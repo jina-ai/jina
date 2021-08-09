@@ -300,6 +300,8 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/><label for="toctree-checkbox-35"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.arrays/">jina.types.arrays package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/><label for="toctree-checkbox-36"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.types.arrays.abstract/">jina.types.arrays.abstract module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.types.arrays.bpm/">jina.types.arrays.bpm module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.arrays.chunk/">jina.types.arrays.chunk module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.arrays.document/">jina.types.arrays.document module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.arrays.match/">jina.types.arrays.match module</a></li>
@@ -396,6 +398,8 @@
   <h2>A</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray">AbstractDocumentArray (class in jina.types.arrays.abstract)</a>
+</li>
         <li><a href="../api/jina.peapods.runtimes.container/#jina.peapods.runtimes.container.ContainerRuntime.activate">activate() (jina.peapods.runtimes.container.ContainerRuntime static method)</a>
 
         <ul>
@@ -451,6 +455,8 @@
         <li><a href="../api/jina.importer/#jina.importer.PathImporter.add_modules">add_modules() (jina.importer.PathImporter static method)</a>
 </li>
         <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.add_node">add_node() (jina.types.document.graph.GraphDocument method)</a>
+</li>
+        <li><a href="../api/jina.types.arrays.bpm/#jina.types.arrays.bpm.BufferPoolManager.add_or_update">add_or_update() (jina.types.arrays.bpm.BufferPoolManager method)</a>
 </li>
         <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.add_pod">add_pod() (jina.types.routing.table.RoutingTable method)</a>
 </li>
@@ -527,6 +533,8 @@
         <li><a href="../api/jina/#jina.DocumentArray.append">append() (jina.DocumentArray method)</a>
 
         <ul>
+          <li><a href="../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.append">(jina.types.arrays.abstract.AbstractDocumentArray method)</a>
+</li>
           <li><a href="../api/jina.types.arrays.chunk/#jina.types.arrays.chunk.ChunkArray.append">(jina.types.arrays.chunk.ChunkArray method)</a>
 </li>
           <li><a href="../api/jina.types.arrays.document/#jina.types.arrays.document.DocumentArray.append">(jina.types.arrays.document.DocumentArray method)</a>
@@ -736,6 +744,8 @@
           <li><a href="../api/jina.types.document/#jina.types.document.Document.buffer">(jina.types.document.Document property)</a>
 </li>
         </ul></li>
+        <li><a href="../api/jina.types.arrays.bpm/#jina.types.arrays.bpm.BufferPoolManager">BufferPoolManager (class in jina.types.arrays.bpm)</a>
+</li>
         <li><a href="../api/daemon.dockerize/#daemon.dockerize.Dockerizer.build">build() (daemon.dockerize.Dockerizer class method)</a>
 
         <ul>
@@ -814,6 +824,8 @@
           <li><a href="../api/jina/#jina.Document.clear">(jina.Document method)</a>
 </li>
           <li><a href="../api/jina/#jina.DocumentArray.clear">(jina.DocumentArray method)</a>
+</li>
+          <li><a href="../api/jina.types.arrays.bpm/#jina.types.arrays.bpm.BufferPoolManager.clear">(jina.types.arrays.bpm.BufferPoolManager method)</a>
 </li>
           <li><a href="../api/jina.types.arrays.document/#jina.types.arrays.document.DocumentArray.clear">(jina.types.arrays.document.DocumentArray method)</a>
 </li>
@@ -1479,6 +1491,8 @@
           <li><a href="../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.delete">(jina.clients.mixin.PostMixin method)</a>
 </li>
         </ul></li>
+        <li><a href="../api/jina.types.arrays.bpm/#jina.types.arrays.bpm.BufferPoolManager.delete_if_exists">delete_if_exists() (jina.types.arrays.bpm.BufferPoolManager method)</a>
+</li>
         <li><a href="../api/jina.enums/#jina.enums.RemoteWorkspaceState.DELETING">DELETING (jina.enums.RemoteWorkspaceState attribute)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.DENSE">DENSE (jina.enums.EmbeddingClsType attribute)</a>
@@ -1528,6 +1542,8 @@
         <li><a href="../api/jina.peapods.runtimes.gateway.http.models/#jina.peapods.runtimes.gateway.http.models.JinaResponseModel.DataRequestModel.docs">docs (jina.peapods.runtimes.gateway.http.models.JinaResponseModel.DataRequestModel attribute)</a>
 </li>
         <li><a href="../api/jina.types.request.mixin/#jina.types.request.mixin.DocsPropertyMixin.docs">docs() (jina.types.request.mixin.DocsPropertyMixin property)</a>
+</li>
+        <li><a href="../api/jina.types.arrays.bpm/#jina.types.arrays.bpm.BufferPoolManager.docs_to_flush">docs_to_flush() (jina.types.arrays.bpm.BufferPoolManager method)</a>
 </li>
         <li><a href="../api/jina.types.request.mixin/#jina.types.request.mixin.DocsPropertyMixin">DocsPropertyMixin (class in jina.types.request.mixin)</a>
 </li>
@@ -1639,10 +1655,10 @@
 </li>
         <li><a href="../api/jina.importer/#jina.importer.ExtensionFileLoader.exec_module">exec_module() (jina.importer.ExtensionFileLoader class method)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina/#jina.Executor">Executor (in module jina)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.enums/#jina.enums.BuildTestLevel.EXECUTOR">EXECUTOR (jina.enums.BuildTestLevel attribute)</a>
 </li>
         <li><a href="../api/cli.api/#cli.api.executor">executor() (in module cli.api)</a>
@@ -1674,6 +1690,8 @@
         <li><a href="../api/jina/#jina.DocumentArray.extend">extend() (jina.DocumentArray method)</a>
 
         <ul>
+          <li><a href="../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.extend">(jina.types.arrays.abstract.AbstractDocumentArray method)</a>
+</li>
           <li><a href="../api/jina.types.arrays.chunk/#jina.types.arrays.chunk.ChunkArray.extend">(jina.types.arrays.chunk.ChunkArray method)</a>
 </li>
           <li><a href="../api/jina.types.arrays.document/#jina.types.arrays.document.DocumentArray.extend">(jina.types.arrays.document.DocumentArray method)</a>
@@ -1708,8 +1726,12 @@
 </li>
         <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceArguments.files">files (daemon.models.workspaces.WorkspaceArguments attribute)</a>
 </li>
-        <li><a href="../api/jina.types.arrays.search_ops/#jina.types.arrays.search_ops.DocumentArraySearchOpsMixin.find">find() (jina.types.arrays.search_ops.DocumentArraySearchOpsMixin method)</a>
+        <li><a href="../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.find">find() (jina.types.arrays.abstract.AbstractDocumentArray method)</a>
+
+        <ul>
+          <li><a href="../api/jina.types.arrays.search_ops/#jina.types.arrays.search_ops.DocumentArraySearchOpsMixin.find">(jina.types.arrays.search_ops.DocumentArraySearchOpsMixin method)</a>
 </li>
+        </ul></li>
         <li><a href="../api/jina.importer/#jina.importer.ExtensionPathFinder.find_spec">find_spec() (jina.importer.ExtensionPathFinder class method)</a>
 </li>
         <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.Pod.first_pea_args">first_pea_args() (jina.peapods.pods.Pod property)</a>
@@ -1744,10 +1766,10 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.FlowInspectType">FlowInspectType (class in jina.enums)</a>
 </li>
-        <li><a href="../api/jina.excepts/#jina.excepts.FlowMissingPodError">FlowMissingPodError</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.excepts/#jina.excepts.FlowMissingPodError">FlowMissingPodError</a>
+</li>
         <li><a href="../api/jina.optimizers/#jina.optimizers.FlowOptimizer">FlowOptimizer (class in jina.optimizers)</a>
 </li>
         <li><a href="../api/jina.optimizers.flow_runner/#jina.optimizers.flow_runner.FlowRunner">FlowRunner (class in jina.optimizers.flow_runner)</a>
@@ -1833,13 +1855,19 @@
         <li><a href="../api/jina/#jina.Document.get_attributes">get_attributes() (jina.Document method)</a>
 
         <ul>
+          <li><a href="../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.get_attributes">(jina.types.arrays.abstract.AbstractDocumentArray method)</a>
+</li>
           <li><a href="../api/jina.types.arrays.document/#jina.types.arrays.document.DocumentArrayGetAttrMixin.get_attributes">(jina.types.arrays.document.DocumentArrayGetAttrMixin method)</a>
 </li>
           <li><a href="../api/jina.types.document/#jina.types.document.Document.get_attributes">(jina.types.document.Document method)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.types.arrays.document/#jina.types.arrays.document.DocumentArrayGetAttrMixin.get_attributes_with_docs">get_attributes_with_docs() (jina.types.arrays.document.DocumentArrayGetAttrMixin method)</a>
+        <li><a href="../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.get_attributes_with_docs">get_attributes_with_docs() (jina.types.arrays.abstract.AbstractDocumentArray method)</a>
+
+        <ul>
+          <li><a href="../api/jina.types.arrays.document/#jina.types.arrays.document.DocumentArrayGetAttrMixin.get_attributes_with_docs">(jina.types.arrays.document.DocumentArrayGetAttrMixin method)</a>
 </li>
+        </ul></li>
         <li><a href="../api/jina.hubble.hubapi/#jina.hubble.hubapi.get_config_path">get_config_path() (in module jina.hubble.hubapi)</a>
 </li>
         <li><a href="../api/jina.peapods.networking/#jina.peapods.networking.get_connect_host">get_connect_host() (in module jina.peapods.networking)</a>
@@ -1859,6 +1887,8 @@
         <li><a href="../api/jina.executors.metas/#jina.executors.metas.get_default_metas">get_default_metas() (in module jina.executors.metas)</a>
 </li>
         <li><a href="../api/jina.hubble.hubapi/#jina.hubble.hubapi.get_dist_path">get_dist_path() (in module jina.hubble.hubapi)</a>
+</li>
+        <li><a href="../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap.get_doc_by_key">get_doc_by_key() (jina.types.arrays.memmap.DocumentArrayMemmap method)</a>
 </li>
         <li><a href="../api/jina.optimizers/#jina.optimizers.EvaluationCallback.get_empty_copy">get_empty_copy() (jina.optimizers.EvaluationCallback method)</a>
 
@@ -1886,10 +1916,10 @@
 </li>
         <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.get_in_degree">get_in_degree() (jina.types.document.graph.GraphDocument method)</a>
 </li>
-        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.get_incoming_nodes">get_incoming_nodes() (jina.types.document.graph.GraphDocument method)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.get_incoming_nodes">get_incoming_nodes() (jina.types.document.graph.GraphDocument method)</a>
+</li>
         <li><a href="../api/jina.helper/#jina.helper.get_internal_ip">get_internal_ip() (in module jina.helper)</a>
 </li>
         <li><a href="../api/jina.hubble.hubapi/#jina.hubble.hubapi.get_lockfile">get_lockfile() (in module jina.hubble.hubapi)</a>
@@ -2841,8 +2871,6 @@
           <li><a href="../api/jina.peapods.networking/#module-jina.peapods.networking">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     jina.peapods.peas
 
@@ -2850,6 +2878,8 @@
           <li><a href="../api/jina.peapods.peas/#module-jina.peapods.peas">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     jina.peapods.peas.helper
 
@@ -3093,6 +3123,20 @@
 
         <ul>
           <li><a href="../api/jina.types.arrays/#module-jina.types.arrays">module</a>
+</li>
+        </ul></li>
+        <li>
+    jina.types.arrays.abstract
+
+        <ul>
+          <li><a href="../api/jina.types.arrays.abstract/#module-jina.types.arrays.abstract">module</a>
+</li>
+        </ul></li>
+        <li>
+    jina.types.arrays.bpm
+
+        <ul>
+          <li><a href="../api/jina.types.arrays.bpm/#module-jina.types.arrays.bpm">module</a>
 </li>
         </ul></li>
         <li>
@@ -3558,8 +3602,12 @@
 </li>
         <li><a href="../api/jina.logging.formatter/#jina.logging.formatter.ColorFormatter.MAPPING">MAPPING (jina.logging.formatter.ColorFormatter attribute)</a>
 </li>
-        <li><a href="../api/jina.types.arrays.neural_ops/#jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin.match">match() (jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin method)</a>
+        <li><a href="../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.match">match() (jina.types.arrays.abstract.AbstractDocumentArray method)</a>
+
+        <ul>
+          <li><a href="../api/jina.types.arrays.neural_ops/#jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin.match">(jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin method)</a>
 </li>
+        </ul></li>
         <li><a href="../api/jina.types.arrays.match/#jina.types.arrays.match.MatchArray">MatchArray (class in jina.types.arrays.match)</a>
 </li>
         <li><a href="../api/jina/#jina.Document.matches">matches() (jina.Document property)</a>
@@ -4000,6 +4048,10 @@
 </li>
           <li><a href="../api/jina.types.arrays/#module-jina.types.arrays">jina.types.arrays</a>
 </li>
+          <li><a href="../api/jina.types.arrays.abstract/#module-jina.types.arrays.abstract">jina.types.arrays.abstract</a>
+</li>
+          <li><a href="../api/jina.types.arrays.bpm/#module-jina.types.arrays.bpm">jina.types.arrays.bpm</a>
+</li>
           <li><a href="../api/jina.types.arrays.chunk/#module-jina.types.arrays.chunk">jina.types.arrays.chunk</a>
 </li>
           <li><a href="../api/jina.types.arrays.document/#module-jina.types.arrays.document">jina.types.arrays.document</a>
@@ -4207,16 +4259,22 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/daemon.models.containers/#daemon.models.containers.ContainerArguments.object">object (daemon.models.containers.ContainerArguments attribute)</a>
 </li>
+        <li><a href="../api/jina/#jina.Document.ON_GETATTR">ON_GETATTR (jina.Document attribute)</a>
+
+        <ul>
+          <li><a href="../api/jina.types.document/#jina.types.document.Document.ON_GETATTR">(jina.types.document.Document attribute)</a>
+</li>
+        </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.OnErrorStrategy">OnErrorStrategy (class in jina.enums)</a>
 </li>
         <li><a href="../api/jina.types.score/#jina.types.score.NamedScore.op_name">op_name() (jina.types.score.NamedScore property)</a>
 </li>
         <li><a href="../api/jina.types.score/#jina.types.score.NamedScore.operands">operands() (jina.types.score.NamedScore property)</a>
 </li>
-        <li><a href="../api/jina.types.arrays.search_ops/#jina.types.arrays.search_ops.DocumentArraySearchOpsMixin.operators">operators (jina.types.arrays.search_ops.DocumentArraySearchOpsMixin attribute)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.types.arrays.search_ops/#jina.types.arrays.search_ops.DocumentArraySearchOpsMixin.operators">operators (jina.types.arrays.search_ops.DocumentArraySearchOpsMixin attribute)</a>
+</li>
         <li><a href="../api/jina.optimizers.parameters/#jina.optimizers.parameters.OptimizationParameter">OptimizationParameter (class in jina.optimizers.parameters)</a>
 </li>
         <li><a href="../api/jina.optimizers/#jina.optimizers.FlowOptimizer.optimize_flow">optimize_flow() (jina.optimizers.FlowOptimizer method)</a>
@@ -4735,12 +4793,18 @@
   <h2>S</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../api/jina.types.arrays.search_ops/#jina.types.arrays.search_ops.DocumentArraySearchOpsMixin.sample">sample() (jina.types.arrays.search_ops.DocumentArraySearchOpsMixin method)</a>
+        <li><a href="../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.sample">sample() (jina.types.arrays.abstract.AbstractDocumentArray method)</a>
+
+        <ul>
+          <li><a href="../api/jina.types.arrays.search_ops/#jina.types.arrays.search_ops.DocumentArraySearchOpsMixin.sample">(jina.types.arrays.search_ops.DocumentArraySearchOpsMixin method)</a>
 </li>
+        </ul></li>
         <li><a href="../api/jina/#jina.DocumentArray.save">save() (jina.DocumentArray method)</a>
 
         <ul>
           <li><a href="../api/jina.types.arrays.document/#jina.types.arrays.document.DocumentArray.save">(jina.types.arrays.document.DocumentArray method)</a>
+</li>
+          <li><a href="../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap.save">(jina.types.arrays.memmap.DocumentArrayMemmap method)</a>
 </li>
         </ul></li>
         <li><a href="../api/jina/#jina.DocumentArray.save_binary">save_binary() (jina.DocumentArray method)</a>
@@ -4853,10 +4917,14 @@
 </li>
         <li><a href="../api/daemon/#daemon.setup">setup() (in module daemon)</a>
 </li>
-        <li><a href="../api/jina.types.arrays.search_ops/#jina.types.arrays.search_ops.DocumentArraySearchOpsMixin.shuffle">shuffle() (jina.types.arrays.search_ops.DocumentArraySearchOpsMixin method)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.shuffle">shuffle() (jina.types.arrays.abstract.AbstractDocumentArray method)</a>
+
+        <ul>
+          <li><a href="../api/jina.types.arrays.search_ops/#jina.types.arrays.search_ops.DocumentArraySearchOpsMixin.shuffle">(jina.types.arrays.search_ops.DocumentArraySearchOpsMixin method)</a>
+</li>
+        </ul></li>
         <li><a href="../api/jina.optimizers.flow_runner/#jina.optimizers.flow_runner.SingleFlowRunner">SingleFlowRunner (class in jina.optimizers.flow_runner)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.PeaRoleType.SINGLETON">SINGLETON (jina.enums.PeaRoleType attribute)</a>
@@ -5029,10 +5097,10 @@
         </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.TF">TF (jina.enums.EmbeddingClsType attribute)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.enums/#jina.enums.RuntimeBackendType.THREAD">THREAD (jina.enums.RuntimeBackendType attribute)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.enums/#jina.enums.OnErrorStrategy.THROW_EARLY">THROW_EARLY (jina.enums.OnErrorStrategy attribute)</a>
 </li>
         <li><a href="../api/jina.logging.profile/#jina.logging.profile.TimeContext.time_attrs">time_attrs (jina.logging.profile.TimeContext attribute)</a>
@@ -5063,12 +5131,24 @@
 </li>
         <li><a href="../api/jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence">TraversableSequence (class in jina.types.arrays.traversable)</a>
 </li>
-        <li><a href="../api/jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence.traverse">traverse() (jina.types.arrays.traversable.TraversableSequence method)</a>
+        <li><a href="../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.traverse">traverse() (jina.types.arrays.abstract.AbstractDocumentArray method)</a>
+
+        <ul>
+          <li><a href="../api/jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence.traverse">(jina.types.arrays.traversable.TraversableSequence method)</a>
 </li>
-        <li><a href="../api/jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence.traverse_flat">traverse_flat() (jina.types.arrays.traversable.TraversableSequence method)</a>
+        </ul></li>
+        <li><a href="../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.traverse_flat">traverse_flat() (jina.types.arrays.abstract.AbstractDocumentArray method)</a>
+
+        <ul>
+          <li><a href="../api/jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence.traverse_flat">(jina.types.arrays.traversable.TraversableSequence method)</a>
 </li>
-        <li><a href="../api/jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence.traverse_flat_per_path">traverse_flat_per_path() (jina.types.arrays.traversable.TraversableSequence method)</a>
+        </ul></li>
+        <li><a href="../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.traverse_flat_per_path">traverse_flat_per_path() (jina.types.arrays.abstract.AbstractDocumentArray method)</a>
+
+        <ul>
+          <li><a href="../api/jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence.traverse_flat_per_path">(jina.types.arrays.traversable.TraversableSequence method)</a>
 </li>
+        </ul></li>
         <li><a href="../api/daemon.models.id/#daemon.models.id.DaemonID.type">type() (daemon.models.id.DaemonID property)</a>
 </li>
         <li><a href="../api/jina.helper/#jina.helper.typename">typename() (in module jina.helper)</a>
@@ -5235,8 +5315,12 @@
 </li>
         <li><a href="../api/jina.hubble/#jina.hubble.HubExecutor.visibility">visibility (jina.hubble.HubExecutor attribute)</a>
 </li>
-        <li><a href="../api/jina.types.arrays.neural_ops/#jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin.visualize">visualize() (jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin method)</a>
+        <li><a href="../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.visualize">visualize() (jina.types.arrays.abstract.AbstractDocumentArray method)</a>
+
+        <ul>
+          <li><a href="../api/jina.types.arrays.neural_ops/#jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin.visualize">(jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin method)</a>
 </li>
+        </ul></li>
         <li><a href="../api/daemon.dockerize/#daemon.dockerize.Dockerizer.volume">volume() (daemon.dockerize.Dockerizer class method)</a>
 </li>
     </ul></td>

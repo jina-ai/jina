@@ -301,6 +301,8 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../api/jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/><label for="toctree-checkbox-35"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../api/jina.types.arrays/">jina.types.arrays package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/><label for="toctree-checkbox-36"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.arrays.abstract/">jina.types.arrays.abstract module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.arrays.bpm/">jina.types.arrays.bpm module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.arrays.chunk/">jina.types.arrays.chunk module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.arrays.document/">jina.types.arrays.document module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.arrays.match/">jina.types.arrays.match module</a></li>
@@ -394,17 +396,22 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterable</span> <span class="k">as</span> <span class="n">Itr</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Union</span><span class="p">,</span>
     <span class="n">Iterable</span><span class="p">,</span>
     <span class="n">Iterator</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
+<span class="kn">from</span> <span class="nn">.abstract</span> <span class="kn">import</span> <span class="n">AbstractDocumentArray</span>
+<span class="kn">from</span> <span class="nn">.bpm</span> <span class="kn">import</span> <span class="n">BufferPoolManager</span>
 <span class="kn">from</span> <span class="nn">.document</span> <span class="kn">import</span> <span class="n">DocumentArrayGetAttrMixin</span>
+<span class="kn">from</span> <span class="nn">.neural_ops</span> <span class="kn">import</span> <span class="n">DocumentArrayNeuralOpsMixin</span>
 <span class="kn">from</span> <span class="nn">.search_ops</span> <span class="kn">import</span> <span class="n">DocumentArraySearchOpsMixin</span>
 <span class="kn">from</span> <span class="nn">.traversable</span> <span class="kn">import</span> <span class="n">TraversableSequence</span>
 <span class="kn">from</span> <span class="nn">..document</span> <span class="kn">import</span> <span class="n">Document</span>
@@ -414,7 +421,12 @@
 
 
 <div class="viewcode-block" id="DocumentArrayMemmap"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap">[docs]</a><span class="k">class</span> <span class="nc">DocumentArrayMemmap</span><span class="p">(</span>
-    <span class="n">TraversableSequence</span><span class="p">,</span> <span class="n">DocumentArrayGetAttrMixin</span><span class="p">,</span> <span class="n">DocumentArraySearchOpsMixin</span><span class="p">,</span> <span class="n">Itr</span>
+    <span class="n">TraversableSequence</span><span class="p">,</span>
+    <span class="n">DocumentArrayGetAttrMixin</span><span class="p">,</span>
+    <span class="n">DocumentArrayNeuralOpsMixin</span><span class="p">,</span>
+    <span class="n">DocumentArraySearchOpsMixin</span><span class="p">,</span>
+    <span class="n">Itr</span><span class="p">,</span>
+    <span class="n">AbstractDocumentArray</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">"""</span>
 <span class="sd">    Create a memory-map to an :class:`DocumentArray` stored in binary files on disk.</span>
@@ -426,12 +438,24 @@
 <span class="sd">        - `header.bin`: stores id, offset, length and boundary info of each Document in `body.bin`;</span>
 <span class="sd">        - `body.bin`: stores Documents continuously</span>
 
-<span class="sd">    When loading :class:`DocumentArrayMemmap`, it only loads the content of `header.bin` into memory, while storing</span>
+<span class="sd">    When loading :class:`DocumentArrayMemmap`, it loads the content of `header.bin` into memory, while storing</span>
 <span class="sd">    all `body.bin` data on disk. As `header.bin` is often much smaller than `body.bin`, memory is saved.</span>
 
+<span class="sd">    :class:`DocumentArrayMemmap` also loads a portion of the documents in a memory buffer and keeps the memory documents</span>
+<span class="sd">    synced with the disk. This helps ensure that modified documents are persisted to the disk.</span>
+<span class="sd">    The memory buffer size is configured with parameter `buffer_pool_size` which represents the number of documents</span>
+<span class="sd">    that the buffer can store.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">            To make sure the documents you modify are persisted to disk, make sure that the number of referenced</span>
+<span class="sd">            documents does not exceed the buffer pool size. Otherwise, they won't be referenced by the buffer pool and</span>
+<span class="sd">            they will not be persisted.</span>
+<span class="sd">            The best practice is to always reference documents using DAM.</span>
+
 <span class="sd">    This class is designed to work similarly as :class:`DocumentArray` but differs in the following aspects:</span>
-<span class="sd">        - one can not set the attribute of elements in a :class:`DocumentArrayMemmap`;</span>
-<span class="sd">        - one can not use slice to index elements in a :class:`DocumentArrayMemmap`;</span>
+<span class="sd">        - you can set the attribute of elements in a :class:`DocumentArrayMemmap` but you need to make sure that you</span>
+<span class="sd">        don't reference more documents than the buffer pool size</span>
+<span class="sd">        - each document</span>
 
 <span class="sd">    To convert between a :class:`DocumentArrayMemmap` and a :class:`DocumentArray`</span>
 
@@ -449,12 +473,14 @@
 <span class="sd">        dam2.extend(da)</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">key_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">36</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">key_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">36</span><span class="p">,</span> <span class="n">buffer_pool_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">):</span>
         <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_header_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">'header.bin'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_body_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">'body.bin'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_key_length</span> <span class="o">=</span> <span class="n">key_length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_mmap</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_header_body</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer_pool</span> <span class="o">=</span> <span class="n">BufferPoolManager</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="n">buffer_pool_size</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DocumentArrayMemmap.reload"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Reload header of this object from the disk.</span>
@@ -464,7 +490,8 @@
 
 <span class="sd">        This function only reloads the header, not the body.</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_load_header_body</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_header_body</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer_pool</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_load_header_body</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'a'</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'_header'</span><span class="p">):</span>
@@ -488,17 +515,19 @@
             <span class="p">],</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_header_entry_size</span> <span class="o">=</span> <span class="mi">24</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_key_length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_header_entry</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_header_map</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
-            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">((</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span> <span class="n">HEADER_NONE_ENTRY</span><span class="p">)</span>
-        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_header_map</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tmp</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">((</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span> <span class="n">HEADER_NONE_ENTRY</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_header_map</span><span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_body_fileno</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_body</span><span class="o">.</span><span class="n">fileno</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header_map</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start</span> <span class="o">=</span> <span class="n">tmp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">tmp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_body</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_start</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_mmap</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_header_map</span><span class="p">)</span>
@@ -511,25 +540,29 @@
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_body</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_body</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_mmap</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="DocumentArrayMemmap.clear"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Clear the on-disk data of :class:`DocumentArrayMemmap`"""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_header_body</span><span class="p">(</span><span class="s1">'wb'</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DocumentArrayMemmap.append"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">,</span> <span class="n">flush</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">"""</span>
-<span class="sd">        Append :param:`doc` in :class:`DocumentArrayMemmap`.</span>
-
-<span class="sd">        :param doc: The doc needs to be appended.</span>
-<span class="sd">        :param flush: If set, then flush to disk on done.</span>
-<span class="sd">        """</span>
+    <span class="k">def</span> <span class="nf">_update_or_append</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">doc</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">,</span>
+        <span class="n">idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">flush</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">update_buffer</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">binary_str</span><span class="p">()</span>
         <span class="n">l</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>  <span class="c1">#: the length</span>
         <span class="n">p</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_start</span> <span class="o">/</span> <span class="n">PAGE_SIZE</span><span class="p">)</span> <span class="o">*</span> <span class="n">PAGE_SIZE</span>  <span class="c1">#: offset of the page</span>
         <span class="n">r</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start</span> <span class="o">%</span> <span class="n">PAGE_SIZE</span>
         <span class="p">)</span>  <span class="c1">#: the remainder, i.e. the start position given the offset</span>
+
+        <span class="k">if</span> <span class="n">idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">idx</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header_entry_size</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
             <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
                 <span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">r</span> <span class="o">+</span> <span class="n">l</span><span class="p">),</span>
@@ -541,39 +574,129 @@
                 <span class="p">],</span>
             <span class="p">)</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_header_map</span><span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_header_map</span><span class="p">),</span> <span class="n">p</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">r</span> <span class="o">+</span> <span class="n">l</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">idx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_header_map</span><span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">last_header_entry</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">r</span> <span class="o">+</span> <span class="n">l</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_header_entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_header_entry</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_header_map</span><span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">r</span> <span class="o">+</span> <span class="n">l</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start</span> <span class="o">=</span> <span class="n">p</span> <span class="o">+</span> <span class="n">r</span> <span class="o">+</span> <span class="n">l</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_body</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">flush</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_body</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_body</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_mmap</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">update_buffer</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_pool</span><span class="o">.</span><span class="n">add_or_update</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                <span class="n">_key</span><span class="p">,</span> <span class="n">_doc</span> <span class="o">=</span> <span class="n">result</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">_doc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_str2int_id</span><span class="p">(</span><span class="n">_key</span><span class="p">),</span> <span class="n">update_buffer</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">'Document'</span><span class="p">:</span>
+<div class="viewcode-block" id="DocumentArrayMemmap.append"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">,</span> <span class="n">flush</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">update_buffer</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Append :param:`doc` in :class:`DocumentArrayMemmap`.</span>
+
+<span class="sd">        :param doc: The doc needs to be appended.</span>
+<span class="sd">        :param update_buffer: If set, update the buffer.</span>
+<span class="sd">        :param flush: If set, then flush to disk on done.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_or_append</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="n">flush</span><span class="p">,</span> <span class="n">update_buffer</span><span class="o">=</span><span class="n">update_buffer</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_update</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">flush</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">update_buffer</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Update :param:`doc` in :class:`DocumentArrayMemmap`.</span>
+
+<span class="sd">        :param doc: The doc needed to be updated.</span>
+<span class="sd">        :param idx: The position of the document.</span>
+<span class="sd">        :param update_buffer: If set, update the buffer.</span>
+<span class="sd">        :param flush: If set, then flush to disk on done.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_or_append</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="n">idx</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="n">flush</span><span class="p">,</span> <span class="n">update_buffer</span><span class="o">=</span><span class="n">update_buffer</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_iteridx_by_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">slice</span><span class="p">):</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span>
+        <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">start</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">stop</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">stop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">length</span><span class="p">,</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">step</span> <span class="ow">or</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">&gt;</span> <span class="n">stop</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="n">length</span><span class="p">:</span>
+            <span class="n">stop</span> <span class="o">=</span> <span class="n">stop</span> <span class="o">+</span> <span class="n">length</span>
+
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">&gt;</span> <span class="n">start</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="n">length</span><span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">length</span>
+
+        <span class="c1"># if start and stop are in order, put them inside bounds</span>
+        <span class="c1"># otherwise, range will return an empty iterator</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;=</span> <span class="n">stop</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">start</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">stop</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">start</span> <span class="o">&gt;</span> <span class="n">length</span> <span class="ow">and</span> <span class="n">stop</span> <span class="o">&gt;</span> <span class="n">length</span><span class="p">):</span>
+                <span class="n">start</span><span class="p">,</span> <span class="n">stop</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+            <span class="k">elif</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">stop</span> <span class="o">&gt;</span> <span class="n">length</span><span class="p">:</span>
+                <span class="n">start</span><span class="p">,</span> <span class="n">stop</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">length</span>
+            <span class="k">elif</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">elif</span> <span class="n">stop</span> <span class="o">&gt;</span> <span class="n">length</span><span class="p">:</span>
+                <span class="n">stop</span> <span class="o">=</span> <span class="n">length</span>
+
+        <span class="k">return</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_doc_array_by_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">slice</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">.document</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+
+        <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iteridx_by_slice</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+            <span class="n">da</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_int2str_id</span><span class="p">(</span><span class="n">i</span><span class="p">)])</span>
+
+        <span class="k">return</span> <span class="n">da</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_mmap</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'mmap'</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_mmap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_mmap</span> <span class="o">=</span> <span class="n">mmap</span><span class="o">.</span><span class="n">mmap</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_body_fileno</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">prot</span><span class="o">=</span><span class="n">mmap</span><span class="o">.</span><span class="n">PROT_READ</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_mmap</span>
+
+<div class="viewcode-block" id="DocumentArrayMemmap.get_doc_by_key"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap.get_doc_by_key">[docs]</a>    <span class="k">def</span> <span class="nf">get_doc_by_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        returns a document by key (ID) from disk</span>
+
+<span class="sd">        :param key: id of the document</span>
+<span class="sd">        :return: returns a document</span>
+<span class="sd">        """</span>
+        <span class="n">pos_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header_map</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">r_plus_l</span> <span class="o">=</span> <span class="n">pos_info</span>
+        <span class="k">return</span> <span class="n">Document</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mmap</span><span class="p">[</span><span class="n">p</span> <span class="o">+</span> <span class="n">r</span> <span class="p">:</span> <span class="n">p</span> <span class="o">+</span> <span class="n">r_plus_l</span><span class="p">])</span></div>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">slice</span><span class="p">]):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">pos_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header_map</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-            <span class="n">_</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">l</span> <span class="o">=</span> <span class="n">pos_info</span>
-            <span class="k">with</span> <span class="n">mmap</span><span class="o">.</span><span class="n">mmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_body_fileno</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="n">l</span><span class="p">)</span> <span class="k">as</span> <span class="n">m</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">Document</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="n">r</span><span class="p">:])</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_pool</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_pool</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_doc_by_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_pool</span><span class="o">.</span><span class="n">add_or_update</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                <span class="n">_key</span><span class="p">,</span> <span class="n">_doc</span> <span class="o">=</span> <span class="n">result</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">_doc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_str2int_id</span><span class="p">(</span><span class="n">_key</span><span class="p">),</span> <span class="n">update_buffer</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">doc</span>
+
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_int2str_id</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_doc_array_by_slice</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'`key` must be int or str, but receiving </span><span class="si">{</span><span class="n">key</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'`key` must be int, str or slice, but receiving </span><span class="si">{</span><span class="n">key</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_str2int_id</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-            <span class="n">str_key</span> <span class="o">=</span> <span class="n">key</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="n">idx</span> <span class="o">=</span> <span class="n">key</span>
-            <span class="n">str_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_int2str_id</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'`key` must be int or str, but receiving </span><span class="si">{</span><span class="n">key</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
-
+    <span class="k">def</span> <span class="nf">_del_doc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">str_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">p</span> <span class="o">=</span> <span class="n">idx</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header_entry_size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
             <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-                <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+                <span class="p">(</span><span class="n">str_key</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
                 <span class="n">dtype</span><span class="o">=</span><span class="p">[</span>
                     <span class="p">(</span><span class="s1">''</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_key_length</span><span class="p">)),</span>
                     <span class="p">(</span><span class="s1">''</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span>
@@ -584,7 +707,25 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_mmap</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_header_map</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">str_key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer_pool</span><span class="o">.</span><span class="n">delete_if_exists</span><span class="p">(</span><span class="n">str_key</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">slice</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_str2int_id</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">str_key</span> <span class="o">=</span> <span class="n">key</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_del_doc</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">str_key</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">key</span>
+            <span class="n">str_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_int2str_id</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_del_doc</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">str_key</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iteridx_by_slice</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+                <span class="n">str_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_int2str_id</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_del_doc</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">str_key</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'`key` must be int, str or slice, but receiving </span><span class="si">{</span><span class="n">key</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_str2int_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header_map</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
@@ -605,15 +746,27 @@
     <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">key</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="n">str_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_int2str_id</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
                 <span class="c1"># override an existing entry</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_header_map</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_int2str_id</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header_map</span><span class="p">[</span><span class="n">value</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
-                <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="n">value</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+
+                <span class="c1"># allows overwriting an existing document</span>
+                <span class="k">if</span> <span class="n">str_key</span> <span class="o">!=</span> <span class="n">value</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+                    <span class="n">entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header_map</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_header_map</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
+                        <span class="p">[</span>
+                            <span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">entry</span><span class="p">)</span> <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="n">str_key</span> <span class="k">else</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header_map</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                        <span class="p">]</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">str_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_pool</span><span class="o">.</span><span class="n">doc_map</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">buffer_pool</span><span class="o">.</span><span class="n">doc_map</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">str_key</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'`key`=</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1"> is out of range'</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">value</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">key</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="n">value</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'key must be equal to document id'</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_str2int_id</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'`key` must be int or str, but receiving </span><span class="si">{</span><span class="n">key</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
 
@@ -637,6 +790,18 @@
 
     <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header_map</span>
+
+<div class="viewcode-block" id="DocumentArrayMemmap.save"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Persists memory loaded documents to disk"""</span>
+        <span class="n">docs_to_flush</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_pool</span><span class="o">.</span><span class="n">docs_to_flush</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs_to_flush</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_str2int_id</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">flush</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_body</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_mmap</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 
 <div class="viewcode-block" id="DocumentArrayMemmap.prune"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap.prune">[docs]</a>    <span class="k">def</span> <span class="nf">prune</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Prune deleted Documents from this object, this yields a smaller on-disk storage. """</span>

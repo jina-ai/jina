@@ -323,6 +323,8 @@
 </li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../jina.types/">jina.types package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/><label for="toctree-checkbox-35"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3 current has-children"><a class="reference internal" href="../jina.types.arrays/">jina.types.arrays package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/><label for="toctree-checkbox-36"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.abstract/">jina.types.arrays.abstract module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.bpm/">jina.types.arrays.bpm module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.chunk/">jina.types.arrays.chunk module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.document/">jina.types.arrays.document module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.match/">jina.types.arrays.match module</a></li>
@@ -414,8 +416,8 @@
 <span id="jina-types-arrays-memmap-module"></span><h1>jina.types.arrays.memmap module<a class="headerlink" href="#module-jina.types.arrays.memmap" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="jina.types.arrays.memmap.DocumentArrayMemmap">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.types.arrays.memmap.</span></code><code class="sig-name descname"><span class="pre">DocumentArrayMemmap</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">36</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence" title="jina.types.arrays.traversable.TraversableSequence"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.traversable.TraversableSequence</span></code></a>, <a class="reference internal" href="../jina.types.arrays.document/#jina.types.arrays.document.DocumentArrayGetAttrMixin" title="jina.types.arrays.document.DocumentArrayGetAttrMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.document.DocumentArrayGetAttrMixin</span></code></a>, <a class="reference internal" href="../jina.types.arrays.search_ops/#jina.types.arrays.search_ops.DocumentArraySearchOpsMixin" title="jina.types.arrays.search_ops.DocumentArraySearchOpsMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.search_ops.DocumentArraySearchOpsMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Iterable</span></code></p>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.types.arrays.memmap.</span></code><code class="sig-name descname"><span class="pre">DocumentArrayMemmap</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">36</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer_pool_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence" title="jina.types.arrays.traversable.TraversableSequence"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.traversable.TraversableSequence</span></code></a>, <a class="reference internal" href="../jina.types.arrays.document/#jina.types.arrays.document.DocumentArrayGetAttrMixin" title="jina.types.arrays.document.DocumentArrayGetAttrMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.document.DocumentArrayGetAttrMixin</span></code></a>, <a class="reference internal" href="../jina.types.arrays.neural_ops/#jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin" title="jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin</span></code></a>, <a class="reference internal" href="../jina.types.arrays.search_ops/#jina.types.arrays.search_ops.DocumentArraySearchOpsMixin" title="jina.types.arrays.search_ops.DocumentArraySearchOpsMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.search_ops.DocumentArraySearchOpsMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Iterable</span></code>, <a class="reference internal" href="../jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray" title="jina.types.arrays.abstract.AbstractDocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.abstract.AbstractDocumentArray</span></code></a></p>
 <p>Create a memory-map to an <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code> stored in binary files on disk.</p>
 <p>Memory-mapped files are used for accessing <code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code> of large <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code> on disk,
 without reading the entire file into memory.</p>
@@ -426,13 +428,25 @@ without reading the entire file into memory.</p>
 </ul>
 </dd>
 </dl>
-<p>When loading <a class="reference internal" href="#jina.types.arrays.memmap.DocumentArrayMemmap" title="jina.types.arrays.memmap.DocumentArrayMemmap"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code></a>, it only loads the content of <cite>header.bin</cite> into memory, while storing
+<p>When loading <a class="reference internal" href="#jina.types.arrays.memmap.DocumentArrayMemmap" title="jina.types.arrays.memmap.DocumentArrayMemmap"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code></a>, it loads the content of <cite>header.bin</cite> into memory, while storing
 all <cite>body.bin</cite> data on disk. As <cite>header.bin</cite> is often much smaller than <cite>body.bin</cite>, memory is saved.</p>
-<dl class="simple">
+<p><a class="reference internal" href="#jina.types.arrays.memmap.DocumentArrayMemmap" title="jina.types.arrays.memmap.DocumentArrayMemmap"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code></a> also loads a portion of the documents in a memory buffer and keeps the memory documents
+synced with the disk. This helps ensure that modified documents are persisted to the disk.
+The memory buffer size is configured with parameter <cite>buffer_pool_size</cite> which represents the number of documents
+that the buffer can store.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To make sure the documents you modify are persisted to disk, make sure that the number of referenced
+documents does not exceed the buffer pool size. Otherwise, they won’t be referenced by the buffer pool and
+they will not be persisted.
+The best practice is to always reference documents using DAM.</p>
+</div>
+<dl>
 <dt>This class is designed to work similarly as <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code> but differs in the following aspects:</dt><dd><ul class="simple">
-<li><p>one can not set the attribute of elements in a <a class="reference internal" href="#jina.types.arrays.memmap.DocumentArrayMemmap" title="jina.types.arrays.memmap.DocumentArrayMemmap"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code></a>;</p></li>
-<li><p>one can not use slice to index elements in a <a class="reference internal" href="#jina.types.arrays.memmap.DocumentArrayMemmap" title="jina.types.arrays.memmap.DocumentArrayMemmap"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code></a>;</p></li>
+<li><p>you can set the attribute of elements in a <a class="reference internal" href="#jina.types.arrays.memmap.DocumentArrayMemmap" title="jina.types.arrays.memmap.DocumentArrayMemmap"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code></a> but you need to make sure that you</p></li>
 </ul>
+<p>don’t reference more documents than the buffer pool size
+- each document</p>
 </dd>
 </dl>
 <p>To convert between a <a class="reference internal" href="#jina.types.arrays.memmap.DocumentArrayMemmap" title="jina.types.arrays.memmap.DocumentArrayMemmap"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code></a> and a <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></p>
@@ -480,17 +494,41 @@ the change has not been reflected in this <code class="xref py py-class docutils
 </dd></dl>
 <dl class="py method">
 <dt id="jina.types.arrays.memmap.DocumentArrayMemmap.append">
-<code class="sig-name descname"><span class="pre">append</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flush</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.append" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">append</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flush</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.append" title="Permalink to this definition">¶</a></dt>
 <dd><p>Append <a href="#id1"><span class="problematic" id="id2">:param:`doc`</span></a> in <a class="reference internal" href="#jina.types.arrays.memmap.DocumentArrayMemmap" title="jina.types.arrays.memmap.DocumentArrayMemmap"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>doc</strong> (<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>) – The doc needs to be appended.</p></li>
+<li><p><strong>update_buffer</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If set, update the buffer.</p></li>
 <li><p><strong>flush</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If set, then flush to disk on done.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.types.arrays.memmap.DocumentArrayMemmap.get_doc_by_key">
+<code class="sig-name descname"><span class="pre">get_doc_by_key</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap.get_doc_by_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.get_doc_by_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns a document by key (ID) from disk</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – id of the document</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>returns a document</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.types.arrays.memmap.DocumentArrayMemmap.save">
+<code class="sig-name descname"><span class="pre">save</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Persists memory loaded documents to disk</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
 </dd></dl>

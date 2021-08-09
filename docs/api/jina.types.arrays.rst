@@ -7,6 +7,8 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   jina.types.arrays.abstract
+   jina.types.arrays.bpm
    jina.types.arrays.chunk
    jina.types.arrays.document
    jina.types.arrays.match
