@@ -21,7 +21,7 @@ class AbstractDocumentArray(ABC):
 
         :param fields: Variable length argument with the name of the fields to extract
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def get_attributes_with_docs(
@@ -32,7 +32,7 @@ class AbstractDocumentArray(ABC):
 
         :param fields: Variable length argument with the name of the fields to extract
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def traverse(
@@ -44,7 +44,7 @@ class AbstractDocumentArray(ABC):
 
         :param traversal_paths: a list of string that represents the traversal path
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def traverse_flat_per_path(
@@ -56,7 +56,7 @@ class AbstractDocumentArray(ABC):
 
         :param traversal_paths: a list of string that represents the traversal path
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def traverse_flat(self, traversal_paths: Iterable[str]) -> 'TraversableSequence':
@@ -71,7 +71,7 @@ class AbstractDocumentArray(ABC):
 
         :param traversal_paths: a list of string that represents the traversal path
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def match(
@@ -112,7 +112,7 @@ class AbstractDocumentArray(ABC):
         :param use_scipy: use Scipy as the computation backend
         :param metric_name: if provided, then match result will be marked with this string.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def visualize(
@@ -139,7 +139,7 @@ class AbstractDocumentArray(ABC):
         :param show_axis: If set, axis and bounding box of the plot will be printed.
 
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def find(
@@ -168,7 +168,7 @@ class AbstractDocumentArray(ABC):
         :param threshold: Number of regex that should match the operator to accept a Document.
                           If no value is provided `threshold=len(regexes)`.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def sample(self, k: int, seed: Optional[int] = None) -> 'DocumentArray':
@@ -178,7 +178,7 @@ class AbstractDocumentArray(ABC):
         :param seed: initialize the random number generator, by default is None. If set will
             save the state of the random function to produce certain outputs.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def shuffle(self, seed: Optional[int] = None) -> 'DocumentArray':
@@ -187,35 +187,35 @@ class AbstractDocumentArray(ABC):
         :param seed: initialize the random number generator, by default is None. If set will
             save the state of the random function to produce certain outputs.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def __eq__(self, other):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def __len__(self):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def __iter__(self) -> Iterator['Document']:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def __contains__(self, item: str):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def __getitem__(self, item: Union[int, str, slice]):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def __setitem__(self, key, value: 'Document'):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def __delitem__(self, index: Union[int, str, slice]):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def extend(self, iterable: Iterable['Document']) -> None:
@@ -223,7 +223,7 @@ class AbstractDocumentArray(ABC):
 
         :param iterable: the iterable of Documents to extend this array with
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def append(self, doc: 'Document', **kwargs):
@@ -233,4 +233,4 @@ class AbstractDocumentArray(ABC):
         :param doc: The doc needs to be appended.
         :param kwargs: keyword args
         """
-        pass
+        raise NotImplementedError
