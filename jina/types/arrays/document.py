@@ -17,6 +17,8 @@ from typing import (
     Sequence,
 )
 
+import numpy as np
+
 from .neural_ops import DocumentArrayNeuralOpsMixin
 from .search_ops import DocumentArraySearchOpsMixin
 from .traversable import TraversableSequence
@@ -62,12 +64,12 @@ class DocumentArrayMemmapGetAttrMixin:
         """
         fields = list(fields)
         if 'embedding' in fields and not self._is_updated:
-            embeddings = self.cached_embeddings
+            embeddings = self.embeddings_memmap.tolist()
             index = fields.index('embedding')
             fields.remove('embedding')
         elif 'embedding' in fields and self._is_updated:
             embeddings = [doc.get_attributes('embedding') for doc in self]
-            self.cached_embeddings = embeddings
+            self.embeddings_memmap = np.asarray(embeddings)
             index = fields.index('embedding')
             fields.remove('embedding')
         if fields:

@@ -65,7 +65,6 @@ class DocumentArrayMemmap(
         self._key_length = key_length
         self._load_header_body()
         self._is_updated = False
-        self._embeddings = []
 
     def reload(self):
         """Reload header of this object from the disk.
@@ -273,12 +272,13 @@ class DocumentArrayMemmap(
         return os.stat(self._header_path).st_size + os.stat(self._body_path).st_size
 
     @property
-    def cached_embeddings(self):
+    def embeddings_memmap(self):
         """Return the cached embedding stored in memory."""
         self._is_updated = False
-        return self._embeddings
+        return np.memmap('embedding.bin', mode='r')
 
-    @cached_embeddings.setter
-    def cached_embeddings(self, other):
+    @embeddings_memmap.setter
+    def embeddings_memmap(self, other):
         """Set the cached embedding value in case it is not cached."""
-        self._embeddings = other
+        np.memmap('embedding.bin', mode='w+')
+        np.flush()
