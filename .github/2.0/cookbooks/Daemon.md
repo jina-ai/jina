@@ -20,7 +20,7 @@ Table of Contents
 
 # JinaD (Daemon)
 
-JinaD is a [daemon](https://en.wikipedia.org/wiki/Daemon_(computing)) for deploying & managing Jina on remote via a RESTful interface. It allows users to create/update/delete Flows and Executors on remote hosts. It achieves isolation of deployments by defining a `workspace` for each Jina object, hence allowing a multi-tenant setup with parallel Flows on the same host.
+JinaD is a [daemon](https://en.wikipedia.org/wiki/Daemon_(computing)) for deploying and managing Jina on remote via a RESTful interface. It allows users to create/update/delete Flows and Executors on remote hosts. It achieves isolation of deployments by defining a `workspace` for each Jina object, hence allowing a multi-tenant setup with parallel Flows on the same host.
 
 ------
 
@@ -30,7 +30,7 @@ JinaD is a [daemon](https://en.wikipedia.org/wiki/Daemon_(computing)) for deploy
 
 #### Run
 
-To deploy JinaD, SSH into a remote instance (e.g.- ec2 instance) & run the below command.
+To deploy JinaD, SSH into a remote instance (e.g.- ec2 instance) and run the below command.
 
 ```bash
 docker run --add-host host.docker.internal:host-gateway \
@@ -44,7 +44,7 @@ docker run --add-host host.docker.internal:host-gateway \
 <details>
 <summary><strong>Points to note</strong></summary>
 
-- You can change the port via the `-p` argument. Following code assumes that `HOST` is the public IP of the above instance & `PORT` is as passed in the docker run cpmmand.
+- You can change the port via the `-p` argument. Following code assumes that `HOST` is the public IP of the above instance and `PORT` is as passed in the docker run cpmmand.
 
 - `JinaD` should always be deployed as a docker container. Simply starting the server using `jinad` command would not work.
 
@@ -128,7 +128,7 @@ Workspace is the entrypoint for all objects in JinaD. It primarily represents 3 
 
 1. **Docker Image**
 
-    All objects created by JinaD are containerized. Workspace is responsible for building the base image. You can customize each image with the help of a `.jinad` file & a `requirements.txt` file.
+    All objects created by JinaD are containerized. Workspace is responsible for building the base image. You can customize each image with the help of a `.jinad` file and a `requirements.txt` file.
 
 2. **Docker Network**
 
@@ -319,7 +319,7 @@ assert client.workspaces.delete(id=workspace_id)
 
 ## RESTful Executors
 
-You wouldn't need to create remote Peas/Pods directly yourself. You can use the below code by passing `host` & `port_expose` to an executor with a Flow. Internally it uses `JinaD` for remote management.
+You wouldn't need to create remote Executors directly yourself. You can use the below code by passing `host` and `port_expose` to an executor with a Flow. Internally it uses `JinaD` for remote management.
 
 ```python
 from jina import Flow
@@ -334,7 +334,7 @@ with f:
 ```
 
 <details>
-<summary>In case you want to create remote Peas/Pods manually, you can follow the advanced guidelines below.</summary>
+<summary>In case you want to create remote Executors manually, you can follow the (advanced) guidelines below.</summary>
 
 <details>
 <summary><strong>Get all accepted arguments (<a href="https://api.jina.ai/daemon/#operation/_fetch_pea_params_peas_arguments_get">redoc</a>)</strong></summary>
@@ -453,7 +453,7 @@ JinaD enables management of (remote + containerized) Flows with all your depende
 <details>
 <summary><strong>Create a Flow (<a href="https://api.jina.ai/daemon/#operation/_create_flows_post">redoc</a>)</strong></summary>
 
-This creates a new container using the base image & network defined by `workspace_id` & starts a Flow inside the container. Only the ports needed for external communication are mapped to local. Make sure you've added all your config files while creating the workspace in the previous step.
+This creates a new container using the base image, connects it to the network defined by `workspace_id` and starts a Flow inside the container. Only the ports needed for external communication are mapped to local. Make sure you've added all your config files while creating the workspace in the previous step.
 
 ```python
 from daemon.clients import JinaDClient
