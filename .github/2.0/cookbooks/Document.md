@@ -1233,7 +1233,7 @@ This table summarizes the interfaces of `DocumentArrayMemmap` and `DocumentArray
 |---|---|---|
 | `__getitem__`, `__setitem__`, `__delitem__` (int) | ✅|✅|
 | `__getitem__`, `__setitem__`, `__delitem__` (string) | ✅|✅|
-| `__getitem__`, `__setitem__`, `__delitem__` (slice)  |❌ |✅|
+| `__getitem__`, `__setitem__`, `__delitem__` (slice)  |✅ |✅|
 | `__iter__` |✅|✅|
 | `__contains__` |✅|✅|
 | `__len__` | ✅|✅|
@@ -1250,7 +1250,7 @@ This table summarizes the interfaces of `DocumentArrayMemmap` and `DocumentArray
 | `save`, `load` |❌ unnecessary |✅|
 | `sample` |✅ |✅|
 | `shuffle` |✅ |✅|
-| `match` |❌|✅|
+| `match` (L/Rvalue) |✅|✅|
 
 ### Convert between `DocumentArray` and `DocumentArrayMemmap`
 

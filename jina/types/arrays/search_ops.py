@@ -3,6 +3,7 @@ import random
 import operator
 from typing import Dict, Optional, Union, Tuple
 
+
 if False:
     from .document import DocumentArray
 
@@ -82,11 +83,12 @@ class DocumentArraySearchOpsMixin:
             save the state of the random function to produce certain outputs.
         :return: A sampled list of :class:`Document` represented as :class:`DocumentArray`.
         """
-        from .document import DocumentArray
 
         if k > len(self):
+            from ...helper import typename
+
             raise ValueError(
-                f'Sample size {k} is greater than the length of Document {len(self)}'
+                f'Sample size can not be greater than the length of {typename(self)}, but {k} > {len(self)}'
             )
         if seed is not None:
             random.seed(seed)
@@ -95,6 +97,9 @@ class DocumentArraySearchOpsMixin:
         # however it's only work on DocumentArray, not DocumentArrayMemmap.
         indices = random.sample(range(len(self)), k)
         sampled = operator.itemgetter(*indices)(self)
+
+        from .document import DocumentArray
+
         return DocumentArray(sampled)
 
     def shuffle(self, seed: Optional[int] = None) -> 'DocumentArray':
