@@ -17,6 +17,7 @@ from typing import (
     Sequence,
 )
 
+from .abstract import AbstractDocumentArray
 from .neural_ops import DocumentArrayNeuralOpsMixin
 from .search_ops import DocumentArraySearchOpsMixin
 from .traversable import TraversableSequence
@@ -98,6 +99,7 @@ class DocumentArray(
     DocumentArrayNeuralOpsMixin,
     DocumentArraySearchOpsMixin,
     Itr,
+    AbstractDocumentArray,
 ):
     """
     :class:`DocumentArray` is a mutable sequence of :class:`Document`.
