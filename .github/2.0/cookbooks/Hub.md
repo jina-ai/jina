@@ -2,16 +2,22 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 Table of Contents
 
-- [Hubble CLI Guidelines](#hubble-cli-guidelines)
+- [JinaHub Guidelines](#jinahub-guidelines)
   - [Prerequisites](#prerequisites)
   - [1. Create Executor](#1-create-executor)
-  - [2. Push and Pull CLI](#2-push-and-pull-cli)
-    - [2.1 Distribute your executor](#21-distribute-your-executor)
-    - [2.2 Pull distributed executor](#22-pull-distributed-executor)
-  - [3. Use in Jina Flow](#3-use-in-jina-flow)
-    - [3.1 Using docker images](#31-using-docker-images)
-    - [3.2 Using source codes](#32-using-source-codes)
-    - [3.3 Override Default Parameters](#33-override-default-parameters)
+  - [2. Push Executor to JinaHub](#2-push-executor-to-jinahub)
+    - [2.1 Basic](#21-basic)
+    - [2.2 Advanced](#22-advanced)
+  - [3. Update Executor in JinaHub](#3-update-executor-in-jinahub)
+    - [3.1 Basic](#31-basic)
+    - [3.2 Advanced](#32-advanced)
+  - [4. Pull Executor from JinaHub](#4-pull-executor-from-jinahub)
+    - [4.1 Docker Image](#41-docker-image)
+    - [4.2 Source Code](#42-source-code)
+  - [5. Use in Jina Flow](#5-use-in-jina-flow)
+    - [5.1 Using docker images](#51-using-docker-images)
+    - [5.2 Using source codes](#52-using-source-codes)
+    - [5.3 Override Default Parameters](#53-override-default-parameters)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
