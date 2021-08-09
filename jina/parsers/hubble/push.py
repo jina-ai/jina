@@ -26,6 +26,21 @@ The content source to be shipped into a Jina Hub executor. It can one of the fol
 - a directory containing Dockerfile, manifest.yml, README.md, zero or more yaml config, zero or more Python file.
 ''',
     )
+
+    gp.add_argument(
+        '-f',
+        '--docker-file',
+        metavar='PATH',
+        help='Name of the Dockerfile (Default is `path/Dockerfile`)',
+    )
+
+    gp.add_argument(
+        '-t',
+        '--tag',
+        action='append',
+        help='Name and optionally a list of tags',
+    )
+
     gp.add_argument(
         '--force',
         type=str,
