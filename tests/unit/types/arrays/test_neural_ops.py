@@ -13,7 +13,8 @@ from jina.types.arrays.memmap import DocumentArrayMemmap
 from jina.math.dimensionality_reduction import PCA
 
 
-def get_docs():
+@pytest.fixture()
+def doc_lists():
     d1 = Document(embedding=np.array([0, 0, 0]))
     d2 = Document(embedding=np.array([3, 0, 0]))
     d3 = Document(embedding=np.array([1, 0, 0]))
@@ -26,36 +27,6 @@ def get_docs():
     d5_m = Document(embedding=np.array([0, 0, 3]))
 
     return [d1, d2, d3, d4], [d1_m, d2_m, d3_m, d4_m, d5_m]
-
-
-def gen_docarrays(is_dam1=False, is_dam2=False, buffer_pool_size=1000):
-    def func():
-        D1, D2 = get_docs()
-        if is_dam1:
-            da1 = DocumentArrayMemmap(
-                tempfile.mkdtemp(), buffer_pool_size=buffer_pool_size
-            )
-        else:
-            da1 = DocumentArray()
-
-        if is_dam2:
-            da2 = DocumentArrayMemmap(
-                tempfile.mkdtemp(), buffer_pool_size=buffer_pool_size
-            )
-        else:
-            da2 = DocumentArray()
-        da1.extend(D1)
-        da2.extend(D2)
-        return da1, da2
-
-    return func
-
-
-def gen_docarray_combinations():
-    return [
-        gen_docarrays(is_dam1, is_dam2)
-        for is_dam1, is_dam2 in product((True, False), (True, False))
-    ] + [gen_docarrays(False, True, buffer_pool_size=3)]
 
 
 @pytest.fixture
@@ -89,12 +60,20 @@ def embeddings():
     return np.array([[1, 0, 0], [2, 0, 0], [3, 0, 0]])
 
 
-@pytest.mark.parametrize('gen_doc_arrays', gen_docarray_combinations())
+@pytest.mark.parametrize('first_memmap', [True, False])
+@pytest.mark.parametrize('second_memmap', [True, False])
 @pytest.mark.parametrize(
     'limit, batch_size', [(1, None), (2, None), (None, None), (1, 1), (1, 2), (2, 1)]
 )
-def test_matching_retrieves_correct_number(gen_doc_arrays, limit, batch_size):
-    D1, D2 = gen_doc_arrays()
+def test_matching_retrieves_correct_number(
+    doc_lists, limit, batch_size, first_memmap, second_memmap, tmpdir
+):
+    doc_list1, doc_list2 = doc_lists
+
+    D1 = DocumentArray() if not first_memmap else DocumentArrayMemmap(tmpdir)
+    D1.extend(doc_list1)
+    D2 = DocumentArray() if not first_memmap else DocumentArrayMemmap(tmpdir)
+    D2.extend(doc_list2)
     D1.match(D2, metric='sqeuclidean', limit=limit, batch_size=batch_size)
     for m in D1.get_attributes('matches'):
         if limit is None:
