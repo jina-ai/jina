@@ -125,6 +125,7 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArraySearchOpsMixin, Itr)
     def clear(self) -> None:
         """Clear the on-disk data of :class:`DocumentArrayMemmap`"""
         self._load_header_body('wb')
+        self._embeddings_memmap = None
 
     def append(self, doc: 'Document', flush: bool = True) -> None:
         """
@@ -153,6 +154,7 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArraySearchOpsMixin, Itr)
         self._header_map[doc.id] = (len(self._header_map), p, r, r + l)
         self._start = p + r + l
         self._body.write(value)
+        self._embeddings_memmap = None
         if flush:
             self._header.flush()
             self._body.flush()
@@ -194,6 +196,7 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArraySearchOpsMixin, Itr)
         self._header.seek(0, 2)
         self._header.flush()
         self._header_map.pop(str_key)
+        self._embeddings_memmap = None
 
     def _str2int_id(self, key: str) -> int:
         return self._header_map[key][0]
@@ -318,12 +321,12 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArraySearchOpsMixin, Itr)
 
     @property
     def _embeddings_memmap(self):
-        """Return the cached embedding stored in memory."""
+        """Return the cached embedding stored in np.memmap."""
         return np.memmap('embedding.bin', mode='r')
 
     @_embeddings_memmap.setter
     def _embeddings_memmap(self, other_embeddings):
-        """Set the cached embedding value in case it is not cached."""
+        """Set the cached embedding values in case it is not cached."""
         fp = np.memmap('embedding.bin', dtype='float32', mode='w+')
         fp[:] = other_embeddings[:]
         fp.flush()
