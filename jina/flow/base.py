@@ -801,7 +801,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 graph.add_pod(f'start-{GATEWAY_NAME}', flow_name, pod)
                 graph.add_pod(f'end-{GATEWAY_NAME}', flow_name, pod)
             else:
-                graph.add_pod(pod_id,flow_name, pod)
+                graph.add_pod(pod_id, flow_name, pod)
 
         for end, pod in self._pod_nodes.items():
 
@@ -1580,7 +1580,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param kwargs: new network settings
         """
         self._common_kwargs.update(kwargs)
-
 
     def deploy_naive(self, deployment_type='k8s'):
         from ..kubernetes.naive import naive_deployment
