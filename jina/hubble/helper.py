@@ -11,12 +11,10 @@ import urllib
 import zipfile
 from functools import lru_cache, wraps
 from pathlib import Path
-from typing import Tuple, Optional, Dict, Generator
+from typing import Tuple, Optional, Dict
 from urllib.parse import urlparse, urljoin
 from urllib.request import Request, urlopen
 
-from rich.console import Console
-from rich.progress import Progress, DownloadColumn, BarColumn
 
 from .. import __resources_path__
 from ..importer import ImportExtensions
