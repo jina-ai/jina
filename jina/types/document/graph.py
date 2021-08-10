@@ -222,7 +222,7 @@ class GraphDocument(Document):
 
     def remove_edge(self, doc1: 'Document', doc2: 'Document'):
         """
-        Remove a node from the graph along with the edges that may contain it
+        Remove the edge between doc1 and doc2 from the graph
 
         :param doc1: the starting node for this edge
         :param doc2: the ending node for this edge

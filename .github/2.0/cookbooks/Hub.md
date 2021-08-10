@@ -57,6 +57,10 @@ MyExecutor/
 - `executor.py` should contain the main logic of your Executor.
 - `README.md` should describe the usage of the Executor.
 
+Example usage:
+
+![Demo](../jina-hub-new.gif)
+
 ## 2. Push Executor to JinaHub
 
 If you want to share your Executors to other persons or colleges, you can push your local Executor to JinaHub.
