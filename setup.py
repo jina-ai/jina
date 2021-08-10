@@ -120,7 +120,7 @@ all_deps = get_extra_requires('extra-requirements.txt')
 
 core_deps = all_deps['core']
 perf_deps = all_deps['perf']
-standard_deps = all_deps['standard']
+standard_deps = all_deps['standard'].union(core_deps).union(perf_deps)
 
 if os.name == 'nt':
     # uvloop & lz4 can not be run on windows
