@@ -48,7 +48,7 @@ def zed_runtime(args: 'Namespace'):
 
 
 # alias
-executor = zed_runtime
+executor = pea
 
 
 def gateway(args: 'Namespace'):
