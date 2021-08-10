@@ -47,8 +47,17 @@ def zed_runtime(args: 'Namespace'):
         runtime.run_forever()
 
 
-# alias
-executor = pea
+def executor(args: 'Namespace'):
+    """
+    Starts a ZEDRuntime
+
+    :param args: arguments coming from the CLI.
+    """
+    uses = args.uses
+    if uses.startswith('jinahub+docker://') or uses.startswith('docker://'):
+        return pea(args)
+    else:
+        return zed_runtime(args)
 
 
 def gateway(args: 'Namespace'):

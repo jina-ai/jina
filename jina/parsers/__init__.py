@@ -215,8 +215,8 @@ def get_main_parser():
     set_pod_parser(
         sp.add_parser(
             'zed_runtime',
-            aliases=['pea'],
-            help='Start an Executor',
+            aliases=['executor'],
+            help='Start a ZEDRuntime with an Executor in it',
             description='Start an Executor in the main process. Executor is how Jina processes Document.',
             formatter_class=_chf,
         )
