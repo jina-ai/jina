@@ -19,9 +19,6 @@ Table of Contents
     - [Use Python to Send HTTP Request](#use-python-to-send-http-request)
     - [Enable Cross-origin-resources-sharing (CORS)](#enable-cross-origin-resources-sharing-cors)
     - [Extend HTTP Interface](#extend-http-interface)
-      - [Hide CRUD and Debug Endpoints from HTTP Interface](#hide-crud-and-debug-endpoints-from-http-interface)
-      - [Expose Customized Endpoints to HTTP Interface](#expose-customized-endpoints-to-http-interface)
-      - [Add non-Jina Related Routes](#add-non-jina-related-routes)
   - [Switch Between Communication Protocols](#switch-between-communication-protocols)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->

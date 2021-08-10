@@ -584,13 +584,50 @@ with f:
             md5sum=resp['package']['md5'],
         )
 
+    def _pull_with_progress(self, log_streams, console):
+        from rich.progress import Progress, DownloadColumn, BarColumn
+
+        with Progress(
+            "[progress.description]{task.description}",
+            BarColumn(),
+            DownloadColumn(),
+            "[progress.percentage]{task.percentage:>3.0f}%",
+            console=console,
+            transient=True,
+        ) as progress:
+            tasks = {}
+            for log in log_streams:
+                if 'status' not in log:
+                    continue
+                status = log['status']
+                status_id = log.get('id', None)
+                pg_detail = log.get('progressDetail', None)
+
+                if (pg_detail is None) or (status_id is None):
+                    console.print(status)
+                    continue
+
+                if status_id not in tasks:
+                    tasks[status_id] = progress.add_task(status, total=0)
+
+                task_id = tasks[status_id]
+
+                if ('current' in pg_detail) and ('total' in pg_detail):
+                    progress.update(
+                        task_id,
+                        completed=pg_detail['current'],
+                        total=pg_detail['total'],
+                        description=status,
+                    )
+                elif not pg_detail:
+                    progress.update(task_id, advance=0, description=status)
+
     def pull(self) -> str:
         """Pull the executor package from Jina Hub.
 
         :return: the `uses` string
         """
         from rich.console import Console
-        from rich.progress import Progress, DownloadColumn, BarColumn
 
         console = Console()
         cached_zip_file = None
@@ -610,48 +647,12 @@ with f:
 
             if scheme == 'jinahub+docker':
                 self._load_docker_client()
-
-                with Progress(
-                    "[progress.description]{task.description}",
-                    BarColumn(),
-                    DownloadColumn(),
-                    "[progress.percentage]{task.percentage:>3.0f}%",
-                    console=console,
-                    transient=True,
-                ) as progress:
-
-                    try:
-                        tasks = {}
-                        for log in self._raw_client.pull(
-                            executor.image_name, stream=True, decode=True
-                        ):
-                            if 'status' not in log:
-                                continue
-                            status = log['status']
-                            status_id = log.get('id', None)
-                            pg_detail = log.get('progressDetail', None)
-
-                            if (pg_detail is None) or (status_id is None):
-                                console.print(status)
-                                continue
-
-                            task = tasks.get(
-                                status_id, progress.add_task(status, total=0)
-                            )
-                            current = pg_detail['current']
-                            total = pg_detail['total']
-                            progress.update(
-                                task,
-                                completed=current,
-                                total=total,
-                                description=status,
-                            )
-
-                            if total and current == total:
-                                progress.stop_task(task)
-
-                    except Exception as ex:
-                        raise ex
+                self._pull_with_progress(
+                    self._raw_client.pull(
+                        executor.image_name, stream=True, decode=True
+                    ),
+                    console,
+                )
 
                 return f'docker://{executor.image_name}'
             elif scheme == 'jinahub':
