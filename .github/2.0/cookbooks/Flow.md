@@ -23,8 +23,20 @@ Table of Contents
   - [Use a Flow](#use-a-flow)
   - [Visualize a Flow](#visualize-a-flow)
   - [Add `Executor` to a Flow](#add-executor-to-a-flow)
+      - [Quick lookup: commonly used patterns for `.add`](#quick-lookup-commonly-used-patterns-for-add)
     - [Chain `.add()`](#chain-add)
     - [Define What Executor to Use via `uses`](#define-what-executor-to-use-via-uses)
+      - [Add Executor via its Class Name](#add-executor-via-its-class-name)
+      - [Add Executor via YAML file](#add-executor-via-yaml-file)
+      - [Add Executor via `Dict`](#add-executor-via-dict)
+      - [Add an already spawned Executor](#add-an-already-spawned-executor)
+      - [Add & spawn a Remote `Executor` via `jinad`](#add--spawn-a-remote-executor-via-jinad)
+        - [Commonly used arguments for deployment in `.add`](#commonly-used-arguments-for-deployment-in-add)
+      - [Forcing an Executor in the remote-local configuration](#forcing-an-executor-in-the-remote-local-configuration)
+    - [Override Executor configuration](#override-executor-configuration)
+      - [`metas` configuration](#metas-configuration)
+      - [`with` configuration](#with-configuration)
+      - [`requests` configuration](#requests-configuration)
   - [Parallelization](#parallelization)
     - [Intra Parallelism via `needs`](#intra-parallelism-via-needs)
     - [Inter Parallelism via `parallel`](#inter-parallelism-via-parallel)
@@ -34,6 +46,7 @@ Table of Contents
     - [Callback Functions](#callback-functions)
     - [Send Parameters](#send-parameters)
     - [Fine-grained Control on Request](#fine-grained-control-on-request)
+      - [Size of the Request](#size-of-the-request)
     - [Get All Responses](#get-all-responses)
   - [Asynchronous Flow](#asynchronous-flow)
 - [Remarks](#remarks)
@@ -393,6 +406,107 @@ the `connect_to_predecessor` argument and `port_out` to the Executor in front.
 f.add(name='remote', host='123.45.67.89', port_out=23456).add(name='local', connect_to_predecessor=True)
 ```
 
+#### Override Executor configuration
+You can override 3 types of executor configurations when creating a flow:
+
+##### `metas` configuration
+To override the `metas` configuration of an executor (described 
+[here](https://github.com/jina-ai/jina/blob/master/.github/2.0/cookbooks/Executor.md#metas)), use `uses_metas`:
+```python
+from jina import Executor, requests, Flow
+class MyExecutor(Executor):
+    @requests
+    def foo(self, docs, **kwargs):
+        print(self.metas.workspace)
+
+flow = Flow().add(
+    uses=MyExecutor,
+    uses_metas={'workspace': 'different_workspace'},
+)
+with flow as f:
+    f.post('/')
+```
+
+```text
+           pod0@219291[L]:ready and listening
+        gateway@219291[L]:ready and listening
+           Flow@219291[I]:🎉 Flow is ready to use!
+	🔗 Protocol: 		GRPC
+	🏠 Local access:	0.0.0.0:58827
+	🔒 Private network:	192.168.1.101:58827
+different_workspace
+```
+
+
+##### `with` configuration
+To override the `with` configuration of an executor, use `uses_with`. The `with` configuration refers to user-defined 
+constructor kwargs.
+```python
+from jina import Executor, requests, Flow
+
+class MyExecutor(Executor):
+    def __init__(self, param1=1, param2=2, param3=3, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.param1 = param1
+        self.param2 = param2
+        self.param3 = param3
+
+    @requests
+    def foo(self, docs, **kwargs):
+        print('param1:', self.param1)
+        print('param2:', self.param2)
+        print('param3:', self.param3)
+
+flow = Flow().add(uses=MyExecutor, uses_with={'param1': 10, 'param3': 30})
+with flow as f:
+    f.post('/')
+```
+```text
+           pod0@219662[L]:ready and listening
+        gateway@219662[L]:ready and listening
+           Flow@219662[I]:🎉 Flow is ready to use!
+	🔗 Protocol: 		GRPC
+	🏠 Local access:	0.0.0.0:32825
+	🔒 Private network:	192.168.1.101:32825
+	🌐 Public address:	197.28.82.165:32825
+param1: 10
+param2: 2
+param3: 30
+```
+
+
+##### `requests` configuration
+You can override the `requests` configuration of an executor and bind methods to endpoints that you provide:
+
+
+```python
+from jina import Executor, requests, Flow
+
+class MyExecutor(Executor):
+    @requests
+    def foo(self, docs, **kwargs):
+        print('foo')
+    
+    def bar(self, docs, **kwargs):
+        print('bar')
+
+flow = Flow().add(uses=MyExecutor, uses_requests={'/index': 'bar'})
+with flow as f:
+    f.post('/index')
+    f.post('/dummy')
+```
+
+```text
+           pod0@221058[L]:ready and listening
+        gateway@221058[L]:ready and listening
+           Flow@221058[I]:🎉 Flow is ready to use!
+	🔗 Protocol: 		GRPC
+	🏠 Local access:	0.0.0.0:36507
+	🔒 Private network:	192.168.1.101:36507
+	🌐 Public address:	197.28.82.165:36507
+bar
+foo
+```
 
 ### Parallelization
 
