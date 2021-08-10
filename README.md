@@ -159,6 +159,7 @@ c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
 ## Read Tutorials
 
 - 🧠 [What is "Neural Search"?](.github/2.0/neural-search.md)
+- 🚶‍[A Walkthrough of Hello World Chatbot](https://jina.ai/2021/06/28/tutorial.html)  
 - 📄 `Document` & `DocumentArray`: the basic data type in Jina.
     - [Minimum Working Example](.github/2.0/cookbooks/Document.md#minimum-working-example)
     - [`Document` API](.github/2.0/cookbooks/Document.md#document-api)
@@ -169,6 +170,7 @@ c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
     - [`Executor` API](.github/2.0/cookbooks/Executor.md#executor-api)
     - [`Executor` Built-in Features](.github/2.0/cookbooks/Executor.md#executor-built-in-features)
     - [Use Tensorflow, Pytorch, Pytorch Lightning, Fastai, Mindspore, PaddlePaddle, Scikit-learn in `Executor`](.github/2.0/cookbooks/Executor.md#executors-in-action)
+    - [A Walkthrough of Creating Your Own Executor](https://jina.ai/2021/07/15/tutorial-executors.html)
 - 🔀 `Flow`: how Jina streamlines and distributes Executors.
     - [Minimum Working Example](.github/2.0/cookbooks/Flow.md#minimum-working-example)
     - [`Flow` API](.github/2.0/cookbooks/Flow.md#flow-api)
