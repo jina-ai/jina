@@ -977,13 +977,50 @@
             <span class="n">md5sum</span><span class="o">=</span><span class="n">resp</span><span class="p">[</span><span class="s1">'package'</span><span class="p">][</span><span class="s1">'md5'</span><span class="p">],</span>
         <span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">_pull_with_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_streams</span><span class="p">,</span> <span class="n">console</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">rich.progress</span> <span class="kn">import</span> <span class="n">Progress</span><span class="p">,</span> <span class="n">DownloadColumn</span><span class="p">,</span> <span class="n">BarColumn</span>
+
+        <span class="k">with</span> <span class="n">Progress</span><span class="p">(</span>
+            <span class="s2">"[progress.description]</span><span class="si">{task.description}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="n">BarColumn</span><span class="p">(),</span>
+            <span class="n">DownloadColumn</span><span class="p">(),</span>
+            <span class="s2">"[progress.percentage]</span><span class="si">{task.percentage:&gt;3.0f}</span><span class="s2">%"</span><span class="p">,</span>
+            <span class="n">console</span><span class="o">=</span><span class="n">console</span><span class="p">,</span>
+            <span class="n">transient</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">progress</span><span class="p">:</span>
+            <span class="n">tasks</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">log_streams</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">'status'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">log</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="n">log</span><span class="p">[</span><span class="s1">'status'</span><span class="p">]</span>
+                <span class="n">status_id</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'id'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">pg_detail</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'progressDetail'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="n">pg_detail</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">status_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+                    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+                    <span class="k">continue</span>
+
+                <span class="k">if</span> <span class="n">status_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+                    <span class="n">tasks</span><span class="p">[</span><span class="n">status_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+                <span class="n">task_id</span> <span class="o">=</span> <span class="n">tasks</span><span class="p">[</span><span class="n">status_id</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="s1">'current'</span> <span class="ow">in</span> <span class="n">pg_detail</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="s1">'total'</span> <span class="ow">in</span> <span class="n">pg_detail</span><span class="p">):</span>
+                    <span class="n">progress</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                        <span class="n">task_id</span><span class="p">,</span>
+                        <span class="n">completed</span><span class="o">=</span><span class="n">pg_detail</span><span class="p">[</span><span class="s1">'current'</span><span class="p">],</span>
+                        <span class="n">total</span><span class="o">=</span><span class="n">pg_detail</span><span class="p">[</span><span class="s1">'total'</span><span class="p">],</span>
+                        <span class="n">description</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="ow">not</span> <span class="n">pg_detail</span><span class="p">:</span>
+                    <span class="n">progress</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">task_id</span><span class="p">,</span> <span class="n">advance</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">status</span><span class="p">)</span>
+
 <div class="viewcode-block" id="HubIO.pull"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.pull">[docs]</a>    <span class="k">def</span> <span class="nf">pull</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Pull the executor package from Jina Hub.</span>
 
 <span class="sd">        :return: the `uses` string</span>
 <span class="sd">        """</span>
         <span class="kn">from</span> <span class="nn">rich.console</span> <span class="kn">import</span> <span class="n">Console</span>
-        <span class="kn">from</span> <span class="nn">rich.progress</span> <span class="kn">import</span> <span class="n">Progress</span><span class="p">,</span> <span class="n">DownloadColumn</span><span class="p">,</span> <span class="n">BarColumn</span>
 
         <span class="n">console</span> <span class="o">=</span> <span class="n">Console</span><span class="p">()</span>
         <span class="n">cached_zip_file</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1003,48 +1040,12 @@
 
             <span class="k">if</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s1">'jinahub+docker'</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_load_docker_client</span><span class="p">()</span>
-
-                <span class="k">with</span> <span class="n">Progress</span><span class="p">(</span>
-                    <span class="s2">"[progress.description]</span><span class="si">{task.description}</span><span class="s2">"</span><span class="p">,</span>
-                    <span class="n">BarColumn</span><span class="p">(),</span>
-                    <span class="n">DownloadColumn</span><span class="p">(),</span>
-                    <span class="s2">"[progress.percentage]</span><span class="si">{task.percentage:&gt;3.0f}</span><span class="s2">%"</span><span class="p">,</span>
-                    <span class="n">console</span><span class="o">=</span><span class="n">console</span><span class="p">,</span>
-                    <span class="n">transient</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="p">)</span> <span class="k">as</span> <span class="n">progress</span><span class="p">:</span>
-
-                    <span class="k">try</span><span class="p">:</span>
-                        <span class="n">tasks</span> <span class="o">=</span> <span class="p">{}</span>
-                        <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_client</span><span class="o">.</span><span class="n">pull</span><span class="p">(</span>
-                            <span class="n">executor</span><span class="o">.</span><span class="n">image_name</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">decode</span><span class="o">=</span><span class="kc">True</span>
-                        <span class="p">):</span>
-                            <span class="k">if</span> <span class="s1">'status'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">log</span><span class="p">:</span>
-                                <span class="k">continue</span>
-                            <span class="n">status</span> <span class="o">=</span> <span class="n">log</span><span class="p">[</span><span class="s1">'status'</span><span class="p">]</span>
-                            <span class="n">status_id</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'id'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-                            <span class="n">pg_detail</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'progressDetail'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-
-                            <span class="k">if</span> <span class="p">(</span><span class="n">pg_detail</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">status_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
-                                <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
-                                <span class="k">continue</span>
-
-                            <span class="n">task</span> <span class="o">=</span> <span class="n">tasks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                                <span class="n">status_id</span><span class="p">,</span> <span class="n">progress</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-                            <span class="p">)</span>
-                            <span class="n">current</span> <span class="o">=</span> <span class="n">pg_detail</span><span class="p">[</span><span class="s1">'current'</span><span class="p">]</span>
-                            <span class="n">total</span> <span class="o">=</span> <span class="n">pg_detail</span><span class="p">[</span><span class="s1">'total'</span><span class="p">]</span>
-                            <span class="n">progress</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-                                <span class="n">task</span><span class="p">,</span>
-                                <span class="n">completed</span><span class="o">=</span><span class="n">current</span><span class="p">,</span>
-                                <span class="n">total</span><span class="o">=</span><span class="n">total</span><span class="p">,</span>
-                                <span class="n">description</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
-                            <span class="p">)</span>
-
-                            <span class="k">if</span> <span class="n">total</span> <span class="ow">and</span> <span class="n">current</span> <span class="o">==</span> <span class="n">total</span><span class="p">:</span>
-                                <span class="n">progress</span><span class="o">.</span><span class="n">stop_task</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
-
-                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="n">ex</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pull_with_progress</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_raw_client</span><span class="o">.</span><span class="n">pull</span><span class="p">(</span>
+                        <span class="n">executor</span><span class="o">.</span><span class="n">image_name</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">decode</span><span class="o">=</span><span class="kc">True</span>
+                    <span class="p">),</span>
+                    <span class="n">console</span><span class="p">,</span>
+                <span class="p">)</span>
 
                 <span class="k">return</span> <span class="sa">f</span><span class="s1">'docker://</span><span class="si">{</span><span class="n">executor</span><span class="o">.</span><span class="n">image_name</span><span class="si">}</span><span class="s1">'</span>
             <span class="k">elif</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s1">'jinahub'</span><span class="p">:</span>
