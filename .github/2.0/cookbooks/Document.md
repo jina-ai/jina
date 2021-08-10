@@ -13,8 +13,8 @@ Document, Executor, and Flow are the three fundamental concepts in Jina.
 `Document` is the basic data type that Jina operates with. Text, picture, video, audio, image or 3D mesh: They are
 all `Document`s in Jina.
 
-`DocumentArray` is a sequence container of `Document`s. It is the first-class citizen of `Executor`, serving as the Executor's input
-and output.
+`DocumentArray` is a sequence container of `Document`s. It is the first-class citizen of `Executor`, serving as the
+Executor's input and output.
 
 You could say `Document` is to Jina is what `np.float` is to Numpy, and `DocumentArray` is similar to `np.ndarray`.
 
@@ -24,56 +24,56 @@ Table of Contents
 
 - [Minimum working example](#minimum-working-example)
 - [`Document` API](#document-api)
-  - [`Document` attributes](#document-attributes)
-    - [Set & Unset attributes](#set--unset-attributes)
-  - [Construct `Document`](#construct-document)
-      - [Content attributes](#content-attributes)
-    - [Exclusivity of `doc.content`](#exclusivity-of-doccontent)
-    - [Conversion between `doc.content`](#conversion-between-doccontent)
-      - [Set embedding](#set-embedding)
-    - [Support for sparse arrays](#support-for-sparse-arrays)
-    - [Construct with multiple attributes](#construct-with-multiple-attributes)
-      - [Meta attributes](#meta-attributes)
-    - [Construct from dict or JSON string](#construct-from-dict-or-json-string)
-      - [Parsing unrecognized fields](#parsing-unrecognized-fields)
-    - [Construct from another `Document`](#construct-from-another-document)
-    - [Construct from JSON, CSV, `ndarray` and files](#construct-from-json-csv-ndarray-and-files)
-  - [Serialize `Document`](#serialize-document)
-  - [Add recursion to `Document`](#add-recursion-to-document)
-    - [Recursive attributes](#recursive-attributes)
-  - [Represent `Document` as dictionary or JSON](#represent-document-as-dictionary-or-json)
-  - [Visualize `Document`](#visualize-document)
-  - [Add relevancy to `Document`s](#add-relevancy-to-documents)
-    - [Relevance attributes](#relevance-attributes)
-  - [`GraphDocument`](#graphdocument)
-    - [`GraphDocument` constructor](#graphdocument-constructor)
-    - [`GraphDocument` additional attributes](#graphdocument-additional-attributes)
-    - [`GraphDocument` methods](#graphdocument-methods)
+    - [`Document` attributes](#document-attributes)
+        - [Set & Unset attributes](#set--unset-attributes)
+    - [Construct `Document`](#construct-document)
+        - [Content attributes](#content-attributes)
+        - [Exclusivity of `doc.content`](#exclusivity-of-doccontent)
+        - [Conversion between `doc.content`](#conversion-between-doccontent)
+            - [Set embedding](#set-embedding)
+        - [Support for sparse arrays](#support-for-sparse-arrays)
+        - [Construct with multiple attributes](#construct-with-multiple-attributes)
+            - [Meta attributes](#meta-attributes)
+        - [Construct from dict or JSON string](#construct-from-dict-or-json-string)
+            - [Parsing unrecognized fields](#parsing-unrecognized-fields)
+        - [Construct from another `Document`](#construct-from-another-document)
+        - [Construct from JSON, CSV, `ndarray` and files](#construct-from-json-csv-ndarray-and-files)
+    - [Serialize `Document`](#serialize-document)
+    - [Add recursion to `Document`](#add-recursion-to-document)
+        - [Recursive attributes](#recursive-attributes)
+    - [Represent `Document` as dictionary or JSON](#represent-document-as-dictionary-or-json)
+    - [Visualize `Document`](#visualize-document)
+    - [Add relevancy to `Document`s](#add-relevancy-to-documents)
+        - [Relevance attributes](#relevance-attributes)
+    - [`GraphDocument`](#graphdocument)
+        - [`GraphDocument` constructor](#graphdocument-constructor)
+        - [`GraphDocument` additional attributes](#graphdocument-additional-attributes)
+        - [`GraphDocument` methods](#graphdocument-methods)
 - [`DocumentArray` API](#documentarray-api)
-  - [Construct `DocumentArray`](#construct-documentarray)
-  - [Persistence via `save()`/`load()`](#persistence-via-saveload)
-  - [Access element](#access-element)
-  - [Traverse elements](#traverse-elements)
-  - [Sort elements](#sort-elements)
-  - [Filter elements](#filter-elements)
-  - [Use `itertools` on `DocumentArray`](#use-itertools-on-documentarray)
-  - [Get attributes in bulk](#get-attributes-in-bulk)
-  - [Access nested attributes from tags](#access-nested-attributes-from-tags)
-  - [Finding closest documents between `DocumentArray` objects](#finding-closest-documents-between-documentarray-objects)
-    - [Using Sparse arrays as embeddings](#using-sparse-arrays-as-embeddings)
-  - [Selecting a subset of Documents from a `DocumentArray` using `.find`](#selecting-a-subset-of-documents-from-a-documentarray-using-find)
-  - [Random sample a subset of Documents from a `DocumentArray` using `sample`](#random-sample-a-subset-of-documents-from-a-documentarray-using-sample)
-  - [Shuffle the `DocumentArray` using `shuffle`](#shuffle-the-documentarray-using-shuffle)
-  - [Visualize embeddings](#visualize-embeddings)
+    - [Construct `DocumentArray`](#construct-documentarray)
+    - [Persistence via `save()`/`load()`](#persistence-via-saveload)
+    - [Access element](#access-element)
+    - [Traverse elements](#traverse-elements)
+    - [Sort elements](#sort-elements)
+    - [Filter elements](#filter-elements)
+    - [Use `itertools` on `DocumentArray`](#use-itertools-on-documentarray)
+    - [Get attributes in bulk](#get-attributes-in-bulk)
+    - [Access nested attributes from tags](#access-nested-attributes-from-tags)
+    - [Finding closest documents between `DocumentArray` objects](#finding-closest-documents-between-documentarray-objects)
+        - [Using Sparse arrays as embeddings](#using-sparse-arrays-as-embeddings)
+    - [Selecting a subset of Documents from a `DocumentArray` using `.find`](#selecting-a-subset-of-documents-from-a-documentarray-using-find)
+    - [Random sample a subset of Documents from a `DocumentArray` using `sample`](#random-sample-a-subset-of-documents-from-a-documentarray-using-sample)
+    - [Shuffle the `DocumentArray` using `shuffle`](#shuffle-the-documentarray-using-shuffle)
+    - [Visualize embeddings](#visualize-embeddings)
 - [`DocumentArrayMemmap` API](#documentarraymemmap-api)
-  - [Create `DocumentArrayMemmap` object](#create-documentarraymemmap-object)
-  - [Add Documents to `DocumentArrayMemmap` object](#add-documents-to-documentarraymemmap-object)
-  - [Clear a `DocumentArrayMemmap` object](#clear-a-documentarraymemmap-object)
-    - [Pruning](#pruning)
-  - [Mutable sequence with "read-only" elements](#mutable-sequence-with-read-only-elements)
-  - [Side-by-side vs. `DocumentArray`](#side-by-side-vs-documentarray)
-  - [Convert between `DocumentArray` and `DocumentArrayMemmap`](#convert-between-documentarray-and-documentarraymemmap)
-  - [Maintaining consistency via `.reload()`](#maintaining-consistency-via-reload)
+    - [Create `DocumentArrayMemmap` object](#create-documentarraymemmap-object)
+    - [Add Documents to `DocumentArrayMemmap` object](#add-documents-to-documentarraymemmap-object)
+    - [Clear a `DocumentArrayMemmap` object](#clear-a-documentarraymemmap-object)
+        - [Pruning](#pruning)
+    - [Mutable sequence with "read-only" elements](#mutable-sequence-with-read-only-elements)
+    - [Side-by-side vs. `DocumentArray`](#side-by-side-vs-documentarray)
+    - [Convert between `DocumentArray` and `DocumentArrayMemmap`](#convert-between-documentarray-and-documentarraymemmap)
+    - [Maintaining consistency via `.reload()`](#maintaining-consistency-via-reload)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -133,6 +133,51 @@ d.pop('text', 'id', 'mime_type')
 <jina.types.document.Document at 5668344144>
 ```
 
+#### Access nested attributes from tags
+
+`Document` contains the `tags` field that can hold a map-like structure that can map arbitrary values.
+
+```python
+from jina import Document
+
+doc = Document(tags={'dimensions': {'height': 5.0, 'weight': 10.0}})
+
+doc.tags['dimensions']
+```
+
+```text
+{'weight': 10.0, 'height': 5.0}
+```
+
+In order to provide easy access to nested fields, the `Document` allows to access attributes by composing the attribute
+qualified name with interlaced `__` symbols:
+
+```python
+from jina import Document
+
+doc = Document(tags={'dimensions': {'height': 5.0, 'weight': 10.0}})
+
+doc.tags__dimensions__weight
+```
+
+```text
+10.0
+```
+
+This also allows to access nested metadata attributes in `bulk` from a `DocumentArray`.
+
+```python
+from jina import Document, DocumentArray
+
+da = DocumentArray([Document(tags={'dimensions': {'height': 5.0, 'weight': 10.0}}) for _ in range(10)])
+
+da.get_attributes('tags__dimensions__height', 'tags__dimensions__weight')
+```
+
+```text
+[[5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0], [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0]]
+```
+
 ### Construct `Document`
 
 ##### Content attributes
@@ -165,8 +210,8 @@ d4 = Document(content='https://static.jina.ai/logo/core/notext/light/logo.png')
 <jina.types.document.Document id=4c008c40-af9f-11eb-bb84-1e008a366d49 uri=https://static.jina.ai/logo/core/notext/light/logo.png mimeType=image/png at 6252395600>
 ```
 
-The content will be automatically assigned to either the `text`, `buffer`, `blob`, or `uri` fields. `id` and `mime_type` are
-auto-generated when not given.
+The content will be automatically assigned to either the `text`, `buffer`, `blob`, or `uri` fields. `id` and `mime_type`
+are auto-generated when not given.
 
 You can get a visualization of a `Document` object in Jupyter Notebook or by calling `.plot()`.
 
@@ -205,10 +250,12 @@ doc.convert_buffer_to_uri()
 doc.convert_text_to_uri()
 doc.convert_uri_to_text()
 ```
-You can use `convert_content_to_uri` to convert the content to URI. This will determine the used `content_type` and use the appropriate conversion method.
 
-You can convert a URI to a data URI (a data in-line URI scheme) using `doc.convert_uri_to_datauri()`. This will fetch the
-resource and make it inline.
+You can use `convert_content_to_uri` to convert the content to URI. This will determine the used `content_type` and use
+the appropriate conversion method.
+
+You can convert a URI to a data URI (a data in-line URI scheme) using `doc.convert_uri_to_datauri()`. This will fetch
+the resource and make it inline.
 
 In particular, when you work with an image `Document`, there are some extra helpers that enable more conversion:
 
@@ -219,9 +266,10 @@ doc.convert_image_uri_to_blob()
 doc.convert_image_datauri_to_blob()
 ```
 
-##### Set embedding
+#### Set embedding
 
-An embedding is a high-dimensional representation of a `Document`. You can assign any Numpy `ndarray` as a `Document`'s embedding.
+An embedding is a high-dimensional representation of a `Document`. You can assign any Numpy `ndarray` as a `Document`'s
+embedding.
 
 ```python
 import numpy as np
@@ -231,22 +279,22 @@ d1 = Document(embedding=np.array([1, 2, 3]))
 d2 = Document(embedding=np.array([[1, 2, 3], [4, 5, 6]]))
 ```
 
-#### Support for sparse arrays
+##### Support for sparse arrays
 
- Scipy sparse array (`coo_matrix, bsr_matrix, csr_matrix, csc_matrix`)  are supported as both `embedding` or `blob` :
+Scipy sparse array (`coo_matrix, bsr_matrix, csr_matrix, csc_matrix`)  are supported as both `embedding` or `blob` :
 
 ```python
-import scipy.sparse as sp 
+import scipy.sparse as sp
 
-d1 = Document(embedding=sp.coo_matrix([0,0,0,1,0]))
-d2 = Document(embedding=sp.csr_matrix([0,0,0,1,0]))
-d3 = Document(embedding=sp.bsr_matrix([0,0,0,1,0]))
-d4 = Document(embedding=sp.csc_matrix([0,0,0,1,0]))
+d1 = Document(embedding=sp.coo_matrix([0, 0, 0, 1, 0]))
+d2 = Document(embedding=sp.csr_matrix([0, 0, 0, 1, 0]))
+d3 = Document(embedding=sp.bsr_matrix([0, 0, 0, 1, 0]))
+d4 = Document(embedding=sp.csc_matrix([0, 0, 0, 1, 0]))
 
-d5 = Document(blob=sp.coo_matrix([0,0,0,1,0]))
-d6 = Document(blob=sp.csr_matrix([0,0,0,1,0]))
-d7 = Document(blob=sp.bsr_matrix([0,0,0,1,0]))
-d8 = Document(blob=sp.csc_matrix([0,0,0,1,0]))
+d5 = Document(blob=sp.coo_matrix([0, 0, 0, 1, 0]))
+d6 = Document(blob=sp.csr_matrix([0, 0, 0, 1, 0]))
+d7 = Document(blob=sp.bsr_matrix([0, 0, 0, 1, 0]))
+d8 = Document(blob=sp.csc_matrix([0, 0, 0, 1, 0]))
 ```
 
 Tensorflow and Pytorch sparse arrays are also supported
@@ -384,9 +432,9 @@ d.update(s)
 
 #### Construct from JSON, CSV, `ndarray` and files
 
-The `jina.types.document.generators` module let you construct `Document` from common file types such as JSON, CSV, `ndarray` and text files. The following
-functions will give a generator of `Document`, where each `Document` object corresponds to a line/row in the original
-format:
+The `jina.types.document.generators` module let you construct `Document` from common file types such as JSON,
+CSV, `ndarray` and text files. The following functions will give a generator of `Document`, where each `Document` object
+corresponds to a line/row in the original format:
 
 |     |     |
 | --- | --- |
@@ -407,42 +455,7 @@ from jina.types.document.generators import from_files
 DocumentArray(from_files('/*.png'))
 ```
 
-### Serialize `Document`
-
-You can serialize a `Document` into JSON string or Python dict or binary string:
-
-```python
-from jina import Document
-
-d = Document(content='hello, world')
-d.json()
-```
-
-```json
-{
-  "id": "6a1c7f34-aef7-11eb-b075-1e008a366d48",
-  "mimeType": "text/plain",
-  "text": "hello world"
-}
-```
-
-```python
-d.dict()
-```
-
-```
-{'id': '6a1c7f34-aef7-11eb-b075-1e008a366d48', 'mimeType': 'text/plain', 'text': 'hello world'}
-```
-
-```python
-d.binary_str()
-```
-
-```
-b'\n$6a1c7f34-aef7-11eb-b075-1e008a366d48R\ntext/plainj\x0bhello world'
-```
-
-### Add recursion to `Document`
+### Construct Recursive `Document`
 
 #### Recursive attributes
 
@@ -479,110 +492,118 @@ You can add **chunks** (sub-Document) and **matches** (neighbour-Document) to a 
   d.matches.append(Document())
   ```
 
-Note that both `doc.chunks` and `doc.matches` return `ChunkArray` and `MatchArray`, which are sub-classes of [`DocumentArray`](#documentarray-api). We will introduce `DocumentArray later.
+Note that both `doc.chunks` and `doc.matches` return `ChunkArray` and `MatchArray`, which are sub-classes
+of [`DocumentArray`](#documentarray-api). We will introduce `DocumentArray later.
 
-### Represent `Document` as dictionary or JSON
 
-Any `Document` can be converted into a `Python dictionary` or into `Json string` by calling their `.dict()` or `.json()` methods. 
+### Construct `GraphDocument`
+
+`GraphDocument` is a subclass of `Document`. It's a special type of `Document` that adds functionality to let you work
+with a `Document` as a `directed graph`. Chunks of the document represent the nodes of the graph. `GraphDocument` adds
+graph-specific attributes (`nodes`, `adjacency` list, `edge_features`,...) and operations (`add_node`, `remove_node`
+, `add_edge`, `remove_edge`,...)
+
+#### `GraphDocument` constructor
+
+`GraphDocument`'s constructor supports the same parameters as `Document`. It mainly adds one
+parameter `force_undirected`. It's a boolean flag that, when set to `True`, forces the graph document to be undirected.
+
+#### `GraphDocument` additional attributes
+
+`GraphDocument` adds the following attributes to `Document`:
+
+| Attribute | Description |
+|---|---|
+| `edge_features` | The dictionary of edge features, indexed by `edge_id` |
+| `adjacency` | Adjacency list |
+| `undirected` | Type of the graph: undirected or directed |
+| `num_nodes` | Number of nodes in the graph |
+| `num_edges` | Number of edges in the graph |
+| `nodes` | The list of nodes. Equivalent to `chunks` |
+
+#### `GraphDocument` methods
+
+`GraphDocument` adds the following methods to `Document`:
+
+* `add_node`: adds a document to the graoh:
 
 ```python
-import pprint
-import numpy as np
-
+from jina.types.document.graph import GraphDocument
 from jina import Document
 
-d0 = Document(id='🐲identifier', text='I am a Jina Document', tags={'cool': True}, embedding=np.array([0, 0]))
-pprint.pprint(d0.dict())
-pprint.pprint(d0.json())
+graph = GraphDocument()
+graph.add_node(Document(text='hello world'))
+graph.nodes[0]
 ```
 
 ```text
-{'embedding': {'dense': {'buffer': 'AAAAAAAAAAAAAAAAAAAAAA==',
-                         'dtype': '<i8',
-                         'shape': [2]}},
- 'id': '🐲identifier',
- 'mime_type': 'text/plain',
- 'tags': {'cool': True},
- 'text': 'I am a Jina Document'}
-('{\n'
- '  "embedding": {\n'
- '    "dense": {\n'
- '      "buffer": "AAAAAAAAAAAAAAAAAAAAAA==",\n'
- '      "dtype": "<i8",\n'
- '      "shape": [\n'
- '        2\n'
- '      ]\n'
- '    }\n'
- '  },\n'
- '  "id": "identifier",\n'
- '  "mime_type": "text/plain",\n'
- '  "tags": {\n'
- '    "cool": true\n'
- '  },\n'
- '  "text": "I am a Jina Document"\n'
- '}')
+<jina.types.document.Document id=8f9a60ce-f5d7-11eb-8383-c7034ef3edd4 mime_type=text/plain text=hello world granularity=1 parent_id=7ec9087c-f5d7-11eb-8383-c7034ef3edd4 at 140287929173088>
 ```
 
-As it can be observed, the output seems quite noisy when representing the `embedding`. This is because Jina `Document` stores `embeddings` in an `inner` structure
-supported by `protobuf`. In order to have a nicer representation of the `embeddings` and any `ndarray` field, you can call `dict` and `json` with the option `prettify_ndarrays=True`.
+* `add_edge`: Adds an edge between 2 documents. If a document does not exist in the graph, it is added. You can also add
+  dict features to the edge with parameter `features`
 
 ```python
-import pprint
-import numpy as np
-
 from jina import Document
+from jina.types.document.graph import GraphDocument
 
-d0 = Document(id='🐲identifier', text='I am a Jina Document', tags={'cool': True}, embedding=np.array([0, 0]))
-pprint.pprint(d0.dict(prettify_ndarrays=True))
-pprint.pprint(d0.json(prettify_ndarrays=True))
+graph = GraphDocument()
+d1 = Document(id='1', text='hello world')
+d2 = Document(id='2', text='goodbye world')
+graph.add_edge(d1, d2, features={"text": "both documents are linked"})
+graph.nodes
 ```
 
 ```text
-{'embedding': [0, 0],
- 'id': '🐲identifier',
- 'mime_type': 'text/plain',
- 'tags': {'cool': True},
- 'text': 'I am a Jina Document'}
-
-('{"embedding": [0, 0], "id": "identifier", "mime_type": '
- '"text/plain", "tags": {"cool": true}, "text": "I am a Jina Document"}')
+<jina.types.arrays.chunk.ChunkArray length=2 at 140039698424448>
 ```
 
-This can be useful to understand the contents of the `Document` and to send to backends that can process vectors as `lists` of values.
-
-### Visualize `Document`
-
-To better see the Document's recursive structure, you can use `.plot()` function. If you are using JupyterLab/Notebook,
-all `Document` objects will be auto-rendered:
-
-<table>
-  <tr>
-    <td>
+You access the edge features using id1-id2 as key:
 
 ```python
-import numpy as np
-from jina import Document
-
-d0 = Document(id='🐲', embedding=np.array([0, 0]))
-d1 = Document(id='🐦', embedding=np.array([1, 0]))
-d2 = Document(id='🐢', embedding=np.array([0, 1]))
-d3 = Document(id='🐯', embedding=np.array([1, 1]))
-
-d0.chunks.append(d1)
-d0.chunks[0].chunks.append(d2)
-d0.matches.append(d3)
-
-d0.plot()  # simply `d0` on JupyterLab
+graph.edge_features['1-2']
 ```
 
-</td>
-<td>
-<img src="../../images/four-symbol-docs.svg?raw=true"/>
-</td>
-</tr>
-</table>
+```text
+<jina.types.struct.StructView text=both documents are linked at 140132368471280>
+```
 
-### Add relevancy to `Document`s
+* `remove_edge` and `remove_node` allows removing an edge (between 2 nodes) and removing a node respectively.
+
+* `GraphDocument` exposes methods that return node-specific information:
+
+| method | Description |
+|---|---|
+| `get_out_degree` | node outdegree  |
+| `get_in_degree` | node indegree |
+| `get_outgoing_nodes` | Array of outgoing nodes for a given node |
+| `get_incoming_nodes` | Array of incoming nodes for a given node |
+
+```python
+from jina import Document
+from jina.types.document.graph import GraphDocument
+
+graph = GraphDocument()
+d1 = Document(id='1', text='hello world')
+d2 = Document(id='2', text='goodbye world')
+d3 = Document(id='3')
+graph.add_edge(d1, d2)
+graph.add_edge(d1, d3)
+
+assert graph.get_out_degree(d1) == 2
+
+graph.get_outgoing_nodes(d1)
+```
+
+```text
+<jina.types.arrays.chunk.ChunkArray length=2 at 140689776342112>
+```
+
+* `to_dgl_graph`: returns a `dgl.DGLGraph` from the graph document.
+* `load_from_dgl_graph`: returns a `GraphDocument` from a `dgl.DGLGraph`.
+
+
+### Add relevancy to `Document`
 
 #### Relevance attributes
 
@@ -629,6 +650,7 @@ q.matches.append(m)
 ```
 
 These attributes (`scores` and `evaluations`) provide a dict-like interface that lets access all its elements:
+
 ```python
 from jina import Document
 
@@ -648,107 +670,113 @@ for evaluation_key, evaluation_score in d.evaluations.items():
  recall => recall at 10: 0.5
 ```
 
-### `GraphDocument`
-`GraphDocument` is a subclass of `Document`. It's a special type of `Document` that adds functionality to let you work with a `Document` as a `directed graph`.
-Chunks of the document represent the nodes of the graph. `GraphDocument` adds graph-specific attributes (`nodes`, `adjacency` list, `edge_features`,...) and operations (`add_node`, `remove_node`, `add_edge`, `remove_edge`,...)
 
+### Serialize `Document` to binary/`Dict`/JSON
 
-#### `GraphDocument` constructor
-`GraphDocument`'s constructor supports the same parameters as `Document`.
-It mainly adds one parameter `force_undirected`. It's a boolean flag that, when set to `True`, forces the graph document to be undirected.
-
-#### `GraphDocument` additional attributes
-
-`GraphDocument` adds the following attributes to `Document`:
-
-| Attribute | Description |
-|---|---|
-| `edge_features` | The dictionary of edge features, indexed by `edge_id` |
-| `adjacency` | Adjacency list |
-| `undirected` | Type of the graph: undirected or directed |
-| `num_nodes` | Number of nodes in the graph |
-| `num_edges` | Number of edges in the graph |
-| `nodes` | The list of nodes. Equivalent to `chunks` |
-
-#### `GraphDocument` methods
-
-`GraphDocument` adds the following methods to `Document`:
-
-* `add_node`: adds a document to the graoh:
-```python
-from jina.types.document.graph import GraphDocument
-from jina import Document
-graph = GraphDocument()
-graph.add_node(Document(text='hello world'))
-graph.nodes[0]
-```
-
-```text
-<jina.types.document.Document id=8f9a60ce-f5d7-11eb-8383-c7034ef3edd4 mime_type=text/plain text=hello world granularity=1 parent_id=7ec9087c-f5d7-11eb-8383-c7034ef3edd4 at 140287929173088>
-```
-
-* `add_edge`: Adds an edge between 2 documents. If a document does not exist in the graph, it is added.
-You can also add dict features to the edge with parameter `features`
+You can serialize a `Document` into JSON string or Python dict or binary string:
 
 ```python
 from jina import Document
-from jina.types.document.graph import GraphDocument
-graph = GraphDocument()
-d1 = Document(id='1', text='hello world')
-d2 = Document(id='2', text='goodbye world')
-graph.add_edge(d1, d2, features={"text": "both documents are linked"})
-graph.nodes
+
+d = Document(content='hello, world')
 ```
-
-```text
-<jina.types.arrays.chunk.ChunkArray length=2 at 140039698424448>
-```
-
-You access the edge features using id1-id2 as key:
-```python
-graph.edge_features['1-2']
-```
-
-```text
-<jina.types.struct.StructView text=both documents are linked at 140132368471280>
-```
-
-* `remove_edge` and `remove_node` allows removing an edge (between 2 nodes) and removing a node respectively.
-
-* `GraphDocument` exposes methods that return node-specific information: 
-
-| method | Description |
-|---|---|
-| `get_out_degree` | node outdegree  |
-| `get_in_degree` | node indegree |
-| `get_outgoing_nodes` | Array of outgoing nodes for a given node |
-| `get_incoming_nodes` | Array of incoming nodes for a given node |
 
 ```python
+d.binary_str()
+```
+
+```
+b'\n$6a1c7f34-aef7-11eb-b075-1e008a366d48R\ntext/plainj\x0bhello world'
+```
+
+```python
+d.json()
+```
+
+```json
+{
+  "id": "6a1c7f34-aef7-11eb-b075-1e008a366d48",
+  "mimeType": "text/plain",
+  "text": "hello world"
+}
+```
+
+
+```python
+d.dict()
+```
+
+```
+{'id': '6a1c7f34-aef7-11eb-b075-1e008a366d48', 'mimeType': 'text/plain', 'text': 'hello world'}
+```
+
+
+In order to have a nicer representation of
+the `embeddings` and any `ndarray` field, you can call `dict` and `json` with the option `prettify_ndarrays=True`.
+
+```python
+import pprint
+import numpy as np
+
 from jina import Document
-from jina.types.document.graph import GraphDocument
-graph = GraphDocument()
-d1 = Document(id='1', text='hello world')
-d2 = Document(id='2', text='goodbye world')
-d3 = Document(id='3')
-graph.add_edge(d1, d2)
-graph.add_edge(d1, d3)
 
-assert graph.get_out_degree(d1) == 2
-
-graph.get_outgoing_nodes(d1)
+d0 = Document(id='🐲identifier', text='I am a Jina Document', tags={'cool': True}, embedding=np.array([0, 0]))
+pprint.pprint(d0.dict(prettify_ndarrays=True))
+pprint.pprint(d0.json(prettify_ndarrays=True))
 ```
 
 ```text
-<jina.types.arrays.chunk.ChunkArray length=2 at 140689776342112>
+{'embedding': [0, 0],
+ 'id': '🐲identifier',
+ 'mime_type': 'text/plain',
+ 'tags': {'cool': True},
+ 'text': 'I am a Jina Document'}
+
+('{"embedding": [0, 0], "id": "identifier", "mime_type": '
+ '"text/plain", "tags": {"cool": true}, "text": "I am a Jina Document"}')
 ```
 
-* `to_dgl_graph`: returns a `dgl.DGLGraph` from the graph document.
-* `load_from_dgl_graph`: returns a `GraphDocument` from a `dgl.DGLGraph`.
+This can be useful to understand the contents of the `Document` and to send to backends that can process vectors
+as `lists` of values.
+
+
+### Visualize `Document`
+
+To better see the Document's recursive structure, you can use `.plot()` function. If you are using JupyterLab/Notebook,
+all `Document` objects will be auto-rendered:
+
+<table>
+  <tr>
+    <td>
+
+```python
+import numpy as np
+from jina import Document
+
+d0 = Document(id='🐲', embedding=np.array([0, 0]))
+d1 = Document(id='🐦', embedding=np.array([1, 0]))
+d2 = Document(id='🐢', embedding=np.array([0, 1]))
+d3 = Document(id='🐯', embedding=np.array([1, 1]))
+
+d0.chunks.append(d1)
+d0.chunks[0].chunks.append(d2)
+d0.matches.append(d3)
+
+d0.plot()  # simply `d0` on JupyterLab
+```
+
+</td>
+<td>
+<img src="../../images/four-symbol-docs.svg?raw=true"/>
+</td>
+</tr>
+</table>
+
 
 ## `DocumentArray` API
 
-A `DocumentArray` is a list of `Document` objects. You can construct, delete, insert, sort and traverse a `DocumentArray`
+A `DocumentArray` is a list of `Document` objects. You can construct, delete, insert, sort and traverse
+a `DocumentArray`
 like a Python `list`.
 
 Methods supported by `DocumentArray`:
@@ -821,23 +849,25 @@ da[1:2]
 ```
 
 ### Traverse elements
-The following graphic illustrates the recursive `Document` structure. 
-Every `Document` can have multiple `Chunks` and `Matches`.
+
+The following graphic illustrates the recursive `Document` structure. Every `Document` can have multiple `Chunks`
+and `Matches`.
 `Chunks` and `Matches` are `Documents` as well.
 
 <img src="https://hanxiao.io/2020/08/28/What-s-New-in-Jina-v0-5/blog-post-v050-protobuf-documents.jpg">
 
-In most of the cases, you want to iterate through a certain level of documents. 
-`DocumentArray.traverse` can be used for that by providing custom paths.
-As return value you get a generator which generates `DocumentArrays` matching the provided traversal paths.
-Let's assume you have the following `Document` structure:
+In most of the cases, you want to iterate through a certain level of documents.
+`DocumentArray.traverse` can be used for that by providing custom paths. As return value you get a generator which
+generates `DocumentArrays` matching the provided traversal paths. Let's assume you have the following `Document`
+structure:
+
 ```python
 from jina import DocumentArray, Document
 
 da = DocumentArray([
     Document(id='r1', chunks=[
         Document(id='c1', matches=[
-                Document(id='c1c1m1'),
+            Document(id='c1c1m1'),
         ]),
         Document(id='c2', chunks=[
             Document(id='c2c1', matches=[
@@ -851,9 +881,11 @@ da = DocumentArray([
     Document(id='r2')
 ])
 ```
-When calling `da.traverse(['cm', 'ccm'])` you get a generator over two `DocumentArrays`. 
-The first `DocumentArray` contains the `Matches` of the `Chunks` and the second `DocumentArray` contains the `Matches` of the `Chunks` of the `Chunks`.
-The following `DocumentArrays` are emitted from the generator:
+
+When calling `da.traverse(['cm', 'ccm'])` you get a generator over two `DocumentArrays`. The first `DocumentArray`
+contains the `Matches` of the `Chunks` and the second `DocumentArray` contains the `Matches` of the `Chunks` of
+the `Chunks`. The following `DocumentArrays` are emitted from the generator:
+
 ```python
 from jina import Document
 from jina.types.arrays import MatchArray
@@ -861,15 +893,17 @@ from jina.types.arrays import MatchArray
 MatchArray([Document(id='c1c1m1', adjacency=1)], reference_doc=da['r1'].chunks['c1'])
 MatchArray([], reference_doc=da['r1'].chunks['c2'])
 MatchArray([], reference_doc=da['r1'].chunks['c3'])
-MatchArray([Document(id='c2c1m1', adjacency=1),Document(id='c2c1m2', adjacency=1)], reference_doc=da['r1'].chunks['c2'].chunks['c2c1'])
+MatchArray([Document(id='c2c1m1', adjacency=1), Document(id='c2c1m2', adjacency=1)],
+           reference_doc=da['r1'].chunks['c2'].chunks['c2c1'])
 MatchArray([], reference_doc=da['r1'].chunks['c2'].chunks['c2c2'])
 ```
 
-`DocumentArray.traverse_flat` is doing the same but flattens all `DocumentArrays` in the generator. 
-When calling `da.traverse_flat(['cm', 'ccm'])` the result in our example will be the following:
+`DocumentArray.traverse_flat` is doing the same but flattens all `DocumentArrays` in the generator. When
+calling `da.traverse_flat(['cm', 'ccm'])` the result in our example will be the following:
 
 ```python
 from jina import Document, DocumentArray
+
 assert da.traverse_flat(['cm', 'ccm']) == DocumentArray([
     Document(id='c1c1m1', adjacency=1),
     Document(id='c2c1m1', adjacency=1),
@@ -877,11 +911,13 @@ assert da.traverse_flat(['cm', 'ccm']) == DocumentArray([
 ])
 ```
 
-`DocumentArray.traverse_flat_per_path` is a further method for `Document` traversal.
-It works like `DocumentArray.traverse_flat` but groups the `Documents` into `DocumentArrays` based on the traversal path.
-When calling `da.traverse_flat_per_path(['cm', 'ccm'])`, the resulting generator emits the following `DocumentArrays`:
+`DocumentArray.traverse_flat_per_path` is a further method for `Document` traversal. It works
+like `DocumentArray.traverse_flat` but groups the `Documents` into `DocumentArrays` based on the traversal path. When
+calling `da.traverse_flat_per_path(['cm', 'ccm'])`, the resulting generator emits the following `DocumentArrays`:
+
 ```python
 from jina import Document, DocumentArray
+
 DocumentArray([
     Document(id='c1c1m1', adjacency=1),
 ])
@@ -890,7 +926,6 @@ DocumentArray([
     Document(id='c2c1m2', adjacency=1)
 ])
 ```
-
 
 ### Sort elements
 
@@ -912,7 +947,7 @@ da.sort(key=lambda d: d.tags['id'], reverse=True)
 print(da)
 ```
 
-To sort elements in `da` in-place, using `tags[id]` value in a descending manner: 
+To sort elements in `da` in-place, using `tags[id]` value in a descending manner:
 
 ```text
 <jina.types.arrays.document.DocumentArray length=3 at 5701440528>
@@ -924,7 +959,8 @@ To sort elements in `da` in-place, using `tags[id]` value in a descending manner
 
 ### Filter elements
 
-You can use Python's [built-in `filter()`](https://docs.python.org/3/library/functions.html#filter) to filter elements in a `DocumentArray` object:
+You can use Python's [built-in `filter()`](https://docs.python.org/3/library/functions.html#filter) to filter elements
+in a `DocumentArray` object:
 
 ```python
 from jina import DocumentArray, Document
@@ -987,8 +1023,8 @@ for key, group in groups:
 
 ### Get attributes in bulk
 
-`DocumentArray` implements powerful getters that lets you fetch multiple attributes from the Documents it contains
-in one-shot:
+`DocumentArray` implements powerful getters that lets you fetch multiple attributes from the Documents it contains in
+one-shot:
 
 ```python
 import numpy as np
@@ -1020,86 +1056,48 @@ np.stack(da.get_attributes('embedding'))
  [7 8 9]]
 ```
 
-### Access nested attributes from tags
-
-`Document` contains the `tags` field that can hold a map-like structure that can map arbitrary values.
-
-```python
-from jina import Document
-
-doc = Document(tags={'dimensions': {'height': 5.0, 'weight': 10.0}})
-
-doc.tags['dimensions']
-```
-
-```text
-{'weight': 10.0, 'height': 5.0}
-```
-
-In order to provide easy access to nested fields, the `Document` allows to access attributes by composing the attribute 
-qualified name with interlaced `__` symbols:
-
-```python
-from jina import Document
-
-doc = Document(tags={'dimensions': {'height': 5.0, 'weight': 10.0}})
-
-doc.tags__dimensions__weight
-```
-
-```text
-10.0
-```
-
-This also allows to access nested metadata attributes in `bulk` from a `DocumentArray`.
-
-```python
-from jina import Document, DocumentArray
-
-da = DocumentArray([Document(tags={'dimensions': {'height': 5.0, 'weight': 10.0}}) for _ in range(10)]) 
-
-da.get_attributes('tags__dimensions__height', 'tags__dimensions__weight')
-```
-
-```text
-[[5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0], [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0]]
-```
 
 ### Finding closest documents between `DocumentArray` objects
 
-`DocumentArray` provides a`.match` function that finds the closest documents between two `DocumentArray` objects. This function requires all documents to be compared have an `embedding` and all embeddings to have the same length.
+`DocumentArray` provides a`.match` function that finds the closest documents between two `DocumentArray` objects. This
+function requires all documents to be compared have an `embedding` and all embeddings to have the same length.
 
-The following image shows how `DocumentArrayA` finds `limit=5` matches from the documents in `DocumentArrayB`. By default, the cosine similarity is used to evaluate the score between documents.
+The following image shows how `DocumentArrayA` finds `limit=5` matches from the documents in `DocumentArrayB`. By
+default, the cosine similarity is used to evaluate the score between documents.
 
 ![match_illustration_5](../../images/match_illustration_5.svg)
 
-More generally, given two `DocumentArray` objects `da_1` and `da_2` the function `da_1.match(da_2, metric=some_metric, normalization=(0, 1), limit=N)` finds for each document in `da_1` then `N` documents from `da_2` with the lowest metric values according to `some_metric`. 
+More generally, given two `DocumentArray` objects `da_1` and `da_2` the
+function `da_1.match(da_2, metric=some_metric, normalization=(0, 1), limit=N)` finds for each document in `da_1`
+then `N` documents from `da_2` with the lowest metric values according to `some_metric`.
 
-- `metric` can be `'cosine'`, `'euclidean'`,  `'sqeuclidean'` or a callable that takes 2 `ndarray` parameters and returns an `ndarray`
-- `normalization` is a tuple [a, b] to be used with min-max normalization. The min distance will be rescaled to `a`, the max distance will be rescaled to `b`; all other values will be rescaled into range `[a, b]`.
+- `metric` can be `'cosine'`, `'euclidean'`,  `'sqeuclidean'` or a callable that takes 2 `ndarray` parameters and
+  returns an `ndarray`
+- `normalization` is a tuple [a, b] to be used with min-max normalization. The min distance will be rescaled to `a`, the
+  max distance will be rescaled to `b`; all other values will be rescaled into range `[a, b]`.
 
-The following example find the 3 closest documents, according to the euclidean distance, for each element in `da_1` from the elements in `da_2`.
+The following example find the 3 closest documents, according to the euclidean distance, for each element in `da_1` from
+the elements in `da_2`.
 
 ```python
 from jina import Document, DocumentArray
 import numpy as np
 
-d1 = Document(embedding=np.array([0,0,0,0,1]))
-d2 = Document(embedding=np.array([1,0,0,0,0]))
-d3 = Document(embedding=np.array([1,1,1,1,0]))
-d4 = Document(embedding=np.array([1,2,2,1,0]))
+d1 = Document(embedding=np.array([0, 0, 0, 0, 1]))
+d2 = Document(embedding=np.array([1, 0, 0, 0, 0]))
+d3 = Document(embedding=np.array([1, 1, 1, 1, 0]))
+d4 = Document(embedding=np.array([1, 2, 2, 1, 0]))
 
-d1_m = Document(embedding=np.array([0,0.1,0,0,0]))
-d2_m = Document(embedding=np.array([1,0.1,0,0,0]))
-d3_m = Document(embedding=np.array([1,1.2,1,1,0]))
-d4_m = Document(embedding=np.array([1,2.2,2,1,0]))
-d5_m = Document(embedding=np.array([4,5.2,2,1,0]))
+d1_m = Document(embedding=np.array([0, 0.1, 0, 0, 0]))
+d2_m = Document(embedding=np.array([1, 0.1, 0, 0, 0]))
+d3_m = Document(embedding=np.array([1, 1.2, 1, 1, 0]))
+d4_m = Document(embedding=np.array([1, 2.2, 2, 1, 0]))
+d5_m = Document(embedding=np.array([4, 5.2, 2, 1, 0]))
 
 da_1 = DocumentArray([d1, d2, d3, d4])
 da_2 = DocumentArray([d1_m, d2_m, d3_m, d4_m, d5_m])
 
-
-da_1.match(da_2, metric='euclidean',  limit=3)
+da_1.match(da_2, metric='euclidean', limit=3)
 query = da_1[2]
 print(f'query emb = {query.embedding}')
 for m in query.matches:
@@ -1113,8 +1111,6 @@ match emb = [1.  2.2 2.  1.  0. ] score = 1.5620499849319458
 match emb = [1.  0.1 0.  0.  0. ] score = 1.6763054132461548
 ```
 
-
-
 #### Using Sparse arrays as embeddings
 
 We can use sparse embeddings and do the `.match` using `is_sparse=True`
@@ -1123,16 +1119,16 @@ We can use sparse embeddings and do the `.match` using `is_sparse=True`
 from jina import Document, DocumentArray
 import scipy.sparse as sp
 
-d1 = Document(embedding=sp.csr_matrix([0,0,0,0,1]))
-d2 = Document(embedding=sp.csr_matrix([1,0,0,0,0]))
-d3 = Document(embedding=sp.csr_matrix([1,1,1,1,0]))
-d4 = Document(embedding=sp.csr_matrix([1,2,2,1,0]))
+d1 = Document(embedding=sp.csr_matrix([0, 0, 0, 0, 1]))
+d2 = Document(embedding=sp.csr_matrix([1, 0, 0, 0, 0]))
+d3 = Document(embedding=sp.csr_matrix([1, 1, 1, 1, 0]))
+d4 = Document(embedding=sp.csr_matrix([1, 2, 2, 1, 0]))
 
-d1_m = Document(embedding=sp.csr_matrix([0,0.1,0,0,0]))
-d2_m = Document(embedding=sp.csr_matrix([1,0.1,0,0,0]))
-d3_m = Document(embedding=sp.csr_matrix([1,1.2,1,1,0]))
-d4_m = Document(embedding=sp.csr_matrix([1,2.2,2,1,0]))
-d5_m = Document(embedding=sp.csr_matrix([4,5.2,2,1,0]))
+d1_m = Document(embedding=sp.csr_matrix([0, 0.1, 0, 0, 0]))
+d2_m = Document(embedding=sp.csr_matrix([1, 0.1, 0, 0, 0]))
+d3_m = Document(embedding=sp.csr_matrix([1, 1.2, 1, 1, 0]))
+d4_m = Document(embedding=sp.csr_matrix([1, 2.2, 2, 1, 0]))
+d5_m = Document(embedding=sp.csr_matrix([4, 5.2, 2, 1, 0]))
 
 da_1 = DocumentArray([d1, d2, d3, d4])
 da_2 = DocumentArray([d1_m, d2_m, d3_m, d4_m, d5_m])
@@ -1151,27 +1147,29 @@ match emb = [[1.  2.2 2.  1.  0. ]] score = 1.5620499849319458
 match emb = [[1.  0.1 0.  0.  0. ]] score = 1.6763054132461548
 ```
 
+### Filter a subset of `DocumentArray` using `.find`
 
+`DocumentArray` provides function `.find` that finds the documents in the `DocumentArray`  whose tag values match a
+dictionary of user provided regular expressions. Since a `Document` can have many tags, the function expects one regular
+expression for each tag that a user wants to consider.
 
+The simplest way to use this function is to provide only the `regexes` dict. In this case, documents will be selected if
+all regular expressions passed are matched. Sometimes, a user might want to be less restrictive and might want to select
+documents only if a subset of the regular expressions is verified. In this case, `threshold` can be used to set the
+number of regular expressions that need to be matched in order to select a document.
 
-
-### Selecting a subset of Documents from a `DocumentArray` using `.find`
-
-`DocumentArray` provides function `.find` that finds the documents in the `DocumentArray`  whose tag values match a dictionary of user provided regular expressions. Since a `Document` can have many tags, the function expects one regular expression for each tag that a user wants to consider.
-
-The simplest way to use this function is to provide only  the `regexes` dict. In this case, documents will be selected if all regular expressions passed are matched. Sometimes, a user might want to be less restrictive and might want to select documents only if a subset of the regular expressions is verified. In this case, `threshold` can be used to set the number of regular expressions that need to be matched in order to select a document.
-
-Let us consider the following example, where we want to select documents form a `DocumentArray` if the `city` tag contains a city that starts with `'B'`.
+Let us consider the following example, where we want to select documents form a `DocumentArray` if the `city` tag
+contains a city that starts with `'B'`.
 
 ```python
-d1 = Document(tags={'city': 'Barcelona', 'phone':'None'})
-d2 = Document(tags={'city': 'Berlin','phone':'648907348'})
+d1 = Document(tags={'city': 'Barcelona', 'phone': 'None'})
+d2 = Document(tags={'city': 'Berlin', 'phone': '648907348'})
 d3 = Document(tags={'city': 'Paris', 'phone': 'None'})
 d4 = Document(tags={'city': 'Brussels', 'phone': 'None'})
 
 docarray = DocumentArray([d1, d2, d3, d4])
 
-regexes = {'city':r'B.*'}
+regexes = {'city': r'B.*'}
 docarray_filtered = docarray.find(regexes=regexes)
 print(f'len(docarray_filtered)={len(docarray_filtered)}')
 for d in docarray_filtered:
@@ -1181,16 +1179,17 @@ for d in docarray_filtered:
 Will print
 
 ```python
-len(docarray_filtered)=3
-dict(d.tags)={'phone': 'None', 'city': 'Barcelona'}
-dict(d.tags)={'phone': '648907348', 'city': 'Berlin'}
-dict(d.tags)={'phone': 'None', 'city': 'Brussels'}
+len(docarray_filtered) = 3
+dict(d.tags) = {'phone': 'None', 'city': 'Barcelona'}
+dict(d.tags) = {'phone': '648907348', 'city': 'Berlin'}
+dict(d.tags) = {'phone': 'None', 'city': 'Brussels'}
 ```
 
-We can consider more conditions, for example a subset of the previous documents that have `None` in the `'phone'` tag. We could do this as follows:
+We can consider more conditions, for example a subset of the previous documents that have `None` in the `'phone'` tag.
+We could do this as follows:
 
 ```python
-regexes = {'city':r'B.*', 'phone':'None' }
+regexes = {'city': r'B.*', 'phone': 'None'}
 docarray_filtered = docarray.find(regexes=regexes)
 print(f'len(docarray_filtered)={len(docarray_filtered)}')
 for d in docarray_filtered:
@@ -1205,11 +1204,12 @@ dict(d.tags)={'city': 'Barcelona', 'phone': 'None'}
 dict(d.tags)={'phone': 'None', 'city': 'Brussels'}
 ```
 
-### Random sample a subset of Documents from a `DocumentArray` using `sample`
+### Sample a subset of `DocumentArray` using `sample`
 
-`DocumentArray` provides function `.sample` that sample `k` elements without replacement.
-It accepts 2 parameters, `k` and `seed`. `k` is used to define the number of elements to sample, and `seed`
-helps you generate pseudo random results. It should be noted that `k` should always less or equal than the length of the document array.
+`DocumentArray` provides function `.sample` that sample `k` elements without replacement. It accepts 2 parameters, `k`
+and `seed`. `k` is used to define the number of elements to sample, and `seed`
+helps you generate pseudo random results. It should be noted that `k` should always less or equal than the length of the
+document array.
 
 To make use of the function:
 
@@ -1223,10 +1223,10 @@ sampled_da = da.sample(k=10)  # sample 10 documents
 sampled_da_with_seed = da.sample(k=10, seed=1)  # sample 10 documents with seed.
 ```
 
-### Shuffle the `DocumentArray` using `shuffle`
+### Shuffle a `DocumentArray` using `shuffle`
 
-`DocumentArray` provides function `.shuffle` that shuffle the entire `DocumentArray`.
-It accepts the parameter `seed`.  `seed` helps you generate pseudo random results. By default, `seed` is None.
+`DocumentArray` provides function `.shuffle` that shuffle the entire `DocumentArray`. It accepts the parameter `seed`
+.  `seed` helps you generate pseudo random results. By default, `seed` is None.
 
 To make use of the function:
 
@@ -1240,22 +1240,24 @@ shuffled_da = da.shuffle()  # shuffle the DocumentArray
 shuffled_da_with_seed = da.shuffle(seed=1)  # shuffle the DocumentArray with seed.
 ```
 
-### Visualize embeddings
+### Visualize the embeddings of a `DocumentArray`
 
-`DocumentArray` provides function `.visualize` to plot document embeddings in a 2D graph. `visualize` supports 2 methods to project in 2D space: `pca` and `tsne`.
+`DocumentArray` provides function `.visualize` to plot document embeddings in a 2D graph. `visualize` supports 2 methods
+to project in 2D space: `pca` and `tsne`.
 
 In the following example, we add 3 different distributions of embeddings and see 3 kinds of point clouds in the graph.
+
 ```python
 import numpy as np
 from jina import Document, DocumentArray
 
 da = DocumentArray(
     [
-        Document(embedding = np.random.normal(0, 1, 50)) for _ in range(500)
+        Document(embedding=np.random.normal(0, 1, 50)) for _ in range(500)
     ] + [
-        Document(embedding = np.random.normal(5, 2, 50)) for _ in range(500)
+        Document(embedding=np.random.normal(5, 2, 50)) for _ in range(500)
     ] + [
-        Document(embedding = np.random.normal(2, 5, 50)) for _ in range(500)
+        Document(embedding=np.random.normal(2, 5, 50)) for _ in range(500)
     ]
 )
 da.visualize()
@@ -1266,7 +1268,11 @@ da.visualize()
 
 ## `DocumentArrayMemmap` API
 
-When your `DocumentArray` object contains a large number of `Document`, holding it in memory can be very demanding. You may want to use `DocumentArrayMemmap` to alleviate this issue. A `DocumentArrayMemmap` stores all Documents directly on the disk, while only keeps a small lookup table in memory. This lookup table contains the offset and length of each `Document`, hence it is much smaller than the full `DocumentArray`. Elements are loaded on-demand to memory during the access.
+When your `DocumentArray` object contains a large number of `Document`, holding it in memory can be very demanding. You
+may want to use `DocumentArrayMemmap` to alleviate this issue. A `DocumentArrayMemmap` stores all Documents directly on
+the disk, while only keeps a small lookup table in memory. This lookup table contains the offset and length of
+each `Document`, hence it is much smaller than the full `DocumentArray`. Elements are loaded on-demand to memory during
+the access.
 
 The next table show the speed and memory consumption when writing and reading 50,000 `Documents`.
 
@@ -1277,7 +1283,7 @@ The next table show the speed and memory consumption when writing and reading 50
 |Memory usage | 20MB | 342MB |
 |Disk storage | 14.3MB | 12.6MB |
 
-### Create `DocumentArrayMemmap` object
+### Create `DocumentArrayMemmap`
 
 ```python
 from jina.types.arrays.memmap import DocumentArrayMemmap
@@ -1285,7 +1291,7 @@ from jina.types.arrays.memmap import DocumentArrayMemmap
 dam = DocumentArrayMemmap('./my-memmap')
 ```
 
-### Add Documents to `DocumentArrayMemmap` object
+### Add Documents to `DocumentArrayMemmap`
 
 ```python
 from jina.types.arrays.memmap import DocumentArrayMemmap
@@ -1298,19 +1304,22 @@ dam = DocumentArrayMemmap('./my-memmap')
 dam.extend([d1, d2])
 ```
 
-The `dam` object stores all future Documents into `./my-memmap`, there is no need to manually call `save`/`load`. In fact, `save`/`load` methods are not available in `DocumentArrayMemmap`.
+The `dam` object stores all future Documents into `./my-memmap`, there is no need to manually call `save`/`load`. In
+fact, `save`/`load` methods are not available in `DocumentArrayMemmap`.
 
-### Clear a `DocumentArrayMemmap` object
+### Clear a `DocumentArrayMemmap`
 
 To clear all contents in a `DocumentArrayMemmap` object, simply call `.clear()`. It will clean all content on disk.
 
 #### Pruning
 
-One may notice another method `.prune()` that shares similar semantics. `.prune()` method is designed for "post-optimizing" the on-disk data structure of `DocumentArrayMemmap` object. It can reduce the on-disk usage.
+One may notice another method `.prune()` that shares similar semantics. `.prune()` method is designed for "
+post-optimizing" the on-disk data structure of `DocumentArrayMemmap` object. It can reduce the on-disk usage.
 
 ### Mutable sequence with "read-only" elements
 
-The biggest caveat in `DocumentArrayMemmap` is that you can **not** modify element's attribute inplace. Though the `DocumentArrayMemmap` is mutable, each of its element is not. For example:
+The biggest caveat in `DocumentArrayMemmap` is that you can **not** modify element's attribute inplace. Though
+the `DocumentArrayMemmap` is mutable, each of its element is not. For example:
 
 ```python
 from jina.types.arrays.memmap import DocumentArrayMemmap
@@ -1358,7 +1367,9 @@ for d in dam:
 
 ### Side-by-side vs. `DocumentArray`
 
-Accessing elements in `DocumentArrayMemmap` is _almost_ the same as `DocumentArray`, you can use integer/string index to access element; you can loop over a `DocumentArrayMemmap` to get all `Document`; you can use `get_attributes` or `traverse_flat` to achieve advanced traversal or getter.
+Accessing elements in `DocumentArrayMemmap` is _almost_ the same as `DocumentArray`, you can use integer/string index to
+access element; you can loop over a `DocumentArrayMemmap` to get all `Document`; you can use `get_attributes`
+or `traverse_flat` to achieve advanced traversal or getter.
 
 This table summarizes the interfaces of `DocumentArrayMemmap` and `DocumentArray`:
 
@@ -1401,10 +1412,12 @@ dam.extend(da)
 da = DocumentArray(dam)
 ```
 
-
 ### Maintaining consistency via `.reload()`
 
-Considering two `DocumentArrayMemmap` objects that share the same on-disk storage `./memmap` but sit in different processes/threads. After some writing ops, the consistency of the lookup table may be corrupted, as each `DocumentArrayMemmap` object has its own version of lookup table in memory. `.reload()` method is for solving this issue:
+Considering two `DocumentArrayMemmap` objects that share the same on-disk storage `./memmap` but sit in different
+processes/threads. After some writing ops, the consistency of the lookup table may be corrupted, as
+each `DocumentArrayMemmap` object has its own version of lookup table in memory. `.reload()` method is for solving this
+issue:
 
 ```python
 from jina.types.arrays.memmap import DocumentArrayMemmap
