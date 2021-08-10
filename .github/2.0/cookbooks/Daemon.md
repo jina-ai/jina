@@ -592,7 +592,7 @@ docker run --add-host host.docker.internal:host-gateway \
 
 - `jinaai/jina:test-daemon` ?
 
-  All images created by JinaD during local tests use image with this name (hard-coded). Once 2.0 is released, it would be pulled from `docker hub` or a better naming would get used.
+  All images created by JinaD during local tests use image with this name (hard-coded).
 
 - `--env JINA_DAEMON_BUILD=DEVEL` ?
 

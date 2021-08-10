@@ -181,27 +181,15 @@ def test_pull(test_envs, mocker, monkeypatch):
     HubIO(args).pull()
 
 
-class MockImageCollection:
-    def __init__(self, fail_pull: bool, fail_get: bool):
-        self.fail_pull = fail_pull
-        self.fail_get = fail_get
-
-    def pull(self, repository: str):
-        if self.fail_pull:
-            raise docker.errors.APIError('Failed pullingdocker image')
-        else:
-            return
-
-    def get(self, repository: str):
-        if self.fail_get:
-            raise docker.errors.ImageNotFound("Image not found")
-        else:
-            return
-
-
 class MockDockerClient:
-    def __init__(self, fail_pull: bool = True, fail_get: bool = True):
-        self.images = MockImageCollection(fail_pull, fail_get)
+    def __init__(self, fail_pull: bool = True):
+        self.fail_pull = fail_pull
+
+    def pull(self, repository: str, stream: bool = True, decode: bool = True):
+        if self.fail_pull:
+            raise docker.errors.APIError('Failed pulling docker image')
+        else:
+            yield {}
 
 
 def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
@@ -225,9 +213,9 @@ def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
                 archive_url=None,
             )
 
-    def _gen_load_docker_client(fail_pull: bool, fail_get: bool):
+    def _gen_load_docker_client(fail_pull: bool):
         def _load_docker_client(obj):
-            obj._client = MockDockerClient(fail_pull=fail_pull, fail_get=fail_get)
+            obj._raw_client = MockDockerClient(fail_pull=fail_pull)
 
         return _load_docker_client
 
@@ -235,7 +223,7 @@ def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
     monkeypatch.setattr(
         HubIO,
         '_load_docker_client',
-        _gen_load_docker_client(fail_pull=True, fail_get=True),
+        _gen_load_docker_client(fail_pull=True),
     )
     monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
 
@@ -252,7 +240,7 @@ def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
     monkeypatch.setattr(
         HubIO,
         '_load_docker_client',
-        _gen_load_docker_client(fail_pull=False, fail_get=True),
+        _gen_load_docker_client(fail_pull=False),
     )
     assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder'
 
@@ -261,6 +249,23 @@ def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
     monkeypatch.setattr(
         HubIO,
         '_load_docker_client',
-        _gen_load_docker_client(fail_pull=True, fail_get=False),
+        _gen_load_docker_client(fail_pull=False),
     )
     assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder'
+
+
+def test_pull_with_progress():
+    import json
+
+    args = set_hub_pull_parser().parse_args(['jinahub+docker://dummy_mwu_encoder'])
+
+    def _log_stream_generator():
+        with open(os.path.join(cur_dir, 'docker_pull.logs')) as fin:
+            for line in fin:
+                if line.strip():
+                    yield json.loads(line)
+
+    from rich.console import Console
+
+    console = Console()
+    HubIO(args)._pull_with_progress(_log_stream_generator(), console)
