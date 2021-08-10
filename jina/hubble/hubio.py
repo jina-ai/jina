@@ -595,36 +595,32 @@ with f:
             console=console,
             transient=True,
         ) as progress:
-            try:
-                tasks = {}
-                for log in log_streams:
-                    if 'status' not in log:
-                        continue
-                    status = log['status']
-                    status_id = log.get('id', None)
-                    pg_detail = log.get('progressDetail', None)
+            tasks = {}
+            for log in log_streams:
+                if 'status' not in log:
+                    continue
+                status = log['status']
+                status_id = log.get('id', None)
+                pg_detail = log.get('progressDetail', None)
 
-                    if (pg_detail is None) or (status_id is None):
-                        console.print(status)
-                        continue
+                if (pg_detail is None) or (status_id is None):
+                    console.print(status)
+                    continue
 
-                    if status_id not in tasks:
-                        tasks[status_id] = progress.add_task(status, total=0)
+                if status_id not in tasks:
+                    tasks[status_id] = progress.add_task(status, total=0)
 
-                    task_id = tasks[status_id]
+                task_id = tasks[status_id]
 
-                    if ('current' in pg_detail) and ('total' in pg_detail):
-                        progress.update(
-                            task_id,
-                            completed=pg_detail['current'],
-                            total=pg_detail['total'],
-                            description=status,
-                        )
-                    elif not pg_detail:
-                        progress.update(task_id, advance=0, description=status)
-
-            except Exception as ex:
-                raise ex
+                if ('current' in pg_detail) and ('total' in pg_detail):
+                    progress.update(
+                        task_id,
+                        completed=pg_detail['current'],
+                        total=pg_detail['total'],
+                        description=status,
+                    )
+                elif not pg_detail:
+                    progress.update(task_id, advance=0, description=status)
 
     def pull(self) -> str:
         """Pull the executor package from Jina Hub.
