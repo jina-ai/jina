@@ -15,50 +15,50 @@ Document, Executor, and Flow are the three fundamental concepts in Jina.
 Table of Contents
 
 - [Minimum working example](#minimum-working-example)
-  - [Pure Python: All-in-one Style](#pure-python-all-in-one-style)
-  - [Pure Python: Flow-as-a-Service Style](#pure-python-flow-as-a-service-style)
-  - [With YAML](#with-yaml)
+    - [Pure Python: All-in-one Style](#pure-python-all-in-one-style)
+    - [Pure Python: Flow-as-a-Service Style](#pure-python-flow-as-a-service-style)
+    - [With YAML](#with-yaml)
 - [`Flow` API](#flow-api)
-  - [Create a Flow](#create-a-flow)
-  - [Use a Flow](#use-a-flow)
-  - [Visualize a Flow](#visualize-a-flow)
-  - [Add `Executor` to a Flow](#add-executor-to-a-flow)
-    - [Chain `.add()`](#chain-add)
-    - [Define What Executor to Use via `uses`](#define-what-executor-to-use-via-uses)
-      - [Add Executor via its Class Name](#add-executor-via-its-class-name)
-      - [Add Executor via YAML file](#add-executor-via-yaml-file)
-      - [Add Executor via `Dict`](#add-executor-via-dict)
-      - [Add Executor via Docker Image](#add-executor-via-docker-image)
-    - [Intra Parallelism via `needs`](#intra-parallelism-via-needs)
-    - [Inter Parallelism via `parallel`](#inter-parallelism-via-parallel)
-    - [Add a Remote `Executor` via `host`](#add-a-remote-executor-via-host)
-    - [Commonly used arguments for deployment in `.add`](#commonly-used-arguments-for-deployment-in-add)
-    - [Commonly used patterns for `.add`](#commonly-used-patterns-for-add)
-      - [Local native Executor via `.py` file:](#local-native-executor-via-py-file)
-      - [Local native Executor via `.yml` file:](#local-native-executor-via-yml-file)
-      - [Local Docker Executor:](#local-docker-executor)
-      - [Local Docker Executor from Jina Hub:](#local-docker-executor-from-jina-hub)
-      - [Using an already spawned Executor:](#using-an-already-spawned-executor)
-      - [Remote Executor](#remote-executor)
-      - [Setting the Gateway data port and host](#setting-the-gateway-data-port-and-host)
-      - [Forcing an Executor in the remote-local configuration](#forcing-an-executor-in-the-remote-local-configuration)
-  - [Send data request via `post`](#send-data-request-via-post)
-    - [Function Signature](#function-signature)
-    - [Define Data via `inputs`](#define-data-via-inputs)
-    - [Callback Functions](#callback-functions)
-    - [Send Parameters](#send-parameters)
-    - [Fine-grained Control on Request](#fine-grained-control-on-request)
-      - [Size of the Request](#size-of-the-request)
-    - [Get All Responses](#get-all-responses)
-  - [Asynchronous Flow](#asynchronous-flow)
+    - [Create a Flow](#create-a-flow)
+    - [Use a Flow](#use-a-flow)
+    - [Visualize a Flow](#visualize-a-flow)
+    - [Add `Executor` to a Flow](#add-executor-to-a-flow)
+        - [Chain `.add()`](#chain-add)
+        - [Define What Executor to Use via `uses`](#define-what-executor-to-use-via-uses)
+            - [Add Executor via its Class Name](#add-executor-via-its-class-name)
+            - [Add Executor via YAML file](#add-executor-via-yaml-file)
+            - [Add Executor via `Dict`](#add-executor-via-dict)
+            - [Add Executor via Docker Image](#add-executor-via-docker-image)
+        - [Intra Parallelism via `needs`](#intra-parallelism-via-needs)
+        - [Inter Parallelism via `parallel`](#inter-parallelism-via-parallel)
+        - [Add a Remote `Executor` via `host`](#add-a-remote-executor-via-host)
+        - [Commonly used arguments for deployment in `.add`](#commonly-used-arguments-for-deployment-in-add)
+        - [Commonly used patterns for `.add`](#commonly-used-patterns-for-add)
+            - [Local native Executor via `.py` file:](#local-native-executor-via-py-file)
+            - [Local native Executor via `.yml` file:](#local-native-executor-via-yml-file)
+            - [Local Docker Executor:](#local-docker-executor)
+            - [Local Docker Executor from Jina Hub:](#local-docker-executor-from-jina-hub)
+            - [Using an already spawned Executor:](#using-an-already-spawned-executor)
+            - [Remote Executor](#remote-executor)
+            - [Setting the Gateway data port and host](#setting-the-gateway-data-port-and-host)
+            - [Forcing an Executor in the remote-local configuration](#forcing-an-executor-in-the-remote-local-configuration)
+    - [Send data request via `post`](#send-data-request-via-post)
+        - [Function Signature](#function-signature)
+        - [Define Data via `inputs`](#define-data-via-inputs)
+        - [Callback Functions](#callback-functions)
+        - [Send Parameters](#send-parameters)
+        - [Fine-grained Control on Request](#fine-grained-control-on-request)
+            - [Size of the Request](#size-of-the-request)
+        - [Get All Responses](#get-all-responses)
+    - [Asynchronous Flow](#asynchronous-flow)
 - [Remarks](#remarks)
-  - [Joining/Merging](#joiningmerging)
+    - [Joining/Merging](#joiningmerging)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Minimum working example
 
-### Pure Python: All-in-one Style 
+### Pure Python: All-in-one Style
 
 ```python
 from jina import Flow, Document, Executor, requests
@@ -80,6 +80,7 @@ with f:
 ### Pure Python: Flow-as-a-Service Style
 
 Server:
+
 ```python
 from jina import Flow, Executor, requests
 
@@ -98,13 +99,13 @@ with f:
 ```
 
 Client:
+
 ```python
 from jina import Client, Document
 
 c = Client(port_expose=12345)
 c.post(on='/bar', inputs=Document(), on_done=print)
 ```
-
 
 ### With YAML
 
@@ -128,9 +129,9 @@ with f:
 
 ## `Flow` API
 
-- Flow is how Jina streamlines and scales Executors. 
+- Flow is how Jina streamlines and scales Executors.
 - Flow is a service, allowing multiple clients to access it via gRPC/REST/WebSocket from the public/private network.
-  
+
 A `Flow` object has the following common methods:
 
 | |  |
@@ -188,17 +189,34 @@ In Jupyter Lab/Notebook, the `Flow` object is rendered automatically without nee
 
 ### Add `Executor` to a Flow
 
-`.add()` is the core method to add an Executor to a `Flow` object. Each `add` creates a new Executor, and these Executors
-can be run as a local thread/process, a remote process, inside a Docker container, or even inside a remote Docker
-container.
+
+`.add()` is the core method to add an Executor to a `Flow` object. Each `add` creates a new Executor, and these
+Executors can be run as a local thread/process, a remote process, inside a Docker container, or even inside a remote
+Docker container.
+
+
+##### Quick lookup: commonly used patterns for `.add`
+
+| Description | Usage (`f = Flow(...)`) |
+| --- | --- |
+| Local native Executor in the context |  `f.add(uses=MyExecutor)` |
+| Local native Executor from a YAML | `f.add(uses='mwu_encoder.yml')` | 
+| Executor from Jina Hub | `f.add(uses='jinahub://MyExecutor')` |
+| Dockerized Executor from Jina Hub | `f.add(uses='jinahub+docker://MyExecutor')` |
+| Generalized dockerized Executor | `f.add(uses='docker://MyExecutor')` |
+| Existing remote Executor | `f.add(host='123.45.67.89', port_in=12345, external=True)` |
+| Spawn Remote Executor (via `jinad` on Remote) | `f.add(uses='mwu_encoder.yml', host='123.45.67.89', port_in=12345, port_expose=8080)` |
+
 
 `.add()` accepts the following common arguments:
 
 | |  |
 |---|---|
 |Define Executor| `uses`|
+|Define Executor's parameters | `uses_with`, `uses_metas`, `uses_requests`|
 |Define Dependencies | `needs` |
 |Parallelization | `parallel`, `polling` |
+
 
 For a full list of arguments, please check `jina executor --help`.
 
@@ -306,17 +324,91 @@ f = Flow().add(
     })
 ```
 
-##### Add Executor via Docker Image
+##### Add an already spawned Executor
 
-To add an Executor from a Docker image tag `myexec:latest`, use:
+A Flow does not have to be local-only. You can use any Executor on remote(s). 
+
+The external Executor in the following two use-cases could have been spawned
+
+- either by another Flow
+- or by the `jina executor` CLI command
+
+```python
+f.add(host='localhost', port_in=12345, external=True)
+f.add(host='123.45.67.89', port_in=12345, external=True)
+```
+
+##### Add & spawn a Remote `Executor` via `jinad`
+
+In the example below, the Executor with
+the `host`
+keyword `gpu-exec`, is put to a remote machine for parallelization, whereas other Executors stay local. Extra file
+dependencies that need to be uploaded are specified via the `upload_files` keyword.
+
+<table>
+    <tr>
+    <td>123.45.67.89</td>
+    <td>
+
+```bash
+# have docker installed
+docker run --name=jinad --network=host -v /var/run/docker.sock:/var/run/docker.sock jinaai/jina:latest-daemon --port-expose 8000
+# stop the docker container
+docker rm -f jinad
+```
+
+</td>
+</tr>
+  <tr>
+    <td>
+    Local
+    </td>
+    <td>
 
 ```python
 from jina import Flow
 
-f = Flow().add(uses='docker://myexec:latest')
+f = (Flow()
+     .add()
+     .add(name='gpu_exec',
+          uses='mwu_encoder.yml',
+          host='123.45.67.89:8000',
+          parallel=2,
+          upload_files=['mwu_encoder.py'])
+     .add())
 ```
 
-Once built, it will start a Docker container.
+</tr>
+
+</table>
+
+###### Commonly used arguments for deployment in `.add`
+
+| Name | default | Description |
+| --- | --- | --- |
+| `host` | `0.0.0.0` | The host of the machine. Can be an ip address or DNS name (e.g. `0.0.0.0`, `my_encoder.jina.ai`) |
+| `port_expose` | randomly initialized | Port of JinaD on the remote machine. |
+| `port_in` | randomly initialized | Port for incoming traffic for the Executor. |
+| `port_out` | randomly initialized | Port for outgoing traffic for the Executor. This is only used in the remote-local use-case described below. |
+| `connect_to_predecessor` | `False` | Forces a Head to connect to the previous Tail. This is only used in the remote-local use-case described below. |
+| `external` | `False` | Stops `Flow` from context managing an Executor. This allows spawning of an external Executor and reusing across multiple Flows. |
+| `uses`, `uses_before` and `uses_after` prefix | No prefix | When prefixing one of the `uses` arguments with `docker` or `jinahub+docker`, the Executor does not run natively, but is spawned inside a container. |
+
+
+##### Forcing an Executor in the remote-local configuration
+
+Sometimes you want to use a remote Executor in your local Flow (e.g. using an expensive encoder on a remote GPU). Then
+the remote cannot talk back to the next local Executor directly. This is similar to a server that cannot talk to a
+client before the client has opened a connection. The Flow inside Jina has an auto-detection mechanism for such cases.
+Anyhow, in some networking setups this mechanism fails. Then you can force this by hand by setting
+the `connect_to_predecessor` argument and `port_out` to the Executor in front.
+
+```python
+f.add(name='remote', host='123.45.67.89', port_out=23456).add(name='local', connect_to_predecessor=True)
+```
+
+
+### Parallelization
 
 #### Intra Parallelism via `needs`
 
@@ -403,133 +495,7 @@ f = (Flow()
 
 <img src="../../simple-plot4.svg?raw=true"/>
 
-#### Add a Remote `Executor` via `host`
 
-A Flow does not have to be local-only. You can put any Executor to remote(s). In the example below, the Executor with the `host`
-keyword `gpu-exec`, is put to a remote machine for parallelization, whereas other Executors stay local. Extra file
-dependencies that need to be uploaded are specified via the `upload_files` keyword.
-
-<table>
-    <tr>
-    <td>123.45.67.89</td>
-    <td>
-
-```bash
-# have docker installed
-docker run --name=jinad --network=host -v /var/run/docker.sock:/var/run/docker.sock jinaai/jina:latest-daemon --port-expose 8000
-# stop the docker container
-docker rm -f jinad
-```
-
-</td>
-</tr>
-  <tr>
-    <td>
-    Local
-    </td>
-    <td>
-
-```python
-from jina import Flow
-
-f = (Flow()
-     .add()
-     .add(name='gpu_exec',
-          uses='mwu_encoder.yml',
-          host='123.45.67.89:8000',
-          parallel=2,
-          upload_files=['mwu_encoder.py'])
-     .add())
-```
-
-</tr>
-
-</table>
-
-#### Commonly used arguments for deployment in `.add`
-
-| Name | default | Description |
-| --- | --- | --- |
-| `host` | `0.0.0.0` | The host of the machine. Can be an ip address or DNS name (e.g. `0.0.0.0`, `my_encoder.jina.ai`) |
-| `port_expose` | randomly initialized | Port of JinaD on the remote machine. |
-| `port_in` | randomly initialized | Port for incoming traffic for the Executor. |
-| `port_out` | randomly initialized | Port for outgoing traffic for the Executor. This is only used in the remote-local use-case described below. |
-| `connect_to_predecessor` | `False` | Forces a Head to connect to the previous Tail. This is only used in the remote-local use-case described below. |
-| `external` | `False` | Stops `Flow` from context managing an Executor. This allows spawning of an external Executor and reusing across multiple Flows. |
-| `uses`, `uses_before` and `uses_after` prefix | No prefix | When prefixing one of the `uses` arguments with `docker` or `jinahub+docker`, the Executor does not run natively, but is spawned inside a container. |
-
-#### Commonly used patterns for `.add`
-
-##### Local native Executor via `.py` file:
-
-```python
-class MyExecutor():...
-
-f.add(uses=MyExecutor)   # passing the Executor class
-f.add(uses='MyExecutor') # passing the name of the Executor class
-```
-
-##### Local native Executor via `.yml` file:
-
-```python
-f.add(uses='mwu_encoder.yml')
-```
-
-##### Local Docker Executor:
-
-```python
-f.add(uses='docker://MyExecutor')
-```
-
-##### Local Docker Executor from Jina Hub:
-
-```python
-f.add(uses='jinahub+docker://MyExecutor')
-```
-
-##### Using an already spawned Executor:
-
-The external Executor in the following two use-cases could have been spawned
-
-- either by another Flow
-- or by the `jina executor` CLI command
-
-```python
-f.add(host='localhost', port_in=12345, external=True)
-f.add(host='123.45.67.89', port_in=12345, external=True)
-```
-
-##### Remote Executor
-
-In any of the following remote patterns without `external`, JinaD must be running on the remote machine.
-Furthermore, JinaD must be setup to listen on `port_expose`.
-
-```python
-f.add(uses='mwu_encoder.yml', host='123.45.67.89', port_in=12345, port_expose=8080)
-```
-
-`uses` can take any argument that would be used in the local case (e.g. `jinahub+docker://...`).
-
-##### Setting the Gateway data port and host
-
-If you need to change the networking of the Gateway, the respective arguments go directly into the Flow initialization.
-
-```python
-Flow(host='123.45.67.89', port_in=12345)
-```
-
-##### Forcing an Executor in the remote-local configuration
-
-Sometimes you want to use a remote Executor in your local Flow (e.g. using an expensive encoder on a remote GPU).
-Then the remote cannot talk back to the next local Executor directly.
-This is similar to a server that cannot talk to a client before the client has opened a connection.
-The Flow inside Jina has an auto-detection mechanism for such cases.
-Anyhow, in some networking setups this mechanism fails.
-Then you can force this by hand by setting the `connect_to_predecessor` argument and `port_out` to the Executor in front.
-
-```python
-Flow().add(name='remote', host='123.45.67.89', port_out=23456).add(name='local', connect_to_predecessor=True)
-```
 
 
 ### Send data request via `post`
@@ -583,7 +549,8 @@ def post(
     """
 ```
 
-Note, you can also use CRUD methods (`index`, `search`, `update`, `delete`) which are just sugary syntax of `post` with `on='/index'`
+Note, you can also use CRUD methods (`index`, `search`, `update`, `delete`) which are just sugary syntax of `post`
+with `on='/index'`
 , `on='/search'`, etc. Precisely, they are defined as:
 
 ```python
@@ -626,7 +593,7 @@ with Flow() as f:
 
 `Document` module provides some methods that lets you build `Document` generator, e.g. [`from_csv`
 , `from_files`, `from_ndarray`, `from_ndjson`](Document.md#construct-from-json-csv-ndarray-and-files). They can be used
- in conjunction with `.post()`, e.g.
+in conjunction with `.post()`, e.g.
 
 ```python
 from jina import Flow
@@ -641,22 +608,24 @@ with f, open('my.csv') as fp:
 #### Callback Functions
 
 Once a request is returned, callback functions are fired. Jina Flow implements a Promise-like interface. You can add
-callback functions `on_done`, `on_error`, `on_always` to hook different events. 
+callback functions `on_done`, `on_error`, `on_always` to hook different events.
 
-In Jina, callback function's first argument is a `jina.types.request.Response` object. Hence, you can annotate the callback function via:
+In Jina, callback function's first argument is a `jina.types.request.Response` object. Hence, you can annotate the
+callback function via:
 
 ```python
 from jina.types.request import Response
+
 
 def my_callback(rep: Response):
     ...
 ```
 
-`Response` object has many attributes, probably the most popular one is `Response.docs`, where you can access all `Document` as an `DocumentArray`.
+`Response` object has many attributes, probably the most popular one is `Response.docs`, where you can access
+all `Document` as an `DocumentArray`.
 
-In the example below, our Flow passes
-the message then prints the result when successful. If something goes wrong, it beeps. Finally, the result is written
-to `output.txt`.
+In the example below, our Flow passes the message then prints the result when successful. If something goes wrong, it
+beeps. Finally, the result is written to `output.txt`.
 
 ```python
 from jina import Document, Flow
@@ -706,12 +675,12 @@ with f:
 
 This is useful to control `Executor` objects in the runtime.
 
-
 #### Fine-grained Control on Request
 
 ##### Size of the Request
 
-You can control how many `Documents` in each request by `request_size`. Say your `inputs` has length of 100, whereas you `request_size` is set to `10`. Then `f.post` will send ten requests and return 10 responses:
+You can control how many `Documents` in each request by `request_size`. Say your `inputs` has length of 100, whereas
+you `request_size` is set to `10`. Then `f.post` will send ten requests and return 10 responses:
 
 ```python
 from jina import Flow, Document
@@ -752,7 +721,8 @@ with f:
 
 #### Get All Responses
 
-In some scenarios (e.g. testing), you may want to get the all responses in bulk and then process them; instead of processing responses on the fly. To do that, you can turn on `return_results`:
+In some scenarios (e.g. testing), you may want to get the all responses in bulk and then process them; instead of
+processing responses on the fly. To do that, you can turn on `return_results`:
 
 ```python
 from jina import Flow, Document
@@ -784,9 +754,10 @@ with f:
 
 ```
 
-Note, turning on `return_results` breaks the streaming of the system. If you are sending 1000 requests, then `return_results=True` means you will get nothing until the 1000th response returns. Moreover, if each response takes 10MB memory, it means you will consume upto 10GB memory! On contrary, with callback and `return_results=False`, your memory usage will stay constant at 10MB. 
-
-
+Note, turning on `return_results` breaks the streaming of the system. If you are sending 1000 requests,
+then `return_results=True` means you will get nothing until the 1000th response returns. Moreover, if each response
+takes 10MB memory, it means you will consume upto 10GB memory! On contrary, with callback and `return_results=False`,
+your memory usage will stay constant at 10MB.
 
 ### Asynchronous Flow
 
@@ -877,10 +848,19 @@ if __name__ == '__main__':
 
 ## Remarks
 
+### Setting the Flow's port and host
+
+If you need to change the networking of the Flow, the respective arguments go directly into the Flow initialization.
+
+```python
+Flow(host='123.45.67.89', port_in=12345)
+```
+
+
 ### Joining/Merging
 
-Combining `docs` from multiple requests is already done by the `ZEDRuntime` before feeding them to the Executor's function.
-Hence, simple joining is just returning this `docs`. Complicated joining should be implemented at `Document`
+Combining `docs` from multiple requests is already done by the `ZEDRuntime` before feeding them to the Executor's
+function. Hence, simple joining is just returning this `docs`. Complicated joining should be implemented at `Document`
 /`DocumentArray`
 
 ```python

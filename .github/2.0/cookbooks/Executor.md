@@ -15,42 +15,42 @@ Document, Executor, and Flow are the three fundamental concepts in Jina.
 Table of Contents
 
 - [Minimum working example](#minimum-working-example)
-  - [Pure Python](#pure-python)
-  - [With YAML](#with-yaml)
+    - [Pure Python](#pure-python)
+    - [With YAML](#with-yaml)
 - [Executor API](#executor-api)
-  - [Inheritance](#inheritance)
-  - [`__init__` Constructor](#__init__-constructor)
-  - [Method naming](#method-naming)
-  - [`@requests` decorator](#requests-decorator)
-    - [Default binding: `@requests` without `on=`](#default-binding-requests-without-on)
-    - [Multiple bindings: `@requests(on=[...])`](#multiple-bindings-requestson)
-    - [No binding](#no-binding)
-  - [Method Signature](#method-signature)
-  - [Method Arguments](#method-arguments)
-  - [Method Returns](#method-returns)
-    - [Example 1: Embed Documents `blob`](#example-1-embed-documents-blob)
-    - [Example 2: Add Chunks by Segmenting Document](#example-2-add-chunks-by-segmenting-document)
-    - [Example 3: Preserve Document `id` Only](#example-3-preserve-document-id-only)
-  - [YAML Interface](#yaml-interface)
-  - [Load and Save Executor's YAML config](#load-and-save-executors-yaml-config)
-  - [Use Executor out of the Flow](#use-executor-out-of-the-flow)
-  - [Close Executor](#close-executor)
+    - [Inheritance](#inheritance)
+    - [`__init__` Constructor](#__init__-constructor)
+    - [Method naming](#method-naming)
+    - [`@requests` decorator](#requests-decorator)
+        - [Default binding: `@requests` without `on=`](#default-binding-requests-without-on)
+        - [Multiple bindings: `@requests(on=[...])`](#multiple-bindings-requestson)
+        - [No binding](#no-binding)
+    - [Method Signature](#method-signature)
+    - [Method Arguments](#method-arguments)
+    - [Method Returns](#method-returns)
+        - [Example 1: Embed Documents `blob`](#example-1-embed-documents-blob)
+        - [Example 2: Add Chunks by Segmenting Document](#example-2-add-chunks-by-segmenting-document)
+        - [Example 3: Preserve Document `id` Only](#example-3-preserve-document-id-only)
+    - [YAML Interface](#yaml-interface)
+    - [Load and Save Executor's YAML config](#load-and-save-executors-yaml-config)
+    - [Use Executor out of the Flow](#use-executor-out-of-the-flow)
+    - [Close Executor](#close-executor)
 - [Executor Built-in Features](#executor-built-in-features)
-  - [Workspace](#workspace)
-  - [Metas](#metas)
-  - [`.metas` & `.runtime_args`](#metas--runtime_args)
-  - [Handle parameters](#handle-parameters)
+    - [Workspace](#workspace)
+    - [Metas](#metas)
+    - [`.metas` & `.runtime_args`](#metas--runtime_args)
+    - [Handle parameters](#handle-parameters)
 - [Migrating from 1.x to 2.0 in Practice](#migrating-from-1x-to-20-in-practice)
-  - [Encoder in `jina hello fashion`](#encoder-in-jina-hello-fashion)
+    - [Encoder in `jina hello fashion`](#encoder-in-jina-hello-fashion)
 - [Executors in Action](#executors-in-action)
-  - [Fastai](#fastai)
-  - [Pytorch Lightning](#pytorch-lightning)
-  - [Paddle](#paddle)
-  - [Tensorflow](#tensorflow)
-  - [MindSpore](#mindspore)
-  - [Scikit-learn](#scikit-learn)
-  - [PyTorch](#pytorch)
-  - [ONNX-Runtime](#onnx-runtime)
+    - [Fastai](#fastai)
+    - [Pytorch Lightning](#pytorch-lightning)
+    - [Paddle](#paddle)
+    - [Tensorflow](#tensorflow)
+    - [MindSpore](#mindspore)
+    - [Scikit-learn](#scikit-learn)
+    - [PyTorch](#pytorch)
+    - [ONNX-Runtime](#onnx-runtime)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -439,23 +439,25 @@ This is useful in debugging an Executor.
 
 ### Close Executor
 
-You might need to execute some logic when your executor's destructor is called.
-For example, let's suppose you want to persist data to the disk (e.g in-memory indexed data, fine-tuned model,...).
-To do so, you can overwrite the method `close` and add your logic.
+You might need to execute some logic when your executor's destructor is called. For example, let's suppose you want to
+persist data to the disk (e.g in-memory indexed data, fine-tuned model,...). To do so, you can overwrite the
+method `close` and add your logic.
 
 ```python
 from jina import Executor, requests, Document, DocumentArray
+
 
 class MyExec(Executor):
 
     @requests
     def foo(self, docs, **kwargs):
         for doc in docs:
-          print(doc.text)
-    
+            print(doc.text)
+
     def close(self):
-      print("closing...")
-    
+        print("closing...")
+
+
 with MyExec() as executor:
     executor.foo(DocumentArray([Document(text='hello world')]))
 ```
@@ -467,10 +469,9 @@ closing...
 
 ## Executor Built-in Features
 
-In Jina 2.0 the Executor class is generic to all categories of executors (`encoders`, `indexers`, `segmenters`,...) to keep development simple.
-We do not provide subclasses of `Executor` that are specific to each category.
-The design principles are (`user` here
-means "Executor developer"):
+In Jina 2.0 the Executor class is generic to all categories of executors (`encoders`, `indexers`, `segmenters`,...) to
+keep development simple. We do not provide subclasses of `Executor` that are specific to each category. The design
+principles are (`user` here means "Executor developer"):
 
 - **Do not surprise the user**: keep `Executor` class as Pythonic as possible. It should be as light and unintrusive as
   a `mixin` class:
@@ -481,10 +482,8 @@ means "Executor developer"):
   interface while delivering just loosely-implemented features is bad for scaling the core framework. For
   example, `save`, `load`, `on_gpu`, etc.
 
-We want to give our users the freedom to customize their executors easily. If a user is a good Python programmer, they should pick
-up `Executor` in no time.
-It is as simple as subclassing `Executor` and adding an endpoint.
-
+We want to give our users the freedom to customize their executors easily. If a user is a good Python programmer, they
+should pick up `Executor` in no time. It is as simple as subclassing `Executor` and adding an endpoint.
 
 ### Workspace
 
@@ -516,20 +515,24 @@ In 2.0rc1, the following fields are valid for `metas` and `runtime_args`:
 | `.metas` (static values from hard-coded values, YAML config) | `name`, `description`, `py_modules`, `workspace` |
 | `.runtime_args` (runtime values from its containers, e.g. `Runtime`, `Pea`, `Pod`) | `name`, `description`, `workspace`, `log_config`, `quiet`, `quiet_error`, `identity`, `port_ctrl`, `ctrl_with_ipc`, `timeout_ctrl`, `ssh_server`, `ssh_keyfile`, `ssh_password`, `uses`, `py_modules`, `port_in`, `port_out`, `host_in`, `host_out`, `socket_in`, `socket_out`, `memory_hwm`, `on_error_strategy`, `num_part`, `entrypoint`, `docker_kwargs`, `pull_latest`, `volumes`, `host`, `port_expose`, `quiet_remote_logs`, `upload_files`, `workspace_id`, `daemon`, `runtime_backend`, `runtime_cls`, `timeout_ready`, `env`, `expose_public`, `pea_id`, `pea_role`, `noblock_on_start`, `uses_before`, `uses_after`, `parallel`, `replicas`, `polling`, `scheduling`, `pod_role`, `peas_hosts`, `proxy`, `uses_metas`, `external`, `gpus`, `zmq_identity`, `hosts_in_connect`, `uses_with` |
 
-**Notes** 
+**Notes**
 
 - the YAML API will ignore `.runtime_args` during save and load as they are not statically stored
-- for any other parametrization of the Executor, you can still access its constructor arguments (defined in the class `__init__`) and the request `parameters`
+- for any other parametrization of the Executor, you can still access its constructor arguments (defined in the
+  class `__init__`) and the request `parameters`
 - `workspace` will be retrieved from either `metas` or `runtime_args`, in that order
 
 ### Handle parameters
-Parameters are passed to executors via `request.parameters` with `Flow.post(..., parameters=)`. This way all the `executors` will receive 
-`parameters` as an argument to their `methods`. These `parameters` can be used to pass extra information or tune the `executor` behavior for a
-given request without updating the general configuration.
+
+Parameters are passed to executors via `request.parameters` with `Flow.post(..., parameters=)`. This way all
+the `executors` will receive
+`parameters` as an argument to their `methods`. These `parameters` can be used to pass extra information or tune
+the `executor` behavior for a given request without updating the general configuration.
 
 ```python
 from typing import Optional
 from jina import Executor, requests, DocumentArray, Flow
+
 
 class MyExecutor(Executor):
     def __init__(self, default_param: int = 1, *args, **kwargs):
@@ -542,18 +545,20 @@ class MyExecutor(Executor):
         # param may be overriden for this specific request
         assert param == 5
 
+
 with Flow().add(uses=MyExecutor) as f:
     f.post(on='/endpoint', inputs=DocumentArray([]), parameters={'param': 5})
 ```
 
-However, this can be a problem when the user wants different executors to have different values of the same parameters. 
-In that case one can specify specific parameters for the specific `executor` by adding a `dictionary` inside parameters with 
-the `executor` name as `key`. Jina will then take all these specific parameters and copy to the root of the parameters dictionary before 
-calling the executor `method`.
+However, this can be a problem when the user wants different executors to have different values of the same parameters.
+In that case one can specify specific parameters for the specific `executor` by adding a `dictionary` inside parameters
+with the `executor` name as `key`. Jina will then take all these specific parameters and copy to the root of the
+parameters dictionary before calling the executor `method`.
 
 ```python
 from typing import Optional
 from jina import Executor, requests, DocumentArray, Flow
+
 
 class MyExecutor(Executor):
     def __init__(self, default_param: int = 1, *args, **kwargs):
@@ -571,36 +576,11 @@ class MyExecutor(Executor):
             assert param == 5
 
 
-with Flow().\
-        add(uses={'jtype': 'MyExecutor', 'metas': {'name': 'my-executor-1'}}).\
-        add(uses={'jtype': 'MyExecutor', 'metas': {'name': 'my-executor-2'}}) as f:
+with (Flow().
+        add(uses={'jtype': 'MyExecutor', 'metas': {'name': 'my-executor-1'}}).
+        add(uses={'jtype': 'MyExecutor', 'metas': {'name': 'my-executor-2'}})) as f:
     f.post(on='/endpoint', inputs=DocumentArray([]), parameters={'param': 5, 'my-executor-1': {'param': 10}})
 ```
-
----
-
-## Migrating from 1.x to 2.0 in Practice
-
-### Encoder in `jina hello fashion`
-
-Left is 1.x, right is 2.0:
-
-![img.png](../migration-fashion.png?raw=true)
-
-Line number corresponds to the 1.x code:
-
-- `L5`: change imports to top-level namespace `jina`;
-- `L8`: all executors now subclass from `Executor` class;
-- `L13-14`: there is no need to inherit from `__init__`, no signature is enforced;
-- `L20`: `.touch()` is removed; for this particular encoder as long as the seed is fixed there is no need to store;
-- `L22`: adding `@requests` to decorate the core method, changing signature to `docs, **kwargs`;
-- `L32`:
-    - content extraction and embedding assignment are now done manually;
-    - replacing previous `Blob2PngURI` and `ExcludeQL` driver logic using `Document` built-in
-      methods `convert_blob_to_uri` and `pop`
-    - there is nothing to return, as the change is done in-place.
-
----
 
 ## Executors in Action
 
@@ -611,8 +591,8 @@ by [fastai](https://github.com/fastai/fastai).
 
 The `encode` function of this executor generates a feature vector for each image in each `Document` of the
 input `DocumentArray`. The feature vector generated is the output activations of the neural network (a vector of 1000
-components). Note the embedding of each text is performed in a joined operation (all embeddings are created for all images
-in a single function call) to achieve higher performance.
+components). Note the embedding of each text is performed in a joined operation (all embeddings are created for all
+images in a single function call) to achieve higher performance.
 
 As a result each `Document` in the input `DocumentArray`  _docs_ will have an `embedding` after `encode()` has
 completed.
@@ -674,15 +654,14 @@ class PLMwuAutoEncoder(Executor):
 
 ### Paddle
 
-The example below use PaddlePaddle [Ernie](https://github.com/PaddlePaddle/ERNIE) model as encoder.
-The Executor load pre-trained Ernie family of tokenizer and model.
-Convert Jina Document ``doc.text`` into Paddle Tensor and encode it as embedding.
-As a result, each `Document` in the `DocumentArray` will have an `embedding` after `encode()` has completed.
+The example below use PaddlePaddle [Ernie](https://github.com/PaddlePaddle/ERNIE) model as encoder. The Executor load
+pre-trained Ernie family of tokenizer and model. Convert Jina Document ``doc.text`` into Paddle Tensor and encode it as
+embedding. As a result, each `Document` in the `DocumentArray` will have an `embedding` after `encode()` has completed.
 
 ```python
-import paddle as P # paddle==2.1.0
+import paddle as P  # paddle==2.1.0
 import numpy as np
-from ernie.modeling_ernie import ErnieModel # paddle-ernie 0.2.0.dev1
+from ernie.modeling_ernie import ErnieModel  # paddle-ernie 0.2.0.dev1
 from ernie.tokenizing_ernie import ErnieTokenizer
 
 from jina import Executor, requests
@@ -692,7 +671,7 @@ class PaddleErineExecutor(Executor):
     def __init__(self, **kwargs):
         super().__init__()
         self.tokenizer = ErnieTokenizer.from_pretrained('ernie-1.0')
-        self.model = ErnieModel.from_pretrained('ernie-1.0') 
+        self.model = ErnieModel.from_pretrained('ernie-1.0')
         self.model.eval()
 
     @requests
@@ -827,9 +806,9 @@ class TFIDFTextEncoder(Executor):
 
 ### PyTorch
 
-The code snippet below takes ``docs`` as input and perform feature extraction with ``modelnet v2``. It
-leverages Pytorch's ``Tensor`` conversion and operation. Finally, the ``embedding`` of each document will be set as the
-extracted features.
+The code snippet below takes ``docs`` as input and perform feature extraction with ``modelnet v2``. It leverages
+Pytorch's ``Tensor`` conversion and operation. Finally, the ``embedding`` of each document will be set as the extracted
+features.
 
 ```python
 import torch  # 1.8.1
@@ -854,7 +833,8 @@ class PytorchMobilNetExecutor(Executor):
 
 ### ONNX-Runtime
 
-The code snippet bellow converts a `Pytorch` model to the `ONNX` and leverage `onnxruntime` to run inference tasks on models from `hugging-face transformers`.
+The code snippet bellow converts a `Pytorch` model to the `ONNX` and leverage `onnxruntime` to run inference tasks on
+models from `hugging-face transformers`.
 
 ```python
 from pathlib import Path
