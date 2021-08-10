@@ -103,7 +103,7 @@ def deploy_glue_executor(glue_executor, namespace, logger):
             glue_executor.port_expose,
             glue_executor.uses,
             '["jina"]',
-            f'["executor", "--uses", "config.yml", {get_cli_params(glue_executor, skip_list=["uses_with"])}]',
+            f'["zed_runtime", "--uses", "config.yml", {get_cli_params(glue_executor, skip_list=["uses_with"])}]',
             logger,
         )
     else:
@@ -117,7 +117,7 @@ def deploy_glue_executor(glue_executor, namespace, logger):
             # 'jinaai/jina',
             'gcr.io/jina-showcase/generic-gateway:latest',
             '["jina"]',
-            f'["executor", "--uses", "{glue_executor.uses}", {get_cli_params(glue_executor, skip_list=["uses_with"])}]',
+            f'["zed_runtime", "--uses", "{glue_executor.uses}", {get_cli_params(glue_executor, skip_list=["uses_with"])}]',
             logger,
         )
 
@@ -166,7 +166,14 @@ def deploy_glue_executor(glue_executor, namespace, logger):
 
 
 def get_cli_params(arguments, skip_list=()):
-    skip_attributes = ['workspace', 'log_config', 'uses', 'dynamic_routing', 'hosts_in_connect', 'polling_type'] + list(skip_list)
+    skip_attributes = [
+        'workspace',
+        'log_config',
+        'uses',
+        'dynamic_routing',
+        'hosts_in_connect',
+        'polling_type',
+    ] + list(skip_list)
     arg_list = [
         [attribute, attribute.replace('_', '-'), value]
         for attribute, value in arguments.__dict__.items()
@@ -327,8 +334,9 @@ def deploy(flow, deployment_type='k8s'):
                 uses_metas = dictionary_to_cli_param({'pea_id': pea_arg.pea_id})
                 uses_with = dictionary_to_cli_param(pea_arg.uses_with)
 
-
-                uses_with_string = f'"--uses-with", "{uses_with}", ' if uses_with else ''
+                uses_with_string = (
+                    f'"--uses-with", "{uses_with}", ' if uses_with else ''
+                )
                 cluster_ip = deploy_service(
                     pea_dns_name,
                     namespace,
@@ -338,11 +346,11 @@ def deploy(flow, deployment_type='k8s'):
                     pea_arg.port_expose,
                     image_name,
                     container_cmd='["jina"]',
-                    container_args=f'["executor", '
+                    container_args=f'["zed_runtime", '
                     f'"--uses", "config.yml", '
                     f'"--uses-metas", "{uses_metas}", '
-                    + uses_with_string +
-                    f'{get_cli_params(pea_arg)}]',
+                    + uses_with_string
+                    + f'{get_cli_params(pea_arg)}]',
                     logger=flow.logger,
                     init_container=init_container,
                 )

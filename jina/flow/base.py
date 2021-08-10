@@ -1581,7 +1581,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """
         self._common_kwargs.update(kwargs)
 
-    def deploy_naive(self, deployment_type='k8s'):
+    def deploy(self, deployment_type='k8s'):
         from ..kubernetes.naive import naive_deployment
 
         naive_deployment.deploy(self, deployment_type)

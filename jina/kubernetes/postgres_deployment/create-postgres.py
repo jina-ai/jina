@@ -13,14 +13,18 @@ from jina.logging.logger import JinaLogger
 class PostgresDefaultDeployment:
 
     RESOURCES = {
-      'config': 'postgres-configmap.yml',
-      'deployment': 'postgres-deployment.yml',
-      'pv': 'postgres-pv.yml',
-      'pvc': 'postgres-pvc.yml',
-      'service': 'postgres-service.yml'
+        'config': 'postgres-configmap.yml',
+        'deployment': 'postgres-deployment.yml',
+        'pv': 'postgres-pv.yml',
+        'pvc': 'postgres-pvc.yml',
+        'service': 'postgres-service.yml',
     }
 
-    def __init__(self, k8s_client, path_to_config_folder: Optional[str] = 'jina/kubernetes/postgres_deployment'):
+    def __init__(
+        self,
+        k8s_client,
+        path_to_config_folder: Optional[str] = 'jina/kubernetes/postgres_deployment',
+    ):
         self._k8s_client = k8s_client
         self._path_to_config_folder = path_to_config_folder
         self._logger = JinaLogger(self.__class__.__name__)

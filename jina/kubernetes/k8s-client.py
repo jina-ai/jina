@@ -11,19 +11,19 @@ kubernetes_tools.get_pod_logs("search-flow")
 time.sleep(2)
 input("Press Enter to start the requests...")
 
-ip = '34.141.109.41'
-ip = '127.0.0.1:8080'
+# ip = '34.141.109.41'
+ip = '127.0.0.1:8081'
 host = f'http://{ip}'
 
 
 # search flow
-data = [{'embedding': np.ones((512, )).tolist()} for _ in range(1)]
+data = [{'embedding': np.ones((512,)).tolist()} for _ in range(1)]
 
 
 def make_request(current):
     resp = requests.post(f'{host}/search', json={'data': data})
     print(f"Len response matches: {len(resp.json()['data']['docs'][0]['matches'])}")
-    print('resp', resp.status_code, resp.json())
+    print(f'{current} resp', resp.status_code, resp.json())
 
 
 # with Pool(10) as p:
