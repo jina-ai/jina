@@ -146,6 +146,20 @@ def test_workspace_delete():
         assert client.workspaces.delete(workspace_id)
 
 
+def test_workspace_clear():
+    client = JinaDClient(host=__default_host__, port=8000)
+    workspace_id = client.workspaces.create(
+        paths=[os.path.join(cur_dir, 'empty_flow.yml')]
+    )
+    assert DaemonID(workspace_id).type == 'workspace'
+    assert(
+        WorkspaceItem(**client.workspaces.get(id=workspace_id)).state
+        == RemoteWorkspaceState.ACTIVE
+    )
+    assert workspace_id in client.workspaces.list()
+    assert client.workspaces.delete(workspace_id)
+
+
 @pytest.mark.asyncio
 async def test_custom_project():
 

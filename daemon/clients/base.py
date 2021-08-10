@@ -108,6 +108,12 @@ class AsyncBaseClient:
                     f'got response {response.status} while listing all {self._kind}s'
                 )
 
+    @if_alive
+    async def clear(self):
+        async with aiohttp.request(method='DELETE', url=f'{self.store_api}') as response:
+            if response.status == HTTPStatus.OK:
+                return await response.json()
+
     async def create(self, *args, **kwargs) -> Dict:
         """Create a Workspace/Flow/Pea/Pod on remote.
         Must be implemented by the inherited class.
