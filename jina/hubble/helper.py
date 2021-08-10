@@ -15,6 +15,7 @@ from typing import Tuple, Optional, Dict
 from urllib.parse import urlparse, urljoin
 from urllib.request import Request, urlopen
 
+
 from .. import __resources_path__
 from ..importer import ImportExtensions
 from ..logging.predefined import default_logger
