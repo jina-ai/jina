@@ -635,20 +635,20 @@ with f:
                                 console.print(status)
                                 continue
 
-                            task = tasks.get(
-                                status_id, progress.add_task(status, total=0)
-                            )
-                            current = pg_detail['current']
-                            total = pg_detail['total']
-                            progress.update(
-                                task,
-                                completed=current,
-                                total=total,
-                                description=status,
-                            )
+                            if status_id not in tasks:
+                                tasks[status_id] = progress.add_task(status, total=0)
 
-                            if total and current == total:
-                                progress.stop_task(task)
+                            task_id = tasks[status_id]
+
+                            if ('current' in pg_detail) and ('total' in pg_detail):
+                                progress.update(
+                                    task_id,
+                                    completed=pg_detail['current'],
+                                    total=pg_detail['total'],
+                                    description=status,
+                                )
+                            elif not pg_detail:
+                                progress.update(task_id, advance=0, description=status)
 
                     except Exception as ex:
                         raise ex
