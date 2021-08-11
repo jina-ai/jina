@@ -205,7 +205,7 @@ def get_main_parser():
     set_pod_parser(
         sp.add_parser(
             'executor',
-            aliases=['pea'],
+            aliases=['pod'],
             help='Start an Executor',
             description='Start an Executor. Executor is how Jina processes Document.',
             formatter_class=_chf,
