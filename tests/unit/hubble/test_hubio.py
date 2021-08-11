@@ -269,3 +269,56 @@ def test_pull_with_progress():
 
     console = Console()
     HubIO(args)._pull_with_progress(_log_stream_generator(), console)
+
+
+@pytest.mark.parametrize('add_dockerfile', [True, False])
+def test_new(monkeypatch, tmpdir, add_dockerfile):
+    from rich.prompt import Prompt, Confirm
+
+    prompts = iter(
+        [
+            'DummyExecutor',
+            tmpdir / 'DummyExecutor',
+            'dummy description',
+            'dummy author',
+            'dummy tags',
+            'dummy docs',
+        ]
+    )
+
+    confirms = iter([True, add_dockerfile])
+
+    def _mock_prompt_ask(*args, **kwargs):
+        return next(prompts)
+
+    def _mock_confirm_ask(*args, **kwargs):
+        return next(confirms)
+
+    monkeypatch.setattr(Prompt, 'ask', _mock_prompt_ask)
+    monkeypatch.setattr(Confirm, 'ask', _mock_confirm_ask)
+
+    args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
+    HubIO(args).new()
+    path = tmpdir / 'DummyExecutor'
+
+    pkg_files = [
+        'executor.py',
+        'manifest.yml',
+        'README.md',
+        'requirements.txt',
+        'config.yml',
+    ]
+
+    if add_dockerfile:
+        pkg_files.append('Dockerfile')
+
+    for file in pkg_files:
+        assert (path / file).exists()
+    for file in [
+        'executor.py',
+        'manifest.yml',
+        'README.md',
+        'config.yml',
+    ]:
+        with open(path / file, 'r') as fp:
+            assert 'DummyExecutor' in fp.read()
