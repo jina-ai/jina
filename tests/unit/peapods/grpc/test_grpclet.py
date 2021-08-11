@@ -1,6 +1,5 @@
 import asyncio
 import time
-from unittest.mock import AsyncMock
 
 import pytest
 from google.protobuf import json_format
@@ -14,10 +13,15 @@ from jina.types.message.common import ControlMessage
 
 @pytest.mark.slow
 @pytest.mark.asyncio
-async def test_send_receive():
-    receive_cb = AsyncMock()
+async def test_send_receive(mocker):
+    # AsyncMock does not seem to exist in python 3.7, this is a manual workaround
+    receive_cb = mocker.Mock()
+
+    async def mock_wrapper(msg):
+        receive_cb()
+
     args = set_pea_parser().parse_args([])
-    grpclet = Grpclet(args=args, message_callback=receive_cb)
+    grpclet = Grpclet(args=args, message_callback=mock_wrapper)
     asyncio.get_event_loop().create_task(grpclet.start())
 
     receive_cb.assert_not_called()
@@ -29,10 +33,10 @@ async def test_send_receive():
 
 @pytest.mark.slow
 @pytest.mark.asyncio
-async def test_send_non_blocking():
-    receive_cb = AsyncMock()
+async def test_send_non_blocking(mocker):
+    receive_cb = mocker.Mock()
 
-    def blocking_cb(msg):
+    async def blocking_cb(msg):
         receive_cb()
         time.sleep(1.0)
         return msg
@@ -42,8 +46,8 @@ async def test_send_non_blocking():
     asyncio.get_event_loop().create_task(grpclet.start())
 
     receive_cb.assert_not_called()
-
     await grpclet.send_message(_create_msg(args))
+
     await asyncio.sleep(0.1)
     assert receive_cb.call_count == 1
     await grpclet.send_message(_create_msg(args))
@@ -54,10 +58,15 @@ async def test_send_non_blocking():
 @pytest.mark.slow
 @pytest.mark.asyncio
 @pytest.mark.timeout(5)
-async def test_send_static_ctrl_msg():
-    receive_cb = AsyncMock()
+async def test_send_static_ctrl_msg(mocker):
+    # AsyncMock does not seem to exist in python 3.7, this is a manual workaround
+    receive_cb = mocker.Mock()
+
+    async def mock_wrapper(msg):
+        receive_cb()
+
     args = set_pea_parser().parse_args([])
-    grpclet = Grpclet(args=args, message_callback=receive_cb)
+    grpclet = Grpclet(args=args, message_callback=mock_wrapper)
     asyncio.get_event_loop().create_task(grpclet.start())
 
     receive_cb.assert_not_called()
