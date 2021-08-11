@@ -156,7 +156,7 @@ class DocumentArrayMemmap(
     def clear(self) -> None:
         """Clear the on-disk data of :class:`DocumentArrayMemmap`"""
         self._load_header_body('wb')
-        self._embeddings_memmap = None
+        self._invalidate_embeddings_memmap()
 
     def _update_or_append(
         self,
@@ -193,7 +193,7 @@ class DocumentArrayMemmap(
             self._header.seek(0, 2)
         self._start = p + r + l
         self._body.write(value)
-        self._embeddings_memmap = None
+        self._invalidate_embeddings_memmap()
         if flush:
             self._header.flush()
             self._body.flush()
@@ -321,8 +321,8 @@ class DocumentArrayMemmap(
         self._header.flush()
         self._last_mmap = None
         self._header_map.pop(str_key)
-        self._embeddings_memmap = None
         self.buffer_pool.delete_if_exists(str_key)
+        self._invalidate_embeddings_memmap()
 
     def __delitem__(self, key: Union[int, str, slice]):
         if isinstance(key, str):
@@ -521,3 +521,7 @@ class DocumentArrayMemmap(
             fp[:] = other_embeddings[:]
             fp.flush()
             del fp
+
+    def _invalidate_embeddings_memmap(self):
+        self._embeddings_memmap = None
+        self._embeddings_shape = None
