@@ -26,6 +26,20 @@ def test_parse_hub_uri():
     assert result == ('jinahub+docker', 'hello', 'world', 'magic')
 
 
+@pytest.mark.parametrize(
+    'uri_path',
+    [
+        'different-scheme://hello',
+        'jinahub://',
+    ],
+)
+def test_parse_wrong_hub_uri(uri_path):
+    with pytest.raises(ValueError) as info:
+        helper.parse_hub_uri(uri_path)
+
+    assert f'{uri_path} is not a valid Hub URI.' == str(info.value)
+
+
 def test_md5file(dummy_zip_file):
     md5sum = helper.md5file(dummy_zip_file)
     assert md5sum == '7ffd1501f24fe5a66dc45883550c2005'
@@ -48,7 +62,15 @@ def test_archive_package(tmpdir):
     ],
 )
 def test_unpack_package(tmpdir, package_file):
-    helper.unpack_package(package_file, tmpdir / 'dummp_executor')
+    helper.unpack_package(package_file, tmpdir / 'dummy_executor')
+
+
+def test_unpack_package_unsupported(tmpdir):
+    with pytest.raises(ValueError):
+        helper.unpack_package(
+            Path(__file__).parent / "dummy_executor.unsupported",
+            tmpdir / 'dummy_executor',
+        )
 
 
 def test_disk_cache(tmpfile):
