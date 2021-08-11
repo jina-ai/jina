@@ -10,6 +10,8 @@ from typing import (
     Union,
     Iterable,
     Iterator,
+    List,
+    Tuple,
     Optional,
 )
 
@@ -17,7 +19,7 @@ import numpy as np
 
 from .abstract import AbstractDocumentArray
 from .bpm import BufferPoolManager
-from .document import DocumentArrayGetAttrMixin
+from .document import DocumentArray, DocumentArrayGetAttrMixin
 from .neural_ops import DocumentArrayNeuralOpsMixin
 from .search_ops import DocumentArraySearchOpsMixin
 from .traversable import TraversableSequence
@@ -29,7 +31,6 @@ PAGE_SIZE = mmap.ALLOCATIONGRANULARITY
 
 class DocumentArrayMemmap(
     TraversableSequence,
-    DocumentArrayGetAttrMixin,
     DocumentArrayNeuralOpsMixin,
     DocumentArraySearchOpsMixin,
     Itr,
@@ -84,9 +85,11 @@ class DocumentArrayMemmap(
         Path(path).mkdir(parents=True, exist_ok=True)
         self._header_path = os.path.join(path, 'header.bin')
         self._body_path = os.path.join(path, 'body.bin')
+        self._embeddings_path = os.path.join(path, 'embeddings.bin')
         self._key_length = key_length
         self._last_mmap = None
         self._load_header_body()
+        self._embeddings_shape = None
         self.buffer_pool = BufferPoolManager(pool_size=buffer_pool_size)
 
     def reload(self):
@@ -153,6 +156,7 @@ class DocumentArrayMemmap(
     def clear(self) -> None:
         """Clear the on-disk data of :class:`DocumentArrayMemmap`"""
         self._load_header_body('wb')
+        self._invalidate_embeddings_memmap()
 
     def _update_or_append(
         self,
@@ -189,6 +193,7 @@ class DocumentArrayMemmap(
             self._header.seek(0, 2)
         self._start = p + r + l
         self._body.write(value)
+        self._invalidate_embeddings_memmap()
         if flush:
             self._header.flush()
             self._body.flush()
@@ -317,6 +322,7 @@ class DocumentArrayMemmap(
         self._last_mmap = None
         self._header_map.pop(str_key)
         self.buffer_pool.delete_if_exists(str_key)
+        self._invalidate_embeddings_memmap()
 
     def __delitem__(self, key: Union[int, str, slice]):
         if isinstance(key, str):
@@ -429,3 +435,93 @@ class DocumentArrayMemmap(
         :return: the number of bytes
         """
         return os.stat(self._header_path).st_size + os.stat(self._body_path).st_size
+
+    def get_attributes(self, *fields: str) -> Union[List, List[List]]:
+        """Return all nonempty values of the fields from all docs this array contains
+
+        :param fields: Variable length argument with the name of the fields to extract
+        :return: Returns a list of the values for these fields.
+            When `fields` has multiple values, then it returns a list of list.
+        """
+        index = None
+        fields = list(fields)
+        if 'embedding' in fields:
+            if self._embeddings_memmap is None:
+                embeddings = [doc.get_attributes('embedding') for doc in self]
+                self._embeddings_memmap = np.asarray(embeddings)
+            else:
+                embeddings = list(self._embeddings_memmap)
+            index = fields.index('embedding')
+            fields.remove('embedding')
+        if fields:
+            contents = [doc.get_attributes(*fields) for doc in self]
+            if len(fields) > 1:
+                contents = list(map(list, zip(*contents)))
+            if index:
+                contents = [contents]
+                contents.insert(index, embeddings)
+            return contents
+        else:
+            return embeddings
+
+    def get_attributes_with_docs(
+        self,
+        *fields: str,
+    ) -> Tuple[Union[List, List[List]], 'DocumentArray']:
+        """Return all nonempty values of the fields together with their nonempty docs
+
+        :param fields: Variable length argument with the name of the fields to extract
+        :return: Returns a tuple. The first element is  a list of the values for these fields.
+            When `fields` has multiple values, then it returns a list of list. The second element is the non-empty docs.
+        """
+
+        contents = []
+        docs_pts = []
+
+        for doc in self:
+            contents.append(doc.get_attributes(*fields))
+            docs_pts.append(doc)
+
+        if len(fields) > 1:
+            contents = list(map(list, zip(*contents)))
+
+        return contents, DocumentArray(docs_pts)
+
+    @property
+    def _embeddings_memmap(self) -> Optional[np.ndarray]:
+        """Return the cached embedding stored in np.memmap.
+
+        :returns: Embeddings as np.ndarray stored in memmap, if not persist, return None.
+        """
+        if self._embeddings_shape:
+            # The memmap object can be used anywhere an ndarray is accepted.
+            # Given a memmap fp, isinstance(fp, numpy.ndarray) returns True.
+            return np.memmap(
+                self._embeddings_path,
+                mode='r',
+                dtype='float',
+                shape=self._embeddings_shape,
+            )
+
+    @_embeddings_memmap.setter
+    def _embeddings_memmap(self, other_embeddings: Optional[np.ndarray]):
+        """Set the cached embedding values in case it is not cached.
+
+        :param other_embeddings: The embedding to be stored into numpy.memmap, or can be set
+            to None to invalidate the property.
+        """
+        if other_embeddings is not None:
+            fp = np.memmap(
+                self._embeddings_path,
+                dtype='float',
+                mode='w+',
+                shape=other_embeddings.shape,
+            )
+            self._embeddings_shape = other_embeddings.shape
+            fp[:] = other_embeddings[:]
+            fp.flush()
+            del fp
+
+    def _invalidate_embeddings_memmap(self):
+        self._embeddings_memmap = None
+        self._embeddings_shape = None
