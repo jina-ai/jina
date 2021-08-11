@@ -14,6 +14,7 @@ from jina.types.message import Message
 
 @pytest.mark.slow
 @pytest.mark.timeout(5)
+@pytest.mark.skip
 def test_grpc_data_runtime(mocker):
     args = set_pea_parser().parse_args([])
     runtime = GRPCDataRuntime(args)
