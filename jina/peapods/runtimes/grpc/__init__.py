@@ -1,9 +1,11 @@
+import argparse
 import asyncio
+import multiprocessing
+import threading
 import time
 from abc import ABC
-from asyncio import CancelledError
 from collections import defaultdict
-from typing import Optional, Union
+from typing import Optional, Union, Dict, List
 
 from grpc import RpcError
 
@@ -16,13 +18,14 @@ from jina.peapods.runtimes.request_handlers.data_request_handler import (
     DataRequestHandler,
 )
 from jina.proto import jina_pb2
+from jina.types.message import Message
 from jina.types.routing.table import RoutingTable
 
 
 class GRPCDataRuntime(BaseRuntime, ABC):
     """Runtime procedure leveraging :class:`Grpclet` for sending DataRequests"""
 
-    def __init__(self, args: 'argparse.Namespace', **kwargs):
+    def __init__(self, args: argparse.Namespace, **kwargs):
         """Initialize grpc and data request handling.
         :param args: args from CLI
         :param kwargs: extra keyword arguments
@@ -32,7 +35,7 @@ class GRPCDataRuntime(BaseRuntime, ABC):
         self._loop = get_or_reuse_loop()
         self._last_active_time = time.perf_counter()
 
-        self._pending_msgs = defaultdict(list)  # type: Dict[str, List['Message']]
+        self._pending_msgs = defaultdict(list)  # type: Dict[str, List[Message]]
         self._partial_requests = None
 
         self._data_request_handler = DataRequestHandler(args, self.logger)
@@ -44,7 +47,6 @@ class GRPCDataRuntime(BaseRuntime, ABC):
 
     def run_forever(self):
         """Start the `Grpclet`."""
-        self.logger.debug('Run GRPCDataRuntime')
         self._grpclet_task = self._loop.create_task(self._grpclet.start())
         self._loop.run_until_complete(self._grpclet_task)
 
@@ -58,8 +60,8 @@ class GRPCDataRuntime(BaseRuntime, ABC):
 
         super().teardown()
 
-    def _close_grpclet(self):
-        self._loop.create_task(self._grpclet.close())
+    async def _close_grpclet(self):
+        await self._loop.create_task(self._grpclet.close())
         self._grpclet_task.cancel()
 
     @staticmethod
@@ -117,7 +119,7 @@ class GRPCDataRuntime(BaseRuntime, ABC):
     def wait_for_ready_or_shutdown(
         timeout: Optional[float],
         ctrl_address: str,
-        shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
+        shutdown_event: Union[multiprocessing.Event, threading.Event],
         **kwargs,
     ):
         """
@@ -138,20 +140,20 @@ class GRPCDataRuntime(BaseRuntime, ABC):
 
         return False
 
-    async def _callback(self, msg: 'Message') -> None:
+    async def _callback(self, msg: Message) -> None:
         try:
             msg = self._post_hook(self._handle(self._pre_hook(msg)))
             asyncio.create_task(self._grpclet.send_message(msg))
         except RuntimeTerminated:
             # this is the proper way to end when a terminate signal is sent
-            self._close_grpclet()
+            await self._close_grpclet()
         except KeyboardInterrupt as kbex:
             self.logger.debug(f'{kbex!r} causes the breaking from the event loop')
-            self._close_grpclet()
+            await self._close_grpclet()
         except (SystemError) as ex:
             # save executor
             self.logger.debug(f'{ex!r} causes the breaking from the event loop')
-            self._close_grpclet()
+            await self._close_grpclet()
         except NoExplicitMessage:
             # silent and do not propagate message anymore
             # 1. wait partial message to be finished
@@ -176,7 +178,7 @@ class GRPCDataRuntime(BaseRuntime, ABC):
 
             self._loop.create_task(self._grpclet.send_message(msg))
 
-    def _handle(self, msg: 'Message') -> 'Message':
+    def _handle(self, msg: Message) -> Message:
         """Register the current message to this pea, so that all message-related properties are up-to-date, including
         :attr:`request`, :attr:`prev_requests`, :attr:`message`, :attr:`prev_messages`. And then call the executor to handle
         this message if its envelope's  status is not ERROR, else skip handling of message.
@@ -207,7 +209,7 @@ class GRPCDataRuntime(BaseRuntime, ABC):
 
         return msg
 
-    def _pre_hook(self, msg: 'Message') -> 'Message':
+    def _pre_hook(self, msg: Message) -> Message:
         """
         Pre-hook function, what to do after first receiving the message.
         :param msg: received message
@@ -258,7 +260,7 @@ class GRPCDataRuntime(BaseRuntime, ABC):
         info_msg += f'{part_str} from {msg.colored_route}'
         self.logger.debug(info_msg)
 
-    def _post_hook(self, msg: 'Message') -> 'Message':
+    def _post_hook(self, msg: Message) -> Message:
         """
         Post-hook function, what to do before handing out the message.
         :param msg: the transformed message

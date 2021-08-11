@@ -1,3 +1,4 @@
+import argparse
 import asyncio
 import inspect
 from typing import Optional, Callable
@@ -15,7 +16,6 @@ from jina.types.routing.table import RoutingTable
 class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
     """A `Grpclet` object can send/receive Messages via gRPC.
 
-    :param async_loop: asyncio loop to use
     :param args: the parsed arguments from the CLI
     :param message_callback: the callback to call on received messages
     :param logger: the logger to use
@@ -23,7 +23,7 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
 
     def __init__(
         self,
-        args: 'argparse.Namespace',
+        args: argparse.Namespace,
         message_callback: Callable[['Message'], None],
         logger: Optional['JinaLogger'] = None,
     ):
@@ -108,13 +108,14 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
 
         return new_message
 
-    async def close(self, *args, **kwargs):
+    async def close(self, grace_period=1.0, *args, **kwargs):
         """Stop the Grpc server
+        :param grace_period: Time to wait for message processing to finish before killing the grpc server
         :param args: Extra positional arguments
         :param kwargs: Extra key-value arguments
         """
         self._logger.debug('Close grpc server')
-        await self._grpc_server.stop(grace=True)
+        await self._grpc_server.stop(grace_period)
 
     async def start(self):
         """
