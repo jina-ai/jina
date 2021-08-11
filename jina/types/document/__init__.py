@@ -211,7 +211,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
                         field_resolver.get(k, k): v for k, v in document.items()
                     }
 
-                user_fields = set(document.keys())
+                user_fields = set(document)
                 support_fields = set(
                     self.attributes(
                         include_proto_fields_camelcase=True, include_properties=False
@@ -1320,7 +1320,7 @@ def _is_datauri(value: str) -> bool:
 
 def _contains_conflicting_content(**kwargs):
     content_keys = 0
-    for k in kwargs.keys():
+    for k in kwargs:
         if k in _all_doc_content_keys:
             content_keys += 1
             if content_keys > 1:
