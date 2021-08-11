@@ -450,7 +450,7 @@ class DocumentArrayMemmap(
                 embeddings = [doc.get_attributes('embedding') for doc in self]
                 self._embeddings_memmap = np.asarray(embeddings)
             else:
-                embeddings = self._embeddings_memmap.tolist()
+                embeddings = list(self._embeddings_memmap)
             index = fields.index('embedding')
             fields.remove('embedding')
         if fields:
