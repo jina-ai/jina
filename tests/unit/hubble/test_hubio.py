@@ -252,3 +252,20 @@ def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
         _gen_load_docker_client(fail_pull=False),
     )
     assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder'
+
+
+def test_pull_with_progress():
+    import json
+
+    args = set_hub_pull_parser().parse_args(['jinahub+docker://dummy_mwu_encoder'])
+
+    def _log_stream_generator():
+        with open(os.path.join(cur_dir, 'docker_pull.logs')) as fin:
+            for line in fin:
+                if line.strip():
+                    yield json.loads(line)
+
+    from rich.console import Console
+
+    console = Console()
+    HubIO(args)._pull_with_progress(_log_stream_generator(), console)

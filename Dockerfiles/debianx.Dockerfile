@@ -17,6 +17,8 @@ ARG BUILD_DATE
 ARG JINA_VERSION
 ARG TARGETPLATFORM
 ARG PIP_EXTRA_INDEX_URL="https://www.piwheels.org/simple"
+ARG PIP_INSTALL_CORE
+ARG PIP_INSTALL_PERF
 
 # constant, wont invalidate cache
 LABEL org.opencontainers.image.vendor="Jina AI Limited" \
@@ -29,7 +31,9 @@ LABEL org.opencontainers.image.vendor="Jina AI Limited" \
 
 # constant, wont invalidate cache
 ENV PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    JINA_PIP_INSTALL_CORE=PIP_INSTALL_CORE \
+    JINA_PIP_INSTALL_PERF=PIP_INSTALL_PERF
 
 # change on extra-requirements.txt, setup.py will invalid the cache
 COPY extra-requirements.txt setup.py /tmp/

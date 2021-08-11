@@ -2,16 +2,22 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 Table of Contents
 
-- [Hubble CLI Guidelines](#hubble-cli-guidelines)
+- [JinaHub Guidelines](#jinahub-guidelines)
   - [Prerequisites](#prerequisites)
   - [1. Create Executor](#1-create-executor)
-  - [2. Push and Pull CLI](#2-push-and-pull-cli)
-    - [2.1 Distribute your executor](#21-distribute-your-executor)
-    - [2.2 Pull distributed executor](#22-pull-distributed-executor)
-  - [3. Use in Jina Flow](#3-use-in-jina-flow)
-    - [3.1 Using docker images](#31-using-docker-images)
-    - [3.2 Using source codes](#32-using-source-codes)
-    - [3.3 Override Default Parameters](#33-override-default-parameters)
+  - [2. Push Executor to JinaHub](#2-push-executor-to-jinahub)
+    - [2.1 Basic](#21-basic)
+    - [2.2 Advanced](#22-advanced)
+  - [3. Update Executor in JinaHub](#3-update-executor-in-jinahub)
+    - [3.1 Basic](#31-basic)
+    - [3.2 Advanced](#32-advanced)
+  - [4. Pull Executor from JinaHub](#4-pull-executor-from-jinahub)
+    - [4.1 Docker Image](#41-docker-image)
+    - [4.2 Source Code](#42-source-code)
+  - [5. Use in Jina Flow](#5-use-in-jina-flow)
+    - [5.1 Using docker images](#51-using-docker-images)
+    - [5.2 Using source codes](#52-using-source-codes)
+    - [5.3 Override Default Parameters](#53-override-default-parameters)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -51,6 +57,10 @@ MyExecutor/
 - `executor.py` should contain the main logic of your Executor.
 - `README.md` should describe the usage of the Executor.
 
+Example usage:
+
+![Demo](../jina-hub-new.gif)
+
 ## 2. Push Executor to JinaHub
 
 If you want to share your Executors to other persons or colleges, you can push your local Executor to JinaHub.
@@ -75,6 +85,14 @@ $ jina hub push <path_to_executor_folder> -t TAG1 -t TAG2 -f <path_to_dockerfile
 ```
 
 You can specify `-t` or `--tags` parameters to tag one Executor. In additional, you can specify `-f` or `--docker-file` parameters to use a specific docker file to build your Executor.
+
+If there is no `-t` parameter provided, the default tag is `latest`. And if you provide `-t` parameters, and you still want to have `latest` tag, you must write it as one `-t` parameter.
+
+```bash
+$ jina hub push .                     # Result in one tag: latest
+$ jina hub push . -t v1.0.0           # Result in one tag: v1.0.0
+$ jina hub push . -t v1.0.0 -t latest # Result in two tags: v1.0.0, latest
+```
 
 ## 3. Update Executor in JinaHub
 
@@ -105,15 +123,19 @@ $ jina hub push [--public/--private] --force <UUID> --secret <SECRET> -t TAG <pa
 ### 4.1 Docker Image
 
 ```bash
-$ jina hub pull jinahub+docker://<UUID>[:<SECRET>]
+$ jina hub pull jinahub+docker://<UUID>[:<SECRET>][/<TAG>]
 ```
 
-You can find the Executor by running this command `docker images`.
+You can find the Executor by running this command `docker images`. You can also indicate which version of the Executor you want to use by naming the `/<TAG>`.
+
+```bash
+$ jina hub pull jinahub+docker://DummyExecutor/v1.0.0
+```
 
 ### 4.2 Source Code
 
 ```bash
-$ jina hub pull jinahub://<UUID>[:<SECRET>]
+$ jina hub pull jinahub://<UUID>[:<SECRET>][/<TAG>]
 ```
 
 It will store Executor source code to `~/.jina/hub-packages`.
@@ -137,6 +159,8 @@ from jina import Flow
 # SECRET must be provided for private Executor
 f = Flow().add(uses='jinahub+docker://<UUID>[:<SECRET>][/<TAG>]')
 ```
+
+If there is no `/<TAG>` provided when using, it by default equals to `/latest`, which means using the `latest` tag.
 
 **Attention:**
 
@@ -175,7 +199,7 @@ any of these parameters by passing `uses_with` and `uses_metas` as parameters.
 ```python
 from jina import Flow
 
-f = Flow().add(uses='jinahub://<UUID>[:<SECRET>]', 
+f = Flow().add(uses='jinahub://<UUID>[:<SECRET>][/<TAG>]', 
                uses_with={'param1': 'new_value'},
                uses_metas={'name': 'new_name'})
 ```
