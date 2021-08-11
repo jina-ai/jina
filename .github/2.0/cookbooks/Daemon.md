@@ -1,3 +1,8 @@
+# JinaD (Daemon)
+
+JinaD is a [daemon](https://en.wikipedia.org/wiki/Daemon_(computing)) for deploying and managing Jina on remote via a RESTful interface. It allows users to create/update/delete Flows and Executors on remote hosts. It achieves isolation of deployments by defining a `workspace` for each Jina object, hence allowing a multi-tenant setup with parallel Flows on the same host.
+
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 Table of Contents
@@ -18,11 +23,6 @@ Table of Contents
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# JinaD (Daemon)
-
-JinaD is a [daemon](https://en.wikipedia.org/wiki/Daemon_(computing)) for deploying and managing Jina on remote via a RESTful interface. It allows users to create/update/delete Flows and Executors on remote hosts. It achieves isolation of deployments by defining a `workspace` for each Jina object, hence allowing a multi-tenant setup with parallel Flows on the same host.
-
-------
 
 ## Server
 
@@ -117,7 +117,6 @@ client.status
 </details>
 </details>
 
-------
 
 ## Workspace
 
@@ -315,8 +314,6 @@ assert client.workspaces.delete(id=workspace_id)
 
 </details>
 
-------
-
 ## RESTful Executors
 
 You wouldn't need to create remote Executors directly yourself. You can use the below code by passing `host` and `port_expose` to an executor with a Flow. Internally it uses `JinaD` for remote management.
@@ -444,7 +441,6 @@ assert client.pods.delete(pod_id)
 </details>
 </details>
 
-------
 
 ## RESTful Flows
 
@@ -523,7 +519,6 @@ assert client.flows.delete(flow_id)
 
 </details>
 
-------
 
 ## Logstreaming
 
@@ -561,8 +556,6 @@ await client.logs(id=my_workspace_id)
 
 </details>
 </details>
-
-------
 
 ## Development using JinaD
 
