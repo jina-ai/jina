@@ -1,10 +1,7 @@
-import os
-import json
 import urllib
 
 import pytest
 
-import tempfile
 from pathlib import Path
 from jina.hubble import helper
 from jina.hubble.helper import disk_cache_offline
@@ -29,9 +26,23 @@ def test_parse_hub_uri():
     assert result == ('jinahub+docker', 'hello', 'world', 'magic')
 
 
+@pytest.mark.parametrize(
+    'uri_path',
+    [
+        'different-scheme://hello',
+        'jinahub://',
+    ],
+)
+def test_parse_wrong_hub_uri(uri_path):
+    with pytest.raises(ValueError) as info:
+        helper.parse_hub_uri(uri_path)
+
+    assert f'{uri_path} is not a valid Hub URI.' == str(info.value)
+
+
 def test_md5file(dummy_zip_file):
     md5sum = helper.md5file(dummy_zip_file)
-    assert md5sum == '4cda7063c8f81d53c65d621ec1b29124'
+    assert md5sum == '7ffd1501f24fe5a66dc45883550c2005'
 
 
 def test_archive_package(tmpdir):
@@ -42,8 +53,24 @@ def test_archive_package(tmpdir):
         temp_zip_file.write(stream_data.getvalue())
 
 
-def test_unpack_package(tmpdir, dummy_zip_file):
-    helper.unpack_package(dummy_zip_file, tmpdir / 'dummp_executor')
+@pytest.mark.parametrize(
+    'package_file',
+    [
+        Path(__file__).parent / 'dummy_executor.zip',
+        Path(__file__).parent / 'dummy_executor.tar',
+        Path(__file__).parent / 'dummy_executor.tar.gz',
+    ],
+)
+def test_unpack_package(tmpdir, package_file):
+    helper.unpack_package(package_file, tmpdir / 'dummy_executor')
+
+
+def test_unpack_package_unsupported(tmpdir):
+    with pytest.raises(ValueError):
+        helper.unpack_package(
+            Path(__file__).parent / "dummy_executor.unsupported",
+            tmpdir / 'dummy_executor',
+        )
 
 
 def test_disk_cache(tmpfile):
