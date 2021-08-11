@@ -85,6 +85,7 @@ class DocumentArrayMemmap(
         Path(path).mkdir(parents=True, exist_ok=True)
         self._header_path = os.path.join(path, 'header.bin')
         self._body_path = os.path.join(path, 'body.bin')
+        self._embeddings_path = os.path.join(path, 'embeddings.bin')
         self._key_length = key_length
         self._last_mmap = None
         self._load_header_body()
@@ -491,7 +492,10 @@ class DocumentArrayMemmap(
             # The memmap object can be used anywhere an ndarray is accepted.
             # Given a memmap fp, isinstance(fp, numpy.ndarray) returns True.
             return np.memmap(
-                'embedding.bin', mode='r', dtype='float', shape=self._embeddings_shape
+                self._embeddings_path,
+                mode='r',
+                dtype='float',
+                shape=self._embeddings_shape,
             )
 
     @_embeddings_memmap.setter
@@ -503,7 +507,10 @@ class DocumentArrayMemmap(
         """
         if other_embeddings:
             fp = np.memmap(
-                'embedding.bin', dtype='float', mode='w+', shape=other_embeddings.shape
+                self._embeddings_path,
+                dtype='float',
+                mode='w+',
+                shape=other_embeddings.shape,
             )
             self._embeddings_shape = other_embeddings.shape
             fp[:] = other_embeddings[:]
