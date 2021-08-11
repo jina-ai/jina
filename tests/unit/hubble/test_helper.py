@@ -31,7 +31,7 @@ def test_parse_hub_uri():
 
 def test_md5file(dummy_zip_file):
     md5sum = helper.md5file(dummy_zip_file)
-    assert md5sum == '4cda7063c8f81d53c65d621ec1b29124'
+    assert md5sum == '7ffd1501f24fe5a66dc45883550c2005'
 
 
 def test_archive_package(tmpdir):
