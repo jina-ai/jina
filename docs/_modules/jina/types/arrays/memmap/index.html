@@ -403,6 +403,8 @@
     <span class="n">Union</span><span class="p">,</span>
     <span class="n">Iterable</span><span class="p">,</span>
     <span class="n">Iterator</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Tuple</span><span class="p">,</span>
     <span class="n">Optional</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -410,7 +412,7 @@
 
 <span class="kn">from</span> <span class="nn">.abstract</span> <span class="kn">import</span> <span class="n">AbstractDocumentArray</span>
 <span class="kn">from</span> <span class="nn">.bpm</span> <span class="kn">import</span> <span class="n">BufferPoolManager</span>
-<span class="kn">from</span> <span class="nn">.document</span> <span class="kn">import</span> <span class="n">DocumentArrayGetAttrMixin</span>
+<span class="kn">from</span> <span class="nn">.document</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">DocumentArrayGetAttrMixin</span>
 <span class="kn">from</span> <span class="nn">.neural_ops</span> <span class="kn">import</span> <span class="n">DocumentArrayNeuralOpsMixin</span>
 <span class="kn">from</span> <span class="nn">.search_ops</span> <span class="kn">import</span> <span class="n">DocumentArraySearchOpsMixin</span>
 <span class="kn">from</span> <span class="nn">.traversable</span> <span class="kn">import</span> <span class="n">TraversableSequence</span>
@@ -422,7 +424,6 @@
 
 <div class="viewcode-block" id="DocumentArrayMemmap"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap">[docs]</a><span class="k">class</span> <span class="nc">DocumentArrayMemmap</span><span class="p">(</span>
     <span class="n">TraversableSequence</span><span class="p">,</span>
-    <span class="n">DocumentArrayGetAttrMixin</span><span class="p">,</span>
     <span class="n">DocumentArrayNeuralOpsMixin</span><span class="p">,</span>
     <span class="n">DocumentArraySearchOpsMixin</span><span class="p">,</span>
     <span class="n">Itr</span><span class="p">,</span>
@@ -477,9 +478,11 @@
         <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_header_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">'header.bin'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_body_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">'body.bin'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">'embeddings.bin'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_key_length</span> <span class="o">=</span> <span class="n">key_length</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_mmap</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_header_body</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_shape</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">buffer_pool</span> <span class="o">=</span> <span class="n">BufferPoolManager</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="n">buffer_pool_size</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DocumentArrayMemmap.reload"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -545,7 +548,8 @@
 
 <div class="viewcode-block" id="DocumentArrayMemmap.clear"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Clear the on-disk data of :class:`DocumentArrayMemmap`"""</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_load_header_body</span><span class="p">(</span><span class="s1">'wb'</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_header_body</span><span class="p">(</span><span class="s1">'wb'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_invalidate_embeddings_memmap</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_update_or_append</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -582,6 +586,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start</span> <span class="o">=</span> <span class="n">p</span> <span class="o">+</span> <span class="n">r</span> <span class="o">+</span> <span class="n">l</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_body</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_invalidate_embeddings_memmap</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">flush</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_body</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
@@ -710,6 +715,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_mmap</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_header_map</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">str_key</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">buffer_pool</span><span class="o">.</span><span class="n">delete_if_exists</span><span class="p">(</span><span class="n">str_key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_invalidate_embeddings_memmap</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">slice</span><span class="p">]):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -821,7 +827,97 @@
 
 <span class="sd">        :return: the number of bytes</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_header_path</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_body_path</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span></div>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_header_path</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_body_path</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span>
+
+<div class="viewcode-block" id="DocumentArrayMemmap.get_attributes"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap.get_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">get_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">fields</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">]]:</span>
+        <span class="sd">"""Return all nonempty values of the fields from all docs this array contains</span>
+
+<span class="sd">        :param fields: Variable length argument with the name of the fields to extract</span>
+<span class="sd">        :return: Returns a list of the values for these fields.</span>
+<span class="sd">            When `fields` has multiple values, then it returns a list of list.</span>
+<span class="sd">        """</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">'embedding'</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_memmap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">embeddings</span> <span class="o">=</span> <span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_memmap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">embeddings</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">embeddings</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_memmap</span><span class="p">)</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">)</span>
+            <span class="n">fields</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="n">contents</span> <span class="o">=</span> <span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="o">*</span><span class="n">fields</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">contents</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">contents</span><span class="p">)))</span>
+            <span class="k">if</span> <span class="n">index</span><span class="p">:</span>
+                <span class="n">contents</span> <span class="o">=</span> <span class="p">[</span><span class="n">contents</span><span class="p">]</span>
+                <span class="n">contents</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">contents</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">embeddings</span></div>
+
+<div class="viewcode-block" id="DocumentArrayMemmap.get_attributes_with_docs"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap.get_attributes_with_docs">[docs]</a>    <span class="k">def</span> <span class="nf">get_attributes_with_docs</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">fields</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">]],</span> <span class="s1">'DocumentArray'</span><span class="p">]:</span>
+        <span class="sd">"""Return all nonempty values of the fields together with their nonempty docs</span>
+
+<span class="sd">        :param fields: Variable length argument with the name of the fields to extract</span>
+<span class="sd">        :return: Returns a tuple. The first element is  a list of the values for these fields.</span>
+<span class="sd">            When `fields` has multiple values, then it returns a list of list. The second element is the non-empty docs.</span>
+<span class="sd">        """</span>
+
+        <span class="n">contents</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">docs_pts</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">contents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="o">*</span><span class="n">fields</span><span class="p">))</span>
+            <span class="n">docs_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">contents</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">contents</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="n">contents</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">docs_pts</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_embeddings_memmap</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+        <span class="sd">"""Return the cached embedding stored in np.memmap.</span>
+
+<span class="sd">        :returns: Embeddings as np.ndarray stored in memmap, if not persist, return None.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_shape</span><span class="p">:</span>
+            <span class="c1"># The memmap object can be used anywhere an ndarray is accepted.</span>
+            <span class="c1"># Given a memmap fp, isinstance(fp, numpy.ndarray) returns True.</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">memmap</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_path</span><span class="p">,</span>
+                <span class="n">mode</span><span class="o">=</span><span class="s1">'r'</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="s1">'float'</span><span class="p">,</span>
+                <span class="n">shape</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_shape</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="nd">@_embeddings_memmap</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">_embeddings_memmap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other_embeddings</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]):</span>
+        <span class="sd">"""Set the cached embedding values in case it is not cached.</span>
+
+<span class="sd">        :param other_embeddings: The embedding to be stored into numpy.memmap, or can be set</span>
+<span class="sd">            to None to invalidate the property.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">other_embeddings</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">memmap</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_path</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="s1">'float'</span><span class="p">,</span>
+                <span class="n">mode</span><span class="o">=</span><span class="s1">'w+'</span><span class="p">,</span>
+                <span class="n">shape</span><span class="o">=</span><span class="n">other_embeddings</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_shape</span> <span class="o">=</span> <span class="n">other_embeddings</span><span class="o">.</span><span class="n">shape</span>
+            <span class="n">fp</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">other_embeddings</span><span class="p">[:]</span>
+            <span class="n">fp</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="k">del</span> <span class="n">fp</span>
+
+    <span class="k">def</span> <span class="nf">_invalidate_embeddings_memmap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_memmap</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_shape</span> <span class="o">=</span> <span class="kc">None</span></div>
 </pre></div>
       </article>
       <footer>

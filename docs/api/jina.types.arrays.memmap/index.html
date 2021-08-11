@@ -417,7 +417,7 @@
 <dl class="py class">
 <dt id="jina.types.arrays.memmap.DocumentArrayMemmap">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.types.arrays.memmap.</span></code><code class="sig-name descname"><span class="pre">DocumentArrayMemmap</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">36</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer_pool_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence" title="jina.types.arrays.traversable.TraversableSequence"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.traversable.TraversableSequence</span></code></a>, <a class="reference internal" href="../jina.types.arrays.document/#jina.types.arrays.document.DocumentArrayGetAttrMixin" title="jina.types.arrays.document.DocumentArrayGetAttrMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.document.DocumentArrayGetAttrMixin</span></code></a>, <a class="reference internal" href="../jina.types.arrays.neural_ops/#jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin" title="jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin</span></code></a>, <a class="reference internal" href="../jina.types.arrays.search_ops/#jina.types.arrays.search_ops.DocumentArraySearchOpsMixin" title="jina.types.arrays.search_ops.DocumentArraySearchOpsMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.search_ops.DocumentArraySearchOpsMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Iterable</span></code>, <a class="reference internal" href="../jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray" title="jina.types.arrays.abstract.AbstractDocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.abstract.AbstractDocumentArray</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence" title="jina.types.arrays.traversable.TraversableSequence"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.traversable.TraversableSequence</span></code></a>, <a class="reference internal" href="../jina.types.arrays.neural_ops/#jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin" title="jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin</span></code></a>, <a class="reference internal" href="../jina.types.arrays.search_ops/#jina.types.arrays.search_ops.DocumentArraySearchOpsMixin" title="jina.types.arrays.search_ops.DocumentArraySearchOpsMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.search_ops.DocumentArraySearchOpsMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Iterable</span></code>, <a class="reference internal" href="../jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray" title="jina.types.arrays.abstract.AbstractDocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.abstract.AbstractDocumentArray</span></code></a></p>
 <p>Create a memory-map to an <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code> stored in binary files on disk.</p>
 <p>Memory-mapped files are used for accessing <code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code> of large <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code> on disk,
 without reading the entire file into memory.</p>
@@ -552,6 +552,40 @@ the change has not been reflected in this <code class="xref py py-class docutils
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>the number of bytes</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.types.arrays.memmap.DocumentArrayMemmap.get_attributes">
+<code class="sig-name descname"><span class="pre">get_attributes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fields</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap.get_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.get_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all nonempty values of the fields from all docs this array contains</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fields</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Variable length argument with the name of the fields to extract</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>]]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Returns a list of the values for these fields.
+When <cite>fields</cite> has multiple values, then it returns a list of list.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.types.arrays.memmap.DocumentArrayMemmap.get_attributes_with_docs">
+<code class="sig-name descname"><span class="pre">get_attributes_with_docs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fields</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap.get_attributes_with_docs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.get_attributes_with_docs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all nonempty values of the fields together with their nonempty docs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fields</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Variable length argument with the name of the fields to extract</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>]], <a class="reference internal" href="../jina.types.arrays.document/#jina.types.arrays.document.DocumentArray" title="jina.types.arrays.document.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Returns a tuple. The first element is  a list of the values for these fields.
+When <cite>fields</cite> has multiple values, then it returns a list of list. The second element is the non-empty docs.</p>
 </dd>
 </dl>
 </dd></dl>
