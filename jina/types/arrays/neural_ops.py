@@ -85,7 +85,7 @@ class DocumentArrayNeuralOpsMixin:
                 if d.id in self:
                     d = Document(d, copy=True)
                     d.pop('matches')
-                _q.matches.append(d, scores={metric_name: _dist}, copy=False)
+                _q.matches.append(d, scores={metric_name: _dist})
 
     def _match(self, darray, cdist, limit, normalization, metric_name):
         """
@@ -135,8 +135,8 @@ class DocumentArrayNeuralOpsMixin:
         :param limit: the maximum number of matches, when not given
                       all Documents in `another` are considered as matches
         :param normalization: a tuple [a, b] to be used with min-max normalization,
-                                the min distance will be rescaled to `a`, the max distance will be rescaled to `b`
-                                all values will be rescaled into range `[a, b]`.
+                              the min distance will be rescaled to `a`, the max distance will be rescaled to `b`
+                              all values will be rescaled into range `[a, b]`.
         :param batch_size: length of the chunks loaded into memory from darray.
         :param metric_name: if provided, then match result will be marked with this string.
         :return: distances and indices
