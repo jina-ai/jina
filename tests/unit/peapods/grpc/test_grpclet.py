@@ -30,7 +30,7 @@ async def test_send_receive(mocker):
     await asyncio.sleep(0.1)
     receive_cb.assert_called()
 
-    await grpclet.close()
+    await grpclet.close(None)
 
 
 @pytest.mark.slow
@@ -56,7 +56,7 @@ async def test_send_non_blocking(mocker):
     await asyncio.sleep(0.1)
     assert receive_cb.call_count == 2
 
-    await grpclet.close()
+    await grpclet.close(None)
 
 
 @pytest.mark.slow
@@ -89,7 +89,7 @@ async def test_send_static_ctrl_msg(mocker):
             await asyncio.sleep(0.1)
 
     receive_cb.assert_called()
-    await grpclet.close()
+    await grpclet.close(None)
 
 
 def _create_msg(args):
