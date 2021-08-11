@@ -14,7 +14,8 @@ def memmap_with_text_and_embedding(tmpdir):
     for idx in range(100):
         d = Document(text=f'random text {idx}', embedding=np.random.rand(512))
         dam.append(d)
-    return dam
+    yield dam
+    dam.clear()
 
 
 def test_memmap_append_extend(tmpdir):
@@ -181,6 +182,7 @@ def test_convert_dm_to_dam(tmpdir, mocker):
 @pytest.mark.parametrize('embed_dim', [10, 10000])
 def test_extend_and_get_attribute(tmpdir, embed_dim):
     dam = DocumentArrayMemmap(tmpdir)
+    dam.clear()
     docs = list(random_docs(100, start_id=0, embed_dim=embed_dim))
     dam.extend(docs)
 
