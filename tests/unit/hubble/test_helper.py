@@ -1,10 +1,7 @@
-import os
-import json
 import urllib
 
 import pytest
 
-import tempfile
 from pathlib import Path
 from jina.hubble import helper
 from jina.hubble.helper import disk_cache_offline
@@ -42,8 +39,16 @@ def test_archive_package(tmpdir):
         temp_zip_file.write(stream_data.getvalue())
 
 
-def test_unpack_package(tmpdir, dummy_zip_file):
-    helper.unpack_package(dummy_zip_file, tmpdir / 'dummp_executor')
+@pytest.mark.parametrize(
+    'package_file',
+    [
+        Path(__file__).parent / 'dummy_executor.zip',
+        Path(__file__).parent / 'dummy_executor.tar',
+        Path(__file__).parent / 'dummy_executor.tar.gz',
+    ],
+)
+def test_unpack_package(tmpdir, package_file):
+    helper.unpack_package(package_file, tmpdir / 'dummp_executor')
 
 
 def test_disk_cache(tmpfile):

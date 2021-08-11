@@ -2,7 +2,6 @@ import argparse
 import os
 import json
 import urllib
-from typing import NamedTuple
 import shutil
 import docker
 import pytest
@@ -86,9 +85,11 @@ class GetMockResponse:
         return self.response_code
 
 
+@pytest.mark.parametrize('tag', [None, '-t v0'])
+@pytest.mark.parametrize('force', [None, 'UUID8'])
 @pytest.mark.parametrize('path', ['dummy_executor'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
-def test_push(mocker, monkeypatch, path, mode, tmpdir):
+def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag):
     mock = mocker.Mock()
 
     def _mock_post(url, data, headers=None, stream=True):
@@ -102,6 +103,11 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir):
 
     exec_path = os.path.join(cur_dir, path)
     _args_list = [exec_path, mode]
+    if force:
+        _args_list.extend(['--force', force])
+
+    if tag:
+        _args_list.append(tag)
 
     args = set_hub_push_parser().parse_args(_args_list)
     result = HubIO(args).push()
