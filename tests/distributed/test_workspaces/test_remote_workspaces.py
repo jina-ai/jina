@@ -156,8 +156,7 @@ def test_workspace_clear():
         WorkspaceItem(**client.workspaces.get(id=workspace_id)).state
         == RemoteWorkspaceState.ACTIVE
     )
-    assert workspace_id in client.workspaces.list()
-    assert client.workspaces.delete(workspace_id)
+    assert client.workspaces.clear()
 
 
 @pytest.mark.asyncio
