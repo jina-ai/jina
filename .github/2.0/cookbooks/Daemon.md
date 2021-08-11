@@ -131,23 +131,23 @@ client.status
 
 ```json
 {
-  'jina' {
-    'jina': '2.0.11',
+  "jina" {
+    "jina": "2.0.11",
     ...
   },
-  'envs': {
+  "envs": {
     ...
   },
-  'workspaces': {
+  "workspaces": {
     ...
   },
-  'peas': {
+  "peas": {
     ...
   },
-  'pods': {
+  "pods": {
     ...
   }
-  'flows': {
+  "flows": {
     ...
   }
 }
@@ -272,23 +272,23 @@ client.workspaces.get(my_workspace_id)
 
 ```json
 {
-  'time_created': '2021-07-26T17:31:29.326049',
-  'state': 'ACTIVE',
-  'metadata': {
-    'image_id': '97b0cb4860',
-    'image_name': 'jworkspace:480ec0d8-ea02-4adb-8e02-04cd27962863',
-    'network': '8dcd21b98a',
-    'workdir': '/tmp/jinad/jworkspace-480ec0d8-ea02-4adb-8e02-04cd27962863',
-    'container_id': None,
-    'managed_objects': []
+  "time_created": "2021-07-26T17:31:29.326049",
+  "state": "ACTIVE",
+  "metadata": {
+    "image_id": "97b0cb4860",
+    "image_name": "jworkspace:480ec0d8-ea02-4adb-8e02-04cd27962863",
+    "network": "8dcd21b98a",
+    "workdir": "/tmp/jinad/jworkspace-480ec0d8-ea02-4adb-8e02-04cd27962863",
+    "container_id": None,
+    "managed_objects": []
   },
-  'arguments': {
-    'files': ['flow.yml', 'requirements.txt', '.jinad'],
-    'jinad': {
-      'build': 'default',
-      'dockerfile': '/usr/local/lib/python3.7/site-packages/daemon/Dockerfiles/default.Dockerfile'
+  "arguments": {
+    "files": ["flow.yml", "requirements.txt", ".jinad"],
+    "jinad": {
+      "build": "default",
+      "dockerfile": "/usr/local/lib/python3.7/site-packages/daemon/Dockerfiles/default.Dockerfile"
     },
-    'requirements': 'tinydb sklearn'
+    "requirements": "tinydb sklearn"
   }
 }
 ```
@@ -301,22 +301,22 @@ client.workspaces.list()
 
 ```json
 {
-  'jworkspace-2b017b8f-19af-4d78-9364-6404447d91ac': {
+  "jworkspace-2b017b8f-19af-4d78-9364-6404447d91ac": {
     ...
   },
-  'jworkspace-8fec6449-2824-4913-9c06-3d0ec1314674': {
+  "jworkspace-8fec6449-2824-4913-9c06-3d0ec1314674": {
     ...
   },
-  'jworkspace-41dbe23a-9ecd-4e84-8df2-8dd6295a55b4': {
+  "jworkspace-41dbe23a-9ecd-4e84-8df2-8dd6295a55b4": {
     ...
   },
-  'jworkspace-0cc90166-5ce2-4702-9d30-0ff8f3598a9f': {
+  "jworkspace-0cc90166-5ce2-4702-9d30-0ff8f3598a9f": {
     ...
   },
-  'jworkspace-be53f490-549a-4335-831a-5fb13a1de754': {
+  "jworkspace-be53f490-549a-4335-831a-5fb13a1de754": {
     ...
   },
-  'jworkspace-48319ab9-6c36-4e2d-b687-dd0ab498cb4f': {
+  "jworkspace-48319ab9-6c36-4e2d-b687-dd0ab498cb4f": {
     ...
   }
 }
@@ -399,31 +399,31 @@ client.pods.get(pod_id)
 
 ```json
 {
-  'time_created': '2021-07-27T05:53:36.512694',
-  'metadata': {
-    'container_id': '6041041351',
-    'container_name': 'jpea-6b94b5f2-828c-49a8-98e8-cb4cac2b5807',
-    'image_id': '28bd40a87e',
-    'network': '73a9b7ce2f',
-    'ports': {
-      '49591/tcp': 49591,
-      '59647/tcp': 59647,
-      '56237/tcp': 56237,
-      '37389/tcp': 37389
+  "time_created": "2021-07-27T05:53:36.512694",
+  "metadata": {
+    "container_id": "6041041351",
+    "container_name": "jpea-6b94b5f2-828c-49a8-98e8-cb4cac2b5807",
+    "image_id": "28bd40a87e",
+    "network": "73a9b7ce2f",
+    "ports": {
+      "49591/tcp": 49591,
+      "59647/tcp": 59647,
+      "56237/tcp": 56237,
+      "37389/tcp": 37389
     },
-    'uri': 'http://host.docker.internal:37389'
+    "uri": "http://host.docker.internal:37389"
   },
-  'arguments': {
-    'object': {
-      'time_created': '2021-07-27T05:53:36.502625',
-      'arguments': {
-        'name': 'my_pea',
+  "arguments": {
+    "object": {
+      "time_created": "2021-07-27T05:53:36.502625",
+      "arguments": {
+        "name": "my_pea",
         ...
       }
     },
-    'command': '--port-expose 37389 --mode pea --workspace-id 4df83da5-e227-4ecd-baac-3a54cdf7a22a'
+    "command": "--port-expose 37389 --mode pea --workspace-id 4df83da5-e227-4ecd-baac-3a54cdf7a22a"
   },
-  'workspace_id': 'jworkspace-4df83da5-e227-4ecd-baac-3a54cdf7a22a'
+  "workspace_id": "jworkspace-4df83da5-e227-4ecd-baac-3a54cdf7a22a"
 }
 ```
 
@@ -465,38 +465,38 @@ client.flows.get(flow_id)
 
 ```json
 {
-  'time_created': '2021-07-27T05:12:06.646809',
-  'metadata': {
-    'container_id': '8770817435',
-    'container_name': 'jflow-a71cc28f-a5db-4cc0-bb9e-bb7797172cc9',
-    'image_id': '28bd40a87e',
-    'network': '6363b4a5b8',
-    'ports': {
-      '23456/tcp': 23456,
-      '51567/tcp': 51567
+  "time_created": "2021-07-27T05:12:06.646809",
+  "metadata": {
+    "container_id": "8770817435",
+    "container_name": "jflow-a71cc28f-a5db-4cc0-bb9e-bb7797172cc9",
+    "image_id": "28bd40a87e",
+    "network": "6363b4a5b8",
+    "ports": {
+      "23456/tcp": 23456,
+      "51567/tcp": 51567
     },
-    'uri': 'http://host.docker.internal:51567'
+    "uri": "http://host.docker.internal:51567"
   },
-  'arguments': {
-    'object': {
-      'time_created': '2021-07-27T05:12:06.640236',
-      'arguments': {
-        'port_expose': 23456,
-        'name': None,
-        'workspace': './',
-        'log_config': '/usr/local/lib/python3.7/site-packages/jina/resources/logging.default.yml',
-        'quiet': False,
-        'quiet_error': False,
-        'workspace_id': '9db7a919-dfa5-420c-834e-ab940a40cbf2',
-        'uses': None,
-        'env': None,
-        'inspect': 2
+  "arguments": {
+    "object": {
+      "time_created": "2021-07-27T05:12:06.640236",
+      "arguments": {
+        "port_expose": 23456,
+        "name": None,
+        "workspace": "./",
+        "log_config": "/usr/local/lib/python3.7/site-packages/jina/resources/logging.default.yml",
+        "quiet": False,
+        "quiet_error": False,
+        "workspace_id": "9db7a919-dfa5-420c-834e-ab940a40cbf2",
+        "uses": None,
+        "env": None,
+        "inspect": 2
       },
-      'yaml_source': "jtype: Flow\nversion: '1.0'\nwith:\n  protocol: http\n  port_expose: 23456\nexecutors:\n  - name: executor_ex\n"
+      "yaml_source": "jtype: Flow\nversion: "1.0"\nwith:\n  protocol: http\n  port_expose: 23456\nexecutors:\n  - name: executor_ex\n"
     },
-    'command': '--port-expose 51567 --mode flow --workspace-id 4d0a0db5-2cb8-4e8f-8183-966681c1c863'
+    "command": "--port-expose 51567 --mode flow --workspace-id 4d0a0db5-2cb8-4e8f-8183-966681c1c863"
   },
-  'workspace_id': 'jworkspace-4d0a0db5-2cb8-4e8f-8183-966681c1c863'
+  "workspace_id": "jworkspace-4d0a0db5-2cb8-4e8f-8183-966681c1c863"
 }
 ```
 
