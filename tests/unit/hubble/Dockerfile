@@ -1,4 +1,4 @@
-FROM jinaai/jina:latest
+FROM jinaai/jina:test-pip
 
 # install requirements before copying the workspace
 COPY requirements.txt /requirements.txt
