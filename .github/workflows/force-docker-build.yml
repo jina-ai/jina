@@ -43,6 +43,14 @@ jobs:
             echo "BUILD_TARGET=jina" >> $GITHUB_ENV
           fi
 
+          if [[ "${{ matrix.pip_tag }}" == "perf" ]]; then
+            echo "PIP_INSTALL_PERF=1" >> $GITHUB_ENV
+          fi
+
+          if [[ "${{ matrix.pip_tag }}" == "" ]]; then
+            echo "PIP_INSTALL_CORE=1" >> $GITHUB_ENV
+          fi
+
           JINA_VERSION=$(sed -n '/^__version__/p' ./jina/__init__.py | cut -d \' -f2)
           V_JINA_VERSION=v${JINA_VERSION}
           JINA_MINOR_VERSION=${JINA_VERSION%.*}
@@ -140,6 +148,8 @@ jobs:
             BUILD_DATE=${{env.BUILD_DATE}}
             JINA_VERSION=${{env.JINA_VERSION}}
             VCS_REF=${{env.VCS_REF}}
+            PIP_INSTALL_CORE=${{env.JINA_PIP_INSTALL_CORE}}
+            PIP_INSTALL_PERF=${{env.JINA_PIP_INSTALL_PERF}}
             PY_VERSION=${{matrix.py_version}}
             PIP_TAG=${{matrix.pip_tag}}
           target: ${{env.BUILD_TARGET}}
