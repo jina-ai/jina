@@ -1,7 +1,7 @@
 # Cookbook on `JinaD` API
 
 `JinaD` is a [daemon](https://en.wikipedia.org/wiki/Daemon_(computing)) for deploying and managing Jina on remote via a
-RESTful interface. It allows users to create/update/delete Flows and Executors on remote hosts. It achieves isolation of
+RESTful interface. It allows users to create/update/delete Executors and Flows on remote hosts. It achieves isolation of
 deployments by defining a `workspace` for each Jina object, hence allowing a multi-tenant setup with parallel Flows on
 the same host.
 
@@ -25,6 +25,43 @@ Table of Contents
         - [Why?](#why)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+## Minimum Working Example
+
+<table>
+    <tr>
+    <td>123.45.67.89</td>
+    <td>
+
+```bash
+# have docker installed
+docker run --name=jinad --network=host -v /var/run/docker.sock:/var/run/docker.sock jinaai/jina:latest-daemon --port-expose 8000
+```
+
+</td>
+</tr>
+  <tr>
+    <td>
+    Local
+    </td>
+    <td>
+
+```python
+from jina import Flow
+
+f = (Flow()
+     .add(uses='mwu_encoder.yml',
+          host='123.45.67.89:8000',
+          parallel=2,
+          upload_files=['mwu_encoder.py']))
+
+with f:
+    ...
+```
+
+</tr>
+
+</table>
 
 ## Setup JinaD Server
 
@@ -294,9 +331,9 @@ assert success_deleted
 ```
 
 
-## Create a Remote Executor
+## Create Remote Executors
 
-You wouldn't need to create remote Executors directly yourself. You can use the below code by passing `host`
+You can use the below code by passing `host`
 and `port_expose` to an executor with a Flow. Internally it uses `JinaD` for remote management.
 
 ```python

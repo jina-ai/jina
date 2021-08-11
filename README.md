@@ -177,9 +177,10 @@ c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
     - [`Flow`-as-a-Service](.github/2.0/cookbooks/Serving.md#flow-as-a-service)
     - [Deliver OAS3.0 Friendly API](.github/2.0/cookbooks/Serving.md#extend-http-interface)
 - ☁️ `JinaD`: manage & deploy Jina on remote
-  - [Server & Client](.github/2.0/cookbooks/Daemon.md#jinad-daemon)
-  - [Remote Executors](.github/2.0/cookbooks/Daemon.md#restful-executors)
-  - [Remote Flows](.github/2.0/cookbooks/Daemon.md#restful-flows)
+  - [Minimum Working Example](.github/2.0/cookbooks/Daemon.md#minimum-working-example)
+  - [Server & Client](.github/2.0/cookbooks/Daemon.md#setup-jinad-server)
+  - [Remote Executors](.github/2.0/cookbooks/Daemon.md#create-a-remote-executor)
+  - [Remote Flows](.github/2.0/cookbooks/Daemon.md#create-remote-flows)
 - 📓 [Developer Reference](https://docs.jina.ai)
 - 🧼 [Clean & Efficient Coding in Jina](.github/2.0/cookbooks/CleanCode.md)
 
