@@ -76,7 +76,7 @@ class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
                     getattr(signal, signame),
                     lambda *args, **kwargs: self.is_cancel.set(),
                 )
-        except ValueError as exc:
+        except (ValueError, RuntimeError) as exc:
             self.logger.warning(
                 f' The runtime {self.__class__.__name__} will not be able to handle termination signals. '
                 f' {repr(exc)}'
