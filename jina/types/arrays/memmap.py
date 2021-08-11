@@ -482,10 +482,10 @@ class DocumentArrayMemmap(
         return contents, DocumentArray(docs_pts)
 
     @property
-    def _embeddings_memmap(self):
+    def _embeddings_memmap(self) -> Optional[np.ndarray]:
         """Return the cached embedding stored in np.memmap.
 
-        :returns: Embeddings as np.ndarray stored in memmap.
+        :returns: Embeddings as np.ndarray stored in memmap, if not persist, return None.
         """
         if self._embeddings_shape:
             # The memmap object can be used anywhere an ndarray is accepted.
@@ -495,10 +495,11 @@ class DocumentArrayMemmap(
             )
 
     @_embeddings_memmap.setter
-    def _embeddings_memmap(self, other_embeddings: Optional[np.ndarray] = None):
+    def _embeddings_memmap(self, other_embeddings: Optional[np.ndarray]):
         """Set the cached embedding values in case it is not cached.
 
-        :param other_embeddings: The embedding to be stored into numpy.memmap.
+        :param other_embeddings: The embedding to be stored into numpy.memmap, or can be set
+            to None to invalidate the property.
         """
         if other_embeddings:
             fp = np.memmap(
