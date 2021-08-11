@@ -64,6 +64,7 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArraySearchOpsMixin, Itr)
         self._body_path = os.path.join(path, 'body.bin')
         self._key_length = key_length
         self._load_header_body()
+        self._embeddings_shape = None
 
     def reload(self):
         """Reload header of this object from the disk.
@@ -325,7 +326,13 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArraySearchOpsMixin, Itr)
 
         :returns: Embeddings as np.ndarray stored in memmap.
         """
-        return np.memmap('embedding.bin', mode='r')
+        if not self._embeddings_shape:
+            raise ValueError('Embedding has not yet been set, shape is not known.')
+        # The memmap object can be used anywhere an ndarray is accepted.
+        # Given a memmap fp, isinstance(fp, numpy.ndarray) returns True.
+        return np.memmap(
+            'embedding.bin', mode='r', dtype='float', shape=self._embeddings_shape
+        )
 
     @_embeddings_memmap.setter
     def _embeddings_memmap(self, other_embeddings):
@@ -334,7 +341,9 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArraySearchOpsMixin, Itr)
         :param other_embeddings: The embedding to be stored into numpy.memmap.
         """
         fp = np.memmap(
-            'embedding.bin', dtype='float32', mode='w+', shape=other_embeddings.shape
+            'embedding.bin', dtype='float', mode='w+', shape=other_embeddings.shape
         )
+        self._embeddings_shape = other_embeddings.shape
         fp[:] = other_embeddings[:]
         fp.flush()
+        del fp
