@@ -27,7 +27,6 @@ class MergeExecutor(Executor):
     'use_grpc',
     [True, False],
 )
-@pytest.mark.skip
 def test_expected_messages_routing(use_grpc):
     f = (
         Flow(grpc_data_requests=use_grpc)

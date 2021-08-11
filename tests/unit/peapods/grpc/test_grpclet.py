@@ -13,7 +13,6 @@ from jina.types.message.common import ControlMessage
 
 @pytest.mark.slow
 @pytest.mark.asyncio
-@pytest.mark.skip
 async def test_send_receive(mocker):
     # AsyncMock does not seem to exist in python 3.7, this is a manual workaround
     receive_cb = mocker.Mock()
@@ -31,10 +30,11 @@ async def test_send_receive(mocker):
     await asyncio.sleep(0.1)
     receive_cb.assert_called()
 
+    await grpclet.close()
+
 
 @pytest.mark.slow
 @pytest.mark.asyncio
-@pytest.mark.skip
 async def test_send_non_blocking(mocker):
     receive_cb = mocker.Mock()
 
@@ -56,11 +56,12 @@ async def test_send_non_blocking(mocker):
     await asyncio.sleep(0.1)
     assert receive_cb.call_count == 2
 
+    await grpclet.close()
+
 
 @pytest.mark.slow
 @pytest.mark.asyncio
 @pytest.mark.timeout(5)
-@pytest.mark.skip
 async def test_send_static_ctrl_msg(mocker):
     # AsyncMock does not seem to exist in python 3.7, this is a manual workaround
     receive_cb = mocker.Mock()
@@ -88,6 +89,7 @@ async def test_send_static_ctrl_msg(mocker):
             await asyncio.sleep(0.1)
 
     receive_cb.assert_called()
+    await grpclet.close()
 
 
 def _create_msg(args):
