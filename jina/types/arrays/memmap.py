@@ -11,6 +11,7 @@ from typing import (
     Iterator,
     List,
     Tuple,
+    Optional,
 )
 
 import numpy as np
@@ -278,14 +279,11 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArraySearchOpsMixin, Itr)
         :return: Returns a list of the values for these fields.
             When `fields` has multiple values, then it returns a list of list.
         """
+        index = None
         fields = list(fields)
-        if 'embedding' in fields and not self._embeddings_memmap:
-            embeddings = self.embeddings_memmap.tolist()
-            index = fields.index('embedding')
-            fields.remove('embedding')
-        elif 'embedding' in fields and self._embeddings_memmap:
+        if 'embedding' in fields and self._embeddings_memmap:
             embeddings = [doc.get_attributes('embedding') for doc in self]
-            self.embeddings_memmap = np.asarray(embeddings)
+            self._embeddings_memmap = np.asarray(embeddings)
             index = fields.index('embedding')
             fields.remove('embedding')
         if fields:
@@ -326,24 +324,24 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArraySearchOpsMixin, Itr)
 
         :returns: Embeddings as np.ndarray stored in memmap.
         """
-        if not self._embeddings_shape:
-            raise ValueError('Embedding has not yet been set, shape is not known.')
-        # The memmap object can be used anywhere an ndarray is accepted.
-        # Given a memmap fp, isinstance(fp, numpy.ndarray) returns True.
-        return np.memmap(
-            'embedding.bin', mode='r', dtype='float', shape=self._embeddings_shape
-        )
+        if self._embeddings_shape:
+            # The memmap object can be used anywhere an ndarray is accepted.
+            # Given a memmap fp, isinstance(fp, numpy.ndarray) returns True.
+            return np.memmap(
+                'embedding.bin', mode='r', dtype='float', shape=self._embeddings_shape
+            )
 
     @_embeddings_memmap.setter
-    def _embeddings_memmap(self, other_embeddings):
+    def _embeddings_memmap(self, other_embeddings: Optional[np.ndarray] = None):
         """Set the cached embedding values in case it is not cached.
 
         :param other_embeddings: The embedding to be stored into numpy.memmap.
         """
-        fp = np.memmap(
-            'embedding.bin', dtype='float', mode='w+', shape=other_embeddings.shape
-        )
-        self._embeddings_shape = other_embeddings.shape
-        fp[:] = other_embeddings[:]
-        fp.flush()
-        del fp
+        if other_embeddings:
+            fp = np.memmap(
+                'embedding.bin', dtype='float', mode='w+', shape=other_embeddings.shape
+            )
+            self._embeddings_shape = other_embeddings.shape
+            fp[:] = other_embeddings[:]
+            fp.flush()
+            del fp

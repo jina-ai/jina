@@ -1,10 +1,20 @@
 import os
 
 import pytest
+import numpy as np
 
 from jina import Document, DocumentArray
 from jina.types.arrays.memmap import DocumentArrayMemmap
 from tests import random_docs
+
+
+@pytest.fixture
+def memmap_with_text_and_embedding(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    for idx in range(100):
+        d = Document(text=f'random text {idx}', embedding=np.random.rand(512))
+        dam.append(d)
+    return dam
 
 
 def test_memmap_append_extend(tmpdir):
@@ -246,3 +256,40 @@ def test_memmap_physical_size(tmpdir):
     assert da.physical_size == 0
     da.append(Document())
     assert da.physical_size > 0
+
+
+def test_memmap_get_single_attribuets_without_embedding(
+    tmpdir, memmap_with_text_and_embedding
+):
+    attributes = memmap_with_text_and_embedding.get_attributes('text')
+    assert len(attributes) == 100
+    assert attributes[0] == 'random text 0'
+
+
+def test_memmap_get_multiple_attribuets_without_embedding(
+    tmpdir, memmap_with_text_and_embedding
+):
+    attributes = memmap_with_text_and_embedding.get_attributes('text', 'id')
+    assert len(attributes) == 2
+    assert len(attributes[0]) == len(attributes[1]) == 100
+    assert attributes[0][0] == 'random text 0'
+
+
+def test_memmap_get_single_attribuets_with_embedding(
+    tmpdir, memmap_with_text_and_embedding
+):
+    attributes = memmap_with_text_and_embedding.get_attributes('embedding')
+    assert len(attributes) == 100
+    assert attributes[0].shape == (512,)
+    assert isinstance(attributes[0], np.ndarray)
+
+
+def test_memmap_get_multiple_attribuets_with_embedding(
+    tmpdir, memmap_with_text_and_embedding
+):
+    attributes = memmap_with_text_and_embedding.get_attributes('text', 'embedding')
+    assert len(attributes) == 2
+    assert len(attributes[0]) == len(attributes[1]) == 100
+    assert attributes[0][0] == 'random text 0'
+    assert attributes[1][0].shape == (512,)
+    assert isinstance(attributes[1][0], np.ndarray)
