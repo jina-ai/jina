@@ -274,7 +274,7 @@ Methods decorated with `@request` can return `Optional[DocumentArray]`.
 
 The return is optional. **All changes happen in-place.**
 
-- If the return not `None`, then the current `docs` field in the `Request` will be overridden by the
+- If the return is not `None`, then the current `docs` field in the `Request` will be overridden by the
   returned `DocumentArray`, which will be forwarded to the next Executor in the Flow.
 - If the return is just a shallow copy of `Request.docs`, then nothing happens. This is because the changes are already
   made in-place, there is no point to assign the value.
@@ -408,7 +408,7 @@ Executor.load_config('y.yml')
 
 ### Use Executor out of the Flow
 
-`Executor` object can be used directly just like regular Python object. For example,
+`Executor` object can be used directly just like a regular Python object. For example,
 
 ```python
 from jina import Executor, requests, DocumentArray, Document
