@@ -212,7 +212,7 @@ def get_main_parser():
         )
     )
 
-    set_pod_parser(
+    set_pea_parser(
         sp.add_parser(
             'zed_runtime',
             aliases=['executor'],
