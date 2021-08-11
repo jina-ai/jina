@@ -1,3 +1,4 @@
+import argparse
 import os
 import json
 import urllib
@@ -11,7 +12,6 @@ from pathlib import Path
 
 from jina.hubble.helper import disk_cache_offline
 from jina.hubble.hubio import HubIO, HubExecutor
-from jina.hubble import helper
 from jina.parsers.hubble import set_hub_push_parser
 from jina.parsers.hubble import set_hub_pull_parser
 
@@ -88,7 +88,7 @@ class GetMockResponse:
 
 @pytest.mark.parametrize('path', ['dummy_executor'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
-def test_push(mocker, monkeypatch, path, mode):
+def test_push(mocker, monkeypatch, path, mode, tmpdir):
     mock = mocker.Mock()
 
     def _mock_post(url, data, headers=None, stream=True):
@@ -109,6 +109,46 @@ def test_push(mocker, monkeypatch, path, mode):
     # remove .jina
     exec_config_path = os.path.join(exec_path, '.jina')
     shutil.rmtree(exec_config_path)
+
+
+@pytest.mark.parametrize(
+    'dockerfile, expected_error',
+    [
+        ('Dockerfile', 'The given Dockerfile `{dockerfile}` does not exist!'),
+        (
+            '../Dockerfile',
+            'The Dockerfile must be placed at the given folder `{work_path}`',
+        ),
+    ],
+)
+@pytest.mark.parametrize('path', ['dummy_executor'])
+@pytest.mark.parametrize('mode', ['--public', '--private'])
+def test_push_wrong_dockerfile(
+    mocker, monkeypatch, path, mode, tmpdir, dockerfile, expected_error
+):
+    dockerfile = os.path.join(cur_dir, path, dockerfile)
+    mock = mocker.Mock()
+
+    def _mock_post(url, data, headers=None, stream=True):
+        mock(url=url, data=data)
+        return PostMockResponse(response_code=requests.codes.created)
+
+    monkeypatch.setattr(requests, 'post', _mock_post)
+    # Second push will use --force --secret because of .jina/secret.key
+    # Then it will use put method
+    monkeypatch.setattr(requests, 'put', _mock_post)
+
+    exec_path = os.path.join(cur_dir, path)
+    _args_list = [exec_path, mode]
+
+    args = set_hub_push_parser().parse_args(_args_list)
+    args.docker_file = dockerfile
+    with pytest.raises(Exception) as exec_info:
+        HubIO(args).push()
+
+    assert expected_error.format(dockerfile=dockerfile, work_path=args.path) in str(
+        exec_info.value
+    )
 
 
 def test_fetch(mocker, monkeypatch):
@@ -297,7 +337,7 @@ def test_new(monkeypatch, tmpdir, add_dockerfile):
     monkeypatch.setattr(Prompt, 'ask', _mock_prompt_ask)
     monkeypatch.setattr(Confirm, 'ask', _mock_confirm_ask)
 
-    args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
+    args = argparse.Namespace(hub='new')
     HubIO(args).new()
     path = tmpdir / 'DummyExecutor'
 
