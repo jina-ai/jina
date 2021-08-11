@@ -8,8 +8,8 @@ Table of Contents
       - [API Docs](#api-docs)
   - [Client (Python)](#client-python)
   - [Workspace](#workspace)
+  - [RESTful Executors](#restful-executors)
   - [RESTful Flows](#restful-flows)
-  - [RESTful Pods/Peas (Advanced)](#restful-podspeas-advanced)
   - [Logstreaming](#logstreaming)
   - [Development using JinaD](#development-using-jinad)
       - [Build](#build)
@@ -20,7 +20,7 @@ Table of Contents
 
 # JinaD (Daemon)
 
-JinaD is a [daemon](https://en.wikipedia.org/wiki/Daemon_(computing)) for deploying & managing Jina on remote via a RESTful interface. It allows users to create/update/delete Flows and Executors on remote hosts. It achieves isolation of deployments by defining a `workspace` for each Jina object, hence allowing a multi-tenant setup with parallel Flows on the same host.
+JinaD is a [daemon](https://en.wikipedia.org/wiki/Daemon_(computing)) for deploying and managing Jina on remote via a RESTful interface. It allows users to create/update/delete Flows and Executors on remote hosts. It achieves isolation of deployments by defining a `workspace` for each Jina object, hence allowing a multi-tenant setup with parallel Flows on the same host.
 
 ------
 
@@ -30,7 +30,7 @@ JinaD is a [daemon](https://en.wikipedia.org/wiki/Daemon_(computing)) for deploy
 
 #### Run
 
-To deploy JinaD, SSH into a remote instance (e.g.- ec2 instance) & run the below command.
+To deploy JinaD, SSH into a remote instance (e.g.- ec2 instance) and run the below command.
 
 ```bash
 docker run --add-host host.docker.internal:host-gateway \
@@ -44,7 +44,7 @@ docker run --add-host host.docker.internal:host-gateway \
 <details>
 <summary><strong>Points to note</strong></summary>
 
-- You can change the port via the `-p` argument. Following code assumes that `HOST` is the public IP of the above instance & `PORT` is as passed in the docker run cpmmand.
+- You can change the port via the `-p` argument. Following code assumes that `HOST` is the public IP of the above instance and `PORT` is as passed in the docker run cpmmand.
 
 - `JinaD` should always be deployed as a docker container. Simply starting the server using `jinad` command would not work.
 
@@ -128,7 +128,7 @@ Workspace is the entrypoint for all objects in JinaD. It primarily represents 3 
 
 1. **Docker Image**
 
-    All objects created by JinaD are containerized. Workspace is responsible for building the base image. You can customize each image with the help of a `.jinad` file & a `requirements.txt` file.
+    All objects created by JinaD are containerized. Workspace is responsible for building the base image. You can customize each image with the help of a `.jinad` file and a `requirements.txt` file.
 
 2. **Docker Network**
 
@@ -317,88 +317,9 @@ assert client.workspaces.delete(id=workspace_id)
 
 ------
 
-## RESTful Flows
+## RESTful Executors
 
-JinaD enables management of (remote + containerized) Flows with all your dependencies via REST APIs.
-
-<details>
-<summary><strong>Create a Flow (<a href="https://api.jina.ai/daemon/#operation/_create_flows_post">redoc</a>)</strong></summary>
-
-This creates a new container using the base image & network defined by `workspace_id` & starts a Flow inside the container. Only the ports needed for external communication are mapped to local. Make sure you've added all your config files while creating the workspace in the previous step.
-
-```python
-from daemon.clients import JinaDClient
-client = JinaDClient(host=HOST, port=PORT)
-client.flows.create(workspace_id=workspace_id, filename='my_awesome_flow.yml')
-# jflow-a71cc28f-a5db-4cc0-bb9e-bb7797172cc9
-```
-
-</details>
-
-<details>
-<summary><strong>Get details of a Flow (<a href="https://api.jina.ai/daemon/#operation/_status_flows__id__get">redoc</a>)</strong></summary>
-
-```python
-client.flows.get(flow_id)
-```
-
-<details>
-<summary>Example response</summary>
-
-```text
-{
-  'time_created': '2021-07-27T05:12:06.646809',
-  'metadata': {
-    'container_id': '8770817435',
-    'container_name': 'jflow-a71cc28f-a5db-4cc0-bb9e-bb7797172cc9',
-    'image_id': '28bd40a87e',
-    'network': '6363b4a5b8',
-    'ports': {
-      '23456/tcp': 23456,
-      '51567/tcp': 51567
-    },
-    'uri': 'http://host.docker.internal:51567'
-  },
-  'arguments': {
-    'object': {
-      'time_created': '2021-07-27T05:12:06.640236',
-      'arguments': {
-        'port_expose': 23456,
-        'name': None,
-        'workspace': './',
-        'log_config': '/usr/local/lib/python3.7/site-packages/jina/resources/logging.default.yml',
-        'quiet': False,
-        'quiet_error': False,
-        'workspace_id': '9db7a919-dfa5-420c-834e-ab940a40cbf2',
-        'uses': None,
-        'env': None,
-        'inspect': 2
-      },
-      'yaml_source': "jtype: Flow\nversion: '1.0'\nwith:\n  protocol: http\n  port_expose: 23456\nexecutors:\n  - name: executor_ex\n"
-    },
-    'command': '--port-expose 51567 --mode flow --workspace-id 4d0a0db5-2cb8-4e8f-8183-966681c1c863'
-  },
-  'workspace_id': 'jworkspace-4d0a0db5-2cb8-4e8f-8183-966681c1c863'
-}
-```
-
-</details>
-</details>
-
-<details>
-<summary><strong>Terminate a Flow (<a href="https://api.jina.ai/daemon/#operation/_delete_flows__id__delete">redoc</a>)</strong></summary>
-
-```python
-assert client.flows.delete(flow_id)
-```
-
-</details>
-
-------
-
-## RESTful Pods/Peas (Advanced)
-
-You wouldn't need to create remote Peas/Pods directly yourself. You can use the below code by passing `host` & `port_expose` to an executor with the Flow. Internally it uses `JinaD` for remote management.
+You wouldn't need to create remote Executors directly yourself. You can use the below code by passing `host` and `port_expose` to an executor with a Flow. Internally it uses `JinaD` for remote management.
 
 ```python
 from jina import Flow
@@ -413,7 +334,7 @@ with f:
 ```
 
 <details>
-<summary>In case you want to create remote Peas/Pods manually, you can follow the guidelines below.</summary>
+<summary>In case you want to create remote Executors manually, you can follow the (advanced) guidelines below.</summary>
 
 <details>
 <summary><strong>Get all accepted arguments (<a href="https://api.jina.ai/daemon/#operation/_fetch_pea_params_peas_arguments_get">redoc</a>)</strong></summary>
@@ -521,6 +442,85 @@ assert client.pods.delete(pod_id)
 ```
 
 </details>
+</details>
+
+------
+
+## RESTful Flows
+
+JinaD enables management of (remote + containerized) Flows with all your dependencies via REST APIs.
+
+<details>
+<summary><strong>Create a Flow (<a href="https://api.jina.ai/daemon/#operation/_create_flows_post">redoc</a>)</strong></summary>
+
+This creates a new container using the base image, connects it to the network defined by `workspace_id` and starts a Flow inside the container. Only the ports needed for external communication are mapped to local. Make sure you've added all your config files while creating the workspace in the previous step.
+
+```python
+from daemon.clients import JinaDClient
+client = JinaDClient(host=HOST, port=PORT)
+client.flows.create(workspace_id=workspace_id, filename='my_awesome_flow.yml')
+# jflow-a71cc28f-a5db-4cc0-bb9e-bb7797172cc9
+```
+
+</details>
+
+<details>
+<summary><strong>Get details of a Flow (<a href="https://api.jina.ai/daemon/#operation/_status_flows__id__get">redoc</a>)</strong></summary>
+
+```python
+client.flows.get(flow_id)
+```
+
+<details>
+<summary>Example response</summary>
+
+```text
+{
+  'time_created': '2021-07-27T05:12:06.646809',
+  'metadata': {
+    'container_id': '8770817435',
+    'container_name': 'jflow-a71cc28f-a5db-4cc0-bb9e-bb7797172cc9',
+    'image_id': '28bd40a87e',
+    'network': '6363b4a5b8',
+    'ports': {
+      '23456/tcp': 23456,
+      '51567/tcp': 51567
+    },
+    'uri': 'http://host.docker.internal:51567'
+  },
+  'arguments': {
+    'object': {
+      'time_created': '2021-07-27T05:12:06.640236',
+      'arguments': {
+        'port_expose': 23456,
+        'name': None,
+        'workspace': './',
+        'log_config': '/usr/local/lib/python3.7/site-packages/jina/resources/logging.default.yml',
+        'quiet': False,
+        'quiet_error': False,
+        'workspace_id': '9db7a919-dfa5-420c-834e-ab940a40cbf2',
+        'uses': None,
+        'env': None,
+        'inspect': 2
+      },
+      'yaml_source': "jtype: Flow\nversion: '1.0'\nwith:\n  protocol: http\n  port_expose: 23456\nexecutors:\n  - name: executor_ex\n"
+    },
+    'command': '--port-expose 51567 --mode flow --workspace-id 4d0a0db5-2cb8-4e8f-8183-966681c1c863'
+  },
+  'workspace_id': 'jworkspace-4d0a0db5-2cb8-4e8f-8183-966681c1c863'
+}
+```
+
+</details>
+</details>
+
+<details>
+<summary><strong>Terminate a Flow (<a href="https://api.jina.ai/daemon/#operation/_delete_flows__id__delete">redoc</a>)</strong></summary>
+
+```python
+assert client.flows.delete(flow_id)
+```
+
 </details>
 
 ------
