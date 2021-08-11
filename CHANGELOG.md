@@ -82,6 +82,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -10006,4 +10007,33 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```0d8544fb```](https://github.com/jina-ai/jina/commit/0d8544fb192ccde1a945b6ee40052d2707db4c68)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```7394523a```](https://github.com/jina-ai/jina/commit/7394523ad2c9a0d1f9df13d995aaaadab3eddb12)] __-__ revert add black logo (#3133)&#34; (#3134) (*Han Xiao*)
  - [[```066c2938```](https://github.com/jina-ai/jina/commit/066c29386cb94d4cee1a7e8eeb56938e579ef957)] __-__ __version__: the next version will be 2.0.17 (*Jina Dev Bot*)
+
+<a name=release-note-2-0-18></a>
+## Release Note (`2.0.18`)
+
+> Release time: 2021-08-11 07:04:34
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Deepankar Mahapatro,  Zhaofeng Miao,  AlaeddineAbdessalem,  🙇
+
+
+### 🧼 Code Refactoring
+
+ - [[```2b79c067```](https://github.com/jina-ai/jina/commit/2b79c06701bef3b6260805048f03d2facbb02c19)] __-__ __setup__: make standard deps as the default deps (#3145) (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```73589246```](https://github.com/jina-ai/jina/commit/73589246a08f61d6bde48026b92a04e7d7b75e29)] __-__ daemon in readme (#3122) (*Deepankar Mahapatro*)
+ - [[```b7a1cf7f```](https://github.com/jina-ai/jina/commit/b7a1cf7fe4dde25d1de32a59573112a97c13f75e)] __-__ __hub__: add description about the tag of hub (#3125) (*Zhaofeng Miao*)
+ - [[```0eb06a94```](https://github.com/jina-ai/jina/commit/0eb06a94fdc95f44be56e6d300725f54ca2905c3)] __-__ update dam chapter and add uses_with , uses_metas , uses_requests to Flow.md (#3146) (*AlaeddineAbdessalem*)
+
+### 🍹 Other Improvements
+
+ - [[```2e22f88d```](https://github.com/jina-ai/jina/commit/2e22f88d7d30c3cb2b69780dc3a32dd842d071ae)] __-__ __docs__: fix layout of jinad markdown (*Han Xiao*)
+ - [[```6c9704c2```](https://github.com/jina-ai/jina/commit/6c9704c2911adcfde6872f2ac81ffe986bc649d4)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```2cc4fb0b```](https://github.com/jina-ai/jina/commit/2cc4fb0b148dd1bffa578d003cb4bb5b5da942c8)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```994a61c0```](https://github.com/jina-ai/jina/commit/994a61c0f8ad5243e67dba3b3aa396aa5a32e402)] __-__ __docs__: fix layout of jinad (*Han Xiao*)
+ - [[```92613c32```](https://github.com/jina-ai/jina/commit/92613c32dc80b7da21562005f1f45bf0468cb5ef)] __-__ __version__: the next version will be 2.0.18 (*Jina Dev Bot*)
 
