@@ -25,11 +25,10 @@ class ChunkArray(DocumentArray):
         self._ref_doc = reference_doc
         super().__init__(doc_views)
 
-    def append(self, document: 'Document', copy: bool = True, **kwargs) -> 'Document':
+    def append(self, document: 'Document', **kwargs) -> 'Document':
         """Add a sub-document (i.e chunk) to the current Document.
 
         :param document: Sub-document to be appended
-        :param copy: If set, then copy the original Document. Otherwise the original Document may get modified
         :param kwargs: additional keyword arguments
         :return: the newly added sub-document in :class:`Document` view
         :rtype: :class:`Document`
@@ -38,22 +37,14 @@ class ChunkArray(DocumentArray):
             Comparing to :attr:`DocumentArray.append()`, this method adds more safeguard to
             make sure the added chunk is legit.
         """
-
-        if copy:
-            from ..document import Document
-
-            chunk = Document(document, copy=True)
-        else:
-            # note: this is faster than Document(document, copy=False)
-            chunk = document
-
+        super().append(document)
+        chunk = self[-1]
+        if not chunk.mime_type:
+            chunk.mime_type = self._ref_doc.mime_type
         chunk.set_attributes(
             parent_id=self._ref_doc.id, granularity=self.granularity, **kwargs
         )
 
-        if not chunk.mime_type:
-            chunk.mime_type = self._ref_doc.mime_type
-        super().append(chunk)
         return chunk
 
     def extend(self, iterable: Iterable['Document']) -> None:
