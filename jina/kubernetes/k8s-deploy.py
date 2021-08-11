@@ -2,9 +2,9 @@ from jina import Flow
 
 
 namespace = 'search-flow'
-search_flow = Flow(name='search-flow', protocol='http', port_expose=8080,).add(
-    name='searcher1',
-    shards=6,
+search_flow = Flow(name='search-flow', protocol='http', port_expose=8080).add(
+    name='text_index',
+    shards=2,
     polling='all',
     uses='jinahub+docker://AnnoySearcher',
     uses_with={'dump_path': '/shared'},

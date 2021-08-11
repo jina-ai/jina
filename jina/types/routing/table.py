@@ -165,13 +165,7 @@ class RoutingTable(ProtoTypeMixin):
             )
         target = self.pods[pod_name]
 
-        # target.host = pod.head_host
-        if pod_name == 'start-gateway':
-            target.host = '0.0.0.0'
-        elif pod.args.pod_role != PodRoleType.GATEWAY and pod.args.parallel > 1:
-            target.host = f'{pod.name}-head.{flow_name}.svc.cluster.local'
-        else:
-            target.host = f'{pod.name}.{flow_name}.svc.cluster.local'
+        target.host = pod.head_host
         target.port = pod.head_port_in
         target.port_out = pod.tail_port_out
         target.target_identity = pod.head_zmq_identity

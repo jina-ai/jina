@@ -5,6 +5,7 @@ from typing import Optional, Dict
 
 from kubernetes.utils import FailToCreateError
 from jina.hubble.hubio import HubIO
+from jina.kubernetes.naive.naive_deployment import to_dns_name
 from jina.peapods.pods import Pod
 
 from jina import Flow
@@ -83,7 +84,7 @@ class JinaPodAsMicroService:
         )
         self._create_service(name)
         pod_to_args[self._pod.name] = {
-            'host_in': f'{name.lower()}.{self._namespace}.svc.cluster.local'
+            'host_in': f'{to_dns_name(name)}.{self._namespace}.svc.cluster.local'
         }
 
         self._logger.info(
