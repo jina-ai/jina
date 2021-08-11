@@ -172,7 +172,7 @@ c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
 - 🔀 `Flow`: how Jina streamlines and distributes Executors.
     - [Minimum Working Example](.github/2.0/cookbooks/Flow.md#minimum-working-example)
     - [`Flow` API](.github/2.0/cookbooks/Flow.md#flow-api)
-- 🤹 [Serving Jina](.github/2.0/cookbooks/Serving.md)
+- 🤹 Serving Jina as a Service
     - [Minimum Working Example](.github/2.0/cookbooks/Serving.md#minimum-working-example)
     - [`Flow`-as-a-Service](.github/2.0/cookbooks/Serving.md#flow-as-a-service)
     - [Deliver OAS3.0 Friendly API](.github/2.0/cookbooks/Serving.md#extend-http-interface)
