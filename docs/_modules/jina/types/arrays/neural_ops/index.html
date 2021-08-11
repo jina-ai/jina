@@ -478,7 +478,7 @@
                 <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
                     <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                     <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'matches'</span><span class="p">)</span>
-                <span class="n">_q</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">scores</span><span class="o">=</span><span class="p">{</span><span class="n">metric_name</span><span class="p">:</span> <span class="n">_dist</span><span class="p">},</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+                <span class="n">_q</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">scores</span><span class="o">=</span><span class="p">{</span><span class="n">metric_name</span><span class="p">:</span> <span class="n">_dist</span><span class="p">})</span></div>
 
     <span class="k">def</span> <span class="nf">_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">darray</span><span class="p">,</span> <span class="n">cdist</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">normalization</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">):</span>
         <span class="sd">"""</span>
@@ -528,8 +528,8 @@
 <span class="sd">        :param limit: the maximum number of matches, when not given</span>
 <span class="sd">                      all Documents in `another` are considered as matches</span>
 <span class="sd">        :param normalization: a tuple [a, b] to be used with min-max normalization,</span>
-<span class="sd">                                the min distance will be rescaled to `a`, the max distance will be rescaled to `b`</span>
-<span class="sd">                                all values will be rescaled into range `[a, b]`.</span>
+<span class="sd">                              the min distance will be rescaled to `a`, the max distance will be rescaled to `b`</span>
+<span class="sd">                              all values will be rescaled into range `[a, b]`.</span>
 <span class="sd">        :param batch_size: length of the chunks loaded into memory from darray.</span>
 <span class="sd">        :param metric_name: if provided, then match result will be marked with this string.</span>
 <span class="sd">        :return: distances and indices</span>
