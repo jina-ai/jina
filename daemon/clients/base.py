@@ -114,7 +114,13 @@ class AsyncBaseClient:
 
     @if_alive
     async def clear(self):
-        async with aiohttp.request(method='DELETE', url=f'{self.store_api}') as response:
+        """Send delete request to api
+
+        :return : json response of the remote Flow/Pea/Pod/Workspace status
+        """
+        async with aiohttp.request(
+            method='DELETE', url=f'{self.store_api}'
+        ) as response:
             if response.status == HTTPStatus.OK:
                 return await response.json()
             else:
