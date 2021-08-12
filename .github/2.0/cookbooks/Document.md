@@ -1053,7 +1053,7 @@ np.stack(da.get_attributes('embedding'))
 
 ### Property `.embeddings`
 
-There is a faster version to extract embeddings from a DocumentArray or DocumentArrayMemmap, the property `.embeddings`. This property assumes all embeddings in the array have the same dimension. Note that
+There is a faster version to extract embeddings from a `DocumentArray` or `DocumentArrayMemmap`, the property `.embeddings`. This property assumes all embeddings in the array have the same dimension. Note that
 
 ```
 da.embeddings
