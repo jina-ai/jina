@@ -177,26 +177,29 @@ class PathImporter:
 
         try:
             # I dont want to trust user path based on directory structure, "jinahub", period
-            spec = importlib.util.spec_from_file_location('jinahub', absolute_path)
-            module = importlib.util.module_from_spec(spec)
+            default_spec_name = 'jinahub'
             user_module_name = os.path.splitext(os.path.basename(absolute_path))[0]
             if user_module_name == '__init__':
                 # __init__ can not be used as a module name
-                spec_name = spec.name
+                spec_name = default_spec_name
             elif user_module_name not in sys.modules:
                 spec_name = user_module_name
             else:
                 warnings.warn(
                     f'''
                 {user_module_name} shadows one of built-in Python module name.
-                It is imported as `jinahub.{user_module_name}`
+                It is imported as `{default_spec_name}.{user_module_name}`
                 
                 Affects:
-                - Either, change your code from using `from {user_module_name} import ...` to `from jinahub.{user_module_name} import ...`
+                - Either, change your code from using `from {user_module_name} import ...` 
+                  to `from {default_spec_name}.{user_module_name} import ...`
                 - Or, rename {user_module_name} to another name
                 '''
                 )
-                spec_name = f'{spec.name}.{user_module_name}'
+                spec_name = f'{default_spec_name}.{user_module_name}'
+
+            spec = importlib.util.spec_from_file_location(spec_name, absolute_path)
+            module = importlib.util.module_from_spec(spec)
             sys.modules[spec_name] = module
             spec.loader.exec_module(module)
         except Exception as ex:
