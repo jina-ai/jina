@@ -16,25 +16,36 @@ from jina.types.message import Message
 @pytest.mark.timeout(5)
 def test_grpc_data_runtime(mocker):
     args = set_pea_parser().parse_args([])
-    runtime = GRPCDataRuntime(args)
-    runtime._data_request_handler.handle = mocker.Mock()
+    handle_mock = mocker.Mock()
 
-    runtime_thread = Thread(target=runtime.run_forever)
+    def start_runtime(args, handle_mock):
+        with GRPCDataRuntime(args) as runtime:
+            runtime._data_request_handler.handle = handle_mock
+            runtime.run_forever()
+
+    runtime_thread = Thread(
+        target=start_runtime,
+        args=(
+            args,
+            handle_mock,
+        ),
+    )
     runtime_thread.start()
 
-    assert runtime.wait_for_ready_or_shutdown(
+    assert GRPCDataRuntime.wait_for_ready_or_shutdown(
         timeout=5.0, ctrl_address=f'{args.host}:{args.port_in}', shutdown_event=Event()
     )
+
     Grpclet._create_grpc_stub(f'{args.host}:{args.port_in}', is_async=False).Call(
         _create_test_data_message()
     )
     time.sleep(0.1)
-    runtime._data_request_handler.handle.assert_called()
+    handle_mock.assert_called()
 
-    runtime.cancel(f'{args.host}:{args.port_in}')
+    GRPCDataRuntime.cancel(f'{args.host}:{args.port_in}')
     runtime_thread.join()
-    assert not runtime.is_ready(f'{args.host}:{args.port_in}')
-    runtime.teardown()
+
+    assert not GRPCDataRuntime.is_ready(f'{args.host}:{args.port_in}')
 
 
 def _create_test_data_message():
