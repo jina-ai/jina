@@ -1,4 +1,3 @@
-from math import inf
 from typing import Optional, Union, Callable, Tuple
 
 import numpy as np
@@ -6,7 +5,6 @@ import numpy as np
 from ... import Document
 from ...importer import ImportExtensions
 from ...math.helper import top_k, minmax_normalize, update_rows_x_mat_best
-from ...logging.predefined import default_logger
 
 if False:
     from .document import DocumentArray
