@@ -32,7 +32,9 @@ def test_grpc_data_runtime(mocker):
     runtime._data_request_handler.handle.assert_called()
 
     runtime.cancel(f'{args.host}:{args.port_in}')
+    runtime_thread.join()
     assert not runtime.is_ready(f'{args.host}:{args.port_in}')
+    runtime.teardown()
 
 
 def _create_test_data_message():
