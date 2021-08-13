@@ -252,7 +252,9 @@ class DocumentArrayNeuralOpsMixin:
     def embeddings(self) -> np.ndarray:
         """Return a `np.ndarray` stacking all the `embedding` attributes as rows.
 
-        Warning: This operation assumes all embeddings have the same shape.
+        Warning: This operation assumes all embeddings have the same shape and dtype.
+                 All dtype and shape values are assumed to be equal to the values of the
+                 first element in the DocumentArray / DocumentArrayMemmap
 
         Warning: This operation currently does not support sparse arrays.
 
@@ -273,7 +275,9 @@ class DocumentArrayNeuralOpsMixin:
         Example: `self._get_embeddings(10:20)` will return 10 embeddings from positions 10 to 20
                   in the `DocumentArray` or `DocumentArrayMemmap`
 
-        Warning: This operation assumes all embeddings have the same shape.
+        Warning: This operation assumes all embeddings have the same shape and dtype.
+                 All dtype and shape values are assumed to be equal to the values of the
+                 first element in the DocumentArray / DocumentArrayMemmap
 
         Warning: This operation currently does not support sparse arrays.
 
