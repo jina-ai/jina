@@ -16,10 +16,14 @@ spec:
       containers:
       - name: executor
         image: {image}
+        imagePullPolicy: Always
         command: {command}
         args: {args}
         ports:
-          - containerPort: {port}
+          - containerPort: {port_in}
+          - containerPort: {port_out}
+          - containerPort: {port_ctrl}
+          - containerPort: {port_expose}
         env:
         - name: JINA_LOG_LEVEL
           value: debug

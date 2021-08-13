@@ -1,3 +1,5 @@
+import pytest
+
 from jina import Document, Executor, Flow, requests
 
 
@@ -21,9 +23,13 @@ class MergeExecutor(Executor):
             docs[0].text = str(len(docs_matrix))
 
 
-def test_expected_messages_routing():
+@pytest.mark.parametrize(
+    'use_grpc',
+    [True, False],
+)
+def test_expected_messages_routing(use_grpc):
     f = (
-        Flow()
+        Flow(grpc_data_requests=use_grpc)
         .add(name='foo', uses=SimplExecutor)
         .add(name='bar', uses=MergeExecutor, needs=['foo', 'gateway'])
     )

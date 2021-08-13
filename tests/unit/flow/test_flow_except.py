@@ -231,6 +231,7 @@ def test_flow_on_error_callback(protocol):
     hit.clear()
 
 
+@pytest.mark.repeat(10)
 @pytest.mark.timeout(10)
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_flow_startup_exception_not_hanging(protocol):
@@ -246,6 +247,7 @@ def test_flow_startup_exception_not_hanging(protocol):
             pass
 
 
+@pytest.mark.repeat(10)
 @pytest.mark.timeout(10)
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_flow_startup_exception_not_hanging2(protocol):

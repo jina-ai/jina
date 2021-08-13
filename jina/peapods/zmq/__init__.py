@@ -216,7 +216,6 @@ class Zmqlet:
                 for address in self.args.hosts_in_connect:
                     if in_connect is None:
                         host, port = address.split(':')
-
                         in_connect, _ = _init_socket(
                             ctx,
                             host,
@@ -286,6 +285,7 @@ class Zmqlet:
         )
 
     def _init_dynamic_out_socket(self, host_out, port_out):
+
         out_sock, _ = _init_socket(
             self.ctx,
             host_out,
@@ -361,7 +361,9 @@ class Zmqlet:
         self.bytes_sent += send_message(socket, msg, **self.send_recv_kwargs)
         self.msg_sent += 1
 
+        print('send idle after send message?')
         if self._active and socket == self.out_sock and self.in_sock_type == zmq.DEALER:
+            print('send idle')
             self._send_idle_to_router()
 
     def _send_control_to_router(self, command, raise_exception=False):
@@ -452,7 +454,9 @@ class AsyncZmqlet(Zmqlet):
         :return: Received protobuf message. Or None in case of any error.
         """
         try:
-            msg = await recv_message_async(self.in_sock, **self.send_recv_kwargs)
+            msg = await recv_message_async(
+                self.in_connect_sock or self.in_sock, **self.send_recv_kwargs
+            )
             self.msg_recv += 1
             if msg is not None:
                 self.bytes_recv += msg.size
@@ -480,12 +484,10 @@ class ZmqStreamlet(Zmqlet):
 
     def __init__(
         self,
-        ready_event: Union['multiprocessing.Event', 'threading.Event'],
         *args,
         **kwargs,
     ):
         super().__init__(**kwargs)
-        self.is_ready_event = ready_event
 
     def _register_pollin(self):
         """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` in poller."""
@@ -494,7 +496,6 @@ class ZmqStreamlet(Zmqlet):
 
             get_or_reuse_loop()
             self.io_loop = tornado.ioloop.IOLoop.current()
-        self.io_loop.add_callback(callback=lambda: self.is_ready_event.set())
         self.in_sock = ZMQStream(self.in_sock, self.io_loop)
         self.out_sock = ZMQStream(self.out_sock, self.io_loop)
         self.ctrl_sock = ZMQStream(self.ctrl_sock, self.io_loop)
@@ -538,7 +539,8 @@ class ZmqStreamlet(Zmqlet):
             time.sleep(0.01)
             if flush:
                 for s in self.opened_socks:
-                    s.flush()
+                    events = s.flush()
+                    self.logger.debug(f'Handled #{events} during flush of socket')
             super().close()
             if hasattr(self, 'io_loop'):
                 try:
@@ -569,7 +571,7 @@ class ZmqStreamlet(Zmqlet):
             self.in_sock.on_recv(self._in_sock_callback)
             self.is_polling_paused = False
 
-    def start(self, callback: Callable[['Message'], 'Message']):
+    def start(self, callback: Callable[['Message'], None]):
         """
         Open all sockets and start the ZMQ context associated to this `Zmqlet`.
 
@@ -581,10 +583,7 @@ class ZmqStreamlet(Zmqlet):
             self.bytes_recv += msg.size
             self.msg_recv += 1
 
-            msg = callback(msg)
-
-            if msg:
-                self.send_message(msg)
+            callback(msg)
 
         self._in_sock_callback = lambda x: _callback(x, self.in_sock_type)
         self.in_sock.on_recv(self._in_sock_callback)
@@ -621,7 +620,7 @@ def send_ctrl_message(
     with zmq.Context() as ctx:
         ctx.setsockopt(zmq.LINGER, 0)
         sock, _ = _init_socket(ctx, address, None, SocketType.PAIR_CONNECT)
-        send_message(sock, msg, timeout)
+        send_message(sock, msg, raise_exception=raise_exception, timeout=timeout)
         r = None
         try:
             r = recv_message(sock, timeout)
@@ -653,23 +652,30 @@ def send_message(
     """
     num_bytes = 0
     try:
+        print(
+            'try send_message, is data request', msg.is_data_request, 'size: ', msg.size
+        )
         _prep_send_socket(sock, timeout)
         sock.send_multipart(msg.dump())
         num_bytes = msg.size
     except zmq.error.Again:
+        print('zmq.error.Again')
         raise TimeoutError(
             f'cannot send message to sock {sock} after timeout={timeout}ms, please check the following:'
             'is the server still online? is the network broken? are "port" correct?'
         )
     except zmq.error.ZMQError as ex:
+        print('zmq.error.ZMQError')
         if raise_exception:
             raise ex
         else:
             default_logger.critical(ex)
     finally:
         try:
+            print('try sock.setsockopt(zmq.SNDTIMEO, -1)')
             sock.setsockopt(zmq.SNDTIMEO, -1)
         except zmq.error.ZMQError:
+            print('zmq.error.ZMQError sock.setsockopt(zmq.SNDTIMEO, -1)')
             pass
 
     return num_bytes
@@ -701,22 +707,28 @@ async def send_message_async(
     :return: the size (in bytes) of the sent message
     """
     try:
+        print('send async...')
         _prep_send_socket(sock, timeout)
         await sock.send_multipart(msg.dump())
         return msg.size
     except zmq.error.Again:
+        print('send async... zmq.error.Again')
         raise TimeoutError(
-            f'cannot send message to sock {sock} after timeout={timeout}ms, please check the following:'
-            'is the server still online? is the network broken? are "port" correct? '
+            f'cannot send message to sock {sock.getsockopt_string(zmq.LAST_ENDPOINT)} after timeout={timeout}ms, '
+            'please check the following: is the server still online? is the network broken? are "port" correct? '
         )
     except zmq.error.ZMQError as ex:
+        print('send async... zmq.error.ZMQError')
         default_logger.critical(ex)
     except asyncio.CancelledError:
+        print('send async... asyncio.CancelledError')
         default_logger.debug('all gateway tasks are cancelled')
     except Exception as ex:
+        print('send async... Exception')
         raise ex
     finally:
         try:
+            print('send async... finally sock.setsockopt(zmq.SNDTIMEO, -1)')
             sock.setsockopt(zmq.SNDTIMEO, -1)
         except zmq.error.ZMQError:
             pass
@@ -734,16 +746,21 @@ def recv_message(sock: 'zmq.Socket', timeout: int = -1, **kwargs) -> 'Message':
             - the size of the message in bytes
     """
     try:
+        print('try recv_message')
         _prep_recv_socket(sock, timeout)
         msg_data = sock.recv_multipart()
-        return _parse_from_frames(sock.type, msg_data)
+        msg = _parse_from_frames(sock.type, msg_data)
+        print('massage received', msg)
+        return msg
 
     except zmq.error.Again:
+        print('timeout')
         raise TimeoutError(
-            f'no response from sock {sock} after timeout={timeout}ms, please check the following:'
-            'is the server still online? is the network broken? are "port" correct? '
+            f'no response from sock {sock.getsockopt_string(zmq.LAST_ENDPOINT)} after timeout={timeout}ms, '
+            f'please check the following: is the server still online? is the network broken? are "port" correct? '
         )
     except Exception as ex:
+        print('another exception')
         raise ex
     finally:
         sock.setsockopt(zmq.RCVTIMEO, -1)
@@ -903,4 +920,5 @@ def _connect_socket(
     if ssh_server is not None:
         tunnel_connection(sock, address, ssh_server, ssh_keyfile, ssh_password)
     else:
+        print('connect to', address)
         sock.connect(address)

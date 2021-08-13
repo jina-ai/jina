@@ -6,6 +6,7 @@ import pytest
 
 from cli.autocomplete import ac_table
 from cli.export import api_to_dict
+from cli.lookup import _build_lookup_table, lookup_and_print
 from jina.checker import NetworkChecker
 from jina.jaml import JAML
 from jina.parsers import set_pod_parser, set_pea_parser
@@ -20,6 +21,16 @@ def test_export_api(tmpdir):
         json.dump(api_to_dict(), fp)
 
 
+@pytest.mark.parametrize('cli', ac_table['commands'])
+def test_help_lookup(cli, capsys):
+    nkw2kw, kw2info = _build_lookup_table()
+    if cli not in {'--help', '--version', '--version-full'}:
+        assert cli in nkw2kw
+        lookup_and_print(cli)
+        captured = capsys.readouterr()
+        assert captured.out
+
+
 def test_main_cli():
     subprocess.check_call(['jina'])
 
@@ -27,6 +38,17 @@ def test_main_cli():
 @pytest.mark.parametrize('cli', ac_table['commands'])
 def test_all_cli(cli):
     subprocess.check_call(['jina', cli, '--help'])
+
+
+@pytest.mark.parametrize('smethod', ['fork', 'spawn'])
+def test_all_start_method(smethod):
+    s = subprocess.check_output(
+        ['jina', '-v'],
+        env=dict(os.environ, JINA_MP_START_METHOD=smethod),
+        stderr=subprocess.STDOUT,
+    )
+    assert 'UserWarning' in s.decode()
+    assert smethod in s.decode()
 
 
 def test_parse_env_map():

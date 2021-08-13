@@ -31,8 +31,7 @@ from ..helper import (
 from ..hubble.helper import get_hubble_url, parse_hub_uri
 from ..hubble.hubio import HubIO
 from ..jaml import JAMLCompatible
-from ..kubernetes import kubernetes_tools
-from ..kubernetes.naive import naive_deployment
+
 from ..logging.logger import JinaLogger
 from ..parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
 from ..peapods import CompoundPod, Pod
@@ -95,6 +94,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         compress: Optional[str] = 'NONE',
         compress_min_bytes: Optional[int] = 1024,
         compress_min_ratio: Optional[float] = 1.1,
+        connect_to_predecessor: Optional[bool] = False,
         cors: Optional[bool] = False,
         ctrl_with_ipc: Optional[bool] = True,
         daemon: Optional[bool] = False,
@@ -113,8 +113,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
         on_error_strategy: Optional[str] = 'IGNORE',
-        override_metas: Optional[dict] = None,
-        override_with: Optional[dict] = None,
         port_ctrl: Optional[int] = None,
         port_expose: Optional[int] = None,
         port_in: Optional[int] = None,
@@ -137,6 +135,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         timeout_ready: Optional[int] = 600000,
         title: Optional[str] = None,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
+        uses_metas: Optional[dict] = None,
+        uses_requests: Optional[dict] = None,
+        uses_with: Optional[dict] = None,
         workspace: Optional[str] = None,
         zmq_identity: Optional[str] = None,
         **kwargs,
@@ -149,6 +150,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
               it depends on the settings of `--compress-min-bytes` and `compress-min-ratio`
         :param compress_min_bytes: The original message size must be larger than this number to trigger the compress algorithm, -1 means disable compression.
         :param compress_min_ratio: The compression ratio (uncompressed_size/compressed_size) must be higher than this number to trigger the compress algorithm.
+        :param connect_to_predecessor: The head Pea of this Pod will connect to the TailPea of the predecessor Pod.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
         :param ctrl_with_ipc: If set, use ipc protocol for control socket
         :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
@@ -184,8 +186,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
           Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something
           is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.
-        :param override_metas: Dictionary of keyword arguments that will override the default `metas configuration` provided to the executor in `uses`
-        :param override_with: Dictionary of keyword arguments that will override the default `with configuration` provided to the executor in `uses`
         :param port_ctrl: The port for controlling the runtime, default a random port between [49152, 65535]
         :param port_expose: The port of the host exposed to the public
         :param port_in: The port for input data, default a random port between [49152, 65535]
@@ -213,7 +213,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param uses: The config of the executor, it could be one of the followings:
-                  * an Executor-level YAML file path (.yml, .yaml, .jaml)
+                  * an Executor YAML file (.yml, .yaml, .jaml)
+                  * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)
                   * a docker image (must start with `docker://`)
                   * the string literal of a YAML config (must start with `!` or `jtype: `)
                   * the string literal of a JSON config
@@ -221,6 +222,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                   When use it under Python, one can use the following values additionally:
                   - a Python dict that represents the config
                   - a text file stream has `.read()` interface
+        :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
+        :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
+        :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
         :param zmq_identity: The identity of a ZMQRuntime. It is used for unique socket identification towards other ZMQRuntimes.
 
@@ -435,6 +439,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     @overload
     def add(
         self,
+        connect_to_predecessor: Optional[bool] = False,
         ctrl_with_ipc: Optional[bool] = False,
         daemon: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
@@ -442,6 +447,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         env: Optional[dict] = None,
         expose_public: Optional[bool] = False,
         external: Optional[bool] = False,
+        gpus: Optional[str] = None,
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
         host_out: Optional[str] = '0.0.0.0',
@@ -450,8 +456,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         memory_hwm: Optional[int] = -1,
         name: Optional[str] = None,
         on_error_strategy: Optional[str] = 'IGNORE',
-        override_metas: Optional[dict] = None,
-        override_with: Optional[dict] = None,
         parallel: Optional[int] = 1,
         peas_hosts: Optional[List[str]] = None,
         polling: Optional[str] = 'ANY',
@@ -480,6 +484,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
         uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
         uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
+        uses_metas: Optional[dict] = None,
+        uses_requests: Optional[dict] = None,
+        uses_with: Optional[dict] = None,
         volumes: Optional[List[str]] = None,
         workspace: Optional[str] = None,
         zmq_identity: Optional[str] = None,
@@ -487,6 +494,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     ) -> Union['Flow', 'AsyncFlow']:
         """Add an Executor to the current Flow object.
 
+        :param connect_to_predecessor: The head Pea of this Pod will connect to the TailPea of the predecessor Pod.
         :param ctrl_with_ipc: If set, use ipc protocol for control socket
         :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
@@ -497,6 +505,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param env: The map of environment variables that are available inside runtime
         :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas
         :param external: The Pod will be considered an external Pod that has been started independently from the Flow.This Pod will not be context managed by the Flow.
+        :param gpus: This argument allows dockerized Jina executor discover local gpu devices.
+
+              Note,
+              - To access all gpus, use `--gpus all`.
+              - To access multiple gpus, e.g. make use of 2 gpus, use `--gpus 2`.
+              - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
+              - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
+              - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for input, by default it is 0.0.0.0
         :param host_out: The host address for output, by default it is 0.0.0.0
@@ -520,8 +536,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
           Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something
           is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.
-        :param override_metas: Dictionary of keyword arguments that will override the default `metas configuration` provided to the executor in `uses`
-        :param override_with: Dictionary of keyword arguments that will override the default `with configuration` provided to the executor in `uses`
         :param parallel: The number of parallel peas in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary
         :param peas_hosts: The hosts of the peas when parallel greater than 1.
                   Peas will be evenly distributed among the hosts. By default,
@@ -565,7 +579,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - by default, `--uses` YAML file is always uploaded.
           - uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use `--workspace-id` to specify the workspace.
         :param uses: The config of the executor, it could be one of the followings:
-                  * an Executor-level YAML file path (.yml, .yaml, .jaml)
+                  * an Executor YAML file (.yml, .yaml, .jaml)
+                  * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)
                   * a docker image (must start with `docker://`)
                   * the string literal of a YAML config (must start with `!` or `jtype: `)
                   * the string literal of a JSON config
@@ -575,6 +590,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                   - a text file stream has `.read()` interface
         :param uses_after: The executor attached after the Peas described by --uses, typically used for receiving from all parallels, accepted type follows `--uses`
         :param uses_before: The executor attached after the Peas described by --uses, typically before sending to all parallels, accepted type follows `--uses`
+        :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
+        :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
+        :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
         :param volumes: The path on the host to be mounted inside the container.
 
           Note,
@@ -662,6 +680,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             parser = set_gateway_parser()
 
         args = ArgNamespace.kwargs2namespace(kwargs, parser)
+
+        if args.grpc_data_requests and args.runtime_cls == 'ZEDRuntime':
+            args.runtime_cls = 'GRPCDataRuntime'
 
         # pod workspace if not set then derive from flow workspace
         args.workspace = os.path.abspath(args.workspace or self.workspace)
@@ -776,14 +797,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             },
         )
 
-    def _get_routing_table(self) -> RoutingTable:
+    def _get_routing_table(self, flow_name) -> RoutingTable:
         graph = RoutingTable()
         for pod_id, pod in self._pod_nodes.items():
             if pod_id == GATEWAY_NAME:
-                graph.add_pod(f'start-{GATEWAY_NAME}', pod)
-                graph.add_pod(f'end-{GATEWAY_NAME}', pod)
+                graph.add_pod(f'start-{GATEWAY_NAME}', flow_name, pod)
+                graph.add_pod(f'end-{GATEWAY_NAME}', flow_name, pod)
             else:
-                graph.add_pod(pod_id, pod)
+                graph.add_pod(pod_id, flow_name, pod)
 
         for end, pod in self._pod_nodes.items():
 
@@ -798,20 +819,23 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     start = f'start-{GATEWAY_NAME}'
 
                 start_pod = graph._get_target_pod(start)
-                if is_remote_local_connection(start_pod.host, pod.head_host):
+
+                if pod.connect_to_predecessor or is_remote_local_connection(
+                    start_pod.host, pod.head_host
+                ):
                     pod.head_args.hosts_in_connect.append(
-                        graph._get_target_pod(start).full_address
+                        graph._get_target_pod(start).full_out_address
                     )
 
-                    graph.add_edge(start, end, True)
+                    graph.add_edge(start, end, False)
                 else:
                     graph.add_edge(start, end)
 
         graph.active_pod = f'start-{GATEWAY_NAME}'
         return graph
 
-    def _set_initial_dynamic_routing_table(self):
-        routing_table = self._get_routing_table()
+    def _set_initial_dynamic_routing_table(self, flow_name):
+        routing_table = self._get_routing_table(flow_name)
         if not routing_table.is_acyclic():
             raise RoutingTableCyclicError(
                 'The routing graph has a cycle. This would result in an infinite loop. Fix your Flow setup.'
@@ -874,10 +898,12 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             else:
                 pod.needs = set(reverse_inspect_map.get(ep, ep) for ep in pod.needs)
 
-        op_flow._set_initial_dynamic_routing_table()
+        op_flow._set_initial_dynamic_routing_table(self.args.name)
 
-        for pod in op_flow._pod_nodes.values():
-            pod.args.host = self._resolve_host(pod.args.host)
+        # TODO skipped for now to have faster runtime (k8s hosts can not be resolved locally)
+        # for pod in op_flow._pod_nodes.values():
+        #     pass
+        # pod.args.host = self._resolve_host(pod.args.host)
 
         hanging_pods = _hanging_pods(op_flow)
         if hanging_pods:
@@ -1074,7 +1100,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                         )
 
                     for j in range(v.args.parallel):
-                        r = node
+                        r = v.args.uses
                         if v.args.replicas > 1:
                             r += f'_{i}_{j}'
                         elif v.args.parallel > 1:
@@ -1091,21 +1117,20 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 mermaid_graph.append('end')
 
         for node, v in self._pod_nodes.items():
-            ed_str = str(v.head_args.socket_in).split('_')[0]
             for need in sorted(v.needs):
-                if need in self._pod_nodes:
-                    st_str = str(self._pod_nodes[need].tail_args.socket_out).split('_')[
-                        0
-                    ]
 
-                _s = start_repl.get(need, (need, f'({need})'))
-                _e = end_repl.get(node, (node, f'({node})'))
+                _s = start_repl.get(
+                    need, (need, f'("{need}<br>({self._pod_nodes[need].args.uses})")')
+                )
+                _e = end_repl.get(node, (node, f'("{node}<br>({v.args.uses})")'))
                 _s_role = self._pod_nodes[need].role
                 _e_role = self._pod_nodes[node].role
                 line_st = '-->'
 
                 if _s_role in {PodRoleType.INSPECT, PodRoleType.JOIN_INSPECT}:
                     _s = start_repl.get(need, (need, f'{{{{{need}}}}}'))
+                elif _s_role == PodRoleType.GATEWAY:
+                    _s = start_repl.get(need, (need, f'("{need}")'))
 
                 if _e_role == PodRoleType.GATEWAY:
                     _e = ('gateway_END', f'({node})')
@@ -1180,8 +1205,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             mermaid_str = mermaid_str.replace('graph LR', 'graph TD')
 
         image_type = 'svg'
-        if output and output.endswith('jpg'):
-            image_type = 'jpg'
+        if output and not output.endswith('svg'):
+            image_type = 'img'
 
         url = op_flow._mermaid_to_url(mermaid_str, image_type)
         showed = False
@@ -1216,9 +1241,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param img_type: image type (svg/jpg)
         :return: the url points to a SVG
         """
-        if img_type == 'jpg':
-            img_type = 'img'
-
         encoded_str = base64.b64encode(bytes(mermaid_str, 'utf-8')).decode('utf-8')
 
         return f'https://mermaid.ink/{img_type}/{encoded_str}'
@@ -1563,131 +1585,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self._common_kwargs.update(kwargs)
 
     def deploy(self, deployment_type='k8s'):
-        """Deploys the Flow. Currently only Kubernetes is supported.
-        Moreover it comes with some limitations at the moment:
-        - only 'simple' linear Flows are supported
-        - sharding is not supported
-        - replicas are just used for redundancy - they can not be used in parallel
-        - each image can only be used once
-        - ingress is only possible on port 8080
-        """
+        from ..kubernetes.naive import naive_deployment
 
-        if deployment_type == 'k8s':
-            # self.logger.info(f'✨ Deploy Flow on Kubernetes...')
-            namespace = self.args.name
-            self.logger.info(f'📦\tCreate Namespace {namespace}')
-            kubernetes_tools.create('namespace', {'name': namespace})
-
-            pod_to_args = {}
-            for pod_name, pod in self._pod_nodes.items():
-                if pod_name == 'gateway':
-                    continue
-                scheme, name, tag, secret = parse_hub_uri(pod.args.uses)
-                meta_data = HubIO.fetch_meta(name)
-                image_name = meta_data.image_name
-                replicas = pod.args.replicas
-                self.logger.info(
-                    f'🔋\tCreate Service for "{pod_name}" with image "{name}" pulling from "{image_name}"'
-                )
-                kubernetes_tools.create(
-                    'service',
-                    {
-                        'name': name.lower(),
-                        'target': name.lower(),
-                        'namespace': namespace,
-                        'port': 8081,
-                        'type': 'ClusterIP',
-                    },
-                )
-                # cluster_ip = kubernetes_tools.get_service_cluster_ip(
-                #     name.lower(), namespace
-                # )
-                pod_to_args[pod_name] = {'host_in': f'{name.lower()}.{namespace}.svc.cluster.local'}
-
-                self.logger.info(
-                    f'🐳\tCreate Deployment for "{image_name}" with replicas {replicas}'
-                )
-                kubernetes_tools.create(
-                    'deployment',
-                    {
-                        'name': name.lower(),
-                        'namespace': namespace,
-                        'image': image_name,
-                        'replicas': replicas,
-                        'command': "[\"jina\"]",
-                        'args': "[\"executor\", \"--uses\", \"config.yml\", \"--port-in\", \"8081\", \"--dynamic-routing-in\", \"--dynamic-routing-out\", \"--socket-in\", \"ROUTER_BIND\", \"--socket-out\", \"ROUTER_BIND\"]",
-                        'port': 8081,
-                    },
-                )
-            self.logger.info(f'🔒\tCreate "gateway service"')
-            external_gateway_service = 'gateway-exposed'
-            kubernetes_tools.create(
-                'service',
-                {
-                    'name': external_gateway_service,
-                    'target': 'gateway',
-                    'namespace': namespace,
-                    'port': 8080,
-                    'type': 'ClusterIP',
-                },
-            )
-            kubernetes_tools.create(
-                'service',
-                {
-                    'name': 'gateway-in',
-                    'target': 'gateway',
-                    'namespace': namespace,
-                    'port': 8081,
-                    'type': 'ClusterIP',
-                },
-            )
-
-            # gateway_cluster_ip = kubernetes_tools.get_service_cluster_ip(
-            #     'gateway-in', namespace
-            # )
-
-            gateway_yaml = self.create_gateway_yaml(pod_to_args, 'gateway-in.f1.svc.cluster.local')
-            kubernetes_tools.create(
-                'deployment',
-                {
-                    'name': 'gateway',
-                    'replicas': 1,
-                    'port': 8080,
-                    'command': "[\"python\"]",
-                    'args': f"[\"gateway.py\", \"{gateway_yaml}\"]",
-                    'image': 'gcr.io/jina-showcase/generic-gateway',
-                    'namespace': namespace,
-                },
-            )
-
-            # self.logger.info(f'🌐\tCreate "Ingress resource"')
-            # kubernetes_tools.create_gateway_ingress(namespace)
-        else:
-            raise Exception(f'deployment type "{deployment_type}" is not supported')
-
-    def create_gateway_yaml(self, pod_to_args, gateway_host_in):
-        yaml = f"""
-        !Flow
-        version: '1'
-        with:
-          port_expose: 8080
-          host_in: {gateway_host_in}
-          port_in: 8081
-          protocol: http
-        pods:
-        """
-        for pod, args in pod_to_args.items():
-            yaml += f"""
-          - name: {pod}
-            port_in: 8081
-            host: {args['host_in']}
-            external: True
-            """
-
-        # return yaml
-        base_64_yaml = base64.b64encode(yaml.encode()).decode('utf8')
-        return base_64_yaml
-
-
-    def deploy_naive(self, deployment_type='k8s'):
         naive_deployment.deploy(self, deployment_type)

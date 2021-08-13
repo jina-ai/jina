@@ -3,10 +3,10 @@ import multiprocessing
 import os
 import threading
 import time
-from typing import Any, Tuple, Union, Dict
+from typing import Any, Tuple, Union, Dict, Optional
 
 from .helper import _get_event, ConditionalEvent
-from ... import __stop_msg__, __ready_msg__, __default_host__, __docker_host__
+from ... import __stop_msg__, __ready_msg__, __default_host__
 from ...enums import PeaRoleType, RuntimeBackendType, SocketType, GatewayProtocolType
 from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
 from ...helper import typename
@@ -23,8 +23,6 @@ def run(
     name: str,
     runtime_cls,
     envs: Dict[str, str],
-    timeout_ctrl: int,
-    zed_runtime_ctrl_address: str,
     is_started: Union['multiprocessing.Event', 'threading.Event'],
     is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
     is_ready: Union['multiprocessing.Event', 'threading.Event'],
@@ -50,8 +48,6 @@ def run(
     :param name: name of the Pea to have proper logging
     :param runtime_cls: the runtime class to instantiate
     :param envs: a dictionary of environment variables to be set in the new Process
-    :param timeout_ctrl: timeout time for the control port communication
-    :param zed_runtime_ctrl_address: the control address of the `ZEDRuntime` that is supported by the Pea or `ContainerRuntime` or `JinadRuntime`.
     :param is_started: concurrency event to communicate runtime is properly started. Used for better logging
     :param is_shutdown: concurrency event to communicate runtime is terminated
     :param is_ready: concurrency event to communicate runtime is ready to receive messages
@@ -77,10 +73,7 @@ def run(
         _set_envs()
         runtime = runtime_cls(
             args=args,
-            ctrl_addr=zed_runtime_ctrl_address,
-            ready_event=is_ready,
             cancel_event=cancel_event,
-            timeout_ctrl=timeout_ctrl,
         )
     except Exception as ex:
         logger.error(
@@ -93,6 +86,7 @@ def run(
     else:
         is_started.set()
         with runtime:
+            is_ready.set()
             runtime.run_forever()
     finally:
         _unset_envs()
@@ -158,8 +152,6 @@ class BasePea:
                 'is_shutdown': self.is_shutdown,
                 'is_ready': self.is_ready,
                 'cancel_event': self.cancel_event,
-                'timeout_ctrl': self._timeout_ctrl,
-                'zed_runtime_ctrl_address': self._zed_runtime_ctrl_address,
                 'runtime_cls': self.runtime_cls,
             },
         )
@@ -167,32 +159,14 @@ class BasePea:
 
     def _set_ctrl_adrr(self):
         """Sets control address for different runtimes"""
-        # This logic must be improved specially when it comes to naming. It is about relative local/remote position
-        # between the runtime and the `ZEDRuntime` it may control
-        from ..zmq import Zmqlet
-        from ..runtimes.container import ContainerRuntime
+        self.runtime_ctrl_address = self.runtime_cls.get_control_address(
+            host=self.args.host,
+            port=self.args.port_ctrl,
+            docker_kwargs=getattr(self.args, 'docker_kwargs', None),
+        )
 
-        if self.runtime_cls == ContainerRuntime:
-            # Checks if caller (JinaD) has set `docker_kwargs['extra_hosts']` to __docker_host__.
-            # If yes, set host_ctrl to __docker_host__, else keep it as __default_host__
-            # Reset extra_hosts as that's set by default in ContainerRuntime
-            if (
-                self.args.docker_kwargs
-                and 'extra_hosts' in self.args.docker_kwargs
-                and __docker_host__ in self.args.docker_kwargs['extra_hosts']
-            ):
-                ctrl_host = __docker_host__
-                self.args.docker_kwargs.pop('extra_hosts')
-            else:
-                ctrl_host = self.args.host
-
-            self._zed_runtime_ctrl_address = Zmqlet.get_ctrl_address(
-                ctrl_host, self.args.port_ctrl, self.args.ctrl_with_ipc
-            )[0]
-        else:
-            self._zed_runtime_ctrl_address = Zmqlet.get_ctrl_address(
-                self.args.host, self.args.port_ctrl, self.args.ctrl_with_ipc
-            )[0]
+        if not self.runtime_ctrl_address:
+            self.runtime_ctrl_address = f'{self.args.host}:{self.args.port_in}'
 
     def start(self):
         """Start the Pea.
@@ -227,7 +201,7 @@ class BasePea:
             self.logger.debug(f'Sending {command} command for the {retry}th time')
             try:
                 send_ctrl_message(
-                    self._zed_runtime_ctrl_address,
+                    self.runtime_ctrl_address,
                     command,
                     timeout=self._timeout_ctrl,
                     raise_exception=True,
@@ -240,23 +214,42 @@ class BasePea:
 
     def activate_runtime(self):
         """ Send activate control message. """
-        if self._is_dealer:
-            self._retry_control_message('ACTIVATE')
+        self.runtime_cls.activate(
+            logger=self.logger,
+            socket_in_type=self.args.socket_in,
+            control_address=self.runtime_ctrl_address,
+            timeout_ctrl=self._timeout_ctrl,
+        )
 
-    def _deactivate_runtime(self):
-        """Send deactivate control message. """
-        if self._is_dealer:
-            self._retry_control_message('DEACTIVATE')
+    def _cancel_runtime(self, skip_deactivate: bool = False):
+        """
+        Send terminate control message.
 
-    def _cancel_runtime(self):
-        """Send terminate control message."""
-        from ..runtimes.zmq.zed import ZEDRuntime
-        from ..runtimes.container import ContainerRuntime
+        :param skip_deactivate: Mark that the DEACTIVATE signal may be missed if set to True
+        """
+        self.runtime_cls.cancel(
+            cancel_event=self.cancel_event,
+            logger=self.logger,
+            socket_in_type=self.args.socket_in,
+            control_address=self.runtime_ctrl_address,
+            timeout_ctrl=self._timeout_ctrl,
+            skip_deactivate=skip_deactivate,
+        )
 
-        if self.runtime_cls == ZEDRuntime or self.runtime_cls == ContainerRuntime:
-            self._retry_control_message('TERMINATE')
-        else:
-            self.cancel_event.set()
+    def _wait_for_ready_or_shutdown(self, timeout: Optional[float]):
+        """
+        Waits for the process to be ready or to know it has failed.
+
+        :param timeout: The time to wait before readiness or failure is determined
+            .. # noqa: DAR201
+        """
+        return self.runtime_cls.wait_for_ready_or_shutdown(
+            timeout=timeout,
+            ready_or_shutdown_event=self.ready_or_shutdown.event,
+            ctrl_address=self.runtime_ctrl_address,
+            timeout_ctrl=self._timeout_ctrl,
+            shutdown_event=self.is_shutdown,
+        )
 
     def wait_start_success(self):
         """Block until all peas starts successfully.
@@ -268,8 +261,8 @@ class BasePea:
             _timeout = None
         else:
             _timeout /= 1e3
-        self.logger.debug('waiting for ready or shutdown signal from runtime')
-        if self.ready_or_shutdown.event.wait(_timeout):
+
+        if self._wait_for_ready_or_shutdown(_timeout):
             if self.is_shutdown.is_set():
                 # return too early and the shutdown is set, means something fails!!
                 if not self.is_started.is_set():
@@ -302,9 +295,9 @@ class BasePea:
         This method makes sure that the `Process/thread` is properly finished and its resources properly released
         """
         # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
+        self.logger.debug('waiting for ready or shutdown signal from runtime')
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
             try:
-                self._deactivate_runtime()
                 self._cancel_runtime()
                 if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
                     self.terminate()
@@ -331,11 +324,24 @@ class BasePea:
             # sometimes, we arrive to the close logic before the `is_ready` is even set.
             # Observed with `gateway` when Pods fail to start
             self.logger.warning(
-                'Pea is being closed before being ready. Most likely some other Pea in the Flow or Pod'
+                'Pea is being closed before being ready. Most likely some other Pea in the Flow or Pod '
                 'failed to start'
             )
-            if self.is_ready.wait(timeout=0.1):
-                self._cancel_runtime()
+            _timeout = self.args.timeout_ready
+            if _timeout <= 0:
+                _timeout = None
+            else:
+                _timeout /= 1e3
+            self.logger.debug('waiting for ready or shutdown signal from runtime')
+            if self._wait_for_ready_or_shutdown(_timeout):
+                if not self.is_shutdown.is_set():
+                    self._cancel_runtime(skip_deactivate=True)
+                    if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
+                        self.terminate()
+                        time.sleep(0.1)
+                        raise Exception(
+                            f'Shutdown signal was not received for {self._timeout_ctrl}'
+                        )
             else:
                 self.logger.warning(
                     'Terminating process after waiting for readiness signal for graceful shutdown'

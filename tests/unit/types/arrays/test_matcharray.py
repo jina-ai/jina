@@ -11,11 +11,7 @@ from jina.types.request import Request
 def document_factory():
     class DocumentFactory(object):
         def create(self, idx, text, mime_type=None):
-            with Document() as d:
-                d.tags['id'] = idx
-                d.text = text
-                d.mime_type = mime_type
-            return d
+            return Document(text=text, tags={'id': idx}, mime_type=mime_type)
 
     return DocumentFactory()
 
@@ -53,7 +49,6 @@ def test_append_from_documents(matcharray, document_factory, reference_doc):
     assert rv.granularity == reference_doc.granularity
     assert rv.adjacency == reference_doc.adjacency + 1
     assert rv.mime_type == 'text/plain'
-    assert rv.scores['score'].ref_id == reference_doc.id
 
 
 def test_mime_type_not_reassigned():

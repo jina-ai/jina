@@ -1,4 +1,5 @@
 from pathlib import Path
+from http import HTTPStatus
 from typing import Dict, List, Optional
 
 from fastapi import HTTPException, UploadFile, File
@@ -38,7 +39,7 @@ class FlowDepends:
             )
         except PathNotAFileError as e:
             raise HTTPException(
-                status_code=404,
+                status_code=HTTPStatus.NOT_FOUND,
                 detail=f'File `{self.filename}` not found in workspace `{self.workspace_id}`',
             )
 

@@ -102,13 +102,19 @@ class DaemonWorker(Thread):
         """
         return Dockerizer.network(workspace_id=self.id)
 
-    def generate_image(self):
+    def generate_image(self) -> str:
         """build and create a docker image
 
         :return: image id
         """
         return Dockerizer.build(
-            workspace_id=self.id, daemon_file=self.daemon_file, logger=self._logger
+            workspace_id=self.id,
+            daemon_file=self.daemon_file,
+            logger=JinaLogger(
+                context=self.name,
+                # identity=self.id,
+                workspace_path=self.workdir,
+            ),
         )
 
     @cached_property

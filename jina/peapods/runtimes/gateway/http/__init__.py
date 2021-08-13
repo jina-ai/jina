@@ -1,8 +1,11 @@
 import os
+import asyncio
 
-from .app import get_fastapi_app
-from ...zmq.asyncio import AsyncNewLoopRuntime
+from jina import __default_host__
+
 from .....importer import ImportExtensions
+from ...zmq.asyncio import AsyncNewLoopRuntime
+from .app import get_fastapi_app
 
 __all__ = ['HTTPRuntime']
 
@@ -37,21 +40,20 @@ class HTTPRuntime(AsyncNewLoopRuntime):
                 if self.should_exit:
                     return
 
-            async def serve(self, sockets=None):
+            async def serve(self, **kwargs):
                 """
                 Start the server.
 
-                :param sockets: sockets of server.
+                :param kwargs: keyword arguments
                 """
                 await self.main_loop()
-                await self.shutdown(sockets=sockets)
 
         from .....helper import extend_rest_interface
 
         self._server = UviServer(
             config=Config(
                 app=extend_rest_interface(get_fastapi_app(self.args, self.logger)),
-                host=self.args.host,
+                host=__default_host__,
                 port=self.args.port_expose,
                 log_level=os.getenv('JINA_LOG_LEVEL', 'error').lower(),
                 timeout_keep_alive=0
@@ -61,9 +63,17 @@ class HTTPRuntime(AsyncNewLoopRuntime):
 
     async def async_run_forever(self):
         """Running method of ther server."""
-        self.is_ready_event.set()
         await self._server.serve()
+
+    async def _wait_for_cancel(self):
+        """Do NOT override this method when inheriting from :class:`GatewayPea`"""
+        # handle terminate signals
+        while not self.is_cancel.is_set() and not self._server.should_exit:
+            await asyncio.sleep(0.1)
+
+        await self.async_cancel()
 
     async def async_cancel(self):
         """Stop the server."""
         self._server.should_exit = True
+        await self._server.shutdown()

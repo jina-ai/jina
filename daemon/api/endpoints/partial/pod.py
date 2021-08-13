@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 from jina.helper import ArgNamespace
 from jina.parsers import set_pod_parser
-from ....excepts import Runtime400Exception
+from ....excepts import PartialDaemon400Exception
 from ....models import PodModel
 from ....models.partial import PartialStoreItem
 from ....stores import partial_store as store
@@ -39,7 +39,7 @@ async def _create(pod: 'PodModel'):
         args = ArgNamespace.kwargs2namespace(pod.dict(), set_pod_parser())
         return store.add(args)
     except Exception as ex:
-        raise Runtime400Exception from ex
+        raise PartialDaemon400Exception from ex
 
 
 @router.delete(
@@ -55,7 +55,7 @@ async def _delete():
     try:
         store.delete()
     except Exception as ex:
-        raise Runtime400Exception from ex
+        raise PartialDaemon400Exception from ex
 
 
 @router.on_event('shutdown')

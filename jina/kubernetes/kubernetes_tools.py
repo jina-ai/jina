@@ -2,6 +2,7 @@ import threading
 
 import pathlib
 from bcolors import UNDERLINE, ENDC, BOLD, PASS
+import time
 
 
 from kubernetes import client, config, utils
@@ -127,8 +128,7 @@ def get_service_cluster_ip(service_name, namespace):
 
 def log_in_thread(pod_name, namespace, container):
     pod = v1.read_namespaced_pod(pod_name, namespace)
-    print("pod.containers is not tested") #TODO
-    containers = pod.containers
+    containers = [container.name for container in pod.spec.containers]
     if container not in containers:
         return
     w = Watch()
@@ -145,8 +145,13 @@ def get_pod_logs(namespace):
     pods = v1.list_namespaced_pod(namespace)
     pod_names = [item.metadata.name for item in pods.items]
     for pod_name in pod_names:
-        for container in ['executor', 'istio-proxy', 'dumper-init']: #, 'linkerd-proxy']:
+        for container in [
+            'executor',
+            'istio-proxy',
+            'dumper-init',
+        ]:  # , 'linkerd-proxy']:
             x = threading.Thread(
                 target=log_in_thread, args=(pod_name, namespace, container)
             )
             x.start()
+            time.sleep(0.1)  # wait to get the logs after another

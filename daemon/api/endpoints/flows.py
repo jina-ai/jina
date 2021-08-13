@@ -30,7 +30,7 @@ async def _fetch_flow_params():
 )
 async def _create(flow: FlowDepends = Depends(FlowDepends)):
     try:
-        return store.add(
+        return await store.add(
             id=flow.id,
             workspace_id=flow.workspace_id,
             params=flow.params,
@@ -43,7 +43,7 @@ async def _create(flow: FlowDepends = Depends(FlowDepends)):
 
 @router.put(
     path='/{id}',
-    summary='Run an update operation on the Flow object',
+    summary='Trigger an update operation on the Flow object',
     description='Types supported: "rolling_update"',
 )
 async def _update(
@@ -53,7 +53,10 @@ async def _update(
     pod_name: str,
     shards: int = None,
 ):
-    return store.update(id, kind, dump_path, pod_name, shards)
+    try:
+        return await store.update(id, kind, dump_path, pod_name, shards)
+    except Exception as ex:
+        raise Runtime400Exception from ex
 
 
 # order matters! this must be put in front of del {id}
@@ -63,7 +66,7 @@ async def _update(
     summary='Terminate all running Flows',
 )
 async def _clear_all():
-    store.clear()
+    await store.clear()
 
 
 @router.delete(
@@ -73,7 +76,7 @@ async def _clear_all():
 )
 async def _delete(id: DaemonID):
     try:
-        store.delete(id=id)
+        await store.delete(id=id)
     except KeyError:
         raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
 
@@ -87,4 +90,4 @@ async def _status(id: DaemonID):
     try:
         return store[id]
     except KeyError:
-        raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
+        raise HTTPException(status_code=404, detail=f'{id} not found in flow store')

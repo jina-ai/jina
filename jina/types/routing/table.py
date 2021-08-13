@@ -2,6 +2,7 @@ from collections import defaultdict
 from typing import List, Optional, Union
 
 from google.protobuf import json_format
+from jina.enums import PodRoleType
 
 from ..mixin import ProtoTypeMixin
 from ...excepts import BadRequestType
@@ -34,6 +35,14 @@ class TargetPod(ProtoTypeMixin):
         return self.proto.port
 
     @property
+    def port_out(self) -> int:
+        """Returns the `port` field of this TargetPod
+
+        :return: port
+        """
+        return self.proto.port_out
+
+    @property
     def host(self) -> str:
         """Returns the `host` field of this TargetPod
 
@@ -48,6 +57,14 @@ class TargetPod(ProtoTypeMixin):
         :return: address
         """
         return f'{self.host}:{self.port}'
+
+    @property
+    def full_out_address(self) -> str:
+        """Return the full zmq adress of the tail of this TargetPod
+
+        :return: address
+        """
+        return f'{self.host}:{self.port_out}'
 
     @property
     def expected_parts(self) -> int:
@@ -136,7 +153,7 @@ class RoutingTable(ProtoTypeMixin):
         self._get_target_pod(from_pod).add_edge(to_pod, send_as_bind)
         self._get_target_pod(to_pod).expected_parts += 1
 
-    def add_pod(self, pod_name: str, pod: 'BasePod') -> None:
+    def add_pod(self, pod_name: str, flow_name, pod: 'BasePod') -> None:
         """Adds a Pod vertex to the graph.
 
         :param pod_name: the name of the Pod. Should be unique to the graph.
@@ -148,12 +165,9 @@ class RoutingTable(ProtoTypeMixin):
             )
         target = self.pods[pod_name]
 
-        # TODO this is just a hack
-        if pod_name == f'end-gateway':
-            target.host = pod.args.host_in
-        else:
-            target.host = pod.head_host
+        target.host = pod.head_host
         target.port = pod.head_port_in
+        target.port_out = pod.tail_port_out
         target.target_identity = pod.head_zmq_identity
 
     def _get_target_pod(self, pod: str) -> TargetPod:

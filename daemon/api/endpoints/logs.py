@@ -83,7 +83,6 @@ class ConnectionManager:
 
         :param message: JSON-serializable message to be broadcast
         """
-        daemon_logger.debug('connections: %r', self.active_connections)
         for connection in self.active_connections:
             try:
                 await connection.send_json(message)
@@ -100,7 +99,7 @@ class ConnectionManager:
 
 
 @router.websocket('/logstream/{log_id}')
-async def _logstream(websocket: WebSocket, log_id: DaemonID, timeout: int = 30):
+async def _logstream(websocket: WebSocket, log_id: DaemonID, timeout: int = 60):
     manager = ConnectionManager()
     await manager.connect(websocket)
     client_details = _websocket_details(websocket)
@@ -118,7 +117,8 @@ async def _logstream(websocket: WebSocket, log_id: DaemonID, timeout: int = 30):
             not Path(filepath).is_file()
             and websocket.application_state == WebSocketState.CONNECTED
         ):
-            daemon_logger.debug(f'still waiting {filepath} to be ready...')
+            if n % 10 == 0:
+                daemon_logger.debug(f'still waiting {filepath} to be ready...')
             await asyncio.sleep(1)
             n += 1
             if timeout > 0 and n >= timeout:
@@ -131,12 +131,11 @@ async def _logstream(websocket: WebSocket, log_id: DaemonID, timeout: int = 30):
 
         with open(filepath) as fp:
             fp.seek(0, 2)
-            delay = 0.1
+            delay = 0.2
             n = 0
             while manager._has_active_connections():
                 line = fp.readline()  # also possible to read an empty line
                 if line:
-                    daemon_logger.debug('sending line %s', line)
                     payload = None
                     try:
                         payload = json.loads(line)

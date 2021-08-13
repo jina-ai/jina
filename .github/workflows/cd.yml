@@ -17,7 +17,7 @@ jobs:
       !startsWith(github.event.head_commit.message, 'chore') &&
       !startsWith(github.event.head_commit.message, 'build: hotfix') &&
       !endsWith(github.event.head_commit.message, 'reformatted by jina-dev-bot')
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
@@ -89,7 +89,7 @@ jobs:
 
   update-doc:
     needs: update-schema
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
@@ -138,7 +138,7 @@ jobs:
 
   prep-testbed:
     needs: [update-doc, update-schema]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 #        with:
@@ -165,7 +165,7 @@ jobs:
 
   core-test:
     needs: prep-testbed
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
       JINA_DAEMON_BUILD: DEVEL
     strategy:
@@ -181,14 +181,14 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Prepare enviroment
+      - name: Prepare environment
         run: |
           docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
           docker pull docker.pkg.github.com/jina-ai/jina/jina:test-pip
           docker tag docker.pkg.github.com/jina-ai/jina/jina:test-pip jinaai/jina:test-pip
           python -m pip install --upgrade pip
           python -m pip install wheel
-          pip install ".[cicd,test,daemon]" --no-cache-dir
+          pip install ".[all]" --no-cache-dir
           jina
           export JINA_LOG_LEVEL="ERROR"
         env:

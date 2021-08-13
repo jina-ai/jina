@@ -52,21 +52,23 @@ def test_get_set_item(tmpdir, idx1, idx99):
     for d in candidates:
         d.id = f'id_{d.id}'
     dam.extend(candidates)
-    dam[idx1] = Document(text='hello')
+    dam[idx1] = Document(id='id_1', text='hello')
     assert len(dam) == 100
     with pytest.raises(IndexError):
         dam[100] = Document(text='world')
-    dam[idx99] = Document(text='world')
+    dam[idx99] = Document(id='id_99', text='world')
     assert len(dam) == 100
     assert dam[1].text == 'hello'
     assert dam[99].text == 'world'
+    assert dam['id_1'].text == 'hello'
+    assert dam['id_99'].text == 'world'
     for idx, d in enumerate(dam):
         if idx == 1:
             assert d.text == 'hello'
         if idx == 99:
             assert d.text == 'world'
-    dam['unknown_new'] = Document()
-    assert len(dam) == 101
+    with pytest.raises(ValueError):
+        dam['unknown_new'] = Document()
 
 
 def test_traverse(tmpdir, mocker):
@@ -173,3 +175,232 @@ def test_convert_dm_to_dam(tmpdir, mocker):
     mock.assert_called()
     assert len(da) == 0
     assert len(dam) == 100
+
+
+@pytest.mark.parametrize('embed_dim', [10, 10000])
+def test_extend_and_get_attribute(tmpdir, embed_dim):
+    dam = DocumentArrayMemmap(tmpdir)
+    docs = list(random_docs(100, start_id=0, embed_dim=embed_dim))
+    dam.extend(docs)
+
+    dam2 = DocumentArrayMemmap(tmpdir)
+    x = dam2.get_attributes('embedding')
+    assert len(dam2) == 100
+
+    docs = list(random_docs(100, start_id=100, embed_dim=embed_dim))
+    dam2.extend(docs)
+    x = dam2.get_attributes('embedding')
+    assert len(x) == 200
+    assert x[0].shape == (embed_dim,)
+    assert len(dam2) == 200
+
+
+def test_sample(tmpdir):
+    da = DocumentArrayMemmap(tmpdir)
+    docs = list(random_docs(100))
+    da.extend(docs)
+    sampled = da.sample(5)
+    assert len(sampled) == 5
+    assert isinstance(sampled, DocumentArray)
+    with pytest.raises(ValueError):
+        da.sample(101)
+
+
+def test_sample_with_seed(tmpdir):
+    da = DocumentArrayMemmap(tmpdir)
+    docs = list(random_docs(100))
+    da.extend(docs)
+    sampled_1 = da.sample(5, seed=1)
+    sampled_2 = da.sample(5, seed=1)
+    sampled_3 = da.sample(5, seed=2)
+    assert len(sampled_1) == len(sampled_2) == len(sampled_3) == 5
+    assert sampled_1 == sampled_2
+    assert sampled_1 != sampled_3
+
+
+def test_shuffle(tmpdir):
+    da = DocumentArrayMemmap(tmpdir)
+    docs = list(random_docs(100))
+    da.extend(docs)
+    shuffled = da.shuffle()
+    assert len(shuffled) == len(da)
+    assert isinstance(shuffled, DocumentArray)
+    ids_before_shuffle = [d.id for d in da]
+    ids_after_shuffle = [d.id for d in shuffled]
+    assert ids_before_shuffle != ids_after_shuffle
+    assert sorted(ids_before_shuffle) == sorted(ids_after_shuffle)
+
+
+def test_shuffle_with_seed(tmpdir):
+    da = DocumentArrayMemmap(tmpdir)
+    docs = list(random_docs(100))
+    da.extend(docs)
+    shuffled_1 = da.shuffle(seed=1)
+    shuffled_2 = da.shuffle(seed=1)
+    shuffled_3 = da.shuffle(seed=2)
+    assert len(shuffled_1) == len(shuffled_2) == len(shuffled_3) == len(da)
+    assert shuffled_1 == shuffled_2
+    assert shuffled_1 != shuffled_3
+
+
+def test_memmap_delete_by_slice(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    candidates = list(random_docs(100))
+    for d in candidates:
+        d.id = f'id_{d.id}'
+    dam.extend(candidates)
+    assert len(dam) == 100
+    del dam[-5:]
+    assert len(dam) == 95
+    del dam[:5]
+    assert len(dam) == 90
+
+    for candidate in candidates[:5] + candidates[-5:]:
+        for d in dam:
+            assert d.id != candidate.id
+
+
+def test_memmap_get_by_slice(tmpdir):
+    def _assert_similar(da1, da2):
+        for doc_a, doc_b in zip(da1, da2):
+            assert doc_a.id == doc_b.id
+
+    dam = DocumentArrayMemmap(tmpdir)
+    candidates = list(random_docs(100))
+    for d in candidates:
+        d.id = f'id_{d.id}'
+    dam.extend(candidates)
+    assert len(dam) == 100
+
+    first_10 = dam[:10]
+    assert len(first_10) == 10
+    _assert_similar(candidates[:10], first_10)
+
+    last_10 = dam[-10:]
+    assert len(last_10) == 10
+    _assert_similar(candidates[-10:], last_10)
+
+    out_of_bound_1 = dam[-101:-95]
+    assert len(out_of_bound_1) == 5
+    _assert_similar(candidates[0:5], out_of_bound_1)
+
+    out_of_bound_2 = dam[-101:101]
+    assert len(out_of_bound_2) == 100
+    _assert_similar(candidates, out_of_bound_2)
+
+    out_of_bound_3 = dam[95:101]
+    assert len(out_of_bound_3) == 5
+    _assert_similar(candidates[95:], out_of_bound_3)
+
+    assert len(dam[101:105]) == 0
+
+    assert len(dam[-105:-101]) == 0
+
+    assert len(dam[10:0]) == 0
+
+
+def test_memmap_update_document(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    candidates = list(random_docs(100))
+    dam.extend(candidates)
+    for idx, candidate in enumerate(candidates):
+        candidate.content = f'new content {idx}'
+        dam[idx] = candidate
+
+    for idx, doc in enumerate(dam):
+        assert doc.content == f'new content {idx}'
+
+
+def test_memmap_update_in_memory(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=100)
+    candidates = list(random_docs(100))
+    dam.extend(candidates)
+    for idx, candidate in enumerate(candidates):
+        candidate.content = f'new content {idx}'
+
+    for idx, doc in enumerate(dam):
+        assert doc.content == f'new content {idx}'
+
+
+def test_memmap_save_reload(tmpdir):
+    docs = list(random_docs(100))
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=100)
+    dam.extend(docs)
+
+    dam1 = DocumentArrayMemmap(tmpdir)
+
+    for doc in docs:
+        doc.content = 'new'
+
+    for doc in dam:
+        # from memory
+        assert doc.content == 'new'
+        # from disk
+        assert dam.get_doc_by_key(doc.id).content == 'hello world'
+
+    # dam1 from disk (empty memory buffer + dam not persisted)
+    for doc in dam1:
+        assert doc.content == 'hello world'
+
+    dam.save()
+    dam1.reload()
+
+    # dam from disk
+    for doc in dam:
+        assert dam.get_doc_by_key(doc.id).content == 'new'
+
+    # dam1 up-to-date
+    for doc in dam1:
+        assert doc.content == 'new'
+
+
+def test_memmap_buffer_synched(tmpdir):
+    docs = list(random_docs(100))
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend(docs[:50])
+
+    for i, doc in enumerate(docs[50:]):
+        dam[i] = doc
+        assert dam.buffer_pool[doc.id].id == dam[i].id
+        doc.content = 'new'
+        assert dam[doc.id].content == 'new'
+
+
+def test_memmap_physical_size(tmpdir):
+    da = DocumentArrayMemmap(tmpdir)
+    assert da.physical_size == 0
+    da.append(Document())
+    assert da.physical_size > 0
+
+
+def test_memmap_persisted(tmpdir):
+    def _local_context():
+        dam = DocumentArrayMemmap(tmpdir)
+        docs = list(random_docs(10))
+        dam.extend(docs)
+        for doc in docs:
+            doc.content = 'new'
+
+    _local_context()
+    dam = DocumentArrayMemmap(tmpdir)
+    for i, doc in enumerate(dam):
+        assert doc.content == 'new'
+        assert doc.id == str(i)
+
+
+def test_memmap_mutate(tmpdir):
+    da = DocumentArrayMemmap(tmpdir)
+    d0 = Document(text='hello')
+    da.append(d0)
+    assert da[0] == d0
+    d1 = Document(text='world')
+    da.append(d1)
+    assert da[1] == d1
+
+    da2 = DocumentArrayMemmap(tmpdir)
+    assert len(da2) == 2
+    assert da2[0] == d0
+    assert da2[1] == d1
+
+    da.clear()
+    assert not len(da)

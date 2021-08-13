@@ -115,8 +115,15 @@ class Message:
                 else None,
             )
             self._size += sys.getsizeof(val)
-        elif isinstance(val, (Request, jina_pb2.RequestProto)):
-            self._request = val  # type: Union['Request', 'jina_pb2.RequestProto']
+        elif isinstance(val, Request):
+            self._request = val
+        elif isinstance(val, jina_pb2.RequestProto):
+            self._request = Request(
+                val,
+                CompressAlgo.from_string(self.envelope.compression.algorithm)
+                if self.envelope
+                else None,
+            )
         else:
             raise TypeError(
                 f'expecting request to be bytes or jina_pb2.RequestProto, but receiving {type(val)}'
@@ -239,7 +246,7 @@ class Message:
         r2 = self._compress(r2)
 
         r0 = self.envelope.receiver_id.encode()
-        r1 = self.envelope.SerializeToString()
+        r1 = self.envelope.SerializePartialToString()
         m = [r0, r1, r2]
         self._size = sum(sys.getsizeof(r) for r in m)
         return m

@@ -302,8 +302,8 @@ def test_container_override_params(docker_image_built, tmpdir, mocker):
         name=random_name(),
         uses=f'docker://{img_name}',
         volumes=abc_path + ':' + '/mapped/here/abc',
-        override_with={'greetings': 'overriden greetings'},
-        override_metas={
+        uses_with={'greetings': 'overriden greetings'},
+        uses_metas={
             'name': 'ext-mwu-encoder',
             'workspace': '/mapped/here/abc',
         },
@@ -324,7 +324,7 @@ def test_container_volume(docker_image_built, tmpdir):
         name=random_name(),
         uses=f'docker://{img_name}',
         volumes=abc_path + ':' + '/mapped/here/abc',
-        override_metas={
+        uses_metas={
             'name': 'ext-mwu-encoder',
             'workspace': '/mapped/here/abc',
         },
@@ -336,3 +336,58 @@ def test_container_volume(docker_image_built, tmpdir):
     assert os.path.exists(
         os.path.join(abc_path, 'ext-mwu-encoder', '0', 'ext-mwu-encoder.bin')
     )
+
+
+@pytest.mark.parametrize(
+    (
+        'gpus_value',
+        'expected_count',
+        'expected_device',
+        'expected_driver',
+        'expected_capabilities',
+    ),
+    [
+        ('all', -1, [], '', [['gpu']]),  # all gpus
+        ('2', 2, [], '', [['gpu']]),  # use two gpus
+        (
+            'device=GPU-fake-gpu-id',
+            0,
+            ['GPU-fake-gpu-id'],
+            '',
+            [['gpu']],
+        ),  # gpu by one device id
+        (
+            'device=GPU-fake-gpu-id1,device=GPU-fake-gpu-id2',
+            0,
+            ['GPU-fake-gpu-id1', 'GPU-fake-gpu-id2'],
+            '',
+            [['gpu']],
+        ),  # gpu by 2 device id
+        (
+            'device=GPU-fake-gpu-id,driver=nvidia,capabilities=utility,capabilities=display',
+            0,
+            ['GPU-fake-gpu-id'],
+            'nvidia',
+            [['gpu', 'utility', 'display']],
+        ),  # gpu with id, driver and capability
+        (
+            'device=GPU-fake-gpu-id1,device=GPU-fake-gpu-id2,driver=nvidia,capabilities=utility',
+            0,
+            ['GPU-fake-gpu-id1', 'GPU-fake-gpu-id2'],
+            'nvidia',
+            [['gpu', 'utility']],
+        ),  # multiple ids
+    ],
+)
+def test_gpu_container(
+    gpus_value, expected_count, expected_device, expected_driver, expected_capabilities
+):
+    args = set_pea_parser().parse_args(
+        ['--uses', f'docker://{img_name}', '--gpus', gpus_value]
+    )
+
+    device_requests = ContainerRuntime._get_gpu_device_requests(args.gpus)
+    assert device_requests[0]['Count'] == expected_count
+    assert device_requests[0]['DeviceIDs'] == expected_device
+    assert device_requests[0]['Driver'] == expected_driver
+    assert device_requests[0]['Capabilities'] == expected_capabilities

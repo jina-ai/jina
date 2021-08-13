@@ -3,6 +3,7 @@ import os
 import sys
 import time
 import warnings
+from typing import Union, Optional, Dict
 from pathlib import Path
 from platform import uname
 
@@ -12,13 +13,30 @@ from .... import __docker_host__
 from ....excepts import BadImageNameError, DockerVersionError
 from ...zmq import send_ctrl_message
 from ....helper import ArgNamespace, slugify
+from ....enums import SocketType
+
+if False:
+    import multiprocessing
+    import threading
+    from ....logging.logger import JinaLogger
 
 
 class ContainerRuntime(ZMQRuntime):
     """Runtime procedure for container."""
 
-    def __init__(self, args: 'argparse.Namespace', ctrl_addr: str, **kwargs):
-        super().__init__(args, ctrl_addr, **kwargs)
+    def __init__(self, args: 'argparse.Namespace', **kwargs):
+        super().__init__(args, **kwargs)
+        self.ctrl_addr = self.get_control_address(
+            args.host,
+            args.port_ctrl,
+            docker_kwargs=self.args.docker_kwargs,
+        )
+        if (
+            self.args.docker_kwargs
+            and 'extra_hosts' in self.args.docker_kwargs
+            and __docker_host__ in self.args.docker_kwargs['extra_hosts']
+        ):
+            self.args.docker_kwargs.pop('extra_hosts')
         self._set_network_for_dind_linux()
         self._docker_run()
         while self._is_container_alive and not self.is_ready:
@@ -42,7 +60,6 @@ class ContainerRuntime(ZMQRuntime):
 
     def run_forever(self):
         """Stream the logs while running."""
-        self.is_ready_event.set()
         self._stream_logs()
 
     def _set_network_for_dind_linux(self):
@@ -73,6 +90,38 @@ class ContainerRuntime(ZMQRuntime):
                     f' Control address set to {self.ctrl_addr}'
                 )
         client.close()
+
+    @staticmethod
+    def _get_gpu_device_requests(gpu_args):
+        import docker
+
+        _gpus = {
+            'count': 0,
+            'capabilities': ['gpu'],
+            'device': [],
+            'driver': '',
+        }
+        for gpu_arg in gpu_args.split(','):
+            if gpu_arg == 'all':
+                _gpus['count'] = -1
+            if gpu_arg.isdigit():
+                _gpus['count'] = int(gpu_arg)
+            if '=' in gpu_arg:
+                gpu_arg_key, gpu_arg_value = gpu_arg.split('=')
+                if gpu_arg_key in _gpus.keys():
+                    if isinstance(_gpus[gpu_arg_key], list):
+                        _gpus[gpu_arg_key].append(gpu_arg_value)
+                    else:
+                        _gpus[gpu_arg_key] = gpu_arg_value
+        device_requests = [
+            docker.types.DeviceRequest(
+                count=_gpus['count'],
+                driver=_gpus['driver'],
+                device_ids=_gpus['device'],
+                capabilities=[_gpus['capabilities']],
+            )
+        ]
+        return device_requests
 
     def _docker_run(self, replay: bool = False):
         # important to notice, that client is not assigned as instance member to avoid potential
@@ -119,6 +168,7 @@ class ContainerRuntime(ZMQRuntime):
                 'pull_latest',
                 'runtime_cls',
                 'docker_kwargs',
+                'gpus',
             },
         )
 
@@ -163,6 +213,11 @@ class ContainerRuntime(ZMQRuntime):
                     'mode': 'rw',
                 }
 
+        device_requests = []
+        if self.args.gpus:
+            device_requests = self._get_gpu_device_requests(self.args.gpus)
+            del self.args.gpus
+
         _expose_port = [self.args.port_ctrl]
         if self.args.socket_in.is_bind:
             _expose_port.append(self.args.port_in)
@@ -184,6 +239,7 @@ class ContainerRuntime(ZMQRuntime):
             network_mode=self._net_mode,
             entrypoint=self.args.entrypoint,
             extra_hosts={__docker_host__: 'host-gateway'},
+            device_requests=device_requests,
             **docker_kwargs,
         )
 
@@ -224,3 +280,135 @@ class ContainerRuntime(ZMQRuntime):
         except docker.errors.NotFound:
             return False
         return True
+
+    # Static methods used by the Pea to communicate with the `Runtime` in the separate process
+    @staticmethod
+    def wait_for_ready_or_shutdown(
+        timeout: Optional[float],
+        ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
+        **kwargs,
+    ):
+        """
+        Check if the runtime has successfully started
+
+        :param timeout: The time to wait before readiness or failure is determined
+        :param ready_or_shutdown_event: the multiprocessing event to detect if the process failed or succeeded
+        :param kwargs: extra keyword arguments
+
+        :return: True if is ready or it needs to be shutdown
+        """
+        return ready_or_shutdown_event.wait(timeout)
+
+    @staticmethod
+    def _retry_control_message(
+        ctrl_address: str,
+        timeout_ctrl: int,
+        command: str,
+        num_retry: int,
+        logger: 'JinaLogger',
+    ):
+        from ...zmq import send_ctrl_message
+
+        for retry in range(1, num_retry + 1):
+            logger.debug(f'Sending {command} command for the {retry}th time')
+            try:
+                send_ctrl_message(
+                    ctrl_address,
+                    command,
+                    timeout=timeout_ctrl,
+                    raise_exception=True,
+                )
+                break
+            except Exception as ex:
+                logger.warning(f'{ex!r}')
+                if retry == num_retry:
+                    raise ex
+
+    @staticmethod
+    def cancel(
+        control_address: str,
+        timeout_ctrl: int,
+        socket_in_type: 'SocketType',
+        skip_deactivate: bool,
+        logger: 'JinaLogger',
+        **kwargs,
+    ):
+        """
+        Check if the runtime has successfully started
+
+        :param control_address: the address where the control message needs to be sent
+        :param timeout_ctrl: the timeout to wait for control messages to be processed
+        :param socket_in_type: the type of input socket, needed to know if is a dealer
+        :param skip_deactivate: flag to tell if deactivate signal may be missed.
+            This is important when you want to independently kill a Runtime
+        :param logger: the JinaLogger to log messages
+        :param kwargs: extra keyword arguments
+        """
+        if not skip_deactivate and socket_in_type == SocketType.DEALER_CONNECT:
+            ContainerRuntime._retry_control_message(
+                ctrl_address=control_address,
+                timeout_ctrl=timeout_ctrl,
+                command='DEACTIVATE',
+                num_retry=3,
+                logger=logger,
+            )
+        ContainerRuntime._retry_control_message(
+            ctrl_address=control_address,
+            timeout_ctrl=timeout_ctrl,
+            command='TERMINATE',
+            num_retry=3,
+            logger=logger,
+        )
+
+    @staticmethod
+    def activate(
+        control_address: str,
+        timeout_ctrl: int,
+        socket_in_type: 'SocketType',
+        logger: 'JinaLogger',
+        **kwargs,
+    ):
+        """
+        Check if the runtime has successfully started
+
+        :param control_address: the address where the control message needs to be sent
+        :param timeout_ctrl: the timeout to wait for control messages to be processed
+        :param socket_in_type: the type of input socket, needed to know if is a dealer
+        :param logger: the JinaLogger to log messages
+        :param kwargs: extra keyword arguments
+        """
+        if socket_in_type == SocketType.DEALER_CONNECT:
+            ContainerRuntime._retry_control_message(
+                ctrl_address=control_address,
+                timeout_ctrl=timeout_ctrl,
+                command='ACTIVATE',
+                num_retry=3,
+                logger=logger,
+            )
+
+    @staticmethod
+    def get_control_address(
+        host: str,
+        port: str,
+        docker_kwargs: Optional[Dict],
+        **kwargs,
+    ):
+        """
+        Get the control address for a runtime with a given host and port
+
+        :param host: the host where the runtime works
+        :param port: the control port where the runtime listens
+        :param docker_kwargs: the extra docker kwargs from which maybe extract extra hosts
+        :param kwargs: extra keyword arguments
+        :return: The corresponding control address
+        """
+        if (
+            docker_kwargs
+            and 'extra_hosts' in docker_kwargs
+            and __docker_host__ in docker_kwargs['extra_hosts']
+        ):
+            ctrl_host = __docker_host__
+        else:
+            ctrl_host = host
+
+        return Zmqlet.get_ctrl_address(ctrl_host, port, False)[0]

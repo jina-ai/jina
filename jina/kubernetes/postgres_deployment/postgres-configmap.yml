@@ -8,4 +8,4 @@ metadata:
 data:
   POSTGRES_DB: "postgresdb"
   POSTGRES_USER: "postgresadmin"
-  POSTGRES_PASSWORD: "1235813"
+#  POSTGRES_PASSWORD: "1235813"
