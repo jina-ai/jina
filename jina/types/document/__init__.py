@@ -24,6 +24,7 @@ from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 
 from .converters import png_to_buffer, to_datauri, to_image_blob
+from .helper import versioned, VersionedMixin
 from ..mixin import ProtoTypeMixin
 from ..ndarray.generic import NdArray, BaseSparseNdArray
 from ..score import NamedScore
@@ -90,7 +91,7 @@ _all_doc_array_keys = ('blob', 'embedding')
 _special_mapped_keys = ('scores', 'evaluations')
 
 
-class Document(ProtoTypeMixin):
+class Document(ProtoTypeMixin, VersionedMixin):
     """
     :class:`Document` is one of the **primitive data type** in Jina.
 
@@ -141,6 +142,8 @@ class Document(ProtoTypeMixin):
     You can leverage the :meth:`convert_a_to_b` interface to convert between content forms.
 
     """
+
+    ON_GETATTR = ['matches', 'chunks']
 
     def __init__(
         self,
@@ -208,7 +211,7 @@ class Document(ProtoTypeMixin):
                         field_resolver.get(k, k): v for k, v in document.items()
                     }
 
-                user_fields = set(document.keys())
+                user_fields = set(document)
                 support_fields = set(
                     self.attributes(
                         include_proto_fields_camelcase=True, include_properties=False
@@ -345,43 +348,6 @@ class Document(ProtoTypeMixin):
         else:
             raise TypeError(f'{value!r} is not supported.')
 
-    def _update(
-        self,
-        source: 'Document',
-        destination: 'Document',
-        fields: Optional[List[str]] = None,
-    ) -> None:
-        """Merge fields specified in ``fields`` from source to destination.
-
-        :param source: source :class:`Document` object.
-        :param destination: the destination :class:`Document` object to be merged into.
-        :param fields: a list of field names that included from destination document
-
-        .. note::
-            *. if ``fields`` is empty, then destination is overridden by the source completely.
-            *. ``destination`` will be modified in place, ``source`` will be unchanged.
-            *. the ``fields`` has value in destination while not in source will be preserved.
-        """
-        # We do a safe update: only update existent (value being set) fields from source.
-        fields_can_be_updated = []
-        # ListFields returns a list of (FieldDescriptor, value) tuples for present fields.
-        present_fields = source._pb_body.ListFields()
-        for field_descriptor, _ in present_fields:
-            fields_can_be_updated.append(field_descriptor.name)
-        if not fields:
-            fields = fields_can_be_updated  # if `fields` empty, update all fields.
-        for field in fields:
-            if (
-                field == 'tags'
-            ):  # For the tags, stay consistent with the python update method.
-                destination._pb_body.tags.update(source.tags)
-            else:
-                destination._pb_body.ClearField(field)
-                try:
-                    setattr(destination, field, getattr(source, field))
-                except AttributeError:
-                    setattr(destination._pb_body, field, getattr(source, field))
-
     def update(
         self,
         source: 'Document',
@@ -389,20 +355,35 @@ class Document(ProtoTypeMixin):
     ) -> None:
         """Updates fields specified in ``fields`` from the source to current Document.
 
-        :param source: source :class:`Document` object.
-        :param fields: a list of field names that included from the current document,
-                if not specified, merge all fields.
+        :param source: The :class:`Document` we want to update from as source. The current
+            :class:`Document` is referred as destination.
+        :param fields: a list of field names that we want to update, if not specified,
+            use all present fields in source.
 
         .. note::
-            *. ``destination`` will be modified in place, ``source`` will be unchanged
+            *. if ``fields`` are empty, then all present fields in source will be merged into current document.
+            * `tags` will be updated like a python :attr:`dict`.
+            *. the current :class:`Document` will be modified in place, ``source`` will be unchanged.
+            *. if current document has more fields than :attr:`source`, these extra fields wll be preserved.
         """
-        if fields and not isinstance(fields, list):
-            raise TypeError('Parameter `fields` must be list of str')
-        self._update(
-            source,
-            self,
-            fields=fields,
-        )
+        # We do a safe update: only update existent (value being set) fields from source.
+        present_fields = [
+            field_descriptor.name
+            for field_descriptor, _ in source._pb_body.ListFields()
+        ]
+        if not fields:
+            fields = present_fields  # if `fields` empty, update all present fields.
+        for field in fields:
+            if (
+                field == 'tags'
+            ):  # For the tags, stay consistent with the python update method.
+                self._pb_body.tags.update(source.tags)
+            else:
+                self._pb_body.ClearField(field)
+                try:
+                    setattr(self, field, getattr(source, field))
+                except AttributeError:
+                    setattr(self._pb_body, field, getattr(source, field))
 
     @property
     def content_hash(self) -> str:
@@ -629,6 +610,7 @@ class Document(ProtoTypeMixin):
                 raise TypeError(f'{k} is in unsupported type {typename(v)}')
 
     @property
+    @versioned
     def matches(self) -> 'MatchArray':
         """Get all matches of the current document.
 
@@ -649,6 +631,7 @@ class Document(ProtoTypeMixin):
         self.matches.extend(value)
 
     @property
+    @versioned
     def chunks(self) -> 'ChunkArray':
         """Get all chunks of the current document.
 
@@ -1301,6 +1284,8 @@ class Document(ProtoTypeMixin):
         return list(set(support_keys))
 
     def __getattr__(self, item):
+        if item in self.ON_GETATTR:
+            self._increaseVersion()
         if hasattr(self._pb_body, item):
             value = getattr(self._pb_body, item)
         elif '__' in item:
@@ -1335,7 +1320,7 @@ def _is_datauri(value: str) -> bool:
 
 def _contains_conflicting_content(**kwargs):
     content_keys = 0
-    for k in kwargs.keys():
+    for k in kwargs:
         if k in _all_doc_content_keys:
             content_keys += 1
             if content_keys > 1:

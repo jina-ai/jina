@@ -34,7 +34,7 @@ The term "final release" is relative to "developmental release" as described bel
 
 `pip install -U jina` only installs the core dependencies of Jina.
 
-The recommended way of installing Jina is `pip install -U "jina[standard]"`
+The recommended way of installing Jina is `pip install -U jina`
 
 `"standard"` include extra dependencies that enables:
 - Jina Hub + Docker support
@@ -103,7 +103,7 @@ jinaai/jina:{version}{python_version}{extra}
     - `-py39` for Python 3.9;
 - `{extra}`: the extra dependency installed along with Jina. Possible values:
     - ` `: Jina is installed inside the image via `pip install jina`;
-    - `-standard`: Jina is installed inside the image via `pip install "jina[standard]"`. It includes all recommended dependencies;  
+    - `-standard`: Jina is installed inside the image via `pip install jina`. It includes all recommended dependencies;  
     - `-devel`: Jina is installed inside the image via `pip install "jina[devel]"`. It includes `standard` plus some extra dependencies;
     - `-daemon`: Jina is installed inside the image via `pip install "jina[dameon]"` along with `fluentd`; **and the entrypoint is set to `jinad`**.
 

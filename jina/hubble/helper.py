@@ -7,6 +7,7 @@ import os
 import shelve
 import subprocess
 import sys
+import tarfile
 import urllib
 import zipfile
 from functools import lru_cache, wraps
@@ -14,6 +15,7 @@ from pathlib import Path
 from typing import Tuple, Optional, Dict
 from urllib.parse import urlparse, urljoin
 from urllib.request import Request, urlopen
+
 
 from .. import __resources_path__
 from ..importer import ImportExtensions
@@ -104,7 +106,7 @@ def unpack_package(filepath: 'Path', target_dir: 'Path'):
         with zipfile.ZipFile(filepath, 'r') as zip:
             zip.extractall(target_dir)
     elif filepath.suffix in ['.tar', '.gz']:
-        with zipfile.open(filepath) as tar:
+        with tarfile.open(filepath) as tar:
             tar.extractall(target_dir)
     else:
         raise ValueError('File format is not supported for unpacking.')
