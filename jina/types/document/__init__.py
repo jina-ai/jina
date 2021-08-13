@@ -17,6 +17,7 @@ from typing import (
     Tuple,
     List,
     Type,
+    overload,
 )
 
 import numpy as np
@@ -144,6 +145,9 @@ class Document(ProtoTypeMixin, VersionedMixin):
     """
 
     ON_GETATTR = ['matches', 'chunks']
+
+    # overload_inject_start_document
+    # overload_inject_end_document
 
     def __init__(
         self,
