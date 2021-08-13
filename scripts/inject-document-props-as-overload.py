@@ -44,8 +44,13 @@ def get_overload_signature(
     ]
     args_str = ', \n'.join(kwargs + [f'{indent}{indent}**kwargs'])
     doc_str = '\n'.join(
-        f'{indent}{indent}:param {property_name}: {description}'
-        for property_name, _, description in properties
+        [
+            f'{indent}{indent}:param {property_name}: {description}'
+            for property_name, _, description in properties
+        ]
+        + [
+            f'{indent}{indent}:param kwargs: other parameters to be set _after_ the document is constructed'
+        ]
     )
 
     signature = f'def __init__(\n{indent}{indent}self,\n{args_str}\n{indent}):'

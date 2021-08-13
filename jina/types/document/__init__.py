@@ -187,6 +187,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
         :param content: the value of the content depending on `:meth:`content_type`
         :param granularity: the granularity from this document proto
         :param adjacency: the adjacency from this document proto
+        :param kwargs: other parameters to be set _after_ the document is constructed
         """
 
     # overload_inject_end_document
