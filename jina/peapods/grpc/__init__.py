@@ -33,6 +33,7 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         self.callback = message_callback
         self.msg_recv = 0
         self.msg_sent = 0
+        self._pending_tasks = []
 
     async def send_message(self, msg: 'Message', **kwargs):
         """
@@ -60,7 +61,10 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
                 async def task_wrapper(new_message, pod_address):
                     await self._stubs[pod_address].Call(new_message)
 
-                asyncio.create_task(task_wrapper(new_message, pod_address))
+                self._pending_tasks.append(
+                    asyncio.create_task(task_wrapper(new_message, pod_address))
+                )
+                self._update_pending_tasks()
             except grpc.RpcError as ex:
                 self._logger.error('Sending data request via grpc failed', ex)
                 raise ex
@@ -108,12 +112,20 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
 
         return new_message
 
-    async def close(self, grace_period=1.0, *args, **kwargs):
+    async def close(self, grace_period=None, *args, **kwargs):
         """Stop the Grpc server
         :param grace_period: Time to wait for message processing to finish before killing the grpc server
         :param args: Extra positional arguments
         :param kwargs: Extra key-value arguments
         """
+        self._update_pending_tasks()
+        try:
+            await asyncio.wait_for(asyncio.gather(*self._pending_tasks), timeout=1.0)
+        except asyncio.TimeoutError:
+            self._update_pending_tasks()
+            self._logger.warning(
+                f'Could not gracefully complete {len(self._pending_tasks)} pending tasks on close.'
+            )
         self._logger.debug('Close grpc server')
         await self._grpc_server.stop(grace_period)
 
@@ -135,6 +147,9 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         await self._grpc_server.start()
         await self._grpc_server.wait_for_termination()
 
+    def _update_pending_tasks(self):
+        self._pending_tasks = [task for task in self._pending_tasks if not task.done()]
+
     async def Call(self, msg, *args):
         """Processes messages received by the GRPC server
         :param msg: The received message
@@ -142,11 +157,12 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         :return: Empty protobuf struct, necessary to return for protobuf Empty
         """
         if self.callback:
-            asyncio.create_task(self.callback(msg))
+            self._pending_tasks.append(asyncio.create_task(self.callback(msg)))
         else:
             self._logger.debug(
                 'Grpclet received data request, but no callback was registered'
             )
 
         self.msg_recv += 1
+        self._update_pending_tasks()
         return struct_pb2.Value()
