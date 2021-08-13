@@ -483,6 +483,25 @@ much slower.</p></li>
 </dd>
 </dl>
 </dd></dl>
+<dl class="py method">
+<dt id="jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin.embeddings">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">embeddings</span></code><a class="headerlink" href="#jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin.embeddings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a <cite>np.ndarray</cite> stacking all the <cite>embedding</cite> attributes as rows.</p>
+<dl class="simple">
+<dt>Warning: This operation assumes all embeddings have the same shape and dtype.</dt><dd><p>All dtype and shape values are assumed to be equal to the values of the
+first element in the DocumentArray / DocumentArrayMemmap</p>
+</dd>
+</dl>
+<p>Warning: This operation currently does not support sparse arrays.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>embeddings stacked per row as <cite>np.ndarray</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 </div>
 

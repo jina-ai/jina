@@ -494,8 +494,9 @@
         <span class="n">is_sparse</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">darray</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">embedding</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-            <span class="n">x_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">))</span>
-            <span class="n">y_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">darray</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">))</span>
+            <span class="n">x_mat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddings</span>
+            <span class="n">y_mat</span> <span class="o">=</span> <span class="n">darray</span><span class="o">.</span><span class="n">embeddings</span>
+
         <span class="k">else</span><span class="p">:</span>
             <span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
 
@@ -536,15 +537,13 @@
             <span class="n">darray</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">embedding</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
         <span class="p">),</span> <span class="sa">f</span><span class="s1">'expected embedding of type np.ndarray but received </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">darray</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">embedding</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
 
-        <span class="n">x_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">))</span>
+        <span class="n">x_mat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddings</span>
         <span class="n">n_x</span> <span class="o">=</span> <span class="n">x_mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="k">def</span> <span class="nf">batch_generator</span><span class="p">(</span><span class="n">y_darray</span><span class="p">:</span> <span class="s1">'DocumentArrayMemmap'</span><span class="p">,</span> <span class="n">n_batch</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">n_max</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_darray</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_darray</span><span class="p">),</span> <span class="n">n_batch</span><span class="p">):</span>
-                <span class="n">y_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
-                    <span class="p">[</span><span class="n">y_darray</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">embedding</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">n_batch</span><span class="p">,</span> <span class="n">n_max</span><span class="p">))]</span>
-                <span class="p">)</span>
+                <span class="n">y_mat</span> <span class="o">=</span> <span class="n">y_darray</span><span class="o">.</span><span class="n">_get_embeddings</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="n">n_batch</span><span class="p">))</span>
                 <span class="k">yield</span> <span class="n">y_mat</span><span class="p">,</span> <span class="n">i</span>
 
         <span class="n">y_batch_generator</span> <span class="o">=</span> <span class="n">batch_generator</span><span class="p">(</span><span class="n">darray</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
@@ -595,7 +594,7 @@
 
 <span class="sd">        """</span>
 
-        <span class="n">x_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">))</span>
+        <span class="n">x_mat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddings</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span>
             <span class="n">x_mat</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
         <span class="p">),</span> <span class="sa">f</span><span class="s1">'Type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x_mat</span><span class="p">)</span><span class="si">}</span><span class="s1"> not currently supported, use np.ndarray embeddings'</span>
@@ -620,6 +619,7 @@
             <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
         <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+
         <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span> <span class="ow">or</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">x_mat</span><span class="p">)</span><span class="si">}</span><span class="s1"> Documents with PCA'</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">colored_tag</span><span class="p">:</span>
@@ -638,7 +638,56 @@
         <span class="k">if</span> <span class="n">output</span><span class="p">:</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">'tight'</span><span class="p">,</span> <span class="n">pad_inches</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div></div>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">"""Return a `np.ndarray` stacking all the `embedding` attributes as rows.</span>
+
+<span class="sd">        Warning: This operation assumes all embeddings have the same shape and dtype.</span>
+<span class="sd">                 All dtype and shape values are assumed to be equal to the values of the</span>
+<span class="sd">                 first element in the DocumentArray / DocumentArrayMemmap</span>
+
+<span class="sd">        Warning: This operation currently does not support sparse arrays.</span>
+
+<span class="sd">        :return: embeddings stacked per row as `np.ndarray`.</span>
+<span class="sd">        """</span>
+
+        <span class="n">x_mat</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">dense</span><span class="o">.</span><span class="n">buffer</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">x_mat</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">dense</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+            <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">dense</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">slice</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">"""Return a `np.ndarray` stacking  the `embedding` attributes as rows.</span>
+<span class="sd">        If indices is passed the embeddings from the indices are retrieved, otherwise</span>
+<span class="sd">        all indices are retrieved.</span>
+
+<span class="sd">        Example: `self._get_embeddings(10:20)` will return 10 embeddings from positions 10 to 20</span>
+<span class="sd">                  in the `DocumentArray` or `DocumentArrayMemmap`</span>
+
+<span class="sd">        Warning: This operation assumes all embeddings have the same shape and dtype.</span>
+<span class="sd">                 All dtype and shape values are assumed to be equal to the values of the</span>
+<span class="sd">                 first element in the DocumentArray / DocumentArrayMemmap</span>
+
+<span class="sd">        Warning: This operation currently does not support sparse arrays.</span>
+
+<span class="sd">        :param indices: slice of data from where to retrieve embeddings.</span>
+<span class="sd">        :return: embeddings stacked per row as `np.ndarray`.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+        <span class="n">x_mat</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">()</span>
+        <span class="n">len_slice</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">[</span><span class="n">indices</span><span class="p">]:</span>
+            <span class="n">x_mat</span> <span class="o">+=</span> <span class="n">d</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">dense</span><span class="o">.</span><span class="n">buffer</span>
+            <span class="n">len_slice</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">x_mat</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">dense</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">len_slice</span><span class="p">,</span> <span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">dense</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="p">)</span></div>
 </pre></div>
       </article>
       <footer>
