@@ -405,7 +405,11 @@
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">colored</span><span class="p">,</span> <span class="n">random_port</span>
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">BaseStore</span>
 <span class="kn">from</span> <span class="nn">..dockerize</span> <span class="kn">import</span> <span class="n">Dockerizer</span>
-<span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">PartialDaemon400Exception</span><span class="p">,</span> <span class="n">Runtime400Exception</span>
+<span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PartialDaemon400Exception</span><span class="p">,</span>
+    <span class="n">Runtime400Exception</span><span class="p">,</span>
+    <span class="n">PartialDaemonConnectionException</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">if_alive</span><span class="p">,</span> <span class="n">id_cleaner</span><span class="p">,</span> <span class="n">error_msg_from</span>
 <span class="kn">from</span> <span class="nn">..models</span> <span class="kn">import</span> <span class="n">DaemonID</span>
 <span class="kn">from</span> <span class="nn">..models.enums</span> <span class="kn">import</span> <span class="n">UpdateOperation</span><span class="p">,</span> <span class="n">IDLiterals</span>
@@ -535,7 +539,7 @@
 <span class="sd">        :param ports: ports to be mapped to local</span>
 <span class="sd">        :param kwargs: keyword args</span>
 <span class="sd">        :raises KeyError: if workspace_id doesn't exist in the store</span>
-<span class="sd">        :raises Runtime400Exception: if container creation fails</span>
+<span class="sd">        :raises PartialDaemonConnectionException: if jinad cannot connect to partial</span>
 <span class="sd">        :return: id of the container</span>
 <span class="sd">        """</span>
         <span class="k">try</span><span class="p">:</span>
@@ -566,16 +570,18 @@
                 <span class="n">workspace_id</span><span class="o">=</span><span class="n">workspace_id</span><span class="p">,</span> <span class="n">container_id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="n">command</span><span class="p">,</span> <span class="n">ports</span><span class="o">=</span><span class="n">ports</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">ready</span><span class="p">(</span><span class="n">uri</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="n">Runtime400Exception</span><span class="p">(</span>
+                <span class="k">raise</span> <span class="n">PartialDaemonConnectionException</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="nb">id</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s1"> creation failed, couldn</span><span class="se">\'</span><span class="s1">t reach the container at </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1"> after 10secs'</span>
                 <span class="p">)</span>
             <span class="nb">object</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">uri</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1"> creation failed as </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
             <span class="n">container_logs</span> <span class="o">=</span> <span class="n">Dockerizer</span><span class="o">.</span><span class="n">logs</span><span class="p">(</span><span class="n">container</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">container_logs</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">PartialDaemon400Exception</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">container_logs</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
+                <span class="n">e</span><span class="p">,</span> <span class="p">(</span><span class="n">PartialDaemon400Exception</span><span class="p">,</span> <span class="n">PartialDaemonConnectionException</span><span class="p">)</span>
+            <span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'error logs frm partial daemon: </span><span class="se">\n</span><span class="s1"> </span><span class="si">{</span><span class="n">container_logs</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">'error logs from partial daemon: </span><span class="se">\n</span><span class="s1"> </span><span class="si">{</span><span class="n">container_logs</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
                     <span class="n">e</span><span class="o">.</span><span class="n">message</span> <span class="o">+=</span> <span class="n">container_logs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
