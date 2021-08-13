@@ -64,3 +64,5 @@ aiostream:                  devel, cicd, async, client, standard
 jsonschema:                 cicd
 dgl==0.6.1:                 cicd, graph
 black==20.8b1:              cicd
+bcolors==1.0.2:             core
+kubernetes==17.17.0:        core

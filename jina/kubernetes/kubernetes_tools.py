@@ -1,7 +1,6 @@
 import threading
-import time
 
-import bcolors
+import pathlib
 from bcolors import UNDERLINE, ENDC, BOLD, PASS
 
 
@@ -11,6 +10,9 @@ import tempfile
 
 from kubernetes.utils import FailToCreateError
 from kubernetes.watch import Watch
+
+cur_dir = path = os.path.dirname(__file__)
+
 
 config.load_kube_config()
 k8s_client = client.ApiClient()
@@ -108,7 +110,10 @@ def create(template, params):
 
 
 def get_yaml(template, params):
-    with open(f'jina/kubernetes/template/{template}.yml') as f:
+    path = os.path.join(cur_dir, 'template', f'{template}.yml')
+    print(cur_dir)
+    print(path)
+    with open(path) as f:
         content = f.read()
         for k, v in params.items():
             content = content.replace(f'{{{k}}}', str(v))
