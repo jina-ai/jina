@@ -187,10 +187,6 @@ class Document(ProtoTypeMixin, VersionedMixin):
         :param content: the value of the content depending on `:meth:`content_type`
         :param granularity: the granularity from this document proto
         :param adjacency: the adjacency from this document proto
-
-        .. # noqa: DAR202
-        .. # noqa: DAR101
-        .. # noqa: DAR003
         """
 
     # overload_inject_end_document
