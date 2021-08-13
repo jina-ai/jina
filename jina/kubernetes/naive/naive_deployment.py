@@ -181,7 +181,7 @@ def get_needs(flow, pod):
 
 
 def get_k8s_flow(flow):
-    k8s_flow = Flow(name=flow.args.name, port_expose=flow.port_expose, protocol=flow.protocol, grpc_data_requests=True)
+    k8s_flow = Flow(name=flow.args.name, port_expose=flow.port_expose, protocol=flow.protocol, grpc_data_requests=False)
     pod_name_to_parallel = dict()
     for pod_name, pod in flow._pod_nodes.items():
         if pod_name == 'gateway':
