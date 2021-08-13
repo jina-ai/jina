@@ -112,8 +112,6 @@ def create(template, params):
 
 def get_yaml(template, params):
     path = os.path.join(cur_dir, 'template', f'{template}.yml')
-    print(cur_dir)
-    print(path)
     with open(path) as f:
         content = f.read()
         for k, v in params.items():
