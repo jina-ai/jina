@@ -50,6 +50,10 @@ class PartialDaemon400Exception(Exception):
         self.message = message
 
 
+class PartialDaemonConnectionException(PartialDaemon400Exception):
+    """ Exception if JinaD cannot connect to Partial Daemon"""
+
+
 def _get_exception(ex: Exception) -> Exception:
     """Get exception cause/context from chained exceptions
 
