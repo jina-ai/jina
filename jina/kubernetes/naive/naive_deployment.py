@@ -30,6 +30,7 @@ def deploy_service(
         container_cmd,
         container_args,
         logger,
+        replicas,
         init_container=None,
 ):
     from jina.kubernetes import kubernetes_tools
@@ -50,9 +51,6 @@ def deploy_service(
         },
     )
 
-    # cluster_ip = kubernetes_tools.get_service_cluster_ip(name, namespace)
-
-    replicas = 1
     logger.info(
         f'🐳\tCreate Deployment for "{image_name}" with replicas {replicas} and init_container {init_container is not None}'
     )
@@ -183,64 +181,77 @@ def get_needs(flow, pod):
 
 
 def get_k8s_flow(flow):
-    k8s_flow = Flow(name=flow.args.name, port_expose=flow.port_expose, grpc_data_requests=True)
+    k8s_flow = Flow(name=flow.args.name, port_expose=flow.port_expose, protocol=flow.protocol, grpc_data_requests=True)
+    pod_name_to_parallel = dict()
     for pod_name, pod in flow._pod_nodes.items():
         if pod_name == 'gateway':
             continue
         needs = get_needs(flow, pod)
-        if pod.args.parallel > 1:
+
+        if type(pod).__name__ == 'CompoundPod':
+            pod_args = pod.replicas_args[0]
+            pod_args.name = pod_args.name.split('/')[0]
+            replicas = len(pod.replicas_args)
+        else:
+            pod_args = pod.args
+            replicas = 1
+        pod_name_to_parallel[pod_name] = (pod.args.parallel, replicas)
+        if pod_args.parallel > 1:
             k8s_flow = k8s_flow.add(
-                name=pod.args.name + '_head',
-                uses=pod.args.uses_before,
+                name=pod_args.name + '_head',
+                uses=pod_args.uses_before,
                 port_in=8081,
                 host=f'{to_dns_name(pod_name)}-head.{k8s_flow.args.name}.svc.cluster.local',
                 external=True,
                 needs=needs
             )
-            for i in range(pod.args.parallel):
+            for i in range(pod_args.parallel):
                 k8s_flow = k8s_flow.add(
-                    name=pod.args.name + f'_{i}',
-                    uses=pod.args.uses,
+                    name=pod_args.name + f'_{i}',
+                    uses=pod_args.uses,
                     port_in=8081,
                     host=f'{to_dns_name(pod_name)}-{i}.{k8s_flow.args.name}.svc.cluster.local',
-                    uses_with=pod.args.uses_with,
+                    uses_with=pod_args.uses_with,
+                    pea_id=i,
                     external=True,
-                    needs=[pod.args.name + '_head']
+                    needs=[pod_args.name + '_head']
                 )
             k8s_flow = k8s_flow.add(
-                name=pod.args.name + '_tail',
-                uses=pod.args.uses_after,
+                name=pod_args.name + '_tail',
+                uses=pod_args.uses_after,
                 port_in=8081,
                 host=f'{to_dns_name(pod_name)}-tail.{k8s_flow.args.name}.svc.cluster.local',
-                uses_with=pod.args.uses_with,
+                uses_with=pod_args.uses_with,
                 external=True,
-                needs=[pod.args.name + f'_{i}' for i in range(pod.args.parallel)]
+                needs=[pod_args.name + f'_{i}' for i in range(pod_args.parallel)]
             )
         else:
             k8s_flow = k8s_flow.add(
-                name=pod.args.name,
-                uses=pod.args.uses,
+                name=pod_args.name,
+                uses=pod_args.uses,
                 port_in=8081,
                 host=f'{to_dns_name(pod_name)}.{k8s_flow.args.name}.svc.cluster.local',
-                uses_with=pod.args.uses_with,
+                uses_with=pod_args.uses_with,
                 external=True,
                 needs=needs
             )
-    return prepare_flow(k8s_flow)
+    return prepare_flow(k8s_flow), pod_name_to_parallel
 
 
 def convert_to_table_name(pod_name):
     return pod_name.replace('-', '_')
 
 
-def get_init_container_args(pod):
-    if pod.args.uses == 'jinahub+docker://AnnoySearcher' or pod.args.uses == 'jinahub+docker://FaissSearcher':
-        parallel = len(pod.peas_args['peas'])
+def get_init_container_args(pod, pod_name_to_parallel):
+    if (pod.args.uses == 'jinahub+docker://AnnoySearcher' or
+            pod.args.uses == 'jinahub+docker://FaissSearcher' or
+            pod.args.uses == 'gcr.io/mystical-sweep-320315/annoy-with-grpc'):
         init_image_name = get_image_name(
             'jinahub+docker://PostgreSQLStorage'
         )
         postgres_cluster_ip = f'postgres.postgres.svc.cluster.local'
 
+        pod_name = pod.name.rsplit("_", 1)[0]
         python_script = (
             'import os; '
             'os.chdir(\'/\'); '
@@ -250,11 +261,11 @@ def get_init_container_args(pod):
             'port=5432,'
             'username="postgresadmin",'
             'database="postgresdb",'
-            f'table="{convert_to_table_name(pod.name)}",'
+            f'table="{convert_to_table_name(pod_name)}",'
             '); '
             'storage.dump(parameters={'
             '"dump_path": "/shared", '
-            f'"shards": {parallel}'
+            f'"shards": {pod_name_to_parallel[pod_name][0]}'
             '});'
         ).replace("\"", "\\\"")
 
@@ -268,7 +279,7 @@ def get_init_container_args(pod):
     return init_container
 
 
-def create_in_k8s(k8s_flow):
+def create_in_k8s(k8s_flow, pod_name_to_parallel):
     namespace = k8s_flow.args.name
     for pod_name, pod in k8s_flow._pod_nodes.items():
         if pod_name == 'gateway':
@@ -277,7 +288,7 @@ def create_in_k8s(k8s_flow):
         pea_arg = pod.peas_args['peas'][0]
         pea_name = pea_arg.name
         pea_dns_name = to_dns_name(pea_name)
-        init_container_args = get_init_container_args(pod)
+        init_container_args = get_init_container_args(pod, pod_name_to_parallel)
         uses_metas = dictionary_to_cli_param({'pea_id': pea_arg.pea_id})
         uses_with = dictionary_to_cli_param(pea_arg.uses_with)
         uses_with_string = (
@@ -286,17 +297,23 @@ def create_in_k8s(k8s_flow):
         if image_name == 'BaseExecutor':
             image_name = 'jinaai/jina'
             container_args = (f'["executor", '
-            f'"--uses", "BaseExecutor", '
-            f'"--uses-metas", "{uses_metas}", '
-            + uses_with_string
-            + f'{get_cli_params(pea_arg)}]')
+                              f'"--uses", "BaseExecutor", '
+                              f'"--uses-metas", "{uses_metas}", '
+                              + uses_with_string
+                              + f'{get_cli_params(pea_arg)}]')
 
         else:
             container_args = (f'["executor", '
-            f'"--uses", "config.yml", '
-            f'"--uses-metas", "{uses_metas}", '
-            + uses_with_string
-            + f'{get_cli_params(pea_arg)}]')
+                              f'"--uses", "config.yml", '
+                              f'"--uses-metas", "{uses_metas}", '
+                              + uses_with_string
+                              + f'{get_cli_params(pea_arg)}]')
+
+
+        if pod_name.endswith('_tail') or pod_name.endswith('_head'):
+            replicas = 1
+        else:
+            replicas = pod_name_to_parallel[pod_name.rsplit("_", 1)[0]][1]
 
         deploy_service(
             pea_dns_name,
@@ -309,6 +326,7 @@ def create_in_k8s(k8s_flow):
             container_cmd='["jina"]',
             container_args=container_args,
             logger=k8s_flow.logger,
+            replicas=replicas,
             init_container=init_container_args,
         )
 
@@ -324,6 +342,7 @@ def create_in_k8s(k8s_flow):
         container_cmd='["jina"]',
         container_args=f'["gateway", ' f'{get_cli_params(gateway_args)}]',
         logger=k8s_flow.logger,
+        replicas=1,
         init_container=None,
     )
 
@@ -333,6 +352,7 @@ def deploy(flow, deployment_type='k8s'):
     Each pod is deployed in a stateful set and we use zmq level communication.
     """
     from jina.kubernetes import kubernetes_tools
+    # TODO needed?
     flow = prepare_flow(flow)
 
     if deployment_type == 'k8s':
@@ -341,9 +361,9 @@ def deploy(flow, deployment_type='k8s'):
         flow.logger.info(f'📦\tCreate Namespace {namespace}')
         kubernetes_tools.create('namespace', {'name': namespace})
 
-        k8s_flow = get_k8s_flow(flow)
+        k8s_flow, pod_name_to_parallel = get_k8s_flow(flow)
 
-        create_in_k8s(k8s_flow)
+        create_in_k8s(k8s_flow, pod_name_to_parallel)
 
         # flow.logger.info(f'🌐\tCreate "Ingress resource"')
         # kubernetes_tools.create_gateway_ingress(namespace)

@@ -56,5 +56,5 @@ index_flow = (
         needs='imageencoder',
     )
 )
-index_flow.plot('index.jpg')
+index_flow.plot('index-flow.jpg')
 index_flow.deploy('k8s')

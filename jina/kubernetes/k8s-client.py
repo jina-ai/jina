@@ -23,15 +23,20 @@ data = [{'embedding': np.ones((512,)).tolist()} for _ in range(1)]
 def make_request(current):
     resp = requests.post(f'{host}/search', json={'data': data})
     print(f"Len response matches: {len(resp.json()['data']['docs'][0]['matches'])}")
-    print(f'{current} resp', resp.status_code, resp.json())
+    print(f'{current} resp', resp.status_code)#, resp.json())
 
+
+for i in range(10):
+    print('request: ', i)
+    make_request(i)
 
 # with Pool(10) as p:
 #     p.map(make_request, range(10))
 
-while True:
-    for i in range(1):
-        print('request num', i)
-        make_request(i)
-        time.sleep(1)
-    time.sleep(2000)
+# while True:
+#     for i in range(1):
+#         print('request num', i)
+#         make_request(i)
+#         time.sleep(1)
+#     time.sleep(2000)
+
