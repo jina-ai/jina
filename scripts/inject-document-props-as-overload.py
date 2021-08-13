@@ -48,12 +48,8 @@ def get_overload_signature(
         for property_name, _, description in properties
     )
 
-    noqa_str = '\n'.join(
-        f'{indent}{indent}.. # noqa: DAR{j}' for j in ['202', '101', '003']
-    )
     signature = f'def __init__(\n{indent}{indent}self,\n{args_str}\n{indent}):'
-
-    final_str = f'@overload\n{indent}{signature}\n{indent}{indent}"""\n{doc_str}\n\n{noqa_str}\n{indent}{indent}"""'
+    final_str = f'@overload\n{indent}{signature}\n{indent}{indent}"""\n{doc_str}\n{indent}{indent}"""'
 
     return final_str
 
