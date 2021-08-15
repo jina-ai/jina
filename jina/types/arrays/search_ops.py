@@ -114,7 +114,7 @@ class DocumentArraySearchOpsMixin:
 
         return DocumentArray(self.sample(len(self), seed=seed))
 
-    def split(self, attribute: str) -> Dict[Any, DocumentArray]:
+    def split(self, attribute: str) -> Dict[Any, 'DocumentArray']:
         """Split the :class:`DocumentArray` into multiple :class:`DocumentArray` according to the attribute value of
           each :class:`Document`.
 
@@ -122,10 +122,12 @@ class DocumentArraySearchOpsMixin:
         :return: a dict where Documents with the same value on `attribute` are grouped together,
           their orders are preserved from the original :class:`DocumentArray`.
         """
+        from .document import DocumentArray
+
         rv = defaultdict(DocumentArray)
         for doc in self:
             value = doc.tags.get(attribute)
             if not value:
                 continue
             rv[value].append(doc)
-        return rv
+        return dict(rv)

@@ -1,4 +1,5 @@
 import os
+import random
 from copy import deepcopy
 
 import pytest
@@ -56,6 +57,17 @@ def docarray_for_cache():
     d1 = Document(id=1)
     d2 = Document(id='2')
     da.extend([d1, d2])
+    return da
+
+
+@pytest.fixture
+def docarray_for_split():
+    da = DocumentArray()
+    da.append(Document(tags={'category': 'c'}))
+    da.append(Document(tags={'category': 'c'}))
+    da.append(Document(tags={'category': 'b'}))
+    da.append(Document(tags={'category': 'a'}))
+    da.append(Document(tags={'category': 'a'}))
     return da
 
 
@@ -439,3 +451,15 @@ def test_shuffle_with_seed():
     assert len(shuffled_1) == len(shuffled_2) == len(shuffled_3) == len(da)
     assert shuffled_1 == shuffled_2
     assert shuffled_1 != shuffled_3
+
+
+def test_split(docarray_for_split):
+    rv = docarray_for_split.split('category')
+    assert isinstance(rv, dict)
+    assert sorted(list(rv.keys())) == ['a', 'b', 'c']
+    # assure order is preserved c, b, a
+    assert list(rv.keys()) == ['c', 'b', 'a']
+    # original input c, c, b, a, a
+    assert len(rv['c']) == 2
+    assert len(rv['b']) == 1
+    assert len(rv['a']) == 2
