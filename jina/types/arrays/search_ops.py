@@ -119,8 +119,8 @@ class DocumentArraySearchOpsMixin:
           each :class:`Document`.
 
         :param attribute: the attribute name to split stored in tags.
-        :return: a dict where Documents with the same value on `attribute` are grouped together,
-          their orders are preserved from the original :class:`DocumentArray`.
+        :return: a dict where Documents with the same value on `attribute` are grouped together, their orders are
+        preserved from the original :class:`DocumentArray`.
         """
         from .document import DocumentArray
 
