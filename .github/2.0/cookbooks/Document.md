@@ -54,6 +54,7 @@ Table of Contents
   - [Filter elements](#filter-elements)
   - [Use `itertools` on `DocumentArray`](#use-itertools-on-documentarray)
   - [Get attributes in bulk](#get-attributes-in-bulk)
+  - [Property `.embeddings`](#property-embeddings)
   - [Finding closest documents between `DocumentArray` objects](#finding-closest-documents-between-documentarray-objects)
     - [Using Sparse arrays as embeddings](#using-sparse-arrays-as-embeddings)
   - [Filter a subset of `DocumentArray` using `.find`](#filter-a-subset-of-documentarray-using-find)
@@ -1042,7 +1043,6 @@ This can be very useful when extracting a batch of embeddings:
 
 ```python
 import numpy as np
-
 np.stack(da.get_attributes('embedding'))
 ```
 
@@ -1051,6 +1051,25 @@ np.stack(da.get_attributes('embedding'))
  [4 5 6]
  [7 8 9]]
 ```
+
+### Property `.embeddings`
+
+There is a faster version to extract embeddings from a `DocumentArray` or `DocumentArrayMemmap`, the property `.embeddings`. This property assumes all embeddings in the array have the same shape and dtype. Note that
+
+```
+da.embeddings
+```
+
+will produce the same output as `np.stack(da.get_attributes('embedding'))` but the results will be retrieved faster.
+
+```
+[[1 2 3]
+ [4 5 6]
+ [7 8 9]]
+```
+
+**Note: using .embeddings in a DocumenArray or DocumentArrayMemmap with different shapes or dtypes might yield to unnexpected results.**
+
 
 
 ### Finding closest documents between `DocumentArray` objects
