@@ -116,7 +116,7 @@ class DocumentArraySearchOpsMixin:
 
     def split(self, attribute: str) -> Dict[Any, 'DocumentArray']:
         """Split the :class:`DocumentArray` into multiple :class:`DocumentArray` according to the attribute value of
-          each :class:`Document`.
+        each :class:`Document`.
 
         :param attribute: the attribute name to split stored in tags.
         :return: a dict where Documents with the same value on `attribute` are grouped together, their orders are
