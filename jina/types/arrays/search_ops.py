@@ -115,12 +115,15 @@ class DocumentArraySearchOpsMixin:
         return DocumentArray(self.sample(len(self), seed=seed))
 
     def split(self, attribute: str) -> Dict[Any, 'DocumentArray']:
-        """Split the :class:`DocumentArray` into multiple :class:`DocumentArray` according to the attribute value of
-        each :class:`Document`.
+        """Split the `DocumentArray` into multiple DocumentArray according to the attribute value of each `Document`.
 
         :param attribute: the attribute name to split stored in tags.
-        :return: a dict where Documents with the same value on `attribute` are grouped together, their orders are
-        preserved from the original :class:`DocumentArray`.
+        :return: a dict where Documents with the same value on `attribute` are grouped together, their orders
+            are preserved from the original :class:`DocumentArray`.
+
+        .. note::
+            If the :attr:`tags` of :class:`Document` do not contains the specified :attr:`attribute`,
+            return an empty dict.
         """
         from .document import DocumentArray
 
