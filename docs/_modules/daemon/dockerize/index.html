@@ -405,8 +405,9 @@
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">colored</span>
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">__root_workspace__</span><span class="p">,</span>
     <span class="n">jinad_args</span><span class="p">,</span>
+    <span class="n">__root_workspace__</span><span class="p">,</span>
+    <span class="n">__partial_workspace__</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.excepts</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">DockerNotFoundException</span><span class="p">,</span>
@@ -710,7 +711,7 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">_get_volume_host_dir</span><span class="p">()</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">workspace_id</span><span class="si">}</span><span class="s1">'</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s1">'bind'</span><span class="p">:</span> <span class="s1">'/workspace'</span><span class="p">,</span>
+                <span class="s1">'bind'</span><span class="p">:</span> <span class="n">__partial_workspace__</span><span class="p">,</span>
                 <span class="s1">'mode'</span><span class="p">:</span> <span class="s1">'rw'</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">dockersock</span><span class="p">:</span> <span class="p">{</span><span class="s1">'bind'</span><span class="p">:</span> <span class="s1">'/var/run/docker.sock'</span><span class="p">},</span>
@@ -723,9 +724,13 @@
 <span class="sd">        :return: dict of env vars</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s1">'JINA_LOG_WORKSPACE'</span><span class="p">:</span> <span class="s1">'/workspace/logs'</span><span class="p">,</span>
+            <span class="s1">'JINA_LOG_WORKSPACE'</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__partial_workspace__</span><span class="p">,</span> <span class="s1">'logs'</span><span class="p">),</span>
             <span class="s1">'JINA_RANDOM_PORT_MIN'</span><span class="p">:</span> <span class="s1">'49153'</span><span class="p">,</span>
             <span class="s1">'JINA_LOG_LEVEL'</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'JINA_LOG_LEVEL'</span><span class="p">)</span> <span class="ow">or</span> <span class="s1">'INFO'</span><span class="p">,</span>
+            <span class="s1">'JINA_HUB_ROOT'</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">__partial_workspace__</span><span class="p">,</span> <span class="s1">'.jina'</span><span class="p">,</span> <span class="s1">'hub-packages'</span>
+            <span class="p">),</span>
+            <span class="s1">'JINA_HUB_CACHE_DIR'</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__partial_workspace__</span><span class="p">,</span> <span class="s1">'.cache'</span><span class="p">,</span> <span class="s1">'jina'</span><span class="p">),</span>
         <span class="p">}</span></div>
 
 <div class="viewcode-block" id="Dockerizer.remove"><a class="viewcode-back" href="../../../api/daemon.dockerize/#daemon.dockerize.Dockerizer.remove">[docs]</a>    <span class="nd">@classmethod</span>

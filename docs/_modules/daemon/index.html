@@ -421,6 +421,7 @@
 
 <span class="n">__task_queue__</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
 <span class="n">__root_workspace__</span> <span class="o">=</span> <span class="n">jinad_args</span><span class="o">.</span><span class="n">workspace</span>
+<span class="n">__partial_workspace__</span> <span class="o">=</span> <span class="s1">'/workspace'</span>
 <span class="n">__rootdir__</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">absolute</span><span class="p">())</span>
 <span class="n">__dockerfiles__</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span> <span class="o">/</span> <span class="s1">'Dockerfiles'</span><span class="p">)</span>
 
@@ -529,7 +530,9 @@
 <span class="k">def</span> <span class="nf">_update_default_args</span><span class="p">():</span>
     <span class="k">global</span> <span class="n">jinad_args</span><span class="p">,</span> <span class="n">__root_workspace__</span>
     <span class="n">jinad_args</span> <span class="o">=</span> <span class="n">_get_run_args</span><span class="p">()</span>
-    <span class="n">__root_workspace__</span> <span class="o">=</span> <span class="s1">'/workspace'</span> <span class="k">if</span> <span class="n">jinad_args</span><span class="o">.</span><span class="n">mode</span> <span class="k">else</span> <span class="n">jinad_args</span><span class="o">.</span><span class="n">workspace</span>
+    <span class="n">__root_workspace__</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">__partial_workspace__</span> <span class="k">if</span> <span class="n">jinad_args</span><span class="o">.</span><span class="n">mode</span> <span class="k">else</span> <span class="n">jinad_args</span><span class="o">.</span><span class="n">workspace</span>
+    <span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_start_fluentd</span><span class="p">():</span>
