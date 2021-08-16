@@ -680,7 +680,7 @@ class ArgNamespace:
 
         :param kwargs: dictionary of key-values to be converted
         :param parser: the parser for building kwargs into a namespace
-        :param log_unkown: True, if unknown arguments should be logged
+        :param warn_unknown: True, if unknown arguments should be logged
         :return: argument list
         """
         args = ArgNamespace.kwargs2list(kwargs)

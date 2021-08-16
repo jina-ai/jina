@@ -2,7 +2,7 @@
 import argparse
 import os
 import warnings
-from typing import Tuple
+from typing import Tuple, List
 
 _SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
 if _SHOW_ALL_ARGS:
@@ -16,7 +16,11 @@ if _SHOW_ALL_ARGS:
 DEPRECATED_ARGS_MAPPING = {'override_with': 'uses_with'}
 
 
-def warn_unknown_args(unknown_args):
+def warn_unknown_args(unknown_args: List[str]):
+    """Creates warnings for all given arguments.
+
+    :param unknown_args: arguments that are unknown to Jina
+    """
     for arg in unknown_args:
         normalized_arg = arg.replace('--', '').replace('-', '_')
         if normalized_arg in DEPRECATED_ARGS_MAPPING:
