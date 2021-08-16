@@ -54,7 +54,11 @@ def executor(args: 'Namespace'):
     :param args: arguments coming from the CLI.
     """
     uses = args.uses
-    if uses.startswith('jinahub+docker://') or uses.startswith('docker://'):
+    if (
+        uses.startswith('jinahub+docker://')
+        or uses.startswith('docker://')
+        or uses.startswith('jinahub://')
+    ):
         return pea(args)
     else:
         return zed_runtime(args)
