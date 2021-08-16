@@ -119,7 +119,16 @@ class DocumentArrayNeuralOpsMixin:
 
         dist, idx = top_k(dists, min(limit, len(darray)), descending=False)
         if isinstance(normalization, (tuple, list)) and normalization is not None:
-            dist = minmax_normalize(dist, normalization)
+
+            # normalization bound uses original distance not the top-k trimmed distance
+            if is_sparse:
+                min_d = dists.min(axis=-1).toarray()
+                max_d = dists.max(axis=-1).toarray()
+            else:
+                min_d = np.min(dists, axis=-1, keepdims=True)
+                max_d = np.max(dists, axis=-1, keepdims=True)
+
+            dist = minmax_normalize(dist, normalization, (min_d, max_d))
 
         return dist, idx
 
