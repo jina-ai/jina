@@ -16,7 +16,7 @@ _SPARSE_SCIPY_TYPES = Union[
 def minmax_normalize(
     x: Union['np.ndarray', _SPARSE_SCIPY_TYPES],
     t_range: Tuple = (0, 1),
-    eps: float = 1e-6,
+    eps: float = 1e-7,
 ):
     """Normalize values in `x` into `t_range`.
 
