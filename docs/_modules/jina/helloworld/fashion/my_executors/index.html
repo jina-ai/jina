@@ -456,9 +456,7 @@
 <span class="sd">        """</span>
         <span class="c1"># reduce dimension to 50 by random orthogonal projection</span>
         <span class="n">content</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'content'</span><span class="p">))</span>
-        <span class="c1"># content.shape=(request_size, 28, 28, 3)</span>
         <span class="n">content</span> <span class="o">=</span> <span class="n">content</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">784</span><span class="p">)</span>
-        <span class="c1"># content.shape=(request_size, 784)</span>
         <span class="n">embeds</span> <span class="o">=</span> <span class="p">(</span><span class="n">content</span> <span class="o">/</span> <span class="mi">255</span><span class="p">)</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">oth_mat</span>
         <span class="k">for</span> <span class="n">doc</span><span class="p">,</span> <span class="n">embed</span><span class="p">,</span> <span class="n">cont</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">embeds</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
             <span class="n">doc</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">embed</span>

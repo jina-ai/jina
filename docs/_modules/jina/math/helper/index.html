@@ -409,7 +409,9 @@
 
 
 <div class="viewcode-block" id="minmax_normalize"><a class="viewcode-back" href="../../../../api/jina.math.helper/#jina.math.helper.minmax_normalize">[docs]</a><span class="k">def</span> <span class="nf">minmax_normalize</span><span class="p">(</span>
-    <span class="n">x</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'np.ndarray'</span><span class="p">,</span> <span class="n">_SPARSE_SCIPY_TYPES</span><span class="p">],</span> <span class="n">t_range</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'np.ndarray'</span><span class="p">,</span> <span class="n">_SPARSE_SCIPY_TYPES</span><span class="p">],</span>
+    <span class="n">t_range</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-7</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">"""Normalize values in `x` into `t_range`.</span>
 
@@ -421,6 +423,7 @@
 
 <span class="sd">    :param x: the data to be normalized</span>
 <span class="sd">    :param t_range: a tuple represents the target range.</span>
+<span class="sd">    :param eps: a small jitter to avoid divde by zero</span>
 <span class="sd">    :return: normalized data in `t_range`</span>
 <span class="sd">    """</span>
     <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">t_range</span>
@@ -428,11 +431,13 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
         <span class="n">min_d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">max_d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">min_d</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">max_d</span> <span class="o">-</span> <span class="n">min_d</span><span class="p">)</span> <span class="o">+</span> <span class="n">a</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">min_d</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">max_d</span> <span class="o">-</span> <span class="n">min_d</span> <span class="o">+</span> <span class="n">eps</span><span class="p">)</span> <span class="o">+</span> <span class="n">a</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">min_d</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
         <span class="n">max_d</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">min_d</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">max_d</span> <span class="o">-</span> <span class="n">min_d</span><span class="p">)</span> <span class="o">+</span> <span class="n">a</span></div>
+        <span class="n">r</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">min_d</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">max_d</span> <span class="o">-</span> <span class="n">min_d</span> <span class="o">+</span> <span class="n">eps</span><span class="p">)</span> <span class="o">+</span> <span class="n">a</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="o">*</span><span class="p">((</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="k">if</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="n">b</span> <span class="k">else</span> <span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)))</span></div>
 
 
 <div class="viewcode-block" id="top_k"><a class="viewcode-back" href="../../../../api/jina.math.helper/#jina.math.helper.top_k">[docs]</a><span class="k">def</span> <span class="nf">top_k</span><span class="p">(</span>

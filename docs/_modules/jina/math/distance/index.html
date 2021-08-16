@@ -462,14 +462,20 @@
     <span class="k">return</span> <span class="n">dists</span></div>
 
 
-<div class="viewcode-block" id="cosine"><a class="viewcode-back" href="../../../../api/jina.math.distance/#jina.math.distance.cosine">[docs]</a><span class="k">def</span> <span class="nf">cosine</span><span class="p">(</span><span class="n">x_mat</span><span class="p">:</span> <span class="s1">'np.ndarray'</span><span class="p">,</span> <span class="n">y_mat</span><span class="p">:</span> <span class="s1">'np.ndarray'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'np.ndarray'</span><span class="p">:</span>
+<div class="viewcode-block" id="cosine"><a class="viewcode-back" href="../../../../api/jina.math.distance/#jina.math.distance.cosine">[docs]</a><span class="k">def</span> <span class="nf">cosine</span><span class="p">(</span><span class="n">x_mat</span><span class="p">:</span> <span class="s1">'np.ndarray'</span><span class="p">,</span> <span class="n">y_mat</span><span class="p">:</span> <span class="s1">'np.ndarray'</span><span class="p">,</span> <span class="n">eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-7</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'np.ndarray'</span><span class="p">:</span>
     <span class="sd">"""Cosine distance between each row in x_mat and each row in y_mat.</span>
 <span class="sd">    :param x_mat: np.ndarray with ndim=2</span>
 <span class="sd">    :param y_mat: np.ndarray with ndim=2</span>
+<span class="sd">    :param eps: a small jitter to avoid divde by zero</span>
 <span class="sd">    :return: np.ndarray  with ndim=2</span>
 <span class="sd">    """</span>
-    <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x_mat</span><span class="p">,</span> <span class="n">y_mat</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">x_mat</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">y_mat</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x_mat</span><span class="p">,</span> <span class="n">y_mat</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">+</span> <span class="n">eps</span><span class="p">)</span>
+        <span class="o">/</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">x_mat</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">y_mat</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="n">eps</span>
+        <span class="p">),</span>
+        <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="mi">1</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
@@ -497,8 +503,12 @@
     <span class="kn">from</span> <span class="nn">scipy.sparse.linalg</span> <span class="kn">import</span> <span class="n">norm</span>
 
     <span class="c1"># we need the np.asarray otherwise we get a np.matrix object that iterates differently</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
-        <span class="mi">1</span> <span class="o">-</span> <span class="n">x_mat</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">y_mat</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">norm</span><span class="p">(</span><span class="n">x_mat</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">norm</span><span class="p">(</span><span class="n">y_mat</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+            <span class="n">x_mat</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">y_mat</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">norm</span><span class="p">(</span><span class="n">x_mat</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">norm</span><span class="p">(</span><span class="n">y_mat</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)))</span>
+        <span class="p">),</span>
+        <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="mi">1</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 

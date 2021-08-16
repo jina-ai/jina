@@ -456,12 +456,14 @@
 </dd></dl>
 <dl class="py function">
 <dt id="jina.math.distance.cosine">
-<code class="sig-prename descclassname"><span class="pre">jina.math.distance.</span></code><code class="sig-name descname"><span class="pre">cosine</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_mat</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/math/distance/#cosine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.math.distance.cosine" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">jina.math.distance.</span></code><code class="sig-name descname"><span class="pre">cosine</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-07</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/math/distance/#cosine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.math.distance.cosine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cosine distance between each row in x_mat and each row in y_mat.
 :type x_mat: <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>
 :param x_mat: np.ndarray with ndim=2
 :type y_mat: <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>
 :param y_mat: np.ndarray with ndim=2
+:type eps: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
+:param eps: a small jitter to avoid divde by zero
 :rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>
 :return: np.ndarray  with ndim=2</p>
 </dd></dl>
