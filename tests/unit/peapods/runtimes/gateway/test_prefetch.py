@@ -44,6 +44,6 @@ async def test_concurrent_requests():
     response = servicer.send(iter([request]))
 
     async for r in response:
-        assert r == request
+        assert r.proto == request
 
     await servicer.close()

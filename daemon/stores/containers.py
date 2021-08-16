@@ -12,7 +12,11 @@ from jina import __docker_host__
 from jina.helper import colored, random_port
 from .base import BaseStore
 from ..dockerize import Dockerizer
-from ..excepts import PartialDaemon400Exception, Runtime400Exception
+from ..excepts import (
+    PartialDaemon400Exception,
+    Runtime400Exception,
+    PartialDaemonConnectionException,
+)
 from ..helper import if_alive, id_cleaner, error_msg_from
 from ..models import DaemonID
 from ..models.enums import UpdateOperation, IDLiterals
@@ -142,7 +146,7 @@ class ContainerStore(BaseStore):
         :param ports: ports to be mapped to local
         :param kwargs: keyword args
         :raises KeyError: if workspace_id doesn't exist in the store
-        :raises Runtime400Exception: if container creation fails
+        :raises PartialDaemonConnectionException: if jinad cannot connect to partial
         :return: id of the container
         """
         try:
@@ -173,16 +177,18 @@ class ContainerStore(BaseStore):
                 workspace_id=workspace_id, container_id=id, command=command, ports=ports
             )
             if not await self.ready(uri):
-                raise Runtime400Exception(
+                raise PartialDaemonConnectionException(
                     f'{id.type.title()} creation failed, couldn\'t reach the container at {uri} after 10secs'
                 )
             object = await self._add(uri=uri, params=params, **kwargs)
         except Exception as e:
             self._logger.error(f'{self._kind} creation failed as {e}')
             container_logs = Dockerizer.logs(container.id)
-            if container_logs and isinstance(e, PartialDaemon400Exception):
+            if container_logs and isinstance(
+                e, (PartialDaemon400Exception, PartialDaemonConnectionException)
+            ):
                 self._logger.debug(
-                    f'error logs frm partial daemon: \n {container_logs}'
+                    f'error logs from partial daemon: \n {container_logs}'
                 )
                 if e.message and isinstance(e.message, list):
                     e.message += container_logs.split('\n')
