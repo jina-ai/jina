@@ -242,6 +242,7 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.peapods/">jina.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label for="toctree-checkbox-24"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.peapods.grpc/">jina.peapods.grpc package</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.peapods.peas/">jina.peapods.peas package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label for="toctree-checkbox-25"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.peas.helper/">jina.peapods.peas.helper module</a></li>
 </ul>
@@ -267,6 +268,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.gateway.prefetch/">jina.peapods.runtimes.gateway.prefetch module</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.grpc/">jina.peapods.runtimes.grpc package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a></li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.request_handlers.data_request_handler/">jina.peapods.runtimes.request_handlers.data_request_handler module</a></li>
@@ -391,7 +393,9 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for jina.proto.serializer</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">..types.request</span> <span class="kn">import</span> <span class="n">Request</span>
+<span></span><span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
+<span class="kn">from</span> <span class="nn">..types.message</span> <span class="kn">import</span> <span class="n">Message</span>
+<span class="kn">from</span> <span class="nn">..types.request</span> <span class="kn">import</span> <span class="n">Request</span>
 
 
 <div class="viewcode-block" id="RequestProto"><a class="viewcode-back" href="../../../../api/jina.proto.serializer/#jina.proto.serializer.RequestProto">[docs]</a><span class="k">class</span> <span class="nc">RequestProto</span><span class="p">:</span>
@@ -418,6 +422,32 @@
 <span class="sd">        # noqa: DAR201</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">Request</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="MessageProto"><a class="viewcode-back" href="../../../../api/jina.proto.serializer/#jina.proto.serializer.MessageProto">[docs]</a><span class="k">class</span> <span class="nc">MessageProto</span><span class="p">:</span>
+    <span class="sd">"""This class is a drop-in replacement for gRPC default serializer.</span>
+<span class="sd">    It replace default serializer to make sure we always work with `Message`</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="MessageProto.SerializeToString"><a class="viewcode-back" href="../../../../api/jina.proto.serializer/#jina.proto.serializer.MessageProto.SerializeToString">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">SerializeToString</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="s1">'Message'</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        # noqa: DAR101</span>
+<span class="sd">        # noqa: DAR102</span>
+<span class="sd">        # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">SerializeToString</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MessageProto.FromString"><a class="viewcode-back" href="../../../../api/jina.proto.serializer/#jina.proto.serializer.MessageProto.FromString">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">FromString</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        # noqa: DAR101</span>
+<span class="sd">        # noqa: DAR102</span>
+<span class="sd">        # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="n">mp</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">MessageProto</span><span class="p">()</span>
+        <span class="n">mp</span><span class="o">.</span><span class="n">ParseFromString</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Message</span><span class="o">.</span><span class="n">from_proto</span><span class="p">(</span><span class="n">mp</span><span class="p">)</span></div></div>
 </pre></div>
       </article>
       <footer>
@@ -430,7 +460,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 13, 2021.
+            Last updated on Aug 16, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

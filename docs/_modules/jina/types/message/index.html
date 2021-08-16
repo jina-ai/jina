@@ -242,6 +242,7 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.peapods/">jina.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label for="toctree-checkbox-24"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.peapods.grpc/">jina.peapods.grpc package</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.peapods.peas/">jina.peapods.peas package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label for="toctree-checkbox-25"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.peas.helper/">jina.peapods.peas.helper module</a></li>
 </ul>
@@ -267,6 +268,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.gateway.prefetch/">jina.peapods.runtimes.gateway.prefetch module</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.grpc/">jina.peapods.runtimes.grpc package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a></li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.request_handlers.data_request_handler/">jina.peapods.runtimes.request_handlers.data_request_handler module</a></li>
@@ -508,8 +510,15 @@
                 <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_size</span> <span class="o">+=</span> <span class="n">sys</span><span class="o">.</span><span class="n">getsizeof</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="n">Request</span><span class="p">,</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">RequestProto</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_request</span> <span class="o">=</span> <span class="n">val</span>  <span class="c1"># type: Union['Request', 'jina_pb2.RequestProto']</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">Request</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_request</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">RequestProto</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_request</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span>
+                <span class="n">val</span><span class="p">,</span>
+                <span class="n">CompressAlgo</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">compression</span><span class="o">.</span><span class="n">algorithm</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">envelope</span>
+                <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'expecting request to be bytes or jina_pb2.RequestProto, but receiving </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
@@ -904,7 +913,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 13, 2021.
+            Last updated on Aug 16, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

@@ -264,6 +264,7 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jina.peapods/">jina.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label for="toctree-checkbox-24"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.peapods.grpc/">jina.peapods.grpc package</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../jina.peapods.peas/">jina.peapods.peas package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label for="toctree-checkbox-25"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.peapods.peas.helper/">jina.peapods.peas.helper module</a></li>
 </ul>
@@ -289,6 +290,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.gateway.prefetch/">jina.peapods.runtimes.gateway.prefetch module</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.peapods.runtimes.grpc/">jina.peapods.runtimes.grpc package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a></li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.request_handlers.data_request_handler/">jina.peapods.runtimes.request_handlers.data_request_handler module</a></li>
@@ -435,6 +437,27 @@
 # noqa: DAR201</p>
 </dd></dl>
 </dd></dl>
+<dl class="py class">
+<dt id="jina.proto.serializer.MessageProto">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.proto.serializer.</span></code><code class="sig-name descname"><span class="pre">MessageProto</span></code><a class="reference internal" href="../../_modules/jina/proto/serializer/#MessageProto"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.serializer.MessageProto" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class is a drop-in replacement for gRPC default serializer.
+It replace default serializer to make sure we always work with <cite>Message</cite></p>
+<dl class="py method">
+<dt id="jina.proto.serializer.MessageProto.SerializeToString">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">SerializeToString</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/serializer/#MessageProto.SerializeToString"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.serializer.MessageProto.SerializeToString" title="Permalink to this definition">¶</a></dt>
+<dd><p># noqa: DAR101
+# noqa: DAR102
+# noqa: DAR201</p>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.proto.serializer.MessageProto.FromString">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">FromString</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/serializer/#MessageProto.FromString"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.serializer.MessageProto.FromString" title="Permalink to this definition">¶</a></dt>
+<dd><p># noqa: DAR101
+# noqa: DAR102
+# noqa: DAR201</p>
+</dd></dl>
+</dd></dl>
 </div>
 
       </article>
@@ -466,7 +489,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 13, 2021.
+            Last updated on Aug 16, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

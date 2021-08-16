@@ -242,6 +242,7 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../api/jina.peapods/">jina.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label for="toctree-checkbox-24"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.peapods.grpc/">jina.peapods.grpc package</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../api/jina.peapods.peas/">jina.peapods.peas package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label for="toctree-checkbox-25"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.peapods.peas.helper/">jina.peapods.peas.helper module</a></li>
 </ul>
@@ -267,6 +268,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.peapods.runtimes.gateway.prefetch/">jina.peapods.runtimes.gateway.prefetch module</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.peapods.runtimes.grpc/">jina.peapods.runtimes.grpc package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a></li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../api/jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.peapods.runtimes.request_handlers.data_request_handler/">jina.peapods.runtimes.request_handlers.data_request_handler module</a></li>
@@ -501,13 +503,16 @@
     <span class="k">def</span> <span class="nf">_mask_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">):</span>
         <span class="n">_args</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
 
-        <span class="c1"># reset the runtime to ZEDRuntime or ContainerRuntime</span>
+        <span class="c1"># reset the runtime to ZEDRuntime/GRPCDataRuntime or ContainerRuntime</span>
         <span class="k">if</span> <span class="n">_args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="s1">'JinadRuntime'</span><span class="p">:</span>
             <span class="c1"># TODO: add jinahub:// and jinahub+docker:// scheme here</span>
             <span class="k">if</span> <span class="n">_args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'docker://'</span><span class="p">):</span>
                 <span class="n">_args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="s1">'ContainerRuntime'</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">_args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="s1">'ZEDRuntime'</span>
+                <span class="k">if</span> <span class="n">_args</span><span class="o">.</span><span class="n">grpc_data_requests</span><span class="p">:</span>
+                    <span class="n">_args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="s1">'GRPCDataRuntime'</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">_args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="s1">'ZEDRuntime'</span>
 
         <span class="c1"># TODO:/NOTE this prevents jumping from remote to another remote (Han: 2021.1.17)</span>
         <span class="c1"># _args.host = __default_host__</span>
@@ -637,7 +642,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 13, 2021.
+            Last updated on Aug 16, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

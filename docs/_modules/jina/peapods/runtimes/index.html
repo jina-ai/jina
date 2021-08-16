@@ -242,6 +242,7 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.peapods/">jina.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label for="toctree-checkbox-24"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.peapods.grpc/">jina.peapods.grpc package</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.peapods.peas/">jina.peapods.peas package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label for="toctree-checkbox-25"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.peas.helper/">jina.peapods.peas.helper module</a></li>
 </ul>
@@ -267,6 +268,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.gateway.prefetch/">jina.peapods.runtimes.gateway.prefetch module</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.grpc/">jina.peapods.runtimes.grpc package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a></li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.request_handlers.data_request_handler/">jina.peapods.runtimes.request_handlers.data_request_handler module</a></li>
@@ -404,6 +406,7 @@
     <span class="kn">from</span> <span class="nn">.container</span> <span class="kn">import</span> <span class="n">ContainerRuntime</span>
     <span class="kn">from</span> <span class="nn">.jinad</span> <span class="kn">import</span> <span class="n">JinadRuntime</span>
     <span class="kn">from</span> <span class="nn">.zmq.zed</span> <span class="kn">import</span> <span class="n">ZEDRuntime</span>
+    <span class="kn">from</span> <span class="nn">.grpc</span> <span class="kn">import</span> <span class="n">GRPCDataRuntime</span>
 
     <span class="k">return</span> <span class="p">[</span>
         <span class="n">k</span>
@@ -425,6 +428,7 @@
     <span class="kn">from</span> <span class="nn">.container</span> <span class="kn">import</span> <span class="n">ContainerRuntime</span>
     <span class="kn">from</span> <span class="nn">.jinad</span> <span class="kn">import</span> <span class="n">JinadRuntime</span>
     <span class="kn">from</span> <span class="nn">.zmq.zed</span> <span class="kn">import</span> <span class="n">ZEDRuntime</span>
+    <span class="kn">from</span> <span class="nn">.grpc</span> <span class="kn">import</span> <span class="n">GRPCDataRuntime</span>
 
     <span class="n">s</span> <span class="o">=</span> <span class="nb">locals</span><span class="p">()[</span><span class="n">name</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">BaseRuntime</span><span class="p">):</span>
@@ -443,7 +447,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 13, 2021.
+            Last updated on Aug 16, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

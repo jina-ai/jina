@@ -242,6 +242,7 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../../api/jina.peapods/">jina.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label for="toctree-checkbox-24"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../api/jina.peapods.grpc/">jina.peapods.grpc package</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../../api/jina.peapods.peas/">jina.peapods.peas package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label for="toctree-checkbox-25"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../../api/jina.peapods.peas.helper/">jina.peapods.peas.helper module</a></li>
 </ul>
@@ -267,6 +268,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.gateway.prefetch/">jina.peapods.runtimes.gateway.prefetch module</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.grpc/">jina.peapods.runtimes.grpc package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a></li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.request_handlers.data_request_handler/">jina.peapods.runtimes.request_handlers.data_request_handler module</a></li>
@@ -396,6 +398,7 @@
 <span class="kn">import</span> <span class="nn">grpc</span>
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_host__</span>
+<span class="kn">from</span> <span class="nn">....grpc</span> <span class="kn">import</span> <span class="n">Grpclet</span>
 
 <span class="kn">from</span> <span class="nn">.....proto</span> <span class="kn">import</span> <span class="n">jina_pb2_grpc</span>
 <span class="kn">from</span> <span class="nn">....zmq</span> <span class="kn">import</span> <span class="n">AsyncZmqlet</span>
@@ -408,9 +411,9 @@
 <span class="k">class</span> <span class="nc">GRPCPrefetchCall</span><span class="p">(</span><span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaRPCServicer</span><span class="p">):</span>
     <span class="sd">"""JinaRPCServicer """</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">zmqlet</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">iolet</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_servicer</span> <span class="o">=</span> <span class="n">PrefetchCaller</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">zmqlet</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_servicer</span> <span class="o">=</span> <span class="n">PrefetchCaller</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">iolet</span><span class="o">=</span><span class="n">iolet</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Call</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_servicer</span><span class="o">.</span><span class="n">send</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">close</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_servicer</span><span class="o">.</span><span class="n">close</span>
 
@@ -434,8 +437,18 @@
                 <span class="p">(</span><span class="s1">'grpc.max_receive_message_length'</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
             <span class="p">]</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">zmqlet</span> <span class="o">=</span> <span class="n">AsyncZmqlet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_prefetcher</span> <span class="o">=</span> <span class="n">GRPCPrefetchCall</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">zmqlet</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">grpc_data_requests</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_grpclet</span> <span class="o">=</span> <span class="n">Grpclet</span><span class="p">(</span>
+                <span class="n">args</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+                <span class="n">message_callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_prefetcher</span> <span class="o">=</span> <span class="n">GRPCPrefetchCall</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">iolet</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_grpclet</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">zmqlet</span> <span class="o">=</span> <span class="n">AsyncZmqlet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_prefetcher</span> <span class="o">=</span> <span class="n">GRPCPrefetchCall</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">iolet</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">zmqlet</span><span class="p">)</span>
+
         <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prefetcher</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
         <span class="n">bind_addr</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">__default_host__</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">'</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">add_insecure_port</span><span class="p">(</span><span class="n">bind_addr</span><span class="p">)</span>
@@ -449,7 +462,10 @@
 <div class="viewcode-block" id="GRPCRuntime.async_run_forever"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.gateway.grpc/#jina.peapods.runtimes.gateway.grpc.GRPCRuntime.async_run_forever">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""The async running of server."""</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">wait_for_termination</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">zmqlet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">grpc_data_requests</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpclet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">zmqlet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
 </pre></div>
       </article>
       <footer>
@@ -462,7 +478,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 13, 2021.
+            Last updated on Aug 16, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

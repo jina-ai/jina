@@ -7,6 +7,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   jina.peapods.grpc
    jina.peapods.peas
    jina.peapods.pods
    jina.peapods.runtimes

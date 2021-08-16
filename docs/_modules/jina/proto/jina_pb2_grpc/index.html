@@ -242,6 +242,7 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.peapods/">jina.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label for="toctree-checkbox-24"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.peapods.grpc/">jina.peapods.grpc package</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.peapods.peas/">jina.peapods.peas package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label for="toctree-checkbox-25"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.peas.helper/">jina.peapods.peas.helper module</a></li>
 </ul>
@@ -267,6 +268,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.gateway.prefetch/">jina.peapods.runtimes.gateway.prefetch module</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.grpc/">jina.peapods.runtimes.grpc package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a></li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.request_handlers.data_request_handler/">jina.peapods.runtimes.request_handlers.data_request_handler module</a></li>
@@ -395,6 +397,7 @@
 <span class="sd">"""Client and server classes corresponding to protobuf-defined services."""</span>
 <span class="kn">import</span> <span class="nn">grpc</span>
 
+<span class="kn">from</span> <span class="nn">google.protobuf</span> <span class="kn">import</span> <span class="n">empty_pb2</span> <span class="k">as</span> <span class="n">google_dot_protobuf_dot_empty__pb2</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">serializer</span> <span class="k">as</span> <span class="n">jina__pb2</span>
 
 
@@ -410,10 +413,10 @@
 <span class="sd">            channel: A grpc.Channel.</span>
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Call</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="n">stream_stream</span><span class="p">(</span>
-                <span class="s1">'/jina.JinaRPC/Call'</span><span class="p">,</span>
-                <span class="n">request_serializer</span><span class="o">=</span><span class="n">jina__pb2</span><span class="o">.</span><span class="n">RequestProto</span><span class="o">.</span><span class="n">SerializeToString</span><span class="p">,</span>
-                <span class="n">response_deserializer</span><span class="o">=</span><span class="n">jina__pb2</span><span class="o">.</span><span class="n">RequestProto</span><span class="o">.</span><span class="n">FromString</span><span class="p">,</span>
-                <span class="p">)</span></div>
+            <span class="s1">'/jina.JinaRPC/Call'</span><span class="p">,</span>
+            <span class="n">request_serializer</span><span class="o">=</span><span class="n">jina__pb2</span><span class="o">.</span><span class="n">RequestProto</span><span class="o">.</span><span class="n">SerializeToString</span><span class="p">,</span>
+            <span class="n">response_deserializer</span><span class="o">=</span><span class="n">jina__pb2</span><span class="o">.</span><span class="n">RequestProto</span><span class="o">.</span><span class="n">FromString</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="JinaRPCServicer"><a class="viewcode-back" href="../../../../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaRPCServicer">[docs]</a><span class="k">class</span> <span class="nc">JinaRPCServicer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -422,8 +425,7 @@
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="JinaRPCServicer.Call"><a class="viewcode-back" href="../../../../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaRPCServicer.Call">[docs]</a>    <span class="k">def</span> <span class="nf">Call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_iterator</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
-        <span class="sd">"""Pass in a Request and a filled Request with matches will be returned.</span>
-<span class="sd">        """</span>
+        <span class="sd">"""Pass in a Request and a filled Request with matches will be returned."""</span>
         <span class="n">context</span><span class="o">.</span><span class="n">set_code</span><span class="p">(</span><span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNIMPLEMENTED</span><span class="p">)</span>
         <span class="n">context</span><span class="o">.</span><span class="n">set_details</span><span class="p">(</span><span class="s1">'Method not implemented!'</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">'Method not implemented!'</span><span class="p">)</span></div></div>
@@ -431,39 +433,132 @@
 
 <div class="viewcode-block" id="add_JinaRPCServicer_to_server"><a class="viewcode-back" href="../../../../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.add_JinaRPCServicer_to_server">[docs]</a><span class="k">def</span> <span class="nf">add_JinaRPCServicer_to_server</span><span class="p">(</span><span class="n">servicer</span><span class="p">,</span> <span class="n">server</span><span class="p">):</span>
     <span class="n">rpc_method_handlers</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">'Call'</span><span class="p">:</span> <span class="n">grpc</span><span class="o">.</span><span class="n">stream_stream_rpc_method_handler</span><span class="p">(</span>
-                    <span class="n">servicer</span><span class="o">.</span><span class="n">Call</span><span class="p">,</span>
-                    <span class="n">request_deserializer</span><span class="o">=</span><span class="n">jina__pb2</span><span class="o">.</span><span class="n">RequestProto</span><span class="o">.</span><span class="n">FromString</span><span class="p">,</span>
-                    <span class="n">response_serializer</span><span class="o">=</span><span class="n">jina__pb2</span><span class="o">.</span><span class="n">RequestProto</span><span class="o">.</span><span class="n">SerializeToString</span><span class="p">,</span>
-            <span class="p">),</span>
+        <span class="s1">'Call'</span><span class="p">:</span> <span class="n">grpc</span><span class="o">.</span><span class="n">stream_stream_rpc_method_handler</span><span class="p">(</span>
+            <span class="n">servicer</span><span class="o">.</span><span class="n">Call</span><span class="p">,</span>
+            <span class="n">request_deserializer</span><span class="o">=</span><span class="n">jina__pb2</span><span class="o">.</span><span class="n">RequestProto</span><span class="o">.</span><span class="n">FromString</span><span class="p">,</span>
+            <span class="n">response_serializer</span><span class="o">=</span><span class="n">jina__pb2</span><span class="o">.</span><span class="n">RequestProto</span><span class="o">.</span><span class="n">SerializeToString</span><span class="p">,</span>
+        <span class="p">),</span>
     <span class="p">}</span>
     <span class="n">generic_handler</span> <span class="o">=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">method_handlers_generic_handler</span><span class="p">(</span>
-            <span class="s1">'jina.JinaRPC'</span><span class="p">,</span> <span class="n">rpc_method_handlers</span><span class="p">)</span>
+        <span class="s1">'jina.JinaRPC'</span><span class="p">,</span> <span class="n">rpc_method_handlers</span>
+    <span class="p">)</span>
     <span class="n">server</span><span class="o">.</span><span class="n">add_generic_rpc_handlers</span><span class="p">((</span><span class="n">generic_handler</span><span class="p">,))</span></div>
 
 
- <span class="c1"># This class is part of an EXPERIMENTAL API.</span>
+<span class="c1"># This class is part of an EXPERIMENTAL API.</span>
 <div class="viewcode-block" id="JinaRPC"><a class="viewcode-back" href="../../../../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaRPC">[docs]</a><span class="k">class</span> <span class="nc">JinaRPC</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">"""*</span>
 <span class="sd">    jina gRPC service.</span>
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="JinaRPC.Call"><a class="viewcode-back" href="../../../../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaRPC.Call">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">Call</span><span class="p">(</span><span class="n">request_iterator</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">Call</span><span class="p">(</span>
+        <span class="n">request_iterator</span><span class="p">,</span>
+        <span class="n">target</span><span class="p">,</span>
+        <span class="n">options</span><span class="o">=</span><span class="p">(),</span>
+        <span class="n">channel_credentials</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">call_credentials</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">insecure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">compression</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">wait_for_ready</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="n">grpc</span><span class="o">.</span><span class="n">experimental</span><span class="o">.</span><span class="n">stream_stream</span><span class="p">(</span>
+            <span class="n">request_iterator</span><span class="p">,</span>
             <span class="n">target</span><span class="p">,</span>
-            <span class="n">options</span><span class="o">=</span><span class="p">(),</span>
-            <span class="n">channel_credentials</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">call_credentials</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">insecure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">compression</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">wait_for_ready</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">grpc</span><span class="o">.</span><span class="n">experimental</span><span class="o">.</span><span class="n">stream_stream</span><span class="p">(</span><span class="n">request_iterator</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="s1">'/jina.JinaRPC/Call'</span><span class="p">,</span>
+            <span class="s1">'/jina.JinaRPC/Call'</span><span class="p">,</span>
             <span class="n">jina__pb2</span><span class="o">.</span><span class="n">RequestProto</span><span class="o">.</span><span class="n">SerializeToString</span><span class="p">,</span>
             <span class="n">jina__pb2</span><span class="o">.</span><span class="n">RequestProto</span><span class="o">.</span><span class="n">FromString</span><span class="p">,</span>
-            <span class="n">options</span><span class="p">,</span> <span class="n">channel_credentials</span><span class="p">,</span>
-            <span class="n">insecure</span><span class="p">,</span> <span class="n">call_credentials</span><span class="p">,</span> <span class="n">compression</span><span class="p">,</span> <span class="n">wait_for_ready</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span></div></div>
+            <span class="n">options</span><span class="p">,</span>
+            <span class="n">channel_credentials</span><span class="p">,</span>
+            <span class="n">insecure</span><span class="p">,</span>
+            <span class="n">call_credentials</span><span class="p">,</span>
+            <span class="n">compression</span><span class="p">,</span>
+            <span class="n">wait_for_ready</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="JinaDataRequestRPCStub"><a class="viewcode-back" href="../../../../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaDataRequestRPCStub">[docs]</a><span class="k">class</span> <span class="nc">JinaDataRequestRPCStub</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">"""*</span>
+<span class="sd">    jina gRPC service for DataRequests.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
+        <span class="sd">"""Constructor.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            channel: A grpc.Channel.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Call</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="n">unary_unary</span><span class="p">(</span>
+            <span class="s1">'/jina.JinaDataRequestRPC/Call'</span><span class="p">,</span>
+            <span class="n">request_serializer</span><span class="o">=</span><span class="n">jina__pb2</span><span class="o">.</span><span class="n">MessageProto</span><span class="o">.</span><span class="n">SerializeToString</span><span class="p">,</span>
+            <span class="n">response_deserializer</span><span class="o">=</span><span class="n">google_dot_protobuf_dot_empty__pb2</span><span class="o">.</span><span class="n">Empty</span><span class="o">.</span><span class="n">FromString</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JinaDataRequestRPCServicer"><a class="viewcode-back" href="../../../../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaDataRequestRPCServicer">[docs]</a><span class="k">class</span> <span class="nc">JinaDataRequestRPCServicer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">"""*</span>
+<span class="sd">    jina gRPC service for DataRequests.</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="JinaDataRequestRPCServicer.Call"><a class="viewcode-back" href="../../../../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaDataRequestRPCServicer.Call">[docs]</a>    <span class="k">def</span> <span class="nf">Call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="sd">"""Pass in a Message, wrapping a DataRequest"""</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">set_code</span><span class="p">(</span><span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNIMPLEMENTED</span><span class="p">)</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">set_details</span><span class="p">(</span><span class="s1">'Method not implemented!'</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">'Method not implemented!'</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="add_JinaDataRequestRPCServicer_to_server"><a class="viewcode-back" href="../../../../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.add_JinaDataRequestRPCServicer_to_server">[docs]</a><span class="k">def</span> <span class="nf">add_JinaDataRequestRPCServicer_to_server</span><span class="p">(</span><span class="n">servicer</span><span class="p">,</span> <span class="n">server</span><span class="p">):</span>
+    <span class="n">rpc_method_handlers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">'Call'</span><span class="p">:</span> <span class="n">grpc</span><span class="o">.</span><span class="n">unary_unary_rpc_method_handler</span><span class="p">(</span>
+            <span class="n">servicer</span><span class="o">.</span><span class="n">Call</span><span class="p">,</span>
+            <span class="n">request_deserializer</span><span class="o">=</span><span class="n">jina__pb2</span><span class="o">.</span><span class="n">MessageProto</span><span class="o">.</span><span class="n">FromString</span><span class="p">,</span>
+            <span class="n">response_serializer</span><span class="o">=</span><span class="n">google_dot_protobuf_dot_empty__pb2</span><span class="o">.</span><span class="n">Empty</span><span class="o">.</span><span class="n">SerializeToString</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">}</span>
+    <span class="n">generic_handler</span> <span class="o">=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">method_handlers_generic_handler</span><span class="p">(</span>
+        <span class="s1">'jina.JinaDataRequestRPC'</span><span class="p">,</span> <span class="n">rpc_method_handlers</span>
+    <span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">add_generic_rpc_handlers</span><span class="p">((</span><span class="n">generic_handler</span><span class="p">,))</span></div>
+
+
+<span class="c1"># This class is part of an EXPERIMENTAL API.</span>
+<div class="viewcode-block" id="JinaDataRequestRPC"><a class="viewcode-back" href="../../../../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaDataRequestRPC">[docs]</a><span class="k">class</span> <span class="nc">JinaDataRequestRPC</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">"""*</span>
+<span class="sd">    jina gRPC service for DataRequests.</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="JinaDataRequestRPC.Call"><a class="viewcode-back" href="../../../../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaDataRequestRPC.Call">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">Call</span><span class="p">(</span>
+        <span class="n">request</span><span class="p">,</span>
+        <span class="n">target</span><span class="p">,</span>
+        <span class="n">options</span><span class="o">=</span><span class="p">(),</span>
+        <span class="n">channel_credentials</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">call_credentials</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">insecure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">compression</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">wait_for_ready</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="n">grpc</span><span class="o">.</span><span class="n">experimental</span><span class="o">.</span><span class="n">unary_unary</span><span class="p">(</span>
+            <span class="n">request</span><span class="p">,</span>
+            <span class="n">target</span><span class="p">,</span>
+            <span class="s1">'/jina.JinaDataRequestRPC/Call'</span><span class="p">,</span>
+            <span class="n">jina__pb2</span><span class="o">.</span><span class="n">MessageProto</span><span class="o">.</span><span class="n">SerializeToString</span><span class="p">,</span>
+            <span class="n">google_dot_protobuf_dot_empty__pb2</span><span class="o">.</span><span class="n">Empty</span><span class="o">.</span><span class="n">FromString</span><span class="p">,</span>
+            <span class="n">options</span><span class="p">,</span>
+            <span class="n">channel_credentials</span><span class="p">,</span>
+            <span class="n">insecure</span><span class="p">,</span>
+            <span class="n">call_credentials</span><span class="p">,</span>
+            <span class="n">compression</span><span class="p">,</span>
+            <span class="n">wait_for_ready</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
 </pre></div>
       </article>
       <footer>
@@ -476,7 +571,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 13, 2021.
+            Last updated on Aug 16, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

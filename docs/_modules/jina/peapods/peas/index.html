@@ -242,6 +242,7 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.peapods/">jina.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label for="toctree-checkbox-24"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.peapods.grpc/">jina.peapods.grpc package</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.peapods.peas/">jina.peapods.peas package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label for="toctree-checkbox-25"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.peas.helper/">jina.peapods.peas.helper module</a></li>
 </ul>
@@ -267,6 +268,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.gateway.prefetch/">jina.peapods.runtimes.gateway.prefetch module</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.grpc/">jina.peapods.runtimes.grpc package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a></li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.request_handlers.data_request_handler/">jina.peapods.runtimes.request_handlers.data_request_handler module</a></li>
@@ -552,11 +554,14 @@
 
     <span class="k">def</span> <span class="nf">_set_ctrl_adrr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Sets control address for different runtimes"""</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_zed_runtime_ctrl_address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_cls</span><span class="o">.</span><span class="n">get_control_address</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">runtime_ctrl_address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_cls</span><span class="o">.</span><span class="n">get_control_address</span><span class="p">(</span>
             <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
             <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_ctrl</span><span class="p">,</span>
             <span class="n">docker_kwargs</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'docker_kwargs'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
         <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_ctrl_address</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">runtime_ctrl_address</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_in</span><span class="si">}</span><span class="s1">'</span>
 
 <div class="viewcode-block" id="BasePea.start"><a class="viewcode-back" href="../../../../api/jina.peapods.peas/#jina.peapods.peas.BasePea.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Start the Pea.</span>
@@ -591,7 +596,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Sending </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1"> command for the </span><span class="si">{</span><span class="n">retry</span><span class="si">}</span><span class="s1">th time'</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">send_ctrl_message</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_zed_runtime_ctrl_address</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">runtime_ctrl_address</span><span class="p">,</span>
                     <span class="n">command</span><span class="p">,</span>
                     <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout_ctrl</span><span class="p">,</span>
                     <span class="n">raise_exception</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -607,7 +612,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">runtime_cls</span><span class="o">.</span><span class="n">activate</span><span class="p">(</span>
             <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
             <span class="n">socket_in_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">socket_in</span><span class="p">,</span>
-            <span class="n">control_address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_zed_runtime_ctrl_address</span><span class="p">,</span>
+            <span class="n">control_address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_ctrl_address</span><span class="p">,</span>
             <span class="n">timeout_ctrl</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout_ctrl</span><span class="p">,</span>
         <span class="p">)</span></div>
 
@@ -621,7 +626,7 @@
             <span class="n">cancel_event</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cancel_event</span><span class="p">,</span>
             <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
             <span class="n">socket_in_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">socket_in</span><span class="p">,</span>
-            <span class="n">control_address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_zed_runtime_ctrl_address</span><span class="p">,</span>
+            <span class="n">control_address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_ctrl_address</span><span class="p">,</span>
             <span class="n">timeout_ctrl</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout_ctrl</span><span class="p">,</span>
             <span class="n">skip_deactivate</span><span class="o">=</span><span class="n">skip_deactivate</span><span class="p">,</span>
         <span class="p">)</span>
@@ -636,7 +641,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_cls</span><span class="o">.</span><span class="n">wait_for_ready_or_shutdown</span><span class="p">(</span>
             <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
             <span class="n">ready_or_shutdown_event</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ready_or_shutdown</span><span class="o">.</span><span class="n">event</span><span class="p">,</span>
-            <span class="n">ctrl_address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_zed_runtime_ctrl_address</span><span class="p">,</span>
+            <span class="n">ctrl_address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_ctrl_address</span><span class="p">,</span>
             <span class="n">timeout_ctrl</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout_ctrl</span><span class="p">,</span>
             <span class="n">shutdown_event</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">,</span>
         <span class="p">)</span>
@@ -806,7 +811,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 13, 2021.
+            Last updated on Aug 16, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

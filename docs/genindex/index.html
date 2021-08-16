@@ -241,6 +241,7 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.peapods/">jina.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label for="toctree-checkbox-24"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/jina.peapods.grpc/">jina.peapods.grpc package</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.peapods.peas/">jina.peapods.peas package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label for="toctree-checkbox-25"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.peapods.peas.helper/">jina.peapods.peas.helper module</a></li>
 </ul>
@@ -266,6 +267,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.peapods.runtimes.gateway.prefetch/">jina.peapods.runtimes.gateway.prefetch module</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.peapods.runtimes.grpc/">jina.peapods.runtimes.grpc package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a></li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.peapods.runtimes.request_handlers.data_request_handler/">jina.peapods.runtimes.request_handlers.data_request_handler module</a></li>
@@ -403,6 +405,8 @@
         <li><a href="../api/jina.peapods.runtimes.container/#jina.peapods.runtimes.container.ContainerRuntime.activate">activate() (jina.peapods.runtimes.container.ContainerRuntime static method)</a>
 
         <ul>
+          <li><a href="../api/jina.peapods.runtimes.grpc/#jina.peapods.runtimes.grpc.GRPCDataRuntime.activate">(jina.peapods.runtimes.grpc.GRPCDataRuntime static method)</a>
+</li>
           <li><a href="../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.activate">(jina.peapods.runtimes.jinad.JinadRuntime static method)</a>
 </li>
           <li><a href="../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.activate">(jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime static method)</a>
@@ -449,6 +453,8 @@
         <li><a href="../api/jina.types.message/#jina.types.message.Message.add_exception">add_exception() (jina.types.message.Message method)</a>
 </li>
         <li><a href="../api/jina.logging.logger/#jina.logging.logger.JinaLogger.add_handlers">add_handlers() (jina.logging.logger.JinaLogger method)</a>
+</li>
+        <li><a href="../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.add_JinaDataRequestRPCServicer_to_server">add_JinaDataRequestRPCServicer_to_server() (in module jina.proto.jina_pb2_grpc)</a>
 </li>
         <li><a href="../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.add_JinaRPCServicer_to_server">add_JinaRPCServicer_to_server() (in module jina.proto.jina_pb2_grpc)</a>
 </li>
@@ -524,10 +530,10 @@
         </ul></li>
         <li><a href="../api/jina.flow.builder/#jina.flow.builder.allowed_levels">allowed_levels() (in module jina.flow.builder)</a>
 </li>
-        <li><a href="../api/jina.enums/#jina.enums.PollingType.ANY">ANY (jina.enums.PollingType attribute)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.enums/#jina.enums.PollingType.ANY">ANY (jina.enums.PollingType attribute)</a>
+</li>
         <li><a href="../api/cli.export/#cli.export.api_to_dict">api_to_dict() (in module cli.export)</a>
 </li>
         <li><a href="../api/jina/#jina.DocumentArray.append">append() (jina.DocumentArray method)</a>
@@ -774,9 +780,15 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.helper/#jina.helper.cached_property">cached_property (class in jina.helper)</a>
 </li>
-        <li><a href="../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaRPC.Call">Call() (jina.proto.jina_pb2_grpc.JinaRPC static method)</a>
+        <li><a href="../api/jina.peapods.grpc/#jina.peapods.grpc.Grpclet.Call">Call() (jina.peapods.grpc.Grpclet method)</a>
 
         <ul>
+          <li><a href="../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaDataRequestRPC.Call">(jina.proto.jina_pb2_grpc.JinaDataRequestRPC static method)</a>
+</li>
+          <li><a href="../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaDataRequestRPCServicer.Call">(jina.proto.jina_pb2_grpc.JinaDataRequestRPCServicer method)</a>
+</li>
+          <li><a href="../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaRPC.Call">(jina.proto.jina_pb2_grpc.JinaRPC static method)</a>
+</li>
           <li><a href="../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaRPCServicer.Call">(jina.proto.jina_pb2_grpc.JinaRPCServicer method)</a>
 </li>
         </ul></li>
@@ -785,6 +797,8 @@
         <li><a href="../api/jina.peapods.runtimes.container/#jina.peapods.runtimes.container.ContainerRuntime.cancel">cancel() (jina.peapods.runtimes.container.ContainerRuntime static method)</a>
 
         <ul>
+          <li><a href="../api/jina.peapods.runtimes.grpc/#jina.peapods.runtimes.grpc.GRPCDataRuntime.cancel">(jina.peapods.runtimes.grpc.GRPCDataRuntime static method)</a>
+</li>
           <li><a href="../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.cancel">(jina.peapods.runtimes.jinad.JinadRuntime static method)</a>
 </li>
           <li><a href="../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.cancel">(jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime static method)</a>
@@ -902,6 +916,8 @@
         <ul>
           <li><a href="../api/jina.logging.logger/#jina.logging.logger.JinaLogger.close">(jina.logging.logger.JinaLogger method)</a>
 </li>
+          <li><a href="../api/jina.peapods.grpc/#jina.peapods.grpc.Grpclet.close">(jina.peapods.grpc.Grpclet method)</a>
+</li>
           <li><a href="../api/jina.peapods.peas/#jina.peapods.peas.BasePea.close">(jina.peapods.peas.BasePea method)</a>
 </li>
           <li><a href="../api/jina.peapods.runtimes.gateway.prefetch/#jina.peapods.runtimes.gateway.prefetch.PrefetchCaller.close">(jina.peapods.runtimes.gateway.prefetch.PrefetchCaller method)</a>
@@ -931,14 +947,14 @@
 </li>
         <li><a href="../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod">CompoundPod (class in jina.peapods.pods.compound)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.enums/#jina.enums.CompressAlgo">CompressAlgo (class in jina.enums)</a>
 </li>
         <li><a href="../api/jina.peapods.peas.helper/#jina.peapods.peas.helper.ConditionalEvent">ConditionalEvent (class in jina.peapods.peas.helper)</a>
 </li>
         <li><a href="../api/jina.optimizers.discovery/#jina.optimizers.discovery.config_global_environment">config_global_environment() (in module jina.optimizers.discovery)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/daemon.api.endpoints.logs/#daemon.api.endpoints.logs.ConnectionManager.connect">connect() (daemon.api.endpoints.logs.ConnectionManager method)</a>
 </li>
         <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.connect_to_predecessor">connect_to_predecessor() (jina.peapods.pods.BasePod property)</a>
@@ -1768,10 +1784,10 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.FlowInspectType">FlowInspectType (class in jina.enums)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.excepts/#jina.excepts.FlowMissingPodError">FlowMissingPodError</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.optimizers/#jina.optimizers.FlowOptimizer">FlowOptimizer (class in jina.optimizers)</a>
 </li>
         <li><a href="../api/jina.optimizers.flow_runner/#jina.optimizers.flow_runner.FlowRunner">FlowRunner (class in jina.optimizers.flow_runner)</a>
@@ -1810,8 +1826,12 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.BetterEnum.from_string">from_string() (jina.enums.BetterEnum class method)</a>
 </li>
-        <li><a href="../api/jina.proto.serializer/#jina.proto.serializer.RequestProto.FromString">FromString() (jina.proto.serializer.RequestProto static method)</a>
+        <li><a href="../api/jina.proto.serializer/#jina.proto.serializer.MessageProto.FromString">FromString() (jina.proto.serializer.MessageProto static method)</a>
+
+        <ul>
+          <li><a href="../api/jina.proto.serializer/#jina.proto.serializer.RequestProto.FromString">(jina.proto.serializer.RequestProto static method)</a>
 </li>
+        </ul></li>
         <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.full_address">full_address() (jina.types.routing.table.TargetPod property)</a>
 </li>
         <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.full_out_address">full_out_address() (jina.types.routing.table.TargetPod property)</a>
@@ -1881,6 +1901,8 @@
         <li><a href="../api/jina.peapods.runtimes.container/#jina.peapods.runtimes.container.ContainerRuntime.get_control_address">get_control_address() (jina.peapods.runtimes.container.ContainerRuntime static method)</a>
 
         <ul>
+          <li><a href="../api/jina.peapods.runtimes.grpc/#jina.peapods.runtimes.grpc.GRPCDataRuntime.get_control_address">(jina.peapods.runtimes.grpc.GRPCDataRuntime static method)</a>
+</li>
           <li><a href="../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.get_control_address">(jina.peapods.runtimes.jinad.JinadRuntime static method)</a>
 </li>
           <li><a href="../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.get_control_address">(jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime static method)</a>
@@ -1920,10 +1942,10 @@
 </li>
         <li><a href="../api/jina.hubble.helper/#jina.hubble.helper.get_hubble_url">get_hubble_url() (in module jina.hubble.helper)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.get_in_degree">get_in_degree() (jina.types.document.graph.GraphDocument method)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.get_incoming_nodes">get_incoming_nodes() (jina.types.document.graph.GraphDocument method)</a>
 </li>
         <li><a href="../api/jina.helper/#jina.helper.get_internal_ip">get_internal_ip() (in module jina.helper)</a>
@@ -1998,9 +2020,17 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.GatewayProtocolType.GRPC">GRPC (jina.enums.GatewayProtocolType attribute)</a>
 </li>
+        <li><a href="../api/cli.api/#cli.api.grpc_data_runtime">grpc_data_runtime() (in module cli.api)</a>
+</li>
+        <li><a href="../api/cli.api/#cli.api.grpc_executor">grpc_executor() (in module cli.api)</a>
+</li>
         <li><a href="../api/jina.clients.base.grpc/#jina.clients.base.grpc.GRPCBaseClient">GRPCBaseClient (class in jina.clients.base.grpc)</a>
 </li>
         <li><a href="../api/jina.clients.grpc/#jina.clients.grpc.GRPCClient">GRPCClient (class in jina.clients.grpc)</a>
+</li>
+        <li><a href="../api/jina.peapods.runtimes.grpc/#jina.peapods.runtimes.grpc.GRPCDataRuntime">GRPCDataRuntime (class in jina.peapods.runtimes.grpc)</a>
+</li>
+        <li><a href="../api/jina.peapods.grpc/#jina.peapods.grpc.Grpclet">Grpclet (class in jina.peapods.grpc)</a>
 </li>
         <li><a href="../api/jina.peapods.runtimes.gateway.grpc/#jina.peapods.runtimes.gateway.grpc.GRPCRuntime">GRPCRuntime (class in jina.peapods.runtimes.gateway.grpc)</a>
 </li>
@@ -2200,6 +2230,8 @@
           <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.Pod.is_ready">(jina.peapods.pods.Pod property)</a>
 </li>
           <li><a href="../api/jina.peapods.runtimes.container/#jina.peapods.runtimes.container.ContainerRuntime.is_ready">(jina.peapods.runtimes.container.ContainerRuntime property)</a>
+</li>
+          <li><a href="../api/jina.peapods.runtimes.grpc/#jina.peapods.runtimes.grpc.GRPCDataRuntime.is_ready">(jina.peapods.runtimes.grpc.GRPCDataRuntime static method)</a>
 </li>
           <li><a href="../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.is_ready">(jina.peapods.runtimes.zmq.zed.ZEDRuntime static method)</a>
 </li>
@@ -2871,6 +2903,13 @@
 </li>
         </ul></li>
         <li>
+    jina.peapods.grpc
+
+        <ul>
+          <li><a href="../api/jina.peapods.grpc/#module-jina.peapods.grpc">module</a>
+</li>
+        </ul></li>
+        <li>
     jina.peapods.networking
 
         <ul>
@@ -2884,8 +2923,6 @@
           <li><a href="../api/jina.peapods.peas/#module-jina.peapods.peas">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     jina.peapods.peas.helper
 
@@ -2893,6 +2930,8 @@
           <li><a href="../api/jina.peapods.peas.helper/#module-jina.peapods.peas.helper">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     jina.peapods.pods
 
@@ -2989,6 +3028,13 @@
 
         <ul>
           <li><a href="../api/jina.peapods.runtimes.gateway.websocket.app/#module-jina.peapods.runtimes.gateway.websocket.app">module</a>
+</li>
+        </ul></li>
+        <li>
+    jina.peapods.runtimes.grpc
+
+        <ul>
+          <li><a href="../api/jina.peapods.runtimes.grpc/#module-jina.peapods.runtimes.grpc">module</a>
 </li>
         </ul></li>
         <li>
@@ -3396,6 +3442,12 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.RemoteAccessType.JINAD">JINAD (jina.enums.RemoteAccessType attribute)</a>
 </li>
+        <li><a href="../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaDataRequestRPC">JinaDataRequestRPC (class in jina.proto.jina_pb2_grpc)</a>
+</li>
+        <li><a href="../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaDataRequestRPCServicer">JinaDataRequestRPCServicer (class in jina.proto.jina_pb2_grpc)</a>
+</li>
+        <li><a href="../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaDataRequestRPCStub">JinaDataRequestRPCStub (class in jina.proto.jina_pb2_grpc)</a>
+</li>
         <li><a href="../api/daemon.clients/#daemon.clients.JinaDClient">JinaDClient (class in daemon.clients)</a>
 </li>
         <li><a href="../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime">JinadRuntime (class in jina.peapods.runtimes.jinad)</a>
@@ -3639,6 +3691,8 @@
 </li>
         </ul></li>
         <li><a href="../api/jina.types.message/#jina.types.message.Message">Message (class in jina.types.message)</a>
+</li>
+        <li><a href="../api/jina.proto.serializer/#jina.proto.serializer.MessageProto">MessageProto (class in jina.proto.serializer)</a>
 </li>
         <li><a href="../api/daemon.models.containers/#daemon.models.containers.ContainerItem.metadata">metadata (daemon.models.containers.ContainerItem attribute)</a>
 
@@ -3980,6 +4034,8 @@
 </li>
           <li><a href="../api/jina.peapods/#module-jina.peapods">jina.peapods</a>
 </li>
+          <li><a href="../api/jina.peapods.grpc/#module-jina.peapods.grpc">jina.peapods.grpc</a>
+</li>
           <li><a href="../api/jina.peapods.networking/#module-jina.peapods.networking">jina.peapods.networking</a>
 </li>
           <li><a href="../api/jina.peapods.peas/#module-jina.peapods.peas">jina.peapods.peas</a>
@@ -4013,6 +4069,8 @@
           <li><a href="../api/jina.peapods.runtimes.gateway.websocket/#module-jina.peapods.runtimes.gateway.websocket">jina.peapods.runtimes.gateway.websocket</a>
 </li>
           <li><a href="../api/jina.peapods.runtimes.gateway.websocket.app/#module-jina.peapods.runtimes.gateway.websocket.app">jina.peapods.runtimes.gateway.websocket.app</a>
+</li>
+          <li><a href="../api/jina.peapods.runtimes.grpc/#module-jina.peapods.runtimes.grpc">jina.peapods.runtimes.grpc</a>
 </li>
           <li><a href="../api/jina.peapods.runtimes.jinad/#module-jina.peapods.runtimes.jinad">jina.peapods.runtimes.jinad</a>
 </li>
@@ -4770,6 +4828,8 @@
         <ul>
           <li><a href="../api/jina.peapods.runtimes.container/#jina.peapods.runtimes.container.ContainerRuntime.run_forever">(jina.peapods.runtimes.container.ContainerRuntime method)</a>
 </li>
+          <li><a href="../api/jina.peapods.runtimes.grpc/#jina.peapods.runtimes.grpc.GRPCDataRuntime.run_forever">(jina.peapods.runtimes.grpc.GRPCDataRuntime method)</a>
+</li>
           <li><a href="../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.run_forever">(jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime method)</a>
 </li>
           <li><a href="../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncZMQRuntime.run_forever">(jina.peapods.runtimes.zmq.asyncio.AsyncZMQRuntime method)</a>
@@ -4861,9 +4921,13 @@
 </li>
         <li><a href="../api/jina.peapods.zmq/#jina.peapods.zmq.send_ctrl_message">send_ctrl_message() (in module jina.peapods.zmq)</a>
 </li>
+        <li><a href="../api/jina.peapods.grpc/#jina.peapods.grpc.Grpclet.send_ctrl_msg">send_ctrl_msg() (jina.peapods.grpc.Grpclet static method)</a>
+</li>
         <li><a href="../api/jina.peapods.zmq/#jina.peapods.zmq.send_message">send_message() (in module jina.peapods.zmq)</a>
 
         <ul>
+          <li><a href="../api/jina.peapods.grpc/#jina.peapods.grpc.Grpclet.send_message">(jina.peapods.grpc.Grpclet method)</a>
+</li>
           <li><a href="../api/jina.peapods.zmq/#jina.peapods.zmq.AsyncZmqlet.send_message">(jina.peapods.zmq.AsyncZmqlet method)</a>
 </li>
           <li><a href="../api/jina.peapods.zmq/#jina.peapods.zmq.Zmqlet.send_message">(jina.peapods.zmq.Zmqlet method)</a>
@@ -4871,9 +4935,11 @@
         </ul></li>
         <li><a href="../api/jina.peapods.zmq/#jina.peapods.zmq.send_message_async">send_message_async() (in module jina.peapods.zmq)</a>
 </li>
-        <li><a href="../api/jina.proto.serializer/#jina.proto.serializer.RequestProto.SerializeToString">SerializeToString() (jina.proto.serializer.RequestProto static method)</a>
+        <li><a href="../api/jina.proto.serializer/#jina.proto.serializer.MessageProto.SerializeToString">SerializeToString() (jina.proto.serializer.MessageProto static method)</a>
 
         <ul>
+          <li><a href="../api/jina.proto.serializer/#jina.proto.serializer.RequestProto.SerializeToString">(jina.proto.serializer.RequestProto static method)</a>
+</li>
           <li><a href="../api/jina.types.request/#jina.types.request.Request.SerializeToString">(jina.types.request.Request method)</a>
 </li>
         </ul></li>
@@ -4923,10 +4989,10 @@
 </li>
         <li><a href="../api/jina.parsers/#jina.parsers.set_pod_parser">set_pod_parser() (in module jina.parsers)</a>
 </li>
-        <li><a href="../api/daemon/#daemon.setup">setup() (in module daemon)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/daemon/#daemon.setup">setup() (in module daemon)</a>
+</li>
         <li><a href="../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.shuffle">shuffle() (jina.types.arrays.abstract.AbstractDocumentArray method)</a>
 
         <ul>
@@ -4999,6 +5065,8 @@
 
         <ul>
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.start">(jina.flow.base.Flow method)</a>
+</li>
+          <li><a href="../api/jina.peapods.grpc/#jina.peapods.grpc.Grpclet.start">(jina.peapods.grpc.Grpclet method)</a>
 </li>
           <li><a href="../api/jina.peapods.peas/#jina.peapods.peas.BasePea.start">(jina.peapods.peas.BasePea method)</a>
 </li>
@@ -5089,6 +5157,8 @@
           <li><a href="../api/jina.peapods.runtimes.base/#jina.peapods.runtimes.base.BaseRuntime.teardown">(jina.peapods.runtimes.base.BaseRuntime method)</a>
 </li>
           <li><a href="../api/jina.peapods.runtimes.container/#jina.peapods.runtimes.container.ContainerRuntime.teardown">(jina.peapods.runtimes.container.ContainerRuntime method)</a>
+</li>
+          <li><a href="../api/jina.peapods.runtimes.grpc/#jina.peapods.runtimes.grpc.GRPCDataRuntime.teardown">(jina.peapods.runtimes.grpc.GRPCDataRuntime method)</a>
 </li>
           <li><a href="../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.teardown">(jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime method)</a>
 </li>
@@ -5344,6 +5414,8 @@
         <li><a href="../api/jina.peapods.runtimes.container/#jina.peapods.runtimes.container.ContainerRuntime.wait_for_ready_or_shutdown">wait_for_ready_or_shutdown() (jina.peapods.runtimes.container.ContainerRuntime static method)</a>
 
         <ul>
+          <li><a href="../api/jina.peapods.runtimes.grpc/#jina.peapods.runtimes.grpc.GRPCDataRuntime.wait_for_ready_or_shutdown">(jina.peapods.runtimes.grpc.GRPCDataRuntime static method)</a>
+</li>
           <li><a href="../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.wait_for_ready_or_shutdown">(jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime static method)</a>
 </li>
           <li><a href="../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.wait_for_ready_or_shutdown">(jina.peapods.runtimes.zmq.zed.ZEDRuntime static method)</a>
@@ -5379,6 +5451,8 @@
           <li><a href="../api/daemon.tasks/#daemon.tasks.DaemonWorker.workdir">(daemon.tasks.DaemonWorker attribute)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.executors/#jina.executors.BaseExecutor.workspace">workspace() (jina.executors.BaseExecutor property)</a>
 
         <ul>
@@ -5387,8 +5461,6 @@
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.workspace">(jina.flow.base.Flow property)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/daemon.files/#daemon.files.workspace_files">workspace_files() (in module daemon.files)</a>
 </li>
         <li><a href="../api/daemon.models.containers/#daemon.models.containers.ContainerItem.workspace_id">workspace_id (daemon.models.containers.ContainerItem attribute)</a>
@@ -5473,7 +5545,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 13, 2021.
+            Last updated on Aug 16, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

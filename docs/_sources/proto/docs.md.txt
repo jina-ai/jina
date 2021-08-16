@@ -33,6 +33,7 @@
     - [RequestProto.ControlRequestProto.Command](#jina.RequestProto.ControlRequestProto.Command)
     - [StatusProto.StatusCode](#jina.StatusProto.StatusCode)
   
+    - [JinaDataRequestRPC](#jina.JinaDataRequestRPC)
     - [JinaRPC](#jina.JinaRPC)
   
 - [Scalar Value Types](#scalar-value-types)
@@ -541,6 +542,16 @@ Represents a Status
  
 
  
+
+
+<a name="jina.JinaDataRequestRPC"></a>
+
+### JinaDataRequestRPC
+jina gRPC service for DataRequests.
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| Call | [MessageProto](#jina.MessageProto) | [.google.protobuf.Empty](#google.protobuf.Empty) | Pass in a Message, wrapping a DataRequest |
 
 
 <a name="jina.JinaRPC"></a>
