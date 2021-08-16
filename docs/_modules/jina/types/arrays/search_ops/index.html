@@ -396,7 +396,8 @@
 <span></span><span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">operator</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Any</span>
 
 
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
@@ -506,7 +507,28 @@
 <span class="sd">        """</span>
         <span class="kn">from</span> <span class="nn">.document</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
-        <span class="k">return</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">))</span></div></div>
+        <span class="k">return</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="DocumentArraySearchOpsMixin.split"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.search_ops/#jina.types.arrays.search_ops.DocumentArraySearchOpsMixin.split">[docs]</a>    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="s1">'DocumentArray'</span><span class="p">]:</span>
+        <span class="sd">"""Split the `DocumentArray` into multiple DocumentArray according to the tag value of each `Document`.</span>
+
+<span class="sd">        :param tag: the tag name to split stored in tags.</span>
+<span class="sd">        :return: a dict where Documents with the same value on `tag` are grouped together, their orders</span>
+<span class="sd">            are preserved from the original :class:`DocumentArray`.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            If the :attr:`tags` of :class:`Document` do not contains the specified :attr:`tag`,</span>
+<span class="sd">            return an empty dict.</span>
+<span class="sd">        """</span>
+        <span class="kn">from</span> <span class="nn">.document</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+
+        <span class="n">rv</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">DocumentArray</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">rv</span><span class="p">[</span><span class="n">value</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">rv</span><span class="p">)</span></div></div>
 </pre></div>
       </article>
       <footer>

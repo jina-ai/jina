@@ -493,6 +493,28 @@ save the state of the random function to produce certain outputs.</p>
 </dd>
 </dl>
 </dd></dl>
+<dl class="py method">
+<dt id="jina.types.arrays.search_ops.DocumentArraySearchOpsMixin.split">
+<code class="sig-name descname"><span class="pre">split</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/search_ops/#DocumentArraySearchOpsMixin.split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.search_ops.DocumentArraySearchOpsMixin.split" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split the <cite>DocumentArray</cite> into multiple DocumentArray according to the tag value of each <cite>Document</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tag</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the tag name to split stored in tags.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a dict where Documents with the same value on <cite>tag</cite> are grouped together, their orders
+are preserved from the original <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code>.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the <code class="xref py py-attr docutils literal notranslate"><span class="pre">tags</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code> do not contains the specified <code class="xref py py-attr docutils literal notranslate"><span class="pre">tag</span></code>,
+return an empty dict.</p>
+</div>
+</dd></dl>
 </dd></dl>
 </div>
 
