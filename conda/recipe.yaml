@@ -1,0 +1,136 @@
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha: malinki, malinki ;)
+
+build:
+  number: 0
+
+outputs:
+- name: jina-core
+  build:
+    entry_points:
+    - jina = cli:main
+    - jinad = daemon:main
+    script: python -m pip install . --no-deps -vv
+  test:
+    requires:
+    - pip
+    imports:
+    - jina
+    commands:
+    - pip check
+    - jina --version
+  requirements:
+    host:
+    - python >=3.7
+    - pip
+    run:
+    - python
+    - protobuf >=3.13.0
+    - pyyaml >=5.3.1
+    - grpcio >=1.33.1
+    - tornado >=5.1.0
+    - pyzmq >=17.1.0
+    - numpy
+- name: jina-perf
+  test:
+    requires:
+    - pip
+    imports:
+    - jina
+    commands:
+    - pip check
+    - jina --version
+  requirements:
+    host:
+    - python >=3.7
+    - pip
+    run:
+    - python >=3.7
+    - '{{ pin_subpackage(''jina-core'', exact=True) }}'
+    - uvloop
+    - lz4 <3.1.2
+- name: jina
+  test:
+    requires:
+    - pip
+    imports:
+    - jina
+    commands:
+    - pip check
+    - jina --version
+  requirements:
+    host:
+    - python >=3.7
+    - pip
+    run:
+    - python >=3.7
+    - '{{ pin_subpackage(''jina-core'', exact=True) }}'
+    - aiohttp
+    - fastapi
+    - docker-py
+    - pathspec
+    - websockets
+    - pydantic
+    - uvicorn[standard] >=0.14.0
+    - aiofiles
+    - cryptography
+    - python-multipart
+    - uvloop
+    - aiostream
+    - filelock
+    - requests
+    - rich
+    - lz4 <3.1.2
+- name: jina-daemon
+  test:
+    requires:
+    - pip
+    imports:
+    - jina
+    commands:
+    - pip check
+    - jina --version
+  requirements:
+    host:
+    - python >=3.7
+    - pip
+    run:
+    - python >=3.7
+    - '{{ pin_subpackage(''jina-core'', exact=True) }}'
+    - aiohttp
+    - fastapi
+    - docker-py
+    - pathspec
+    - websockets
+    - pydantic
+    - uvicorn[standard] >=0.14.0
+    - aiofiles
+    - fluent-logger
+    - python-multipart
+    - uvloop
+    - aiostream
+    - filelock
+    - cryptography
+    - requests
+    - rich
+    - lz4 <3.1.2
+
+about:
+  home: https://github.com/jina-ai/jina/
+  license: Apache-2.0
+  license_family: Apache
+  license_file: LICENSE
+  description: Jina is the cloud-native neural search framework for any kind of data
+  doc_url: https://docs.jina.ai
+
+extra:
+  recipe-maintainers:
+  - tadejsv
+  - maateen
+  - nan-wang
+  - hanxiao
