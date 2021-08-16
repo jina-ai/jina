@@ -14,12 +14,9 @@ def _get_run_args(print_args: bool = True):
         args, unknown = parser.parse_known_args()
 
         if unknown:
-            import warnings
+            from ..parsers.helper import warn_unknown_args
 
-            warnings.warn(
-                f'ignored unknown argument: {unknown}, '
-                f'this may be caused by the mismatched version on Jina'
-            )
+            warn_unknown_args(unknown)
 
         if args.cli not in silent_print and print_args:
             from jina.helper import colored

@@ -1,6 +1,7 @@
 """Module for helper functions in the parser"""
 import argparse
 import os
+import warnings
 from typing import Tuple
 
 _SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
@@ -10,6 +11,23 @@ if _SHOW_ALL_ARGS:
     default_logger.warning(
         f'Setting {_SHOW_ALL_ARGS} will make remote Peas with sharding not work when using JinaD'
     )
+
+
+DEPRECATED_ARGS_MAPPING = {'override_with': 'uses_with'}
+
+
+def warn_unknown_args(unknown_args):
+    for arg in unknown_args:
+        normalized_arg = arg.replace('--', '').replace('-', '_')
+        if normalized_arg in DEPRECATED_ARGS_MAPPING:
+            new_argument = DEPRECATED_ARGS_MAPPING[normalized_arg]
+            if '-' in arg:
+                new_argument = new_argument.replace('_', '-')
+            warnings.warn(
+                f'''Ignored the deprecated argument '{arg}'. Please use '{new_argument}'.'''
+            )
+        else:
+            warnings.warn(f'ignored unknown argument: {arg}')
 
 
 def add_arg_group(parser, title):
