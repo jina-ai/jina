@@ -47,8 +47,42 @@ def zed_runtime(args: 'Namespace'):
         runtime.run_forever()
 
 
+def executor(args: 'Namespace'):
+    """
+    Starts a ZEDRuntime
+
+    :param args: arguments coming from the CLI.
+
+    :returns: return the same as `pea` or `zed_runtime`
+    """
+    uses = args.uses
+    if (
+        uses.startswith('jinahub+docker://')
+        or uses.startswith('docker://')
+        or uses.startswith('jinahub://')
+    ):
+        return pea(args)
+    else:
+        return zed_runtime(args)
+
+
+def grpc_data_runtime(args: 'Namespace'):
+    """
+    Starts a GRPCDataRuntime
+
+    :param args: arguments coming from the CLI.
+    """
+    from jina.peapods.runtimes.grpc import GRPCDataRuntime
+
+    with GRPCDataRuntime(args) as runtime:
+        runtime.logger.success(
+            f' Executor {runtime._data_request_handler._executor.metas.name} started'
+        )
+        runtime.run_forever()
+
+
 # alias
-executor = zed_runtime
+grpc_executor = grpc_data_runtime
 
 
 def gateway(args: 'Namespace'):

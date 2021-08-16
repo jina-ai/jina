@@ -1,7 +1,8 @@
 import re
 import random
 import operator
-from typing import Dict, Optional, Union, Tuple
+from collections import defaultdict
+from typing import Dict, Optional, Union, Tuple, Any
 
 
 if False:
@@ -112,3 +113,24 @@ class DocumentArraySearchOpsMixin:
         from .document import DocumentArray
 
         return DocumentArray(self.sample(len(self), seed=seed))
+
+    def split(self, tag: str) -> Dict[Any, 'DocumentArray']:
+        """Split the `DocumentArray` into multiple DocumentArray according to the tag value of each `Document`.
+
+        :param tag: the tag name to split stored in tags.
+        :return: a dict where Documents with the same value on `tag` are grouped together, their orders
+            are preserved from the original :class:`DocumentArray`.
+
+        .. note::
+            If the :attr:`tags` of :class:`Document` do not contains the specified :attr:`tag`,
+            return an empty dict.
+        """
+        from .document import DocumentArray
+
+        rv = defaultdict(DocumentArray)
+        for doc in self:
+            value = doc.tags.get(tag)
+            if not value:
+                continue
+            rv[value].append(doc)
+        return dict(rv)

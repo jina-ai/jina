@@ -18,6 +18,17 @@ def memmap_with_text_and_embedding(tmpdir):
     dam.clear()
 
 
+@pytest.fixture
+def memmap_for_split(tmpdir):
+    da = DocumentArrayMemmap(tmpdir)
+    da.append(Document(tags={'category': 'c'}))
+    da.append(Document(tags={'category': 'c'}))
+    da.append(Document(tags={'category': 'b'}))
+    da.append(Document(tags={'category': 'a'}))
+    da.append(Document(tags={'category': 'a'}))
+    return da
+
+
 def test_memmap_append_extend(tmpdir):
     dam = DocumentArrayMemmap(tmpdir)
     docs = list(random_docs(100))
@@ -444,3 +455,15 @@ def test_memmap_mutate(tmpdir):
 
     da.clear()
     assert not len(da)
+
+
+def test_split(memmap_for_split):
+    rv = memmap_for_split.split('category')
+    assert isinstance(rv, dict)
+    assert sorted(list(rv.keys())) == ['a', 'b', 'c']
+    # assure order is preserved c, b, a
+    assert list(rv.keys()) == ['c', 'b', 'a']
+    # original input c, c, b, a, a
+    assert len(rv['c']) == 2
+    assert len(rv['b']) == 1
+    assert len(rv['a']) == 2
