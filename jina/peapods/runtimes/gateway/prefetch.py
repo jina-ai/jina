@@ -37,7 +37,7 @@ class PrefetchCaller:
             self._receive_task = get_or_reuse_loop().create_task(self._receive())
 
     async def _unwrap_request(self, msg):
-        return await self._process_message(msg.request)
+        return self._process_message(msg.request)
 
     async def _receive(self):
         try:
@@ -47,7 +47,7 @@ class PrefetchCaller:
                 if message is None:
                     break
 
-                await self._process_message(message)
+                self._process_message(message)
         except asyncio.CancelledError:
             raise
         finally:
@@ -57,7 +57,7 @@ class PrefetchCaller:
                 )
             self._message_buffer.clear()
 
-    async def _process_message(self, message):
+    def _process_message(self, message):
         if message.request_id in self._message_buffer:
             future = self._message_buffer.pop(message.request_id)
             future.set_result(message)

@@ -1,7 +1,7 @@
+import argparse
 import os
 import json
 import urllib
-from typing import NamedTuple
 import shutil
 import docker
 import pytest
@@ -11,7 +11,6 @@ from pathlib import Path
 
 from jina.hubble.helper import disk_cache_offline
 from jina.hubble.hubio import HubIO, HubExecutor
-from jina.hubble import helper
 from jina.parsers.hubble import set_hub_push_parser
 from jina.parsers.hubble import set_hub_pull_parser
 
@@ -86,9 +85,54 @@ class GetMockResponse:
         return self.response_code
 
 
+@pytest.mark.parametrize('tag', [None, '-t v0'])
+@pytest.mark.parametrize('force', [None, 'UUID8'])
 @pytest.mark.parametrize('path', ['dummy_executor'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
-def test_push(mocker, monkeypatch, path, mode):
+def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag):
+    mock = mocker.Mock()
+
+    def _mock_post(url, data, headers=None, stream=True):
+        mock(url=url, data=data)
+        return PostMockResponse(response_code=requests.codes.created)
+
+    monkeypatch.setattr(requests, 'post', _mock_post)
+    # Second push will use --force --secret because of .jina/secret.key
+    # Then it will use put method
+    monkeypatch.setattr(requests, 'put', _mock_post)
+
+    exec_path = os.path.join(cur_dir, path)
+    _args_list = [exec_path, mode]
+    if force:
+        _args_list.extend(['--force', force])
+
+    if tag:
+        _args_list.append(tag)
+
+    args = set_hub_push_parser().parse_args(_args_list)
+    result = HubIO(args).push()
+
+    # remove .jina
+    exec_config_path = os.path.join(exec_path, '.jina')
+    shutil.rmtree(exec_config_path)
+
+
+@pytest.mark.parametrize(
+    'dockerfile, expected_error',
+    [
+        ('Dockerfile', 'The given Dockerfile `{dockerfile}` does not exist!'),
+        (
+            '../Dockerfile',
+            'The Dockerfile must be placed at the given folder `{work_path}`',
+        ),
+    ],
+)
+@pytest.mark.parametrize('path', ['dummy_executor'])
+@pytest.mark.parametrize('mode', ['--public', '--private'])
+def test_push_wrong_dockerfile(
+    mocker, monkeypatch, path, mode, tmpdir, dockerfile, expected_error
+):
+    dockerfile = os.path.join(cur_dir, path, dockerfile)
     mock = mocker.Mock()
 
     def _mock_post(url, data, headers=None, stream=True):
@@ -104,11 +148,13 @@ def test_push(mocker, monkeypatch, path, mode):
     _args_list = [exec_path, mode]
 
     args = set_hub_push_parser().parse_args(_args_list)
-    result = HubIO(args).push()
+    args.docker_file = dockerfile
+    with pytest.raises(Exception) as info:
+        HubIO(args).push()
 
-    # remove .jina
-    exec_config_path = os.path.join(exec_path, '.jina')
-    shutil.rmtree(exec_config_path)
+    assert expected_error.format(dockerfile=dockerfile, work_path=args.path) in str(
+        info.value
+    )
 
 
 def test_fetch(mocker, monkeypatch):
@@ -269,3 +315,56 @@ def test_pull_with_progress():
 
     console = Console()
     HubIO(args)._pull_with_progress(_log_stream_generator(), console)
+
+
+@pytest.mark.parametrize('add_dockerfile', [True, False])
+def test_new(monkeypatch, tmpdir, add_dockerfile):
+    from rich.prompt import Prompt, Confirm
+
+    prompts = iter(
+        [
+            'DummyExecutor',
+            tmpdir / 'DummyExecutor',
+            'dummy description',
+            'dummy author',
+            'dummy tags',
+            'dummy docs',
+        ]
+    )
+
+    confirms = iter([True, add_dockerfile])
+
+    def _mock_prompt_ask(*args, **kwargs):
+        return next(prompts)
+
+    def _mock_confirm_ask(*args, **kwargs):
+        return next(confirms)
+
+    monkeypatch.setattr(Prompt, 'ask', _mock_prompt_ask)
+    monkeypatch.setattr(Confirm, 'ask', _mock_confirm_ask)
+
+    args = argparse.Namespace(hub='new')
+    HubIO(args).new()
+    path = tmpdir / 'DummyExecutor'
+
+    pkg_files = [
+        'executor.py',
+        'manifest.yml',
+        'README.md',
+        'requirements.txt',
+        'config.yml',
+    ]
+
+    if add_dockerfile:
+        pkg_files.append('Dockerfile')
+
+    for file in pkg_files:
+        assert (path / file).exists()
+    for file in [
+        'executor.py',
+        'manifest.yml',
+        'README.md',
+        'config.yml',
+    ]:
+        with open(path / file, 'r') as fp:
+            assert 'DummyExecutor' in fp.read()
