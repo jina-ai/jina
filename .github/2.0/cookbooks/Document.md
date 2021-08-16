@@ -54,6 +54,7 @@ Table of Contents
   - [Filter elements](#filter-elements)
   - [Use `itertools` on `DocumentArray`](#use-itertools-on-documentarray)
   - [Get attributes in bulk](#get-attributes-in-bulk)
+  - [Property `.embeddings`](#property-embeddings)
   - [Finding closest documents between `DocumentArray` objects](#finding-closest-documents-between-documentarray-objects)
     - [Using Sparse arrays as embeddings](#using-sparse-arrays-as-embeddings)
   - [Filter a subset of `DocumentArray` using `.find`](#filter-a-subset-of-documentarray-using-find)
