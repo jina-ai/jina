@@ -26,6 +26,7 @@ daemon_logger = JinaLogger('DAEMON', **vars(jinad_args))
 
 __task_queue__ = Queue()
 __root_workspace__ = jinad_args.workspace
+__partial_workspace__ = '/workspace'
 __rootdir__ = str(Path(__file__).parent.parent.absolute())
 __dockerfiles__ = str(Path(__file__).parent.absolute() / 'Dockerfiles')
 
@@ -134,7 +135,9 @@ def _get_app(mode=None):
 def _update_default_args():
     global jinad_args, __root_workspace__
     jinad_args = _get_run_args()
-    __root_workspace__ = '/workspace' if jinad_args.mode else jinad_args.workspace
+    __root_workspace__ = (
+        __partial_workspace__ if jinad_args.mode else jinad_args.workspace
+    )
 
 
 def _start_fluentd():
