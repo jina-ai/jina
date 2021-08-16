@@ -12,7 +12,7 @@ import tempfile
 from kubernetes.utils import FailToCreateError
 from kubernetes.watch import Watch
 
-cur_dir = path = os.path.dirname(__file__)
+cur_dir = os.path.dirname(__file__)
 
 
 config.load_kube_config()
