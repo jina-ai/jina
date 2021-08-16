@@ -464,4 +464,4 @@ def test_split(docarray_for_split):
     assert len(rv['b']) == 1
     assert len(rv['a']) == 2
     rv = docarray_for_split.split('random')
-    assert not rv  # wrong attribute returns empty dict
+    assert not rv  # wrong tag returns empty dict
