@@ -60,7 +60,7 @@ Table of Contents
   - [Filter a subset of `DocumentArray` using `.find`](#filter-a-subset-of-documentarray-using-find)
   - [Sample a subset of `DocumentArray` using `sample`](#sample-a-subset-of-documentarray-using-sample)
   - [Shuffle a `DocumentArray` using `shuffle`](#shuffle-a-documentarray-using-shuffle)
-  - [Split a `DocumentArray` by tag using `split`](#split-a-documentarray-by-tag-using-split) 
+  - [Split a `DocumentArray` by tag using `split`](#split-a-documentarray-by-tag-using-split)
   - [Visualize the embeddings of a `DocumentArray`](#visualize-the-embeddings-of-a-documentarray)
 - [`DocumentArrayMemmap` API](#documentarraymemmap-api)
   - [Create `DocumentArrayMemmap`](#create-documentarraymemmap)
