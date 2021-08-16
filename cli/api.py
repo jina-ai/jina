@@ -51,6 +51,25 @@ def zed_runtime(args: 'Namespace'):
 executor = zed_runtime
 
 
+def grpc_data_runtime(args: 'Namespace'):
+    """
+    Starts a GRPCDataRuntime
+
+    :param args: arguments coming from the CLI.
+    """
+    from jina.peapods.runtimes.grpc import GRPCDataRuntime
+
+    with GRPCDataRuntime(args) as runtime:
+        runtime.logger.success(
+            f' Executor {runtime._data_request_handler._executor.metas.name} started'
+        )
+        runtime.run_forever()
+
+
+# alias
+grpc_executor = grpc_data_runtime
+
+
 def gateway(args: 'Namespace'):
     """
     Start a Gateway Pod
