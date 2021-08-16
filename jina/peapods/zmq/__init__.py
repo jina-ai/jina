@@ -23,10 +23,6 @@ from ...types.message.common import ControlMessage
 from ...types.request import Request
 from ...types.routing.table import RoutingTable
 
-if False:
-    import multiprocessing
-    import threading
-
 
 class Zmqlet:
     """A `Zmqlet` object can send/receive data to/from ZeroMQ socket and invoke callback function. It
@@ -315,14 +311,10 @@ class Zmqlet:
         next_targets = routing_table.get_next_targets()
         next_routes = []
         for target, send_as_bind in next_targets:
-            pod_address = target.active_target_pod.full_address
-
             if send_as_bind:
                 out_socket = self.out_sock
             else:
-                out_socket = self.out_sockets.get(pod_address, None)
-                if out_socket is None:
-                    out_socket = self._get_dynamic_out_socket(target.active_target_pod)
+                out_socket = self._get_dynamic_out_socket(target.active_target_pod)
 
             next_routes.append((target, out_socket))
         return next_routes
@@ -351,7 +343,16 @@ class Zmqlet:
             if self.args.dynamic_routing_out:
                 self._send_message_dynamic(msg)
                 return
-            out_sock = self.out_sock
+            out_sock = _init_socket(
+                self.ctx,
+                self.args.host_out,
+                self.args.port_out,
+                self.args.socket_out,
+                self.identity,
+                ssh_server=self.args.ssh_server,
+                ssh_keyfile=self.args.ssh_keyfile,
+                ssh_password=self.args.ssh_password,
+            )
         else:
             out_sock = self.ctrl_sock
 
