@@ -67,16 +67,15 @@ def cdist(
     return dists
 
 
-def cosine(x_mat: 'np.ndarray', y_mat: 'np.ndarray', eps: float = 1e-6) -> 'np.ndarray':
+def cosine(x_mat: 'np.ndarray', y_mat: 'np.ndarray', eps: float = 1e-7) -> 'np.ndarray':
     """Cosine distance between each row in x_mat and each row in y_mat.
     :param x_mat: np.ndarray with ndim=2
     :param y_mat: np.ndarray with ndim=2
     :param eps: a small jitter to avoid divde by zero
     :return: np.ndarray  with ndim=2
     """
-    return np.clip(
-        1
-        - np.dot(x_mat, y_mat.T)
+    return 1 - np.clip(
+        (np.dot(x_mat, y_mat.T) + eps)
         / (
             np.outer(np.linalg.norm(x_mat, axis=1), np.linalg.norm(y_mat, axis=1)) + eps
         ),
@@ -99,22 +98,19 @@ def sqeuclidean(x_mat: 'np.ndarray', y_mat: 'np.ndarray') -> 'np.ndarray':
 
 
 def sparse_cosine(
-    x_mat: _SPARSE_SCIPY_TYPES, y_mat: _SPARSE_SCIPY_TYPES, eps: float = 1e-6
+    x_mat: _SPARSE_SCIPY_TYPES, y_mat: _SPARSE_SCIPY_TYPES
 ) -> 'np.ndarray':
     """Cosine distance between each row in x_mat and each row in y_mat.
     :param x_mat:  scipy.sparse like array with ndim=2
     :param y_mat:  scipy.sparse like array with ndim=2
-    :param eps: a small jitter to avoid divde by zero
     :return: np.ndarray  with ndim=2
     """
     from scipy.sparse.linalg import norm
 
     # we need the np.asarray otherwise we get a np.matrix object that iterates differently
-    return np.clip(
+    return 1 - np.clip(
         np.asarray(
-            1
-            - x_mat.dot(y_mat.T)
-            / (np.outer(norm(x_mat, axis=1), norm(y_mat, axis=1)) + eps)
+            x_mat.dot(y_mat.T) / (np.outer(norm(x_mat, axis=1), norm(y_mat, axis=1)))
         ),
         0,
         1,
