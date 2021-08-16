@@ -57,4 +57,5 @@ index_flow = (
     )
 )
 index_flow.plot('index-flow.jpg')
+print('deploy index flow')
 index_flow.deploy('k8s')
