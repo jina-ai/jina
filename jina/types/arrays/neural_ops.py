@@ -148,7 +148,6 @@ class DocumentArrayNeuralOpsMixin:
         n_x = x_mat.shape[0]
 
         def batch_generator(y_darray: 'DocumentArrayMemmap', n_batch: int):
-            n_max = len(y_darray)
             for i in range(0, len(y_darray), n_batch):
                 y_mat = y_darray._get_embeddings(slice(i, i + n_batch))
                 yield y_mat, i
