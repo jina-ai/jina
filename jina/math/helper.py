@@ -14,7 +14,9 @@ _SPARSE_SCIPY_TYPES = Union[
 
 
 def minmax_normalize(
-    x: Union['np.ndarray', _SPARSE_SCIPY_TYPES], t_range: Tuple = (0, 1)
+    x: Union['np.ndarray', _SPARSE_SCIPY_TYPES],
+    t_range: Tuple = (0, 1),
+    eps: float = 1e-6,
 ):
     """Normalize values in `x` into `t_range`.
 
@@ -26,6 +28,7 @@ def minmax_normalize(
 
     :param x: the data to be normalized
     :param t_range: a tuple represents the target range.
+    :param eps: a small jitter to avoid divde by zero
     :return: normalized data in `t_range`
     """
     a, b = t_range
@@ -33,11 +36,13 @@ def minmax_normalize(
     if isinstance(x, np.ndarray):
         min_d = np.min(x, axis=-1, keepdims=True)
         max_d = np.max(x, axis=-1, keepdims=True)
-        return (b - a) * (x - min_d) / (max_d - min_d) + a
+        r = (b - a) * (x - min_d) / (max_d - min_d + eps) + a
     else:
         min_d = x.min(axis=-1).toarray()
         max_d = x.max(axis=-1).toarray()
-        return (b - a) * (x - min_d) / (max_d - min_d) + a
+        r = (b - a) * (x - min_d) / (max_d - min_d + eps) + a
+
+    return np.clip(r, *((a, b) if a < b else (b, a)))
 
 
 def top_k(
