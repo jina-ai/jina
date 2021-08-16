@@ -442,8 +442,23 @@
         <span class="n">runtime</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span></div>
 
 
-<span class="c1"># alias</span>
-<span class="n">executor</span> <span class="o">=</span> <span class="n">zed_runtime</span>
+<div class="viewcode-block" id="executor"><a class="viewcode-back" href="../../../api/cli.api/#cli.api.executor">[docs]</a><span class="k">def</span> <span class="nf">executor</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="s1">'Namespace'</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Starts a ZEDRuntime</span>
+
+<span class="sd">    :param args: arguments coming from the CLI.</span>
+
+<span class="sd">    :returns: return the same as `pea` or `zed_runtime`</span>
+<span class="sd">    """</span>
+    <span class="n">uses</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">uses</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'jinahub+docker://'</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'docker://'</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'jinahub://'</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="n">pea</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">zed_runtime</span><span class="p">(</span><span class="n">args</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="grpc_data_runtime"><a class="viewcode-back" href="../../../api/cli.api/#cli.api.grpc_data_runtime">[docs]</a><span class="k">def</span> <span class="nf">grpc_data_runtime</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="s1">'Namespace'</span><span class="p">):</span>

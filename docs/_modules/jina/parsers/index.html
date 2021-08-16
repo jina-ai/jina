@@ -607,6 +607,16 @@
         <span class="p">)</span>
     <span class="p">)</span>
 
+    <span class="n">set_pea_parser</span><span class="p">(</span>
+        <span class="n">sp</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+            <span class="s1">'zed_runtime'</span><span class="p">,</span>
+            <span class="n">aliases</span><span class="o">=</span><span class="p">[</span><span class="s1">'executor'</span><span class="p">],</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">'Start a ZEDRuntime with an Executor in it'</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">'Start an Executor in the main process. Executor is how Jina processes Document.'</span><span class="p">,</span>
+            <span class="n">formatter_class</span><span class="o">=</span><span class="n">_chf</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
     <span class="n">set_flow_parser</span><span class="p">(</span>
         <span class="n">sp</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
             <span class="s1">'flow'</span><span class="p">,</span>
