@@ -54,6 +54,7 @@ Table of Contents
   - [Filter elements](#filter-elements)
   - [Use `itertools` on `DocumentArray`](#use-itertools-on-documentarray)
   - [Get attributes in bulk](#get-attributes-in-bulk)
+  - [Property `.embeddings`](#property-embeddings)
   - [Finding closest documents between `DocumentArray` objects](#finding-closest-documents-between-documentarray-objects)
     - [Using Sparse arrays as embeddings](#using-sparse-arrays-as-embeddings)
   - [Filter a subset of `DocumentArray` using `.find`](#filter-a-subset-of-documentarray-using-find)
@@ -63,12 +64,13 @@ Table of Contents
 - [`DocumentArrayMemmap` API](#documentarraymemmap-api)
   - [Create `DocumentArrayMemmap`](#create-documentarraymemmap)
   - [Add Documents to `DocumentArrayMemmap`](#add-documents-to-documentarraymemmap)
+  - [Buffer pool](#buffer-pool)
+  - [Modifying elements of `DocumentArrayMemmap`](#modifying-elements-of-documentarraymemmap)
   - [Clear a `DocumentArrayMemmap`](#clear-a-documentarraymemmap)
     - [Pruning](#pruning)
-  - [Mutable sequence with "read-only" elements](#mutable-sequence-with-read-only-elements)
   - [Side-by-side vs. `DocumentArray`](#side-by-side-vs-documentarray)
   - [Convert between `DocumentArray` and `DocumentArrayMemmap`](#convert-between-documentarray-and-documentarraymemmap)
-  - [Maintaining consistency via `.reload()`](#maintaining-consistency-via-reload)
+  - [Maintaining consistency via `.reload()` and `.save()`](#maintaining-consistency-via-reload-and-save)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1041,7 +1043,6 @@ This can be very useful when extracting a batch of embeddings:
 
 ```python
 import numpy as np
-
 np.stack(da.get_attributes('embedding'))
 ```
 
@@ -1050,6 +1051,25 @@ np.stack(da.get_attributes('embedding'))
  [4 5 6]
  [7 8 9]]
 ```
+
+### Property `.embeddings`
+
+There is a faster version to extract embeddings from a `DocumentArray` or `DocumentArrayMemmap`, the property `.embeddings`. This property assumes all embeddings in the array have the same shape and dtype. Note that
+
+```
+da.embeddings
+```
+
+will produce the same output as `np.stack(da.get_attributes('embedding'))` but the results will be retrieved faster.
+
+```
+[[1 2 3]
+ [4 5 6]
+ [7 8 9]]
+```
+
+**Note: using .embeddings in a DocumenArray or DocumentArrayMemmap with different shapes or dtypes might yield to unnexpected results.**
+
 
 
 ### Finding closest documents between `DocumentArray` objects
@@ -1265,9 +1285,10 @@ da.visualize()
 
 When your `DocumentArray` object contains a large number of `Document`, holding it in memory can be very demanding. You
 may want to use `DocumentArrayMemmap` to alleviate this issue. A `DocumentArrayMemmap` stores all Documents directly on
-the disk, while only keeps a small lookup table in memory. This lookup table contains the offset and length of
-each `Document`, hence it is much smaller than the full `DocumentArray`. Elements are loaded on-demand to memory during
-the access.
+the disk, while keeping a small lookup table in memory and a buffer pool of documents with a fixed size. The lookup 
+table contains the offset and length of each `Document`, hence it is much smaller than the full `DocumentArray`.
+Elements are loaded on-demand to memory during the access. Memory-loaded documents are kept in the buffer pool to allow 
+modifying documents.
 
 The next table show the speed and memory consumption when writing and reading 50,000 `Documents`.
 
@@ -1299,22 +1320,32 @@ dam = DocumentArrayMemmap('./my-memmap')
 dam.extend([d1, d2])
 ```
 
-The `dam` object stores all future Documents into `./my-memmap`, there is no need to manually call `save`/`load`. In
-fact, `save`/`load` methods are not available in `DocumentArrayMemmap`.
+The `dam` object stores all future Documents into `./my-memmap`, there is no need to manually call `save`/`reload`.
+Recently added, modified or accessed documents are also kept in the memory buffer so all changes to documents are 
+applied first in the memory buffer and will be persisted to disk lazily (e.g when they quit the buffer pool or when
+the `dam` object's destructor is called). If you want to instantly persist the changed documents, you can call `save`.
 
-### Clear a `DocumentArrayMemmap`
 
-To clear all contents in a `DocumentArrayMemmap` object, simply call `.clear()`. It will clean all content on disk.
+### Buffer pool
+A fixed number of documents are kept in the memory buffer pool. The number can be configured with the constructor
+parameter `buffer_pool_size` (1000 by default). Only the `buffer_pool_size` most recently accessed, modified or added
+documents exist in the pool. Replacement of documents uses the LRU strategy.
 
-#### Pruning
+```python
+from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import Document
+dam = DocumentArrayMemmap('./my-memmap', buffer_pool_size=10)
+dam.extend([Document() for _ in range(100)])
+```
 
-One may notice another method `.prune()` that shares similar semantics. `.prune()` method is designed for "
-post-optimizing" the on-disk data structure of `DocumentArrayMemmap` object. It can reduce the on-disk usage.
+The buffer pool ensures that in-memory modified documents are persisted to disk. Therefore, you should not reference 
+documents manually and modify them if they might be outside of the buffer pool. The next section explains the best 
+practices when modifying documents.
 
-### Mutable sequence with "read-only" elements
+### Modifying elements of `DocumentArrayMemmap`
 
-The biggest caveat in `DocumentArrayMemmap` is that you can **not** modify element's attribute inplace. Though
-the `DocumentArrayMemmap` is mutable, each of its element is not. For example:
+Modifying elements of a `DocumentArrayMemmap` is possible due to the fact that accessed and modified documents are kept
+in the buffer pool:
 
 ```python
 from jina.types.arrays.memmap import DocumentArrayMemmap
@@ -1332,33 +1363,151 @@ print(dam[0].text)
 ```
 
 ```text
-hello
+goodbye
 ```
 
-One can see the `text` field has not changed!
+However, there are practices to **avoid**. Mainly, you should not modify documents that you reference manually and that 
+might not be in the buffer pool. Here are some practices to avoid:
 
-To update an existing `Document` in a `DocumentArrayMemmap`, you need to assign it to a new `Document` object.
+1. Keep more  references than the buffer pool size and modify them:
+   <table>
+   <tr>
+   <td>
+   <b><center>❌ Don't</center></b>
+   </td>
+   <td>
+   <b><center>✅ Do</center></b>
+   </td>
+   </tr>
+   <tr>
+   <td>
+   
+   ```python
+   from jina import Document
+   from jina.types.arrays.memmap import DocumentArrayMemmap
+   
+   docs = [Document(text='hello') for _ in range(100)]
+   dam = DocumentArrayMemmap('./my-memmap', buffer_pool_size=10)
+   dam.extend(docs)
+   for doc in docs:
+       doc.text = 'goodbye'
+   
+   dam[50].text
+   ```
+    ```text
+    hello
+    ```
 
-```python
-from jina.types.arrays.memmap import DocumentArrayMemmap
-from jina import Document
 
-d1 = Document(text='hello')
-d2 = Document(text='world')
+   </td>
+   <td>
+   Use the dam object to modify instead:
 
-dam = DocumentArrayMemmap('./my-memmap')
-dam.extend([d1, d2])
+   ```python
+   from jina import Document
+   from jina.types.arrays.memmap import DocumentArrayMemmap
+   
+   docs = [Document(text='hello') for _ in range(100)]
+   dam = DocumentArrayMemmap('./my-memmap', buffer_pool_size=10)
+   dam.extend(docs)
+   for doc in dam:
+       doc.text = 'goodbye'
+   
+   dam[50].text
+   ```
+   ```text
+   goodbye
+   ```
 
-dam[0] = Document(text='goodbye')
+   It's also okay if you reference docs less than the buffer pool size:
 
-for d in dam:
-    print(d)
-```
+   ```python
+   from jina import Document
+   from jina.types.arrays.memmap import DocumentArrayMemmap
+   
+   docs = [Document(text='hello') for _ in range(100)]
+   dam = DocumentArrayMemmap('./my-memmap', buffer_pool_size=1000)
+   dam.extend(docs)
+   for doc in docs:
+       doc.text = 'goodbye'
+   
+   dam[50].text
+   ```
+   ```text
+   goodbye
+   ```
 
-```text
-{'id': '44a74b56-c821-11eb-8522-1e008a366d48', 'mime_type': 'text/plain', 'text': 'goodbye'}
-{'id': '44a73562-c821-11eb-8522-1e008a366d48', 'mime_type': 'text/plain', 'text': 'world'}
-```
+   </td>
+   </tr>
+   </table>
+
+
+2. Modify a reference that might have left the buffer pool :
+   <table>
+   <tr>
+   <td>
+   <b><center>❌ Don't</center></b>
+   </td>
+   <td>
+   <b><center>✅ Do</center></b>
+   </td>
+   </tr>
+   <tr>
+   <td>
+   
+   ```python
+   from jina import Document
+   from jina.types.arrays.memmap import DocumentArrayMemmap
+   
+   dam = DocumentArrayMemmap('./my-memmap', buffer_pool_size=10)
+   my_doc = Document(text='hello')
+   dam.append(my_doc)
+   
+   # my_doc leaves the buffer pool after extend
+   dam.extend([Document(text='hello') for _ in range(99)])
+   my_doc.text = 'goodbye'
+   dam[0].text
+   ```
+    ```text
+    hello
+    ```
+
+
+   </td>
+   <td>
+   Get the document from the dam object and then modify it:
+
+   ```python
+   from jina import Document
+   from jina.types.arrays.memmap import DocumentArrayMemmap
+   
+   dam = DocumentArrayMemmap('./my-memmap', buffer_pool_size=10)
+   my_doc = Document(text='hello')
+   dam.append(my_doc)
+   
+   # my_doc leaves the buffer pool after extend
+   dam.extend([Document(text='hello') for _ in range(99)])
+   dam[my_doc.id].text = 'goodbye' # or dam[0].text = 'goodbye'
+   dam[0].text
+   ```
+   ```text
+   goodbye
+   ```
+
+   </td>
+   </tr>
+   </table>
+
+To summarize, it's a best practice to **rely on the `dam` object to reference the docs that you modify**.
+
+### Clear a `DocumentArrayMemmap`
+
+To clear all contents in a `DocumentArrayMemmap` object, simply call `.clear()`. It will clean all content on disk.
+
+#### Pruning
+
+One may notice another method `.prune()` that shares similar semantics. `.prune()` method is designed for "
+post-optimizing" the on-disk data structure of `DocumentArrayMemmap` object. It can reduce the on-disk usage.
 
 ### Side-by-side vs. `DocumentArray`
 
@@ -1407,12 +1556,12 @@ dam.extend(da)
 da = DocumentArray(dam)
 ```
 
-### Maintaining consistency via `.reload()`
+### Maintaining consistency via `.reload()` and `.save()`
 
 Considering two `DocumentArrayMemmap` objects that share the same on-disk storage `./memmap` but sit in different
-processes/threads. After some writing ops, the consistency of the lookup table may be corrupted, as
-each `DocumentArrayMemmap` object has its own version of lookup table in memory. `.reload()` method is for solving this
-issue:
+processes/threads. After some writing ops, the consistency of the lookup table and the buffer pool may be corrupted, as
+each `DocumentArrayMemmap` object has its own version of lookup table and buffer pool in memory. `.reload()` and 
+`.save()` are for solving this issue:
 
 ```python
 from jina.types.arrays.memmap import DocumentArrayMemmap
@@ -1437,4 +1586,29 @@ assert len(dam2) == 2
 
 dam2.reload()
 assert len(dam2) == 0
+```
+You don't need to use `.save` if you add new documents. However, if you modified an attribute of a document, you need
+to use it:
+
+```python
+from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import Document
+
+d1 = Document(text='hello')
+
+dam = DocumentArrayMemmap('./my-memmap')
+dam2 = DocumentArrayMemmap('./my-memmap')
+
+dam.append(d1)
+d1.text = 'goodbye'
+assert len(dam) == 1
+assert len(dam2) == 0
+
+dam2.reload()
+assert len(dam2) == 1
+assert dam2[0].text == 'hello'
+
+dam.save()
+dam2.reload()
+assert dam2[0].text == 'goodbye'
 ```

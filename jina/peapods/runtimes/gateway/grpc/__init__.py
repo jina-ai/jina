@@ -3,6 +3,7 @@ import os
 import grpc
 
 from jina import __default_host__
+from ....grpc import Grpclet
 
 from .....proto import jina_pb2_grpc
 from ....zmq import AsyncZmqlet
@@ -15,9 +16,9 @@ __all__ = ['GRPCRuntime']
 class GRPCPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
     """JinaRPCServicer """
 
-    def __init__(self, args, zmqlet):
+    def __init__(self, args, iolet):
         super().__init__()
-        self._servicer = PrefetchCaller(args, zmqlet)
+        self._servicer = PrefetchCaller(args, iolet=iolet)
         self.Call = self._servicer.send
         self.close = self._servicer.close
 
@@ -41,8 +42,18 @@ class GRPCRuntime(AsyncNewLoopRuntime):
                 ('grpc.max_receive_message_length', -1),
             ]
         )
-        self.zmqlet = AsyncZmqlet(self.args, logger=self.logger)
-        self._prefetcher = GRPCPrefetchCall(self.args, self.zmqlet)
+
+        if self.args.grpc_data_requests:
+            self._grpclet = Grpclet(
+                args=self.args,
+                message_callback=None,
+                logger=self.logger,
+            )
+            self._prefetcher = GRPCPrefetchCall(self.args, iolet=self._grpclet)
+        else:
+            self.zmqlet = AsyncZmqlet(self.args, logger=self.logger)
+            self._prefetcher = GRPCPrefetchCall(self.args, iolet=self.zmqlet)
+
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self._prefetcher, self.server)
         bind_addr = f'{__default_host__}:{self.args.port_expose}'
         self.server.add_insecure_port(bind_addr)
@@ -56,4 +67,7 @@ class GRPCRuntime(AsyncNewLoopRuntime):
     async def async_run_forever(self):
         """The async running of server."""
         await self.server.wait_for_termination()
-        self.zmqlet.close()
+        if self.args.grpc_data_requests:
+            await self._grpclet.close()
+        else:
+            self.zmqlet.close()

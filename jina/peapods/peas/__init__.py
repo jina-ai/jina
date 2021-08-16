@@ -159,11 +159,14 @@ class BasePea:
 
     def _set_ctrl_adrr(self):
         """Sets control address for different runtimes"""
-        self._zed_runtime_ctrl_address = self.runtime_cls.get_control_address(
+        self.runtime_ctrl_address = self.runtime_cls.get_control_address(
             host=self.args.host,
             port=self.args.port_ctrl,
             docker_kwargs=getattr(self.args, 'docker_kwargs', None),
         )
+
+        if not self.runtime_ctrl_address:
+            self.runtime_ctrl_address = f'{self.args.host}:{self.args.port_in}'
 
     def start(self):
         """Start the Pea.
@@ -198,7 +201,7 @@ class BasePea:
             self.logger.debug(f'Sending {command} command for the {retry}th time')
             try:
                 send_ctrl_message(
-                    self._zed_runtime_ctrl_address,
+                    self.runtime_ctrl_address,
                     command,
                     timeout=self._timeout_ctrl,
                     raise_exception=True,
@@ -214,7 +217,7 @@ class BasePea:
         self.runtime_cls.activate(
             logger=self.logger,
             socket_in_type=self.args.socket_in,
-            control_address=self._zed_runtime_ctrl_address,
+            control_address=self.runtime_ctrl_address,
             timeout_ctrl=self._timeout_ctrl,
         )
 
@@ -228,7 +231,7 @@ class BasePea:
             cancel_event=self.cancel_event,
             logger=self.logger,
             socket_in_type=self.args.socket_in,
-            control_address=self._zed_runtime_ctrl_address,
+            control_address=self.runtime_ctrl_address,
             timeout_ctrl=self._timeout_ctrl,
             skip_deactivate=skip_deactivate,
         )
@@ -243,7 +246,7 @@ class BasePea:
         return self.runtime_cls.wait_for_ready_or_shutdown(
             timeout=timeout,
             ready_or_shutdown_event=self.ready_or_shutdown.event,
-            ctrl_address=self._zed_runtime_ctrl_address,
+            ctrl_address=self.runtime_ctrl_address,
             timeout_ctrl=self._timeout_ctrl,
             shutdown_event=self.is_shutdown,
         )
