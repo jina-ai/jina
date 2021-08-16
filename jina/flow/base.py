@@ -675,7 +675,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if pod_role == PodRoleType.GATEWAY:
             parser = set_gateway_parser()
 
-        args = ArgNamespace.kwargs2namespace(kwargs, parser)
+        args = ArgNamespace.kwargs2namespace(kwargs, parser, True)
 
         if args.grpc_data_requests and args.runtime_cls == 'ZEDRuntime':
             args.runtime_cls = 'GRPCDataRuntime'

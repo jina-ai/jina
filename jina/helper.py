@@ -671,13 +671,16 @@ class ArgNamespace:
 
     @staticmethod
     def kwargs2namespace(
-        kwargs: Dict[str, Union[str, int, bool]], parser: ArgumentParser
+        kwargs: Dict[str, Union[str, int, bool]],
+        parser: ArgumentParser,
+        log_unknown: bool = False,
     ) -> Namespace:
         """
         Convert dict to a namespace.
 
         :param kwargs: dictionary of key-values to be converted
         :param parser: the parser for building kwargs into a namespace
+        :param log_unkown: True, if unknown arguments should be logged
         :return: argument list
         """
         args = ArgNamespace.kwargs2list(kwargs)
@@ -687,6 +690,13 @@ class ArgNamespace:
             raise ValueError(
                 f'bad arguments "{args}" with parser {parser}, '
                 'you may want to double check your args '
+            )
+        if log_unknown and unknown_args:
+            from jina.logging.predefined import default_logger
+
+            default_logger.warning(
+                f'ignored unknown arguments: {unknown_args}, '
+                f'this may be caused by the mismatched version on Jina'
             )
         return p_args
 
