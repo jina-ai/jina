@@ -79,7 +79,7 @@ def cosine(x_mat: 'np.ndarray', y_mat: 'np.ndarray', eps: float = 1e-7) -> 'np.n
         / (
             np.outer(np.linalg.norm(x_mat, axis=1), np.linalg.norm(y_mat, axis=1)) + eps
         ),
-        0,
+        -1,
         1,
     )
 
@@ -112,7 +112,7 @@ def sparse_cosine(
         np.asarray(
             x_mat.dot(y_mat.T) / (np.outer(norm(x_mat, axis=1), norm(y_mat, axis=1)))
         ),
-        0,
+        -1,
         1,
     )
 
