@@ -47,8 +47,23 @@ def zed_runtime(args: 'Namespace'):
         runtime.run_forever()
 
 
-# alias
-executor = zed_runtime
+def executor(args: 'Namespace'):
+    """
+    Starts a ZEDRuntime
+
+    :param args: arguments coming from the CLI.
+
+    :returns: return the same as `pea` or `zed_runtime`
+    """
+    uses = args.uses
+    if (
+        uses.startswith('jinahub+docker://')
+        or uses.startswith('docker://')
+        or uses.startswith('jinahub://')
+    ):
+        return pea(args)
+    else:
+        return zed_runtime(args)
 
 
 def grpc_data_runtime(args: 'Namespace'):
