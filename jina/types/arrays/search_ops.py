@@ -114,7 +114,7 @@ class DocumentArraySearchOpsMixin:
 
         return DocumentArray(self.sample(len(self), seed=seed))
 
-    def split(self, attribute: str) -> Dict[Any, 'DocumentArray']:
+    def split(self, tag: str) -> Dict[Any, 'DocumentArray']:
         """Split the `DocumentArray` into multiple DocumentArray according to the attribute value of each `Document`.
 
         :param attribute: the attribute name to split stored in tags.
