@@ -207,6 +207,7 @@ ac_table = {
             '--num-part',
             '--dynamic-routing-out',
             '--dynamic-routing-in',
+            '--grpc-data-requests',
             '--entrypoint',
             '--docker-kwargs',
             '--pull-latest',
