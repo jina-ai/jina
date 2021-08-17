@@ -1,3 +1,4 @@
+import itertools
 import json
 from abc import abstractmethod
 from collections.abc import MutableSequence, Iterable as Itr
@@ -437,3 +438,7 @@ class DocumentArray(
             dap.ParseFromString(fp.read())
             da = DocumentArray(dap.docs)
             return da
+
+    @staticmethod
+    def _flatten(sequence):
+        return DocumentArray(list(itertools.chain.from_iterable(sequence)))

@@ -4,23 +4,23 @@ import shutil
 import sys
 import time
 import timeit
-from typing import Dict
 from pathlib import Path
+from typing import Dict
 
 # this line is needed here for measuring import time accurately for 1M imports
 import_time = timeit.timeit(stmt='import jina', number=1000000)
 
-from pkg_resources import resource_filename
-from packaging import version
-from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import Document, Flow, __version__
 from jina.helloworld.fashion.helper import (
-    index_generator,
     download_data,
+    index_generator,
     query_generator,
 )
-from jina.parsers.helloworld import set_hw_parser
 from jina.logging.logger import JinaLogger
-from jina import Document, Flow, __version__
+from jina.parsers.helloworld import set_hw_parser
+from jina.types.arrays.memmap import DocumentArrayMemmap
+from packaging import version
+from pkg_resources import resource_filename
 
 try:
     from jina.helloworld.fashion.executors import MyEncoder, MyIndexer
