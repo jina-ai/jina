@@ -9,15 +9,11 @@ import pytest
 from jina import Document, DocumentArray
 from jina.types.arrays.memmap import DocumentArrayMemmap
 from jina.math.dimensionality_reduction import PCA
+from tests import random_docs
 
 
-@pytest.fixture
-def embeddings():
-    return np.array([[1, 0, 0], [2, 0, 0], [3, 0, 0]])
-
-
-@pytest.fixture
-def docarrays_for_embedding_distance_computation():
+@pytest.fixture()
+def doc_lists():
     d1 = Document(embedding=np.array([0, 0, 0]))
     d2 = Document(embedding=np.array([3, 0, 0]))
     d3 = Document(embedding=np.array([1, 0, 0]))
@@ -29,9 +25,15 @@ def docarrays_for_embedding_distance_computation():
     d4_m = Document(embedding=np.array([0, 0, 2]))
     d5_m = Document(embedding=np.array([0, 0, 3]))
 
-    D1 = DocumentArray([d1, d2, d3, d4])
-    D2 = DocumentArray([d1_m, d2_m, d3_m, d4_m, d5_m])
-    return D1, D2
+    return [d1, d2, d3, d4], [d1_m, d2_m, d3_m, d4_m, d5_m]
+
+
+@pytest.fixture
+def docarrays_for_embedding_distance_computation(doc_lists):
+    D1, D2 = doc_lists
+    da1 = DocumentArray(D1)
+    da2 = DocumentArray(D2)
+    return da1, da2
 
 
 @pytest.fixture
@@ -52,14 +54,55 @@ def docarrays_for_embedding_distance_computation_sparse():
     return D1, D2
 
 
-@pytest.mark.parametrize('limit', [1, 2])
-def test_matching_retrieves_correct_number(
-    docarrays_for_embedding_distance_computation, limit
+@pytest.fixture
+def embeddings():
+    return np.array([[1, 0, 0], [2, 0, 0], [3, 0, 0]])
+
+
+def doc_lists_to_doc_arrays(
+    doc_lists, tmpdir, first_memmap, second_memmap, buffer_pool_size
 ):
-    D1, D2 = docarrays_for_embedding_distance_computation
-    D1.match(D2, metric='sqeuclidean', limit=limit)
+    doc_list1, doc_list2 = doc_lists
+
+    tmpdir1, tmpdir2 = tmpdir / '1', tmpdir / '2'
+
+    D1 = (
+        DocumentArray()
+        if not first_memmap
+        else DocumentArrayMemmap(tmpdir1, buffer_pool_size=buffer_pool_size)
+    )
+    D1.extend(doc_list1)
+    D2 = (
+        DocumentArray()
+        if not second_memmap
+        else DocumentArrayMemmap(tmpdir2, buffer_pool_size=buffer_pool_size)
+    )
+    D2.extend(doc_list2)
+    return D1, D2
+
+
+@pytest.mark.parametrize('buffer_pool_size', [1000, 3])
+@pytest.mark.parametrize('first_memmap', [True, False])
+@pytest.mark.parametrize('second_memmap', [True, False])
+@pytest.mark.parametrize(
+    'limit, batch_size', [(1, None), (2, None), (None, None), (1, 1), (1, 2), (2, 1)]
+)
+def test_matching_retrieves_correct_number(
+    doc_lists, limit, batch_size, first_memmap, second_memmap, tmpdir, buffer_pool_size
+):
+    D1, D2 = doc_lists_to_doc_arrays(
+        doc_lists,
+        tmpdir,
+        first_memmap,
+        second_memmap,
+        buffer_pool_size=buffer_pool_size,
+    )
+    D1.match(D2, metric='sqeuclidean', limit=limit, batch_size=batch_size)
     for m in D1.get_attributes('matches'):
-        assert len(m) == limit
+        if limit is None:
+            assert len(m) == len(D2)
+        else:
+            assert len(m) == limit
 
 
 @pytest.mark.parametrize('metric', ['sqeuclidean', 'cosine'])
@@ -89,12 +132,40 @@ def test_matching_same_results_with_sparse(
     np.testing.assert_equal(distances, distances_sparse)
 
 
+@pytest.mark.parametrize('metric', ['sqeuclidean', 'cosine'])
+def test_matching_same_results_with_batch(
+    docarrays_for_embedding_distance_computation,
+    metric,
+):
+
+    D1, D2 = docarrays_for_embedding_distance_computation
+    D1_batch = copy.deepcopy(D1)
+    D2_batch = copy.deepcopy(D2)
+
+    # use match without batches
+    D1.match(D2, metric=metric)
+    distances = []
+    for m in D1.get_attributes('matches'):
+        for d in m:
+            distances.extend([d.scores[metric].value])
+
+    # use match with batches
+    D1_batch.match(D2_batch, metric=metric, batch_size=10)
+
+    distances_batch = []
+    for m in D1.get_attributes('matches'):
+        for d in m:
+            distances_batch.extend([d.scores[metric].value])
+
+    np.testing.assert_equal(distances, distances_batch)
+
+
 @pytest.mark.parametrize('metric', ['euclidean', 'cosine'])
 def test_matching_scipy_cdist(
     docarrays_for_embedding_distance_computation,
     metric,
 ):
-    def scipy_cdist_metric(X, Y):
+    def scipy_cdist_metric(X, Y, *args):
         return scipy_cdist(X, Y, metric=metric)
 
     D1, D2 = docarrays_for_embedding_distance_computation
@@ -117,6 +188,9 @@ def test_matching_scipy_cdist(
     np.testing.assert_equal(distances, distances_scipy)
 
 
+@pytest.mark.parametrize('buffer_pool_size', [1000, 3])
+@pytest.mark.parametrize('first_memmap', [True, False])
+@pytest.mark.parametrize('second_memmap', [True, False])
 @pytest.mark.parametrize(
     'normalization, metric',
     [
@@ -130,12 +204,25 @@ def test_matching_scipy_cdist(
 )
 @pytest.mark.parametrize('use_scipy', [True, False])
 def test_matching_retrieves_closest_matches(
-    docarrays_for_embedding_distance_computation, normalization, metric, use_scipy
+    doc_lists,
+    tmpdir,
+    normalization,
+    metric,
+    use_scipy,
+    first_memmap,
+    second_memmap,
+    buffer_pool_size,
 ):
     """
     Tests if match.values are returned 'low to high' if normalization is True or 'high to low' otherwise
     """
-    D1, D2 = docarrays_for_embedding_distance_computation
+    D1, D2 = doc_lists_to_doc_arrays(
+        doc_lists,
+        tmpdir,
+        first_memmap,
+        second_memmap,
+        buffer_pool_size=buffer_pool_size,
+    )
     D1.match(
         D2, metric=metric, limit=3, normalization=normalization, use_scipy=use_scipy
     )
@@ -178,7 +265,13 @@ def test_docarray_match_docarraymemmap(
 
     D2memmap = DocumentArrayMemmap(tmpdir)
     D2memmap.extend(D2_)
-    D1_.match(D2memmap, metric=metric, limit=3, normalization=normalization)
+    D1_.match(
+        D2memmap,
+        metric=metric,
+        limit=3,
+        normalization=normalization,
+        use_scipy=use_scipy,
+    )
     values_docarraymemmap = [m.scores[metric].value for d in D1_ for m in d.matches]
 
     np.testing.assert_equal(values_docarray, values_docarraymemmap)
@@ -214,11 +307,22 @@ def test_scipy_dist(
     np.testing.assert_equal(values_docarray, values_docarraymemmap)
 
 
-def test_2arity_function(docarrays_for_embedding_distance_computation):
-    def dotp(x, y):
+@pytest.mark.parametrize('buffer_pool_size', [1000, 3])
+@pytest.mark.parametrize('first_memmap', [True, False])
+@pytest.mark.parametrize('second_memmap', [True, False])
+def test_2arity_function(
+    first_memmap, second_memmap, doc_lists, tmpdir, buffer_pool_size
+):
+    def dotp(x, y, *args):
         return np.dot(x, np.transpose(y))
 
-    D1, D2 = docarrays_for_embedding_distance_computation
+    D1, D2 = doc_lists_to_doc_arrays(
+        doc_lists,
+        tmpdir,
+        first_memmap,
+        second_memmap,
+        buffer_pool_size=buffer_pool_size,
+    )
     D1.match(D2, metric=dotp, use_scipy=True)
 
     for d in D1:
@@ -269,3 +373,55 @@ def test_match_inclusive():
     assert len(da2) == 3
     traversed = da1.traverse_flat(traversal_paths=['m', 'mm', 'mmm'])
     assert len(traversed) == 9
+
+
+def test_match_inclusive_dam(tmpdir):
+    """Call match function, while the other :class:`DocumentArray` is itself
+    or have same :class:`Document`.
+    """
+    # The document array da1 match with itself.
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend(
+        [
+            Document(embedding=np.array([1, 2, 3])),
+            Document(embedding=np.array([1, 0, 1])),
+            Document(embedding=np.array([1, 1, 2])),
+        ]
+    )
+
+    dam.match(dam)
+    assert len(dam) == 3
+    traversed = dam.traverse_flat(traversal_paths=['m', 'mm', 'mmm'])
+    assert len(list(traversed)) == 9
+    # The document array da2 shares same documents with da1
+    da2 = DocumentArray([Document(embedding=np.array([4, 1, 3])), dam[0], dam[1]])
+    dam.match(da2)
+    assert len(da2) == 3
+    traversed = dam.traverse_flat(traversal_paths=['m', 'mm', 'mmm'])
+    assert len(list(traversed)) == 9
+
+
+def test_da_get_embeddings():
+    da = DocumentArray(random_docs(100))
+    np.testing.assert_almost_equal(da.get_attributes('embedding'), da.embeddings)
+
+
+def test_dam_embeddings(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend(Document(embedding=np.array([1, 2, 3, 4])) for _ in range(100))
+    np.testing.assert_almost_equal(dam.get_attributes('embedding'), dam.embeddings)
+
+
+def test_da_get_embeddings():
+    da = DocumentArray(random_docs(100))
+    np.testing.assert_almost_equal(
+        da.get_attributes('embedding')[10:20], da._get_embeddings(slice(10, 20))
+    )
+
+
+def test_dam_get_embeddings(tmpdir):
+    da = DocumentArrayMemmap(tmpdir)
+    da.extend(Document(embedding=np.array([1, 2, 3, 4])) for _ in range(100))
+    np.testing.assert_almost_equal(
+        da.get_attributes('embedding')[10:20], da._get_embeddings(slice(10, 20))
+    )

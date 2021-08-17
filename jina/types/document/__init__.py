@@ -17,6 +17,7 @@ from typing import (
     Tuple,
     List,
     Type,
+    overload,
 )
 
 import numpy as np
@@ -24,6 +25,7 @@ from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 
 from .converters import png_to_buffer, to_datauri, to_image_blob
+from .helper import versioned, VersionedMixin
 from ..mixin import ProtoTypeMixin
 from ..ndarray.generic import NdArray, BaseSparseNdArray
 from ..score import NamedScore
@@ -90,7 +92,7 @@ _all_doc_array_keys = ('blob', 'embedding')
 _special_mapped_keys = ('scores', 'evaluations')
 
 
-class Document(ProtoTypeMixin):
+class Document(ProtoTypeMixin, VersionedMixin):
     """
     :class:`Document` is one of the **primitive data type** in Jina.
 
@@ -141,6 +143,54 @@ class Document(ProtoTypeMixin):
     You can leverage the :meth:`convert_a_to_b` interface to convert between content forms.
 
     """
+
+    ON_GETATTR = ['matches', 'chunks']
+
+    # overload_inject_start_document
+    @overload
+    def __init__(
+        self,
+        weight: Optional[float] = None,
+        modality: Optional[str] = None,
+        tags: Optional[Union[Dict, StructView]] = None,
+        id: Optional[Union[bytes, str, int]] = None,
+        parent_id: Optional[Union[bytes, str, int]] = None,
+        blob: Optional[Union['ArrayType', 'jina_pb2.NdArrayProto', 'NdArray']] = None,
+        embedding: Optional[
+            Union['ArrayType', 'jina_pb2.NdArrayProto', 'NdArray']
+        ] = None,
+        matches: Optional[Iterable['Document']] = None,
+        chunks: Optional[Iterable['Document']] = None,
+        buffer: Optional[bytes] = None,
+        text: Optional[str] = None,
+        uri: Optional[str] = None,
+        mime_type: Optional[str] = None,
+        content: Optional[DocumentContentType] = None,
+        granularity: Optional[int] = None,
+        adjacency: Optional[int] = None,
+        **kwargs,
+    ):
+        """
+        :param weight: the weight of the document
+        :param modality: the modality of the document.
+        :param tags: a Python dict view of the tags.
+        :param id: the id from the proto
+        :param parent_id: the parent id from the proto
+        :param blob: the blob content from the proto
+        :param embedding: the embedding from the proto
+        :param matches: the array of matches attached to this document
+        :param chunks: the array of chunks of this document
+        :param buffer: the buffer bytes from this document
+        :param text: the text from this document content
+        :param uri: the uri from this document proto
+        :param mime_type: the mime_type from this document proto
+        :param content: the value of the content depending on `:meth:`content_type`
+        :param granularity: the granularity from this document proto
+        :param adjacency: the adjacency from this document proto
+        :param kwargs: other parameters to be set _after_ the document is constructed
+        """
+
+    # overload_inject_end_document
 
     def __init__(
         self,
@@ -208,7 +258,7 @@ class Document(ProtoTypeMixin):
                         field_resolver.get(k, k): v for k, v in document.items()
                     }
 
-                user_fields = set(document.keys())
+                user_fields = set(document)
                 support_fields = set(
                     self.attributes(
                         include_proto_fields_camelcase=True, include_properties=False
@@ -607,6 +657,7 @@ class Document(ProtoTypeMixin):
                 raise TypeError(f'{k} is in unsupported type {typename(v)}')
 
     @property
+    @versioned
     def matches(self) -> 'MatchArray':
         """Get all matches of the current document.
 
@@ -627,6 +678,7 @@ class Document(ProtoTypeMixin):
         self.matches.extend(value)
 
     @property
+    @versioned
     def chunks(self) -> 'ChunkArray':
         """Get all chunks of the current document.
 
@@ -1279,6 +1331,8 @@ class Document(ProtoTypeMixin):
         return list(set(support_keys))
 
     def __getattr__(self, item):
+        if item in self.ON_GETATTR:
+            self._increaseVersion()
         if hasattr(self._pb_body, item):
             value = getattr(self._pb_body, item)
         elif '__' in item:
@@ -1313,7 +1367,7 @@ def _is_datauri(value: str) -> bool:
 
 def _contains_conflicting_content(**kwargs):
     content_keys = 0
-    for k in kwargs.keys():
+    for k in kwargs:
         if k in _all_doc_content_keys:
             content_keys += 1
             if content_keys > 1:

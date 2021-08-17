@@ -23,10 +23,6 @@ from ...types.message.common import ControlMessage
 from ...types.request import Request
 from ...types.routing.table import RoutingTable
 
-if False:
-    import multiprocessing
-    import threading
-
 
 class Zmqlet:
     """A `Zmqlet` object can send/receive data to/from ZeroMQ socket and invoke callback function. It
@@ -53,7 +49,7 @@ class Zmqlet:
             self.identity = args.zmq_identity
         else:
             self.identity = random_identity()
-        self.name = args.name or self.__class__.__name__
+        self.name = str(args.name) or self.__class__.__name__
         self.logger = logger
         self.send_recv_kwargs = vars(args)
         if ctrl_addr:

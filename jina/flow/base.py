@@ -677,6 +677,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         args = ArgNamespace.kwargs2namespace(kwargs, parser)
 
+        if args.grpc_data_requests and args.runtime_cls == 'ZEDRuntime':
+            args.runtime_cls = 'GRPCDataRuntime'
+
         # pod workspace if not set then derive from flow workspace
         args.workspace = os.path.abspath(args.workspace or self.workspace)
 
