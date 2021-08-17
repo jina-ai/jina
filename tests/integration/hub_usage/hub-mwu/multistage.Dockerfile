@@ -8,4 +8,4 @@ ADD README.md ./
 
 FROM base
 
-ENTRYPOINT ["jina", "pod", "--uses", "mwu_encoder.yml"]
+ENTRYPOINT ["jina", "executor", "--uses", "mwu_encoder.yml"]

@@ -5,4 +5,4 @@ COPY . /workspace/
 
 WORKDIR /workspace
 
-ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]
+ENTRYPOINT ["jina", "executor", "--uses", "config.yml"]
