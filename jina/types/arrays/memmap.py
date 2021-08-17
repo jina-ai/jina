@@ -522,13 +522,13 @@ class DocumentArrayMemmap(
     def embeddings(self) -> np.ndarray:
         """Return a `np.ndarray` stacking all the `embedding` attributes as rows.
 
-        Warning: This operation assumes all embeddings have the same shape and dtype.
-                 All dtype and shape values are assumed to be equal to the values of the
-                 first element in the DocumentArray / DocumentArrayMemmap
-
-        Warning: This operation currently does not support sparse arrays.
-
         :return: embeddings stacked per row as `np.ndarray`.
+
+        .. warning:: This operation assumes all embeddings have the same shape and dtype.
+            All dtype and shape values are assumed to be equal to the values of the
+            first element in the DocumentArray / DocumentArrayMemmap.
+
+        .. warning:: This operation currently does not support sparse arrays.
         """
         if self._embeddings_memmap is not None:
             return self._embeddings_memmap
