@@ -267,12 +267,21 @@ class DocumentArrayNeuralOpsMixin:
 
         :return: embeddings stacked per row as `np.ndarray`.
         """
+        from .memmap import DocumentArrayMemmap
+
+        if isinstance(self, DocumentArrayMemmap):
+            if self._embeddings_memmap is not None:
+                return self._embeddings_memmap
 
         x_mat = b''.join(d.proto.embedding.dense.buffer for d in self)
+        embeds = np.frombuffer(
+            x_mat, dtype=self[0].proto.embedding.dense.dtype
+        ).reshape((len(self), self[0].proto.embedding.dense.shape[0]))
 
-        return np.frombuffer(x_mat, dtype=self[0].proto.embedding.dense.dtype).reshape(
-            (len(self), self[0].proto.embedding.dense.shape[0])
-        )
+        if isinstance(self, DocumentArrayMemmap):
+            self._embeddings_memmap = embeds
+
+        return embeds
 
     def _get_embeddings(self, indices: Optional[slice] = None) -> np.ndarray:
         """Return a `np.ndarray` stacking  the `embedding` attributes as rows.
