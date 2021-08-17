@@ -433,8 +433,14 @@ def test_embeddings_setter():
     da.embeddings = emb
     np.testing.assert_almost_equal(da.embeddings, emb)
 
+    for x, y in zip(emb, da.embeddings):
+        np.testing.assert_almost_equal(x, y)
+
 
 def test_embeddings_getter():
     emb = np.random.random((100, 128))
     da = DocumentArray([Document(embedding=x) for x in emb])
     np.testing.assert_almost_equal(da.embeddings, emb)
+
+    for x, y in zip(emb, da.embeddings):
+        np.testing.assert_almost_equal(x, y)
