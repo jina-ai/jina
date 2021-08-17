@@ -447,10 +447,10 @@ class DocumentArrayMemmap(
         fields = list(fields)
         if 'embedding' in fields:
             if self._embeddings_memmap is None:
-                embeddings = [doc.get_attributes('embedding') for doc in self]
-                self._embeddings_memmap = np.asarray(embeddings)
+                embeddings = self.embeddings  # type: np.ndarray
+                self._embeddings_memmap = embeddings
             else:
-                embeddings = list(self._embeddings_memmap)
+                embeddings = self._embeddings_memmap  # type: np.ndarray
             index = fields.index('embedding')
             fields.remove('embedding')
         if fields:
@@ -462,7 +462,7 @@ class DocumentArrayMemmap(
                 contents.insert(index, embeddings)
             return contents
         else:
-            return embeddings
+            return list(embeddings)
 
     def get_attributes_with_docs(
         self,
