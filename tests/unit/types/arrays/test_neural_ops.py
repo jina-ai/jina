@@ -427,20 +427,41 @@ def test_dam_get_embeddings(tmpdir):
     )
 
 
-def test_embeddings_setter():
+def test_embeddings_setter_da():
     emb = np.random.random((100, 128))
     da = DocumentArray([Document() for _ in range(100)])
     da.embeddings = emb
     np.testing.assert_almost_equal(da.embeddings, emb)
 
-    for x, y in zip(emb, da.embeddings):
-        np.testing.assert_almost_equal(x, y)
+    for x, doc in zip(emb, da):
+        np.testing.assert_almost_equal(x, doc.embedding)
 
 
-def test_embeddings_getter():
+def test_embeddings_setter_dam(tmpdir):
+    emb = np.random.random((100, 128))
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document() for _ in range(100)])
+    dam.embeddings = emb
+    np.testing.assert_almost_equal(dam.embeddings, emb)
+
+    for x, doc in zip(emb, dam):
+        np.testing.assert_almost_equal(x, doc.embedding)
+
+
+def test_embeddings_getter_da():
     emb = np.random.random((100, 128))
     da = DocumentArray([Document(embedding=x) for x in emb])
     np.testing.assert_almost_equal(da.embeddings, emb)
 
-    for x, y in zip(emb, da.embeddings):
-        np.testing.assert_almost_equal(x, y)
+    for x, doc in zip(emb, da):
+        np.testing.assert_almost_equal(x, doc.embedding)
+
+
+def test_embeddings_getter_dam(tmpdir):
+    emb = np.random.random((100, 128))
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document(embedding=x) for x in emb])
+
+    np.testing.assert_almost_equal(dam.embeddings, emb)
+    for x, doc in zip(emb, dam):
+        np.testing.assert_almost_equal(x, doc.embedding)
