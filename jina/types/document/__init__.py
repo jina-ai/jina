@@ -150,43 +150,43 @@ class Document(ProtoTypeMixin, VersionedMixin):
     @overload
     def __init__(
         self,
-        weight: Optional[float] = None,
-        modality: Optional[str] = None,
-        tags: Optional[Union[Dict, StructView]] = None,
-        id: Optional[Union[bytes, str, int]] = None,
-        parent_id: Optional[Union[bytes, str, int]] = None,
+        adjacency: Optional[int] = None,
         blob: Optional[Union['ArrayType', 'jina_pb2.NdArrayProto', 'NdArray']] = None,
+        buffer: Optional[bytes] = None,
+        chunks: Optional[Iterable['Document']] = None,
+        content: Optional[DocumentContentType] = None,
         embedding: Optional[
             Union['ArrayType', 'jina_pb2.NdArrayProto', 'NdArray']
         ] = None,
+        granularity: Optional[int] = None,
+        id: Optional[str] = None,
         matches: Optional[Iterable['Document']] = None,
-        chunks: Optional[Iterable['Document']] = None,
-        buffer: Optional[bytes] = None,
+        mime_type: Optional[str] = None,
+        modality: Optional[str] = None,
+        parent_id: Optional[str] = None,
+        tags: Optional[Union[Dict, StructView]] = None,
         text: Optional[str] = None,
         uri: Optional[str] = None,
-        mime_type: Optional[str] = None,
-        content: Optional[DocumentContentType] = None,
-        granularity: Optional[int] = None,
-        adjacency: Optional[int] = None,
+        weight: Optional[float] = None,
         **kwargs,
     ):
         """
-        :param weight: the weight of the document
-        :param modality: the modality of the document.
-        :param tags: a Python dict view of the tags.
-        :param id: the id from the proto
-        :param parent_id: the parent id from the proto
+        :param adjacency: the adjacency from this document proto
         :param blob: the blob content from the proto
-        :param embedding: the embedding from the proto
-        :param matches: the array of matches attached to this document
-        :param chunks: the array of chunks of this document
         :param buffer: the buffer bytes from this document
+        :param chunks: the array of chunks of this document
+        :param content: the value of the content depending on `:meth:`content_type`
+        :param embedding: the embedding from the proto
+        :param granularity: the granularity from this document proto
+        :param id: the id from the proto
+        :param matches: the array of matches attached to this document
+        :param mime_type: the mime_type from this document proto
+        :param modality: the modality of the document.
+        :param parent_id: the parent id from the proto
+        :param tags: a Python dict view of the tags.
         :param text: the text from this document content
         :param uri: the uri from this document proto
-        :param mime_type: the mime_type from this document proto
-        :param content: the value of the content depending on `:meth:`content_type`
-        :param granularity: the granularity from this document proto
-        :param adjacency: the adjacency from this document proto
+        :param weight: the weight of the document
         :param kwargs: other parameters to be set _after_ the document is constructed
         """
 
