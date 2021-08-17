@@ -425,3 +425,16 @@ def test_dam_get_embeddings(tmpdir):
     np.testing.assert_almost_equal(
         da.get_attributes('embedding')[10:20], da._get_embeddings(slice(10, 20))
     )
+
+
+def test_embeddings_setter():
+    emb = np.random.random((100, 128))
+    da = DocumentArray([Document() for _ in range(100)])
+    da.embeddings = emb
+    np.testing.assert_almost_equal(da.embeddings, emb)
+
+
+def test_embeddings_getter():
+    emb = np.random.random((100, 128))
+    da = DocumentArray([Document(embedding=x) for x in emb])
+    np.testing.assert_almost_equal(da.embeddings, emb)
