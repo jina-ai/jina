@@ -479,18 +479,18 @@ class Document(ProtoTypeMixin, VersionedMixin):
         return self._pb_body.parent_id
 
     @id.setter
-    def id(self, value: Union[bytes, str, int]):
+    def id(self, value: str):
         """Set document id to a string value.
 
-        :param value: id as bytes, int or str
+        :param value: id as string
         """
         self._pb_body.id = str(value)
 
     @parent_id.setter
-    def parent_id(self, value: Union[bytes, str, int]):
+    def parent_id(self, value: str):
         """Set document's parent id to a string value.
 
-        :param value: id as bytes, int or str
+        :param value: id as string
         """
         self._pb_body.parent_id = str(value)
 
