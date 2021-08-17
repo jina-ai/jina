@@ -2,9 +2,9 @@ from cli.export import api_to_dict
 
 from .helper import _cli_to_schema
 
-schema_pod = _cli_to_schema(
+schema_executor = _cli_to_schema(
     api_to_dict(),
-    'pod',
+    'executor',
     extras={
         'needs': {
             'description': 'The name of the Pod(s) that this Pod receives data from. '
