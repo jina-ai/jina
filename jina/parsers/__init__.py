@@ -202,22 +202,11 @@ def get_main_parser():
         )
     )
 
-    set_pod_parser(
-        sp.add_parser(
-            'executor',
-            aliases=['pod'],
-            help='Start an Executor',
-            description='Start an Executor. Executor is how Jina processes Document.',
-            formatter_class=_chf,
-        )
-    )
-
     set_pea_parser(
         sp.add_parser(
-            'zed_runtime',
-            aliases=['executor'],
-            help='Start a ZEDRuntime with an Executor in it',
-            description='Start an Executor in the main process. Executor is how Jina processes Document.',
+            'executor',
+            help='Start an Executor',
+            description='Start an Executor. Executor is how Jina processes Document.',
             formatter_class=_chf,
         )
     )
@@ -276,6 +265,16 @@ def get_main_parser():
             'are doing low-level orchestration',
             formatter_class=_chf,
             **(dict(help='Start a Pea')) if _SHOW_ALL_ARGS else {},
+        )
+    )
+
+    set_pod_parser(
+        sp.add_parser(
+            'pod',
+            description='Start a Pod. '
+            'You should rarely use this directly unless you '
+            'are doing low-level orchestration',
+            **(dict(help='Start a Pod')) if _SHOW_ALL_ARGS else {},
         )
     )
 
