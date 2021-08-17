@@ -1,4 +1,6 @@
 import functools
+import warnings
+from copy import copy
 from typing import Iterable, List
 
 __all__ = ['DocGroundtruthPair']
@@ -82,3 +84,11 @@ def versioned(fn):
         return fn(self, *args, **kwargs)
 
     return wrapper
+
+
+def get_warning_filters(action, message, category):
+    filters = copy(warnings.filters)
+    warnings.filterwarnings(action, message, category=category)
+    protobuf_filters = warnings.filters
+    warnings.filters = filters
+    return protobuf_filters

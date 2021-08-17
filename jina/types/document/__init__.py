@@ -6,6 +6,7 @@ import os
 import urllib.parse
 import urllib.request
 import warnings
+from copy import copy
 from hashlib import blake2b
 from typing import (
     Iterable,
@@ -25,7 +26,7 @@ from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 
 from .converters import png_to_buffer, to_datauri, to_image_blob
-from .helper import versioned, VersionedMixin
+from .helper import versioned, VersionedMixin, get_warning_filters
 from ..mixin import ProtoTypeMixin
 from ..ndarray.generic import NdArray, BaseSparseNdArray
 from ..score import NamedScore
@@ -90,6 +91,10 @@ _all_mime_types = set(mimetypes.types_map.values())
 _all_doc_content_keys = {'content', 'uri', 'blob', 'text', 'buffer'}
 _all_doc_array_keys = ('blob', 'embedding')
 _special_mapped_keys = ('scores', 'evaluations')
+
+protobuf_warning_filters = get_warning_filters(
+    'error', 'Unexpected end-group tag', RuntimeWarning
+)
 
 
 class Document(ProtoTypeMixin, VersionedMixin):
@@ -295,16 +300,15 @@ class Document(ProtoTypeMixin, VersionedMixin):
                 # fortunately protobuf throws a warning when the parsing seems go wrong
                 # the context manager below converts this warning into exception and throw it
                 # properly
-                with warnings.catch_warnings():
-                    warnings.filterwarnings(
-                        'error', 'Unexpected end-group tag', category=RuntimeWarning
-                    )
-                    try:
-                        self._pb_body.ParseFromString(document)
-                    except RuntimeWarning as ex:
-                        raise BadDocType(
-                            f'fail to construct a document from {document}'
-                        ) from ex
+                filters = warnings.filters
+                warnings.filters = protobuf_warning_filters
+                try:
+                    self._pb_body.ParseFromString(document)
+                except RuntimeWarning as ex:
+                    raise BadDocType(
+                        f'fail to construct a document from {document}'
+                    ) from ex
+                warnings.filters = filters
             elif isinstance(document, Document):
                 if copy:
                     self._pb_body.CopyFrom(document.proto)
