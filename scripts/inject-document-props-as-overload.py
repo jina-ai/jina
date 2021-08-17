@@ -29,8 +29,11 @@ def get_properties(cls) -> List[Tuple[str, Optional[str], Optional[str]]]:
             if description:
                 description = description.strip()
             property_docs.append(description)
-    return list(
-        zip(map(itemgetter(0), setters), map(itemgetter(1), setters), property_docs)
+    return sorted(
+        list(
+            zip(map(itemgetter(0), setters), map(itemgetter(1), setters), property_docs)
+        ),
+        key=lambda x: x[0],
     )
 
 
