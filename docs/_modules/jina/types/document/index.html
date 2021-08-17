@@ -545,43 +545,43 @@
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">weight</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">modality</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">tags</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="n">StructView</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">parent_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">adjacency</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">blob</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">'ArrayType'</span><span class="p">,</span> <span class="s1">'jina_pb2.NdArrayProto'</span><span class="p">,</span> <span class="s1">'NdArray'</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">buffer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">chunks</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">content</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DocumentContentType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">embedding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
             <span class="n">Union</span><span class="p">[</span><span class="s1">'ArrayType'</span><span class="p">,</span> <span class="s1">'jina_pb2.NdArrayProto'</span><span class="p">,</span> <span class="s1">'NdArray'</span><span class="p">]</span>
         <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">granularity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">matches</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">chunks</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">buffer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">mime_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">modality</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">parent_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tags</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="n">StructView</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">text</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">uri</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">mime_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">content</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DocumentContentType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">granularity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">adjacency</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">weight</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">"""</span>
-<span class="sd">        :param weight: the weight of the document</span>
-<span class="sd">        :param modality: the modality of the document.</span>
-<span class="sd">        :param tags: a Python dict view of the tags.</span>
-<span class="sd">        :param id: the id from the proto</span>
-<span class="sd">        :param parent_id: the parent id from the proto</span>
-<span class="sd">        :param blob: the blob content from the proto</span>
-<span class="sd">        :param embedding: the embedding from the proto</span>
-<span class="sd">        :param matches: the array of matches attached to this document</span>
-<span class="sd">        :param chunks: the array of chunks of this document</span>
+<span class="sd">        :param adjacency: the adjacency of this Document</span>
+<span class="sd">        :param blob: the blob content of thi Document</span>
 <span class="sd">        :param buffer: the buffer bytes from this document</span>
-<span class="sd">        :param text: the text from this document content</span>
-<span class="sd">        :param uri: the uri from this document proto</span>
-<span class="sd">        :param mime_type: the mime_type from this document proto</span>
+<span class="sd">        :param chunks: the array of chunks of this document</span>
 <span class="sd">        :param content: the value of the content depending on `:meth:`content_type`</span>
-<span class="sd">        :param granularity: the granularity from this document proto</span>
-<span class="sd">        :param adjacency: the adjacency from this document proto</span>
+<span class="sd">        :param embedding: the embedding of this Document</span>
+<span class="sd">        :param granularity: the granularity of this Document</span>
+<span class="sd">        :param id: the id of this Document</span>
+<span class="sd">        :param matches: the array of matches attached to this document</span>
+<span class="sd">        :param mime_type: the mime_type of this Document</span>
+<span class="sd">        :param modality: the modality of the document.</span>
+<span class="sd">        :param parent_id: the parent id of this Document</span>
+<span class="sd">        :param tags: a Python dict view of the tags.</span>
+<span class="sd">        :param text: the text from this document content</span>
+<span class="sd">        :param uri: the uri of this Document</span>
+<span class="sd">        :param weight: the weight of the document</span>
 <span class="sd">        :param kwargs: other parameters to be set _after_ the document is constructed</span>
 <span class="sd">        """</span>
 
@@ -857,35 +857,33 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">"""The document id in hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable.</span>
-<span class="sd">        it will be used as the major view.</span>
+        <span class="sd">"""The document id in string.</span>
 
-<span class="sd">        :return: the id from the proto</span>
+<span class="sd">        :return: the id of this Document</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">id</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">parent_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">"""The document's parent id in hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable.</span>
-<span class="sd">        it will be used as the major view.</span>
+        <span class="sd">"""The document's parent id in string.</span>
 
-<span class="sd">        :return: the parent id from the proto</span>
+<span class="sd">        :return: the parent id of this Document</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">parent_id</span>
 
     <span class="nd">@id</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">"""Set document id to a string value.</span>
 
-<span class="sd">        :param value: id as bytes, int or str</span>
+<span class="sd">        :param value: id as string</span>
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@parent_id</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">parent_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="nf">parent_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">"""Set document's parent id to a string value.</span>
 
-<span class="sd">        :param value: id as bytes, int or str</span>
+<span class="sd">        :param value: id as string</span>
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">parent_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
@@ -900,7 +898,7 @@
 <span class="sd">            proto instance stored. In the case where the `blob` stored is sparse, it will return them as a `coo` matrix.</span>
 <span class="sd">            If any other type of `sparse` type is desired, use the `:meth:`get_sparse_blob`.</span>
 
-<span class="sd">        :return: the blob content from the proto</span>
+<span class="sd">        :return: the blob content of thi Document</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">NdArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">blob</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
 
@@ -913,7 +911,7 @@
 <span class="sd">        :param kwargs: Additional key value argument, for `scipy` backend, we need to set</span>
 <span class="sd">            the keyword `sp_format` as one of the scipy supported sparse format, such as `coo`</span>
 <span class="sd">            or `csr`.</span>
-<span class="sd">        :return: the blob from the proto as an sparse array</span>
+<span class="sd">        :return: the blob of this Document but as an sparse array</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">NdArray</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">blob</span><span class="p">,</span>
@@ -939,7 +937,7 @@
 <span class="sd">            proto instance stored. In the case where the `embedding` stored is sparse, it will return them as a `coo` matrix.</span>
 <span class="sd">            If any other type of `sparse` type is desired, use the `:meth:`get_sparse_embedding`.</span>
 
-<span class="sd">        :return: the embedding from the proto</span>
+<span class="sd">        :return: the embedding of this Document</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">NdArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">embedding</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
 
@@ -952,7 +950,7 @@
 <span class="sd">        :param kwargs: Additional key value argument, for `scipy` backend, we need to set</span>
 <span class="sd">            the keyword `sp_format` as one of the scipy supported sparse format, such as `coo`</span>
 <span class="sd">            or `csr`.</span>
-<span class="sd">        :return: the embedding from the proto as an sparse array</span>
+<span class="sd">        :return: the embedding of this Document but as as an sparse array</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">NdArray</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">embedding</span><span class="p">,</span>
@@ -1214,7 +1212,7 @@
     <span class="k">def</span> <span class="nf">uri</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Return the URI of the document.</span>
 
-<span class="sd">        :return: the uri from this document proto</span>
+<span class="sd">        :return: the uri of this Document</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">uri</span>
 
@@ -1236,7 +1234,7 @@
     <span class="k">def</span> <span class="nf">mime_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Get MIME type of the document</span>
 
-<span class="sd">        :return: the mime_type from this document proto</span>
+<span class="sd">        :return: the mime_type of this Document</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">mime_type</span>
 
@@ -1264,7 +1262,7 @@
     <span class="k">def</span> <span class="nf">content_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Return the content type of the document, possible values: text, blob, buffer</span>
 
-<span class="sd">        :return: the type of content present in this document proto</span>
+<span class="sd">        :return: the type of content of this Document</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">WhichOneof</span><span class="p">(</span><span class="s1">'content'</span><span class="p">)</span>
 
@@ -1312,7 +1310,7 @@
     <span class="k">def</span> <span class="nf">granularity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Return the granularity of the document.</span>
 
-<span class="sd">        :return: the granularity from this document proto</span>
+<span class="sd">        :return: the granularity of this Document</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">granularity</span>
 
@@ -1328,7 +1326,7 @@
     <span class="k">def</span> <span class="nf">adjacency</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Return the adjacency of the document.</span>
 
-<span class="sd">        :return: the adjacency from this document proto</span>
+<span class="sd">        :return: the adjacency of this Document</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">adjacency</span>
 
