@@ -60,6 +60,7 @@ Table of Contents
   - [Filter a subset of `DocumentArray` using `.find`](#filter-a-subset-of-documentarray-using-find)
   - [Sample a subset of `DocumentArray` using `sample`](#sample-a-subset-of-documentarray-using-sample)
   - [Shuffle a `DocumentArray` using `shuffle`](#shuffle-a-documentarray-using-shuffle)
+  - [Split a `DocumentArray` by tag using `split`](#split-a-documentarray-by-tag-using-split)
   - [Visualize the embeddings of a `DocumentArray`](#visualize-the-embeddings-of-a-documentarray)
 - [`DocumentArrayMemmap` API](#documentarraymemmap-api)
   - [Create `DocumentArrayMemmap`](#create-documentarraymemmap)
@@ -1255,6 +1256,29 @@ shuffled_da = da.shuffle()  # shuffle the DocumentArray
 shuffled_da_with_seed = da.shuffle(seed=1)  # shuffle the DocumentArray with seed.
 ```
 
+### Split a `DocumentArray` by tag using `split`
+
+`DocumentArray` provides function `.split` that split the `DocumentArray` into multiple :class:`DocumentArray` according to the tag value (stored in `tags`) of each :class:`Document`.
+It returns a python `dict` where `Documents` with the same value on `tag` are grouped together, their orders are preserved from the original :class:`DocumentArray`.
+
+To make use of the function:
+
+```python
+from jina import Document, DocumentArray
+
+da = DocumentArray()
+da.append(Document(tags={'category': 'c'}))
+da.append(Document(tags={'category': 'c'}))
+da.append(Document(tags={'category': 'b'}))
+da.append(Document(tags={'category': 'a'}))
+da.append(Document(tags={'category': 'a'}))
+
+rv = da.split(tag='category')
+assert len(rv['c']) == 2  # category `c` is a DocumentArray has 2 Documents
+```
+
+
+
 ### Visualize the embeddings of a `DocumentArray`
 
 `DocumentArray` provides function `.visualize` to plot document embeddings in a 2D graph. `visualize` supports 2 methods
@@ -1537,6 +1561,7 @@ This table summarizes the interfaces of `DocumentArrayMemmap` and `DocumentArray
 | `__eq__` |✅|✅|
 | `sample` |✅ |✅|
 | `shuffle` |✅ |✅|
+| `split` |✅ |✅|
 | `match` (L/Rvalue) |✅|✅|
 | `visualize` |✅|✅|
 

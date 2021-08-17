@@ -265,7 +265,13 @@ def test_docarray_match_docarraymemmap(
 
     D2memmap = DocumentArrayMemmap(tmpdir)
     D2memmap.extend(D2_)
-    D1_.match(D2memmap, metric=metric, limit=3, normalization=normalization)
+    D1_.match(
+        D2memmap,
+        metric=metric,
+        limit=3,
+        normalization=normalization,
+        use_scipy=use_scipy,
+    )
     values_docarraymemmap = [m.scores[metric].value for d in D1_ for m in d.matches]
 
     np.testing.assert_equal(values_docarray, values_docarraymemmap)

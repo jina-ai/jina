@@ -10,8 +10,9 @@ from jina import __docker_host__
 from jina.helper import colored
 from jina.logging.logger import JinaLogger
 from . import (
-    __root_workspace__,
     jinad_args,
+    __root_workspace__,
+    __partial_workspace__,
 )
 from .excepts import (
     DockerNotFoundException,
@@ -315,7 +316,7 @@ class Dockerizer:
         """
         return {
             f'{cls._get_volume_host_dir()}/{workspace_id}': {
-                'bind': '/workspace',
+                'bind': __partial_workspace__,
                 'mode': 'rw',
             },
             cls.dockersock: {'bind': '/var/run/docker.sock'},
@@ -328,9 +329,13 @@ class Dockerizer:
         :return: dict of env vars
         """
         return {
-            'JINA_LOG_WORKSPACE': '/workspace/logs',
+            'JINA_LOG_WORKSPACE': os.path.join(__partial_workspace__, 'logs'),
             'JINA_RANDOM_PORT_MIN': '49153',
             'JINA_LOG_LEVEL': os.getenv('JINA_LOG_LEVEL') or 'INFO',
+            'JINA_HUB_ROOT': os.path.join(
+                __partial_workspace__, '.jina', 'hub-packages'
+            ),
+            'JINA_HUB_CACHE_DIR': os.path.join(__partial_workspace__, '.cache', 'jina'),
         }
 
     @classmethod

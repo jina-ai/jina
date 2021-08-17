@@ -119,7 +119,16 @@ class DocumentArrayNeuralOpsMixin:
 
         dist, idx = top_k(dists, min(limit, len(darray)), descending=False)
         if isinstance(normalization, (tuple, list)) and normalization is not None:
-            dist = minmax_normalize(dist, normalization)
+
+            # normalization bound uses original distance not the top-k trimmed distance
+            if is_sparse:
+                min_d = dists.min(axis=-1).toarray()
+                max_d = dists.max(axis=-1).toarray()
+            else:
+                min_d = np.min(dists, axis=-1, keepdims=True)
+                max_d = np.max(dists, axis=-1, keepdims=True)
+
+            dist = minmax_normalize(dist, normalization, (min_d, max_d))
 
         return dist, idx
 
@@ -148,7 +157,6 @@ class DocumentArrayNeuralOpsMixin:
         n_x = x_mat.shape[0]
 
         def batch_generator(y_darray: 'DocumentArrayMemmap', n_batch: int):
-            n_max = len(y_darray)
             for i in range(0, len(y_darray), n_batch):
                 y_mat = y_darray._get_embeddings(slice(i, i + n_batch))
                 yield y_mat, i
