@@ -180,3 +180,12 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
+
+    gp.add_argument(
+        '--runs-in-docker',
+        action='store_true',
+        default=False,
+        help='Informs a Executor that runs in a container. Important to properly set networking information'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
