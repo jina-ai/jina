@@ -171,21 +171,21 @@ class Document(ProtoTypeMixin, VersionedMixin):
         **kwargs,
     ):
         """
-        :param adjacency: the adjacency from this document proto
-        :param blob: the blob content from the proto
+        :param adjacency: the adjacency of this Document
+        :param blob: the blob content of thi Document
         :param buffer: the buffer bytes from this document
         :param chunks: the array of chunks of this document
         :param content: the value of the content depending on `:meth:`content_type`
-        :param embedding: the embedding from the proto
-        :param granularity: the granularity from this document proto
-        :param id: the id from the proto
+        :param embedding: the embedding of this Document
+        :param granularity: the granularity of this Document
+        :param id: the id of this Document
         :param matches: the array of matches attached to this document
-        :param mime_type: the mime_type from this document proto
+        :param mime_type: the mime_type of this Document
         :param modality: the modality of the document.
-        :param parent_id: the parent id from the proto
+        :param parent_id: the parent id of this Document
         :param tags: a Python dict view of the tags.
         :param text: the text from this document content
-        :param uri: the uri from this document proto
+        :param uri: the uri of this Document
         :param weight: the weight of the document
         :param kwargs: other parameters to be set _after_ the document is constructed
         """
