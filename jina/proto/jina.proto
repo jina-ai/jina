@@ -1,6 +1,7 @@
 syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/struct.proto";
+import "google/protobuf/empty.proto";
 
 package jina;
 
@@ -360,3 +361,13 @@ service JinaRPC {
     rpc Call (stream RequestProto) returns (stream RequestProto) {
     }
 }
+
+/**
+ * jina gRPC service for DataRequests.
+ */
+service JinaDataRequestRPC {
+    // Pass in a Message, wrapping a DataRequest
+    rpc Call (MessageProto) returns (google.protobuf.Empty) {
+    }
+}
+

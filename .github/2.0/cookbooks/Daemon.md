@@ -40,12 +40,17 @@ Table of Contents
 
 <table>
     <tr>
-    <td>123.45.67.89</td>
+    <td>1.2.3.4</td>
     <td>
 
 ```bash
 # have docker installed
-docker run --name=jinad --network=host -v /var/run/docker.sock:/var/run/docker.sock jinaai/jina:latest-daemon --port-expose 8000
+docker run --add-host host.docker.internal:host-gateway \
+           -v /var/run/docker.sock:/var/run/docker.sock \
+           -v /tmp/jinad:/tmp/jinad \
+           -p 8000:8000 \
+           --name jinad \
+           -d jinaai/jina:master-daemon
 ```
 
 </td>
@@ -61,8 +66,7 @@ from jina import Flow
 
 f = (Flow()
      .add(uses='mwu_encoder.yml',
-          host='123.45.67.89:8000',
-          parallel=2,
+          host='1.2.3.4:8000',
           upload_files=['mwu_encoder.py']))
 
 with f:
@@ -211,7 +215,7 @@ Workspace is the entrypoint for all objects in JinaD. It primarily represents 4 
       torch>=1.8.0
       tensorflow
       ```
-    
+
 
 ### Create a workspace ([redoc](https://api.jina.ai/daemon/#operation/_create_workspaces_post))
 

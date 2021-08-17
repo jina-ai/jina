@@ -108,13 +108,16 @@ class JinadRuntime(AsyncNewLoopRuntime):
     def _mask_args(self, args: 'argparse.Namespace'):
         _args = copy.deepcopy(args)
 
-        # reset the runtime to ZEDRuntime or ContainerRuntime
+        # reset the runtime to ZEDRuntime/GRPCDataRuntime or ContainerRuntime
         if _args.runtime_cls == 'JinadRuntime':
             # TODO: add jinahub:// and jinahub+docker:// scheme here
             if _args.uses.startswith('docker://'):
                 _args.runtime_cls = 'ContainerRuntime'
             else:
-                _args.runtime_cls = 'ZEDRuntime'
+                if _args.grpc_data_requests:
+                    _args.runtime_cls = 'GRPCDataRuntime'
+                else:
+                    _args.runtime_cls = 'ZEDRuntime'
 
         # TODO:/NOTE this prevents jumping from remote to another remote (Han: 2021.1.17)
         # _args.host = __default_host__
