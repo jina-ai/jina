@@ -126,7 +126,7 @@ def fill_overload(
 # param
 entries = [
     dict(
-        cli_entrypoint='executor',
+        cli_entrypoint='pod',
         doc_str_title='Add an Executor to the current Flow object.',
         doc_str_return='a (new) Flow object with modification',
         return_type="Union['Flow', 'AsyncFlow']",

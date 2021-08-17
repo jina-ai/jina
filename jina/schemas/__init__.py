@@ -7,14 +7,14 @@ def get_full_schema() -> dict:
     from .executor import schema_all_executors
     from .flow import schema_flow
     from .meta import schema_metas
-    from .pod import schema_executor
+    from .pod import schema_pod
 
     definitions = {}
     for s in [
         schema_all_executors,
         schema_flow,
         schema_metas,
-        schema_executor,
+        schema_pod,
         IMPORTED.schema_executors,
     ]:
         definitions.update(s)

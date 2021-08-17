@@ -48,10 +48,12 @@ def set_zed_runtime_parser(parser=None):
     from .peapods.base import mixin_base_ppr_parser
     from .peapods.runtimes.zmq import mixin_zmq_runtime_parser
     from .peapods.runtimes.zed import mixin_zed_runtime_parser
+    from .peapods.runtimes.remote import mixin_remote_parser
 
     mixin_base_ppr_parser(parser)
     mixin_zmq_runtime_parser(parser)
     mixin_zed_runtime_parser(parser)
+    mixin_remote_parser(parser)
 
     return parser
 
@@ -224,12 +226,12 @@ def get_main_parser():
         )
     )
 
-    set_pod_parser(
+    set_zed_runtime_parser(
         sp.add_parser(
             'executor',
-            help='Start an Executor',
-            description='Start an Executor. Executor is how Jina processes Document.',
+            description='Start a ZEDRuntime with an Executor in it',
             formatter_class=_chf,
+            help='Start a Executor',
         )
     )
 
@@ -297,14 +299,12 @@ def get_main_parser():
         )
     )
 
-    set_zed_runtime_parser(
+    set_pod_parser(
         sp.add_parser(
-            'runtime',
-            description='Start a ZEDRuntime with an Executor in it',
+            'pod',
+            description='Start an Executor. Executor is how Jina processes Document.',
             formatter_class=_chf,
-            **(dict(help='Start a ZEDRuntime with an Executor in it'))
-            if _SHOW_ALL_ARGS
-            else {},
+            **(dict(help='Start a Pod')) if _SHOW_ALL_ARGS else {},
         )
     )
 

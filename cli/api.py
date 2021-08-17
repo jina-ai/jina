@@ -2,30 +2,21 @@ if False:
     from argparse import Namespace
 
 
-def executor(args: 'Namespace'):
+def pod(args: 'Namespace'):
     """
-    Start a Executor/Pod
+    Start a Pod
 
     :param args: arguments coming from the CLI.
     """
-    uses = args.uses
-    if (
-        uses.startswith('jinahub+docker://')
-        or uses.startswith('docker://')
-        or uses.startswith('jinahub://')
-    ):
-        from jina.peapods.pods.factory import PodFactory
+    from jina.peapods.pods.factory import PodFactory
 
-        with PodFactory.build_pod(args) as p:
-            p.join()
-
-    else:
-        runtime(args)
+    with PodFactory.build_pod(args) as p:
+        p.join()
 
 
-def runtime(args: 'Namespace'):
+def executor(args: 'Namespace'):
     """
-    Starts a ZEDRuntime
+    Starts a Executor
 
     :param args: arguments coming from the CLI.
     """
