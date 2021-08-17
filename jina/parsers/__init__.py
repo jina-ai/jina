@@ -122,6 +122,29 @@ def set_gateway_parser(parser=None):
     return parser
 
 
+def set_zed_runtime_parser(parser=None):
+    """Set the parser for the ZEDRuntime
+    :param parser: an optional existing parser to build upon
+    :return: the parser
+    """
+    if not parser:
+        from .base import set_base_parser
+
+        parser = set_base_parser()
+
+    from .peapods.base import mixin_base_ppr_parser
+    from .peapods.runtimes.zmq import mixin_zmq_runtime_parser
+    from .peapods.runtimes.zed import mixin_zed_runtime_parser
+    from .peapods.runtimes.remote import mixin_remote_parser
+
+    mixin_base_ppr_parser(parser)
+    mixin_zmq_runtime_parser(parser)
+    mixin_zed_runtime_parser(parser)
+    mixin_remote_parser(parser)
+
+    return parser
+
+
 def set_client_cli_parser(parser=None):
     """Set the parser for the cli client
 
@@ -202,22 +225,11 @@ def get_main_parser():
         )
     )
 
-    set_pod_parser(
-        sp.add_parser(
-            'executor',
-            aliases=['pod'],
-            help='Start an Executor',
-            description='Start an Executor. Executor is how Jina processes Document.',
-            formatter_class=_chf,
-        )
-    )
-
     set_pea_parser(
         sp.add_parser(
-            'zed_runtime',
-            aliases=['executor'],
-            help='Start a ZEDRuntime with an Executor in it',
-            description='Start an Executor in the main process. Executor is how Jina processes Document.',
+            'executor',
+            help='Start an Executor',
+            description='Start an Executor. Executor is how Jina processes Document.',
             formatter_class=_chf,
         )
     )
@@ -276,6 +288,16 @@ def get_main_parser():
             'are doing low-level orchestration',
             formatter_class=_chf,
             **(dict(help='Start a Pea')) if _SHOW_ALL_ARGS else {},
+        )
+    )
+
+    set_pod_parser(
+        sp.add_parser(
+            'pod',
+            description='Start a Pod. '
+            'You should rarely use this directly unless you '
+            'are doing low-level orchestration',
+            **(dict(help='Start a Pod')) if _SHOW_ALL_ARGS else {},
         )
     )
 
