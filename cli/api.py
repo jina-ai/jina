@@ -8,13 +8,21 @@ def executor(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-    from jina.peapods.pods.factory import PodFactory
+    uses = args.uses
+    if (
+        uses.startswith('jinahub+docker://')
+        or uses.startswith('docker://')
+        or uses.startswith('jinahub://')
+    ):
+        from jina.peapods.pods.factory import PodFactory
 
-    try:
-        with PodFactory.build_pod(args) as p:
-            p.join()
-    except KeyboardInterrupt:
-        pass
+        try:
+            with PodFactory.build_pod(args) as p:
+                p.join()
+        except KeyboardInterrupt:
+            pass
+    else:
+        runtime(args)
 
 
 def runtime(args: 'Namespace'):
@@ -25,11 +33,11 @@ def runtime(args: 'Namespace'):
     """
     from jina.peapods.runtimes.zmq.zed import ZEDRuntime
 
-    with ZEDRuntime(args) as runtime:
-        runtime.logger.success(
-            f' Executor {runtime._data_request_handler._executor.metas.name} started'
+    with ZEDRuntime(args) as r:
+        r.logger.success(
+            f' Executor {r._data_request_handler._executor.metas.name} started'
         )
-        runtime.run_forever()
+        r.run_forever()
 
 
 def grpc_data_runtime(args: 'Namespace'):
