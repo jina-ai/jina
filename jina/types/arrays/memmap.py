@@ -446,7 +446,7 @@ class DocumentArrayMemmap(
         index = None
         fields = list(fields)
         if 'embedding' in fields:
-            embeddings = list(self.embeddings)  # type: np.ndarray
+            embeddings = list(self.embeddings)  # type: List[np.ndarray]
             index = fields.index('embedding')
             fields.remove('embedding')
         if fields:

@@ -267,6 +267,7 @@ class DocumentArrayNeuralOpsMixin:
 
         :return: embeddings stacked per row as `np.ndarray`.
         """
+
         x_mat = b''.join(d.proto.embedding.dense.buffer for d in self)
 
         return np.frombuffer(x_mat, dtype=self[0].proto.embedding.dense.dtype).reshape(
