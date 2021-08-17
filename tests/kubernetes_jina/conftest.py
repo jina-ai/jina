@@ -23,3 +23,8 @@ def executor_image(logger: JinaLogger):
             for line in chunk['stream'].splitlines():
                 logger.debug(line)
     return image
+
+
+@pytest.fixture()
+def kind_cluster_with_moved_config(kind_cluster):
+    os.rename(os.path.join(cur_dir, '..', ))

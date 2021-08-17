@@ -50,3 +50,11 @@ def test_deploy(k8s_index_flow: Flow):
         pods = test_client.list_pods('index-flow')
         for pod in pods:
             print(pod.status)
+
+
+def test_deploy_with_l(kind_cluster, executor_image, k8s_index_flow: Flow):
+    test_executor_image_name = executor_image.tags[0]
+
+    kind_cluster.load_docker_image(test_executor_image_name)
+
+    k8s_index_flow.deploy('k8s')
