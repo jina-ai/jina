@@ -4,7 +4,7 @@ if False:
 
 def executor(args: 'Namespace'):
     """
-    Start a Pod
+    Start a Executor/Pod
 
     :param args: arguments coming from the CLI.
     """
