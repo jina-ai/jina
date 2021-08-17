@@ -1,4 +1,4 @@
-# commit-lint needs "pull_request_target" access,
+# commit-lint needs "pull_request" access,
 # therefore separate from main ci.yml
 name: PR
 
