@@ -937,6 +937,17 @@
 
         <span class="k">return</span> <span class="n">embeds</span>
 
+    <span class="nd">@embeddings</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">emb</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">emb</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="p">(</span>
+            <span class="s1">'the number of rows in the input ({len(emb)}),'</span>
+            <span class="s1">'should match the number of Documents ({len(self)})'</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">emb</span><span class="p">):</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">x</span>
+
     <span class="k">def</span> <span class="nf">_invalidate_embeddings_memmap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_memmap</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_shape</span> <span class="o">=</span> <span class="kc">None</span></div>
