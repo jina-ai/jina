@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/cli/index.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="usage: jina [-h] [-v] [-vf] {hello, executor, pod, zed_runtime ... 8 more choices} ... Named Arguments:-v, --version,, Show Jina version,,-vf, --version-full,, Show Jina and all dependencies’ versions,. subcommands: Use%(prog)-8s [sub-command] –help to get detailed information about each sub-comm..." />
+  <meta property="og:description" content="usage: jina [-h] [-v] [-vf] {hello, executor, flow, ping ... 7 more choices} ... Named Arguments:-v, --version,, Show Jina version,,-vf, --version-full,, Show Jina and all dependencies’ versions,. subcommands: Use%(prog)-8s [sub-command] –help to get detailed information about each sub-command. T..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -418,7 +418,7 @@
         <div class="section" id="jina-command-line-interface">
 <h1>Jina Command-Line Interface<a class="headerlink" href="#jina-command-line-interface" title="Permalink to this headline">¶</a></h1>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">jina</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">vf</span><span class="p">]</span>
-            <span class="p">{</span><span class="n">hello</span><span class="p">,</span> <span class="n">executor</span><span class="p">,</span> <span class="n">pod</span><span class="p">,</span> <span class="n">zed_runtime</span> <span class="o">...</span> <span class="mi">8</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}</span> <span class="o">...</span>
+            <span class="p">{</span><span class="n">hello</span><span class="p">,</span> <span class="n">executor</span><span class="p">,</span> <span class="n">flow</span><span class="p">,</span> <span class="n">ping</span> <span class="o">...</span> <span class="mi">7</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}</span> <span class="o">...</span>
 </pre></div>
 </div>
 <div class="section" id="Named Arguments">
@@ -440,7 +440,7 @@
 </div></blockquote>
 <dl class="option-list">
 <dt><kbd>cli</kbd></dt>
-<dd><p>Possible choices: hello, executor, pod, zed_runtime, flow, ping, gateway, hub, help, pea, client, export-api</p>
+<dd><p>Possible choices: hello, executor, flow, ping, gateway, hub, help, pea, pod, client, export-api</p>
 </dd>
 </dl>
 </div>
@@ -477,7 +477,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “50e01f1f-7c4d-4b47-884e-94152ea683c2”</p>
+<p>Default: “1a097e7d-bb18-47cb-a0de-49d7b9cbe364”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -552,7 +552,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “c8df620c-fcd2-4231-9f46-74840c8c06af”</p>
+<p>Default: “2468fb85-b675-4be9-b16e-9d1e8c2eebe4”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -585,7 +585,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “00f4b8aa-ee2d-458c-ae24-0a0a4ab7f4fc”</p>
+<p>Default: “28ead8df-e231-42ce-b0ab-33013ae0c16b”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -614,9 +614,9 @@
 </div>
 </div>
 </div>
-<div class="section" id="executor (zed_runtime)">
-<h3>executor (zed_runtime)<a class="headerlink" href="#executor (zed_runtime)" title="Permalink to this headline">¶</a></h3>
-<p>Start an Executor in the main process. Executor is how Jina processes Document.</p>
+<div class="section" id="executor">
+<h3>executor<a class="headerlink" href="#executor" title="Permalink to this headline">¶</a></h3>
+<p>Start an Executor. Executor is how Jina processes Document.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">executor</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">zmq</span><span class="o">-</span><span class="n">identity</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ctrl</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">ipc</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">server</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">keyfile</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">password</span><span class="p">]</span>
@@ -629,17 +629,17 @@
               <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="n">out</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">9</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">memory</span><span class="o">-</span><span class="n">hwm</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">on</span><span class="o">-</span><span class="n">error</span><span class="o">-</span><span class="n">strategy</span> <span class="p">{</span><span class="n">IGNORE</span><span class="p">,</span> <span class="n">SKIP_HANDLE</span><span class="p">,</span> <span class="n">THROW_EARLY</span><span class="p">}]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">part</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="n">out</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">requests</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">docker</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">pull</span><span class="o">-</span><span class="n">latest</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">volumes</span> <span class="p">[</span><span class="n">DIR</span> <span class="p">[</span><span class="n">DIR</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">gpus</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">remote</span><span class="o">-</span><span class="n">logs</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">native</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">part</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="n">out</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">requests</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">runs</span><span class="o">-</span><span class="ow">in</span><span class="o">-</span><span class="n">docker</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">docker</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">pull</span><span class="o">-</span><span class="n">latest</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">volumes</span> <span class="p">[</span><span class="n">DIR</span> <span class="p">[</span><span class="n">DIR</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">gpus</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">remote</span><span class="o">-</span><span class="n">logs</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">upload</span><span class="o">-</span><span class="n">files</span> <span class="p">[</span><span class="n">FILE</span> <span class="p">[</span><span class="n">FILE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">remote</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">daemon</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="n">backend</span> <span class="p">{</span><span class="n">THREAD</span><span class="p">,</span> <span class="n">PROCESS</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">public</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">pea</span><span class="o">-</span><span class="nb">id</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">pea</span><span class="o">-</span><span class="n">role</span> <span class="p">{</span><span class="n">SINGLETON</span><span class="p">,</span> <span class="n">HEAD</span><span class="p">,</span> <span class="n">TAIL</span><span class="p">,</span> <span class="n">PARALLEL</span><span class="p">}]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">noblock</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">start</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">runs</span><span class="o">-</span><span class="ow">in</span><span class="o">-</span><span class="n">docker</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">noblock</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">start</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="section" id="Essential arguments">
@@ -679,7 +679,7 @@
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 47577</p>
+<p>Default: 57169</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -740,11 +740,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 51117</p>
+<p>Default: 36505</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 52651</p>
+<p>Default: 39715</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -783,6 +783,10 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.</p>
 <p>Default: 0</p>
 </dd>
+<dt><kbd>--native</kbd></dt>
+<dd><p>If set, only native Executors is allowed, and the Executor is always run inside ZEDRuntime.</p>
+<p>Default: False</p>
+</dd>
 <dt><kbd>--num-part</kbd></dt>
 <dd><p>the number of messages expected from upstream, 0 and 1 means single part</p>
 <p>Default: 0</p>
@@ -797,6 +801,10 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
 </dd>
 <dt><kbd>--grpc-data-requests</kbd></dt>
 <dd><p>Tells if a Pea should use gRPC for data requests. Works only with dynamic routing out.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--runs-in-docker</kbd></dt>
+<dd><p>Informs a Pea that runs in a container. Important to properly set networking information</p>
 <p>Default: False</p>
 </dd>
 </dl>
@@ -845,7 +853,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 34055</p>
+<p>Default: 34803</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -916,382 +924,6 @@ Python files, data files.</p>
 <dd><p>If set, starting a Pea/Pod does not block the thread/process. It then relies on <cite>wait_start_success</cite> at outer function for the postpone check.</p>
 <p>Default: False</p>
 </dd>
-<dt><kbd>--runs-in-docker</kbd></dt>
-<dd><p>Informs a Pea that runs in a container. Important to properly set networking information</p>
-<p>Default: False</p>
-</dd>
-</dl>
-</div>
-</div>
-<div class="section" id="pod">
-<h3>pod<a class="headerlink" href="#pod" title="Permalink to this headline">¶</a></h3>
-<p>Start an Executor. Executor is how Jina processes Document.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">pod</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">zmq</span><span class="o">-</span><span class="n">identity</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ctrl</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">ipc</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">server</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">keyfile</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">password</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="k">with</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">metas</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">requests</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">out</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">hosts</span><span class="o">-</span><span class="ow">in</span><span class="o">-</span><span class="n">connect</span> <span class="p">[[</span><span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="n">out</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="ow">in</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">9</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="n">out</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">9</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">memory</span><span class="o">-</span><span class="n">hwm</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">on</span><span class="o">-</span><span class="n">error</span><span class="o">-</span><span class="n">strategy</span> <span class="p">{</span><span class="n">IGNORE</span><span class="p">,</span> <span class="n">SKIP_HANDLE</span><span class="p">,</span> <span class="n">THROW_EARLY</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">part</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="n">out</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">requests</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">docker</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">pull</span><span class="o">-</span><span class="n">latest</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">volumes</span> <span class="p">[</span><span class="n">DIR</span> <span class="p">[</span><span class="n">DIR</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">gpus</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">remote</span><span class="o">-</span><span class="n">logs</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">upload</span><span class="o">-</span><span class="n">files</span> <span class="p">[</span><span class="n">FILE</span> <span class="p">[</span><span class="n">FILE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">remote</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">daemon</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="n">backend</span> <span class="p">{</span><span class="n">THREAD</span><span class="p">,</span> <span class="n">PROCESS</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">public</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">pea</span><span class="o">-</span><span class="nb">id</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">pea</span><span class="o">-</span><span class="n">role</span> <span class="p">{</span><span class="n">SINGLETON</span><span class="p">,</span> <span class="n">HEAD</span><span class="p">,</span> <span class="n">TAIL</span><span class="p">,</span> <span class="n">PARALLEL</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">noblock</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">start</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">runs</span><span class="o">-</span><span class="ow">in</span><span class="o">-</span><span class="n">docker</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">parallel</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">polling</span> <span class="p">{</span><span class="n">ANY</span><span class="p">,</span> <span class="n">ALL</span><span class="p">,</span> <span class="n">ALL_ASYNC</span><span class="p">}]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">scheduling</span> <span class="p">{</span><span class="n">LOAD_BALANCE</span><span class="p">,</span> <span class="n">ROUND_ROBIN</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">external</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">peas</span><span class="o">-</span><span class="n">hosts</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">pod</span><span class="o">-</span><span class="n">role</span> <span class="p">{</span><span class="n">POD</span><span class="p">,</span> <span class="n">JOIN</span><span class="p">,</span> <span class="n">INSPECT</span><span class="p">,</span> <span class="n">GATEWAY</span> <span class="o">...</span> <span class="mi">2</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">connect</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">predecessor</span><span class="p">]</span>
-</pre></div>
-</div>
-<div class="section" id="Named Arguments_repeat3">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat3" title="Permalink to this headline">¶</a></h4>
-<dl class="option-list">
-<dt><kbd>--no-dynamic-routing</kbd></dt>
-<dd><p>The Pod will setup the socket types of the HeadPea and TailPea depending on this argument.</p>
-<p>Default: True</p>
-</dd>
-<dt><kbd>--connect-to-predecessor</kbd></dt>
-<dd><p>The head Pea of this Pod will connect to the TailPea of the predecessor Pod.</p>
-<p>Default: False</p>
-</dd>
-</dl>
-</div>
-<div class="section" id="Essential arguments_repeat1">
-<h4>Essential arguments<a class="headerlink" href="#Essential arguments_repeat1" title="Permalink to this headline">¶</a></h4>
-<dl class="option-list">
-<dt><kbd>--name</kbd></dt>
-<dd><p>The name of this object.</p>
-<p>This will be used in the following places:
-- how you refer to this object in Python/YAML/CLI
-- visualization
-- log message header
-- …</p>
-<p>When not given, then the default naming strategy will apply.</p>
-</dd>
-<dt><kbd>--workspace</kbd></dt>
-<dd><p>The working directory for any IO operations in this object. If not set, then derive from its parent <cite>workspace</cite>.</p>
-</dd>
-<dt><kbd>--log-config</kbd></dt>
-<dd><p>The YAML config of the logger used in this object.</p>
-<p>Default: “/home/runner/work/jina/jina/jina/resources/logging.default.yml”</p>
-</dd>
-<dt><kbd>--quiet</kbd></dt>
-<dd><p>If set, then no log will be emitted from this object.</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>--quiet-error</kbd></dt>
-<dd><p>If set, then exception stack information will not be added to the log</p>
-<p>Default: False</p>
-</dd>
-</dl>
-</div>
-<div class="section" id="ZMQRuntime arguments_repeat1">
-<h4>ZMQRuntime arguments<a class="headerlink" href="#ZMQRuntime arguments_repeat1" title="Permalink to this headline">¶</a></h4>
-<dl class="option-list">
-<dt><kbd>--zmq-identity</kbd></dt>
-<dd><p>The identity of a ZMQRuntime. It is used for unique socket identification towards other ZMQRuntimes.</p>
-</dd>
-<dt><kbd>--port-ctrl</kbd></dt>
-<dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 49759</p>
-</dd>
-<dt><kbd>--ctrl-with-ipc</kbd></dt>
-<dd><p>If set, use ipc protocol for control socket</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>--timeout-ctrl</kbd></dt>
-<dd><p>The timeout in milliseconds of the control request, -1 for waiting forever</p>
-<p>Default: 5000</p>
-</dd>
-<dt><kbd>--ssh-server</kbd></dt>
-<dd><p>The SSH server through which the tunnel will be created, can actually be a fully specified <cite>user@server:port</cite> ssh url.</p>
-</dd>
-<dt><kbd>--ssh-keyfile</kbd></dt>
-<dd><p>This specifies a key to be used in ssh login, default None. regular default ssh keys will be used without specifying this argument.</p>
-</dd>
-<dt><kbd>--ssh-password</kbd></dt>
-<dd><p>The ssh password to the ssh server.</p>
-</dd>
-</dl>
-</div>
-<div class="section" id="ZEDRuntime arguments_repeat1">
-<h4>ZEDRuntime arguments<a class="headerlink" href="#ZEDRuntime arguments_repeat1" title="Permalink to this headline">¶</a></h4>
-<dl class="option-list">
-<dt><kbd>--uses</kbd></dt>
-<dd><blockquote>
-<div><p>The config of the executor, it could be one of the followings:
-* an Executor YAML file (.yml, .yaml, .jaml)
-* a Jina Hub Executor (must start with <cite>jinahub://</cite> or <cite>jinahub+docker://</cite>)
-* a docker image (must start with <cite>docker://</cite>)
-* the string literal of a YAML config (must start with <cite>!</cite> or <a href="#id1"><span class="problematic" id="id2">`</span></a>jtype: <a href="#id3"><span class="problematic" id="id4">`</span></a>)
-* the string literal of a JSON config</p>
-<p>When use it under Python, one can use the following values additionally:
-- a Python dict that represents the config
-- a text file stream has <cite>.read()</cite> interface</p>
-</div></blockquote>
-<p>Default: “BaseExecutor”</p>
-</dd>
-<dt><kbd>--uses-with</kbd></dt>
-<dd><blockquote>
-<div><p>Dictionary of keyword arguments that will override the <cite>with</cite> configuration in <cite>uses</cite></p>
-</div></blockquote>
-</dd>
-<dt><kbd>--uses-metas</kbd></dt>
-<dd><blockquote>
-<div><p>Dictionary of keyword arguments that will override the <cite>metas</cite> configuration in <cite>uses</cite></p>
-</div></blockquote>
-</dd>
-<dt><kbd>--uses-requests</kbd></dt>
-<dd><blockquote>
-<div><p>Dictionary of keyword arguments that will override the <cite>requests</cite> configuration in <cite>uses</cite></p>
-</div></blockquote>
-</dd>
-<dt><kbd>--py-modules</kbd></dt>
-<dd><p>The customized python modules need to be imported before loading the executor</p>
-<p>Note, when importing multiple files and there is a dependency between them, then one has to write the dependencies in
-reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>, which again depends on <cite>B.py</cite>, then you need to write:</p>
-<p>–py-modules __init__.py –py-modules B.py –py-modules A.py</p>
-</dd>
-<dt><kbd>--port-in</kbd></dt>
-<dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 50041</p>
-</dd>
-<dt><kbd>--port-out</kbd></dt>
-<dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 34841</p>
-</dd>
-<dt><kbd>--hosts-in-connect</kbd></dt>
-<dd><p>The host address for input, by default it is 0.0.0.0</p>
-</dd>
-<dt><kbd>--host-in</kbd></dt>
-<dd><p>The host address for input, by default it is 0.0.0.0</p>
-<p>Default: “0.0.0.0”</p>
-</dd>
-<dt><kbd>--host-out</kbd></dt>
-<dd><p>The host address for output, by default it is 0.0.0.0</p>
-<p>Default: “0.0.0.0”</p>
-</dd>
-<dt><kbd>--socket-in</kbd></dt>
-<dd><p>Possible choices: PULL_BIND, PULL_CONNECT, PUSH_BIND, PUSH_CONNECT, SUB_BIND, SUB_CONNECT, PUB_BIND, PUB_CONNECT, PAIR_BIND, PAIR_CONNECT, ROUTER_BIND, DEALER_CONNECT, ROUTER_CONNECT</p>
-<p>The socket type for input port</p>
-<p>Default: 0</p>
-</dd>
-<dt><kbd>--socket-out</kbd></dt>
-<dd><p>Possible choices: PULL_BIND, PULL_CONNECT, PUSH_BIND, PUSH_CONNECT, SUB_BIND, SUB_CONNECT, PUB_BIND, PUB_CONNECT, PAIR_BIND, PAIR_CONNECT, ROUTER_BIND, DEALER_CONNECT, ROUTER_CONNECT</p>
-<p>The socket type for output port</p>
-<p>Default: 2</p>
-</dd>
-<dt><kbd>--memory-hwm</kbd></dt>
-<dd><p>The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. -1 means no restriction</p>
-<p>Default: -1</p>
-</dd>
-<dt><kbd>--on-error-strategy</kbd></dt>
-<dd><p>Possible choices: IGNORE, SKIP_HANDLE, THROW_EARLY</p>
-<p>The skip strategy on exceptions.</p>
-<ul class="simple">
-<li><p>IGNORE: Ignore it, keep running all Executors in the sequel flow</p></li>
-<li><p>SKIP_HANDLE: Skip all Executors in the sequel, only <cite>pre_hook</cite> and <cite>post_hook</cite> are called</p></li>
-<li><p>THROW_EARLY: Immediately throw the exception, the sequel flow will not be running at all</p></li>
-</ul>
-<p>Note, <cite>IGNORE</cite>, <cite>SKIP_EXECUTOR</cite> and <cite>SKIP_HANDLE</cite> do not guarantee the success execution in the sequel flow. If something
-is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.</p>
-<p>Default: 0</p>
-</dd>
-<dt><kbd>--num-part</kbd></dt>
-<dd><p>the number of messages expected from upstream, 0 and 1 means single part</p>
-<p>Default: 0</p>
-</dd>
-<dt><kbd>--dynamic-routing-out</kbd></dt>
-<dd><p>Tells if ZEDRuntime should respect routing graph for outgoing traffic.</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>--dynamic-routing-in</kbd></dt>
-<dd><p>Tells if ZEDRuntime should handle incoming traffic as dynamic routing.</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>--grpc-data-requests</kbd></dt>
-<dd><p>Tells if a Pea should use gRPC for data requests. Works only with dynamic routing out.</p>
-<p>Default: False</p>
-</dd>
-</dl>
-</div>
-<div class="section" id="ContainerRuntime arguments_repeat1">
-<h4>ContainerRuntime arguments<a class="headerlink" href="#ContainerRuntime arguments_repeat1" title="Permalink to this headline">¶</a></h4>
-<dl class="option-list">
-<dt><kbd>--entrypoint</kbd></dt>
-<dd><p>The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.</p>
-</dd>
-<dt><kbd>--docker-kwargs</kbd></dt>
-<dd><p>Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker ‘
-container.</p>
-<p>More details can be found in the Docker SDK docs:  <a class="reference external" href="https://docker-py.readthedocs.io/en/stable/">https://docker-py.readthedocs.io/en/stable/</a></p>
-</dd>
-<dt><kbd>--pull-latest</kbd></dt>
-<dd><p>Pull the latest image before running</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>--volumes</kbd></dt>
-<dd><p>The path on the host to be mounted inside the container.</p>
-<p>Note,
-- If separated by <cite>:</cite>, then the first part will be considered as the local host path and the second part is the path in the container system.
-- If no split provided, then the basename of that directory will be mounted into container’s root path, e.g. <cite>–volumes=”/user/test/my-workspace”</cite> will be mounted into <cite>/my-workspace</cite> inside the container.
-- All volumes are mounted with read-write mode.</p>
-</dd>
-<dt><kbd>--gpus</kbd></dt>
-<dd><blockquote>
-<div><p>This argument allows dockerized Jina executor discover local gpu devices.</p>
-<p>Note,
-- To access all gpus, use <cite>–gpus all</cite>.
-- To access multiple gpus, e.g. make use of 2 gpus, use <cite>–gpus 2</cite>.
-- To access specified gpus based on device id, use <cite>–gpus device=[YOUR-GPU-DEVICE-ID]</cite>
-- To access specified gpus based on multiple device id, use <cite>–gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]</cite>
-- To specify more parameters, use <a href="#id1"><span class="problematic" id="id2">`</span></a>–gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display</p>
-</div></blockquote>
-</dd>
-</dl>
-</div>
-<div class="section" id="Expose arguments_repeat1">
-<h4>Expose arguments<a class="headerlink" href="#Expose arguments_repeat1" title="Permalink to this headline">¶</a></h4>
-<dl class="option-list">
-<dt><kbd>--host</kbd></dt>
-<dd><p>The host address of the runtime, by default it is 0.0.0.0.</p>
-<p>Default: “0.0.0.0”</p>
-</dd>
-<dt><kbd>--port-expose</kbd></dt>
-<dd><p>The port of the host exposed to the public</p>
-<p>Default: 42253</p>
-</dd>
-<dt><kbd>--proxy</kbd></dt>
-<dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
-<p>Default: False</p>
-</dd>
-</dl>
-</div>
-<div class="section" id="Distributed arguments_repeat1">
-<h4>Distributed arguments<a class="headerlink" href="#Distributed arguments_repeat1" title="Permalink to this headline">¶</a></h4>
-<dl class="option-list">
-<dt><kbd>--quiet-remote-logs</kbd></dt>
-<dd><p>Do not display the streaming of remote logs on local console</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>--upload-files</kbd></dt>
-<dd><p>The files on the host to be uploaded to the remote
-workspace. This can be useful when your Pod has more
-file dependencies beyond a single YAML file, e.g.
-Python files, data files.</p>
-<p>Note,
-- currently only flatten structure is supported, which means if you upload <cite>[./foo/a.py, ./foo/b.pp, ./bar/c.yml]</cite>, then they will be put under the _same_ workspace on the remote, losing all hierarchies.
-- by default, <cite>–uses</cite> YAML file is always uploaded.
-- uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use <cite>–workspace-id</cite> to specify the workspace.</p>
-</dd>
-<dt><kbd>--disable-remote</kbd></dt>
-<dd><p>If set, remote pea invocation is avoided. This is used by peas created by JinaD</p>
-<p>Default: False</p>
-</dd>
-</dl>
-</div>
-<div class="section" id="Pea arguments_repeat1">
-<h4>Pea arguments<a class="headerlink" href="#Pea arguments_repeat1" title="Permalink to this headline">¶</a></h4>
-<dl class="option-list">
-<dt><kbd>--daemon</kbd></dt>
-<dd><p>The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>--runtime-backend, --runtime</kbd></dt>
-<dd><p>Possible choices: THREAD, PROCESS</p>
-<p>The parallel backend of the runtime inside the Pea</p>
-<p>Default: 1</p>
-</dd>
-<dt><kbd>--runtime-cls</kbd></dt>
-<dd><p>The runtime class to run inside the Pea</p>
-<p>Default: “ZEDRuntime”</p>
-</dd>
-<dt><kbd>--timeout-ready</kbd></dt>
-<dd><p>The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever</p>
-<p>Default: 600000</p>
-</dd>
-<dt><kbd>--env</kbd></dt>
-<dd><p>The map of environment variables that are available inside runtime</p>
-</dd>
-<dt><kbd>--expose-public</kbd></dt>
-<dd><p>If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>--pea-id</kbd></dt>
-<dd><p>defines the suffix for the workspace path of the pea`</p>
-<p>Default: 0</p>
-</dd>
-<dt><kbd>--pea-role</kbd></dt>
-<dd><p>Possible choices: SINGLETON, HEAD, TAIL, PARALLEL</p>
-<p>The role of this Pea in a Pod</p>
-<p>Default: 0</p>
-</dd>
-<dt><kbd>--noblock-on-start</kbd></dt>
-<dd><p>If set, starting a Pea/Pod does not block the thread/process. It then relies on <cite>wait_start_success</cite> at outer function for the postpone check.</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>--runs-in-docker</kbd></dt>
-<dd><p>Informs a Pea that runs in a container. Important to properly set networking information</p>
-<p>Default: False</p>
-</dd>
-</dl>
-</div>
-<div class="section" id="Pod arguments">
-<h4>Pod arguments<a class="headerlink" href="#Pod arguments" title="Permalink to this headline">¶</a></h4>
-<dl class="option-list">
-<dt><kbd>--uses-before</kbd></dt>
-<dd><p>The executor attached after the Peas described by –uses, typically before sending to all parallels, accepted type follows <cite>–uses</cite></p>
-</dd>
-<dt><kbd>--uses-after</kbd></dt>
-<dd><p>The executor attached after the Peas described by –uses, typically used for receiving from all parallels, accepted type follows <cite>–uses</cite></p>
-</dd>
-<dt><kbd>--parallel, --shards</kbd></dt>
-<dd><p>The number of parallel peas in the pod running at the same time, <cite>port_in</cite> and <cite>port_out</cite> will be set to random, and routers will be added automatically when necessary</p>
-<p>Default: 1</p>
-</dd>
-<dt><kbd>--replicas</kbd></dt>
-<dd><p>The number of replicas in the pod, <cite>port_in</cite> and <cite>port_out</cite> will be set to random, and routers will be added automatically when necessary</p>
-<p>Default: 1</p>
-</dd>
-<dt><kbd>--polling</kbd></dt>
-<dd><p>Possible choices: ANY, ALL, ALL_ASYNC</p>
-<p>The polling strategy of the Pod (when <cite>parallel&gt;1</cite>)
-- ANY: only one (whoever is idle) Pea polls the message
-- ALL: all Peas poll the message (like a broadcast)</p>
-<p>Default: 1</p>
-</dd>
-<dt><kbd>--scheduling</kbd></dt>
-<dd><p>Possible choices: LOAD_BALANCE, ROUND_ROBIN</p>
-<p>The strategy of scheduling workload among Peas</p>
-<p>Default: 0</p>
-</dd>
-<dt><kbd>--external</kbd></dt>
-<dd><p>The Pod will be considered an external Pod that has been started independently from the Flow.This Pod will not be context managed by the Flow.</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>--peas-hosts</kbd></dt>
-<dd><dl class="simple">
-<dt>The hosts of the peas when parallel greater than 1.</dt><dd><p>Peas will be evenly distributed among the hosts. By default,
-peas are running on host provided by the argument <code class="docutils literal notranslate"><span class="pre">host</span></code></p>
-</dd>
-</dl>
-</dd>
-<dt><kbd>--pod-role</kbd></dt>
-<dd><p>Possible choices: POD, JOIN, INSPECT, GATEWAY, INSPECT_AUX_PASS, JOIN_INSPECT</p>
-<p>The role of this pod in the flow</p>
-</dd>
 </dl>
 </div>
 </div>
@@ -1303,8 +935,8 @@ peas are running on host provided by the argument <code class="docutils literal 
           <span class="p">[</span><span class="o">--</span><span class="n">inspect</span> <span class="p">{</span><span class="n">HANG</span><span class="p">,</span> <span class="n">REMOVE</span><span class="p">,</span> <span class="n">COLLECT</span><span class="p">}]</span>
 </pre></div>
 </div>
-<div class="section" id="Essential arguments_repeat2">
-<h4>Essential arguments<a class="headerlink" href="#Essential arguments_repeat2" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Essential arguments_repeat1">
+<h4>Essential arguments<a class="headerlink" href="#Essential arguments_repeat1" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--name</kbd></dt>
 <dd><p>The name of this object.</p>
@@ -1370,8 +1002,8 @@ peas are running on host provided by the argument <code class="docutils literal 
 </dd>
 </dl>
 </div>
-<div class="section" id="Named Arguments_repeat4">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat4" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat3">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat3" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--timeout</kbd></dt>
 <dd><p>Timeout in millisecond of one check
@@ -1404,10 +1036,11 @@ peas are running on host provided by the argument <code class="docutils literal 
              <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="n">out</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">9</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">memory</span><span class="o">-</span><span class="n">hwm</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">on</span><span class="o">-</span><span class="n">error</span><span class="o">-</span><span class="n">strategy</span> <span class="p">{</span><span class="n">IGNORE</span><span class="p">,</span> <span class="n">SKIP_HANDLE</span><span class="p">,</span> <span class="n">THROW_EARLY</span><span class="p">}]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">part</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="n">out</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">requests</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefetch</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefetch</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">recv</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">title</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cors</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">default</span><span class="o">-</span><span class="n">swagger</span><span class="o">-</span><span class="n">ui</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">debug</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">crud</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">native</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">part</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="n">out</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">requests</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">runs</span><span class="o">-</span><span class="ow">in</span><span class="o">-</span><span class="n">docker</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">prefetch</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefetch</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">recv</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">title</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">description</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">cors</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">default</span><span class="o">-</span><span class="n">swagger</span><span class="o">-</span><span class="n">ui</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">debug</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">crud</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">compress</span> <span class="p">{</span><span class="n">NONE</span><span class="p">,</span> <span class="n">LZ4</span><span class="p">,</span> <span class="n">ZLIB</span><span class="p">,</span> <span class="n">GZIP</span> <span class="o">...</span> <span class="mi">2</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">compress</span><span class="o">-</span><span class="nb">min</span><span class="o">-</span><span class="nb">bytes</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">compress</span><span class="o">-</span><span class="nb">min</span><span class="o">-</span><span class="n">ratio</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span>
@@ -1415,12 +1048,11 @@ peas are running on host provided by the argument <code class="docutils literal 
              <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">public</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">pea</span><span class="o">-</span><span class="nb">id</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">pea</span><span class="o">-</span><span class="n">role</span> <span class="p">{</span><span class="n">SINGLETON</span><span class="p">,</span> <span class="n">HEAD</span><span class="p">,</span> <span class="n">TAIL</span><span class="p">,</span> <span class="n">PARALLEL</span><span class="p">}]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">noblock</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">start</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">runs</span><span class="o">-</span><span class="ow">in</span><span class="o">-</span><span class="n">docker</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">connect</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">predecessor</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">noblock</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">start</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">connect</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">predecessor</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat5">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat5" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat4">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat4" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--protocol</kbd></dt>
 <dd><p>Possible choices: GRPC, HTTP, WEBSOCKET</p>
@@ -1433,8 +1065,8 @@ peas are running on host provided by the argument <code class="docutils literal 
 </dd>
 </dl>
 </div>
-<div class="section" id="Essential arguments_repeat3">
-<h4>Essential arguments<a class="headerlink" href="#Essential arguments_repeat3" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Essential arguments_repeat2">
+<h4>Essential arguments<a class="headerlink" href="#Essential arguments_repeat2" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--name</kbd></dt>
 <dd><p>The name of this object.</p>
@@ -1463,15 +1095,15 @@ peas are running on host provided by the argument <code class="docutils literal 
 </dd>
 </dl>
 </div>
-<div class="section" id="ZMQRuntime arguments_repeat2">
-<h4>ZMQRuntime arguments<a class="headerlink" href="#ZMQRuntime arguments_repeat2" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="ZMQRuntime arguments_repeat1">
+<h4>ZMQRuntime arguments<a class="headerlink" href="#ZMQRuntime arguments_repeat1" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--zmq-identity</kbd></dt>
 <dd><p>The identity of a ZMQRuntime. It is used for unique socket identification towards other ZMQRuntimes.</p>
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 33009</p>
+<p>Default: 47435</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1492,8 +1124,8 @@ peas are running on host provided by the argument <code class="docutils literal 
 </dd>
 </dl>
 </div>
-<div class="section" id="ZEDRuntime arguments_repeat2">
-<h4>ZEDRuntime arguments<a class="headerlink" href="#ZEDRuntime arguments_repeat2" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="ZEDRuntime arguments_repeat1">
+<h4>ZEDRuntime arguments<a class="headerlink" href="#ZEDRuntime arguments_repeat1" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--uses</kbd></dt>
 <dd><blockquote>
@@ -1532,11 +1164,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 38355</p>
+<p>Default: 52233</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 52957</p>
+<p>Default: 34751</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1575,6 +1207,10 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.</p>
 <p>Default: 0</p>
 </dd>
+<dt><kbd>--native</kbd></dt>
+<dd><p>If set, only native Executors is allowed, and the Executor is always run inside ZEDRuntime.</p>
+<p>Default: False</p>
+</dd>
 <dt><kbd>--num-part</kbd></dt>
 <dd><p>the number of messages expected from upstream, 0 and 1 means single part</p>
 <p>Default: 0</p>
@@ -1589,6 +1225,10 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
 </dd>
 <dt><kbd>--grpc-data-requests</kbd></dt>
 <dd><p>Tells if a Pea should use gRPC for data requests. Works only with dynamic routing out.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--runs-in-docker</kbd></dt>
+<dd><p>Informs a Pea that runs in a container. Important to properly set networking information</p>
 <p>Default: False</p>
 </dd>
 </dl>
@@ -1665,8 +1305,8 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 </dl>
 </div>
-<div class="section" id="Expose arguments_repeat2">
-<h4>Expose arguments<a class="headerlink" href="#Expose arguments_repeat2" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Expose arguments_repeat1">
+<h4>Expose arguments<a class="headerlink" href="#Expose arguments_repeat1" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--host</kbd></dt>
 <dd><p>The host address of the runtime, by default it is 0.0.0.0.</p>
@@ -1674,7 +1314,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 35469</p>
+<p>Default: 33751</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1682,8 +1322,8 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 </dl>
 </div>
-<div class="section" id="Pea arguments_repeat2">
-<h4>Pea arguments<a class="headerlink" href="#Pea arguments_repeat2" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Pea arguments_repeat1">
+<h4>Pea arguments<a class="headerlink" href="#Pea arguments_repeat1" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--daemon</kbd></dt>
 <dd><p>The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing</p>
@@ -1722,10 +1362,6 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 <dd><p>If set, starting a Pea/Pod does not block the thread/process. It then relies on <cite>wait_start_success</cite> at outer function for the postpone check.</p>
 <p>Default: False</p>
 </dd>
-<dt><kbd>--runs-in-docker</kbd></dt>
-<dd><p>Informs a Pea that runs in a container. Important to properly set networking information</p>
-<p>Default: False</p>
-</dd>
 </dl>
 </div>
 </div>
@@ -1761,8 +1397,8 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
               <span class="n">path</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat6">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat6" title="Permalink to this headline">¶</a></h6>
+<div class="section" id="Named Arguments_repeat5">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat5" title="Permalink to this headline">¶</a></h6>
 <dl class="option-list">
 <dt><kbd>--no-usage</kbd></dt>
 <dd><p>If set, Hub executor usage will not be printed.</p>
@@ -1809,8 +1445,8 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hub</span> <span class="n">pull</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">usage</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="n">uri</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat7">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat7" title="Permalink to this headline">¶</a></h6>
+<div class="section" id="Named Arguments_repeat6">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat6" title="Permalink to this headline">¶</a></h6>
 <dl class="option-list">
 <dt><kbd>--no-usage</kbd></dt>
 <dd><p>If set, Hub executor usage will not be printed.</p>
@@ -1862,18 +1498,353 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
          <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="ow">in</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">9</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="n">out</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">9</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">memory</span><span class="o">-</span><span class="n">hwm</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">on</span><span class="o">-</span><span class="n">error</span><span class="o">-</span><span class="n">strategy</span> <span class="p">{</span><span class="n">IGNORE</span><span class="p">,</span> <span class="n">SKIP_HANDLE</span><span class="p">,</span> <span class="n">THROW_EARLY</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">part</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="n">out</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">requests</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">docker</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">pull</span><span class="o">-</span><span class="n">latest</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">volumes</span> <span class="p">[</span><span class="n">DIR</span> <span class="p">[</span><span class="n">DIR</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">gpus</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">remote</span><span class="o">-</span><span class="n">logs</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">upload</span><span class="o">-</span><span class="n">files</span> <span class="p">[</span><span class="n">FILE</span> <span class="p">[</span><span class="n">FILE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">remote</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">daemon</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="n">backend</span> <span class="p">{</span><span class="n">THREAD</span><span class="p">,</span> <span class="n">PROCESS</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">public</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">pea</span><span class="o">-</span><span class="nb">id</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">on</span><span class="o">-</span><span class="n">error</span><span class="o">-</span><span class="n">strategy</span> <span class="p">{</span><span class="n">IGNORE</span><span class="p">,</span> <span class="n">SKIP_HANDLE</span><span class="p">,</span> <span class="n">THROW_EARLY</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">native</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">part</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="n">out</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">requests</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">runs</span><span class="o">-</span><span class="ow">in</span><span class="o">-</span><span class="n">docker</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">docker</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">pull</span><span class="o">-</span><span class="n">latest</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">volumes</span> <span class="p">[</span><span class="n">DIR</span> <span class="p">[</span><span class="n">DIR</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">gpus</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">remote</span><span class="o">-</span><span class="n">logs</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">upload</span><span class="o">-</span><span class="n">files</span> <span class="p">[</span><span class="n">FILE</span> <span class="p">[</span><span class="n">FILE</span> <span class="o">...</span><span class="p">]]]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">remote</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">daemon</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="n">backend</span> <span class="p">{</span><span class="n">THREAD</span><span class="p">,</span> <span class="n">PROCESS</span><span class="p">}]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">public</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">pea</span><span class="o">-</span><span class="nb">id</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">pea</span><span class="o">-</span><span class="n">role</span> <span class="p">{</span><span class="n">SINGLETON</span><span class="p">,</span> <span class="n">HEAD</span><span class="p">,</span> <span class="n">TAIL</span><span class="p">,</span> <span class="n">PARALLEL</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">noblock</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">start</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">runs</span><span class="o">-</span><span class="ow">in</span><span class="o">-</span><span class="n">docker</span><span class="p">]</span>
 </pre></div>
+</div>
+<div class="section" id="Essential arguments_repeat3">
+<h4>Essential arguments<a class="headerlink" href="#Essential arguments_repeat3" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>--name</kbd></dt>
+<dd><p>The name of this object.</p>
+<p>This will be used in the following places:
+- how you refer to this object in Python/YAML/CLI
+- visualization
+- log message header
+- …</p>
+<p>When not given, then the default naming strategy will apply.</p>
+</dd>
+<dt><kbd>--workspace</kbd></dt>
+<dd><p>The working directory for any IO operations in this object. If not set, then derive from its parent <cite>workspace</cite>.</p>
+</dd>
+<dt><kbd>--log-config</kbd></dt>
+<dd><p>The YAML config of the logger used in this object.</p>
+<p>Default: “/home/runner/work/jina/jina/jina/resources/logging.default.yml”</p>
+</dd>
+<dt><kbd>--quiet</kbd></dt>
+<dd><p>If set, then no log will be emitted from this object.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--quiet-error</kbd></dt>
+<dd><p>If set, then exception stack information will not be added to the log</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="ZMQRuntime arguments_repeat2">
+<h4>ZMQRuntime arguments<a class="headerlink" href="#ZMQRuntime arguments_repeat2" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>--zmq-identity</kbd></dt>
+<dd><p>The identity of a ZMQRuntime. It is used for unique socket identification towards other ZMQRuntimes.</p>
+</dd>
+<dt><kbd>--port-ctrl</kbd></dt>
+<dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
+<p>Default: 36487</p>
+</dd>
+<dt><kbd>--ctrl-with-ipc</kbd></dt>
+<dd><p>If set, use ipc protocol for control socket</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--timeout-ctrl</kbd></dt>
+<dd><p>The timeout in milliseconds of the control request, -1 for waiting forever</p>
+<p>Default: 5000</p>
+</dd>
+<dt><kbd>--ssh-server</kbd></dt>
+<dd><p>The SSH server through which the tunnel will be created, can actually be a fully specified <cite>user@server:port</cite> ssh url.</p>
+</dd>
+<dt><kbd>--ssh-keyfile</kbd></dt>
+<dd><p>This specifies a key to be used in ssh login, default None. regular default ssh keys will be used without specifying this argument.</p>
+</dd>
+<dt><kbd>--ssh-password</kbd></dt>
+<dd><p>The ssh password to the ssh server.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="ZEDRuntime arguments_repeat2">
+<h4>ZEDRuntime arguments<a class="headerlink" href="#ZEDRuntime arguments_repeat2" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>--uses</kbd></dt>
+<dd><blockquote>
+<div><p>The config of the executor, it could be one of the followings:
+* an Executor YAML file (.yml, .yaml, .jaml)
+* a Jina Hub Executor (must start with <cite>jinahub://</cite> or <cite>jinahub+docker://</cite>)
+* a docker image (must start with <cite>docker://</cite>)
+* the string literal of a YAML config (must start with <cite>!</cite> or <a href="#id1"><span class="problematic" id="id2">`</span></a>jtype: <a href="#id3"><span class="problematic" id="id4">`</span></a>)
+* the string literal of a JSON config</p>
+<p>When use it under Python, one can use the following values additionally:
+- a Python dict that represents the config
+- a text file stream has <cite>.read()</cite> interface</p>
+</div></blockquote>
+<p>Default: “BaseExecutor”</p>
+</dd>
+<dt><kbd>--uses-with</kbd></dt>
+<dd><blockquote>
+<div><p>Dictionary of keyword arguments that will override the <cite>with</cite> configuration in <cite>uses</cite></p>
+</div></blockquote>
+</dd>
+<dt><kbd>--uses-metas</kbd></dt>
+<dd><blockquote>
+<div><p>Dictionary of keyword arguments that will override the <cite>metas</cite> configuration in <cite>uses</cite></p>
+</div></blockquote>
+</dd>
+<dt><kbd>--uses-requests</kbd></dt>
+<dd><blockquote>
+<div><p>Dictionary of keyword arguments that will override the <cite>requests</cite> configuration in <cite>uses</cite></p>
+</div></blockquote>
+</dd>
+<dt><kbd>--py-modules</kbd></dt>
+<dd><p>The customized python modules need to be imported before loading the executor</p>
+<p>Note, when importing multiple files and there is a dependency between them, then one has to write the dependencies in
+reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>, which again depends on <cite>B.py</cite>, then you need to write:</p>
+<p>–py-modules __init__.py –py-modules B.py –py-modules A.py</p>
+</dd>
+<dt><kbd>--port-in</kbd></dt>
+<dd><p>The port for input data, default a random port between [49152, 65535]</p>
+<p>Default: 51835</p>
+</dd>
+<dt><kbd>--port-out</kbd></dt>
+<dd><p>The port for output data, default a random port between [49152, 65535]</p>
+<p>Default: 34981</p>
+</dd>
+<dt><kbd>--hosts-in-connect</kbd></dt>
+<dd><p>The host address for input, by default it is 0.0.0.0</p>
+</dd>
+<dt><kbd>--host-in</kbd></dt>
+<dd><p>The host address for input, by default it is 0.0.0.0</p>
+<p>Default: “0.0.0.0”</p>
+</dd>
+<dt><kbd>--host-out</kbd></dt>
+<dd><p>The host address for output, by default it is 0.0.0.0</p>
+<p>Default: “0.0.0.0”</p>
+</dd>
+<dt><kbd>--socket-in</kbd></dt>
+<dd><p>Possible choices: PULL_BIND, PULL_CONNECT, PUSH_BIND, PUSH_CONNECT, SUB_BIND, SUB_CONNECT, PUB_BIND, PUB_CONNECT, PAIR_BIND, PAIR_CONNECT, ROUTER_BIND, DEALER_CONNECT, ROUTER_CONNECT</p>
+<p>The socket type for input port</p>
+<p>Default: 0</p>
+</dd>
+<dt><kbd>--socket-out</kbd></dt>
+<dd><p>Possible choices: PULL_BIND, PULL_CONNECT, PUSH_BIND, PUSH_CONNECT, SUB_BIND, SUB_CONNECT, PUB_BIND, PUB_CONNECT, PAIR_BIND, PAIR_CONNECT, ROUTER_BIND, DEALER_CONNECT, ROUTER_CONNECT</p>
+<p>The socket type for output port</p>
+<p>Default: 2</p>
+</dd>
+<dt><kbd>--memory-hwm</kbd></dt>
+<dd><p>The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. -1 means no restriction</p>
+<p>Default: -1</p>
+</dd>
+<dt><kbd>--on-error-strategy</kbd></dt>
+<dd><p>Possible choices: IGNORE, SKIP_HANDLE, THROW_EARLY</p>
+<p>The skip strategy on exceptions.</p>
+<ul class="simple">
+<li><p>IGNORE: Ignore it, keep running all Executors in the sequel flow</p></li>
+<li><p>SKIP_HANDLE: Skip all Executors in the sequel, only <cite>pre_hook</cite> and <cite>post_hook</cite> are called</p></li>
+<li><p>THROW_EARLY: Immediately throw the exception, the sequel flow will not be running at all</p></li>
+</ul>
+<p>Note, <cite>IGNORE</cite>, <cite>SKIP_EXECUTOR</cite> and <cite>SKIP_HANDLE</cite> do not guarantee the success execution in the sequel flow. If something
+is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.</p>
+<p>Default: 0</p>
+</dd>
+<dt><kbd>--native</kbd></dt>
+<dd><p>If set, only native Executors is allowed, and the Executor is always run inside ZEDRuntime.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--num-part</kbd></dt>
+<dd><p>the number of messages expected from upstream, 0 and 1 means single part</p>
+<p>Default: 0</p>
+</dd>
+<dt><kbd>--dynamic-routing-out</kbd></dt>
+<dd><p>Tells if ZEDRuntime should respect routing graph for outgoing traffic.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--dynamic-routing-in</kbd></dt>
+<dd><p>Tells if ZEDRuntime should handle incoming traffic as dynamic routing.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--grpc-data-requests</kbd></dt>
+<dd><p>Tells if a Pea should use gRPC for data requests. Works only with dynamic routing out.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--runs-in-docker</kbd></dt>
+<dd><p>Informs a Pea that runs in a container. Important to properly set networking information</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="ContainerRuntime arguments_repeat1">
+<h4>ContainerRuntime arguments<a class="headerlink" href="#ContainerRuntime arguments_repeat1" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>--entrypoint</kbd></dt>
+<dd><p>The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.</p>
+</dd>
+<dt><kbd>--docker-kwargs</kbd></dt>
+<dd><p>Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker ‘
+container.</p>
+<p>More details can be found in the Docker SDK docs:  <a class="reference external" href="https://docker-py.readthedocs.io/en/stable/">https://docker-py.readthedocs.io/en/stable/</a></p>
+</dd>
+<dt><kbd>--pull-latest</kbd></dt>
+<dd><p>Pull the latest image before running</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--volumes</kbd></dt>
+<dd><p>The path on the host to be mounted inside the container.</p>
+<p>Note,
+- If separated by <cite>:</cite>, then the first part will be considered as the local host path and the second part is the path in the container system.
+- If no split provided, then the basename of that directory will be mounted into container’s root path, e.g. <cite>–volumes=”/user/test/my-workspace”</cite> will be mounted into <cite>/my-workspace</cite> inside the container.
+- All volumes are mounted with read-write mode.</p>
+</dd>
+<dt><kbd>--gpus</kbd></dt>
+<dd><blockquote>
+<div><p>This argument allows dockerized Jina executor discover local gpu devices.</p>
+<p>Note,
+- To access all gpus, use <cite>–gpus all</cite>.
+- To access multiple gpus, e.g. make use of 2 gpus, use <cite>–gpus 2</cite>.
+- To access specified gpus based on device id, use <cite>–gpus device=[YOUR-GPU-DEVICE-ID]</cite>
+- To access specified gpus based on multiple device id, use <cite>–gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]</cite>
+- To specify more parameters, use <a href="#id1"><span class="problematic" id="id2">`</span></a>–gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display</p>
+</div></blockquote>
+</dd>
+</dl>
+</div>
+<div class="section" id="Expose arguments_repeat2">
+<h4>Expose arguments<a class="headerlink" href="#Expose arguments_repeat2" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>--host</kbd></dt>
+<dd><p>The host address of the runtime, by default it is 0.0.0.0.</p>
+<p>Default: “0.0.0.0”</p>
+</dd>
+<dt><kbd>--port-expose</kbd></dt>
+<dd><p>The port of the host exposed to the public</p>
+<p>Default: 50207</p>
+</dd>
+<dt><kbd>--proxy</kbd></dt>
+<dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="Distributed arguments_repeat1">
+<h4>Distributed arguments<a class="headerlink" href="#Distributed arguments_repeat1" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>--quiet-remote-logs</kbd></dt>
+<dd><p>Do not display the streaming of remote logs on local console</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--upload-files</kbd></dt>
+<dd><p>The files on the host to be uploaded to the remote
+workspace. This can be useful when your Pod has more
+file dependencies beyond a single YAML file, e.g.
+Python files, data files.</p>
+<p>Note,
+- currently only flatten structure is supported, which means if you upload <cite>[./foo/a.py, ./foo/b.pp, ./bar/c.yml]</cite>, then they will be put under the _same_ workspace on the remote, losing all hierarchies.
+- by default, <cite>–uses</cite> YAML file is always uploaded.
+- uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use <cite>–workspace-id</cite> to specify the workspace.</p>
+</dd>
+<dt><kbd>--disable-remote</kbd></dt>
+<dd><p>If set, remote pea invocation is avoided. This is used by peas created by JinaD</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="Pea arguments_repeat2">
+<h4>Pea arguments<a class="headerlink" href="#Pea arguments_repeat2" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>--daemon</kbd></dt>
+<dd><p>The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--runtime-backend, --runtime</kbd></dt>
+<dd><p>Possible choices: THREAD, PROCESS</p>
+<p>The parallel backend of the runtime inside the Pea</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--runtime-cls</kbd></dt>
+<dd><p>The runtime class to run inside the Pea</p>
+<p>Default: “ZEDRuntime”</p>
+</dd>
+<dt><kbd>--timeout-ready</kbd></dt>
+<dd><p>The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever</p>
+<p>Default: 600000</p>
+</dd>
+<dt><kbd>--env</kbd></dt>
+<dd><p>The map of environment variables that are available inside runtime</p>
+</dd>
+<dt><kbd>--expose-public</kbd></dt>
+<dd><p>If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--pea-id</kbd></dt>
+<dd><p>defines the suffix for the workspace path of the pea`</p>
+<p>Default: 0</p>
+</dd>
+<dt><kbd>--pea-role</kbd></dt>
+<dd><p>Possible choices: SINGLETON, HEAD, TAIL, PARALLEL</p>
+<p>The role of this Pea in a Pod</p>
+<p>Default: 0</p>
+</dd>
+<dt><kbd>--noblock-on-start</kbd></dt>
+<dd><p>If set, starting a Pea/Pod does not block the thread/process. It then relies on <cite>wait_start_success</cite> at outer function for the postpone check.</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="pod">
+<h3>pod<a class="headerlink" href="#pod" title="Permalink to this headline">¶</a></h3>
+<p>Start a Pod. You should rarely use this directly unless you are doing low-level orchestration</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">pod</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span> <span class="n">NAME</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span> <span class="n">WORKSPACE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span> <span class="n">LOG_CONFIG</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">zmq</span><span class="o">-</span><span class="n">identity</span> <span class="n">ZMQ_IDENTITY</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">ctrl</span> <span class="n">PORT_CTRL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ctrl</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">ipc</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span> <span class="n">TIMEOUT_CTRL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">server</span> <span class="n">SSH_SERVER</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">keyfile</span> <span class="n">SSH_KEYFILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">password</span> <span class="n">SSH_PASSWORD</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">uses</span> <span class="n">USES</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="k">with</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">metas</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">requests</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="ow">in</span> <span class="n">PORT_IN</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">out</span> <span class="n">PORT_OUT</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">hosts</span><span class="o">-</span><span class="ow">in</span><span class="o">-</span><span class="n">connect</span> <span class="p">[</span><span class="n">HOSTS_IN_CONNECT</span> <span class="p">[</span><span class="n">HOSTS_IN_CONNECT</span> <span class="o">...</span><span class="p">]]]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="ow">in</span> <span class="n">HOST_IN</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="n">out</span> <span class="n">HOST_OUT</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="ow">in</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span><span class="n">PULL_CONNECT</span><span class="p">,</span><span class="n">PUSH_BIND</span><span class="p">,</span><span class="n">PUSH_CONNECT</span><span class="p">,</span><span class="n">SUB_BIND</span><span class="p">,</span><span class="n">SUB_CONNECT</span><span class="p">,</span><span class="n">PUB_BIND</span><span class="p">,</span><span class="n">PUB_CONNECT</span><span class="p">,</span><span class="n">PAIR_BIND</span><span class="p">,</span><span class="n">PAIR_CONNECT</span><span class="p">,</span><span class="n">ROUTER_BIND</span><span class="p">,</span><span class="n">DEALER_CONNECT</span><span class="p">,</span><span class="n">ROUTER_CONNECT</span><span class="p">}]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="n">out</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span><span class="n">PULL_CONNECT</span><span class="p">,</span><span class="n">PUSH_BIND</span><span class="p">,</span><span class="n">PUSH_CONNECT</span><span class="p">,</span><span class="n">SUB_BIND</span><span class="p">,</span><span class="n">SUB_CONNECT</span><span class="p">,</span><span class="n">PUB_BIND</span><span class="p">,</span><span class="n">PUB_CONNECT</span><span class="p">,</span><span class="n">PAIR_BIND</span><span class="p">,</span><span class="n">PAIR_CONNECT</span><span class="p">,</span><span class="n">ROUTER_BIND</span><span class="p">,</span><span class="n">DEALER_CONNECT</span><span class="p">,</span><span class="n">ROUTER_CONNECT</span><span class="p">}]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">memory</span><span class="o">-</span><span class="n">hwm</span> <span class="n">MEMORY_HWM</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">on</span><span class="o">-</span><span class="n">error</span><span class="o">-</span><span class="n">strategy</span> <span class="p">{</span><span class="n">IGNORE</span><span class="p">,</span><span class="n">SKIP_HANDLE</span><span class="p">,</span><span class="n">THROW_EARLY</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">native</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">part</span> <span class="n">NUM_PART</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="n">out</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">requests</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">runs</span><span class="o">-</span><span class="ow">in</span><span class="o">-</span><span class="n">docker</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span> <span class="n">ENTRYPOINT</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">docker</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">pull</span><span class="o">-</span><span class="n">latest</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">volumes</span> <span class="p">[</span><span class="n">DIR</span> <span class="p">[</span><span class="n">DIR</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">gpus</span> <span class="n">GPUS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span> <span class="n">HOST</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span> <span class="n">PORT_EXPOSE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">remote</span><span class="o">-</span><span class="n">logs</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">upload</span><span class="o">-</span><span class="n">files</span> <span class="p">[</span><span class="n">FILE</span> <span class="p">[</span><span class="n">FILE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">remote</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">daemon</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="n">backend</span> <span class="p">{</span><span class="n">THREAD</span><span class="p">,</span><span class="n">PROCESS</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span> <span class="n">RUNTIME_CLS</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span> <span class="n">TIMEOUT_READY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">public</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">pea</span><span class="o">-</span><span class="nb">id</span> <span class="n">PEA_ID</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">pea</span><span class="o">-</span><span class="n">role</span> <span class="p">{</span><span class="n">SINGLETON</span><span class="p">,</span><span class="n">HEAD</span><span class="p">,</span><span class="n">TAIL</span><span class="p">,</span><span class="n">PARALLEL</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">noblock</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">start</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span> <span class="n">USES_BEFORE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span> <span class="n">USES_AFTER</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">parallel</span> <span class="n">PARALLEL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span> <span class="n">REPLICAS</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">polling</span> <span class="p">{</span><span class="n">ANY</span><span class="p">,</span><span class="n">ALL</span><span class="p">,</span><span class="n">ALL_ASYNC</span><span class="p">}]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">scheduling</span> <span class="p">{</span><span class="n">LOAD_BALANCE</span><span class="p">,</span><span class="n">ROUND_ROBIN</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">external</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">peas</span><span class="o">-</span><span class="n">hosts</span> <span class="n">PEAS_HOSTS</span> <span class="p">[</span><span class="n">PEAS_HOSTS</span> <span class="o">...</span><span class="p">]]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">pod</span><span class="o">-</span><span class="n">role</span> <span class="p">{</span><span class="n">POD</span><span class="p">,</span><span class="n">JOIN</span><span class="p">,</span><span class="n">INSPECT</span><span class="p">,</span><span class="n">GATEWAY</span><span class="p">,</span><span class="n">INSPECT_AUX_PASS</span><span class="p">,</span><span class="n">JOIN_INSPECT</span><span class="p">}]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">connect</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">predecessor</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments_repeat7">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat7" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>--no-dynamic-routing</kbd></dt>
+<dd><p>The Pod will setup the socket types of the HeadPea and TailPea depending on this argument.</p>
+<p>Default: True</p>
+</dd>
+<dt><kbd>--connect-to-predecessor</kbd></dt>
+<dd><p>The head Pea of this Pod will connect to the TailPea of the predecessor Pod.</p>
+<p>Default: False</p>
+</dd>
+</dl>
 </div>
 <div class="section" id="Essential arguments_repeat4">
 <h4>Essential arguments<a class="headerlink" href="#Essential arguments_repeat4" title="Permalink to this headline">¶</a></h4>
@@ -1912,7 +1883,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 45551</p>
+<p>Default: 48239</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1973,11 +1944,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 52299</p>
+<p>Default: 42223</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 60879</p>
+<p>Default: 40407</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -2016,6 +1987,10 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.</p>
 <p>Default: 0</p>
 </dd>
+<dt><kbd>--native</kbd></dt>
+<dd><p>If set, only native Executors is allowed, and the Executor is always run inside ZEDRuntime.</p>
+<p>Default: False</p>
+</dd>
 <dt><kbd>--num-part</kbd></dt>
 <dd><p>the number of messages expected from upstream, 0 and 1 means single part</p>
 <p>Default: 0</p>
@@ -2030,6 +2005,10 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
 </dd>
 <dt><kbd>--grpc-data-requests</kbd></dt>
 <dd><p>Tells if a Pea should use gRPC for data requests. Works only with dynamic routing out.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--runs-in-docker</kbd></dt>
+<dd><p>Informs a Pea that runs in a container. Important to properly set networking information</p>
 <p>Default: False</p>
 </dd>
 </dl>
@@ -2078,7 +2057,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 58117</p>
+<p>Default: 57175</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -2149,9 +2128,51 @@ Python files, data files.</p>
 <dd><p>If set, starting a Pea/Pod does not block the thread/process. It then relies on <cite>wait_start_success</cite> at outer function for the postpone check.</p>
 <p>Default: False</p>
 </dd>
-<dt><kbd>--runs-in-docker</kbd></dt>
-<dd><p>Informs a Pea that runs in a container. Important to properly set networking information</p>
+</dl>
+</div>
+<div class="section" id="Pod arguments">
+<h4>Pod arguments<a class="headerlink" href="#Pod arguments" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>--uses-before</kbd></dt>
+<dd><p>The executor attached after the Peas described by –uses, typically before sending to all parallels, accepted type follows <cite>–uses</cite></p>
+</dd>
+<dt><kbd>--uses-after</kbd></dt>
+<dd><p>The executor attached after the Peas described by –uses, typically used for receiving from all parallels, accepted type follows <cite>–uses</cite></p>
+</dd>
+<dt><kbd>--parallel, --shards</kbd></dt>
+<dd><p>The number of parallel peas in the pod running at the same time, <cite>port_in</cite> and <cite>port_out</cite> will be set to random, and routers will be added automatically when necessary</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--replicas</kbd></dt>
+<dd><p>The number of replicas in the pod, <cite>port_in</cite> and <cite>port_out</cite> will be set to random, and routers will be added automatically when necessary</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--polling</kbd></dt>
+<dd><p>Possible choices: ANY, ALL, ALL_ASYNC</p>
+<p>The polling strategy of the Pod (when <cite>parallel&gt;1</cite>)
+- ANY: only one (whoever is idle) Pea polls the message
+- ALL: all Peas poll the message (like a broadcast)</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--scheduling</kbd></dt>
+<dd><p>Possible choices: LOAD_BALANCE, ROUND_ROBIN</p>
+<p>The strategy of scheduling workload among Peas</p>
+<p>Default: 0</p>
+</dd>
+<dt><kbd>--external</kbd></dt>
+<dd><p>The Pod will be considered an external Pod that has been started independently from the Flow.This Pod will not be context managed by the Flow.</p>
 <p>Default: False</p>
+</dd>
+<dt><kbd>--peas-hosts</kbd></dt>
+<dd><dl class="simple">
+<dt>The hosts of the peas when parallel greater than 1.</dt><dd><p>Peas will be evenly distributed among the hosts. By default,
+peas are running on host provided by the argument <code class="docutils literal notranslate"><span class="pre">host</span></code></p>
+</dd>
+</dl>
+</dd>
+<dt><kbd>--pod-role</kbd></dt>
+<dd><p>Possible choices: POD, JOIN, INSPECT, GATEWAY, INSPECT_AUX_PASS, JOIN_INSPECT</p>
+<p>The role of this pod in the flow</p>
 </dd>
 </dl>
 </div>
@@ -2186,7 +2207,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 57853</p>
+<p>Default: 47067</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -2303,7 +2324,7 @@ Python files, data files.</p>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#executor (zed_runtime)">executor (zed_runtime)</a><ul>
+<li><a class="reference internal" href="#executor">executor</a><ul>
 <li><a class="reference internal" href="#Essential arguments">Essential arguments</a></li>
 <li><a class="reference internal" href="#ZMQRuntime arguments">ZMQRuntime arguments</a></li>
 <li><a class="reference internal" href="#ZEDRuntime arguments">ZEDRuntime arguments</a></li>
@@ -2313,38 +2334,26 @@ Python files, data files.</p>
 <li><a class="reference internal" href="#Pea arguments">Pea arguments</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#pod">pod</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat3">Named Arguments</a></li>
-<li><a class="reference internal" href="#Essential arguments_repeat1">Essential arguments</a></li>
-<li><a class="reference internal" href="#ZMQRuntime arguments_repeat1">ZMQRuntime arguments</a></li>
-<li><a class="reference internal" href="#ZEDRuntime arguments_repeat1">ZEDRuntime arguments</a></li>
-<li><a class="reference internal" href="#ContainerRuntime arguments_repeat1">ContainerRuntime arguments</a></li>
-<li><a class="reference internal" href="#Expose arguments_repeat1">Expose arguments</a></li>
-<li><a class="reference internal" href="#Distributed arguments_repeat1">Distributed arguments</a></li>
-<li><a class="reference internal" href="#Pea arguments_repeat1">Pea arguments</a></li>
-<li><a class="reference internal" href="#Pod arguments">Pod arguments</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#flow">flow</a><ul>
-<li><a class="reference internal" href="#Essential arguments_repeat2">Essential arguments</a></li>
+<li><a class="reference internal" href="#Essential arguments_repeat1">Essential arguments</a></li>
 <li><a class="reference internal" href="#Flow Feature arguments">Flow Feature arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#ping">ping</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat1">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat4">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat3">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#gateway">gateway</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat5">Named Arguments</a></li>
-<li><a class="reference internal" href="#Essential arguments_repeat3">Essential arguments</a></li>
-<li><a class="reference internal" href="#ZMQRuntime arguments_repeat2">ZMQRuntime arguments</a></li>
-<li><a class="reference internal" href="#ZEDRuntime arguments_repeat2">ZEDRuntime arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat4">Named Arguments</a></li>
+<li><a class="reference internal" href="#Essential arguments_repeat2">Essential arguments</a></li>
+<li><a class="reference internal" href="#ZMQRuntime arguments_repeat1">ZMQRuntime arguments</a></li>
+<li><a class="reference internal" href="#ZEDRuntime arguments_repeat1">ZEDRuntime arguments</a></li>
 <li><a class="reference internal" href="#Prefetch arguments">Prefetch arguments</a></li>
 <li><a class="reference internal" href="#HTTP Gateway arguments">HTTP Gateway arguments</a></li>
 <li><a class="reference internal" href="#Compression arguments">Compression arguments</a></li>
-<li><a class="reference internal" href="#Expose arguments_repeat2">Expose arguments</a></li>
-<li><a class="reference internal" href="#Pea arguments_repeat2">Pea arguments</a></li>
+<li><a class="reference internal" href="#Expose arguments_repeat1">Expose arguments</a></li>
+<li><a class="reference internal" href="#Pea arguments_repeat1">Pea arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#hub">hub</a><ul>
@@ -2352,13 +2361,13 @@ Python files, data files.</p>
 <li><a class="reference internal" href="#Sub-commands:_repeat2">Sub-commands:</a><ul>
 <li><a class="reference internal" href="#new">new</a></li>
 <li><a class="reference internal" href="#push">push</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat6">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat5">Named Arguments</a></li>
 <li><a class="reference internal" href="#Push arguments">Push arguments</a></li>
 <li><a class="reference internal" href="#Visibility arguments">Visibility arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#pull">pull</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat7">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat6">Named Arguments</a></li>
 <li><a class="reference internal" href="#Pull arguments">Pull arguments</a></li>
 </ul>
 </li>
@@ -2371,6 +2380,17 @@ Python files, data files.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#pea">pea</a><ul>
+<li><a class="reference internal" href="#Essential arguments_repeat3">Essential arguments</a></li>
+<li><a class="reference internal" href="#ZMQRuntime arguments_repeat2">ZMQRuntime arguments</a></li>
+<li><a class="reference internal" href="#ZEDRuntime arguments_repeat2">ZEDRuntime arguments</a></li>
+<li><a class="reference internal" href="#ContainerRuntime arguments_repeat1">ContainerRuntime arguments</a></li>
+<li><a class="reference internal" href="#Expose arguments_repeat2">Expose arguments</a></li>
+<li><a class="reference internal" href="#Distributed arguments_repeat1">Distributed arguments</a></li>
+<li><a class="reference internal" href="#Pea arguments_repeat2">Pea arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#pod">pod</a><ul>
+<li><a class="reference internal" href="#Named Arguments_repeat7">Named Arguments</a></li>
 <li><a class="reference internal" href="#Essential arguments_repeat4">Essential arguments</a></li>
 <li><a class="reference internal" href="#ZMQRuntime arguments_repeat3">ZMQRuntime arguments</a></li>
 <li><a class="reference internal" href="#ZEDRuntime arguments_repeat3">ZEDRuntime arguments</a></li>
@@ -2378,6 +2398,7 @@ Python files, data files.</p>
 <li><a class="reference internal" href="#Expose arguments_repeat3">Expose arguments</a></li>
 <li><a class="reference internal" href="#Distributed arguments_repeat2">Distributed arguments</a></li>
 <li><a class="reference internal" href="#Pea arguments_repeat3">Pea arguments</a></li>
+<li><a class="reference internal" href="#Pod arguments">Pod arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#client">client</a><ul>
