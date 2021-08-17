@@ -71,7 +71,7 @@ def test_container_runtime_good_entrypoint(runtime):
             '--uses',
             'docker://jinaai/jina:test-pip',
             '--entrypoint',
-            'jina pod',
+            'jina executor',
             '--runtime-backend',
             runtime,
         ]
@@ -99,7 +99,12 @@ def test_address_in_use(runtime):
     [
         (
             set_pea_parser,
-            ['--uses', 'docker://jinaai/jina:test-pip', '--entrypoint', 'jina pod'],
+            [
+                '--uses',
+                'docker://jinaai/jina:test-pip',
+                '--entrypoint',
+                'jina executor',
+            ],
         ),
         (set_gateway_parser, ['--protocol', 'websocket']),
         (set_gateway_parser, ['--protocol', 'http']),

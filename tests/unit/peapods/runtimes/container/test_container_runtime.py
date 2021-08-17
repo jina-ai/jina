@@ -73,7 +73,7 @@ def test_flow_with_replica_container_ext_yaml(docker_image_built):
         name='dummyEncoder3',
         uses=f'docker://{img_name}',
         parallel=3,
-        entrypoint='jina pea',
+        entrypoint='jina executor',
     )
 
     with f:

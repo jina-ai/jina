@@ -6,7 +6,7 @@ import signal
 from jina.parsers import set_gateway_parser, set_pea_parser
 from jina import Executor
 
-from cli.api import gateway, zed_runtime
+from cli.api import gateway, runtime
 
 
 class DummyExecutor(Executor):
@@ -33,7 +33,7 @@ def test_zed_runtime(signal, graceful, tmpdir):
             'with': {'dir': str(tmpdir)},
             'metas': {'workspace': str(tmpdir)},
         }
-        zed_runtime(args)
+        runtime(args)
 
     process = multiprocessing.Process(target=run)
     process.start()

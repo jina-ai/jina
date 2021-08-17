@@ -2,7 +2,7 @@ if False:
     from argparse import Namespace
 
 
-def pod(args: 'Namespace'):
+def executor(args: 'Namespace'):
     """
     Start a Pod
 
@@ -17,22 +17,7 @@ def pod(args: 'Namespace'):
         pass
 
 
-def pea(args: 'Namespace'):
-    """
-    Start a Pea
-
-    :param args: arguments coming from the CLI.
-    """
-    from jina.peapods import Pea
-
-    try:
-        with Pea(args) as p:
-            p.join()
-    except KeyboardInterrupt:
-        pass
-
-
-def zed_runtime(args: 'Namespace'):
+def runtime(args: 'Namespace'):
     """
     Starts a ZEDRuntime
 
@@ -45,25 +30,6 @@ def zed_runtime(args: 'Namespace'):
             f' Executor {runtime._data_request_handler._executor.metas.name} started'
         )
         runtime.run_forever()
-
-
-def executor(args: 'Namespace'):
-    """
-    Starts a ZEDRuntime
-
-    :param args: arguments coming from the CLI.
-
-    :returns: return the same as `pea` or `zed_runtime`
-    """
-    uses = args.uses
-    if (
-        uses.startswith('jinahub+docker://')
-        or uses.startswith('docker://')
-        or uses.startswith('jinahub://')
-    ):
-        return pea(args)
-    else:
-        return zed_runtime(args)
 
 
 def grpc_data_runtime(args: 'Namespace'):
