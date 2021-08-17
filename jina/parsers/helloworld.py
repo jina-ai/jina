@@ -61,7 +61,7 @@ Remarks:
 
 - Pytorch, transformers & FastAPI are required to run this demo. To install all dependencies, use
 
-    pip install "jina[chatbot]"
+    pip install "jina[demo]"
 
 - The indexing could take 1~2 minute on a CPU machine.
 ''',
@@ -80,7 +80,7 @@ Remarks:
 
 - Pytorch, torchvision, transformers & FastAPI are required to run this demo. To install all dependencies, use
 
-    pip install "jina[multimodal]"
+    pip install "jina[demo]"
 
 - The indexing could take 2~3 minute on a CPU machine.
 - Downloading the dataset could take ~1 minute depending on your network.
