@@ -18,6 +18,8 @@ from typing import (
     Sequence,
 )
 
+import numpy as np
+
 from .abstract import AbstractDocumentArray
 from .neural_ops import DocumentArrayNeuralOpsMixin
 from .search_ops import DocumentArraySearchOpsMixin
@@ -91,6 +93,20 @@ class DocumentArrayGetAttrMixin:
             contents = list(map(list, zip(*contents)))
 
         return contents, DocumentArray(docs_pts)
+
+    @property
+    @abstractmethod
+    def embeddings(self) -> np.ndarray:
+        """Return a `np.ndarray` stacking all the `embedding` attributes as rows."""
+        ...
+
+    @embeddings.setter
+    @abstractmethod
+    def embeddings(self, emb: np.ndarray):
+        """Set the embeddings of the Documents
+        :param emb: the embeddings to set
+        """
+        ...
 
 
 class DocumentArray(
@@ -229,6 +245,39 @@ class DocumentArray(
         for doc in other:
             self.append(doc)
         return self
+
+    @property
+    def embeddings(self) -> np.ndarray:
+        """Return a `np.ndarray` stacking all the `embedding` attributes as rows.
+
+        .. warning:: This operation assumes all embeddings have the same shape and dtype.
+                 All dtype and shape values are assumed to be equal to the values of the
+                 first element in the DocumentArray / DocumentArrayMemmap
+
+        .. warning:: This operation currently does not support sparse arrays.
+
+        :return: embeddings stacked per row as `np.ndarray`.
+        """
+        x_mat = b''.join(d.proto.embedding.dense.buffer for d in self)
+
+        return np.frombuffer(x_mat, dtype=self[0].proto.embedding.dense.dtype).reshape(
+            (len(self), self[0].proto.embedding.dense.shape[0])
+        )
+
+    @embeddings.setter
+    def embeddings(self, emb: np.ndarray):
+        """Set the embeddings of the Documents
+
+        :param emb: The embedding matrix to set
+        """
+
+        assert len(emb) == len(self), (
+            'the number of rows in the input ({len(emb)}),'
+            'should match the number of Documents ({len(self)})'
+        )
+
+        for d, x in zip(self, emb):
+            d.embedding = x
 
     def append(self, doc: 'Document'):
         """
