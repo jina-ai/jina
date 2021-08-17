@@ -16,11 +16,9 @@ def executor(args: 'Namespace'):
     ):
         from jina.peapods.pods.factory import PodFactory
 
-        try:
-            with PodFactory.build_pod(args) as p:
-                p.join()
-        except KeyboardInterrupt:
-            pass
+        with PodFactory.build_pod(args) as p:
+            p.join()
+
     else:
         runtime(args)
 
