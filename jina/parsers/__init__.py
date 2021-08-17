@@ -122,29 +122,6 @@ def set_gateway_parser(parser=None):
     return parser
 
 
-def set_zed_runtime_parser(parser=None):
-    """Set the parser for the ZEDRuntime
-    :param parser: an optional existing parser to build upon
-    :return: the parser
-    """
-    if not parser:
-        from .base import set_base_parser
-
-        parser = set_base_parser()
-
-    from .peapods.base import mixin_base_ppr_parser
-    from .peapods.runtimes.zmq import mixin_zmq_runtime_parser
-    from .peapods.runtimes.zed import mixin_zed_runtime_parser
-    from .peapods.runtimes.remote import mixin_remote_parser
-
-    mixin_base_ppr_parser(parser)
-    mixin_zmq_runtime_parser(parser)
-    mixin_zed_runtime_parser(parser)
-    mixin_remote_parser(parser)
-
-    return parser
-
-
 def set_client_cli_parser(parser=None):
     """Set the parser for the cli client
 
