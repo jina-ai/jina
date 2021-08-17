@@ -518,6 +518,30 @@ class DocumentArrayMemmap(
             fp.flush()
             del fp
 
+    @property
+    def embeddings(self) -> np.ndarray:
+        """Return a `np.ndarray` stacking all the `embedding` attributes as rows.
+
+        Warning: This operation assumes all embeddings have the same shape and dtype.
+                 All dtype and shape values are assumed to be equal to the values of the
+                 first element in the DocumentArray / DocumentArrayMemmap
+
+        Warning: This operation currently does not support sparse arrays.
+
+        :return: embeddings stacked per row as `np.ndarray`.
+        """
+        if self._embeddings_memmap is not None:
+            return self._embeddings_memmap
+
+        x_mat = b''.join(d.proto.embedding.dense.buffer for d in self)
+        embeds = np.frombuffer(
+            x_mat, dtype=self[0].proto.embedding.dense.dtype
+        ).reshape((len(self), self[0].proto.embedding.dense.shape[0]))
+
+        self._embeddings_memmap = embeds
+
+        return embeds
+
     def _invalidate_embeddings_memmap(self):
         self._embeddings_memmap = None
         self._embeddings_shape = None
