@@ -323,6 +323,16 @@ class Zmqlet:
                 out_socket = self.out_sockets.get(pod_address, None)
                 if out_socket is None:
                     out_socket = self._get_dynamic_out_socket(target.active_target_pod)
+                elif self.args.always_reconnect:
+                    address = f'tcp://{get_connect_host(target.active_target_pod.host, False, self.args)}:{target.active_target_pod.port}'
+                    self.logger.debug(f'disconnect from {address}')
+                    if isinstance(out_socket, ZMQStream):
+                        out_socket.socket.disconnect(address)
+                    else:
+                        out_socket.disconnect(address)
+                    self.logger.debug(f'reconnect to {address}')
+                    out_socket.connect(address)
+                    self.logger.debug('done')
 
             next_routes.append((target, out_socket))
         return next_routes

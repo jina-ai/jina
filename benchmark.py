@@ -14,7 +14,9 @@ FLOW_LENGTH = 25
 
 def long_flow(mode, always_reconnect):
     flow = Flow(
-        port_expose=PORT_EXPOSE, grpc_data_requests=True if mode == 'grpc' else False
+        port_expose=PORT_EXPOSE,
+        grpc_data_requests=True if mode == 'grpc' else False,
+        always_reconnect=always_reconnect,
     )
     for i in range(FLOW_LENGTH):
         flow = flow.add(name=f'exec_{i}', uses='dummy_exec.yml')
@@ -23,13 +25,17 @@ def long_flow(mode, always_reconnect):
 
 def sharded_flow(mode, always_reconnect):
     return Flow(
-        port_expose=PORT_EXPOSE, grpc_data_requests=True if mode == 'grpc' else False
+        port_expose=PORT_EXPOSE,
+        grpc_data_requests=True if mode == 'grpc' else False,
+        always_reconnect=always_reconnect,
     ).add(name=f'exec', uses='dummy_exec.yml', shards=SHARD_COUNT, polling='ALL')
 
 
 def needs_flow(mode, always_reconnect):
     flow = Flow(
-        port_expose=PORT_EXPOSE, grpc_data_requests=True if mode == 'grpc' else False
+        port_expose=PORT_EXPOSE,
+        grpc_data_requests=True if mode == 'grpc' else False,
+        always_reconnect=always_reconnect,
     )
     for i in range(SHARD_COUNT):
         flow = flow.add(name=f'exec_{i}', uses='dummy_exec.yml', needs='gateway')
@@ -60,12 +66,18 @@ def run_benchmark(mode, flow_type, request_count, always_reconnect=False):
 
 
 def run_benchmarks(request_count):
-    # print('run zmq benchmark long - reconnect')
-    # #zmq_benchmark_time_long_reconnect = run_benchmark('zmq', long_flow, request_count, always_reconnect=True)
-    # print('run zmq benchmark wide/needs - reconnect')
-    # #zmq_benchmark_time_needs_reconnect = run_benchmark('zmq', needs_flow, request_count, always_reconnect=True)
-    # print('run zmq benchmark wide/shards - reconnect')
-    # zmq_benchmark_time_shards_reconnect = run_benchmark('zmq', sharded_flow, request_count, always_reconnect=True)
+    print('run zmq benchmark long - reconnect')
+    zmq_benchmark_time_long_reconnect = run_benchmark(
+        'zmq', long_flow, request_count, always_reconnect=True
+    )
+    print('run zmq benchmark wide/needs - reconnect')
+    zmq_benchmark_time_needs_reconnect = run_benchmark(
+        'zmq', needs_flow, request_count, always_reconnect=True
+    )
+    print('run zmq benchmark wide/shards - reconnect')
+    zmq_benchmark_time_shards_reconnect = run_benchmark(
+        'zmq', sharded_flow, request_count, always_reconnect=True
+    )
 
     print('run zmq benchmark long')
     zmq_benchmark_time_long = run_benchmark('zmq', long_flow, request_count)
@@ -74,9 +86,9 @@ def run_benchmarks(request_count):
     print('run zmq benchmark wide/shards')
     zmq_benchmark_time_shards = run_benchmark('zmq', sharded_flow, request_count)
 
-    print('run grpc benchmark long')
+    print('run gcp benchmark long')
     grpc_benchmark_time_long = run_benchmark('grpc', long_flow, request_count)
-    print('run grpc benchmark wide')
+    print('run gcp benchmark wide')
     grpc_benchmark_time_wide = run_benchmark('grpc', needs_flow, request_count)
 
     print(f'requests {request_count}')
@@ -92,11 +104,16 @@ def run_benchmarks(request_count):
     print(f'wide (needs): {zmq_benchmark_time_needs}')
     print(f'wide (shards): {zmq_benchmark_time_shards}')
 
+    print('zmq - reconnect')
+    print(f'long: {zmq_benchmark_time_long_reconnect}')
+    print(f'wide (needs): {zmq_benchmark_time_needs_reconnect}')
+    print(f'wide (shards): {zmq_benchmark_time_shards_reconnect}')
+
 
 # default=['grpc', 'zmq', 'zmq_reconnect'],
 @click.command()
 @click.option(
-    '--requests', default=100, help='Number of search requests to use for benchmarking'
+    '--requests', default=1, help='Number of search requests to use for benchmarking'
 )
 def start(requests):
     run_benchmarks(request_count=requests)
