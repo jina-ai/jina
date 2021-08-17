@@ -841,11 +841,7 @@
         <span class="n">index</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
         <span class="k">if</span> <span class="s1">'embedding'</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_memmap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">embeddings</span> <span class="o">=</span> <span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_memmap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">embeddings</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">embeddings</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_memmap</span><span class="p">)</span>
+            <span class="n">embeddings</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embeddings</span><span class="p">)</span>  <span class="c1"># type: List[np.ndarray]</span>
             <span class="n">index</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">)</span>
             <span class="n">fields</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">fields</span><span class="p">:</span>
@@ -916,6 +912,30 @@
             <span class="n">fp</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">other_embeddings</span><span class="p">[:]</span>
             <span class="n">fp</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
             <span class="k">del</span> <span class="n">fp</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">"""Return a `np.ndarray` stacking all the `embedding` attributes as rows.</span>
+
+<span class="sd">        :return: embeddings stacked per row as `np.ndarray`.</span>
+
+<span class="sd">        .. warning:: This operation assumes all embeddings have the same shape and dtype.</span>
+<span class="sd">            All dtype and shape values are assumed to be equal to the values of the</span>
+<span class="sd">            first element in the DocumentArray / DocumentArrayMemmap.</span>
+
+<span class="sd">        .. warning:: This operation currently does not support sparse arrays.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_memmap</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_memmap</span>
+
+        <span class="n">x_mat</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">dense</span><span class="o">.</span><span class="n">buffer</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">embeds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span>
+            <span class="n">x_mat</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">dense</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">dense</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_memmap</span> <span class="o">=</span> <span class="n">embeds</span>
+
+        <span class="k">return</span> <span class="n">embeds</span>
 
     <span class="k">def</span> <span class="nf">_invalidate_embeddings_memmap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_memmap</span> <span class="o">=</span> <span class="kc">None</span>

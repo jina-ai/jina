@@ -654,11 +654,11 @@
     <span class="k">def</span> <span class="nf">embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Return a `np.ndarray` stacking all the `embedding` attributes as rows.</span>
 
-<span class="sd">        Warning: This operation assumes all embeddings have the same shape and dtype.</span>
+<span class="sd">        .. warning:: This operation assumes all embeddings have the same shape and dtype.</span>
 <span class="sd">                 All dtype and shape values are assumed to be equal to the values of the</span>
 <span class="sd">                 first element in the DocumentArray / DocumentArrayMemmap</span>
 
-<span class="sd">        Warning: This operation currently does not support sparse arrays.</span>
+<span class="sd">        .. warning:: This operation currently does not support sparse arrays.</span>
 
 <span class="sd">        :return: embeddings stacked per row as `np.ndarray`.</span>
 <span class="sd">        """</span>
@@ -677,11 +677,11 @@
 <span class="sd">        Example: `self._get_embeddings(10:20)` will return 10 embeddings from positions 10 to 20</span>
 <span class="sd">                  in the `DocumentArray` or `DocumentArrayMemmap`</span>
 
-<span class="sd">        Warning: This operation assumes all embeddings have the same shape and dtype.</span>
+<span class="sd">        .. warning:: This operation assumes all embeddings have the same shape and dtype.</span>
 <span class="sd">                 All dtype and shape values are assumed to be equal to the values of the</span>
 <span class="sd">                 first element in the DocumentArray / DocumentArrayMemmap</span>
 
-<span class="sd">        Warning: This operation currently does not support sparse arrays.</span>
+<span class="sd">        .. warning:: This operation currently does not support sparse arrays.</span>
 
 <span class="sd">        :param indices: slice of data from where to retrieve embeddings.</span>
 <span class="sd">        :return: embeddings stacked per row as `np.ndarray`.</span>
