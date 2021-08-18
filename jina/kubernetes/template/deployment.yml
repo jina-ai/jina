@@ -16,7 +16,7 @@ spec:
       containers:
       - name: executor
         image: {image}
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         command: {command}
         args: {args}
         ports:

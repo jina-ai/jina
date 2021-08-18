@@ -2,6 +2,7 @@
 import os
 import pytest
 import docker
+from pytest_kind import KindCluster
 
 from jina.logging.logger import JinaLogger
 
@@ -17,14 +18,17 @@ def logger():
 
 @pytest.fixture()
 def executor_image(logger: JinaLogger):
-    image, build_logs = client.images.build(path=os.path.join(cur_dir, 'test-executor'), tag='test-executor:v.0.1', rm=True)
+    image, build_logs = client.images.build(path=os.path.join(cur_dir, 'test-executor'), tag='test-executor:0.4.0')
     for chunk in build_logs:
         if 'stream' in chunk:
             for line in chunk['stream'].splitlines():
                 logger.debug(line)
-    return image
+    return image.tags[-1]
 
 
 @pytest.fixture()
-def kind_cluster_with_moved_config(kind_cluster):
-    os.rename(os.path.join(cur_dir, '..', ))
+def k8s_cluster(kind_cluster) -> KindCluster:
+    # TODO: Make more robust
+    kind_cluster.kubectl_path = '/usr/local/bin/kubectl'
+    os.environ['KUBECONFIG'] = os.path.join(os.getcwd(), '.pytest-kind/pytest-kind/kubeconfig')
+    return kind_cluster

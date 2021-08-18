@@ -1,86 +1,130 @@
 import threading
 
 import pathlib
+from typing import Union
+
 from bcolors import UNDERLINE, ENDC, BOLD, PASS
 import time
 
+# from kubernetes import utils
 
-from kubernetes import client, config, utils
 import os
 import tempfile
 
-from kubernetes.utils import FailToCreateError
-from kubernetes.watch import Watch
+# from kubernetes.utils import FailToCreateError
+# from kubernetes.watch import Watch
 
 cur_dir = os.path.dirname(__file__)
 
 
-config.load_kube_config()
-k8s_client = client.ApiClient()
-v1 = client.CoreV1Api()
-beta = client.ExtensionsV1beta1Api()
-networking_v1_beta1_api = client.NetworkingV1beta1Api()
+class ClientsSingelton:
+
+    def __init__(self):
+        self.__k8s_client = None
+        self.__v1 = None
+        self.__beta = None
+        self.__networking_v1_beta1_api = None
+
+    def __instantiate(self):
+        # this import reads the `KUBECONFIG` env var. Lazy load to postpone the reading
+        from kubernetes import config, client
+
+        config.load_kube_config()
+        self.__k8s_client = client.ApiClient()
+        self.__v1 = client.CoreV1Api(api_client=self.__k8s_client)
+        self.__beta = client.ExtensionsV1beta1Api(api_client=self.__k8s_client)
+        self.__networking_v1_beta1_api = client.NetworkingV1beta1Api(api_client=self.__k8s_client)
+
+    @property
+    def k8s_client(self):
+        if self.__k8s_client is None:
+            self.__instantiate()
+        return self.__k8s_client
+
+    @property
+    def v1(self):
+        if self.__v1 is None:
+            self.__instantiate()
+        return self.__v1
+
+    @property
+    def beta(self):
+        if self.__beta is None:
+            self.__instantiate()
+        return self.__beta
+
+    @property
+    def networking_v1_beta1_api(self):
+        if self.__networking_v1_beta1_api is None:
+            self.__instantiate()
+        return self.__networking_v1_beta1_api
 
 
-def create_gateway_ingress(namespace: str):
-    # create ingress class
-    # body = client.V1beta1IngressClass(
-    #     api_version="networking.k8s.io/v1",
-    #     kind="IngressClass",
-    #     metadata=client.V1ObjectMeta(
-    #         name=f'{namespace}-lb',
-    #         annotations= {
-    #             "linkerd.io/inject": "enabled"
-    #         }
-    #     ),
-    #     spec=client.V1beta1IngressClassSpec(
-    #         controller="example.com/ingress-controller",
-    #         parameters={
-    #             "apiGroup": "k8s.example.com",
-    #             "kind": "IngressParameters",
-    #             "name": "external-lb",
-    #         }
-    #     )
-    # )
-    # networking_v1_beta1_api.create_ingress_class(
-    #     body=body
-    # )
+__clients_singelton = ClientsSingelton()
 
-    # create ingress
-    body = client.NetworkingV1beta1Ingress(
-        api_version="networking.k8s.io/v1beta1",
-        kind="Ingress",
-        metadata=client.V1ObjectMeta(
-            name=f'{namespace}-ingress',
-            annotations={
-                "nginx.ingress.kubernetes.io/rewrite-target": "/",
-                # "linkerd.io/inject": "enabled",
-            },
-        ),
-        spec=client.NetworkingV1beta1IngressSpec(
-            rules=[
-                client.NetworkingV1beta1IngressRule(
-                    host="",
-                    http=client.NetworkingV1beta1HTTPIngressRuleValue(
-                        paths=[
-                            client.NetworkingV1beta1HTTPIngressPath(
-                                path="/",
-                                backend=client.NetworkingV1beta1IngressBackend(
-                                    service_port=8080, service_name="gateway-exposed"
-                                ),
-                            )
-                        ]
-                    ),
-                )
-            ]
-        ),
-    )
-    # Creation of the Deployment in specified namespace
-    # (Can replace "default" with a namespace you may have created)
-    networking_v1_beta1_api.create_namespaced_ingress(namespace=namespace, body=body)
+#
+# def create_gateway_ingress(namespace: str):
+#     # create ingress class
+#     # body = client.V1beta1IngressClass(
+#     #     api_version="networking.k8s.io/v1",
+#     #     kind="IngressClass",
+#     #     metadata=client.V1ObjectMeta(
+#     #         name=f'{namespace}-lb',
+#     #         annotations= {
+#     #             "linkerd.io/inject": "enabled"
+#     #         }
+#     #     ),
+#     #     spec=client.V1beta1IngressClassSpec(
+#     #         controller="example.com/ingress-controller",
+#     #         parameters={
+#     #             "apiGroup": "k8s.example.com",
+#     #             "kind": "IngressParameters",
+#     #             "name": "external-lb",
+#     #         }
+#     #     )
+#     # )
+#     # networking_v1_beta1_api.create_ingress_class(
+#     #     body=body
+#     # )
+#
+#     # create ingress
+#     body = client.NetworkingV1beta1Ingress(
+#         api_version="networking.k8s.io/v1beta1",
+#         kind="Ingress",
+#         metadata=client.V1ObjectMeta(
+#             name=f'{namespace}-ingress',
+#             annotations={
+#                 "nginx.ingress.kubernetes.io/rewrite-target": "/",
+#                 # "linkerd.io/inject": "enabled",
+#             },
+#         ),
+#         spec=client.NetworkingV1beta1IngressSpec(
+#             rules=[
+#                 client.NetworkingV1beta1IngressRule(
+#                     host="",
+#                     http=client.NetworkingV1beta1HTTPIngressRuleValue(
+#                         paths=[
+#                             client.NetworkingV1beta1HTTPIngressPath(
+#                                 path="/",
+#                                 backend=client.NetworkingV1beta1IngressBackend(
+#                                     service_port=8080, service_name="gateway-exposed"
+#                                 ),
+#                             )
+#                         ]
+#                     ),
+#                 )
+#             ]
+#         ),
+#     )
+#     # Creation of the Deployment in specified namespace
+#     # (Can replace "default" with a namespace you may have created)
+#     __clients_singelton.networking_v1_beta1_api.create_namespaced_ingress(namespace=namespace, body=body)
+#
 
 
 def create(template, params):
+    from kubernetes.utils import FailToCreateError
+    from kubernetes import utils
     yaml = get_yaml(template, params)
     fd, path = tempfile.mkstemp()
     try:
@@ -98,7 +142,7 @@ def create(template, params):
         #     pass
 
         try:
-            utils.create_from_yaml(k8s_client, path)
+            utils.create_from_yaml(__clients_singelton.k8s_client, path)
         except FailToCreateError as e:
             if e.api_exceptions[0].status == 409:
                 print('exists already')
@@ -120,18 +164,19 @@ def get_yaml(template, params):
 
 
 def get_service_cluster_ip(service_name, namespace):
-    resp = v1.read_namespaced_service(service_name, namespace)
+    resp = __clients_singelton.v1.read_namespaced_service(service_name, namespace)
     return resp.spec.cluster_ip
 
 
 def log_in_thread(pod_name, namespace, container):
-    pod = v1.read_namespaced_pod(pod_name, namespace)
+    from kubernetes.watch import Watch
+    pod = __clients_singelton.v1.read_namespaced_pod(pod_name, namespace)
     containers = [container.name for container in pod.spec.containers]
     if container not in containers:
         return
     w = Watch()
     for e in w.stream(
-        v1.read_namespaced_pod_log,
+        __clients_singelton.v1.read_namespaced_pod_log,
         name=pod_name,
         namespace=namespace,
         container=container,
@@ -140,7 +185,7 @@ def log_in_thread(pod_name, namespace, container):
 
 
 def get_pod_logs(namespace):
-    pods = v1.list_namespaced_pod(namespace)
+    pods = __clients_singelton.v1.list_namespaced_pod(namespace)
     pod_names = [item.metadata.name for item in pods.items]
     for pod_name in pod_names:
         for container in [
