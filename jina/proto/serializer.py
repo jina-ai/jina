@@ -1,3 +1,6 @@
+import time
+from functools import lru_cache
+
 from . import jina_pb2
 from ..types.message import Message
 from ..types.request import Request
@@ -41,6 +44,9 @@ class MessageProto:
         # noqa: DAR102
         # noqa: DAR201
         """
+        # print(x.envelope)
+        # print(x.request)
+        # time.sleep(0.5)
         return x.proto.SerializeToString()
 
     @staticmethod

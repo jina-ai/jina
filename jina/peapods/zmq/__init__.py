@@ -326,12 +326,14 @@ class Zmqlet:
                 elif self.args.always_reconnect:
                     address = f'tcp://{get_connect_host(target.active_target_pod.host, False, self.args)}:{target.active_target_pod.port}'
                     self.logger.debug(f'disconnect from {address}')
+                    # instead of the closing and the recreation of the socket, one could also do .disconnect() + .connect()
                     if isinstance(out_socket, ZMQStream):
-                        out_socket.socket.disconnect(address)
+                        out_socket.close()
                     else:
-                        out_socket.disconnect(address)
+                        out_socket.close()
                     self.logger.debug(f'reconnect to {address}')
-                    out_socket.connect(address)
+                    out_socket = self._get_dynamic_out_socket(target.active_target_pod)
+                    self.opened_socks.pop()
                     self.logger.debug('done')
 
             next_routes.append((target, out_socket))
