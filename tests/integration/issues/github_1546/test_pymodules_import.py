@@ -9,7 +9,7 @@ def test_import_with_new_module_structure_should_pass():
         - python code for the executor organized in a package structure inside
           the ``executor/`` folder
         - core logic in ``executor/my_executor.py``
-        - the ``executor/__init__.py`` contains 
+        - the ``executor/__init__.py`` contains
           ``from .my_executor import GoodCrafterNew``, which makes sure the
           custom executor class gets registered
         - all imports are relative - so in ``executor/my_executor.py`` the ``helper``
