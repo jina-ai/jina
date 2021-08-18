@@ -115,6 +115,7 @@ ac_table = {
             '--pod-role',
             '--no-dynamic-routing',
             '--connect-to-predecessor',
+            '--k8s-uses-init',
         ],
         'pod': [
             '--help',
@@ -184,6 +185,7 @@ ac_table = {
             '--pod-role',
             '--no-dynamic-routing',
             '--connect-to-predecessor',
+            '--k8s-uses-init',
         ],
         'flow': [
             '--help',
@@ -196,6 +198,7 @@ ac_table = {
             '--uses',
             '--env',
             '--inspect',
+            '--infrastructure',
         ],
         'ping': ['--help', '--timeout', '--retries', '--print-response'],
         'gateway': [
