@@ -162,11 +162,12 @@ def test_list_view_insert():
     view.insert(0, 10)
     assert len(view) == 1
     assert view[0] == 10
-    view.insert(20, 10)
+    view.insert(20, 20)
     assert len(view) == 2
-    assert view[1] == 10
-    view.insert(0, 20)
-    assert view[0] == 20
+    assert view[1] == 20
+    view.insert(0, 30)
+    assert len(view) == 3
+    assert view[0] == 30
 
 
 def test_list_view_append_empty():
