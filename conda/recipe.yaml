@@ -1,10 +1,13 @@
+{% set name = "jina" %}
+{% set version = "2.0.19" %}
+
 package:
-  name: '{{ name|lower }}'
-  version: '{{ version }}'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha: malinki, malinki ;)
+  sha: 0ff0f811c5c34c5b07efbb64cfc64ef37c9d9a77d4052a49b928014e44e93c3c
 
 build:
   number: 0
@@ -30,12 +33,12 @@ outputs:
     - pip
     run:
     - python
-    - pyyaml >=5.3.1
-    - grpcio >=1.33.1
-    - tornado >=5.1.0
-    - numpy
-    - protobuf >=3.13.0
     - pyzmq >=17.1.0
+    - tornado >=5.1.0
+    - grpcio >=1.33.1
+    - numpy
+    - pyyaml >=5.3.1
+    - protobuf >=3.13.0
 - name: jina-perf
   test:
     requires:
@@ -51,9 +54,9 @@ outputs:
     - pip
     run:
     - python >=3.7
-    - <{ pin_subpackage('jina-core', exact=True) }>
-    - uvloop
+    - {{ pin_subpackage('jina-core', exact=True) }}
     - lz4 <3.1.2
+    - uvloop
 - name: jina
   test:
     requires:
@@ -69,23 +72,23 @@ outputs:
     - pip
     run:
     - python >=3.7
-    - <{ pin_subpackage('jina-core', exact=True) }>
-    - uvloop
-    - websockets
+    - {{ pin_subpackage('jina-core', exact=True) }}
+    - lz4 <3.1.2
+    - filelock
     - aiostream
     - uvicorn[standard] >=0.14.0
-    - fastapi
-    - aiohttp
-    - filelock
-    - aiofiles
-    - lz4 <3.1.2
+    - websockets
+    - uvloop
+    - pathspec
     - rich
     - docker-py
-    - cryptography
-    - pathspec
-    - requests
-    - pydantic
     - python-multipart
+    - cryptography
+    - fastapi
+    - aiofiles
+    - requests
+    - aiohttp
+    - pydantic
 - name: jina-daemon
   test:
     requires:
@@ -101,24 +104,56 @@ outputs:
     - pip
     run:
     - python >=3.7
-    - <{ pin_subpackage('jina-core', exact=True) }>
-    - uvloop
-    - websockets
-    - aiostream
+    - {{ pin_subpackage('jina-core', exact=True) }}
     - fluent-logger
-    - fastapi
-    - aiohttp
-    - filelock
-    - aiofiles
-    - rich
     - lz4 <3.1.2
+    - filelock
+    - aiostream
+    - uvicorn[standard] >=0.14.0
+    - websockets
+    - uvloop
+    - pathspec
+    - rich
+    - python-multipart
     - docker-py
     - cryptography
-    - pathspec
-    - uvicorn[standard] >=0.14.0
+    - fastapi
+    - aiofiles
     - requests
+    - aiohttp
     - pydantic
+- name: jina-demo
+  test:
+    requires:
+    - pip
+    imports:
+    - jina
+    commands:
+    - pip check
+    - jina --version
+  requirements:
+    host:
+    - python >=3.7
+    - pip
+    run:
+    - python >=3.7
+    - {{ pin_subpackage('jina-core', exact=True) }}
+    - lz4 <3.1.2
+    - filelock
+    - aiostream
+    - uvicorn[standard] >=0.14.0
+    - websockets
+    - uvloop
+    - pathspec
+    - rich
+    - docker-py
     - python-multipart
+    - cryptography
+    - fastapi
+    - aiofiles
+    - requests
+    - aiohttp
+    - pydantic
 
 about:
   home: https://github.com/jina-ai/jina/

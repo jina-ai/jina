@@ -1,7 +1,9 @@
 import re
 from collections import defaultdict
 
+import requests
 import yaml
+from bs4 import BeautifulSoup
 
 
 def get_extra_requires(path):
@@ -30,6 +32,10 @@ def get_extra_requires(path):
                     if k[0] == 'docker':
                         k[0] = 'docker-py'
 
+                    # Pytorch package is pytorch-cpu (gpu not needed for demo) on forge
+                    if k[0] == 'torch':
+                        k[0] = 'pytorch-cpu'
+
                     # In conda recipe pkg name and version must be separated by space
                     k = ' '.join(k)
 
@@ -53,20 +59,46 @@ class RecipeDumper(yaml.SafeDumper):
         return True
 
 
+#######################################################
+# Get requirements from the extra-requirements.txt file
+#######################################################
+
 extra_deps = get_extra_requires('extra-requirements.txt')
 reqs = {}
 
 # core < perf < standard < daemon
+# standard < demo
 reqs['core'] = extra_deps['core']
 reqs['perf'] = reqs['core'].union(extra_deps['perf'])
 reqs['standard'] = reqs['perf'].union(extra_deps['standard'])
 reqs['daemon'] = reqs['standard'].union(extra_deps['daemon'])
+reqs['demo'] = reqs['standard'].union(extra_deps['demo'])
 
 # Make all the others a diff from core:
 for key in reqs:
     if key != 'core':
         reqs[key] = reqs[key] - reqs['core']
 
+
+######################################
+# Get latest version and SHA from pypi
+######################################
+
+
+page = requests.get('https://pypi.org/project/jina/')
+soup = BeautifulSoup(page.text, 'html.parser')
+pkg_ver_name = soup.select_one('h1.package-header__name').contents[0].strip()
+jina_version = pkg_ver_name.split(' ')[-1]
+
+
+for table_row in soup.select('table.table--hashes tr'):
+    if table_row.select_one('th').contents[0] == "SHA256":
+        jina_sha = table_row.select_one('button')['data-clipboard-text']
+
+
+###################
+# Create the recipe
+###################
 
 # Create yaml file as a dictionary
 test_object = {
@@ -81,10 +113,10 @@ build_object = {
 core_pinned = "<{ pin_subpackage('jina-core', exact=True) }>"
 
 recipe_object = {
-    'package': {'name': '{{ name|lower }}', 'version': '{{ version }}'},
+    'package': {'name': '<{ name|lower }>', 'version': '<{ version }>'},
     'source': {
         'url': 'https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz',
-        'sha': 'malinki, malinki ;)',
+        'sha': jina_sha,
     },
     'build': {'number': 0},
     'outputs': [
@@ -121,6 +153,14 @@ recipe_object = {
                 'run': ['python >=3.7', core_pinned] + list(reqs['daemon']),
             },
         },
+        {
+            'name': 'jina-demo',
+            'test': test_object,
+            'requirements': {
+                'host': ['python >=3.7', 'pip'],
+                'run': ['python >=3.7', core_pinned] + list(reqs['demo']),
+            },
+        },
     ],
     'about': {
         'home': 'https://github.com/jina-ai/jina/',
@@ -134,12 +174,24 @@ recipe_object = {
 }
 
 
+#####################################
+# Write the recipe to conda/meta.yaml
+#####################################
+
+recipe = yaml.dump(
+    recipe_object,
+    Dumper=RecipeDumper,
+    width=1000,
+    sort_keys=False,
+    default_style=None,
+)
+recipe = recipe.replace('<{', '{{').replace('}>', '}}')
+
+recipe_header = f'''{{% set name = "jina" %}}
+{{% set version = "{jina_version}" %}}
+
+'''
+
+recipe = recipe_header + recipe
 with open('conda/recipe.yaml', 'w+') as fp:
-    yaml.dump(
-        recipe_object,
-        stream=fp,
-        Dumper=RecipeDumper,
-        width=1000,
-        sort_keys=False,
-        default_style=None,
-    )
+    fp.write(recipe)
