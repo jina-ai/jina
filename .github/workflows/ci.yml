@@ -163,12 +163,6 @@ jobs:
         with:
           install: true
           driver-opts: network=host
-      - name: Login to DockerHub
-        if: ${{ !github.event.pull_request.head.repo.fork }}
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
-          password: ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
       - run: |
           docker run --privileged --rm tonistiigi/binfmt --uninstall qemu-aarch64
           docker run --rm --privileged tonistiigi/binfmt --install all
@@ -178,7 +172,7 @@ jobs:
           context: .
           file: Dockerfiles/debianx.Dockerfile
           platforms: ${{ matrix.test-arch }}
-          push: false
+          push: true
           tags: localhost:5000/jina/multiarch:latest
           target: jina
       - run: |
