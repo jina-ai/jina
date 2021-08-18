@@ -391,3 +391,58 @@ def test_gpu_container(
     assert device_requests[0]['DeviceIDs'] == expected_device
     assert device_requests[0]['Driver'] == expected_driver
     assert device_requests[0]['Capabilities'] == expected_capabilities
+
+
+def test_pass_native_arg(monkeypatch, mocker):
+    import docker
+
+    mocker.patch(
+        'jina.peapods.runtimes.container.ContainerRuntime.is_ready',
+        return_value=True,
+    )
+
+    class MockContainers:
+        class MockContainer:
+            def reload(self):
+                pass
+
+            def logs(self, **kwargs):
+                return []
+
+        def __init__(self):
+            pass
+
+        def run(self, *args, **kwargs):
+            assert '--native' in args[1]
+            return MockContainers.MockContainer()
+
+    class MockClient:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def close(self):
+            pass
+
+        def version(self):
+            return {'Version': '20.0.1'}
+
+        @property
+        def networks(self):
+            return {'bridge': None}
+
+        @property
+        def containers(self):
+            return MockContainers()
+
+        @property
+        def images(self):
+            return {}
+
+    monkeypatch.setattr(docker, 'from_env', MockClient)
+    args = set_pea_parser().parse_args(
+        [
+            '--uses',
+            'docker://jinahub/pod',
+        ]
+    )
+    _ = ContainerRuntime(args, ctrl_addr='', ready_event=multiprocessing.Event())
