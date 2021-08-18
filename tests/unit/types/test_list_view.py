@@ -166,7 +166,7 @@ def test_list_view_insert():
     assert len(view) == 2
     assert view[1] == 20
     view.insert(0, 30)
-    assert len(view) == 3
+    assert len(view) == 2
     assert view[0] == 30
 
 
