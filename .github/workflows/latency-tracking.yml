@@ -9,6 +9,7 @@ jobs:
     strategy:
       matrix:
         last_nth_release: [master, 1, 2]
+    if: ${{ !github.event.pull_request.head.repo.fork }}
     steps:
 #      - name: Cancel Previous Runs
 #        uses: styfle/cancel-workflow-action@0.9.0
@@ -38,6 +39,7 @@ jobs:
   comment-on-pr:
     needs: lt-nth-releases
     runs-on: ubuntu-latest
+    if: ${{ !github.event.pull_request.head.repo.fork }}
     steps:
       - uses: actions/checkout@v2
       - run: |
