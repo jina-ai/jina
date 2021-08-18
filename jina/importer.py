@@ -176,8 +176,8 @@ class PathImporter:
         import importlib.util
 
         try:
-            # I dont want to trust user path based on directory structure, "jinahub", period
-            default_spec_name = 'jinahub'
+            # I dont want to trust user path based on directory structure, "user_module", period
+            default_spec_name = 'user_module'
             user_module_name = os.path.splitext(os.path.basename(absolute_path))[0]
             if user_module_name == '__init__':
                 # __init__ can not be used as a module name

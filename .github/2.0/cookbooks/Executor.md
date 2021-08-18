@@ -90,6 +90,9 @@ requests:
   /random_work: foo
 ```
 
+In this example your executor is defined in a single python file, `foo.py`. If you want to use multiple python files
+(for example, `foo.py` and `helper.py`), check out how to organize them in the section [Structure of the Repository](#structure-of-the-repository)
+
 Construct `Executor` from YAML:
 
 ```python
@@ -464,6 +467,101 @@ with MyExec() as executor:
 hello world
 closing...
 ```
+
+## Structure of the Repository
+
+### Single python file
+
+When you are only working with a single python file (let's call it `my_executor.py`), you can simply put it at the root of the repository, and import it directly in `config.yml`
+
+```yaml
+jtype: MyExecutor
+metas:
+  py_modules:
+    - my_executor.py
+```
+
+### Multiple python files
+
+When you are working with multiple python files, you should organize them as a **python package** and put them in a special folder inside
+your repository (as you would normally do with python packages). Specifically, you should do the following:
+- put all your python files inside a special folder (call it `executor`, as a convention), and put an `__init__.py` file inside it
+    - because of how Jina registers executors, make sure to import your executor in this file (see the contents of `executor/__init__.py` in the example below).
+- use relative imports (`from .bar import foo`, and not `from bar import foo`) inside the python modules in this folder
+- Only list `executor/__init__.py` under `py_modules` in `config.yml` - this way Python knows that you are importing a package, and makes sure that all the relative imports within your package work properly
+
+This way of structuring your files has several advantages:
+- it is the standard way of creating Python packages, so you may already be familiar with it
+- it avoids cluttering the root of your repository with many python files
+- it enables you to try out your executor from the console, i.e. you can do things like this
+    ```python
+    >>> from executor import MyExecutor
+    >>> my_exec = MyExecutor()
+    ```
+- you can easily use it with test automation frameworks, like Pytest. Just remember to import objects from the `executor` package in the test files, e.g. you would use `from executor import MyExecutor` inside `tests/test_unit.py`.
+
+To make things more specific, take this repository structure as an example
+
+```
+.
+├── config.yml
+└── executor
+    ├── helper.py
+    ├── __init__.py
+    └── my_executor.py
+```
+
+The contents of `executor/__init__.py` is 
+```python
+from .my_executor import MyExecutor
+```
+the contents of `executor/helper.py` is
+
+```python
+def print_something():
+    print('something')
+```
+
+and the contents of `executor/my_executor.py` is
+
+```python
+from jina import Executor, requests
+
+from .helper import print_something
+
+class MyExecutor(Executor):
+    @requests
+    def foo(self, **kwargs):
+        print_something()
+```
+
+Finally, the contents of `config.yml` - notice that only the `executor/__init__.py` file needs to be listed under `py_modules`
+
+```yaml
+jtype: MyExecutor
+metas:
+  py_modules:
+    - executor/__init__.py
+```
+
+This was a relatively simple example, but this way of structuring python modules works for any python package structure, however complex. Consider this slightly more complicated example
+
+```
+.
+├── config.yml           # Remains exactly the same as before
+└── executor
+    ├── helper.py
+    ├── __init__.py
+    ├── my_executor.py
+    └── utils/
+        ├── __init__.py  # Required inside all executor sub-folders
+        ├── data.py
+        └── io.py
+```
+
+Here you can then import from `utils/data.py` in `my_executor.py` like this: `from .utils.data import foo`, and do any other kinds of relative imports that python enables.
+
+The best thing is that no matter how complicated your package structure, "importing" it in your `config.yml` file is super easy - you always put only `executor/__init__.py` under `py_modules`.
 
 ## Executor Built-in Features
 
