@@ -215,7 +215,6 @@ jobs:
   core-test:
     needs: prep-testbed
     runs-on: ubuntu-latest
-    if: ${{ !github.event.pull_request.head.repo.fork }}
     env:
       JINA_DAEMON_BUILD: DEVEL
     strategy:
@@ -243,8 +242,6 @@ jobs:
           pip install ".[all]" --no-cache-dir
           jina
           export JINA_LOG_LEVEL="ERROR"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Test
         id: test
         run: |
@@ -273,10 +270,6 @@ jobs:
             echo "::set-output name=codecov_flag::jina"
           fi
         timeout-minutes: 20
-        env:
-          JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
-          JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Check codecov file
         id: check_files
         uses: andstor/file-existence-action@v1
