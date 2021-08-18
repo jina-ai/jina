@@ -58,6 +58,9 @@ class RecipeDumper(yaml.SafeDumper):
     def ignore_aliases(self, data):
         return True
 
+    def increase_indent(self, flow=False, *args, **kwargs):
+        return super().increase_indent(flow=flow, indentless=False)
+
 
 #######################################################
 # Get requirements from the extra-requirements.txt file
