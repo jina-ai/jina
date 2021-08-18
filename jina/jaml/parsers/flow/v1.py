@@ -6,6 +6,7 @@ from ....enums import PodRoleType
 from .... import Flow
 from ....helper import expand_env_var, ArgNamespace
 from ....parsers import set_pod_parser, set_gateway_parser
+from ....parsers.helper import warn_unknown_args
 
 
 def _get_taboo():
@@ -71,6 +72,10 @@ class V1Parser(VersionedYAMLParser):
                 method = p_pod_attr.get('method', 'add')
                 # support methods: add, needs, inspect
                 getattr(obj, method)(**p_pod_attr, copy_flow=False)
+        unknown_args = set(data.keys()) - {'executors', 'with', 'version'}
+        if unknown_args:
+            warn_unknown_args(unknown_args)
+
         return obj
 
     def dump(self, data: 'Flow') -> Dict:
