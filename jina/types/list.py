@@ -28,7 +28,10 @@ class ListView(ProtoTypeMixin, MutableSequence):
         :param index: Position of the insertion.
         :param object: The object that needs to be inserted.
         """
-        self._pb_body.insert(index, object)
+        if index >= len(self):
+            self._pb_body.append(object)
+        else:
+            self[index] = object
 
     def __getitem__(self, i: Union[int, slice]):
         if i >= len(self):

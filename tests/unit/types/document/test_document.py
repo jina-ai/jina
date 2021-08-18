@@ -1102,3 +1102,12 @@ def test_empty_sparse_array():
     doc.embedding = matrix
     assert isinstance(doc.embedding, coo_matrix)
     assert (doc.embedding != matrix).nnz == 0
+
+
+def test_tags_list_append():
+    doc = Document()
+    doc.tags['key'] = []
+    assert len(doc.tags['key']) == 0
+    doc.tags['key'].append(1)
+    assert len(doc.tags['key']) == 1
+    assert doc.tags['key'][0] == 1
