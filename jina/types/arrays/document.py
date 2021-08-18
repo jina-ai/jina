@@ -136,7 +136,7 @@ class DocumentArrayGetAttrMixin:
         x_mat = b''.join(d.proto.blob.dense.buffer for d in self)
 
         return np.frombuffer(x_mat, dtype=self[0].proto.blob.dense.dtype).reshape(
-            (len(self), self[0].proto.blob.dense.shape[0])
+            (len(self), *self[0].proto.blob.dense.shape)
         )
 
     @blobs.setter
