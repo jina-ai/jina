@@ -43,7 +43,7 @@ def mixin_k8s_parser(parser):
     gp = add_arg_group(parser, title='Kubernetes Feature')
     gp.add_argument(
         '--infrastructure',
-        action=KVAppendAction,
+        type=InfrastructureType.from_string,
         choices=list(InfrastructureType),
         default=InfrastructureType.LOCAL,
         help='Infrastructure where the Flow runs on. Currently, `local` and `k8s` are supported',

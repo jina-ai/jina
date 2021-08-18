@@ -2,7 +2,7 @@
 import argparse
 
 from jina.enums import PollingType, SchedulerType, PodRoleType
-from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS
+from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS, KVAppendAction
 
 
 def mixin_base_pod_parser(parser):
@@ -107,6 +107,14 @@ The polling strategy of the Pod (when `parallel>1`)
 def mixin_k8s_pod_parser(parser):
     parser.add_argument(
         '--k8s-uses-init',
-        default=None,
+        type=str,
+        # default='',
         help='Init container for k8s pod. Usually retrieves some data which or waits until some condition is fulfilled.',
+    )
+    parser.add_argument(
+        '--k8s-uses-with-init',
+        action=KVAppendAction,
+        metavar='KEY: VALUE',
+        nargs='*',
+        help='Arguments for the init container.',
     )

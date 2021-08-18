@@ -17,7 +17,7 @@ from .builder import allowed_levels, _hanging_pods
 from .. import __default_host__
 from ..clients import Client
 from ..clients.mixin import AsyncPostMixin, PostMixin
-from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType, GatewayProtocolType
+from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType, GatewayProtocolType, InfrastructureType
 from ..excepts import FlowTopologyError, FlowMissingPodError, RoutingTableCyclicError
 from ..helper import (
     colored,
@@ -968,8 +968,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         :return: this instance
         """
-        if self.args.infrastructure == 'k8s':
-            from jina.kubernetes.deployment import kubernetes_deployment
+        if self.args.infrastructure == InfrastructureType.K8S:
+            from jina.kubernetes import kubernetes_deployment
 
             kubernetes_deployment.deploy(self)
             return
