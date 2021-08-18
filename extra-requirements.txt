@@ -69,7 +69,6 @@ bs4:                        cicd
 aiostream:                  standard, daemon, devel
 jsonschema:                 cicd
 dgl>=0.6.1:                 devel
-bcolors==1.0.2:             core
-kubernetes==17.17.0:        core
+kubernetes==18.20.0b1:      core
 black==20.8b1:              test
 matplotlib>=3.3.1:          devel

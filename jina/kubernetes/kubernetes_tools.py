@@ -1,15 +1,11 @@
-import threading
-
-import pathlib
-from typing import Union
-
-from bcolors import UNDERLINE, ENDC, BOLD, PASS
-import time
-
-# from kubernetes import utils
-
 import os
 import tempfile
+import threading
+import time
+
+from bcolors import UNDERLINE, ENDC, BOLD, PASS
+
+# from kubernetes import utils
 
 # from kubernetes.utils import FailToCreateError
 # from kubernetes.watch import Watch

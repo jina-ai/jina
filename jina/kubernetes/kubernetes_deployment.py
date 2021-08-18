@@ -347,7 +347,7 @@ def create_in_k8s(k8s_flow, pod_name_to_parallel):
     )
 
 
-def deploy(flow, deployment_type='k8s'):
+def deploy(flow):
     """Deploys the Flow. Currently only Kubernetes is supported.
     Each pod is deployed in a stateful set and we use zmq level communication.
     """
@@ -355,45 +355,14 @@ def deploy(flow, deployment_type='k8s'):
     # TODO needed?
     flow = prepare_flow(flow)
 
-    if deployment_type == 'k8s':
-        flow.logger.info(f'✨ Deploy Flow on Kubernetes...')
-        namespace = flow.args.name
-        flow.logger.info(f'📦\tCreate Namespace {namespace}')
-        kubernetes_tools.create('namespace', {'name': namespace})
+    flow.logger.info(f'✨ Deploy Flow on Kubernetes...')
+    namespace = flow.args.name
+    flow.logger.info(f'📦\tCreate Namespace {namespace}')
+    kubernetes_tools.create('namespace', {'name': namespace})
 
-        k8s_flow, pod_name_to_parallel = get_k8s_flow(flow)
+    k8s_flow, pod_name_to_parallel = get_k8s_flow(flow)
 
-        create_in_k8s(k8s_flow, pod_name_to_parallel)
+    create_in_k8s(k8s_flow, pod_name_to_parallel)
 
-        # flow.logger.info(f'🌐\tCreate "Ingress resource"')
-        # kubernetes_tools.create_gateway_ingress(namespace)
-    else:
-        raise Exception(f'deployment type "{deployment_type}" is not supported')
-
-# def create_gateway_yaml(pod_to_pea_and_args, gateway_host_in, gateway_port_in):
-#     yaml = f"""
-#         !Flow
-#         version: '1'
-#         with:
-#           port_expose: 8080
-#           host: {gateway_host_in}
-#           port_in: {gateway_port_in}
-#           protocol: http
-#         pods:
-#         """
-#     for pod_name, pea_to_args in pod_to_pea_and_args.items():
-#         yaml += f"""
-#           - name: {pod_name}
-#             port_in: {pea_to_args[0][1]}
-#             host: {pea_to_args[0][2]['host_in']}
-#             external: True
-#             """
-#         needs = pea_to_args[0][2]['needs']
-#         if needs:
-#             yaml += f"""
-#             needs: [{', '.join(needs)}]
-#             """
-#
-#     # return yaml
-#     base_64_yaml = base64.b64encode(yaml.encode()).decode('utf8')
-#     return base_64_yaml
+    # flow.logger.info(f'🌐\tCreate "Ingress resource"')
+    # kubernetes_tools.create_gateway_ingress(namespace)

@@ -964,6 +964,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         :return: this instance
         """
+        if self.args.infrastructure == 'k8s':
+            from jina.kubernetes.deployment import kubernetes_deployment
+            kubernetes_deployment.deploy(self)
+            return
 
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
             self.build(copy_flow=False)
@@ -1583,8 +1587,3 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param kwargs: new network settings
         """
         self._common_kwargs.update(kwargs)
-
-    def deploy(self, deployment_type='k8s'):
-        from ..kubernetes.naive import naive_deployment
-
-        naive_deployment.deploy(self, deployment_type)

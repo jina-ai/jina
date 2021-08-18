@@ -18,9 +18,12 @@ def _get_postgres_config_for_table(table_name: str) -> Dict:
     return cfg
 
 
+# kubernetes pod
+# normal flow
+
 GCP_REGISTRY_PROJECT_NAME = 'mystical-sweep-320315'
 index_flow = (
-    Flow(name='index-flow', port_expose=8080, protocol='http')
+    Flow(name='index-flow', port_expose=8080, protocol='http', type='k8s')
     .add(
         name='segmenter',
         uses=f'gcr.io/{GCP_REGISTRY_PROJECT_NAME}/doc-segmenter:v.0.0.1',
@@ -54,8 +57,9 @@ index_flow = (
         uses='jinahub+docker://PostgreSQLStorage',
         uses_with=_get_postgres_config_for_table('image_data'),
         needs='imageencoder',
+
     )
 )
 index_flow.plot('index-flow.jpg')
 print('deploy index flow')
-index_flow.deploy('k8s')
+index_flow.start()

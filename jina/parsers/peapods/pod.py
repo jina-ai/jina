@@ -103,3 +103,10 @@ The polling strategy of the Pod (when `parallel>1`)
         default=False,
         help='The head Pea of this Pod will connect to the TailPea of the predecessor Pod.',
     )
+
+def mixin_k8s_pod_parser(parser):
+    parser.add_argument(
+        '--k8s-uses-init',
+        default=None,
+        help='Init container for k8s pod. Usually retrieves some data which or waits until some condition is fulfilled.',
+    )
