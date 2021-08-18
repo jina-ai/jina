@@ -543,17 +543,6 @@ class DocumentArrayMemmap(
 
         return embeds
 
-    @embeddings.setter
-    def embeddings(self, emb: np.ndarray):
-
-        assert len(emb) == len(self), (
-            'the number of rows in the input ({len(emb)}),'
-            'should match the number of Documents ({len(self)})'
-        )
-
-        for d, x in zip(self, emb):
-            d.embedding = x
-
     def _invalidate_embeddings_memmap(self):
         self._embeddings_memmap = None
         self._embeddings_shape = None
