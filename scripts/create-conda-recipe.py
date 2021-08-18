@@ -193,5 +193,5 @@ recipe_header = f'''{{% set name = "jina" %}}
 '''
 
 recipe = recipe_header + recipe
-with open('conda/recipe.yaml', 'w+') as fp:
+with open('conda/meta.yaml', 'w+') as fp:
     fp.write(recipe)
