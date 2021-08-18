@@ -400,7 +400,6 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">urllib.parse</span>
 <span class="kn">import</span> <span class="nn">urllib.request</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">hashlib</span> <span class="kn">import</span> <span class="n">blake2b</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Iterable</span><span class="p">,</span>
@@ -686,20 +685,7 @@
                                 <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">document</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">_remainder</span><span class="p">}</span>
                             <span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
-                <span class="c1"># directly parsing from binary string gives large false-positive</span>
-                <span class="c1"># fortunately protobuf throws a warning when the parsing seems go wrong</span>
-                <span class="c1"># the context manager below converts this warning into exception and throw it</span>
-                <span class="c1"># properly</span>
-                <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
-                    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span>
-                        <span class="s1">'error'</span><span class="p">,</span> <span class="s1">'Unexpected end-group tag'</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span>
-                    <span class="p">)</span>
-                    <span class="k">try</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">ParseFromString</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
-                    <span class="k">except</span> <span class="ne">RuntimeWarning</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="n">BadDocType</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s1">'fail to construct a document from </span><span class="si">{</span><span class="n">document</span><span class="si">}</span><span class="s1">'</span>
-                        <span class="p">)</span> <span class="kn">from</span> <span class="nn">ex</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">ParseFromString</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="n">Document</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">document</span><span class="o">.</span><span class="n">proto</span><span class="p">)</span>
@@ -1587,10 +1573,10 @@
 
         <span class="n">mermaid_str</span> <span class="o">=</span> <span class="p">(</span>
             <span class="sd">"""</span>
-<span class="sd">                                %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%</span>
-<span class="sd">                                classDiagram</span>
-
-<span class="sd">                                        """</span>
+<span class="sd">                                    %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%</span>
+<span class="sd">                                    classDiagram</span>
+<span class="sd">    </span>
+<span class="sd">                                            """</span>
             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">__mermaid_str__</span><span class="p">()</span>
         <span class="p">)</span>
 
