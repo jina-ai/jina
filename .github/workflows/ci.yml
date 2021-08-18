@@ -10,9 +10,9 @@ on:
 jobs:
   commit-lint:
     runs-on: ubuntu-latest
-    if: ${{ !github.event.pull_request.head.repo.fork }}
     steps:
       - name: find the prev warning if exist
+        if: ${{ !github.event.pull_request.head.repo.fork }}
         uses: peter-evans/find-comment@v1
         id: fc
         with:
@@ -20,7 +20,7 @@ jobs:
           comment-author: 'github-actions[bot]'
           body-includes: 'bad commit message'
       - name: Delete comment if exist
-        if: ${{ steps.fc.outputs.comment-id != 0 }}
+        if: ${{ steps.fc.outputs.comment-id != 0 && !github.event.pull_request.head.repo.fork }}
         uses: actions/github-script@v3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -105,11 +105,10 @@ jobs:
 
   code-injection:
     runs-on: ubuntu-latest
-    if: ${{ !github.event.pull_request.head.repo.fork }}
     steps:
       - uses: actions/checkout@v2
         with:
-          token: ${{ secrets.JINA_DEV_BOT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Set up Python 3.7
         uses: actions/setup-python@v2
@@ -130,7 +129,9 @@ jobs:
             git commit -m "style: fix overload and cli autocomplete"
             echo '::set-output name=IS_CHANGED::YES'
           fi
-      - uses: ad-m/github-push-action@v0.6.0
+      - name: Push changes to head ref
+        if: ${{ !github.event.pull_request.head.repo.fork }}
+        uses: ad-m/github-push-action@v0.6.0
         with:
           github_token: ${{ secrets.JINA_DEV_BOT }}
           branch: ${{ github.head_ref }}
@@ -141,7 +142,6 @@ jobs:
   docker-image-test:
     needs: [commit-lint, code-injection]
     runs-on: ubuntu-latest
-    if: ${{ !github.event.pull_request.head.repo.fork }}
     services:
       registry:
         image: registry:2
@@ -164,6 +164,7 @@ jobs:
           install: true
           driver-opts: network=host
       - name: Login to DockerHub
+        if: ${{ !github.event.pull_request.head.repo.fork }}
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
@@ -177,7 +178,7 @@ jobs:
           context: .
           file: Dockerfiles/debianx.Dockerfile
           platforms: ${{ matrix.test-arch }}
-          push: true
+          push: false
           tags: localhost:5000/jina/multiarch:latest
           target: jina
       - run: |
