@@ -239,6 +239,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def __init__(
         self,
         env: Optional[dict] = None,
+        infrastructure: Optional[str] = 'LOCAL',
         inspect: Optional[str] = 'COLLECT',
         log_config: Optional[str] = None,
         name: Optional[str] = None,
@@ -251,6 +252,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina flow` CLI.
 
         :param env: The map of environment variables that are available inside runtime
+        :param infrastructure: Infrastructure where the Flow runs on. Currently, `local` and `k8s` are supported
         :param inspect: The strategy on those inspect pods in the flow.
 
               If `REMOVE` is given then all inspect pods are removed when building the flow.
@@ -452,6 +454,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         host_in: Optional[str] = '0.0.0.0',
         host_out: Optional[str] = '0.0.0.0',
         hosts_in_connect: Optional[List[str]] = None,
+        k8s_uses_init: Optional[None] = None,
         log_config: Optional[str] = None,
         memory_hwm: Optional[int] = -1,
         name: Optional[str] = None,
@@ -517,6 +520,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param host_in: The host address for input, by default it is 0.0.0.0
         :param host_out: The host address for output, by default it is 0.0.0.0
         :param hosts_in_connect: The host address for input, by default it is 0.0.0.0
+        :param k8s_uses_init: Init container for k8s pod. Usually retrieves some data which or waits until some condition is fulfilled.
         :param log_config: The YAML config of the logger used in this object.
         :param memory_hwm: The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. -1 means no restriction
         :param name: The name of this object.
@@ -966,6 +970,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """
         if self.args.infrastructure == 'k8s':
             from jina.kubernetes.deployment import kubernetes_deployment
+
             kubernetes_deployment.deploy(self)
             return
 
