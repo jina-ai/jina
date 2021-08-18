@@ -183,9 +183,9 @@ c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
   - [Create Remote Flows](.github/2.0/cookbooks/Daemon.md#create-remote-flows)
 - 📓 [Developer Reference](https://docs.jina.ai)
 - 🧼 [Clean & Efficient Coding in Jina](.github/2.0/cookbooks/CleanCode.md)
-- 🚶‍ Walkthroughs
+<!-- - 🚶‍ Walkthroughs
   - [How to Build Hello World Chatbot](https://jina.ai/2021/06/28/tutorial.html)
-  - [Create Your Own Executor](https://jina.ai/2021/07/15/tutorial-executors.html)
+  - [Create Your Own Executor](https://jina.ai/2021/07/15/tutorial-executors.html) -->
 
     
 ## Support
