@@ -5,7 +5,6 @@ import mimetypes
 import os
 import urllib.parse
 import urllib.request
-import warnings
 from hashlib import blake2b
 from typing import (
     Iterable,
@@ -150,43 +149,43 @@ class Document(ProtoTypeMixin, VersionedMixin):
     @overload
     def __init__(
         self,
-        weight: Optional[float] = None,
-        modality: Optional[str] = None,
-        tags: Optional[Union[Dict, StructView]] = None,
-        id: Optional[Union[bytes, str, int]] = None,
-        parent_id: Optional[Union[bytes, str, int]] = None,
+        adjacency: Optional[int] = None,
         blob: Optional[Union['ArrayType', 'jina_pb2.NdArrayProto', 'NdArray']] = None,
+        buffer: Optional[bytes] = None,
+        chunks: Optional[Iterable['Document']] = None,
+        content: Optional[DocumentContentType] = None,
         embedding: Optional[
             Union['ArrayType', 'jina_pb2.NdArrayProto', 'NdArray']
         ] = None,
+        granularity: Optional[int] = None,
+        id: Optional[str] = None,
         matches: Optional[Iterable['Document']] = None,
-        chunks: Optional[Iterable['Document']] = None,
-        buffer: Optional[bytes] = None,
+        mime_type: Optional[str] = None,
+        modality: Optional[str] = None,
+        parent_id: Optional[str] = None,
+        tags: Optional[Union[Dict, StructView]] = None,
         text: Optional[str] = None,
         uri: Optional[str] = None,
-        mime_type: Optional[str] = None,
-        content: Optional[DocumentContentType] = None,
-        granularity: Optional[int] = None,
-        adjacency: Optional[int] = None,
+        weight: Optional[float] = None,
         **kwargs,
     ):
         """
-        :param weight: the weight of the document
-        :param modality: the modality of the document.
-        :param tags: a Python dict view of the tags.
-        :param id: the id from the proto
-        :param parent_id: the parent id from the proto
-        :param blob: the blob content from the proto
-        :param embedding: the embedding from the proto
-        :param matches: the array of matches attached to this document
-        :param chunks: the array of chunks of this document
+        :param adjacency: the adjacency of this Document
+        :param blob: the blob content of thi Document
         :param buffer: the buffer bytes from this document
-        :param text: the text from this document content
-        :param uri: the uri from this document proto
-        :param mime_type: the mime_type from this document proto
+        :param chunks: the array of chunks of this document
         :param content: the value of the content depending on `:meth:`content_type`
-        :param granularity: the granularity from this document proto
-        :param adjacency: the adjacency from this document proto
+        :param embedding: the embedding of this Document
+        :param granularity: the granularity of this Document
+        :param id: the id of this Document
+        :param matches: the array of matches attached to this document
+        :param mime_type: the mime_type of this Document
+        :param modality: the modality of the document.
+        :param parent_id: the parent id of this Document
+        :param tags: a Python dict view of the tags.
+        :param text: the text from this document content
+        :param uri: the uri of this Document
+        :param weight: the weight of the document
         :param kwargs: other parameters to be set _after_ the document is constructed
         """
 
@@ -291,20 +290,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
                                 {k: document[k] for k in _remainder}
                             )
             elif isinstance(document, bytes):
-                # directly parsing from binary string gives large false-positive
-                # fortunately protobuf throws a warning when the parsing seems go wrong
-                # the context manager below converts this warning into exception and throw it
-                # properly
-                with warnings.catch_warnings():
-                    warnings.filterwarnings(
-                        'error', 'Unexpected end-group tag', category=RuntimeWarning
-                    )
-                    try:
-                        self._pb_body.ParseFromString(document)
-                    except RuntimeWarning as ex:
-                        raise BadDocType(
-                            f'fail to construct a document from {document}'
-                        ) from ex
+                self._pb_body.ParseFromString(document)
             elif isinstance(document, Document):
                 if copy:
                     self._pb_body.CopyFrom(document.proto)
@@ -462,35 +448,33 @@ class Document(ProtoTypeMixin, VersionedMixin):
 
     @property
     def id(self) -> str:
-        """The document id in hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable.
-        it will be used as the major view.
+        """The document id in string.
 
-        :return: the id from the proto
+        :return: the id of this Document
         """
         return self._pb_body.id
 
     @property
     def parent_id(self) -> str:
-        """The document's parent id in hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable.
-        it will be used as the major view.
+        """The document's parent id in string.
 
-        :return: the parent id from the proto
+        :return: the parent id of this Document
         """
         return self._pb_body.parent_id
 
     @id.setter
-    def id(self, value: Union[bytes, str, int]):
+    def id(self, value: str):
         """Set document id to a string value.
 
-        :param value: id as bytes, int or str
+        :param value: id as string
         """
         self._pb_body.id = str(value)
 
     @parent_id.setter
-    def parent_id(self, value: Union[bytes, str, int]):
+    def parent_id(self, value: str):
         """Set document's parent id to a string value.
 
-        :param value: id as bytes, int or str
+        :param value: id as string
         """
         self._pb_body.parent_id = str(value)
 
@@ -505,7 +489,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
             proto instance stored. In the case where the `blob` stored is sparse, it will return them as a `coo` matrix.
             If any other type of `sparse` type is desired, use the `:meth:`get_sparse_blob`.
 
-        :return: the blob content from the proto
+        :return: the blob content of thi Document
         """
         return NdArray(self._pb_body.blob).value
 
@@ -518,7 +502,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
         :param kwargs: Additional key value argument, for `scipy` backend, we need to set
             the keyword `sp_format` as one of the scipy supported sparse format, such as `coo`
             or `csr`.
-        :return: the blob from the proto as an sparse array
+        :return: the blob of this Document but as an sparse array
         """
         return NdArray(
             self._pb_body.blob,
@@ -544,7 +528,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
             proto instance stored. In the case where the `embedding` stored is sparse, it will return them as a `coo` matrix.
             If any other type of `sparse` type is desired, use the `:meth:`get_sparse_embedding`.
 
-        :return: the embedding from the proto
+        :return: the embedding of this Document
         """
         return NdArray(self._pb_body.embedding).value
 
@@ -557,7 +541,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
         :param kwargs: Additional key value argument, for `scipy` backend, we need to set
             the keyword `sp_format` as one of the scipy supported sparse format, such as `coo`
             or `csr`.
-        :return: the embedding from the proto as an sparse array
+        :return: the embedding of this Document but as as an sparse array
         """
         return NdArray(
             self._pb_body.embedding,
@@ -819,7 +803,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
     def uri(self) -> str:
         """Return the URI of the document.
 
-        :return: the uri from this document proto
+        :return: the uri of this Document
         """
         return self._pb_body.uri
 
@@ -841,7 +825,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
     def mime_type(self) -> str:
         """Get MIME type of the document
 
-        :return: the mime_type from this document proto
+        :return: the mime_type of this Document
         """
         return self._pb_body.mime_type
 
@@ -869,7 +853,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
     def content_type(self) -> str:
         """Return the content type of the document, possible values: text, blob, buffer
 
-        :return: the type of content present in this document proto
+        :return: the type of content of this Document
         """
         return self._pb_body.WhichOneof('content')
 
@@ -917,7 +901,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
     def granularity(self):
         """Return the granularity of the document.
 
-        :return: the granularity from this document proto
+        :return: the granularity of this Document
         """
         return self._pb_body.granularity
 
@@ -933,7 +917,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
     def adjacency(self):
         """Return the adjacency of the document.
 
-        :return: the adjacency from this document proto
+        :return: the adjacency of this Document
         """
         return self._pb_body.adjacency
 
@@ -1194,10 +1178,10 @@ class Document(ProtoTypeMixin, VersionedMixin):
 
         mermaid_str = (
             """
-                                %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
-                                classDiagram
-
-                                        """
+                                    %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
+                                    classDiagram
+    
+                                            """
             + self.__mermaid_str__()
         )
 
