@@ -170,8 +170,8 @@ class PeaDepends:
         TODO: HEAD/TAIL - can `uses_before` or `uses_after` be `docker://`
         """
         # Each pea is inside a container
-        self.params.host_in = self.host_in
-        self.params.host_out = self.host_out
+        # self.params.host_in = self.host_in
+        # self.params.host_out = self.host_out
         self.params.identity = self.id
         self.params.workspace_id = self.workspace_id
         self.params.runs_in_docker = True
