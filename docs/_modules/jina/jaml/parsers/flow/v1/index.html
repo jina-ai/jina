@@ -401,6 +401,7 @@
 <span class="kn">from</span> <span class="nn">....</span> <span class="kn">import</span> <span class="n">Flow</span>
 <span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">expand_env_var</span><span class="p">,</span> <span class="n">ArgNamespace</span>
 <span class="kn">from</span> <span class="nn">....parsers</span> <span class="kn">import</span> <span class="n">set_pod_parser</span><span class="p">,</span> <span class="n">set_gateway_parser</span>
+<span class="kn">from</span> <span class="nn">....parsers.helper</span> <span class="kn">import</span> <span class="n">warn_unknown_args</span>
 
 
 <span class="k">def</span> <span class="nf">_get_taboo</span><span class="p">():</span>
@@ -466,6 +467,10 @@
                 <span class="n">method</span> <span class="o">=</span> <span class="n">p_pod_attr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'method'</span><span class="p">,</span> <span class="s1">'add'</span><span class="p">)</span>
                 <span class="c1"># support methods: add, needs, inspect</span>
                 <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">method</span><span class="p">)(</span><span class="o">**</span><span class="n">p_pod_attr</span><span class="p">,</span> <span class="n">copy_flow</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">unknown_args</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span> <span class="p">{</span><span class="s1">'executors'</span><span class="p">,</span> <span class="s1">'with'</span><span class="p">,</span> <span class="s1">'version'</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">unknown_args</span><span class="p">:</span>
+            <span class="n">warn_unknown_args</span><span class="p">(</span><span class="n">unknown_args</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">obj</span></div>
 
 <div class="viewcode-block" id="V1Parser.dump"><a class="viewcode-back" href="../../../../../../api/jina.jaml.parsers.flow.v1/#jina.jaml.parsers.flow.v1.V1Parser.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="s1">'Flow'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
@@ -519,7 +524,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 17, 2021.
+            Last updated on Aug 18, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

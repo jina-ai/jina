@@ -1066,13 +1066,16 @@
 
 <div class="viewcode-block" id="ArgNamespace.kwargs2namespace"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.ArgNamespace.kwargs2namespace">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">kwargs2namespace</span><span class="p">(</span>
-        <span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]],</span> <span class="n">parser</span><span class="p">:</span> <span class="n">ArgumentParser</span>
+        <span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]],</span>
+        <span class="n">parser</span><span class="p">:</span> <span class="n">ArgumentParser</span><span class="p">,</span>
+        <span class="n">warn_unknown</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
         <span class="sd">"""</span>
 <span class="sd">        Convert dict to a namespace.</span>
 
 <span class="sd">        :param kwargs: dictionary of key-values to be converted</span>
 <span class="sd">        :param parser: the parser for building kwargs into a namespace</span>
+<span class="sd">        :param warn_unknown: True, if unknown arguments should be logged</span>
 <span class="sd">        :return: argument list</span>
 <span class="sd">        """</span>
         <span class="n">args</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2list</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
@@ -1083,6 +1086,11 @@
                 <span class="sa">f</span><span class="s1">'bad arguments "</span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s1">" with parser </span><span class="si">{</span><span class="n">parser</span><span class="si">}</span><span class="s1">, '</span>
                 <span class="s1">'you may want to double check your args '</span>
             <span class="p">)</span>
+        <span class="k">if</span> <span class="n">warn_unknown</span> <span class="ow">and</span> <span class="n">unknown_args</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">.parsers.helper</span> <span class="kn">import</span> <span class="n">warn_unknown_args</span>
+
+            <span class="n">warn_unknown_args</span><span class="p">(</span><span class="n">unknown_args</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">p_args</span></div>
 
 <div class="viewcode-block" id="ArgNamespace.get_non_defaults_args"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.ArgNamespace.get_non_defaults_args">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -1716,7 +1724,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 17, 2021.
+            Last updated on Aug 18, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
