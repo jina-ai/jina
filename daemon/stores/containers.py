@@ -108,14 +108,15 @@ class ContainerStore(BaseStore):
         :return: uri for mini-jinad
         """
 
-        if (
-            sys.platform == 'linux'
-            and 'microsoft' not in uname().release
-            and not os.path.exists('/.dockerenv')
-        ):
-            return f'http://localhost:{port}'
-        else:
-            return f'http://{__docker_host__}:{port}'
+        return f'http://localhost:{port}'
+        # if (
+        #     sys.platform == 'linux'
+        #     and 'microsoft' not in uname().release
+        #     and not os.path.exists('/.dockerenv')
+        # ):
+        #     return f'http://localhost:{port}'
+        # else:
+        #     return f'http://{__docker_host__}:{port}'
 
     def _command(self, port: int, workspace_id: DaemonID) -> str:
         """Returns command for mini-jinad container to be appended to default entrypoint

@@ -3,8 +3,6 @@ services:
   jinad:
     image: jinaai/jina:test-daemon
     container_name: test_upload_simple_non_standard_rootworkspace
-    ports:
-      - "9000:8000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/other_jinad:/tmp/jinad
@@ -12,3 +10,4 @@ services:
       - "host.docker.internal:host-gateway"
     environment:
       - JINA_DAEMON_BUILD=DEVEL
+    network_mode: "host"

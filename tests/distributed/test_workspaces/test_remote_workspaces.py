@@ -210,7 +210,7 @@ def test_upload_simple_non_standard_rootworkspace(docker_compose, mocker):
         .add()
         .add(
             uses='mwu_encoder.yml',
-            host='localhost:9000',
+            host='localhost:8000',
             upload_files=['mwu_encoder.py'],
         )
         .add()
