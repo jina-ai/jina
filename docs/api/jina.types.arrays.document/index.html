@@ -448,29 +448,6 @@ it builds a view or a copy from it. It also can accept a List</p>
 </dl>
 </dd></dl>
 <dl class="py method">
-<dt id="jina.types.arrays.document.DocumentArray.embeddings">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">embeddings</span></code><a class="headerlink" href="#jina.types.arrays.document.DocumentArray.embeddings" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a <cite>np.ndarray</cite> stacking all the <cite>embedding</cite> attributes as rows.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This operation assumes all embeddings have the same shape and dtype.
-All dtype and shape values are assumed to be equal to the values of the
-first element in the DocumentArray / DocumentArrayMemmap</p>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This operation currently does not support sparse arrays.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>embeddings stacked per row as <cite>np.ndarray</cite>.</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
 <dt id="jina.types.arrays.document.DocumentArray.append">
 <code class="sig-name descname"><span class="pre">append</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/document/#DocumentArray.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.document.DocumentArray.append" title="Permalink to this definition">¶</a></dt>
 <dd><p>Append <a href="#id5"><span class="problematic" id="id6">:param:`doc`</span></a> in <a class="reference internal" href="#jina.types.arrays.document.DocumentArray" title="jina.types.arrays.document.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>.</p>
@@ -614,6 +591,29 @@ but binary format gives much smaller size and faster save/load speed.</p></li>
 </dd>
 </dl>
 </dd></dl>
+<dl class="py method">
+<dt id="jina.types.arrays.document.DocumentArray.embeddings">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">embeddings</span></code><a class="headerlink" href="#jina.types.arrays.document.DocumentArray.embeddings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a <cite>np.ndarray</cite> stacking all the <cite>embedding</cite> attributes as rows.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This operation assumes all embeddings have the same shape and dtype.
+All dtype and shape values are assumed to be equal to the values of the
+first element in the DocumentArray / DocumentArrayMemmap</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This operation currently does not support sparse arrays.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>embeddings stacked per row as <cite>np.ndarray</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 <dl class="py class">
 <dt id="jina.types.arrays.document.DocumentArrayGetAttrMixin">
@@ -661,6 +661,29 @@ When <cite>fields</cite> has multiple values, then it returns a list of list. Th
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.types.arrays.document.DocumentArrayGetAttrMixin.blobs">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">blobs</span></code><a class="headerlink" href="#jina.types.arrays.document.DocumentArrayGetAttrMixin.blobs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a <cite>np.ndarray</cite> stacking all the <cite>blob</cite> attributes as rows.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This operation assumes all Documents have <cite>blob</cite> as content, blobs have the same shape and dtype.
+All dtype and shape values are assumed to be equal to the values of the
+first element in the DocumentArray / DocumentArrayMemmap</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This operation currently does not support sparse arrays.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>blobs stacked per row as <cite>np.ndarray</cite>.</p>
 </dd>
 </dl>
 </dd></dl>
