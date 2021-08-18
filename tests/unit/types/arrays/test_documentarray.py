@@ -465,3 +465,52 @@ def test_split(docarray_for_split):
     assert len(rv['a']) == 2
     rv = docarray_for_split.split('random')
     assert not rv  # wrong tag returns empty dict
+
+
+def test_da_get_embeddings():
+    da = DocumentArray(random_docs(100))
+    np.testing.assert_almost_equal(da.get_attributes('embedding'), da.embeddings)
+
+
+def test_da_get_embeddings_slice():
+    da = DocumentArray(random_docs(100))
+    np.testing.assert_almost_equal(
+        da.get_attributes('embedding')[10:20], da._get_embeddings(slice(10, 20))
+    )
+
+
+def test_embeddings_setter_da():
+    emb = np.random.random((100, 128))
+    da = DocumentArray([Document() for _ in range(100)])
+    da.embeddings = emb
+    np.testing.assert_almost_equal(da.embeddings, emb)
+
+    for x, doc in zip(emb, da):
+        np.testing.assert_almost_equal(x, doc.embedding)
+
+
+def test_embeddings_getter_da():
+    emb = np.random.random((100, 128))
+    da = DocumentArray([Document(embedding=x) for x in emb])
+    assert len(da) == 100
+    np.testing.assert_almost_equal(da.embeddings, emb)
+
+    for x, doc in zip(emb, da):
+        np.testing.assert_almost_equal(x, doc.embedding)
+
+
+def test_blobs_getter_da():
+    blobs = np.random.random((100, 10, 10))
+    da = DocumentArray([Document(blob=blob) for blob in blobs])
+    assert len(da) == 100
+    np.testing.assert_almost_equal(da.get_attributes('blob'), da.blobs)
+
+
+def test_blobs_setter_da():
+    blobs = np.random.random((100, 10, 10))
+    da = DocumentArray([Document() for _ in range(100)])
+    da.blobs = blobs
+    np.testing.assert_almost_equal(da.blobs, blobs)
+
+    for x, doc in zip(blobs, da):
+        np.testing.assert_almost_equal(x, doc.blob)

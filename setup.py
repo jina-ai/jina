@@ -119,7 +119,7 @@ def get_extra_requires(path, add_all=True):
 all_deps = get_extra_requires('extra-requirements.txt')
 
 core_deps = all_deps['core']
-perf_deps = all_deps['perf']
+perf_deps = all_deps['perf'].union(core_deps)
 standard_deps = all_deps['standard'].union(core_deps).union(perf_deps)
 
 if os.name == 'nt':

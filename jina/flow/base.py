@@ -106,6 +106,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         log_config: Optional[str] = None,
         memory_hwm: Optional[int] = -1,
         name: Optional[str] = 'gateway',
+        native: Optional[bool] = False,
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
         on_error_strategy: Optional[str] = 'IGNORE',
@@ -170,6 +171,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - ...
 
           When not given, then the default naming strategy will apply.
+        :param native: If set, only native Executors is allowed, and the Executor is always run inside ZEDRuntime.
         :param no_crud_endpoints: If set, /index, /search, /update, /delete endpoints are removed from HTTP interface.
 
                   Any executor that has `@requests(on=...)` bind with those values will receive data requests.
@@ -300,7 +302,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         _flow_parser = set_flow_parser()
         if args is None:
-            args = ArgNamespace.kwargs2namespace(kwargs, _flow_parser)
+            args = ArgNamespace.kwargs2namespace(kwargs, _flow_parser, True)
         self.args = args
         # common args should be the ones that can not be parsed by _flow_parser
         known_keys = vars(args)
@@ -451,6 +453,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         log_config: Optional[str] = None,
         memory_hwm: Optional[int] = -1,
         name: Optional[str] = None,
+        native: Optional[bool] = False,
         on_error_strategy: Optional[str] = 'IGNORE',
         parallel: Optional[int] = 1,
         peas_hosts: Optional[List[str]] = None,
@@ -524,6 +527,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - ...
 
           When not given, then the default naming strategy will apply.
+        :param native: If set, only native Executors is allowed, and the Executor is always run inside ZEDRuntime.
         :param on_error_strategy: The skip strategy on exceptions.
 
           - IGNORE: Ignore it, keep running all Executors in the sequel flow
@@ -675,7 +679,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if pod_role == PodRoleType.GATEWAY:
             parser = set_gateway_parser()
 
-        args = ArgNamespace.kwargs2namespace(kwargs, parser)
+        args = ArgNamespace.kwargs2namespace(kwargs, parser, True)
 
         if args.grpc_data_requests and args.runtime_cls == 'ZEDRuntime':
             args.runtime_cls = 'GRPCDataRuntime'
