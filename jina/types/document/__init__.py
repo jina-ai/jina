@@ -5,7 +5,6 @@ import mimetypes
 import os
 import urllib.parse
 import urllib.request
-import warnings
 from hashlib import blake2b
 from typing import (
     Iterable,
@@ -1179,10 +1178,10 @@ class Document(ProtoTypeMixin, VersionedMixin):
 
         mermaid_str = (
             """
-                                %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
-                                classDiagram
-
-                                        """
+                                    %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
+                                    classDiagram
+    
+                                            """
             + self.__mermaid_str__()
         )
 
