@@ -184,8 +184,8 @@ c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
 - 📓 [Developer Reference](https://docs.jina.ai)
 - 🧼 [Clean & Efficient Coding in Jina](.github/2.0/cookbooks/CleanCode.md)
 <!-- - 🚶‍ Walkthroughs
-  - [How to Build Hello World Chatbot](https://jina.ai/2021/06/28/tutorial.html)
-  - [Create Your Own Executor](https://jina.ai/2021/07/15/tutorial-executors.html) -->
+  - [How to Build Hello World Chatbot](https://jina.ai/tutorial.html)
+  - [Create Your Own Executor](https://jina.ai/tutorial-executors.html) -->
 
     
 ## Support
@@ -213,7 +213,7 @@ your active involvement.
 - [Contributing guidelines](CONTRIBUTING.md)
 - [Code of conduct](https://github.com/jina-ai/jina/blob/master/.github/CODE_OF_CONDUCT.md)
   community
-- [Get yourself some swags](https://jina.ai/2021/07/12/swag.html)
+- [Get yourself some swags](https://jina.ai/swag.html)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-171-orange.svg?style=flat-square)](#contributors-)
