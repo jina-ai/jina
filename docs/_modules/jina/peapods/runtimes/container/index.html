@@ -553,6 +553,7 @@
         <span class="kn">from</span> <span class="nn">....parsers</span> <span class="kn">import</span> <span class="n">set_pea_parser</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runs_in_docker</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">native</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">non_defaults</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">get_non_defaults_args</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
             <span class="n">set_pea_parser</span><span class="p">(),</span>
