@@ -9,7 +9,6 @@ import pytest
 from jina import Document, DocumentArray
 from jina.types.arrays.memmap import DocumentArrayMemmap
 from jina.math.dimensionality_reduction import PCA
-from tests import random_docs
 
 
 @pytest.fixture()
@@ -399,29 +398,3 @@ def test_match_inclusive_dam(tmpdir):
     assert len(da2) == 3
     traversed = dam.traverse_flat(traversal_paths=['m', 'mm', 'mmm'])
     assert len(list(traversed)) == 9
-
-
-def test_da_get_embeddings():
-    da = DocumentArray(random_docs(100))
-    np.testing.assert_almost_equal(da.get_attributes('embedding'), da.embeddings)
-
-
-def test_dam_embeddings(tmpdir):
-    dam = DocumentArrayMemmap(tmpdir)
-    dam.extend(Document(embedding=np.array([1, 2, 3, 4])) for _ in range(100))
-    np.testing.assert_almost_equal(dam.get_attributes('embedding'), dam.embeddings)
-
-
-def test_da_get_embeddings():
-    da = DocumentArray(random_docs(100))
-    np.testing.assert_almost_equal(
-        da.get_attributes('embedding')[10:20], da._get_embeddings(slice(10, 20))
-    )
-
-
-def test_dam_get_embeddings(tmpdir):
-    da = DocumentArrayMemmap(tmpdir)
-    da.extend(Document(embedding=np.array([1, 2, 3, 4])) for _ in range(100))
-    np.testing.assert_almost_equal(
-        da.get_attributes('embedding')[10:20], da._get_embeddings(slice(10, 20))
-    )

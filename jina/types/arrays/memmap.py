@@ -446,11 +446,7 @@ class DocumentArrayMemmap(
         index = None
         fields = list(fields)
         if 'embedding' in fields:
-            if self._embeddings_memmap is None:
-                embeddings = [doc.get_attributes('embedding') for doc in self]
-                self._embeddings_memmap = np.asarray(embeddings)
-            else:
-                embeddings = list(self._embeddings_memmap)
+            embeddings = list(self.embeddings)  # type: List[np.ndarray]
             index = fields.index('embedding')
             fields.remove('embedding')
         if fields:
@@ -521,6 +517,41 @@ class DocumentArrayMemmap(
             fp[:] = other_embeddings[:]
             fp.flush()
             del fp
+
+    @property
+    def embeddings(self) -> np.ndarray:
+        """Return a `np.ndarray` stacking all the `embedding` attributes as rows.
+
+        :return: embeddings stacked per row as `np.ndarray`.
+
+        .. warning:: This operation assumes all embeddings have the same shape and dtype.
+            All dtype and shape values are assumed to be equal to the values of the
+            first element in the DocumentArray / DocumentArrayMemmap.
+
+        .. warning:: This operation currently does not support sparse arrays.
+        """
+        if self._embeddings_memmap is not None:
+            return self._embeddings_memmap
+
+        x_mat = b''.join(d.proto.embedding.dense.buffer for d in self)
+        embeds = np.frombuffer(
+            x_mat, dtype=self[0].proto.embedding.dense.dtype
+        ).reshape((len(self), self[0].proto.embedding.dense.shape[0]))
+
+        self._embeddings_memmap = embeds
+
+        return embeds
+
+    @embeddings.setter
+    def embeddings(self, emb: np.ndarray):
+
+        assert len(emb) == len(self), (
+            'the number of rows in the input ({len(emb)}),'
+            'should match the number of Documents ({len(self)})'
+        )
+
+        for d, x in zip(self, emb):
+            d.embedding = x
 
     def _invalidate_embeddings_memmap(self):
         self._embeddings_memmap = None

@@ -146,6 +146,13 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
     )
 
     gp.add_argument(
+        '--native',
+        action='store_true',
+        default=False,
+        help='If set, only native Executors is allowed, and the Executor is always run inside ZEDRuntime.',
+    )
+
+    gp.add_argument(
         '--num-part',
         type=int,
         default=0,
@@ -177,6 +184,15 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
         action='store_true',
         default=False,
         help='Tells if a Pea should use gRPC for data requests. Works only with dynamic routing out.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+
+    gp.add_argument(
+        '--runs-in-docker',
+        action='store_true',
+        default=False,
+        help='Informs a Pea that runs in a container. Important to properly set networking information'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )

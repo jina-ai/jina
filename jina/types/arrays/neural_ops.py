@@ -255,25 +255,6 @@ class DocumentArrayNeuralOpsMixin:
         else:
             plt.show()
 
-    @property
-    def embeddings(self) -> np.ndarray:
-        """Return a `np.ndarray` stacking all the `embedding` attributes as rows.
-
-        Warning: This operation assumes all embeddings have the same shape and dtype.
-                 All dtype and shape values are assumed to be equal to the values of the
-                 first element in the DocumentArray / DocumentArrayMemmap
-
-        Warning: This operation currently does not support sparse arrays.
-
-        :return: embeddings stacked per row as `np.ndarray`.
-        """
-
-        x_mat = b''.join(d.proto.embedding.dense.buffer for d in self)
-
-        return np.frombuffer(x_mat, dtype=self[0].proto.embedding.dense.dtype).reshape(
-            (len(self), self[0].proto.embedding.dense.shape[0])
-        )
-
     def _get_embeddings(self, indices: Optional[slice] = None) -> np.ndarray:
         """Return a `np.ndarray` stacking  the `embedding` attributes as rows.
         If indices is passed the embeddings from the indices are retrieved, otherwise
@@ -282,11 +263,11 @@ class DocumentArrayNeuralOpsMixin:
         Example: `self._get_embeddings(10:20)` will return 10 embeddings from positions 10 to 20
                   in the `DocumentArray` or `DocumentArrayMemmap`
 
-        Warning: This operation assumes all embeddings have the same shape and dtype.
+        .. warning:: This operation assumes all embeddings have the same shape and dtype.
                  All dtype and shape values are assumed to be equal to the values of the
                  first element in the DocumentArray / DocumentArrayMemmap
 
-        Warning: This operation currently does not support sparse arrays.
+        .. warning:: This operation currently does not support sparse arrays.
 
         :param indices: slice of data from where to retrieve embeddings.
         :return: embeddings stacked per row as `np.ndarray`.
