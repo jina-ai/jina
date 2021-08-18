@@ -33,10 +33,10 @@ outputs:
     - pip
     run:
     - python
+    - numpy
+    - grpcio >=1.33.1
     - pyzmq >=17.1.0
     - tornado >=5.1.0
-    - grpcio >=1.33.1
-    - numpy
     - pyyaml >=5.3.1
     - protobuf >=3.13.0
 - name: jina-perf
@@ -55,8 +55,8 @@ outputs:
     run:
     - python >=3.7
     - {{ pin_subpackage('jina-core', exact=True) }}
-    - lz4 <3.1.2
     - uvloop
+    - lz4 <3.1.2
 - name: jina
   test:
     requires:
@@ -73,22 +73,22 @@ outputs:
     run:
     - python >=3.7
     - {{ pin_subpackage('jina-core', exact=True) }}
-    - lz4 <3.1.2
-    - filelock
+    - uvloop
+    - cryptography
     - aiostream
     - uvicorn[standard] >=0.14.0
-    - websockets
-    - uvloop
-    - pathspec
-    - rich
-    - docker-py
+    - lz4 <3.1.2
     - python-multipart
-    - cryptography
-    - fastapi
+    - pathspec
+    - docker-py
     - aiofiles
-    - requests
     - aiohttp
+    - requests
+    - filelock
     - pydantic
+    - websockets
+    - fastapi
+    - rich
 - name: jina-daemon
   test:
     requires:
@@ -105,23 +105,23 @@ outputs:
     run:
     - python >=3.7
     - {{ pin_subpackage('jina-core', exact=True) }}
-    - fluent-logger
-    - lz4 <3.1.2
-    - filelock
-    - aiostream
-    - uvicorn[standard] >=0.14.0
-    - websockets
     - uvloop
-    - pathspec
-    - rich
-    - python-multipart
-    - docker-py
+    - fluent-logger
     - cryptography
+    - uvicorn[standard] >=0.14.0
+    - aiostream
+    - lz4 <3.1.2
+    - websockets
+    - pathspec
     - fastapi
     - aiofiles
-    - requests
     - aiohttp
+    - requests
+    - filelock
     - pydantic
+    - python-multipart
+    - docker-py
+    - rich
 - name: jina-demo
   test:
     requires:
@@ -138,22 +138,26 @@ outputs:
     run:
     - python >=3.7
     - {{ pin_subpackage('jina-core', exact=True) }}
-    - lz4 <3.1.2
-    - filelock
-    - aiostream
-    - uvicorn[standard] >=0.14.0
-    - websockets
-    - uvloop
-    - pathspec
-    - rich
-    - docker-py
-    - python-multipart
     - cryptography
-    - fastapi
-    - aiofiles
-    - requests
+    - lz4 <3.1.2
+    - pytorch-cpu >=1.1.0
     - aiohttp
+    - filelock
+    - rich
+    - uvicorn[standard] >=0.14.0
+    - pathspec
+    - python-multipart
+    - docker-py
+    - aiostream
+    - Pillow
+    - aiofiles
     - pydantic
+    - fastapi
+    - torchvision >=0.3.0
+    - uvloop
+    - transformers >=2.6.0
+    - requests
+    - websockets
 
 about:
   home: https://github.com/jina-ai/jina/
