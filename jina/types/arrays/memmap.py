@@ -31,6 +31,7 @@ PAGE_SIZE = mmap.ALLOCATIONGRANULARITY
 
 class DocumentArrayMemmap(
     TraversableSequence,
+    DocumentArrayGetAttrMixin,
     DocumentArrayNeuralOpsMixin,
     DocumentArraySearchOpsMixin,
     Itr,

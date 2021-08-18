@@ -671,13 +671,16 @@ class ArgNamespace:
 
     @staticmethod
     def kwargs2namespace(
-        kwargs: Dict[str, Union[str, int, bool]], parser: ArgumentParser
+        kwargs: Dict[str, Union[str, int, bool]],
+        parser: ArgumentParser,
+        warn_unknown: bool = False,
     ) -> Namespace:
         """
         Convert dict to a namespace.
 
         :param kwargs: dictionary of key-values to be converted
         :param parser: the parser for building kwargs into a namespace
+        :param warn_unknown: True, if unknown arguments should be logged
         :return: argument list
         """
         args = ArgNamespace.kwargs2list(kwargs)
@@ -688,6 +691,11 @@ class ArgNamespace:
                 f'bad arguments "{args}" with parser {parser}, '
                 'you may want to double check your args '
             )
+        if warn_unknown and unknown_args:
+            from .parsers.helper import warn_unknown_args
+
+            warn_unknown_args(unknown_args)
+
         return p_args
 
     @staticmethod

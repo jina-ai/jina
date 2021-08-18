@@ -57,6 +57,19 @@ class DocumentArrayGetAttrMixin:
     def __iter__(self):
         ...
 
+    @abstractmethod
+    def __len__(self):
+        """Any implementation needs to implement the `length` method"""
+        ...
+
+    @abstractmethod
+    def __getitem__(self, item: int):
+        """Any implementation needs to implement access via integer item
+
+        :param item: the item index to access
+        """
+        ...
+
     def get_attributes(self, *fields: str) -> Union[List, List[List]]:
         """Return all nonempty values of the fields from all docs this array contains
 
@@ -107,6 +120,38 @@ class DocumentArrayGetAttrMixin:
         :param emb: the embeddings to set
         """
         ...
+
+    @property
+    def blobs(self) -> np.ndarray:
+        """Return a `np.ndarray` stacking all the `blob` attributes as rows.
+
+        .. warning:: This operation assumes all Documents have `blob` as content, blobs have the same shape and dtype.
+                 All dtype and shape values are assumed to be equal to the values of the
+                 first element in the DocumentArray / DocumentArrayMemmap
+
+        .. warning:: This operation currently does not support sparse arrays.
+
+        :return: blobs stacked per row as `np.ndarray`.
+        """
+        x_mat = b''.join(d.proto.blob.dense.buffer for d in self)
+
+        return np.frombuffer(x_mat, dtype=self[0].proto.blob.dense.dtype).reshape(
+            (len(self), *self[0].proto.blob.dense.shape)
+        )
+
+    @blobs.setter
+    def blobs(self, b: np.ndarray):
+        """Set the blobs of the Documents
+
+        :param b: The blobs matrix to set
+        """
+
+        assert len(b) == len(
+            self
+        ), f'the number of rows in the input ({len(b)}), should match the number of Documents ({len(self)})'
+
+        for d, x in zip(self, b):
+            d.blob = x
 
 
 class DocumentArray(
@@ -245,39 +290,6 @@ class DocumentArray(
         for doc in other:
             self.append(doc)
         return self
-
-    @property
-    def embeddings(self) -> np.ndarray:
-        """Return a `np.ndarray` stacking all the `embedding` attributes as rows.
-
-        .. warning:: This operation assumes all embeddings have the same shape and dtype.
-                 All dtype and shape values are assumed to be equal to the values of the
-                 first element in the DocumentArray / DocumentArrayMemmap
-
-        .. warning:: This operation currently does not support sparse arrays.
-
-        :return: embeddings stacked per row as `np.ndarray`.
-        """
-        x_mat = b''.join(d.proto.embedding.dense.buffer for d in self)
-
-        return np.frombuffer(x_mat, dtype=self[0].proto.embedding.dense.dtype).reshape(
-            (len(self), self[0].proto.embedding.dense.shape[0])
-        )
-
-    @embeddings.setter
-    def embeddings(self, emb: np.ndarray):
-        """Set the embeddings of the Documents
-
-        :param emb: The embedding matrix to set
-        """
-
-        assert len(emb) == len(self), (
-            'the number of rows in the input ({len(emb)}),'
-            'should match the number of Documents ({len(self)})'
-        )
-
-        for d, x in zip(self, emb):
-            d.embedding = x
 
     def append(self, doc: 'Document'):
         """
@@ -491,3 +503,36 @@ class DocumentArray(
     @staticmethod
     def _flatten(sequence):
         return DocumentArray(list(itertools.chain.from_iterable(sequence)))
+
+    # Properties for fast access of commonly used attributes
+    @property
+    def embeddings(self) -> np.ndarray:
+        """Return a `np.ndarray` stacking all the `embedding` attributes as rows.
+
+        .. warning:: This operation assumes all embeddings have the same shape and dtype.
+                 All dtype and shape values are assumed to be equal to the values of the
+                 first element in the DocumentArray / DocumentArrayMemmap
+
+        .. warning:: This operation currently does not support sparse arrays.
+
+        :return: embeddings stacked per row as `np.ndarray`.
+        """
+        x_mat = b''.join(d.proto.embedding.dense.buffer for d in self)
+
+        return np.frombuffer(x_mat, dtype=self[0].proto.embedding.dense.dtype).reshape(
+            (len(self), self[0].proto.embedding.dense.shape[0])
+        )
+
+    @embeddings.setter
+    def embeddings(self, emb: np.ndarray):
+        """Set the embeddings of the Documents
+
+        :param emb: The embedding matrix to set
+        """
+
+        assert len(emb) == len(
+            self
+        ), f'the number of rows in the input ({len(emb)}), should match the number of Documents ({len(self)})'
+
+        for d, x in zip(self, emb):
+            d.embedding = x
