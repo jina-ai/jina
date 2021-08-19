@@ -490,16 +490,6 @@ your repository (as you would normally do with python packages). Specifically, y
 - use relative imports (`from .bar import foo`, and not `from bar import foo`) inside the python modules in this folder
 - Only list `executor/__init__.py` under `py_modules` in `config.yml` - this way Python knows that you are importing a package, and makes sure that all the relative imports within your package work properly
 
-This way of structuring your files has several advantages:
-- it is the standard way of creating Python packages, so you may already be familiar with it
-- it avoids cluttering the root of your repository with many python files
-- it enables you to try out your executor from the console, i.e. you can do things like this
-    ```python
-    >>> from executor import MyExecutor
-    >>> my_exec = MyExecutor()
-    ```
-- you can easily use it with test automation frameworks, like Pytest. Just remember to import objects from the `executor` package in the test files, e.g. you would use `from executor import MyExecutor` inside `tests/test_unit.py`.
-
 To make things more specific, take this repository structure as an example
 
 ```
