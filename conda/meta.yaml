@@ -19,6 +19,8 @@ outputs:
         - jina = cli:main
         - jinad = daemon:main
       script: python -m pip install . --no-deps -vv
+      script_env:
+        - JINA_PIP_INSTALL_CORE=1
     test:
       requires:
         - pip
@@ -32,13 +34,13 @@ outputs:
         - python >=3.7
         - pip
       run:
-        - python
+        - python >=3.7
         - protobuf >=3.13.0
+        - numpy
         - tornado >=5.1.0
         - pyzmq >=17.1.0
-        - grpcio >=1.33.1
-        - numpy
         - pyyaml >=5.3.1
+        - grpcio >=1.33.1
   - name: jina-perf
     test:
       requires:
@@ -48,15 +50,27 @@ outputs:
       commands:
         - pip check
         - jina --version
+    build:
+      entry_points:
+        - jina = cli:main
+        - jinad = daemon:main
+      script: python -m pip install . --no-deps -vv
+      script_env:
+        - JINA_PIP_INSTALL_PERF=1
     requirements:
       host:
         - python >=3.7
         - pip
       run:
         - python >=3.7
-        - {{ pin_subpackage('jina-core', exact=True) }}
-        - uvloop
+        - protobuf >=3.13.0
+        - numpy
+        - tornado >=5.1.0
+        - pyzmq >=17.1.0
         - lz4 <3.1.2
+        - grpcio >=1.33.1
+        - pyyaml >=5.3.1
+        - uvloop
   - name: jina
     test:
       requires:
@@ -66,98 +80,39 @@ outputs:
       commands:
         - pip check
         - jina --version
+    build:
+      entry_points:
+        - jina = cli:main
+        - jinad = daemon:main
+      script: python -m pip install . --no-deps -vv
     requirements:
       host:
         - python >=3.7
         - pip
       run:
         - python >=3.7
-        - {{ pin_subpackage('jina-core', exact=True) }}
-        - fastapi
-        - rich
-        - aiostream
-        - websockets
-        - pydantic
-        - python-multipart
-        - requests
-        - uvloop
-        - uvicorn[standard] >=0.14.0
+        - protobuf >=3.13.0
+        - pyzmq >=17.1.0
         - docker-py
-        - lz4 <3.1.2
-        - cryptography
-        - aiohttp
-        - filelock
-        - pathspec
-        - aiofiles
-  - name: jina-daemon
-    test:
-      requires:
-        - pip
-      imports:
-        - jina
-      commands:
-        - pip check
-        - jina --version
-    requirements:
-      host:
-        - python >=3.7
-        - pip
-      run:
-        - python >=3.7
-        - {{ pin_subpackage('jina-core', exact=True) }}
-        - fastapi
-        - rich
         - aiostream
-        - websockets
-        - fluent-logger
-        - pydantic
-        - python-multipart
-        - requests
-        - uvloop
-        - uvicorn[standard] >=0.14.0
-        - docker-py
-        - lz4 <3.1.2
-        - cryptography
-        - aiohttp
-        - filelock
-        - pathspec
-        - aiofiles
-  - name: jina-demo
-    test:
-      requires:
-        - pip
-      imports:
-        - jina
-      commands:
-        - pip check
-        - jina --version
-    requirements:
-      host:
-        - python >=3.7
-        - pip
-      run:
-        - python >=3.7
-        - {{ pin_subpackage('jina-core', exact=True) }}
-        - pydantic
-        - torchvision >=0.3.0
-        - pytorch-cpu >=1.1.0
-        - lz4 <3.1.2
-        - aiohttp
-        - pathspec
-        - aiofiles
-        - websockets
-        - transformers >=2.6.0
-        - aiostream
-        - requests
-        - uvloop
-        - uvicorn[standard] >=0.14.0
-        - docker-py
-        - rich
-        - filelock
-        - fastapi
-        - Pillow
         - python-multipart
         - cryptography
+        - aiofiles
+        - uvicorn >=0.14.0
+        - rich
+        - pydantic
+        - fastapi
+        - grpcio >=1.33.1
+        - uvloop
+        - websockets
+        - numpy
+        - tornado >=5.1.0
+        - pyyaml >=5.3.1
+        - filelock
+        - requests
+        - pathspec
+        - aiohttp
+        - lz4 <3.1.2
 
 about:
   home: https://github.com/jina-ai/jina/

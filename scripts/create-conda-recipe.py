@@ -1,5 +1,6 @@
 import re
 from collections import defaultdict
+from copy import deepcopy
 
 import requests
 import yaml
@@ -26,7 +27,7 @@ def get_extra_requires(path):
                     assert len(k) <= 2, 'requirement should not have more than 2 parts'
 
                     # Can not use extra requirements in conda - i.e. uvicorn[standard]
-                    k[0] = re.sub(r'\[\w\]', '', k[0])
+                    k[0] = re.sub(r'\[\w+\]', '', k[0])
 
                     # The docker package is docker-py on conda-forge
                     if k[0] == 'docker':
@@ -74,13 +75,6 @@ reqs = {}
 reqs['core'] = extra_deps['core']
 reqs['perf'] = reqs['core'].union(extra_deps['perf'])
 reqs['standard'] = reqs['perf'].union(extra_deps['standard'])
-reqs['daemon'] = reqs['standard'].union(extra_deps['daemon'])
-reqs['demo'] = reqs['standard'].union(extra_deps['demo'])
-
-# Make all the others a diff from core:
-for key in reqs:
-    if key != 'core':
-        reqs[key] = reqs[key] - reqs['core']
 
 
 ######################################
@@ -109,11 +103,19 @@ test_object = {
     'imports': ['jina'],
     'commands': ['pip check', 'jina --version'],
 }
-build_object = {
+build_object_core = {
     'entry_points': ['jina = cli:main', 'jinad = daemon:main'],
     'script': 'python -m pip install . --no-deps -vv',
+    'script_env': ['JINA_PIP_INSTALL_CORE=1'],
 }
-core_pinned = "<{ pin_subpackage('jina-core', exact=True) }>"
+
+build_object_perf = deepcopy(build_object_core)
+build_object_perf['script_env'] = ['JINA_PIP_INSTALL_PERF=1']
+
+build_object_standard = deepcopy(build_object_perf)
+del build_object_standard['script_env']
+
+jina_pinned = "<{ pin_subpackage('jina', exact=True) }>"
 
 recipe_object = {
     'package': {'name': '<{ name|lower }>', 'version': '<{ version }>'},
@@ -125,43 +127,29 @@ recipe_object = {
     'outputs': [
         {
             'name': 'jina-core',
-            'build': build_object,
+            'build': build_object_core,
             'test': test_object,
             'requirements': {
                 'host': ['python >=3.7', 'pip'],
-                'run': ['python'] + list(reqs['core']),
+                'run': ['python >=3.7'] + list(reqs['core']),
             },
         },
         {
             'name': 'jina-perf',
             'test': test_object,
+            'build': build_object_perf,
             'requirements': {
                 'host': ['python >=3.7', 'pip'],
-                'run': ['python >=3.7', core_pinned] + list(reqs['perf']),
+                'run': ['python >=3.7'] + list(reqs['perf']),
             },
         },
         {
             'name': 'jina',  # standard
             'test': test_object,
+            'build': build_object_standard,
             'requirements': {
                 'host': ['python >=3.7', 'pip'],
-                'run': ['python >=3.7', core_pinned] + list(reqs['standard']),
-            },
-        },
-        {
-            'name': 'jina-daemon',
-            'test': test_object,
-            'requirements': {
-                'host': ['python >=3.7', 'pip'],
-                'run': ['python >=3.7', core_pinned] + list(reqs['daemon']),
-            },
-        },
-        {
-            'name': 'jina-demo',
-            'test': test_object,
-            'requirements': {
-                'host': ['python >=3.7', 'pip'],
-                'run': ['python >=3.7', core_pinned] + list(reqs['demo']),
+                'run': ['python >=3.7'] + list(reqs['standard']),
             },
         },
     ],
