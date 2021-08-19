@@ -520,7 +520,6 @@
 
         <span class="n">exec_description</span> <span class="o">=</span> <span class="s1">'{{}}'</span>
         <span class="n">exec_keywords</span> <span class="o">=</span> <span class="s1">'{{}}'</span>
-        <span class="n">exec_author</span> <span class="o">=</span> <span class="s1">'{{}}'</span>
         <span class="n">exec_url</span> <span class="o">=</span> <span class="s1">'{{}}'</span>
 
         <span class="n">is_dockerfile</span> <span class="o">=</span> <span class="kc">False</span>
@@ -538,14 +537,6 @@
                 <span class="ow">or</span> <span class="n">exec_description</span>
             <span class="p">)</span>
 
-            <span class="n">exec_author</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">Prompt</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span>
-                    <span class="s1">':grey_question: What is the [bold]author name[/bold]?</span><span class="se">\n</span><span class="s1">'</span>
-                    <span class="sa">f</span><span class="s1">'[dim]Example: John Doe[/dim]'</span>
-                <span class="p">)</span>
-                <span class="ow">or</span> <span class="n">exec_author</span>
-            <span class="p">)</span>
-
             <span class="n">exec_keywords</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">Prompt</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span>
                     <span class="s1">':grey_question: Please give some [bold]keywords[/bold] to help people search your executor [dim](separated by space)[/dim]</span><span class="se">\n</span><span class="s1">'</span>
@@ -556,8 +547,8 @@
 
             <span class="n">exec_url</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">Prompt</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span>
-                    <span class="s1">':grey_question: What is the [bold]URL[/bold] for documentation/reference/more info?</span><span class="se">\n</span><span class="s1">'</span>
-                    <span class="sa">f</span><span class="s1">'[dim]Example: https://docs.jina.ai[/dim]'</span>
+                    <span class="s1">':grey_question: What is the [bold]URL[/bold] for GitHub repo?</span><span class="se">\n</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">'[dim]Example: https://github.com/yourname/my-executor[/dim]'</span>
                 <span class="p">)</span>
                 <span class="ow">or</span> <span class="n">exec_url</span>
             <span class="p">)</span>
@@ -594,7 +585,6 @@
                         <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'{{exec_name}}'</span><span class="p">,</span> <span class="n">exec_name</span><span class="p">)</span>
                         <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'{{exec_description}}'</span><span class="p">,</span> <span class="n">exec_description</span><span class="p">)</span>
                         <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'{{exec_keywords}}'</span><span class="p">,</span> <span class="n">exec_keywords</span><span class="p">)</span>
-                        <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'{{exec_author}}'</span><span class="p">,</span> <span class="n">exec_author</span><span class="p">)</span>
                         <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'{{exec_url}}'</span><span class="p">,</span> <span class="n">exec_url</span><span class="p">)</span>
                     <span class="p">)</span>
 
@@ -661,7 +651,6 @@
         <span class="n">field_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'Human-readable title of the Executor'</span><span class="p">)</span>
         <span class="n">field_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">'alias'</span><span class="p">,</span> <span class="s1">'The unique identifier in Jina Hub'</span><span class="p">)</span>
         <span class="n">field_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">'description'</span><span class="p">,</span> <span class="s1">'Human-readable description of the Executor'</span><span class="p">)</span>
-        <span class="n">field_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">'author'</span><span class="p">,</span> <span class="s1">'The author of the Executor'</span><span class="p">)</span>
         <span class="n">field_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">'url'</span><span class="p">,</span> <span class="s1">'URL to find more information on the Executor'</span><span class="p">)</span>
         <span class="n">field_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">'keywords'</span><span class="p">,</span> <span class="s1">'Keywords that help user find the Executor'</span><span class="p">)</span>
 
