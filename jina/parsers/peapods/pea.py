@@ -92,6 +92,7 @@ def mixin_pea_parser(parser):
 
     gp.add_argument(
         '--metas',
+        type=str,
         help='Contains all meta arguments for the Executor.'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
