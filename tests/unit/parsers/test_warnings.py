@@ -56,3 +56,14 @@ executors:
     with pytest.warns(None, match='ignored unknown') as record:
         Flow().load_config(yaml)
     assert len(record) == 0
+
+
+def test_executor_override_with_works():
+    yaml = '''jtype: Flow
+version: 1
+executors:
+    - override_with: 1
+    '''
+    with pytest.warns(None, match='ignored unknown') as record:
+        Flow().load_config(yaml)
+    assert len(record) == 2

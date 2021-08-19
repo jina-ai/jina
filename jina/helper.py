@@ -639,22 +639,18 @@ class ColorContext:
         print(_RESET, flush=True, end='')
 
 
-DEPRECATED_ARGS_MAPPING = {'override_with': 'uses_with'}
-
-
 def warn_unknown_args(unknown_args: List[str]):
     """Creates warnings for all given arguments.
 
     :param unknown_args: arguments that are unknown to Jina
     """
     for arg in unknown_args:
-        normalized_arg = arg.replace('--', '').replace('-', '_')
-        if normalized_arg in DEPRECATED_ARGS_MAPPING:
-            new_argument = DEPRECATED_ARGS_MAPPING[normalized_arg]
-            if '-' in arg:
-                new_argument = new_argument.replace('_', '-')
+        from .parsers.deprecated import get_deprecated_replacement
+
+        new_arg = get_deprecated_replacement(arg)
+        if new_arg:
             warnings.warn(
-                f'''Ignored the deprecated argument '{arg}'. Please use '{new_argument}'.'''
+                f'''Ignored the deprecated argument '{arg}'. Please use '{new_arg}'.'''
             )
         else:
             warnings.warn(f'ignored unknown argument: {arg}')
