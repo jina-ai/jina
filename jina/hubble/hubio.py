@@ -125,8 +125,8 @@ This guide helps you to create your own Executor in 30 seconds.''',
 
         exec_description = '{{}}'
         exec_keywords = '{{}}'
-        exec_author = '{{}}'
         exec_url = '{{}}'
+        exec_license = '{{}}'
 
         is_dockerfile = False
 
@@ -143,14 +143,6 @@ This guide helps you to create your own Executor in 30 seconds.''',
                 or exec_description
             )
 
-            exec_author = (
-                Prompt.ask(
-                    ':grey_question: What is the [bold]author name[/bold]?\n'
-                    f'[dim]Example: John Doe[/dim]'
-                )
-                or exec_author
-            )
-
             exec_keywords = (
                 Prompt.ask(
                     ':grey_question: Please give some [bold]keywords[/bold] to help people search your executor [dim](separated by space)[/dim]\n'
@@ -161,10 +153,18 @@ This guide helps you to create your own Executor in 30 seconds.''',
 
             exec_url = (
                 Prompt.ask(
-                    ':grey_question: What is the [bold]URL[/bold] for documentation/reference/more info?\n'
-                    f'[dim]Example: https://docs.jina.ai[/dim]'
+                    ':grey_question: What is the [bold]URL[/bold] for GitHub repo?\n'
+                    f'[dim]Example: https://github.com/jina-ai/executors[/dim]'
                 )
                 or exec_url
+            )
+
+            exec_license = (
+                Prompt.ask(
+                    ':grey_question: What is the [bold]license[/bold]?\n'
+                    f'[dim]Example: apache-2.0[/dim]'
+                )
+                or exec_license
             )
 
             print(
@@ -199,8 +199,8 @@ your executor has non-trivial dependencies or must be run under certain environm
                         .replace('{{exec_name}}', exec_name)
                         .replace('{{exec_description}}', exec_description)
                         .replace('{{exec_keywords}}', exec_keywords)
-                        .replace('{{exec_author}}', exec_author)
                         .replace('{{exec_url}}', exec_url)
+                        .replace('{{exec_license}}', exec_license)
                     )
 
                     f = [
@@ -266,9 +266,9 @@ py_modules:
         field_table.add_row('name', 'Human-readable title of the Executor')
         field_table.add_row('alias', 'The unique identifier in Jina Hub')
         field_table.add_row('description', 'Human-readable description of the Executor')
-        field_table.add_row('author', 'The author of the Executor')
         field_table.add_row('url', 'URL to find more information on the Executor')
         field_table.add_row('keywords', 'Keywords that help user find the Executor')
+        field_table.add_row('license', 'The license of the Executor')
 
         table.add_row('', field_table)
 
