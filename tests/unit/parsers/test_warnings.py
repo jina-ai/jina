@@ -9,17 +9,6 @@ class MyExecutor(Executor):
         super().__init__(*args, **kwargs)
 
 
-def test_flow_warnings():
-    yaml = '''jtype: Flow
-version: 1
-foo: bar
-    '''
-    with pytest.warns(UserWarning, match='ignored unknown') as record:
-        Flow().load_config(yaml)
-    assert len(record) == 1
-    assert record[0].message.args[0].startswith('ignored unknown')
-
-
 def test_flow_with_warnings():
     yaml = '''jtype: Flow
 version: 1
