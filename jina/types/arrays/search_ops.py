@@ -126,11 +126,16 @@ class DocumentArraySearchOpsMixin:
             return an empty dict.
         """
         from .document import DocumentArray
+        from ...helper import dunder_get
 
         rv = defaultdict(DocumentArray)
         for doc in self:
-            value = doc.tags.get(tag)
-            if not value:
+            if '__' in tag:
+                value = dunder_get(doc.tags, tag)
+            else:
+                value = doc.tags.get(tag, None)
+
+            if value is None:
                 continue
             rv[value].append(doc)
         return dict(rv)
