@@ -233,6 +233,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.parsers.base/">jina.parsers.base module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.parsers.client/">jina.parsers.client module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/jina.parsers.deprecated/">jina.parsers.deprecated module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.parsers.export_api/">jina.parsers.export_api module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.parsers.flow/">jina.parsers.flow module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.parsers.helloworld/">jina.parsers.helloworld module</a></li>
@@ -1034,6 +1035,23 @@
         <span class="nb">print</span><span class="p">(</span><span class="n">_RESET</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span>
 
 
+<span class="k">def</span> <span class="nf">warn_unknown_args</span><span class="p">(</span><span class="n">unknown_args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+    <span class="sd">"""Creates warnings for all given arguments.</span>
+
+<span class="sd">    :param unknown_args: arguments that are unknown to Jina</span>
+<span class="sd">    """</span>
+    <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">unknown_args</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">.parsers.deprecated</span> <span class="kn">import</span> <span class="n">get_deprecated_replacement</span>
+
+        <span class="n">new_arg</span> <span class="o">=</span> <span class="n">get_deprecated_replacement</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">new_arg</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'''Ignored the deprecated argument '</span><span class="si">{</span><span class="n">arg</span><span class="si">}</span><span class="s1">'. Please use '</span><span class="si">{</span><span class="n">new_arg</span><span class="si">}</span><span class="s1">'.'''</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">'ignored unknown argument: </span><span class="si">{</span><span class="n">arg</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="ArgNamespace"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.ArgNamespace">[docs]</a><span class="k">class</span> <span class="nc">ArgNamespace</span><span class="p">:</span>
     <span class="sd">"""Helper function for argparse.Namespace object."""</span>
 
@@ -1079,16 +1097,8 @@
 <span class="sd">        :return: argument list</span>
 <span class="sd">        """</span>
         <span class="n">args</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2list</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">p_args</span><span class="p">,</span> <span class="n">unknown_args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_known_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">SystemExit</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'bad arguments "</span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s1">" with parser </span><span class="si">{</span><span class="n">parser</span><span class="si">}</span><span class="s1">, '</span>
-                <span class="s1">'you may want to double check your args '</span>
-            <span class="p">)</span>
+        <span class="n">p_args</span><span class="p">,</span> <span class="n">unknown_args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_known_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">warn_unknown</span> <span class="ow">and</span> <span class="n">unknown_args</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">.parsers.helper</span> <span class="kn">import</span> <span class="n">warn_unknown_args</span>
-
             <span class="n">warn_unknown_args</span><span class="p">(</span><span class="n">unknown_args</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">p_args</span></div>

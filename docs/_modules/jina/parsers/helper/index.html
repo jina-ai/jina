@@ -233,6 +233,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.base/">jina.parsers.base module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.client/">jina.parsers.client module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.deprecated/">jina.parsers.deprecated module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.export_api/">jina.parsers.export_api module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.flow/">jina.parsers.flow module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.helloworld/">jina.parsers.helloworld module</a></li>
@@ -406,27 +407,6 @@
     <span class="n">default_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
         <span class="sa">f</span><span class="s1">'Setting </span><span class="si">{</span><span class="n">_SHOW_ALL_ARGS</span><span class="si">}</span><span class="s1"> will make remote Peas with sharding not work when using JinaD'</span>
     <span class="p">)</span>
-
-
-<span class="n">DEPRECATED_ARGS_MAPPING</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'override_with'</span><span class="p">:</span> <span class="s1">'uses_with'</span><span class="p">}</span>
-
-
-<div class="viewcode-block" id="warn_unknown_args"><a class="viewcode-back" href="../../../../api/jina.parsers.helper/#jina.parsers.helper.warn_unknown_args">[docs]</a><span class="k">def</span> <span class="nf">warn_unknown_args</span><span class="p">(</span><span class="n">unknown_args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
-    <span class="sd">"""Creates warnings for all given arguments.</span>
-
-<span class="sd">    :param unknown_args: arguments that are unknown to Jina</span>
-<span class="sd">    """</span>
-    <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">unknown_args</span><span class="p">:</span>
-        <span class="n">normalized_arg</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'--'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'-'</span><span class="p">,</span> <span class="s1">'_'</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">normalized_arg</span> <span class="ow">in</span> <span class="n">DEPRECATED_ARGS_MAPPING</span><span class="p">:</span>
-            <span class="n">new_argument</span> <span class="o">=</span> <span class="n">DEPRECATED_ARGS_MAPPING</span><span class="p">[</span><span class="n">normalized_arg</span><span class="p">]</span>
-            <span class="k">if</span> <span class="s1">'-'</span> <span class="ow">in</span> <span class="n">arg</span><span class="p">:</span>
-                <span class="n">new_argument</span> <span class="o">=</span> <span class="n">new_argument</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'_'</span><span class="p">,</span> <span class="s1">'-'</span><span class="p">)</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'''Ignored the deprecated argument '</span><span class="si">{</span><span class="n">arg</span><span class="si">}</span><span class="s1">'. Please use '</span><span class="si">{</span><span class="n">new_argument</span><span class="si">}</span><span class="s1">'.'''</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">'ignored unknown argument: </span><span class="si">{</span><span class="n">arg</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="add_arg_group"><a class="viewcode-back" href="../../../../api/jina.parsers.helper/#jina.parsers.helper.add_arg_group">[docs]</a><span class="k">def</span> <span class="nf">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>

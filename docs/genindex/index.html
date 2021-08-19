@@ -232,6 +232,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.parsers.base/">jina.parsers.base module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.parsers.client/">jina.parsers.client module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/jina.parsers.deprecated/">jina.parsers.deprecated module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.parsers.export_api/">jina.parsers.export_api module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.parsers.flow/">jina.parsers.flow module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.parsers.helloworld/">jina.parsers.helloworld module</a></li>
@@ -678,13 +679,13 @@
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.BadDocType">BadDocType</a>
 </li>
-        <li><a href="../api/jina.excepts/#jina.excepts.BadFlowYAMLVersion">BadFlowYAMLVersion</a>
-</li>
         <li><a href="../api/jina.excepts/#jina.excepts.BadImageNameError">BadImageNameError</a>
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.BadNamedScoreType">BadNamedScoreType</a>
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.BadRequestType">BadRequestType</a>
+</li>
+        <li><a href="../api/jina.excepts/#jina.excepts.BadYAMLVersion">BadYAMLVersion</a>
 </li>
         <li><a href="../api/daemon.clients.base/#daemon.clients.base.BaseClient">BaseClient (class in daemon.clients.base)</a>
 
@@ -1926,6 +1927,8 @@
 </li>
         <li><a href="../api/jina.executors.metas/#jina.executors.metas.get_default_metas">get_default_metas() (in module jina.executors.metas)</a>
 </li>
+        <li><a href="../api/jina.parsers.deprecated/#jina.parsers.deprecated.get_deprecated_replacement">get_deprecated_replacement() (in module jina.parsers.deprecated)</a>
+</li>
         <li><a href="../api/jina.hubble.hubapi/#jina.hubble.hubapi.get_dist_path">get_dist_path() (in module jina.hubble.hubapi)</a>
 </li>
         <li><a href="../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap.get_doc_by_key">get_doc_by_key() (jina.types.arrays.memmap.DocumentArrayMemmap method)</a>
@@ -2775,6 +2778,13 @@
 </li>
         </ul></li>
         <li>
+    jina.parsers.deprecated
+
+        <ul>
+          <li><a href="../api/jina.parsers.deprecated/#module-jina.parsers.deprecated">module</a>
+</li>
+        </ul></li>
+        <li>
     jina.parsers.export_api
 
         <ul>
@@ -2935,6 +2945,8 @@
           <li><a href="../api/jina.peapods.peas/#module-jina.peapods.peas">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     jina.peapods.peas.helper
 
@@ -2942,8 +2954,6 @@
           <li><a href="../api/jina.peapods.peas.helper/#module-jina.peapods.peas.helper">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     jina.peapods.pods
 
@@ -4005,6 +4015,8 @@
           <li><a href="../api/jina.parsers.base/#module-jina.parsers.base">jina.parsers.base</a>
 </li>
           <li><a href="../api/jina.parsers.client/#module-jina.parsers.client">jina.parsers.client</a>
+</li>
+          <li><a href="../api/jina.parsers.deprecated/#module-jina.parsers.deprecated">jina.parsers.deprecated</a>
 </li>
           <li><a href="../api/jina.parsers.export_api/#module-jina.parsers.export_api">jina.parsers.export_api</a>
 </li>
@@ -5443,8 +5455,6 @@
           <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.Pod.wait_start_success">(jina.peapods.pods.Pod method)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.parsers.helper/#jina.parsers.helper.warn_unknown_args">warn_unknown_args() (in module jina.parsers.helper)</a>
-</li>
         <li><a href="../api/jina.enums/#jina.enums.LogVerbosity.WARNING">WARNING (jina.enums.LogVerbosity attribute)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.GatewayProtocolType.WEBSOCKET">WEBSOCKET (jina.enums.GatewayProtocolType attribute)</a>

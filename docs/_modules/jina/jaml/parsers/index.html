@@ -233,6 +233,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.base/">jina.parsers.base module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.client/">jina.parsers.client module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.deprecated/">jina.parsers.deprecated module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.export_api/">jina.parsers.export_api module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.flow/">jina.parsers.flow module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.helloworld/">jina.parsers.helloworld module</a></li>
@@ -398,7 +399,7 @@
 
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">VersionedYAMLParser</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">JAMLCompatible</span>
-<span class="kn">from</span> <span class="nn">...excepts</span> <span class="kn">import</span> <span class="n">BadFlowYAMLVersion</span>
+<span class="kn">from</span> <span class="nn">...excepts</span> <span class="kn">import</span> <span class="n">BadYAMLVersion</span>
 
 
 <span class="k">def</span> <span class="nf">_get_all_parser</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="s1">'JAMLCompatible'</span><span class="p">]):</span>
@@ -464,15 +465,16 @@
                     <span class="ne">UserWarning</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="k">return</span> <span class="n">p</span><span class="p">()</span>
-        <span class="k">raise</span> <span class="n">BadFlowYAMLVersion</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s1"> is not a valid version number'</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">BadYAMLVersion</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s1"> is not a valid version number'</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">version</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'can not find parser for version: </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s1">, '</span>
+                <span class="sa">f</span><span class="s1">'fallback to legacy parser. '</span>
+                <span class="sa">f</span><span class="s1">'this usually mean you are using a depreciated YAML format.'</span><span class="p">,</span>
+                <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="c1"># fallback to legacy parser</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'can not find parser for version: </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s1">, '</span>
-            <span class="sa">f</span><span class="s1">'fallback to legacy parser. '</span>
-            <span class="sa">f</span><span class="s1">'this usually mean you are using a depreciated YAML format.'</span><span class="p">,</span>
-            <span class="ne">DeprecationWarning</span><span class="p">,</span>
-        <span class="p">)</span>
         <span class="k">return</span> <span class="n">legacy_parser</span><span class="p">()</span></div>
 
 
