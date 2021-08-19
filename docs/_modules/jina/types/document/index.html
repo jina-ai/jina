@@ -709,6 +709,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'Document content fields are mutually exclusive, please provide only one of </span><span class="si">{</span><span class="n">_all_doc_content_keys</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mermaid_id</span> <span class="o">=</span> <span class="n">random_identity</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Document.pop"><a class="viewcode-back" href="../../../../api/jina.types.document/#jina.Document.pop">[docs]</a>    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">fields</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1718,15 +1719,7 @@
             <span class="n">value</span> <span class="o">=</span> <span class="n">dunder_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span>
-        <span class="k">return</span> <span class="n">value</span>
-
-    <span class="nd">@cached_property</span>
-    <span class="k">def</span> <span class="nf">_mermaid_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">"""A unique ID for mermaid visualize id</span>
-
-<span class="sd">        :return: unique ID</span>
-<span class="sd">        """</span>
-        <span class="k">return</span> <span class="n">random_identity</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="n">value</span></div>
 
 
 <span class="k">def</span> <span class="nf">_is_uri</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
