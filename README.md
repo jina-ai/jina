@@ -183,9 +183,9 @@ c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
   - [Create Remote Flows](.github/2.0/cookbooks/Daemon.md#create-remote-flows)
 - 📓 [Developer Reference](https://docs.jina.ai)
 - 🧼 [Clean & Efficient Coding in Jina](.github/2.0/cookbooks/CleanCode.md)
-<!-- - 🚶‍ Walkthroughs
-  - [How to Build Hello World Chatbot](https://jina.ai/tutorial.html)
-  - [Create Your Own Executor](https://jina.ai/tutorial-executors.html) -->
+- 🚶‍ Walkthroughs
+  - [How to Build Hello World Chatbot](https://jina.ai/blog/tutorial)
+  - [Create Your Own Executor](https://jina.ai/blog/tutorial-executors)
 
     
 ## Support
@@ -213,7 +213,7 @@ your active involvement.
 - [Contributing guidelines](CONTRIBUTING.md)
 - [Code of conduct](https://github.com/jina-ai/jina/blob/master/.github/CODE_OF_CONDUCT.md)
   community
-- [Get yourself some swags](https://jina.ai/swag.html)
+- [Get yourself some swags](https://jina.ai/blog/swag)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-171-orange.svg?style=flat-square)](#contributors-)
