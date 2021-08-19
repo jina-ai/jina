@@ -34,6 +34,11 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         self.msg_recv = 0
         self.msg_sent = 0
         self._pending_tasks = []
+        self._send_routing_table = args.send_routing_table
+        if hasattr(args, 'routing_table'):
+            self._routing_table = RoutingTable(args.routing_table)
+        else:
+            self._routing_table = None
 
     async def send_message(self, msg: 'Message', **kwargs):
         """
@@ -41,7 +46,11 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         :param msg: the protobuf message to send
         :param kwargs: Additional arguments.
         """
-        routing_table = RoutingTable(msg.envelope.routing_table)
+        routing_table = (
+            self._routing_table
+            if self._routing_table
+            else RoutingTable(msg.envelope.routing_table)
+        )
 
         next_targets = routing_table.get_next_targets()
 
@@ -107,7 +116,8 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
     def _add_envelope(self, msg, routing_table):
         new_envelope = jina_pb2.EnvelopeProto()
         new_envelope.CopyFrom(msg.envelope)
-        new_envelope.routing_table.CopyFrom(routing_table.proto)
+        if self._send_routing_table:
+            new_envelope.routing_table.CopyFrom(routing_table.proto)
         new_message = Message(request=msg.request, envelope=new_envelope)
 
         return new_message

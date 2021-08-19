@@ -38,6 +38,7 @@ class GRPCDataRuntime(BaseRuntime, ABC):
         self._pending_msgs = defaultdict(list)  # type: Dict[str, List[Message]]
         self._partial_requests = None
         self._pending_tasks = []
+        self._static_routing_table = hasattr(args, 'routing_table')
 
         self._data_request_handler = DataRequestHandler(args, self.logger)
         self._grpclet = Grpclet(
@@ -204,9 +205,7 @@ class GRPCDataRuntime(BaseRuntime, ABC):
             return msg
 
         req_id = msg.envelope.request_id
-        num_expected_parts = RoutingTable(
-            msg.envelope.routing_table
-        ).active_target_pod.expected_parts
+        num_expected_parts = self._get_expected_parts(msg)
         self._data_request_handler.handle(
             msg=msg,
             partial_requests=[m.request for m in self._pending_msgs[req_id]]
@@ -217,6 +216,16 @@ class GRPCDataRuntime(BaseRuntime, ABC):
 
         return msg
 
+    def _get_expected_parts(self, msg):
+        if msg.is_data_request:
+            if not self._static_routing_table:
+                graph = RoutingTable(msg.envelope.routing_table)
+                return graph.active_target_pod.expected_parts
+            else:
+                return self.args.num_part
+        else:
+            return 1
+
     def _pre_hook(self, msg: Message) -> Message:
         """
         Pre-hook function, what to do after first receiving the message.
@@ -225,9 +234,7 @@ class GRPCDataRuntime(BaseRuntime, ABC):
         """
         msg.add_route(self.name, self._id)
 
-        expected_parts = RoutingTable(
-            msg.envelope.routing_table
-        ).active_target_pod.expected_parts
+        expected_parts = self._get_expected_parts(msg)
 
         req_id = msg.envelope.request_id
         if expected_parts > 1:
@@ -279,10 +286,7 @@ class GRPCDataRuntime(BaseRuntime, ABC):
 
         self._last_active_time = time.perf_counter()
 
-        if (
-            RoutingTable(msg.envelope.routing_table).active_target_pod.expected_parts
-            > 1
-        ):
+        if self._get_expected_parts(msg) > 1:
             msgs = self._pending_msgs.pop(msg.envelope.request_id)
             msg.merge_envelope_from(msgs)
 

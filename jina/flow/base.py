@@ -840,7 +840,19 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             raise RoutingTableCyclicError(
                 'The routing graph has a cycle. This would result in an infinite loop. Fix your Flow setup.'
             )
-        self._pod_nodes[GATEWAY_NAME].args.routing_table = routing_table.json()
+        for pod in self._pod_nodes:
+            routing_table_copy = RoutingTable()
+            routing_table_copy.proto.CopyFrom(routing_table.proto)
+            self._pod_nodes[
+                pod
+            ].args.send_routing_table = not self.args.static_routing_table
+            # The gateway always needs the routing table to be set
+            if pod == GATEWAY_NAME:
+                self._pod_nodes[pod].args.routing_table = routing_table_copy.json()
+            # For other pods we only set it if we are told do so
+            elif self.args.static_routing_table:
+                routing_table_copy.active_pod = pod
+                self._pod_nodes[pod].args.routing_table = routing_table_copy.json()
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def build(self, copy_flow: bool = False) -> 'Flow':
