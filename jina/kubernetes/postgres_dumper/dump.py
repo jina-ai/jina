@@ -1,21 +1,22 @@
-import os
+
 import sys
 
-os.chdir('/')
-from workspace import PostgreSQLStorage
+from workspace.postgres_indexer import PostgreSQLStorage
+import json
+print(sys.argv)
 
+_, args = sys.argv
 
-assert len(sys.argv) == 3
-_, postgres_host, table_name, dump_path, num_shards = sys.argv
+params = json.loads(args.replace('\'', '"'))
 
 storage = PostgreSQLStorage(
-    hostname=postgres_host,
+    hostname=params['postgres_svc'],
     port=5432,
     username="postgresadmin",
     database="postgresdb",
-    table=table_name,
+    table=params['table_name'],
 )
 storage.dump(parameters={
-    "dump_path": dump_path,
-    "shards": num_shards,
+    "dump_path": params['dump_path'],
+    "shards": params['shards'],
 })

@@ -5,11 +5,6 @@ import time
 
 from bcolors import UNDERLINE, ENDC, BOLD, PASS
 
-# from kubernetes import utils
-
-# from kubernetes.utils import FailToCreateError
-# from kubernetes.watch import Watch
-
 cur_dir = os.path.dirname(__file__)
 
 

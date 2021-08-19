@@ -212,6 +212,8 @@ def get_k8s_flow(flow):
                     port_in=8081,
                     host=f'{to_dns_name(pod_name)}-{i}.{k8s_flow.args.name}.svc.cluster.local',
                     uses_with=pod_args.uses_with,
+                    k8s_uses_init=pod_args.k8s_uses_init,
+                    k8s_uses_with_init=pod_args.k8s_uses_with_init,
                     pea_id=i,
                     external=True,
                     needs=[pod_args.name + '_head']
@@ -242,37 +244,40 @@ def convert_to_table_name(pod_name):
     return pod_name.replace('-', '_')
 
 
-def get_init_container_args(pod, pod_name_to_parallel):
-    if (pod.args.uses == 'jinahub+docker://AnnoySearcher' or
-            pod.args.uses == 'jinahub+docker://FaissSearcher' or
-            pod.args.uses == 'gcr.io/mystical-sweep-320315/annoy-with-grpc'):
-        init_image_name = get_image_name(
-            'jinahub+docker://PostgreSQLStorage'
-        )
-        postgres_cluster_ip = f'postgres.postgres.svc.cluster.local'
+def get_init_container_args(pod):
+    # if (pod.args.uses == 'jinahub+docker://AnnoySearcher' or
+    #         pod.args.uses == 'jinahub+docker://FaissSearcher' or
+    #         pod.args.uses == 'gcr.io/mystical-sweep-320315/annoy-with-grpc'):
+    #     init_image_name = get_image_name(
+    #         'jinahub+docker://PostgreSQLStorage'
+    #     )
+    #     postgres_cluster_ip = f'postgres.postgres.svc.cluster.local'
+    #
+    #     pod_name = pod.name.rsplit("_", 1)[0]
+    #     table_name = convert_to_table_name(pod_name)
+    #     shards = pod_name_to_parallel[pod_name][0]
+        # python_script = (
+        #     'import os; '
+        #     'os.chdir(\'/\'); '
+        #     'from workspace import PostgreSQLStorage; '
+        #     'storage = PostgreSQLStorage('
+        #     f'hostname="{postgres_cluster_ip}",'
+        #     'port=5432,'
+        #     'username="postgresadmin",'
+        #     'database="postgresdb",'
+        #     f'table="{convert_to_table_name(pod_name)}",'
+        #     '); '
+        #     'storage.dump(parameters={'
+        #     '"dump_path": "/shared", '
+        #     f'"shards": {pod_name_to_parallel[pod_name][0]}'
+        #     '});'
+        # ).replace("\"", "\\\"")
 
-        pod_name = pod.name.rsplit("_", 1)[0]
-        python_script = (
-            'import os; '
-            'os.chdir(\'/\'); '
-            'from workspace import PostgreSQLStorage; '
-            'storage = PostgreSQLStorage('
-            f'hostname="{postgres_cluster_ip}",'
-            'port=5432,'
-            'username="postgresadmin",'
-            'database="postgresdb",'
-            f'table="{convert_to_table_name(pod_name)}",'
-            '); '
-            'storage.dump(parameters={'
-            '"dump_path": "/shared", '
-            f'"shards": {pod_name_to_parallel[pod_name][0]}'
-            '});'
-        ).replace("\"", "\\\"")
-
+    if pod.args.k8s_uses_init:
         init_container = {
-            'init-name': 'dumper-init',
-            'init-image': init_image_name,
-            'init-command': '["python", "-c", "' + python_script + '"]',
+            'init-name': 'init',
+            'init-image': pod.args.k8s_uses_init,
+            'init-command': f'["python", "dump.py", "{dictionary_to_cli_param(pod.args.k8s_uses_with_init)}"]',
         }
     else:
         init_container = None
@@ -288,7 +293,7 @@ def create_in_k8s(k8s_flow, pod_name_to_parallel):
         pea_arg = pod.peas_args['peas'][0]
         pea_name = pea_arg.name
         pea_dns_name = to_dns_name(pea_name)
-        init_container_args = get_init_container_args(pod, pod_name_to_parallel)
+        init_container_args = get_init_container_args(pod)
         uses_metas = dictionary_to_cli_param({'pea_id': pea_arg.pea_id})
         uses_with = dictionary_to_cli_param(pea_arg.uses_with)
         uses_with_string = (
