@@ -154,7 +154,7 @@ This guide helps you to create your own Executor in 30 seconds.''',
             exec_url = (
                 Prompt.ask(
                     ':grey_question: What is the [bold]URL[/bold] for GitHub repo?\n'
-                    f'[dim]Example: https://github.com/jina-ai/executors[/dim]'
+                    f'[dim]Example: https://github.com/yourname/my-executor[/dim]'
                 )
                 or exec_url
             )
