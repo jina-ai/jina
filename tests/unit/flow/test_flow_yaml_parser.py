@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from jina import Executor
-from jina.excepts import BadFlowYAMLVersion
+from jina.excepts import BadYAMLVersion
 from jina import Flow
 from jina.jaml import JAML
 from jina.jaml.parsers import get_supported_versions
@@ -34,7 +34,7 @@ def test_load_legacy_and_v1():
     # this should fallback to v1
     Flow.load_config('yaml/flow-v1.0-syntax.yml')
 
-    with pytest.raises(BadFlowYAMLVersion):
+    with pytest.raises(BadYAMLVersion):
         Flow.load_config('yaml/flow-v99-syntax.yml')
 
 
