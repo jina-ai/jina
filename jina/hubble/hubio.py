@@ -126,7 +126,6 @@ This guide helps you to create your own Executor in 30 seconds.''',
         exec_description = '{{}}'
         exec_keywords = '{{}}'
         exec_url = '{{}}'
-        exec_license = '{{}}'
 
         is_dockerfile = False
 
@@ -157,14 +156,6 @@ This guide helps you to create your own Executor in 30 seconds.''',
                     f'[dim]Example: https://github.com/yourname/my-executor[/dim]'
                 )
                 or exec_url
-            )
-
-            exec_license = (
-                Prompt.ask(
-                    ':grey_question: What is the [bold]license[/bold]?\n'
-                    f'[dim]Example: apache-2.0[/dim]'
-                )
-                or exec_license
             )
 
             print(
@@ -200,7 +191,6 @@ your executor has non-trivial dependencies or must be run under certain environm
                         .replace('{{exec_description}}', exec_description)
                         .replace('{{exec_keywords}}', exec_keywords)
                         .replace('{{exec_url}}', exec_url)
-                        .replace('{{exec_license}}', exec_license)
                     )
 
                     f = [
@@ -268,7 +258,6 @@ py_modules:
         field_table.add_row('description', 'Human-readable description of the Executor')
         field_table.add_row('url', 'URL to find more information on the Executor')
         field_table.add_row('keywords', 'Keywords that help user find the Executor')
-        field_table.add_row('license', 'The license of the Executor')
 
         table.add_row('', field_table)
 
