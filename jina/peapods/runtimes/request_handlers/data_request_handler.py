@@ -132,6 +132,15 @@ class DataRequestHandler:
             self.logger.debug(
                 f'skip executor: mismatch request, exec_endpoint: {msg.envelope.header.exec_endpoint}, requests: {self._executor.requests}'
             )
+            if partial_requests:
+                DataRequestHandler.replace_docs(
+                    msg,
+                    docs=_get_docs_from_msg(
+                        msg,
+                        partial_request=partial_requests,
+                        field='docs',
+                    ),
+                )
             return
 
         params = self._parse_params(msg.request.parameters, self._executor.metas.name)
@@ -174,11 +183,14 @@ class DataRequestHandler:
                 )
             elif r_docs != msg.request.docs:
                 # this means the returned DocArray is a completely new one
-                msg.request.docs.clear()
-                msg.request.docs.extend(r_docs)
+                DataRequestHandler.replace_docs(msg, docs)
         elif partial_requests:
-            msg.request.docs.clear()
-            msg.request.docs.extend(docs)
+            DataRequestHandler.replace_docs(msg, docs)
+
+    @staticmethod
+    def replace_docs(msg, docs):
+        msg.request.docs.clear()
+        msg.request.docs.extend(docs)
 
     def close(self):
         """ Close the data request handler, by closing the executor """
