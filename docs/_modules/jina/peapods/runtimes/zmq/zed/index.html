@@ -446,6 +446,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_idle_dealer_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_data_request_handler</span> <span class="o">=</span> <span class="n">DataRequestHandler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_static_routing_table</span> <span class="o">=</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'routing_table'</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_zmqstreamlet</span><span class="p">()</span>
 
 <div class="viewcode-block" id="ZEDRuntime.run_forever"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.run_forever">[docs]</a>    <span class="k">def</span> <span class="nf">run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -711,7 +713,10 @@
 <span class="sd">        :return: expected number of partial messages</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">is_data_request</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">socket_in</span> <span class="o">==</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">ROUTER_BIND</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">socket_in</span> <span class="o">==</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">ROUTER_BIND</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_static_routing_table</span>
+            <span class="p">):</span>
                 <span class="n">graph</span> <span class="o">=</span> <span class="n">RoutingTable</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">routing_table</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">graph</span><span class="o">.</span><span class="n">active_target_pod</span><span class="o">.</span><span class="n">expected_parts</span>
             <span class="k">else</span><span class="p">:</span>

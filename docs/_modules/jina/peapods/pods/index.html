@@ -714,16 +714,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">deducted_head</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">deducted_tail</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">peas</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: List['BasePea']</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">Dict</span><span class="p">):</span>
-            <span class="c1"># This is used when a Pod is created in a remote context, where peas &amp; their connections are already given.</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span> <span class="o">=</span> <span class="n">args</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_pea_args</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_activated</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Pod.update_pea_args"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.Pod.update_pea_args">[docs]</a>    <span class="k">def</span> <span class="nf">update_pea_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">""" Update args of its peas based on Pod args"""</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">Dict</span><span class="p">):</span>
+            <span class="c1"># This is used when a Pod is created in a remote context, where peas &amp; their connections are already given.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">is_singleton</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>

@@ -430,6 +430,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg_recv</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg_sent</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pending_tasks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send_routing_table</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">send_routing_table</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'routing_table'</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_routing_table</span> <span class="o">=</span> <span class="n">RoutingTable</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">routing_table</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_next_targets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_routing_table</span><span class="o">.</span><span class="n">get_next_target_addresses</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_routing_table</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_next_targets</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="Grpclet.send_message"><a class="viewcode-back" href="../../../../api/jina.peapods.grpc/#jina.peapods.grpc.Grpclet.send_message">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="s1">'Message'</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""</span>
@@ -437,33 +444,37 @@
 <span class="sd">        :param msg: the protobuf message to send</span>
 <span class="sd">        :param kwargs: Additional arguments.</span>
 <span class="sd">        """</span>
-        <span class="n">routing_table</span> <span class="o">=</span> <span class="n">RoutingTable</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">routing_table</span><span class="p">)</span>
 
-        <span class="n">next_targets</span> <span class="o">=</span> <span class="n">routing_table</span><span class="o">.</span><span class="n">get_next_targets</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_targets</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">pod_address</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_targets</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">pod_address</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">routing_table</span> <span class="o">=</span> <span class="n">RoutingTable</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">routing_table</span><span class="p">)</span>
+            <span class="n">next_targets</span> <span class="o">=</span> <span class="n">routing_table</span><span class="o">.</span><span class="n">get_next_targets</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">target</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">next_targets</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_add_envelope</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">target</span><span class="p">),</span>
+                    <span class="n">target</span><span class="o">.</span><span class="n">active_target_pod</span><span class="o">.</span><span class="n">full_address</span><span class="p">,</span>
+                <span class="p">)</span></div>
 
-        <span class="k">for</span> <span class="n">target</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">next_targets</span><span class="p">:</span>
-            <span class="n">pod_address</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">active_target_pod</span><span class="o">.</span><span class="n">full_address</span>
+    <span class="k">def</span> <span class="nf">_send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">pod_address</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">pod_address</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stubs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stubs</span><span class="p">[</span><span class="n">pod_address</span><span class="p">]</span> <span class="o">=</span> <span class="n">Grpclet</span><span class="o">.</span><span class="n">_create_grpc_stub</span><span class="p">(</span><span class="n">pod_address</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg_sent</span> <span class="o">+=</span> <span class="mi">1</span>
 
-            <span class="n">new_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_envelope</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+            <span class="c1"># this wraps the awaitable object from grpc as a coroutine so it can be used as a task</span>
+            <span class="c1"># the grpc call function is not a coroutine but some _AioCall</span>
+            <span class="k">async</span> <span class="k">def</span> <span class="nf">task_wrapper</span><span class="p">(</span><span class="n">new_message</span><span class="p">,</span> <span class="n">pod_address</span><span class="p">):</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stubs</span><span class="p">[</span><span class="n">pod_address</span><span class="p">]</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span><span class="n">new_message</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">pod_address</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stubs</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_stubs</span><span class="p">[</span><span class="n">pod_address</span><span class="p">]</span> <span class="o">=</span> <span class="n">Grpclet</span><span class="o">.</span><span class="n">_create_grpc_stub</span><span class="p">(</span><span class="n">pod_address</span><span class="p">)</span>
-
-            <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">msg_sent</span> <span class="o">+=</span> <span class="mi">1</span>
-
-                <span class="c1"># this wraps the awaitable object from grpc as a coroutine so it can be used as a task</span>
-                <span class="c1"># the grpc call function is not a coroutine but some _AioCall</span>
-                <span class="k">async</span> <span class="k">def</span> <span class="nf">task_wrapper</span><span class="p">(</span><span class="n">new_message</span><span class="p">,</span> <span class="n">pod_address</span><span class="p">):</span>
-                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stubs</span><span class="p">[</span><span class="n">pod_address</span><span class="p">]</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span><span class="n">new_message</span><span class="p">)</span>
-
-                <span class="bp">self</span><span class="o">.</span><span class="n">_pending_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">task_wrapper</span><span class="p">(</span><span class="n">new_message</span><span class="p">,</span> <span class="n">pod_address</span><span class="p">))</span>
-                <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_update_pending_tasks</span><span class="p">()</span>
-            <span class="k">except</span> <span class="n">grpc</span><span class="o">.</span><span class="n">RpcError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">'Sending data request via grpc failed'</span><span class="p">,</span> <span class="n">ex</span><span class="p">)</span>
-                <span class="k">raise</span> <span class="n">ex</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">task_wrapper</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">pod_address</span><span class="p">))</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_pending_tasks</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">grpc</span><span class="o">.</span><span class="n">RpcError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">'Sending data request via grpc failed'</span><span class="p">,</span> <span class="n">ex</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ex</span>
 
 <div class="viewcode-block" id="Grpclet.send_ctrl_msg"><a class="viewcode-back" href="../../../../api/jina.peapods.grpc/#jina.peapods.grpc.Grpclet.send_ctrl_msg">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">send_ctrl_msg</span><span class="p">(</span><span class="n">pod_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -501,12 +512,15 @@
         <span class="k">return</span> <span class="n">stub</span>
 
     <span class="k">def</span> <span class="nf">_add_envelope</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">routing_table</span><span class="p">):</span>
-        <span class="n">new_envelope</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">EnvelopeProto</span><span class="p">()</span>
-        <span class="n">new_envelope</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">envelope</span><span class="p">)</span>
-        <span class="n">new_envelope</span><span class="o">.</span><span class="n">routing_table</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">routing_table</span><span class="o">.</span><span class="n">proto</span><span class="p">)</span>
-        <span class="n">new_message</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="n">envelope</span><span class="o">=</span><span class="n">new_envelope</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_routing_table</span><span class="p">:</span>
+            <span class="n">new_envelope</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">EnvelopeProto</span><span class="p">()</span>
+            <span class="n">new_envelope</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">envelope</span><span class="p">)</span>
+            <span class="n">new_envelope</span><span class="o">.</span><span class="n">routing_table</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">routing_table</span><span class="o">.</span><span class="n">proto</span><span class="p">)</span>
+            <span class="n">new_message</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="n">envelope</span><span class="o">=</span><span class="n">new_envelope</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">new_message</span>
+            <span class="k">return</span> <span class="n">new_message</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">msg</span>
 
 <div class="viewcode-block" id="Grpclet.close"><a class="viewcode-back" href="../../../../api/jina.peapods.grpc/#jina.peapods.grpc.Grpclet.close">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grace_period</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""Stop the Grpc server</span>

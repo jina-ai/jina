@@ -638,6 +638,7 @@
         <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">static_routing_table</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'./'</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
@@ -660,6 +661,7 @@
 <span class="sd">          When not given, then the default naming strategy will apply.</span>
 <span class="sd">        :param quiet: If set, then no log will be emitted from this object.</span>
 <span class="sd">        :param quiet_error: If set, then exception stack information will not be added to the log</span>
+<span class="sd">        :param static_routing_table: Defines if the routing table should be pre computed by the Flow. In this case it is statically defined for each Pod and not send on every data request. Can not be used in combination with external pods</span>
 <span class="sd">        :param uses: The YAML file represents a flow</span>
 <span class="sd">        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.</span>
 
@@ -1236,7 +1238,20 @@
             <span class="k">raise</span> <span class="n">RoutingTableCyclicError</span><span class="p">(</span>
                 <span class="s1">'The routing graph has a cycle. This would result in an infinite loop. Fix your Flow setup.'</span>
             <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">routing_table</span> <span class="o">=</span> <span class="n">routing_table</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">pod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">:</span>
+            <span class="n">routing_table_copy</span> <span class="o">=</span> <span class="n">RoutingTable</span><span class="p">()</span>
+            <span class="n">routing_table_copy</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">routing_table</span><span class="o">.</span><span class="n">proto</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span>
+                <span class="n">pod</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">send_routing_table</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">static_routing_table</span>
+            <span class="c1"># The gateway always needs the routing table to be set</span>
+            <span class="k">if</span> <span class="n">pod</span> <span class="o">==</span> <span class="n">GATEWAY_NAME</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="n">pod</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">routing_table</span> <span class="o">=</span> <span class="n">routing_table_copy</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="c1"># For other pods we only set it if we are told do so</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">static_routing_table</span><span class="p">:</span>
+                <span class="n">routing_table_copy</span><span class="o">.</span><span class="n">active_pod</span> <span class="o">=</span> <span class="n">pod</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="n">pod</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">routing_table</span> <span class="o">=</span> <span class="n">routing_table_copy</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="n">pod</span><span class="p">]</span><span class="o">.</span><span class="n">update_pea_args</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Flow.build"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.build">[docs]</a>    <span class="nd">@allowed_levels</span><span class="p">([</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">])</span>
     <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">copy_flow</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Flow'</span><span class="p">:</span>

@@ -394,7 +394,9 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for jina.proto.serializer</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
+<span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
 <span class="kn">from</span> <span class="nn">..types.message</span> <span class="kn">import</span> <span class="n">Message</span>
 <span class="kn">from</span> <span class="nn">..types.request</span> <span class="kn">import</span> <span class="n">Request</span>
 
@@ -431,6 +433,7 @@
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="MessageProto.SerializeToString"><a class="viewcode-back" href="../../../../api/jina.proto.serializer/#jina.proto.serializer.MessageProto.SerializeToString">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="nd">@lru_cache</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">SerializeToString</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="s1">'Message'</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        # noqa: DAR101</span>

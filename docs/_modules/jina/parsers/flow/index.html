@@ -427,6 +427,14 @@
 
 <span class="s1">    If `REMOVE` is given then all inspect pods are removed when building the flow.</span>
 <span class="s1">    '''</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--static-routing-table'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'Defines if the routing table should be pre computed by the Flow. In this case it is statically defined for each Pod and not send on every data request.'</span>
+        <span class="s1">' Can not be used in combination with external pods'</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 

@@ -613,6 +613,17 @@
             <span class="n">targets</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">new_graph</span><span class="p">,</span> <span class="n">edge</span><span class="o">.</span><span class="n">send_as_bind</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">targets</span></div>
 
+<div class="viewcode-block" id="RoutingTable.get_next_target_addresses"><a class="viewcode-back" href="../../../../../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.get_next_target_addresses">[docs]</a>    <span class="k">def</span> <span class="nf">get_next_target_addresses</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Calculates next routing targets for all currently outgoing edges.</span>
+
+<span class="sd">        :return: list of addresses for next targets</span>
+<span class="sd">        """</span>
+        <span class="n">targets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_out_edges</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">active_pod</span><span class="p">):</span>
+            <span class="n">targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_target_pod</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">pod</span><span class="p">)</span><span class="o">.</span><span class="n">full_address</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">targets</span></div>
+
 <div class="viewcode-block" id="RoutingTable.is_acyclic"><a class="viewcode-back" href="../../../../../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.is_acyclic">[docs]</a>    <span class="k">def</span> <span class="nf">is_acyclic</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">"""</span>
 <span class="sd">        :return: True, if graph is acyclic, False otherwise.</span>

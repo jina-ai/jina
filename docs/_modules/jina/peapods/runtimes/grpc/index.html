@@ -434,6 +434,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_pending_msgs</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>  <span class="c1"># type: Dict[str, List[Message]]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_partial_requests</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pending_tasks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_static_routing_table</span> <span class="o">=</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'routing_table'</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_data_request_handler</span> <span class="o">=</span> <span class="n">DataRequestHandler</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_grpclet</span> <span class="o">=</span> <span class="n">Grpclet</span><span class="p">(</span>
@@ -547,7 +548,8 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_post_hook</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pre_hook</span><span class="p">(</span><span class="n">msg</span><span class="p">)))</span>
-            <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_grpclet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">is_data_request</span><span class="p">:</span>
+                <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_grpclet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
         <span class="k">except</span> <span class="n">RuntimeTerminated</span><span class="p">:</span>
             <span class="c1"># this is the proper way to end when a terminate signal is sent</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_pending_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_close_grpclet</span><span class="p">()))</span>
@@ -580,6 +582,8 @@
                     <span class="n">exc_info</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span><span class="p">,</span>
                 <span class="p">)</span>
 
+            <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">is_data_request</span><span class="p">:</span>
+                <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_grpclet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
             <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_grpclet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Message</span><span class="p">:</span>
@@ -600,9 +604,7 @@
             <span class="k">return</span> <span class="n">msg</span>
 
         <span class="n">req_id</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">request_id</span>
-        <span class="n">num_expected_parts</span> <span class="o">=</span> <span class="n">RoutingTable</span><span class="p">(</span>
-            <span class="n">msg</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">routing_table</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">active_target_pod</span><span class="o">.</span><span class="n">expected_parts</span>
+        <span class="n">num_expected_parts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_expected_parts</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data_request_handler</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span>
             <span class="n">msg</span><span class="o">=</span><span class="n">msg</span><span class="p">,</span>
             <span class="n">partial_requests</span><span class="o">=</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">request</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_msgs</span><span class="p">[</span><span class="n">req_id</span><span class="p">]]</span>
@@ -613,6 +615,16 @@
 
         <span class="k">return</span> <span class="n">msg</span>
 
+    <span class="k">def</span> <span class="nf">_get_expected_parts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">is_data_request</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_static_routing_table</span><span class="p">:</span>
+                <span class="n">graph</span> <span class="o">=</span> <span class="n">RoutingTable</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">routing_table</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">graph</span><span class="o">.</span><span class="n">active_target_pod</span><span class="o">.</span><span class="n">expected_parts</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">num_part</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span>
+
     <span class="k">def</span> <span class="nf">_pre_hook</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Message</span><span class="p">:</span>
         <span class="sd">"""</span>
 <span class="sd">        Pre-hook function, what to do after first receiving the message.</span>
@@ -621,9 +633,7 @@
 <span class="sd">        """</span>
         <span class="n">msg</span><span class="o">.</span><span class="n">add_route</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
 
-        <span class="n">expected_parts</span> <span class="o">=</span> <span class="n">RoutingTable</span><span class="p">(</span>
-            <span class="n">msg</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">routing_table</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">active_target_pod</span><span class="o">.</span><span class="n">expected_parts</span>
+        <span class="n">expected_parts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_expected_parts</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="n">req_id</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">request_id</span>
         <span class="k">if</span> <span class="n">expected_parts</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -675,10 +685,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_active_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="n">RoutingTable</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">routing_table</span><span class="p">)</span><span class="o">.</span><span class="n">active_target_pod</span><span class="o">.</span><span class="n">expected_parts</span>
-            <span class="o">&gt;</span> <span class="mi">1</span>
-        <span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_expected_parts</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">msgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_msgs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">request_id</span><span class="p">)</span>
             <span class="n">msg</span><span class="o">.</span><span class="n">merge_envelope_from</span><span class="p">(</span><span class="n">msgs</span><span class="p">)</span>
 

@@ -485,6 +485,11 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">out_sockets</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_active</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send_routing_table</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">send_routing_table</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'routing_table'</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_routing_table</span> <span class="o">=</span> <span class="n">RoutingTable</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">routing_table</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_routing_table</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">_register_pollin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` (if :attr:`out_sock_type` is zmq.ROUTER)</span>
@@ -703,7 +708,12 @@
         <span class="k">return</span> <span class="n">out_sock</span>
 
     <span class="k">def</span> <span class="nf">_get_dynamic_next_routes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
-        <span class="n">routing_table</span> <span class="o">=</span> <span class="n">RoutingTable</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">routing_table</span><span class="p">)</span>
+        <span class="c1"># use our own static routing table if available, otherwise use the one in the message</span>
+        <span class="n">routing_table</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_routing_table</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_routing_table</span>
+            <span class="k">else</span> <span class="n">RoutingTable</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">routing_table</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="n">next_targets</span> <span class="o">=</span> <span class="n">routing_table</span><span class="o">.</span><span class="n">get_next_targets</span><span class="p">()</span>
         <span class="n">next_routes</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">target</span><span class="p">,</span> <span class="n">send_as_bind</span> <span class="ow">in</span> <span class="n">next_targets</span><span class="p">:</span>
@@ -724,7 +734,8 @@
         <span class="k">for</span> <span class="n">routing_table</span><span class="p">,</span> <span class="n">out_sock</span> <span class="ow">in</span> <span class="n">next_routes</span><span class="p">:</span>
             <span class="n">new_envelope</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">EnvelopeProto</span><span class="p">()</span>
             <span class="n">new_envelope</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">envelope</span><span class="p">)</span>
-            <span class="n">new_envelope</span><span class="o">.</span><span class="n">routing_table</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">routing_table</span><span class="o">.</span><span class="n">proto</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_routing_table</span><span class="p">:</span>
+                <span class="n">new_envelope</span><span class="o">.</span><span class="n">routing_table</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">routing_table</span><span class="o">.</span><span class="n">proto</span><span class="p">)</span>
             <span class="n">new_message</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="n">envelope</span><span class="o">=</span><span class="n">new_envelope</span><span class="p">)</span>
 
             <span class="n">new_message</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">receiver_id</span> <span class="o">=</span> <span class="p">(</span>
@@ -821,7 +832,8 @@
         <span class="k">for</span> <span class="n">routing_table</span><span class="p">,</span> <span class="n">out_sock</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dynamic_next_routes</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
             <span class="n">new_envelope</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">EnvelopeProto</span><span class="p">()</span>
             <span class="n">new_envelope</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">envelope</span><span class="p">)</span>
-            <span class="n">new_envelope</span><span class="o">.</span><span class="n">routing_table</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">routing_table</span><span class="o">.</span><span class="n">proto</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_routing_table</span><span class="p">:</span>
+                <span class="n">new_envelope</span><span class="o">.</span><span class="n">routing_table</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">routing_table</span><span class="o">.</span><span class="n">proto</span><span class="p">)</span>
             <span class="n">new_message</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="n">envelope</span><span class="o">=</span><span class="n">new_envelope</span><span class="p">)</span>
             <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_send_message_via</span><span class="p">(</span><span class="n">out_sock</span><span class="p">,</span> <span class="n">new_message</span><span class="p">))</span>
 
