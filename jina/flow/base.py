@@ -194,10 +194,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param py_modules: The customized python modules need to be imported before loading the executor
 
-          Note, when importing multiple files and there is a dependency between them, then one has to write the dependencies in
-          reverse order. That is, if `__init__.py` depends on `A.py`, which again depends on `B.py`, then you need to write:
-
-          --py-modules __init__.py --py-modules B.py --py-modules A.py
+          Note that the recommended way is to only import a single module - a simple python file, if your
+          executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
+          which should be structured as a python package. For more details, please see the
+          `Executor cookbook <https://github.com/jina-ai/jina/blob/master/.github/2.0/cookbooks/Executor.md#structure-of-the-repository>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param runtime_backend: The parallel backend of the runtime inside the Pea
@@ -551,10 +551,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param pull_latest: Pull the latest image before running
         :param py_modules: The customized python modules need to be imported before loading the executor
 
-          Note, when importing multiple files and there is a dependency between them, then one has to write the dependencies in
-          reverse order. That is, if `__init__.py` depends on `A.py`, which again depends on `B.py`, then you need to write:
-
-          --py-modules __init__.py --py-modules B.py --py-modules A.py
+          Note that the recommended way is to only import a single module - a simple python file, if your
+          executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
+          which should be structured as a python package. For more details, please see the
+          `Executor cookbook <https://github.com/jina-ai/jina/blob/master/.github/2.0/cookbooks/Executor.md#structure-of-the-repository>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param quiet_remote_logs: Do not display the streaming of remote logs on local console
