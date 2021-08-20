@@ -119,7 +119,16 @@ class DocumentArrayNeuralOpsMixin:
 
         dist, idx = top_k(dists, min(limit, len(darray)), descending=False)
         if isinstance(normalization, (tuple, list)) and normalization is not None:
-            dist = minmax_normalize(dist, normalization)
+
+            # normalization bound uses original distance not the top-k trimmed distance
+            if is_sparse:
+                min_d = dists.min(axis=-1).toarray()
+                max_d = dists.max(axis=-1).toarray()
+            else:
+                min_d = np.min(dists, axis=-1, keepdims=True)
+                max_d = np.max(dists, axis=-1, keepdims=True)
+
+            dist = minmax_normalize(dist, normalization, (min_d, max_d))
 
         return dist, idx
 
@@ -148,7 +157,6 @@ class DocumentArrayNeuralOpsMixin:
         n_x = x_mat.shape[0]
 
         def batch_generator(y_darray: 'DocumentArrayMemmap', n_batch: int):
-            n_max = len(y_darray)
             for i in range(0, len(y_darray), n_batch):
                 y_mat = y_darray._get_embeddings(slice(i, i + n_batch))
                 yield y_mat, i
@@ -247,25 +255,6 @@ class DocumentArrayNeuralOpsMixin:
         else:
             plt.show()
 
-    @property
-    def embeddings(self) -> np.ndarray:
-        """Return a `np.ndarray` stacking all the `embedding` attributes as rows.
-
-        Warning: This operation assumes all embeddings have the same shape and dtype.
-                 All dtype and shape values are assumed to be equal to the values of the
-                 first element in the DocumentArray / DocumentArrayMemmap
-
-        Warning: This operation currently does not support sparse arrays.
-
-        :return: embeddings stacked per row as `np.ndarray`.
-        """
-
-        x_mat = b''.join(d.proto.embedding.dense.buffer for d in self)
-
-        return np.frombuffer(x_mat, dtype=self[0].proto.embedding.dense.dtype).reshape(
-            (len(self), self[0].proto.embedding.dense.shape[0])
-        )
-
     def _get_embeddings(self, indices: Optional[slice] = None) -> np.ndarray:
         """Return a `np.ndarray` stacking  the `embedding` attributes as rows.
         If indices is passed the embeddings from the indices are retrieved, otherwise
@@ -274,11 +263,11 @@ class DocumentArrayNeuralOpsMixin:
         Example: `self._get_embeddings(10:20)` will return 10 embeddings from positions 10 to 20
                   in the `DocumentArray` or `DocumentArrayMemmap`
 
-        Warning: This operation assumes all embeddings have the same shape and dtype.
+        .. warning:: This operation assumes all embeddings have the same shape and dtype.
                  All dtype and shape values are assumed to be equal to the values of the
                  first element in the DocumentArray / DocumentArrayMemmap
 
-        Warning: This operation currently does not support sparse arrays.
+        .. warning:: This operation currently does not support sparse arrays.
 
         :param indices: slice of data from where to retrieve embeddings.
         :return: embeddings stacked per row as `np.ndarray`.

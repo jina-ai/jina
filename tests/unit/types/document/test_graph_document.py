@@ -246,7 +246,6 @@ def test_undirected_graph_to_dgl(graph):
     [(GraphDocument(force_undirected=True), 1), (GraphDocument(), 2)],
 )
 def test_graph_edge_behaviour_creation(graph, expected_output):
-
     doc0 = Document(text='Document0')
     doc1 = Document(text='Document1')
 
@@ -261,7 +260,6 @@ def test_graph_edge_behaviour_creation(graph, expected_output):
     [(GraphDocument(force_undirected=True), 1), (GraphDocument(), 2)],
 )
 def test_graph_edge_behaviour_creation(graph, expected_output):
-
     doc0 = Document(text='Document0')
     doc1 = Document(text='Document1')
 
@@ -276,7 +274,6 @@ def test_graph_edge_behaviour_creation(graph, expected_output):
     [(GraphDocument(force_undirected=True), 1), (GraphDocument(), 1)],
 )
 def test_graph_count_invariance(graph, expected_output):
-
     doc0 = Document(text='Document0')
     doc1 = Document(text='Document1')
 
@@ -291,7 +288,6 @@ def test_graph_count_invariance(graph, expected_output):
     [(GraphDocument(force_undirected=True), 1), (GraphDocument(), 1)],
 )
 def test_added_edges_in_edge_features(graph, expected_output):
-
     doc0 = Document(text='Document0')
     doc1 = Document(text='Document1')
 
@@ -307,7 +303,6 @@ def test_added_edges_in_edge_features(graph, expected_output):
     [(GraphDocument(force_undirected=True), 1), (GraphDocument(), 1)],
 )
 def test_manual_update_edges_features(graph, expected_output):
-
     doc0 = Document(text='Document0')
     doc1 = Document(text='Document1')
 
@@ -339,3 +334,7 @@ def test_edge_update_nested_lists():
     assert graph.edge_features[edge_key]['hey']['list'][1] is True
     assert graph.edge_features[edge_key]['hey']['list'][2]['inlist'] == 'not here'
     assert graph.edge_features[edge_key]['hoy'][0] == 1
+
+
+def test_graph_plot_does_not_fail(graph):
+    graph.plot()

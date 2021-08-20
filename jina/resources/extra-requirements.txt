@@ -23,11 +23,11 @@
 # AVAILABLE TAGS:
 # core < perf < standard < daemon < devel: these tags correspond to Docker image tag
 # test: required for **setting up test ENVIRONMENT**
-# chatbot, multimodal: required for the hello world demos
+# demo: required for the hello world demos
 
 scipy>=1.6.1:               devel
-fastapi:                    standard, daemon, devel, chatbot, multimodal
-uvicorn[standard]>=0.14.0:  standard, daemon, devel, chatbot, multimodal
+fastapi:                    standard, daemon, devel, demo
+uvicorn[standard]>=0.14.0:  standard, daemon, devel, demo
 fluent-logger:              daemon, devel
 docker:                     standard, daemon, devel
 pathspec:                   standard, daemon, devel
@@ -35,11 +35,11 @@ rich:                       standard, daemon, devel
 cryptography:               standard, daemon, devel
 filelock:                   standard, daemon, devel
 requests:                   standard, daemon, devel
-torch>=1.1.0:               chatbot, multimodal
-transformers>=2.6.0:        chatbot, multimodal
+torch>=1.1.0:               demo
+transformers>=2.6.0:        demo
 tensorflow>=2.0:            cicd
-torchvision>=0.3.0:         multimodal
-Pillow:                     multimodal
+torchvision>=0.3.0:         demo
+Pillow:                     demo
 lz4<3.1.2:                  perf, standard, daemon, devel
 uvloop:                     perf, standard, daemon, devel
 numpy:                      core
@@ -60,7 +60,7 @@ mock:                       test
 prettytable:                devel
 optuna:                     devel
 websockets:                 standard, daemon, devel
-pydantic:                   standard, daemon, devel, chatbot, multimodal
+pydantic:                   standard, daemon, devel, demo
 python-multipart:           standard, daemon, devel
 aiofiles:                   standard, daemon, devel
 aiohttp:                    standard, daemon, devel

@@ -50,6 +50,8 @@ class ZEDRuntime(ZMQRuntime):
         self._idle_dealer_ids = set()
 
         self._data_request_handler = DataRequestHandler(self.args, self.logger)
+        self._static_routing_table = hasattr(args, 'routing_table')
+
         self._load_zmqstreamlet()
 
     def run_forever(self):
@@ -321,7 +323,10 @@ class ZEDRuntime(ZMQRuntime):
         :return: expected number of partial messages
         """
         if msg.is_data_request:
-            if self.args.socket_in == SocketType.ROUTER_BIND:
+            if (
+                self.args.socket_in == SocketType.ROUTER_BIND
+                and not self._static_routing_table
+            ):
                 graph = RoutingTable(msg.envelope.routing_table)
                 return graph.active_target_pod.expected_parts
             else:

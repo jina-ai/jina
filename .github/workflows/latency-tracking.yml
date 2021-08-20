@@ -4,7 +4,7 @@ on:
   - pull_request
 
 jobs:
-  nth-releases:
+  lt-nth-releases:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -18,10 +18,6 @@ jobs:
       - name: Test docker install
         run: |
           docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:master .
-      - uses: actions/checkout@v2
-        with:
-          repository: jina-ai/latency-tracking
-          path: latency
       - uses: actions/setup-python@v2
         with:
           python-version: 3.7
@@ -30,7 +26,8 @@ jobs:
           sudo rm -f .dockerignore
           sudo mkdir -p /var/output
           sudo apt-get install jq
-          bash latency/track.sh ${{ matrix.last_nth_release }}
+          cd scripts/latency-tracking
+          bash track.sh ${{ matrix.last_nth_release }}
       - name: Upload output
         uses: actions/upload-artifact@v2
         with:
@@ -39,41 +36,40 @@ jobs:
           if-no-files-found: error
 
   comment-on-pr:
-    needs: nth-releases
+    needs: lt-nth-releases
     runs-on: ubuntu-latest
     steps:
-      - run: mkdir -p output
+      - uses: actions/checkout@v2
+      - run: |
+          mkdir -p scripts/latency-tracking/output
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
           name: lt-master
-          path: output
+          path: scripts/latency-tracking/output
       - uses: actions/download-artifact@v2
         with:
           name: lt-1
-          path: output
+          path: scripts/latency-tracking/output
       - uses: actions/download-artifact@v2
         with:
           name: lt-2
-          path: output
+          path: scripts/latency-tracking/output
       - name: Display structure of downloaded files
         run: ls -R
-        working-directory: output/
-      - uses: actions/checkout@v2
-        with:
-          repository: jina-ai/latency-tracking
-          path: latency
+        working-directory: scripts/latency-tracking/output
       - uses: actions/setup-python@v2
         with:
           python-version: 3.7
       - name: prepare comment
         run: |
           pip install packaging==21.0 prettytable==2.1.0
-          python latency/merge_outputs.py output stats.json
-          python latency/ppstat.py output/stats.json > latency/comment.txt
+          cd scripts/latency-tracking
+          python merge_outputs.py output stats.json
+          python ppstat.py output/stats.json > comment.txt
       - id: get-comment-body
         run: |
-          body=$(cat latency/comment.txt)
+          body=$(cat scripts/latency-tracking/comment.txt)
           body="${body//'%'/'%25'}"
           body="${body//$'\n'/'%0A'}"
           body="${body//$'\r'/'%0D'}"

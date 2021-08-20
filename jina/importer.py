@@ -3,7 +3,6 @@ import sys
 import warnings
 from types import SimpleNamespace, ModuleType
 from typing import Optional
-from importlib.abc import MetaPathFinder, Loader
 
 from . import __resources_path__
 
@@ -96,57 +95,6 @@ class ImportExtensions:
                 return True  # suppress the error
 
 
-class ExtensionFileLoader(Loader):
-    """Loader for extension modules."""
-
-    @classmethod
-    def exec_module(cls, module):
-        """Initialize an extension module
-
-        :param module: a namespace module
-        """
-        load_path = module.__spec__.origin
-        init_file = '__init__.py'
-        if load_path.endswith(init_file):
-            module.__path__ = [load_path[: -len(init_file) - 1]]
-
-
-_loader = ExtensionFileLoader()
-
-
-class ExtensionPathFinder:
-    """Meta path finder for extentions modules"""
-
-    __path__ = '.'
-
-    @classmethod
-    def find_spec(cls, fullname, paths=None, target=None):
-        """Try to find a spec for the specified module.
-
-        :param fullname: module full name
-        :param paths: the search paths
-        :param target: the target
-        :return: a module spec
-        """
-        from importlib.machinery import ModuleSpec
-
-        # TODO: read PEP 420
-        last_module = fullname.split('.')[-1]
-        if paths is None:
-            paths = [cls.__path__]
-        for path in paths:
-            full_path = os.path.join(path, last_module)
-
-            init_path = os.path.join(full_path, '__init__.py')
-            module_path = full_path + '.py'
-
-            if os.path.exists(init_path) and not os.path.exists(module_path):
-                return ModuleSpec(fullname, _loader, origin=init_path)
-            elif os.path.exists(module_path):
-                return ModuleSpec(fullname, _loader, origin=module_path)
-        return None
-
-
 class PathImporter:
     """The class to import modules from paths."""
 
@@ -176,27 +124,30 @@ class PathImporter:
         import importlib.util
 
         try:
-            # I dont want to trust user path based on directory structure, "jinahub", period
-            spec = importlib.util.spec_from_file_location('jinahub', absolute_path)
-            module = importlib.util.module_from_spec(spec)
+            # I dont want to trust user path based on directory structure, "user_module", period
+            default_spec_name = 'user_module'
             user_module_name = os.path.splitext(os.path.basename(absolute_path))[0]
             if user_module_name == '__init__':
                 # __init__ can not be used as a module name
-                spec_name = spec.name
+                spec_name = default_spec_name
             elif user_module_name not in sys.modules:
                 spec_name = user_module_name
             else:
                 warnings.warn(
                     f'''
                 {user_module_name} shadows one of built-in Python module name.
-                It is imported as `jinahub.{user_module_name}`
+                It is imported as `{default_spec_name}.{user_module_name}`
                 
                 Affects:
-                - Either, change your code from using `from {user_module_name} import ...` to `from jinahub.{user_module_name} import ...`
+                - Either, change your code from using `from {user_module_name} import ...` 
+                  to `from {default_spec_name}.{user_module_name} import ...`
                 - Or, rename {user_module_name} to another name
                 '''
                 )
-                spec_name = f'{spec.name}.{user_module_name}'
+                spec_name = f'{default_spec_name}.{user_module_name}'
+
+            spec = importlib.util.spec_from_file_location(spec_name, absolute_path)
+            module = importlib.util.module_from_spec(spec)
             sys.modules[spec_name] = module
             spec.loader.exec_module(module)
         except Exception as ex:

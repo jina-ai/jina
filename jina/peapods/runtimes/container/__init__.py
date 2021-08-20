@@ -158,6 +158,7 @@ class ContainerRuntime(ZMQRuntime):
         from ....parsers import set_pea_parser
 
         self.args.runs_in_docker = True
+        self.args.native = True
         non_defaults = ArgNamespace.get_non_defaults_args(
             self.args,
             set_pea_parser(),

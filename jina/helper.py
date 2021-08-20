@@ -639,6 +639,23 @@ class ColorContext:
         print(_RESET, flush=True, end='')
 
 
+def warn_unknown_args(unknown_args: List[str]):
+    """Creates warnings for all given arguments.
+
+    :param unknown_args: arguments that are unknown to Jina
+    """
+    for arg in unknown_args:
+        from .parsers.deprecated import get_deprecated_replacement
+
+        new_arg = get_deprecated_replacement(arg)
+        if new_arg:
+            warnings.warn(
+                f'''Ignored the deprecated argument '{arg}'. Please use '{new_arg}'.'''
+            )
+        else:
+            warnings.warn(f'ignored unknown argument: {arg}')
+
+
 class ArgNamespace:
     """Helper function for argparse.Namespace object."""
 
@@ -671,23 +688,23 @@ class ArgNamespace:
 
     @staticmethod
     def kwargs2namespace(
-        kwargs: Dict[str, Union[str, int, bool]], parser: ArgumentParser
+        kwargs: Dict[str, Union[str, int, bool]],
+        parser: ArgumentParser,
+        warn_unknown: bool = False,
     ) -> Namespace:
         """
         Convert dict to a namespace.
 
         :param kwargs: dictionary of key-values to be converted
         :param parser: the parser for building kwargs into a namespace
+        :param warn_unknown: True, if unknown arguments should be logged
         :return: argument list
         """
         args = ArgNamespace.kwargs2list(kwargs)
-        try:
-            p_args, unknown_args = parser.parse_known_args(args)
-        except SystemExit:
-            raise ValueError(
-                f'bad arguments "{args}" with parser {parser}, '
-                'you may want to double check your args '
-            )
+        p_args, unknown_args = parser.parse_known_args(args)
+        if warn_unknown and unknown_args:
+            warn_unknown_args(unknown_args)
+
         return p_args
 
     @staticmethod

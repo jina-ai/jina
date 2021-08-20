@@ -1,4 +1,4 @@
-from typing import Tuple, Union, TYPE_CHECKING
+from typing import Tuple, Union, TYPE_CHECKING, Optional
 
 import numpy as np
 
@@ -14,7 +14,10 @@ _SPARSE_SCIPY_TYPES = Union[
 
 
 def minmax_normalize(
-    x: Union['np.ndarray', _SPARSE_SCIPY_TYPES], t_range: Tuple = (0, 1)
+    x: Union['np.ndarray', _SPARSE_SCIPY_TYPES],
+    t_range: Tuple = (0, 1),
+    x_range: Optional[Tuple] = None,
+    eps: float = 1e-7,
 ):
     """Normalize values in `x` into `t_range`.
 
@@ -26,18 +29,22 @@ def minmax_normalize(
 
     :param x: the data to be normalized
     :param t_range: a tuple represents the target range.
+    :param x_range: a tuple represents x range.
+    :param eps: a small jitter to avoid divde by zero
     :return: normalized data in `t_range`
     """
     a, b = t_range
 
     if isinstance(x, np.ndarray):
-        min_d = np.min(x, axis=-1, keepdims=True)
-        max_d = np.max(x, axis=-1, keepdims=True)
-        return (b - a) * (x - min_d) / (max_d - min_d) + a
+        min_d = x_range[0] if x_range else np.min(x, axis=-1, keepdims=True)
+        max_d = x_range[1] if x_range else np.max(x, axis=-1, keepdims=True)
+        r = (b - a) * (x - min_d) / (max_d - min_d + eps) + a
     else:
-        min_d = x.min(axis=-1).toarray()
-        max_d = x.max(axis=-1).toarray()
-        return (b - a) * (x - min_d) / (max_d - min_d) + a
+        min_d = x_range[0] if x_range else x.min(axis=-1).toarray()
+        max_d = x_range[1] if x_range else x.max(axis=-1).toarray()
+        r = (b - a) * (x - min_d) / (max_d - min_d + eps) + a
+
+    return np.clip(r, *((a, b) if a < b else (b, a)))
 
 
 def top_k(

@@ -204,10 +204,9 @@ def get_main_parser():
         )
     )
 
-    set_pod_parser(
+    set_pea_parser(
         sp.add_parser(
             'executor',
-            aliases=['pod'],
             help='Start an Executor',
             description='Start an Executor. Executor is how Jina processes Document.',
             formatter_class=_chf,
@@ -268,6 +267,16 @@ def get_main_parser():
                         'are doing low-level orchestration',
             formatter_class=_chf,
             **(dict(help='Start a Pea')) if _SHOW_ALL_ARGS else {},
+        )
+    )
+
+    set_pod_parser(
+        sp.add_parser(
+            'pod',
+            description='Start a Pod. '
+            'You should rarely use this directly unless you '
+            'are doing low-level orchestration',
+            **(dict(help='Start a Pod')) if _SHOW_ALL_ARGS else {},
         )
     )
 

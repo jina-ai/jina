@@ -23,10 +23,6 @@ from ...types.message.common import ControlMessage
 from ...types.request import Request
 from ...types.routing.table import RoutingTable
 
-if False:
-    import multiprocessing
-    import threading
-
 
 class Zmqlet:
     """A `Zmqlet` object can send/receive data to/from ZeroMQ socket and invoke callback function. It
@@ -93,6 +89,11 @@ class Zmqlet:
 
         self.out_sockets = {}
         self._active = True
+        self._send_routing_table = args.send_routing_table
+        if hasattr(args, 'routing_table'):
+            self._routing_table = RoutingTable(args.routing_table)
+        else:
+            self._routing_table = None
 
     def _register_pollin(self):
         """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` (if :attr:`out_sock_type` is zmq.ROUTER)
@@ -311,7 +312,12 @@ class Zmqlet:
         return out_sock
 
     def _get_dynamic_next_routes(self, message):
-        routing_table = RoutingTable(message.envelope.routing_table)
+        # use our own static routing table if available, otherwise use the one in the message
+        routing_table = (
+            self._routing_table
+            if self._routing_table
+            else RoutingTable(message.envelope.routing_table)
+        )
         next_targets = routing_table.get_next_targets()
         next_routes = []
         for target, send_as_bind in next_targets:
@@ -332,7 +338,8 @@ class Zmqlet:
         for routing_table, out_sock in next_routes:
             new_envelope = jina_pb2.EnvelopeProto()
             new_envelope.CopyFrom(msg.envelope)
-            new_envelope.routing_table.CopyFrom(routing_table.proto)
+            if self._send_routing_table:
+                new_envelope.routing_table.CopyFrom(routing_table.proto)
             new_message = Message(request=msg.request, envelope=new_envelope)
 
             new_message.envelope.receiver_id = (
@@ -431,7 +438,8 @@ class AsyncZmqlet(Zmqlet):
         for routing_table, out_sock in self._get_dynamic_next_routes(msg):
             new_envelope = jina_pb2.EnvelopeProto()
             new_envelope.CopyFrom(msg.envelope)
-            new_envelope.routing_table.CopyFrom(routing_table.proto)
+            if self._send_routing_table:
+                new_envelope.routing_table.CopyFrom(routing_table.proto)
             new_message = Message(request=msg.request, envelope=new_envelope)
             asyncio.create_task(self._send_message_via(out_sock, new_message))
 

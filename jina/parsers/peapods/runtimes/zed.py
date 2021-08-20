@@ -67,11 +67,10 @@ def mixin_zed_runtime_parser(parser):
         help='''
 The customized python modules need to be imported before loading the executor
 
-Note, when importing multiple files and there is a dependency between them, then one has to write the dependencies in
-reverse order. That is, if `__init__.py` depends on `A.py`, which again depends on `B.py`, then you need to write:
-
---py-modules __init__.py --py-modules B.py --py-modules A.py
-
+Note that the recommended way is to only import a single module - a simple python file, if your
+executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
+which should be structured as a python package. For more details, please see the
+`Executor cookbook <https://github.com/jina-ai/jina/blob/master/.github/2.0/cookbooks/Executor.md#structure-of-the-repository>`__
 ''',
     )
 
@@ -146,6 +145,13 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
     )
 
     gp.add_argument(
+        '--native',
+        action='store_true',
+        default=False,
+        help='If set, only native Executors is allowed, and the Executor is always run inside ZEDRuntime.',
+    )
+
+    gp.add_argument(
         '--num-part',
         type=int,
         default=0,
@@ -177,6 +183,15 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
         action='store_true',
         default=False,
         help='Tells if a Pea should use gRPC for data requests. Works only with dynamic routing out.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+
+    gp.add_argument(
+        '--runs-in-docker',
+        action='store_true',
+        default=False,
+        help='Informs a Pea that runs in a container. Important to properly set networking information'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )

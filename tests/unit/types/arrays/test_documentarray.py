@@ -1,4 +1,5 @@
 import os
+import random
 from copy import deepcopy
 
 import pytest
@@ -56,6 +57,39 @@ def docarray_for_cache():
     d1 = Document(id=1)
     d2 = Document(id='2')
     da.extend([d1, d2])
+    return da
+
+
+@pytest.fixture
+def docarray_for_split():
+    da = DocumentArray()
+    da.append(Document(tags={'category': 'c'}))
+    da.append(Document(tags={'category': 'c'}))
+    da.append(Document(tags={'category': 'b'}))
+    da.append(Document(tags={'category': 'a'}))
+    da.append(Document(tags={'category': 'a'}))
+    return da
+
+
+@pytest.fixture
+def docarray_for_split_at_zero():
+    da = DocumentArray()
+    da.append(Document(tags={'category': 0.0}))
+    da.append(Document(tags={'category': 0.0}))
+    da.append(Document(tags={'category': 1.0}))
+    da.append(Document(tags={'category': 2.0}))
+    da.append(Document(tags={'category': 2.0}))
+    return da
+
+
+@pytest.fixture
+def docarray_for_nest_split():
+    da = DocumentArray()
+    da.append(Document(tags={'nest': {'category': 'c'}}))
+    da.append(Document(tags={'nest': {'category': 'c'}}))
+    da.append(Document(tags={'nest': {'category': 'b'}}))
+    da.append(Document(tags={'nest': {'category': 'a'}}))
+    da.append(Document(tags={'nest': {'category': 'a'}}))
     return da
 
 
@@ -439,3 +473,87 @@ def test_shuffle_with_seed():
     assert len(shuffled_1) == len(shuffled_2) == len(shuffled_3) == len(da)
     assert shuffled_1 == shuffled_2
     assert shuffled_1 != shuffled_3
+
+
+def test_split(docarray_for_split):
+    rv = docarray_for_split.split('category')
+    assert isinstance(rv, dict)
+    assert sorted(list(rv.keys())) == ['a', 'b', 'c']
+    # assure order is preserved c, b, a
+    assert list(rv.keys()) == ['c', 'b', 'a']
+    # original input c, c, b, a, a
+    assert len(rv['c']) == 2
+    assert len(rv['b']) == 1
+    assert len(rv['a']) == 2
+    rv = docarray_for_split.split('random')
+    assert not rv  # wrong tag returns empty dict
+
+
+def test_split_at_zero(docarray_for_split_at_zero):
+    rv = docarray_for_split_at_zero.split('category')
+    assert isinstance(rv, dict)
+    assert sorted(list(rv.keys())) == [0.0, 1.0, 2.0]
+
+
+def test_dunder_split(docarray_for_nest_split):
+    rv = docarray_for_nest_split.split('nest__category')
+    assert isinstance(rv, dict)
+    assert sorted(list(rv.keys())) == ['a', 'b', 'c']
+    # assure order is preserved c, b, a
+    assert list(rv.keys()) == ['c', 'b', 'a']
+    # original input c, c, b, a, a
+    assert len(rv['c']) == 2
+    assert len(rv['b']) == 1
+    assert len(rv['a']) == 2
+
+    with pytest.raises(KeyError):
+        docarray_for_nest_split.split('nest__random')
+
+
+def test_da_get_embeddings():
+    da = DocumentArray(random_docs(100))
+    np.testing.assert_almost_equal(da.get_attributes('embedding'), da.embeddings)
+
+
+def test_da_get_embeddings_slice():
+    da = DocumentArray(random_docs(100))
+    np.testing.assert_almost_equal(
+        da.get_attributes('embedding')[10:20], da._get_embeddings(slice(10, 20))
+    )
+
+
+def test_embeddings_setter_da():
+    emb = np.random.random((100, 128))
+    da = DocumentArray([Document() for _ in range(100)])
+    da.embeddings = emb
+    np.testing.assert_almost_equal(da.embeddings, emb)
+
+    for x, doc in zip(emb, da):
+        np.testing.assert_almost_equal(x, doc.embedding)
+
+
+def test_embeddings_getter_da():
+    emb = np.random.random((100, 128))
+    da = DocumentArray([Document(embedding=x) for x in emb])
+    assert len(da) == 100
+    np.testing.assert_almost_equal(da.embeddings, emb)
+
+    for x, doc in zip(emb, da):
+        np.testing.assert_almost_equal(x, doc.embedding)
+
+
+def test_blobs_getter_da():
+    blobs = np.random.random((100, 10, 10))
+    da = DocumentArray([Document(blob=blob) for blob in blobs])
+    assert len(da) == 100
+    np.testing.assert_almost_equal(da.get_attributes('blob'), da.blobs)
+
+
+def test_blobs_setter_da():
+    blobs = np.random.random((100, 10, 10))
+    da = DocumentArray([Document() for _ in range(100)])
+    da.blobs = blobs
+    np.testing.assert_almost_equal(da.blobs, blobs)
+
+    for x, doc in zip(blobs, da):
+        np.testing.assert_almost_equal(x, doc.blob)

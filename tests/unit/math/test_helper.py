@@ -25,6 +25,13 @@ def test_minmax_normalization_sparse():
     np.testing.assert_almost_equal(a_normalized, [[1, 0.5, 0], [0, 0.5, 1]])
 
 
+def test_minmax_normalization_zero():
+    a = np.array([[1, 1, 1], [3, 3, 3]])
+    np.testing.assert_almost_equal(minmax_normalize(a), [[0, 0, 0], [0, 0, 0]])
+    a_normalized = minmax_normalize(a, (1, 0))
+    np.testing.assert_almost_equal(a_normalized, [[1, 1, 1], [1, 1, 1]])
+
+
 def test_update_rows_x_mat_best():
     x_mat_best = np.array([[1, 5], [3, 5]])
 

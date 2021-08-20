@@ -216,6 +216,17 @@ class RoutingTable(ProtoTypeMixin):
             targets.append((new_graph, edge.send_as_bind))
         return targets
 
+    def get_next_target_addresses(self) -> List[str]:
+        """
+        Calculates next routing targets for all currently outgoing edges.
+
+        :return: list of addresses for next targets
+        """
+        targets = []
+        for edge in self._get_out_edges(self.active_pod):
+            targets.append(self._get_target_pod(edge.pod).full_address)
+        return targets
+
     def is_acyclic(self) -> bool:
         """
         :return: True, if graph is acyclic, False otherwise.

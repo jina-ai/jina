@@ -2,8 +2,8 @@ import argparse
 from typing import Dict, Any
 
 from ..base import VersionedYAMLParser
-from ....enums import PodRoleType
 from .... import Flow
+from ....enums import PodRoleType
 from ....helper import expand_env_var, ArgNamespace
 from ....parsers import set_pod_parser, set_gateway_parser
 
@@ -71,6 +71,7 @@ class V1Parser(VersionedYAMLParser):
                 method = p_pod_attr.get('method', 'add')
                 # support methods: add, needs, inspect
                 getattr(obj, method)(**p_pod_attr, copy_flow=False)
+
         return obj
 
     def dump(self, data: 'Flow') -> Dict:

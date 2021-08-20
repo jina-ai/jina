@@ -32,23 +32,33 @@ def pea(args: 'Namespace'):
         pass
 
 
-def zed_runtime(args: 'Namespace'):
+def executor_native(args: 'Namespace'):
     """
-    Starts a ZEDRuntime
+    Starts an Executor in ZEDRuntime
 
     :param args: arguments coming from the CLI.
     """
     from jina.peapods.runtimes.zmq.zed import ZEDRuntime
 
-    with ZEDRuntime(args) as runtime:
-        runtime.logger.success(
-            f' Executor {runtime._data_request_handler._executor.metas.name} started'
+    with ZEDRuntime(args) as rt:
+        rt.logger.success(
+            f' Executor {rt._data_request_handler._executor.metas.name} started'
         )
-        runtime.run_forever()
+        rt.run_forever()
 
 
-# alias
-executor = zed_runtime
+def executor(args: 'Namespace'):
+    """
+    Starts an Executor in any Runtime
+
+    :param args: arguments coming from the CLI.
+
+    :returns: return the same as `pea` or `zed_runtime`
+    """
+    if args.native:
+        return executor_native(args)
+    else:
+        return pea(args)
 
 
 def grpc_data_runtime(args: 'Namespace'):

@@ -113,6 +113,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         log_config: Optional[str] = None,
         memory_hwm: Optional[int] = -1,
         name: Optional[str] = 'gateway',
+        native: Optional[bool] = False,
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
         on_error_strategy: Optional[str] = 'IGNORE',
@@ -177,6 +178,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - ...
 
           When not given, then the default naming strategy will apply.
+        :param native: If set, only native Executors is allowed, and the Executor is always run inside ZEDRuntime.
         :param no_crud_endpoints: If set, /index, /search, /update, /delete endpoints are removed from HTTP interface.
 
                   Any executor that has `@requests(on=...)` bind with those values will receive data requests.
@@ -199,10 +201,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param py_modules: The customized python modules need to be imported before loading the executor
 
-          Note, when importing multiple files and there is a dependency between them, then one has to write the dependencies in
-          reverse order. That is, if `__init__.py` depends on `A.py`, which again depends on `B.py`, then you need to write:
-
-          --py-modules __init__.py --py-modules B.py --py-modules A.py
+          Note that the recommended way is to only import a single module - a simple python file, if your
+          executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
+          which should be structured as a python package. For more details, please see the
+          `Executor cookbook <https://github.com/jina-ai/jina/blob/master/.github/2.0/cookbooks/Executor.md#structure-of-the-repository>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param runtime_backend: The parallel backend of the runtime inside the Pea
@@ -248,6 +250,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         name: Optional[str] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
+        static_routing_table: Optional[bool] = False,
         uses: Optional[str] = None,
         workspace: Optional[str] = './',
         **kwargs,
@@ -271,6 +274,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           When not given, then the default naming strategy will apply.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param static_routing_table: Defines if the routing table should be pre computed by the Flow. In this case it is statically defined for each Pod and not send on every data request. Can not be used in combination with external pods
         :param uses: The YAML file represents a flow
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
@@ -309,7 +313,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         _flow_parser = set_flow_parser()
         if args is None:
-            args = ArgNamespace.kwargs2namespace(kwargs, _flow_parser)
+            args = ArgNamespace.kwargs2namespace(kwargs, _flow_parser, True)
         self.args = args
         # common args should be the ones that can not be parsed by _flow_parser
         known_keys = vars(args)
@@ -463,6 +467,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         log_config: Optional[str] = None,
         memory_hwm: Optional[int] = -1,
         name: Optional[str] = None,
+        native: Optional[bool] = False,
         on_error_strategy: Optional[str] = 'IGNORE',
         parallel: Optional[int] = 1,
         peas_hosts: Optional[List[str]] = None,
@@ -536,6 +541,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - ...
 
           When not given, then the default naming strategy will apply.
+        :param native: If set, only native Executors is allowed, and the Executor is always run inside ZEDRuntime.
         :param on_error_strategy: The skip strategy on exceptions.
 
           - IGNORE: Ignore it, keep running all Executors in the sequel flow
@@ -559,10 +565,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param pull_latest: Pull the latest image before running
         :param py_modules: The customized python modules need to be imported before loading the executor
 
-          Note, when importing multiple files and there is a dependency between them, then one has to write the dependencies in
-          reverse order. That is, if `__init__.py` depends on `A.py`, which again depends on `B.py`, then you need to write:
-
-          --py-modules __init__.py --py-modules B.py --py-modules A.py
+          Note that the recommended way is to only import a single module - a simple python file, if your
+          executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
+          which should be structured as a python package. For more details, please see the
+          `Executor cookbook <https://github.com/jina-ai/jina/blob/master/.github/2.0/cookbooks/Executor.md#structure-of-the-repository>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param quiet_remote_logs: Do not display the streaming of remote logs on local console
@@ -687,7 +693,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if pod_role == PodRoleType.GATEWAY:
             parser = set_gateway_parser()
 
-        args = ArgNamespace.kwargs2namespace(kwargs, parser)
+        args = ArgNamespace.kwargs2namespace(kwargs, parser, True)
 
         if args.grpc_data_requests and args.runtime_cls == 'ZEDRuntime':
             args.runtime_cls = 'GRPCDataRuntime'
@@ -891,7 +897,20 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             raise RoutingTableCyclicError(
                 'The routing graph has a cycle. This would result in an infinite loop. Fix your Flow setup.'
             )
-        self._pod_nodes[GATEWAY_NAME].args.routing_table = routing_table.json()
+        for pod in self._pod_nodes:
+            routing_table_copy = RoutingTable()
+            routing_table_copy.proto.CopyFrom(routing_table.proto)
+            self._pod_nodes[
+                pod
+            ].args.send_routing_table = not self.args.static_routing_table
+            # The gateway always needs the routing table to be set
+            if pod == GATEWAY_NAME:
+                self._pod_nodes[pod].args.routing_table = routing_table_copy.json()
+            # For other pods we only set it if we are told do so
+            elif self.args.static_routing_table:
+                routing_table_copy.active_pod = pod
+                self._pod_nodes[pod].args.routing_table = routing_table_copy.json()
+                self._pod_nodes[pod].update_pea_args()
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def build(self, copy_flow: bool = False) -> 'Flow':

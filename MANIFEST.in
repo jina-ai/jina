@@ -4,5 +4,6 @@ recursive-include daemon/Dockerfiles *
 include extra-requirements.txt
 include fastentrypoints.py
 include jina/kubernetes/template/*.yml
+include LICENSE
 prune tests/
 prune **/tests/
