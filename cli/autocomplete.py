@@ -116,6 +116,8 @@ ac_table = {
             '--no-dynamic-routing',
             '--connect-to-predecessor',
             '--k8s-uses-init',
+            '--k8s-uses-with-init',
+            '--k8s-namespace',
         ],
         'pod': [
             '--help',
@@ -186,6 +188,8 @@ ac_table = {
             '--no-dynamic-routing',
             '--connect-to-predecessor',
             '--k8s-uses-init',
+            '--k8s-uses-with-init',
+            '--k8s-namespace',
         ],
         'flow': [
             '--help',
