@@ -483,6 +483,8 @@ metas:
 
 ### Multiple python files
 
+> This way of repository structure is currently not compatible with JinaD, when adding the executor to a Flow using `uses='config.yml'`, as JinaD only supports a flat file structure.  In this case, it is recommended that you containerize your executor, and use it with JinaD in your Flow either via `uses='jinahub+docker://...'` or `uses='docker://...'`.
+
 When you are working with multiple python files, you should organize them as a **python package** and put them in a special folder inside
 your repository (as you would normally do with python packages). Specifically, you should do the following:
 - put all your python files inside a special folder (call it `executor`, as a convention), and put an `__init__.py` file inside it
