@@ -121,7 +121,7 @@ recipe_object = {
     'package': {'name': '<{ name|lower }>', 'version': '<{ version }>'},
     'source': {
         'url': 'https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz',
-        'sha': jina_sha,
+        'sha256': jina_sha,
     },
     'build': {'number': 0},
     'outputs': [
@@ -158,7 +158,7 @@ recipe_object = {
         'license': 'Apache-2.0',
         'license_family': 'Apache',
         'license_file': 'LICENSE',
-        'description': 'Jina is the cloud-native neural search framework for any kind of data',
+        'summary': 'Jina is the cloud-native neural search framework for any kind of data',
         'doc_url': 'https://docs.jina.ai',
     },
     'extra': {'recipe-maintainers': ['tadejsv', 'maateen', 'nan-wang', 'hanxiao']},
