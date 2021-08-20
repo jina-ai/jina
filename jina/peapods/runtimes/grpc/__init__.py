@@ -152,7 +152,8 @@ class GRPCDataRuntime(BaseRuntime, ABC):
     async def _callback(self, msg: Message) -> None:
         try:
             msg = self._post_hook(self._handle(self._pre_hook(msg)))
-            asyncio.create_task(self._grpclet.send_message(msg))
+            if msg.is_data_request:
+                asyncio.create_task(self._grpclet.send_message(msg))
         except RuntimeTerminated:
             # this is the proper way to end when a terminate signal is sent
             self._pending_tasks.append(asyncio.create_task(self._close_grpclet()))
@@ -185,6 +186,8 @@ class GRPCDataRuntime(BaseRuntime, ABC):
                     exc_info=not self.args.quiet_error,
                 )
 
+            if msg.is_data_request:
+                asyncio.create_task(self._grpclet.send_message(msg))
             asyncio.create_task(self._grpclet.send_message(msg))
 
     def _handle(self, msg: Message) -> Message:
