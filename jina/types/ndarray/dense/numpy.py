@@ -8,6 +8,8 @@ from ....proto import jina_pb2
 
 __all__ = ['BaseDenseNdArray']
 
+QUANTIZE = os.environ.get('JINA_ARRAY_QUANT')
+
 
 class DenseNdArray(BaseDenseNdArray):
     """
@@ -41,7 +43,7 @@ class DenseNdArray(BaseDenseNdArray):
         **kwargs
     ):
         super().__init__(proto, *args, **kwargs)
-        self.quantize = os.environ.get('JINA_ARRAY_QUANT', quantize)
+        self.quantize = quantize or QUANTIZE
 
     @property
     def value(self) -> 'np.ndarray':
