@@ -73,7 +73,7 @@ class K8sPod(BasePod):
 
     def _deploy_runtime(self, deployment_args, replicas, k8s_namespace, deployment_id):
         image_name = kubernetes_deployment.get_image_name(self.args.uses)
-        dns_name = kubernetes_deployment.to_dns_name(self.name)
+        dns_name = kubernetes_deployment.to_dns_name(self.name + str(deployment_id))
         init_container_args = kubernetes_deployment.get_init_container_args(self)
         uses_metas = kubernetes_deployment.dictionary_to_cli_param(
             {'pea_id': deployment_id}
