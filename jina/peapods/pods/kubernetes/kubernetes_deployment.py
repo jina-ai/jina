@@ -118,13 +118,27 @@ def deploy_service(
 def get_cli_params(arguments, skip_list=()):
     arguments.host = '0.0.0.0'
     skip_attributes = [
+        'uses',  # set manually
+        'uses_with',  # set manually
+        'runtime_cls',  # set manually
         'workspace',
         'log_config',
-        'uses',
         'dynamic_routing',
         'hosts_in_connect',
         'polling_type',
         'k8s_namespace',
+        'uses_after',
+        'uses_before',
+        'replicas',
+        'shards',
+        'parallel',
+        'polling',
+        'port_in',
+        'port_out',
+        'port_ctrl',
+        'port_expose',
+        'k8s_uses_with_init',
+        'k8s_uses_init'
     ] + list(skip_list)
     arg_list = [
         [attribute, attribute.replace('_', '-'), value]
@@ -141,6 +155,11 @@ def get_cli_params(arguments, skip_list=()):
                 value = str(value)
                 value = value.replace('\'', '').replace('"', '\\"')
                 cli_args.append(f'"--{cli_attribute}", "{value}"')
+
+    cli_args.append('"--port-in", "8081"')
+    cli_args.append('"--port-out", "8082"')
+    cli_args.append('"--port-ctrl", "8083"')
+    cli_args.append('"--port-expose", "8080"')
     cli_string = ', '.join(cli_args)
     return cli_string
 
@@ -286,92 +305,92 @@ def get_init_container_args(pod):
     return init_container
 
 
-def create_in_k8s(k8s_flow, pod_name_to_parallel):
-    namespace = k8s_flow.args.name
-    for pod_name, pod in k8s_flow._pod_nodes.items():
-        if pod_name == 'gateway':
-            continue
-        image_name = get_image_name(pod.args.uses)
-        pea_arg = pod.peas_args['peas'][0]
-        pea_name = pea_arg.name
-        pea_dns_name = to_dns_name(pea_name)
-        init_container_args = get_init_container_args(pod)
-        uses_metas = dictionary_to_cli_param({'pea_id': pea_arg.pea_id})
-        uses_with = dictionary_to_cli_param(pea_arg.uses_with)
-        uses_with_string = f'"--uses-with", "{uses_with}", ' if uses_with else ''
-        if image_name == 'BaseExecutor':
-            image_name = 'jinaai/jina'
-            container_args = (
-                f'["executor", '
-                f'"--uses", "BaseExecutor", '
-                f'"--uses-metas", "{uses_metas}", '
-                + uses_with_string
-                + f'{get_cli_params(pea_arg)}]'
-            )
+# def create_in_k8s(k8s_flow, pod_name_to_parallel):
+#     namespace = k8s_flow.args.name
+#     for pod_name, pod in k8s_flow._pod_nodes.items():
+#         if pod_name == 'gateway':
+#             continue
+#         image_name = get_image_name(pod.args.uses)
+#         pea_arg = pod.peas_args['peas'][0]
+#         pea_name = pea_arg.name
+#         pea_dns_name = to_dns_name(pea_name)
+#         init_container_args = get_init_container_args(pod)
+#         uses_metas = dictionary_to_cli_param({'pea_id': pea_arg.pea_id})
+#         uses_with = dictionary_to_cli_param(pea_arg.uses_with)
+#         uses_with_string = f'"--uses-with", "{uses_with}", ' if uses_with else ''
+#         if image_name == 'BaseExecutor':
+#             image_name = 'jinaai/jina'
+#             container_args = (
+#                 f'["executor", '
+#                 f'"--uses", "BaseExecutor", '
+#                 f'"--uses-metas", "{uses_metas}", '
+#                 + uses_with_string
+#                 + f'{get_cli_params(pea_arg)}]'
+#             )
+#
+#         else:
+#             container_args = (
+#                 f'["executor", '
+#                 f'"--uses", "config.yml", '
+#                 f'"--uses-metas", "{uses_metas}", '
+#                 + uses_with_string
+#                 + f'{get_cli_params(pea_arg)}]'
+#             )
+#
+#         if pod_name.endswith('_tail') or pod_name.endswith('_head'):
+#             replicas = 1
+#         else:
+#             replicas = pod_name_to_parallel[pod_name.rsplit("_", 1)[0]][1]
+#
+#         deploy_service(
+#             pea_dns_name,
+#             namespace=namespace,
+#             port_in=pea_arg.port_in,
+#             port_out=pea_arg.port_out,
+#             port_ctrl=pea_arg.port_ctrl,
+#             port_expose=pea_arg.port_expose,
+#             image_name=image_name,
+#             container_cmd='["jina"]',
+#             container_args=container_args,
+#             logger=k8s_flow.logger,
+#             replicas=replicas,
+#             init_container=init_container_args,
+#         )
+#
+#     gateway_args = k8s_flow._pod_nodes['gateway'].peas_args['peas'][0]
+#     deploy_service(
+#         gateway_args.name,
+#         namespace,
+#         gateway_args.port_in,
+#         gateway_args.port_out,
+#         gateway_args.port_ctrl,
+#         gateway_args.port_expose,
+#         'gcr.io/jina-showcase/generic-gateway:latest',
+#         container_cmd='["jina"]',
+#         container_args=f'["gateway", ' f'{get_cli_params(gateway_args)}]',
+#         logger=k8s_flow.logger,
+#         replicas=1,
+#         init_container=None,
+#     )
 
-        else:
-            container_args = (
-                f'["executor", '
-                f'"--uses", "config.yml", '
-                f'"--uses-metas", "{uses_metas}", '
-                + uses_with_string
-                + f'{get_cli_params(pea_arg)}]'
-            )
 
-        if pod_name.endswith('_tail') or pod_name.endswith('_head'):
-            replicas = 1
-        else:
-            replicas = pod_name_to_parallel[pod_name.rsplit("_", 1)[0]][1]
-
-        deploy_service(
-            pea_dns_name,
-            namespace=namespace,
-            port_in=pea_arg.port_in,
-            port_out=pea_arg.port_out,
-            port_ctrl=pea_arg.port_ctrl,
-            port_expose=pea_arg.port_expose,
-            image_name=image_name,
-            container_cmd='["jina"]',
-            container_args=container_args,
-            logger=k8s_flow.logger,
-            replicas=replicas,
-            init_container=init_container_args,
-        )
-
-    gateway_args = k8s_flow._pod_nodes['gateway'].peas_args['peas'][0]
-    deploy_service(
-        gateway_args.name,
-        namespace,
-        gateway_args.port_in,
-        gateway_args.port_out,
-        gateway_args.port_ctrl,
-        gateway_args.port_expose,
-        'gcr.io/jina-showcase/generic-gateway:latest',
-        container_cmd='["jina"]',
-        container_args=f'["gateway", ' f'{get_cli_params(gateway_args)}]',
-        logger=k8s_flow.logger,
-        replicas=1,
-        init_container=None,
-    )
-
-
-def deploy(flow):
-    """Deploys the Flow. Currently only Kubernetes is supported.
-    Each pod is deployed in a stateful set and we use zmq level communication.
-    """
-    from jina.peapods.pods.kubernetes import kubernetes_tools
-
-    # TODO needed?
-    flow = prepare_flow(flow)
-
-    flow.logger.info(f'✨ Deploy Flow on Kubernetes...')
-    namespace = flow.args.name
-    flow.logger.info(f'📦\tCreate Namespace {namespace}')
-    kubernetes_tools.create('namespace', {'name': namespace})
-
-    k8s_flow, pod_name_to_parallel = get_k8s_flow(flow)
-
-    create_in_k8s(k8s_flow, pod_name_to_parallel)
-
-    # flow.logger.info(f'🌐\tCreate "Ingress resource"')
-    # kubernetes_tools.create_gateway_ingress(namespace)
+# def deploy(flow):
+#     """Deploys the Flow. Currently only Kubernetes is supported.
+#     Each pod is deployed in a stateful set and we use zmq level communication.
+#     """
+#     from jina.peapods.pods.kubernetes import kubernetes_tools
+#
+#     # TODO needed?
+#     flow = prepare_flow(flow)
+#
+#     flow.logger.info(f'✨ Deploy Flow on Kubernetes...')
+#     namespace = flow.args.name
+#     flow.logger.info(f'📦\tCreate Namespace {namespace}')
+#     kubernetes_tools.create('namespace', {'name': namespace})
+#
+#     k8s_flow, pod_name_to_parallel = get_k8s_flow(flow)
+#
+#     create_in_k8s(k8s_flow, pod_name_to_parallel)
+#
+#     # flow.logger.info(f'🌐\tCreate "Ingress resource"')
+#     # kubernetes_tools.create_gateway_ingress(namespace)

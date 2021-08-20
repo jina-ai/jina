@@ -1,7 +1,7 @@
 from jina import Flow
 
 namespace = 'search-flow'
-shards = 3
+shards = 2
 search_flow = Flow(
     name=namespace, protocol='http', port_expose=8080, infrastructure='k8s'
 ).add(

@@ -81,12 +81,12 @@ class K8sPod(BasePod):
         uses_with = kubernetes_deployment.dictionary_to_cli_param(self.args.uses_with)
         uses_with_string = f'"--uses-with", "{uses_with}", ' if uses_with else ''
         if image_name == __default_executor__:
-            image_name = 'gcr.io/jina-showcase/generic-gateway:latest'
+            image_name = 'gcr.io/jina-showcase/custom-jina:latest'
             container_args = (
                 f'["pea", '
                 f'"--uses", "BaseExecutor", '
                 # f'"--grpc-data-requests", "True", '
-                f'"--runtime-cls", "GRPCDataRuntime'
+                f'"--runtime-cls", "GRPCDataRuntime", '
                 f'"--uses-metas", "{uses_metas}", '
                 + uses_with_string
                 + f'{kubernetes_deployment.get_cli_params(self.args)}]'
@@ -97,7 +97,7 @@ class K8sPod(BasePod):
                 f'["pea", '
                 f'"--uses", "config.yml", '
                 # f'"--grpc_data_requests", "True", '
-                f'"--runtime-cls", "GRPCDataRuntime'
+                f'"--runtime-cls", "GRPCDataRuntime", '
                 f'"--uses-metas", "{uses_metas}", '
                 + uses_with_string
                 + f'{kubernetes_deployment.get_cli_params(self.args)}]'
