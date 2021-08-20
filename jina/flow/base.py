@@ -853,6 +853,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             elif self.args.static_routing_table:
                 routing_table_copy.active_pod = pod
                 self._pod_nodes[pod].args.routing_table = routing_table_copy.json()
+                self._pod_nodes[pod].update_pea_args()
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def build(self, copy_flow: bool = False) -> 'Flow':

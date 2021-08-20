@@ -318,16 +318,20 @@ class Pod(BasePod, ExitFIFO):
         self.deducted_head = None
         self.deducted_tail = None
         self.peas = []  # type: List['BasePea']
-        if isinstance(args, Dict):
-            # This is used when a Pod is created in a remote context, where peas & their connections are already given.
-            self.peas_args = args
-        else:
-            self.peas_args = self._parse_args(args)
+        self.update_pea_args()
         self._activated = False
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
         self.join()
+
+    def update_pea_args(self):
+        """ Update args of its peas based on Pod args"""
+        if isinstance(self.args, Dict):
+            # This is used when a Pod is created in a remote context, where peas & their connections are already given.
+            self.peas_args = self.args
+        else:
+            self.peas_args = self._parse_args(self.args)
 
     @property
     def is_singleton(self) -> bool:
