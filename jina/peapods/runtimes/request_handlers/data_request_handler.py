@@ -183,7 +183,7 @@ class DataRequestHandler:
                 )
             elif r_docs != msg.request.docs:
                 # this means the returned DocArray is a completely new one
-                DataRequestHandler.replace_docs(msg, docs)
+                DataRequestHandler.replace_docs(msg, r_docs)
         elif partial_requests:
             DataRequestHandler.replace_docs(msg, docs)
 

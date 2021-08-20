@@ -2,7 +2,6 @@ jtype: Flow
 version: '1'
 with:
   cors: True
-  expose_crud_endpoints: True
 executors:
   - name: craftText
     uses:
