@@ -1,3 +1,4 @@
+import copy
 from argparse import Namespace
 from typing import Optional, Dict, Union, Set, List
 
@@ -5,6 +6,7 @@ from .kubernetes import kubernetes_deployment, kubernetes_tools
 
 from ...logging.logger import JinaLogger
 from .. import BasePod
+from ... import __default_executor__
 
 
 class K8sPod(BasePod):
@@ -14,17 +16,30 @@ class K8sPod(BasePod):
         super().__init__()
         self.args = args
         self.needs = needs or set()
-        self.peas_args = self._parse_args(args)
+        self.deployment_args = self._parse_args(args)
 
     def _parse_args(
         self, args: Namespace
     ) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:
-        return self._parse_base_pod_args(args)
+        return self._parse_deployment_args(args)
 
-    def _parse_base_pod_args(self, args):
-        parsed_args = {'peas': []}
-        parsed_args['peas'] = [args]
-        # note that peas_args['peas'][0] exist either way and carries the original property
+    def _parse_deployment_args(self, args):
+        parsed_args = {
+            'head_deployment': None,
+            'tail_deployment': None,
+            'deployments': [],
+        }
+        parallel = getattr(args, 'parallel', 1)
+        if parallel > 1:
+            # reasons to separate head and tail from peas is that they
+            # can be deducted based on the previous and next pods
+            parsed_args['head_deployment'] = copy.copy(args)
+            parsed_args['head_deployment'].uses = args.uses_before
+            parsed_args['tail_deployment'] = copy.copy(args)
+            parsed_args['tail_deployment'].uses = args.uses_after
+            parsed_args['deployments'] = [args] * parallel
+        else:
+            parsed_args['deployments'] = [args]
         return parsed_args
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -39,77 +54,96 @@ class K8sPod(BasePod):
     def host(self) -> str:
         raise NotImplementedError
 
+    def _deploy_gateway(self):
+        kubernetes_deployment.deploy_service(
+            self.name,
+            namespace=self.args.k8s_namespace,  # maybe new args for kubernetes Pod
+            port_in=self.args.port_in,
+            port_out=self.args.port_out,
+            port_ctrl=self.args.port_ctrl,
+            port_expose=self.args.port_expose,
+            image_name='gcr.io/jina-showcase/generic-gateway:latest',
+            container_cmd='["jina"]',
+            container_args=f'["gateway", '
+            f'{kubernetes_deployment.get_cli_params(self.args)}]',
+            logger=JinaLogger(f'deploy_{self.name}'),
+            replicas=1,
+            init_container=None,
+        )
+
+    def _deploy_runtime(self, deployment_args, replicas, k8s_namespace, deployment_id):
+        image_name = kubernetes_deployment.get_image_name(self.args.uses)
+        dns_name = kubernetes_deployment.to_dns_name(self.name)
+        init_container_args = kubernetes_deployment.get_init_container_args(self)
+        uses_metas = kubernetes_deployment.dictionary_to_cli_param(
+            {'pea_id': deployment_id}
+        )
+        uses_with = kubernetes_deployment.dictionary_to_cli_param(self.args.uses_with)
+        uses_with_string = f'"--uses-with", "{uses_with}", ' if uses_with else ''
+        if image_name == __default_executor__:
+            image_name = 'gcr.io/jina-showcase/generic-gateway:latest'
+            container_args = (
+                f'["executor", '
+                f'"--uses", "BaseExecutor", '
+                f'"--grpc_data_requests", "True", '
+                f'"--uses-metas", "{uses_metas}", '
+                + uses_with_string
+                + f'{kubernetes_deployment.get_cli_params(self.args)}]'
+            )
+
+        else:
+            container_args = (
+                f'["executor", '
+                f'"--uses", "config.yml", '
+                f'"--grpc_data_requests", "True", '
+                f'"--uses-metas", "{uses_metas}", '
+                + uses_with_string
+                + f'{kubernetes_deployment.get_cli_params(self.args)}]'
+            )
+
+        kubernetes_deployment.deploy_service(
+            dns_name,
+            namespace=k8s_namespace,  # maybe new args for kubernetes Pod
+            port_in=deployment_args.port_in,
+            port_out=deployment_args.port_out,
+            port_ctrl=deployment_args.port_ctrl,
+            port_expose=deployment_args.port_expose,
+            image_name=image_name,
+            container_cmd='["jina"]',
+            container_args=container_args,
+            logger=JinaLogger(f'deploy_{self.name}'),
+            replicas=replicas,
+            init_container=init_container_args,
+        )
+
     def start(self) -> 'K8sPod':
-        # kubernetes_tooks start things
-        # flow.logger.info(f'✨ Deploy Flow on Kubernetes...')
-        # namespace = flow.args.name
-        # flow.logger.info(f'📦\tCreate Namespace {namespace}')
+        # K8s start things
         kubernetes_tools.create('namespace', {'name': self.args.k8s_namespace})
 
         if self.name == 'gateway':
-            kubernetes_deployment.deploy_service(
-                self.name,
-                namespace=self.args.k8s_namespace,  # maybe new args for kubernetes Pod
-                port_in=self.args.port_in,
-                port_out=self.args.port_out,
-                port_ctrl=self.args.port_ctrl,
-                port_expose=self.args.port_expose,
-                image_name='gcr.io/jina-showcase/generic-gateway:latest',
-                container_cmd='["jina"]',
-                container_args=f'["gateway", '
-                f'{kubernetes_deployment.get_cli_params(self.args)}]',
-                logger=JinaLogger(f'deploy_{self.name}'),
-                replicas=1,
-                init_container=None,
-            )
+            self._deploy_gateway()
         else:
-            image_name = kubernetes_deployment.get_image_name(self.args.uses)
-            pea_args = self.peas_args['peas'][0]
-            # for now, no shards
-            dns_name = kubernetes_deployment.to_dns_name(self.name)
-            init_container_args = kubernetes_deployment.get_init_container_args(self)
-            # we will see with shards
-            uses_metas = kubernetes_deployment.dictionary_to_cli_param({'pea_id': 0})
-            uses_with = kubernetes_deployment.dictionary_to_cli_param(
-                self.args.uses_with
-            )
-            uses_with_string = f'"--uses-with", "{uses_with}", ' if uses_with else ''
-            if image_name == 'BaseExecutor':
-                image_name = 'gcr.io/jina-showcase/generic-gateway:latest'
-                container_args = (
-                    f'["executor", '
-                    f'"--uses", "BaseExecutor", '
-                    f'"--grpc_data_requests", "True", '
-                    f'"--uses-metas", "{uses_metas}", '
-                    + uses_with_string
-                    + f'{kubernetes_deployment.get_cli_params(self.args)}]'
+            if self.deployment_args['head_deployment'] is not None:
+                self._deploy_runtime(
+                    self.deployment_args['head_deployment'],
+                    1,
+                    self.args.k8s_namespace,
+                    '_head',
                 )
 
-            else:
-                container_args = (
-                    f'["executor", '
-                    f'"--uses", "config.yml", '
-                    f'"--grpc_data_requests", "True", '
-                    f'"--uses-metas", "{uses_metas}", '
-                    + uses_with_string
-                    + f'{kubernetes_deployment.get_cli_params(self.args)}]'
+            for i in range(self.args.parallel):
+                deployment_args = self.deployment_args['deployments'][i]
+                self._deploy_runtime(
+                    deployment_args, self.args.replicas, self.args.k8s_namespace, i
                 )
 
-            replicas = self.args.replicas
-            kubernetes_deployment.deploy_service(
-                dns_name,
-                namespace=self.args.k8s_namespace,  # maybe new args for kubernetes Pod
-                port_in=pea_args.port_in,
-                port_out=pea_args.port_out,
-                port_ctrl=pea_args.port_ctrl,
-                port_expose=pea_args.port_expose,
-                image_name=image_name,
-                container_cmd='["jina"]',
-                container_args=container_args,
-                logger=JinaLogger(f'deploy_{self.name}'),
-                replicas=replicas,
-                init_container=init_container_args,
-            )
+            if self.deployment_args['tail_deployment'] is not None:
+                self._deploy_runtime(
+                    self.deployment_args['tail_deployment'],
+                    1,
+                    self.args.k8s_namespace,
+                    '_tail',
+                )
 
     def wait_start_success(self) -> None:
         # if eventually we can check when the start is good
