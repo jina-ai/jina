@@ -19,5 +19,5 @@ search_flow = Flow(name=namespace, protocol='http', port_expose=8080, infrastruc
     },
     k8s_uses_init='gcr.io/jina-showcase/postgres-dumper',
 )
-search_flow.plot('search-flow.jpg')
+# search_flow.plot('search-flow.jpg')
 search_flow.start()

@@ -44,9 +44,7 @@ class K8sPod(BasePod):
         if self.name == 'gateway':
             kubernetes_deployment.deploy_service(
                 self.name,
-                namespace=self.args.get(
-                    'k8s_namespace', 'flow_name'
-                ),  # maybe new args for kubernetes Pod
+                namespace=self.args.k8s_namespace,  # maybe new args for kubernetes Pod
                 port_in=self.args.port_in,
                 port_out=self.args.port_out,
                 port_ctrl=self.args.port_ctrl,
@@ -93,9 +91,7 @@ class K8sPod(BasePod):
             replicas = self.args.replicas
             kubernetes_deployment.deploy_service(
                 dns_name,
-                namespace=self.args.get(
-                    'k8s_namespace', 'flow_name'
-                ),  # maybe new args for kubernetes Pod
+                namespace=self.args.k8s_namespace,  # maybe new args for kubernetes Pod
                 port_in=pea_args.port_in,
                 port_out=pea_args.port_out,
                 port_ctrl=pea_args.port_ctrl,
@@ -139,3 +135,7 @@ class K8sPod(BasePod):
     @property
     def num_peas(self):
         return -1
+
+    @property
+    def head_zmq_identity(self):
+        return b''
