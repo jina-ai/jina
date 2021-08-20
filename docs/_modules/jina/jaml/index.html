@@ -920,22 +920,10 @@
                 <span class="c1"># expand variables</span>
                 <span class="n">no_tag_yml</span> <span class="o">=</span> <span class="n">JAML</span><span class="o">.</span><span class="n">expand_dict</span><span class="p">(</span><span class="n">no_tag_yml</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">allow_py_modules</span><span class="p">:</span>
-                <span class="c1"># also add YAML parent path to the search paths</span>
-                <span class="k">if</span> <span class="n">s_path</span><span class="p">:</span>
-                    <span class="c1"># append ExtensionPathFinder into sys.meta_path</span>
-                    <span class="kn">from</span> <span class="nn">..importer</span> <span class="kn">import</span> <span class="n">ExtensionPathFinder</span>
-
-                    <span class="n">ExtensionPathFinder</span><span class="o">.</span><span class="n">__path__</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">s_path</span><span class="p">)</span>
-                    <span class="n">sys</span><span class="o">.</span><span class="n">meta_path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ExtensionPathFinder</span><span class="p">())</span>
-
                 <span class="n">load_py_modules</span><span class="p">(</span>
                     <span class="n">no_tag_yml</span><span class="p">,</span>
                     <span class="n">extra_search_paths</span><span class="o">=</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">s_path</span><span class="p">),)</span> <span class="k">if</span> <span class="n">s_path</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="p">)</span>
-
-                <span class="k">if</span> <span class="n">s_path</span><span class="p">:</span>
-                    <span class="c1"># pop ExtensionPathFinder from sys.meta_path</span>
-                    <span class="n">sys</span><span class="o">.</span><span class="n">meta_path</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
 
             <span class="kn">from</span> <span class="nn">..flow.base</span> <span class="kn">import</span> <span class="n">Flow</span>
 

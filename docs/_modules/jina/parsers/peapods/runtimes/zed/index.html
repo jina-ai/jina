@@ -463,11 +463,10 @@
         <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
 <span class="s1">The customized python modules need to be imported before loading the executor</span>
 
-<span class="s1">Note, when importing multiple files and there is a dependency between them, then one has to write the dependencies in</span>
-<span class="s1">reverse order. That is, if `__init__.py` depends on `A.py`, which again depends on `B.py`, then you need to write:</span>
-
-<span class="s1">--py-modules __init__.py --py-modules B.py --py-modules A.py</span>
-
+<span class="s1">Note that the recommended way is to only import a single module - a simple python file, if your</span>
+<span class="s1">executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,</span>
+<span class="s1">which should be structured as a python package. For more details, please see the</span>
+<span class="s1">`Executor cookbook &lt;https://github.com/jina-ai/jina/blob/master/.github/2.0/cookbooks/Executor.md#structure-of-the-repository&gt;`__</span>
 <span class="s1">'''</span><span class="p">,</span>
     <span class="p">)</span>
 
