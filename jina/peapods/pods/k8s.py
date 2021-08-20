@@ -73,7 +73,7 @@ class K8sPod(BasePod):
 
     def _deploy_runtime(self, deployment_args, replicas, k8s_namespace, deployment_id):
         image_name = kubernetes_deployment.get_image_name(self.args.uses)
-        dns_name = kubernetes_deployment.to_dns_name(self.name)
+        dns_name = kubernetes_deployment.to_dns_name(self.name + str(deployment_id))
         init_container_args = kubernetes_deployment.get_init_container_args(self)
         uses_metas = kubernetes_deployment.dictionary_to_cli_param(
             {'pea_id': deployment_id}
@@ -180,3 +180,43 @@ class K8sPod(BasePod):
     @property
     def head_zmq_identity(self):
         return b''
+
+    @property
+    def deployments(self):
+        res = []
+        if self.deployment_args['head_deployment'] is not None:
+            name = kubernetes_deployment.to_dns_name(self.name + '_head')
+            res.append(
+                {
+                    'name': f'{self.name}_head',
+                    'head_host': f'{name}.{self.args.k8s_namespace}.svc.cluster.local',
+                    'head_port_in': 8081,
+                    'tail_port_out': 8082,
+                    'head_zmq_identity': self.head_zmq_identity,
+                }
+            )
+        for deployment_id, deployment_arg in enumerate(
+            self.deployment_args['deployments']
+        ):
+            name = kubernetes_deployment.to_dns_name(self.name + str(deployment_id))
+            res.append(
+                {
+                    'name': f'{self.name}_{deployment_id}',
+                    'head_host': f'{name}.{self.args.k8s_namespace}.svc.cluster.local',
+                    'head_port_in': 8081,
+                    'tail_port_out': 8082,
+                    'head_zmq_identity': self.head_zmq_identity,
+                }
+            )
+        if self.deployment_args['tail_deployment'] is not None:
+            name = kubernetes_deployment.to_dns_name(self.name + '_tail')
+            res.append(
+                {
+                    'name': f'{self.name}_tail',
+                    'head_host': f'{name}.{self.args.k8s_namespace}.svc.cluster.local',
+                    'head_port_in': 8081,
+                    'tail_port_out': 8082,
+                    'head_zmq_identity': self.head_zmq_identity,
+                }
+            )
+        return res

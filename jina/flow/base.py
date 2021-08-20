@@ -808,26 +808,49 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             },
         )
 
-    def _get_routing_table(self, flow_name) -> RoutingTable:
+    # THIS NEEDS TO BE REWRITTEN
+    def _get_routing_table(self) -> RoutingTable:
         graph = RoutingTable()
         for pod_id, pod in self._pod_nodes.items():
             if pod_id == GATEWAY_NAME:
-                graph.add_pod(f'start-{GATEWAY_NAME}', flow_name, pod)
-                graph.add_pod(f'end-{GATEWAY_NAME}', flow_name, pod)
+                graph.add_pod(
+                    f'start-{GATEWAY_NAME}',
+                    pod.head_host,
+                    pod.head_port_in,
+                    pod.tail_port_out,
+                    pod.head_zmq_identity,
+                )
+                graph.add_pod(
+                    f'end-{GATEWAY_NAME}',
+                    pod.head_host,
+                    pod.head_port_in,
+                    pod.tail_port_out,
+                    pod.head_zmq_identity,
+                )
             else:
-                graph.add_pod(pod_id, flow_name, pod)
+                for i, deployment in pod.deployments():
+                    graph.add_pod(
+                        getattr(deployment, 'name'),
+                        getattr(deployment, 'head_host'),
+                        getattr(deployment, 'head_port_in'),
+                        getattr(deployment, 'tail_port_out'),
+                        getattr(deployment, 'head_zmq_identity'),
+                    )
 
         for end, pod in self._pod_nodes.items():
-
             if end == GATEWAY_NAME:
                 end = f'end-{GATEWAY_NAME}'
 
+            # In K8sPod will not be needed
             if pod.head_args.hosts_in_connect is None:
                 pod.head_args.hosts_in_connect = []
 
             for start in pod.needs:
                 if start == GATEWAY_NAME:
                     start = f'start-{GATEWAY_NAME}'
+
+                if start not in graph.pods:
+                    start = start + '_tail'
 
                 start_pod = graph._get_target_pod(start)
 
@@ -840,13 +863,28 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
                     graph.add_edge(start, end, False)
                 else:
+                    if end not in graph.pods:
+                        end = end + '_head'
                     graph.add_edge(start, end)
+
+        # ADD INTERNAL POD BETWEEN EDGES
+        for end, pod in self._pod_nodes.items():
+            # set internal edges
+            if len(pod.deployments) > 0:
+                deployments = pod.deployments
+                for deployment in deployments[1:-1]:
+                    graph.add_edge(
+                        getattr(deployments[0], 'name'), getattr(deployment, 'name')
+                    )
+                    graph.add_edge(
+                        getattr(deployments, 'name'), getattr(deployments[-1], 'name')
+                    )
 
         graph.active_pod = f'start-{GATEWAY_NAME}'
         return graph
 
-    def _set_initial_dynamic_routing_table(self, flow_name):
-        routing_table = self._get_routing_table(flow_name)
+    def _set_initial_dynamic_routing_table(self):
+        routing_table = self._get_routing_table()
         if not routing_table.is_acyclic():
             raise RoutingTableCyclicError(
                 'The routing graph has a cycle. This would result in an infinite loop. Fix your Flow setup.'
@@ -909,7 +947,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             else:
                 pod.needs = set(reverse_inspect_map.get(ep, ep) for ep in pod.needs)
 
-        op_flow._set_initial_dynamic_routing_table(self.args.name)
+        op_flow._set_initial_dynamic_routing_table()
 
         # TODO skipped for now to have faster runtime (k8s hosts can not be resolved locally)
         # for pod in op_flow._pod_nodes.values():

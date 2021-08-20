@@ -2,15 +2,11 @@ from collections import defaultdict
 from typing import List, Optional, Union
 
 from google.protobuf import json_format
-from jina.enums import PodRoleType
 
 from ..mixin import ProtoTypeMixin
 from ...excepts import BadRequestType
 from ...helper import typename
 from ...proto import jina_pb2
-
-if False:
-    from ...peapods import BasePod
 
 
 class TargetPod(ProtoTypeMixin):
@@ -153,7 +149,9 @@ class RoutingTable(ProtoTypeMixin):
         self._get_target_pod(from_pod).add_edge(to_pod, send_as_bind)
         self._get_target_pod(to_pod).expected_parts += 1
 
-    def add_pod(self, pod_name: str, flow_name, pod: 'BasePod') -> None:
+    def add_pod(
+        self, pod_name: str, head_host, head_port_in, tail_port_out, head_zmq_identity
+    ) -> None:
         """Adds a Pod vertex to the graph.
 
         :param pod_name: the name of the Pod. Should be unique to the graph.
@@ -165,10 +163,10 @@ class RoutingTable(ProtoTypeMixin):
             )
         target = self.pods[pod_name]
 
-        target.host = pod.head_host
-        target.port = pod.head_port_in
-        target.port_out = pod.tail_port_out
-        target.target_identity = pod.head_zmq_identity
+        target.host = head_host
+        target.port = head_port_in
+        target.port_out = tail_port_out
+        target.target_identity = head_zmq_identity
 
     def _get_target_pod(self, pod: str) -> TargetPod:
         return TargetPod(self.pods[pod])

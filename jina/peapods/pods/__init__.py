@@ -293,6 +293,10 @@ class BasePod:
         """
         ...
 
+    @property
+    def deployments(self):
+        return [self]
+
 
 class Pod(BasePod, ExitFIFO):
     """A BasePod is an immutable set of peas, which run in parallel. They share the same input and output socket.
@@ -556,10 +560,13 @@ class Pod(BasePod, ExitFIFO):
             if args.peas_hosts
             else [
                 args.host,
-            ] * (args.parallel + 2)
+            ]
+            * (args.parallel + 2)
         )
 
-        for idx, pea_host in zip(range(args.parallel), _host_list[2:]): # first two are taken by head and tail TODO refactor this hack
+        for idx, pea_host in zip(
+            range(args.parallel), _host_list[2:]
+        ):  # first two are taken by head and tail TODO refactor this hack
             _args = copy.deepcopy(args)
             _args.pea_id = idx
 
