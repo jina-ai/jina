@@ -71,6 +71,28 @@ def docarray_for_split():
     return da
 
 
+@pytest.fixture
+def docarray_for_split_at_zero():
+    da = DocumentArray()
+    da.append(Document(tags={'category': 0.0}))
+    da.append(Document(tags={'category': 0.0}))
+    da.append(Document(tags={'category': 1.0}))
+    da.append(Document(tags={'category': 2.0}))
+    da.append(Document(tags={'category': 2.0}))
+    return da
+
+
+@pytest.fixture
+def docarray_for_nest_split():
+    da = DocumentArray()
+    da.append(Document(tags={'nest': {'category': 'c'}}))
+    da.append(Document(tags={'nest': {'category': 'c'}}))
+    da.append(Document(tags={'nest': {'category': 'b'}}))
+    da.append(Document(tags={'nest': {'category': 'a'}}))
+    da.append(Document(tags={'nest': {'category': 'a'}}))
+    return da
+
+
 def test_length(docarray, docs):
     assert len(docs) == len(docarray) == 3
 
@@ -465,6 +487,27 @@ def test_split(docarray_for_split):
     assert len(rv['a']) == 2
     rv = docarray_for_split.split('random')
     assert not rv  # wrong tag returns empty dict
+
+
+def test_split_at_zero(docarray_for_split_at_zero):
+    rv = docarray_for_split_at_zero.split('category')
+    assert isinstance(rv, dict)
+    assert sorted(list(rv.keys())) == [0.0, 1.0, 2.0]
+
+
+def test_dunder_split(docarray_for_nest_split):
+    rv = docarray_for_nest_split.split('nest__category')
+    assert isinstance(rv, dict)
+    assert sorted(list(rv.keys())) == ['a', 'b', 'c']
+    # assure order is preserved c, b, a
+    assert list(rv.keys()) == ['c', 'b', 'a']
+    # original input c, c, b, a, a
+    assert len(rv['c']) == 2
+    assert len(rv['b']) == 1
+    assert len(rv['a']) == 2
+
+    with pytest.raises(KeyError):
+        docarray_for_nest_split.split('nest__random')
 
 
 def test_da_get_embeddings():

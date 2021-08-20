@@ -13,27 +13,6 @@ if _SHOW_ALL_ARGS:
     )
 
 
-DEPRECATED_ARGS_MAPPING = {'override_with': 'uses_with'}
-
-
-def warn_unknown_args(unknown_args: List[str]):
-    """Creates warnings for all given arguments.
-
-    :param unknown_args: arguments that are unknown to Jina
-    """
-    for arg in unknown_args:
-        normalized_arg = arg.replace('--', '').replace('-', '_')
-        if normalized_arg in DEPRECATED_ARGS_MAPPING:
-            new_argument = DEPRECATED_ARGS_MAPPING[normalized_arg]
-            if '-' in arg:
-                new_argument = new_argument.replace('_', '-')
-            warnings.warn(
-                f'''Ignored the deprecated argument '{arg}'. Please use '{new_argument}'.'''
-            )
-        else:
-            warnings.warn(f'ignored unknown argument: {arg}')
-
-
 def add_arg_group(parser, title):
     """Add the arguments for a specific group to the parser
 
