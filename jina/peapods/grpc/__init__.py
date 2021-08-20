@@ -114,13 +114,15 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         return stub
 
     def _add_envelope(self, msg, routing_table):
-        new_envelope = jina_pb2.EnvelopeProto()
-        new_envelope.CopyFrom(msg.envelope)
         if self._send_routing_table:
+            new_envelope = jina_pb2.EnvelopeProto()
+            new_envelope.CopyFrom(msg.envelope)
             new_envelope.routing_table.CopyFrom(routing_table.proto)
-        new_message = Message(request=msg.request, envelope=new_envelope)
+            new_message = Message(request=msg.request, envelope=new_envelope)
 
-        return new_message
+            return new_message
+        else:
+            return msg
 
     async def close(self, grace_period=None, *args, **kwargs):
         """Stop the Grpc server
