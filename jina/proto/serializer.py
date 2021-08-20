@@ -37,7 +37,7 @@ class MessageProto:
     """
 
     @staticmethod
-    @lru_cache
+    @lru_cache()
     def SerializeToString(x: 'Message'):
         """
         # noqa: DAR101
