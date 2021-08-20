@@ -124,6 +124,7 @@ def get_cli_params(arguments, skip_list=()):
         'dynamic_routing',
         'hosts_in_connect',
         'polling_type',
+        'k8s_namespace',
     ] + list(skip_list)
     arg_list = [
         [attribute, attribute.replace('_', '-'), value]
@@ -180,7 +181,7 @@ def get_needs(flow, pod):
 #         name=flow.args.name,
 #         port_expose=flow.port_expose,
 #         protocol=flow.protocol,
-#         grpc_data_requests=False,
+#         grpc_data_requests=True,
 #     )
 #     pod_name_to_parallel = dict()
 #     for pod_name, pod in flow._pod_nodes.items():

@@ -1,7 +1,7 @@
 from argparse import Namespace
 from typing import Optional, Dict, Union, Set, List
 
-from .kubernetes import kubernetes_deployment
+from .kubernetes import kubernetes_deployment, kubernetes_tools
 
 from ...logging.logger import JinaLogger
 from .. import BasePod
@@ -41,6 +41,11 @@ class K8sPod(BasePod):
 
     def start(self) -> 'K8sPod':
         # kubernetes_tooks start things
+        # flow.logger.info(f'✨ Deploy Flow on Kubernetes...')
+        # namespace = flow.args.name
+        # flow.logger.info(f'📦\tCreate Namespace {namespace}')
+        kubernetes_tools.create('namespace', {'name': self.args.k8s_namespace})
+
         if self.name == 'gateway':
             kubernetes_deployment.deploy_service(
                 self.name,
@@ -49,7 +54,7 @@ class K8sPod(BasePod):
                 port_out=self.args.port_out,
                 port_ctrl=self.args.port_ctrl,
                 port_expose=self.args.port_expose,
-                image_name='jinaai/jina',
+                image_name='gcr.io/jina-showcase/generic-gateway:latest',
                 container_cmd='["jina"]',
                 container_args=f'["gateway", '
                 f'{kubernetes_deployment.get_cli_params(self.args)}]',
@@ -70,10 +75,11 @@ class K8sPod(BasePod):
             )
             uses_with_string = f'"--uses-with", "{uses_with}", ' if uses_with else ''
             if image_name == 'BaseExecutor':
-                image_name = 'jinaai/jina'
+                image_name = 'gcr.io/jina-showcase/generic-gateway:latest'
                 container_args = (
-                    f'["grpc_data_runtime", '
+                    f'["executor", '
                     f'"--uses", "BaseExecutor", '
+                    f'"--grpc_data_requests", "True", '
                     f'"--uses-metas", "{uses_metas}", '
                     + uses_with_string
                     + f'{kubernetes_deployment.get_cli_params(self.args)}]'
@@ -81,8 +87,9 @@ class K8sPod(BasePod):
 
             else:
                 container_args = (
-                    f'["grpc_data_runtime", '
+                    f'["executor", '
                     f'"--uses", "config.yml", '
+                    f'"--grpc_data_requests", "True", '
                     f'"--uses-metas", "{uses_metas}", '
                     + uses_with_string
                     + f'{kubernetes_deployment.get_cli_params(self.args)}]'

@@ -16,7 +16,13 @@ from .builder import allowed_levels, _hanging_pods
 from .. import __default_host__
 from ..clients import Client
 from ..clients.mixin import AsyncPostMixin, PostMixin
-from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType, GatewayProtocolType
+from ..enums import (
+    FlowBuildLevel,
+    PodRoleType,
+    FlowInspectType,
+    GatewayProtocolType,
+    InfrastructureType,
+)
 from ..excepts import FlowTopologyError, FlowMissingPodError, RoutingTableCyclicError
 from ..helper import (
     colored,
@@ -394,7 +400,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
 
-        self._pod_nodes[GATEWAY_NAME] = Pod(args, needs)
+        args.k8s_namespace = self.args.name
+        self._pod_nodes[GATEWAY_NAME] = PodFactory.build_pod(
+            args, needs, self.args.infrastructure
+        )
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def needs(
@@ -1325,45 +1334,48 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def _show_success_message(self):
 
-        address_table = [
-            f'\t🔗 Protocol: \t\t{colored(self.protocol, attrs="bold")}',
-            f'\t🏠 Local access:\t'
-            + colored(f'{self.host}:{self.port_expose}', 'cyan', attrs='underline'),
-            f'\t🔒 Private network:\t'
-            + colored(
-                f'{self.address_private}:{self.port_expose}',
-                'cyan',
-                attrs='underline',
-            ),
-        ]
-        if self.address_public:
-            address_table.append(
-                f'\t🌐 Public address:\t'
+        if self.args.infrastructure == InfrastructureType.K8S:
+            self.logger.info('🎉 Kubernetes deployment done!\n')
+        else:
+            address_table = [
+                f'\t🔗 Protocol: \t\t{colored(self.protocol, attrs="bold")}',
+                f'\t🏠 Local access:\t'
+                + colored(f'{self.host}:{self.port_expose}', 'cyan', attrs='underline'),
+                f'\t🔒 Private network:\t'
                 + colored(
-                    f'{self.address_public}:{self.port_expose}',
+                    f'{self.address_private}:{self.port_expose}',
                     'cyan',
                     attrs='underline',
+                ),
+            ]
+            if self.address_public:
+                address_table.append(
+                    f'\t🌐 Public address:\t'
+                    + colored(
+                        f'{self.address_public}:{self.port_expose}',
+                        'cyan',
+                        attrs='underline',
+                    )
                 )
-            )
-        if self.protocol == GatewayProtocolType.HTTP:
-            address_table.append(
-                f'\t💬 Swagger UI:\t\t'
-                + colored(
-                    f'http://localhost:{self.port_expose}/docs',
-                    'cyan',
-                    attrs='underline',
+            if self.protocol == GatewayProtocolType.HTTP:
+                address_table.append(
+                    f'\t💬 Swagger UI:\t\t'
+                    + colored(
+                        f'http://localhost:{self.port_expose}/docs',
+                        'cyan',
+                        attrs='underline',
+                    )
                 )
-            )
-            address_table.append(
-                f'\t📚 Redoc:\t\t'
-                + colored(
-                    f'http://localhost:{self.port_expose}/redoc',
-                    'cyan',
-                    attrs='underline',
+                address_table.append(
+                    f'\t📚 Redoc:\t\t'
+                    + colored(
+                        f'http://localhost:{self.port_expose}/redoc',
+                        'cyan',
+                        attrs='underline',
+                    )
                 )
-            )
 
-        self.logger.info('🎉 Flow is ready to use!\n' + '\n'.join(address_table))
+            self.logger.info('🎉 Flow is ready to use!\n' + '\n'.join(address_table))
 
     def block(self):
         """Block the process until user hits KeyboardInterrupt"""
