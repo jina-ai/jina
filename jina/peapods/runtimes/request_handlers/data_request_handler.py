@@ -135,15 +135,15 @@ class DataRequestHandler:
             return
 
         params = self._parse_params(msg.request.parameters, self._executor.metas.name)
-
+        docs = _get_docs_from_msg(
+            msg,
+            partial_request=partial_requests,
+            field='docs',
+        )
         # executor logic
         r_docs = self._executor(
             req_endpoint=msg.envelope.header.exec_endpoint,
-            docs=_get_docs_from_msg(
-                msg,
-                partial_request=partial_requests,
-                field='docs',
-            ),
+            docs=docs,
             parameters=params,
             docs_matrix=_get_docs_matrix_from_message(
                 msg,
@@ -176,6 +176,9 @@ class DataRequestHandler:
                 # this means the returned DocArray is a completely new one
                 msg.request.docs.clear()
                 msg.request.docs.extend(r_docs)
+        elif partial_requests:
+            msg.request.docs.clear()
+            msg.request.docs.extend(docs)
 
     def close(self):
         """ Close the data request handler, by closing the executor """
