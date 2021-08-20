@@ -88,17 +88,21 @@ class NdArray(BaseNdArray):
         *args,
         **kwargs
     ):
-        self.is_sparse = is_sparse
+        self._is_sparse = is_sparse
         self.dense_cls = dense_cls
         self.sparse_cls = sparse_cls
-        super().__init__(proto, *args, **kwargs)
+
+        self._pb_body = self.null_proto()
+
         self._args = args
         self._kwargs = kwargs
 
-        if self.is_sparse:
+        if self._is_sparse:
             self._ndarray = self.sparse_cls(self._pb_body.sparse, **self._kwargs)
         else:
             self._ndarray = self.dense_cls(self._pb_body.dense)
+
+        super().__init__(proto, *args, **kwargs)
 
     def null_proto(self):
         """
@@ -125,6 +129,28 @@ class NdArray(BaseNdArray):
         :param value: value to set
         """
         self._ndarray.value = value
+
+    @property
+    def is_sparse(self):
+        """
+        Returns whether the NdArrayis sparse or not
+
+        :return: is_sparse
+        """
+        return self._is_sparse
+
+    @is_sparse.setter
+    def is_sparse(self, value: bool):
+        """
+        Sets is_sparse
+
+        :param value: value to set
+        """
+        self._is_sparse = value
+        if self._is_sparse:
+            self._ndarray = self.sparse_cls(self._pb_body.sparse, **self._kwargs)
+        else:
+            self._ndarray = self.dense_cls(self._pb_body.dense)
 
     def _build_content_dict(self):
         return {'value': self.value, 'is_sparse': self.is_sparse}

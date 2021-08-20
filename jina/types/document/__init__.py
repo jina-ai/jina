@@ -560,9 +560,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
 
         :param value: the array value to set the embedding
         """
-        # self._update_embedding(value)
-
-        self._update_ndarray('embedding', value)
+        self._update_embedding(value)
 
     def _update_sparse_ndarray(self, k, v, sparse_cls):
         NdArray(
