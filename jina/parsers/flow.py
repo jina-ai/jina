@@ -33,6 +33,14 @@ def mixin_flow_features_parser(parser):
     ''',
     )
 
+    gp.add_argument(
+        '--static-routing-table',
+        action='store_true',
+        default=False,
+        help='Defines if the routing table should be pre computed by the Flow. In this case it is statically defined for each Pod and not send on every data request.'
+        ' Can not be used in combination with external pods',
+    )
+
 
 def set_flow_parser(parser=None, with_identity=False):
     """Set the parser for the flow

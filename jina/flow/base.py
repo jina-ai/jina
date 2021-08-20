@@ -242,6 +242,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         name: Optional[str] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
+        static_routing_table: Optional[bool] = False,
         uses: Optional[str] = None,
         workspace: Optional[str] = './',
         **kwargs,
@@ -264,6 +265,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           When not given, then the default naming strategy will apply.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param static_routing_table: Defines if the routing table should be pre computed by the Flow. In this case it is statically defined for each Pod and not send on every data request. Can not be used in combination with external pods
         :param uses: The YAML file represents a flow
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
@@ -840,7 +842,20 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             raise RoutingTableCyclicError(
                 'The routing graph has a cycle. This would result in an infinite loop. Fix your Flow setup.'
             )
-        self._pod_nodes[GATEWAY_NAME].args.routing_table = routing_table.json()
+        for pod in self._pod_nodes:
+            routing_table_copy = RoutingTable()
+            routing_table_copy.proto.CopyFrom(routing_table.proto)
+            self._pod_nodes[
+                pod
+            ].args.send_routing_table = not self.args.static_routing_table
+            # The gateway always needs the routing table to be set
+            if pod == GATEWAY_NAME:
+                self._pod_nodes[pod].args.routing_table = routing_table_copy.json()
+            # For other pods we only set it if we are told do so
+            elif self.args.static_routing_table:
+                routing_table_copy.active_pod = pod
+                self._pod_nodes[pod].args.routing_table = routing_table_copy.json()
+                self._pod_nodes[pod].update_pea_args()
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def build(self, copy_flow: bool = False) -> 'Flow':
