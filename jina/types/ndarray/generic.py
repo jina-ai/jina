@@ -95,6 +95,11 @@ class NdArray(BaseNdArray):
         self._args = args
         self._kwargs = kwargs
 
+        if self.is_sparse:
+            self._ndarray = self.sparse_cls(self._pb_body.sparse, **self._kwargs)
+        else:
+            self._ndarray = self.dense_cls(self._pb_body.dense)
+
     def null_proto(self):
         """
         Get the new protobuf representation.
@@ -110,11 +115,7 @@ class NdArray(BaseNdArray):
 
         :return: value
         """
-        stype = self._pb_body.WhichOneof('content')
-        if stype == 'dense':
-            return self.dense_cls(self._pb_body.dense).value
-        elif stype == 'sparse':
-            return self.sparse_cls(self._pb_body.sparse, **self._kwargs).value
+        return self._ndarray.value
 
     @value.setter
     def value(self, value):
@@ -123,10 +124,7 @@ class NdArray(BaseNdArray):
 
         :param value: value to set
         """
-        if self.is_sparse:
-            self.sparse_cls(self._pb_body.sparse).value = value
-        else:
-            self.dense_cls(self._pb_body.dense).value = value
+        self._ndarray.value = value
 
     def _build_content_dict(self):
         return {'value': self.value, 'is_sparse': self.is_sparse}

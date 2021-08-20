@@ -227,6 +227,8 @@ class Document(ProtoTypeMixin, VersionedMixin):
                 assert d.tags['good'] == 'bye'  # true
         """
         self._pb_body = jina_pb2.DocumentProto()
+        self._embedding = NdArray(self._pb_body.embedding)
+
         try:
             if isinstance(document, jina_pb2.DocumentProto):
                 if copy:
@@ -531,7 +533,8 @@ class Document(ProtoTypeMixin, VersionedMixin):
 
         :return: the embedding of this Document
         """
-        return NdArray(self._pb_body.embedding).value
+
+        return self._embedding.value
 
     def get_sparse_embedding(
         self, sparse_ndarray_cls_type: Type[BaseSparseNdArray], **kwargs
@@ -557,6 +560,8 @@ class Document(ProtoTypeMixin, VersionedMixin):
 
         :param value: the array value to set the embedding
         """
+        # self._update_embedding(value)
+
         self._update_ndarray('embedding', value)
 
     def _update_sparse_ndarray(self, k, v, sparse_cls):
@@ -635,6 +640,20 @@ class Document(ProtoTypeMixin, VersionedMixin):
         elif isinstance(v, NdArray):
             NdArray(getattr(self._pb_body, k)).is_sparse = v.is_sparse
             NdArray(getattr(self._pb_body, k)).value = v.value
+        else:
+            v_valid_sparse_type = self._update_if_sparse(k, v)
+
+            if not v_valid_sparse_type:
+                raise TypeError(f'{k} is in unsupported type {typename(v)}')
+
+    def _update_embedding(self, v):
+        if isinstance(v, jina_pb2.NdArrayProto):
+            self._pb_body.embedding.CopyFrom(v)
+        elif isinstance(v, np.ndarray):
+            self._embedding.value = v
+        elif isinstance(v, NdArray):
+            self._embedding.is_sparse = v.is_sparse
+            self._embedding.value = v.value
         else:
             v_valid_sparse_type = self._update_if_sparse(k, v)
 
