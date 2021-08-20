@@ -813,28 +813,30 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         graph = RoutingTable()
         for pod_id, pod in self._pod_nodes.items():
             if pod_id == GATEWAY_NAME:
+                deployment = pod.deployments[0]
+
                 graph.add_pod(
                     f'start-{GATEWAY_NAME}',
-                    pod.head_host,
-                    pod.head_port_in,
-                    pod.tail_port_out,
-                    pod.head_zmq_identity,
+                    deployment['head_host'],
+                    deployment['head_port_in'],
+                    deployment['tail_port_out'],
+                    deployment['head_zmq_identity'],
                 )
                 graph.add_pod(
                     f'end-{GATEWAY_NAME}',
-                    pod.head_host,
-                    pod.head_port_in,
-                    pod.tail_port_out,
-                    pod.head_zmq_identity,
+                    deployment['head_host'],
+                    deployment['head_port_in'],
+                    deployment['tail_port_out'],
+                    deployment['head_zmq_identity'],
                 )
             else:
-                for i, deployment in pod.deployments():
+                for deployment in pod.deployments:
                     graph.add_pod(
-                        getattr(deployment, 'name'),
-                        getattr(deployment, 'head_host'),
-                        getattr(deployment, 'head_port_in'),
-                        getattr(deployment, 'tail_port_out'),
-                        getattr(deployment, 'head_zmq_identity'),
+                        deployment['name'],
+                        deployment['head_host'],
+                        deployment['head_port_in'],
+                        deployment['tail_port_out'],
+                        deployment['head_zmq_identity'],
                     )
 
         for end, pod in self._pod_nodes.items():
@@ -874,10 +876,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 deployments = pod.deployments
                 for deployment in deployments[1:-1]:
                     graph.add_edge(
-                        getattr(deployments[0], 'name'), getattr(deployment, 'name')
+                        deployments[0]['name'], deployment['name']
                     )
                     graph.add_edge(
-                        getattr(deployments, 'name'), getattr(deployments[-1], 'name')
+                        deployment['name'], deployments[-1]['name']
                     )
 
         graph.active_pod = f'start-{GATEWAY_NAME}'

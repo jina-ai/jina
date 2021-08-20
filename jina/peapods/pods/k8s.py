@@ -83,9 +83,10 @@ class K8sPod(BasePod):
         if image_name == __default_executor__:
             image_name = 'gcr.io/jina-showcase/generic-gateway:latest'
             container_args = (
-                f'["executor", '
+                f'["pea", '
                 f'"--uses", "BaseExecutor", '
-                f'"--grpc_data_requests", "True", '
+                # f'"--grpc-data-requests", "True", '
+                f'"--runtime-cls", "GRPCDataRuntime'
                 f'"--uses-metas", "{uses_metas}", '
                 + uses_with_string
                 + f'{kubernetes_deployment.get_cli_params(self.args)}]'
@@ -93,9 +94,10 @@ class K8sPod(BasePod):
 
         else:
             container_args = (
-                f'["executor", '
+                f'["pea", '
                 f'"--uses", "config.yml", '
-                f'"--grpc_data_requests", "True", '
+                # f'"--grpc_data_requests", "True", '
+                f'"--runtime-cls", "GRPCDataRuntime'
                 f'"--uses-metas", "{uses_metas}", '
                 + uses_with_string
                 + f'{kubernetes_deployment.get_cli_params(self.args)}]'
@@ -184,39 +186,51 @@ class K8sPod(BasePod):
     @property
     def deployments(self):
         res = []
-        if self.deployment_args['head_deployment'] is not None:
-            name = kubernetes_deployment.to_dns_name(self.name + '_head')
+        if self.args.name == 'gateway':
+            name = kubernetes_deployment.to_dns_name(self.name)
             res.append(
                 {
-                    'name': f'{self.name}_head',
+                    'name': f'{self.name}',
                     'head_host': f'{name}.{self.args.k8s_namespace}.svc.cluster.local',
                     'head_port_in': 8081,
                     'tail_port_out': 8082,
                     'head_zmq_identity': self.head_zmq_identity,
                 }
             )
-        for deployment_id, deployment_arg in enumerate(
-            self.deployment_args['deployments']
-        ):
-            name = kubernetes_deployment.to_dns_name(self.name + str(deployment_id))
-            res.append(
-                {
-                    'name': f'{self.name}_{deployment_id}',
-                    'head_host': f'{name}.{self.args.k8s_namespace}.svc.cluster.local',
-                    'head_port_in': 8081,
-                    'tail_port_out': 8082,
-                    'head_zmq_identity': self.head_zmq_identity,
-                }
-            )
-        if self.deployment_args['tail_deployment'] is not None:
-            name = kubernetes_deployment.to_dns_name(self.name + '_tail')
-            res.append(
-                {
-                    'name': f'{self.name}_tail',
-                    'head_host': f'{name}.{self.args.k8s_namespace}.svc.cluster.local',
-                    'head_port_in': 8081,
-                    'tail_port_out': 8082,
-                    'head_zmq_identity': self.head_zmq_identity,
-                }
-            )
+        else:
+            if self.deployment_args['head_deployment'] is not None:
+                name = kubernetes_deployment.to_dns_name(self.name + '_head')
+                res.append(
+                    {
+                        'name': f'{self.name}_head',
+                        'head_host': f'{name}.{self.args.k8s_namespace}.svc.cluster.local',
+                        'head_port_in': 8081,
+                        'tail_port_out': 8082,
+                        'head_zmq_identity': self.head_zmq_identity,
+                    }
+                )
+            for deployment_id, deployment_arg in enumerate(
+                self.deployment_args['deployments']
+            ):
+                name = kubernetes_deployment.to_dns_name(self.name + str(deployment_id))
+                res.append(
+                    {
+                        'name': f'{self.name}_{deployment_id}',
+                        'head_host': f'{name}.{self.args.k8s_namespace}.svc.cluster.local',
+                        'head_port_in': 8081,
+                        'tail_port_out': 8082,
+                        'head_zmq_identity': self.head_zmq_identity,
+                    }
+                )
+            if self.deployment_args['tail_deployment'] is not None:
+                name = kubernetes_deployment.to_dns_name(self.name + '_tail')
+                res.append(
+                    {
+                        'name': f'{self.name}_tail',
+                        'head_host': f'{name}.{self.args.k8s_namespace}.svc.cluster.local',
+                        'head_port_in': 8081,
+                        'tail_port_out': 8082,
+                        'head_zmq_identity': self.head_zmq_identity,
+                    }
+                )
         return res
