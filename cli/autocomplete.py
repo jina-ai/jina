@@ -104,7 +104,6 @@ ac_table = {
             '--pea-id',
             '--pea-role',
             '--noblock-on-start',
-            '--metas',
         ],
         'flow': [
             '--help',
@@ -181,7 +180,6 @@ ac_table = {
             '--pea-id',
             '--pea-role',
             '--noblock-on-start',
-            '--metas',
             '--routing-table',
             '--dynamic-routing',
             '--connect-to-predecessor',
@@ -257,7 +255,6 @@ ac_table = {
             '--pea-id',
             '--pea-role',
             '--noblock-on-start',
-            '--metas',
         ],
         'pod': [
             '--help',
@@ -316,7 +313,6 @@ ac_table = {
             '--pea-id',
             '--pea-role',
             '--noblock-on-start',
-            '--metas',
             '--uses-before',
             '--uses-after',
             '--parallel',

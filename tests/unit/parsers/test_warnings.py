@@ -73,9 +73,12 @@ def test_executor_metas_works():
     yaml = '''jtype: Flow
 version: 1
 executors:
-    - metas:
-        name: MyExecutor
+    - uses:
+        jtype: BaseExecutor
+        metas:
+            name: MyExecutor
     '''
     with pytest.warns(None, match='ignored unknown') as record:
-        Flow().load_config(yaml)
+        with Flow().load_config(yaml):
+            pass
     assert len(record) == 0
