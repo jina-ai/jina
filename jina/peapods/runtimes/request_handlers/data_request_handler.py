@@ -189,6 +189,11 @@ class DataRequestHandler:
 
     @staticmethod
     def replace_docs(msg, docs):
+        """Replaces the docs in a message with new Documents.
+
+        :param msg: The message object
+        :param docs: the new docs to be used
+        """
         msg.request.docs.clear()
         msg.request.docs.extend(docs)
 
