@@ -1,7 +1,7 @@
 # Kubernetes MVP Feature
 This module contains WIP for developing the new kubernetes deployment support. 
 
-The relevant code lives in this module and the [Flow Base](./../flow/base.py).
+The relevant code lives in this module and the [Flow Base](../../../flow/base.py).
 To start experimenting, install a kubernetes cluster on GCP and get credential to your local machine.
 I.e. `kubectl get nodes` should work. 
 
@@ -9,7 +9,7 @@ I.e. `kubectl get nodes` should work.
 
 Clone this [repo](https://github.com/jina-ai/kubernetes_deployment) build the docker file and push it to your gcp 
 container registry. Make sure to tag the image correctly with gcr.io/{project-id}/generic-gateway
-You need to adapt the reference to this image in the [Flow Base](./../flow/base.py).
+You need to adapt the reference to this image in the [Flow Base](../../../flow/base.py).
 ```
 kubernetes_tools.create(
     'deployment',

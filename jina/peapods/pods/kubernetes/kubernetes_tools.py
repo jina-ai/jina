@@ -9,7 +9,6 @@ cur_dir = os.path.dirname(__file__)
 
 
 class ClientsSingelton:
-
     def __init__(self):
         self.__k8s_client = None
         self.__v1 = None
@@ -24,7 +23,9 @@ class ClientsSingelton:
         self.__k8s_client = client.ApiClient()
         self.__v1 = client.CoreV1Api(api_client=self.__k8s_client)
         self.__beta = client.ExtensionsV1beta1Api(api_client=self.__k8s_client)
-        self.__networking_v1_beta1_api = client.NetworkingV1beta1Api(api_client=self.__k8s_client)
+        self.__networking_v1_beta1_api = client.NetworkingV1beta1Api(
+            api_client=self.__k8s_client
+        )
 
     @property
     def k8s_client(self):
@@ -116,6 +117,7 @@ __clients_singelton = ClientsSingelton()
 def create(template, params):
     from kubernetes.utils import FailToCreateError
     from kubernetes import utils
+
     yaml = get_yaml(template, params)
     fd, path = tempfile.mkstemp()
     try:
@@ -161,6 +163,7 @@ def get_service_cluster_ip(service_name, namespace):
 
 def log_in_thread(pod_name, namespace, container):
     from kubernetes.watch import Watch
+
     pod = __clients_singelton.v1.read_namespaced_pod(pod_name, namespace)
     containers = [container.name for container in pod.spec.containers]
     if container not in containers:

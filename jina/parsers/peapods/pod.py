@@ -104,17 +104,30 @@ The polling strategy of the Pod (when `parallel>1`)
         help='The head Pea of this Pod will connect to the TailPea of the predecessor Pod.',
     )
 
+
 def mixin_k8s_pod_parser(parser):
     parser.add_argument(
         '--k8s-uses-init',
         type=str,
         # default='',
-        help='Init container for k8s pod. Usually retrieves some data which or waits until some condition is fulfilled.',
+        help='Init container for k8s pod. Usually retrieves some data which or waits until some condition is fulfilled.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
     )
     parser.add_argument(
         '--k8s-uses-with-init',
         action=KVAppendAction,
         metavar='KEY: VALUE',
         nargs='*',
-        help='Arguments for the init container.',
+        help='Arguments for the init container.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+    parser.add_argument(
+        '--k8s-namespace',
+        type=str,
+        default='',
+        help='Name of the namespace where Kubernetes deployment should be deployed, to be filled by flow name'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
     )

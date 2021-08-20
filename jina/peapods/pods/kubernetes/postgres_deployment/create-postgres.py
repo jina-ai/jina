@@ -4,9 +4,9 @@ from typing import Optional
 from kubernetes import utils
 from kubernetes.utils import FailToCreateError
 
-from jina.kubernetes import kubernetes_tools
+from jina.peapods.pods.kubernetes import kubernetes_tools
 
-from jina.kubernetes.naive.index_flow import PostgresConfig
+from jina.peapods.pods.kubernetes import PostgresConfig
 from jina.logging.logger import JinaLogger
 
 

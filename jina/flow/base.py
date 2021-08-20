@@ -6,7 +6,6 @@ import os
 import re
 import socket
 import threading
-import time
 import uuid
 import warnings
 from collections import OrderedDict
@@ -17,7 +16,7 @@ from .builder import allowed_levels, _hanging_pods
 from .. import __default_host__
 from ..clients import Client
 from ..clients.mixin import AsyncPostMixin, PostMixin
-from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType, GatewayProtocolType, InfrastructureType
+from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType, GatewayProtocolType
 from ..excepts import FlowTopologyError, FlowMissingPodError, RoutingTableCyclicError
 from ..helper import (
     colored,
@@ -28,8 +27,6 @@ from ..helper import (
     download_mermaid_url,
     CatchAllCleanupContextManager,
 )
-from ..hubble.helper import get_hubble_url, parse_hub_uri
-from ..hubble.hubio import HubIO
 from ..jaml import JAMLCompatible
 
 from ..logging.logger import JinaLogger
@@ -691,7 +688,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         # pod workspace if not set then derive from flow workspace
         args.workspace = os.path.abspath(args.workspace or self.workspace)
 
-        op_flow._pod_nodes[pod_name] = PodFactory.build_pod(args, needs)
+        args.k8s_namespace = self.args.name
+        op_flow._pod_nodes[pod_name] = PodFactory.build_pod(
+            args, needs, self.args.infrastructure
+        )
 
         op_flow.last_pod = pod_name
 
@@ -968,12 +968,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         :return: this instance
         """
-        if self.args.infrastructure == InfrastructureType.K8S:
-            from jina.kubernetes import kubernetes_deployment
-
-            kubernetes_deployment.deploy(self)
-            return
-
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
             self.build(copy_flow=False)
 
