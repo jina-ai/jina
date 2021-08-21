@@ -14,6 +14,8 @@ def is_remote_local_connection(first: str, second: str):
     :return: True, if first is remote and second is local
     """
 
+    print('\n\nin is_remote_local_connection')
+    print(f'first: {first}, second: {second}\n\n')
     try:
         first_ip = ipaddress.ip_address(first)
         first_global = first_ip.is_global
@@ -75,6 +77,14 @@ def get_connect_host(
     bind_conn_same_remote = (
         not bind_local and not conn_local and (bind_host == connect_args.host)
     )
+
+    print(f'\n\nin get_connect_host')
+    print(f'bind_host: {bind_host}')
+    print(f'runs_in_docker: {runs_in_docker}')
+    print(f'bind_local: {bind_local}')
+    print(f'conn_local: {conn_local}')
+    print(f'conn_docker: {conn_docker}\n')
+    print(f'connect_args: {connect_args}\n\n')
 
     # pod1 in local, pod2 in local (conn_docker if pod2 in docker)
     if bind_local and conn_local:

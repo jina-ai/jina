@@ -7,7 +7,7 @@ from jina.parsers.base import set_base_parser
 from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS
 from jina.parsers.peapods.base import mixin_base_ppr_parser
 from jina.parsers.peapods.runtimes.remote import mixin_remote_parser
-from .models.enums import PartialDaemonModes
+from .models.enums import PartialDaemonModes, OSOptions
 
 
 def mixin_daemon_parser(parser):
@@ -30,6 +30,13 @@ def mixin_daemon_parser(parser):
         help='''
     Disable loading from local store (if any), while starting JinaD
     ''',
+    )
+    gp.add_argument(
+        '--os',
+        type=OSOptions,
+        choices=list(OSOptions),
+        default=OSOptions.LINUX,
+        help='Pass the host OS name where JinaD is running',
     )
     gp.add_argument(
         '--mode',

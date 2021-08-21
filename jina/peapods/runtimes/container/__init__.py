@@ -2,8 +2,9 @@ import argparse
 import os
 import sys
 import time
+import socket
 import warnings
-from typing import Union, Optional, Dict
+from typing import TYPE_CHECKING, Union, Optional, Dict
 from pathlib import Path
 from platform import uname
 
@@ -62,6 +63,40 @@ class ContainerRuntime(ZMQRuntime):
         """Stream the logs while running."""
         self._stream_logs()
 
+    @staticmethod
+    def _get_docker_network(client) -> Optional[str]:
+        """Do a best-effort guess if the caller is in a docker network
+
+        Check if `hostname` exists in list of docker containers.
+        If a container is found, check its network id
+
+        :param client: docker client object
+        :return: network id if exists
+        """
+        import docker
+
+        if TYPE_CHECKING:
+            from docker.models.containers import Container
+
+        container: 'Container' = None
+        try:
+            hostname = socket.gethostname()
+            container = client.containers.get(hostname)
+        except docker.errors.NotFound:
+            try:
+                # https://stackoverflow.com/a/52988227/15683245
+                with open('/proc/1/cpuset') as f:
+                    hostname = os.path.basename(f.read().rstrip())
+                container = client.containers.get(hostname)
+            except Exception:
+                return None
+        networks = container.attrs['NetworkSettings']['Networks']
+        if networks:
+            net_mode = list(networks.keys())[0]
+            return net_mode, networks[net_mode]['NetworkID']
+        else:
+            return None
+
     def _set_network_for_dind_linux(self):
         import docker
 
@@ -72,15 +107,19 @@ class ContainerRuntime(ZMQRuntime):
         # Related to potential docker-in-docker communication. If `ContainerPea` lives already inside a container.
         # it will need to communicate using the `bridge` network.
         self._net_mode = None
+        self._network = None
 
         # In WSL, we need to set ports explicitly
         if sys.platform in ('linux', 'linux2') and 'microsoft' not in uname().release:
             self._net_mode = 'host'
             try:
-                bridge_network = client.networks.get('bridge')
-                if bridge_network:
+                # bridge_network = client.networks.get('bridge')
+                self._net_mode, self._network = self._get_docker_network(client)
+                if self._network:
                     self.ctrl_addr, _ = Zmqlet.get_ctrl_address(
-                        bridge_network.attrs['IPAM']['Config'][0]['Gateway'],
+                        client.networks.get(self._network).attrs['IPAM']['Config'][0][
+                            'Gateway'
+                        ],
                         self.args.port_ctrl,
                         self.args.ctrl_with_ipc,
                     )
@@ -225,22 +264,43 @@ class ContainerRuntime(ZMQRuntime):
         if self.args.socket_out.is_bind:
             _expose_port.append(self.args.port_out)
 
-        _args = ArgNamespace.kwargs2list(non_defaults)
-        ports = {f'{v}/tcp': v for v in _expose_port} if not self._net_mode else None
-
+        # ports = {f'{v}/tcp': v for v in _expose_port} if not self._net_mode != 'host' else None
         docker_kwargs = self.args.docker_kwargs or {}
+
+        if self._net_mode == 'host':
+            # network_mode 'host' doesn't allow assigning `ports` or `network`
+            non_defaults['']
+            network_args = {'ports': None, 'network': None}
+        elif self._network:
+            # in this case, caller is inside a docker network (which is not host)
+            # expose the ports and attach the runtime to the caller's network
+            network_args = {
+                'ports': {f'{v}/tcp': v for v in _expose_port},
+                'network': self._network,
+            }
+        else:
+            # in this case, neither net_mode is known nor caller is inside a docker network
+            # expose the ports and connect to the default docker network
+            network_args = {
+                'ports': {f'{v}/tcp': v for v in _expose_port},
+            }
+        # network_args = (
+        #     {'network': self._network}
+        #     if self._network
+        #     else {'network_mode': self._net_mode}
+        # )
+        _args = ArgNamespace.kwargs2list(non_defaults)
         self._container = client.containers.run(
             uses_img,
             _args,
             detach=True,
             auto_remove=True,
-            ports=ports,
             name=slugify(self.name),
             volumes=_volumes,
-            network_mode=self._net_mode,
             entrypoint=self.args.entrypoint,
             extra_hosts={__docker_host__: 'host-gateway'},
             device_requests=device_requests,
+            **network_args,
             **docker_kwargs,
         )
 
@@ -403,13 +463,24 @@ class ContainerRuntime(ZMQRuntime):
         :param kwargs: extra keyword arguments
         :return: The corresponding control address
         """
+        import docker
+
+        client = docker.from_env()
+        _, network = ContainerRuntime._get_docker_network(client)
+
         if (
             docker_kwargs
             and 'extra_hosts' in docker_kwargs
             and __docker_host__ in docker_kwargs['extra_hosts']
         ):
             ctrl_host = __docker_host__
+        elif network:
+            # If the caller is in a docker network, replace ctrl-host with network gateway
+            ctrl_host = client.networks.get(network).attrs['IPAM']['Config'][0][
+                'Gateway'
+            ]
         else:
             ctrl_host = host
 
+        print(f'ctrl_host is: {ctrl_host}')
         return Zmqlet.get_ctrl_address(ctrl_host, port, False)[0]

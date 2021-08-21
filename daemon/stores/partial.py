@@ -97,10 +97,12 @@ class PartialFlowStore(PartialStore):
 
             with open(args.uses) as yaml_file:
                 y_spec = yaml_file.read()
-            flow = Flow.load_config(y_spec)
+            flow: Flow = Flow.load_config(y_spec)
             flow.workspace_id = jinad_args.workspace_id
             flow.port_expose = port_expose
-            self.object: Flow = flow
+            # Flow & all executors (that use ZEDRuntime) created by JinaD live inside container.
+            flow.args.runs_in_docker = True
+            self.object = flow
             self.object = self.object.__enter__()
         except Exception as e:
             if hasattr(self, 'object'):

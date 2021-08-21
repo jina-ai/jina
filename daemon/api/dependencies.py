@@ -9,6 +9,8 @@ from pydantic.errors import PathNotAFileError
 from jina import __docker_host__, Flow
 from jina.enums import PeaRoleType, SocketType, RemoteWorkspaceState
 from jina.helper import cached_property, random_port
+from .. import jinad_args
+from ..models.enums import OSOptions
 from ..helper import get_workspace_path
 from ..models import DaemonID, FlowModel, PodModel, PeaModel
 from ..stores import workspace_store as store
@@ -81,6 +83,7 @@ class PeaDepends:
             __docker_host__
             if PeaRoleType.from_string(self.params.pea_role)
             in [PeaRoleType.PARALLEL, PeaRoleType.HEAD]
+            and jinad_args.os != OSOptions.LINUX
             else self.params.host_in
         )
 
@@ -96,7 +99,8 @@ class PeaDepends:
             __docker_host__
             if PeaRoleType.from_string(self.params.pea_role)
             in [PeaRoleType.PARALLEL, PeaRoleType.HEAD]
-            else self.params.host_in
+            and jinad_args.os != OSOptions.LINUX
+            else self.params.host_out
         )
 
     @cached_property
@@ -170,8 +174,8 @@ class PeaDepends:
         TODO: HEAD/TAIL - can `uses_before` or `uses_after` be `docker://`
         """
         # Each pea is inside a container
-        # self.params.host_in = self.host_in
-        # self.params.host_out = self.host_out
+        self.params.host_in = self.host_in
+        self.params.host_out = self.host_out
         self.params.identity = self.id
         self.params.workspace_id = self.workspace_id
         self.params.runs_in_docker = True

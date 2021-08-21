@@ -2,7 +2,7 @@ import os
 import sys
 import socket
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 import docker
 
@@ -15,6 +15,7 @@ class Introspect:
     """ Make best effort to understand yourself """
 
     network: str = 'host'
+    network_id: str = 'host'
     ports: Dict[str, str] = field(default_factory=dict)
     extra_hosts: Dict[str, str] = field(default_factory=dict)
     volumes: List[str] = field(default_factory=list)
@@ -57,13 +58,21 @@ class Introspect:
             sys.exit(-1)
         return volumes
 
+    def get_network_details(self, network_settings) -> Tuple[str, str]:
+        """Get network ID of JinaD container"""
+        network = list(network_settings['Networks'].keys())[0]
+        net_id = network_settings['Networks'][network]['NetworkID']
+        return network, net_id
+
     def __post_init__(self):
         """Get to know yourself"""
         if self.inspect:
             host_config = self.inspect['HostConfig']
             self.volumes = self.validate_volumes(host_config['Binds'])
             self.ports = host_config['PortBindings']
-            self.network = host_config.get('NetworkMode', 'host')
+            self.network, self.network_id = self.get_network_details(
+                self.inspect.get('NetworkSettings')
+            )
             self.extra_hosts = host_config['ExtraHosts']
 
             # docker desktop adds `desktop.docker.io/wsl-distro` in Labels for WSL

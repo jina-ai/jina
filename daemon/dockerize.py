@@ -97,6 +97,11 @@ class Dockerizer:
         :raises DockerNetworkException: if there are issues during network creation
         :return: id of the network
         """
+        # from . import __self__
+
+        # if __self__.network_id:
+        #     print(__self__.network_id)
+        #     return __self__.network_id
         if workspace_id in cls.networks:
             network = cls.client.networks.get(network_id=workspace_id)
         else:
@@ -290,6 +295,18 @@ class Dockerizer:
         except docker.errors.NotFound:
             cls.logger.error(f'no containers with id {id} found')
             return ""
+
+    @classmethod
+    def network_id(cls, container) -> str:
+        """Fetch the network that the container is connected to
+
+        :param container: container object
+        :return: network id for the container
+        """
+        networks = container.attrs['NetworkSettings']['Networks']
+        net_mode = list(networks.keys())[0]
+        net_id = networks[net_mode]['NetworkID']
+        return net_id
 
     @classmethod
     def _get_volume_host_dir(cls):

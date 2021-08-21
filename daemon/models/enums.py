@@ -69,6 +69,14 @@ class PartialDaemonModes(DaemonEnum):
     FLOW = 'flow'
 
 
+class OSOptions(DaemonEnum):
+    """Enum representing allowed OS"""
+
+    LINUX = 'linux'
+    MAC = 'mac'
+    WSL = 'wsl'
+
+
 class UpdateOperation(DaemonEnum):
     """
     Represents the type of operation to perform in the update

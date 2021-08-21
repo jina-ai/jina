@@ -8,18 +8,17 @@ from typing import Dict, TYPE_CHECKING
 
 import aiohttp
 
-from jina import __docker_host__
+from jina import __default_host__, __docker_host__
 from jina.helper import colored, random_port
 from .base import BaseStore
 from ..dockerize import Dockerizer
 from ..excepts import (
     PartialDaemon400Exception,
-    Runtime400Exception,
     PartialDaemonConnectionException,
 )
 from ..helper import if_alive, id_cleaner, error_msg_from
 from ..models import DaemonID
-from ..models.enums import UpdateOperation, IDLiterals
+from ..models.enums import UpdateOperation, IDLiterals, OSOptions
 from ..models.containers import (
     ContainerArguments,
     ContainerItem,
@@ -38,23 +37,25 @@ class ContainerStore(BaseStore):
     _status_model = ContainerStoreStatus
 
     async def _add(self, uri, *args, **kwargs):
-        """Implements jina object creation in `mini-jinad`
+        """Implements jina object creation in `partial-daemon`
 
         .. #noqa: DAR101"""
         raise NotImplementedError
 
     @if_alive
     async def _update(self, uri: str, params: Dict, **kwargs) -> Dict:
-        """Sends `PUT` request to `mini-jinad` to execute a command on a Flow.
+        """Sends `PUT` request to `partial-daemon` to execute a command on a Flow.
 
-        :param uri: uri of mini-jinad
+        :param uri: uri of partial-daemon
         :param params: json payload to be sent
         :param kwargs: keyword args
         :raises PartialDaemon400Exception: if update fails
-        :return: response from mini-jinad
+        :return: response from partial-daemon
         """
 
-        self._logger.debug(f'sending PUT request to mini-jinad on {uri}/{self._kind}')
+        self._logger.debug(
+            f'sending PUT request to partial-daemon on {uri}/{self._kind}'
+        )
         async with aiohttp.request(
             method='PUT', url=f'{uri}/{self._kind}', params=params
         ) as response:
@@ -64,16 +65,16 @@ class ContainerStore(BaseStore):
             return response_json
 
     async def _delete(self, uri, *args, **kwargs):
-        """Implements jina object termination in `mini-jinad`
+        """Implements jina object termination in `partial-daemon`
 
         .. #noqa: DAR101"""
         raise NotImplementedError
 
     async def ready(self, uri) -> bool:
-        """Check if the container with mini-jinad is alive
+        """Check if the container with partial-daemon is alive
 
-        :param uri: uri of mini-jinad
-        :return: True if mini-jinad is ready"""
+        :param uri: uri of partial-daemon
+        :return: True if partial-daemon is ready"""
         async with aiohttp.ClientSession() as session:
             for _ in range(20):
                 try:
@@ -88,7 +89,7 @@ class ContainerStore(BaseStore):
                     continue
                 except Exception as e:
                     self._logger.error(
-                        f'error while checking if mini-jinad is ready: {e}'
+                        f'error while checking if partial-daemon is ready: {e}'
                     )
         self._logger.error(
             f'couldn\'t reach {self._kind.title()} container at {uri} after 10secs'
@@ -96,37 +97,38 @@ class ContainerStore(BaseStore):
         return False
 
     def _uri(self, port: int) -> str:
-        """Returns uri of mini-jinad.
+        """Returns uri of partial-daemon.
 
-        NOTE: JinaD (running inside a container) needs to access other containers via dockerhost.
-        Mac/WSL: this would work as is, as dockerhost is accessible.
-        Linux: this would only work if we start jinad passing extra_hosts.
-
-        NOTE: Checks if we actually are in docker (needed for unit tests). If not docker, use localhost.
-
+        NOTE: JinaD (running inside a container) needs to access other containers via dockerhost/localhost.
         :param port: mini jinad port
-        :return: uri for mini-jinad
+        :return: uri for partial-daemon
         """
 
-        return f'http://localhost:{port}'
-        # if (
-        #     sys.platform == 'linux'
-        #     and 'microsoft' not in uname().release
-        #     and not os.path.exists('/.dockerenv')
-        # ):
-        #     return f'http://localhost:{port}'
-        # else:
-        #     return f'http://{__docker_host__}:{port}'
+        from .. import __self__, jinad_args
+
+        self._logger.critical(f'jinad_args.os {jinad_args.os}')
+        if not os.path.exists('/.dockerenv'):
+            # Checks if we actually are in docker (needed for unit tests). If not docker, use localhost.
+            host = __default_host__
+        elif jinad_args.os == OSOptions.LINUX:
+            # Linux: connect to partial-daemon via localhost if net_mode is host
+            # else, connect via dockerhost (this would only work if we start jinad passing extra_hosts)
+            host = __default_host__ if __self__.network == 'host' else __docker_host__
+        elif jinad_args.os in [OSOptions.MAC, OSOptions.WSL]:
+            # Mac/WSL: __docker_host__ is accessible
+            host = __docker_host__
+
+        return f'http://{host}:{port}'
 
     def _command(self, port: int, workspace_id: DaemonID) -> str:
-        """Returns command for mini-jinad container to be appended to default entrypoint
+        """Returns command for partial-daemon container to be appended to default entrypoint
 
         NOTE: `command` is appended to already existing entrypoint, hence removed the prefix `jinad`
         NOTE: Important to set `workspace_id` here as this gets set in jina objects in the container
 
         :param port: mini jinad port
         :param workspace_id: workspace id
-        :return: command for mini-jinad container
+        :return: command for partial-daemon container
         """
         return f'--port-expose {port} --mode {self._kind} --workspace-id {workspace_id.jid}'
 
@@ -197,7 +199,7 @@ class ContainerStore(BaseStore):
                     e.message += container_logs
             if id in Dockerizer.containers:
                 self._logger.info(f'removing container {id_cleaner(container.id)}')
-                Dockerizer.rm_container(container.id)
+                # Dockerizer.rm_container(container.id)
             raise
         else:
             self[id] = ContainerItem(
@@ -205,9 +207,7 @@ class ContainerStore(BaseStore):
                     container_id=id_cleaner(container.id),
                     container_name=container.name,
                     image_id=id_cleaner(container.image.id),
-                    network=container.attrs['NetworkSettings']['Networks']['bridge'][
-                        'NetworkID'
-                    ],
+                    network=Dockerizer.network_id(container),
                     ports=ports,
                     uri=uri,
                 ),
