@@ -25,7 +25,7 @@ class AsyncPeaClient(AsyncBaseClient):
         :return: dict arguments of remote JinaD
         """
         async with aiohttp.request(
-            method='GET', url=f'{self.store_api}/arguments'
+            method='GET', url=f'{self.store_api}/arguments', timeout=self.timeout
         ) as response:
             if response.status == HTTPStatus.OK:
                 return await response.json()
@@ -46,6 +46,7 @@ class AsyncPeaClient(AsyncBaseClient):
             url=self.store_api,
             params={'workspace_id': daemonize(workspace_id)},
             json=payload,
+            timeout=self.timeout,
         ) as response:
             response_json = await response.json()
             if response.status == HTTPStatus.CREATED:
@@ -74,7 +75,9 @@ class AsyncPeaClient(AsyncBaseClient):
         """
 
         async with aiohttp.request(
-            method='DELETE', url=f'{self.store_api}/{daemonize(id, self._kind)}'
+            method='DELETE',
+            url=f'{self.store_api}/{daemonize(id, self._kind)}',
+            timeout=self.timeout,
         ) as response:
             response_json = await response.json()
             if response.status != HTTPStatus.OK:
