@@ -110,8 +110,7 @@ class JinadRuntime(AsyncNewLoopRuntime):
 
         # reset the runtime to ZEDRuntime/GRPCDataRuntime or ContainerRuntime
         if _args.runtime_cls == 'JinadRuntime':
-            # TODO: add jinahub:// and jinahub+docker:// scheme here
-            if _args.uses.startswith('docker://'):
+            if _args.uses.startswith(('docker://', 'jinahub+docker://')):
                 _args.runtime_cls = 'ContainerRuntime'
             else:
                 if _args.grpc_data_requests:
@@ -126,7 +125,7 @@ class JinadRuntime(AsyncNewLoopRuntime):
 
         # NOTE: on remote relative filepaths should be converted to filename only
         def basename(field):
-            if field and not field.startswith('docker://'):
+            if field and not field.startswith(('docker://', 'jinahub')):
                 try:
                     return os.path.basename(complete_path(field))
                 except FileNotFoundError:
