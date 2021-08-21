@@ -431,6 +431,7 @@
                 <span class="s1">'kind'</span><span class="p">:</span> <span class="n">UpdateOperation</span><span class="o">.</span><span class="n">ROLLING_UPDATE</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
                 <span class="s1">'dump_path'</span><span class="p">:</span> <span class="n">dump_path</span><span class="p">,</span>
             <span class="p">},</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span>
         <span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
             <span class="n">response_json</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">OK</span><span class="p">:</span>
@@ -456,7 +457,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 20, 2021.
+            Last updated on Aug 21, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
