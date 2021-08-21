@@ -174,7 +174,7 @@ class ContainerStore(BaseStore):
                 )
             )
 
-            container, network, ports = Dockerizer.run(
+            container = Dockerizer.run(
                 workspace_id=workspace_id, container_id=id, command=command, ports=ports
             )
             if not await self.ready(uri):
@@ -205,7 +205,9 @@ class ContainerStore(BaseStore):
                     container_id=id_cleaner(container.id),
                     container_name=container.name,
                     image_id=id_cleaner(container.image.id),
-                    network=network,
+                    network=container.attrs['NetworkSettings']['Networks']['bridge'][
+                        'NetworkID'
+                    ],
                     ports=ports,
                     uri=uri,
                 ),

@@ -124,7 +124,7 @@ class DaemonWorker(Thread):
         :return: container id, if created
         """
         if self.daemon_file.run:
-            container, _, _ = Dockerizer.run_custom(
+            container = Dockerizer.run_custom(
                 workspace_id=self.id, daemon_file=self.daemon_file
             )
             return id_cleaner(container.id)

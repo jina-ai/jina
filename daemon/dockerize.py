@@ -46,7 +46,7 @@ class Dockerizer:
     except docker.errors.DockerException:
         logger.critical(
             f'docker client cannot connect to dockerd. '
-            f'please start jinad with `-v /var/run/docker.sock:/var/run/docker.sock`'
+            f'please start jinad container with `-v /var/run/docker.sock:/var/run/docker.sock`'
         )
         raise DockerNotFoundException()
 
@@ -168,8 +168,6 @@ class Dockerizer:
                 _log_stream(build_log, 'stream')
             elif 'message' in build_log:
                 _log_stream(build_log, 'message')
-            # elif 'status' in build_log:
-            #     _log_stream(build_log, 'status')
 
         try:
             image = cls.client.images.get(name=workspace_id.tag)
@@ -181,14 +179,14 @@ class Dockerizer:
     @classmethod
     def run_custom(
         cls, workspace_id: DaemonID, daemon_file: 'DaemonFile'
-    ) -> Tuple['Container', str, Dict]:
+    ) -> 'Container':
         """Run a custom container during workspace creation.
         .. note::
             This invalidates the default entrypint (mini-jinad) & uses the entrypoint provided
             mentioned in the .jinad file (`run` section)
         :param workspace_id: workspace id
         :param daemon_file: daemon file describing content inside the workdir
-        :return: tuple of container object, network id & ports
+        :return: container object
         """
         return cls.run(
             workspace_id=workspace_id,
@@ -206,7 +204,7 @@ class Dockerizer:
         command: str,
         ports: Dict,
         entrypoint: Optional[str] = None,
-    ) -> Tuple['Container', str, Dict]:
+    ) -> 'Container':
         """
         Runs a container using an existing image (tagged with `workspace_id`).
         Maps `ports` to local dockerhost & tags the container with name `container_id`
@@ -219,7 +217,7 @@ class Dockerizer:
         :param entrypoint: custom entrypoint
         :raises DockerImageException: if image is not found locally
         :raises DockerContainerException: if container creation fails
-        :return: tuple of container object, network id & ports
+        :return: container object
         """
 
         from .stores import workspace_store
@@ -246,7 +244,7 @@ class Dockerizer:
                 detach=True,
                 command=command,
                 entrypoint=entrypoint,
-                extra_hosts={__docker_host__: 'host-gateway'},
+                extra_hosts=cls.extrahosts(),
             )
         except docker.errors.NotFound as e:
             cls.logger.critical(
@@ -264,8 +262,20 @@ class Dockerizer:
                     msg = f'port conflict: {match[0]}'
             cls.logger.critical(msg)
             raise DockerContainerException(msg)
-        # TODO: network & ports return can be avoided?
-        return container, network, ports
+        return container
+
+    @classmethod
+    def extrahosts(cls) -> Dict:
+        """Get extrahosts to be added to the container
+
+        EXTRAHOSTS = {__docker_host__: 'host-gateway'}
+        If host OS is linux, this **must** return EXTRAHOSTS.
+        If host OS is mac/wsl, this can return {} as mac/wsl understand __docker_host__ without adding extrahosts.
+        Since we don't have a confirmed way of knowing the host OS, we return EXTRAHOSTS by default.
+
+        :return: dict of extrahosts
+        """
+        return {__docker_host__: 'host-gateway'}
 
     @classmethod
     def logs(cls, id: str) -> str:

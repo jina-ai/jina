@@ -24,6 +24,7 @@ from .parser import get_main_parser, _get_run_args
 jinad_args = get_main_parser().parse_args([])
 daemon_logger = JinaLogger('DAEMON', **vars(jinad_args))
 
+__self__ = None
 __task_queue__ = Queue()
 __root_workspace__ = jinad_args.workspace
 __partial_workspace__ = '/workspace'
@@ -140,6 +141,15 @@ def _update_default_args():
     )
 
 
+def _introspect():
+    from .models.introspect import Introspect
+
+    global __self__, jinad_args
+    if jinad_args.mode is None:
+        __self__ = Introspect()
+        daemon_logger.debug(__self__)
+
+
 def _start_fluentd():
     daemon_logger.info('starting fluentd...')
     cfg = os.path.join(__resources_path__, 'fluent.conf')
@@ -181,6 +191,7 @@ def _start_uvicorn(app: 'FastAPI'):
 def setup():
     """Setup steps for JinaD"""
     _update_default_args()
+    _introspect()
     pathlib.Path(__root_workspace__).mkdir(parents=True, exist_ok=True)
     if not jinad_args.no_fluentd:
         Thread(target=_start_fluentd, daemon=True).start()
