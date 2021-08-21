@@ -1,6 +1,7 @@
 import os
 import json
 import asyncio
+from numbers import Number
 from http import HTTPStatus
 from typing import Dict, Optional, Union
 
@@ -34,7 +35,9 @@ class AsyncBaseClient:
         timeout: int = None,
     ):
         self._logger = logger
-        self.timeout = timeout
+        self.timeout = aiohttp.ClientTimeout(
+            timeout if isinstance(timeout, Number) else 10 * 60
+        )
         self.http_uri = f'http://{uri}'
         self.store_api = f'{self.http_uri}{self._endpoint}'
         self.logstream_api = f'ws://{uri}/logstream'
@@ -45,7 +48,9 @@ class AsyncBaseClient:
 
         :return: True if JinaD is alive at remote else false
         """
-        async with aiohttp.request(method='GET', url=self.http_uri) as response:
+        async with aiohttp.request(
+            method='GET', url=self.http_uri, timeout=self.timeout
+        ) as response:
             return response.status == HTTPStatus.OK
 
     @if_alive
@@ -55,7 +60,7 @@ class AsyncBaseClient:
         :return: dict status of remote JinaD
         """
         async with aiohttp.request(
-            method='GET', url=f'{self.http_uri}/status'
+            method='GET', url=f'{self.http_uri}/status', timeout=self.timeout
         ) as response:
             if response.status == HTTPStatus.OK:
                 return await response.json()
@@ -71,6 +76,7 @@ class AsyncBaseClient:
         async with aiohttp.request(
             method='GET',
             url=f'{self.store_api}/{daemonize(id, self._kind)}',
+            timeout=self.timeout,
         ) as response:
             response_json = await response.json()
             if response.status == HTTPStatus.UNPROCESSABLE_ENTITY:
@@ -92,7 +98,9 @@ class AsyncBaseClient:
 
         :return: json response of the remote Flow/Pea/Pod/Workspace status
         """
-        async with aiohttp.request(method='GET', url=self.store_api) as response:
+        async with aiohttp.request(
+            method='GET', url=self.store_api, timeout=self.timeout
+        ) as response:
             if response.status == HTTPStatus.OK:
                 response_json = await response.json()
                 self._logger.success(

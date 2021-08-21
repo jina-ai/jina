@@ -26,7 +26,7 @@ class AsyncFlowClient(AsyncBaseClient):
         :return: dict arguments of remote JinaD
         """
         async with aiohttp.request(
-            method='GET', url=f'{self.store_api}/arguments'
+            method='GET', url=f'{self.store_api}/arguments', timeout=self.timeout
         ) as response:
             if response.status == HTTPStatus.OK:
                 return await response.json()
@@ -47,6 +47,7 @@ class AsyncFlowClient(AsyncBaseClient):
             method='POST',
             url=self.store_api,
             params={'workspace_id': workspace_id, 'filename': filename},
+            timeout=self.timeout,
         ) as response:
             response_json = await response.json()
             if response.status != HTTPStatus.CREATED:
@@ -78,6 +79,7 @@ class AsyncFlowClient(AsyncBaseClient):
                 'pod_name': pod_name,
                 'dump_path': dump_path,
             },
+            timeout=self.timeout,
         ) as response:
             response_json = await response.json()
             if response.status != HTTPStatus.OK:
@@ -100,6 +102,7 @@ class AsyncFlowClient(AsyncBaseClient):
         async with aiohttp.request(
             method='DELETE',
             url=f'{self.store_api}/{daemonize(id, self._kind)}',
+            timeout=self.timeout,
         ) as response:
             response_json = await response.json()
             if response.status != HTTPStatus.OK:
