@@ -639,6 +639,23 @@ class ColorContext:
         print(_RESET, flush=True, end='')
 
 
+def warn_unknown_args(unknown_args: List[str]):
+    """Creates warnings for all given arguments.
+
+    :param unknown_args: arguments that are unknown to Jina
+    """
+    for arg in unknown_args:
+        from .parsers.deprecated import get_deprecated_replacement
+
+        new_arg = get_deprecated_replacement(arg)
+        if new_arg:
+            warnings.warn(
+                f'''Ignored the deprecated argument '{arg}'. Please use '{new_arg}'.'''
+            )
+        else:
+            warnings.warn(f'ignored unknown argument: {arg}')
+
+
 class ArgNamespace:
     """Helper function for argparse.Namespace object."""
 
@@ -684,16 +701,8 @@ class ArgNamespace:
         :return: argument list
         """
         args = ArgNamespace.kwargs2list(kwargs)
-        try:
-            p_args, unknown_args = parser.parse_known_args(args)
-        except SystemExit:
-            raise ValueError(
-                f'bad arguments "{args}" with parser {parser}, '
-                'you may want to double check your args '
-            )
+        p_args, unknown_args = parser.parse_known_args(args)
         if warn_unknown and unknown_args:
-            from .parsers.helper import warn_unknown_args
-
             warn_unknown_args(unknown_args)
 
         return p_args

@@ -314,6 +314,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
             raise ValueError(
                 f'Document content fields are mutually exclusive, please provide only one of {_all_doc_content_keys}'
             )
+        self._mermaid_id = random_identity()
         self.set_attributes(**kwargs)
 
     def pop(self, *fields) -> None:
@@ -1324,14 +1325,6 @@ class Document(ProtoTypeMixin, VersionedMixin):
         else:
             raise AttributeError
         return value
-
-    @cached_property
-    def _mermaid_id(self) -> str:
-        """A unique ID for mermaid visualize id
-
-        :return: unique ID
-        """
-        return random_identity()
 
 
 def _is_uri(value: str) -> bool:

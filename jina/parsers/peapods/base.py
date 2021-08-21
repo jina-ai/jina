@@ -80,3 +80,12 @@ When not given, then the default naming strategy will apply.
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
+
+    gp.add_argument(
+        '--send-routing-table',
+        action='store_true',
+        default=True,
+        help='If set the routing table will be included in every request.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
