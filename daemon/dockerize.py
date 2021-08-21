@@ -336,6 +336,7 @@ class Dockerizer:
                 __partial_workspace__, '.jina', 'hub-packages'
             ),
             'JINA_HUB_CACHE_DIR': os.path.join(__partial_workspace__, '.cache', 'jina'),
+            'HOME': __partial_workspace__,
         }
 
     @classmethod
