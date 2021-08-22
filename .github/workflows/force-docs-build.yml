@@ -1,0 +1,59 @@
+name: Manual Docs Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_token:
+        description: 'Your release token'
+        required: true
+      triggered_by:
+        description: 'CD | TAG | MANUAL'
+        required: false
+        default: MANUAL
+
+jobs:
+  token-check:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "success!"
+        if: "${{ github.event.inputs.release_token }} == ${{ env.release_token }}"
+        env:
+          release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}
+
+  regular-release:
+    needs: token-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Build doc and push to gh-pages
+        run: |
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
+          git checkout gh-pages
+          git merge origin/master
+          pip install .[devel]
+          mkdir gen-html
+          cd docs
+          pip install -r requirements.txt
+          pip install --pre -U furo
+          docker run --rm \
+            -v $(pwd)/proto:/out \
+            -v $(pwd)/../jina/proto:/protos \
+            pseudomuto/protoc-gen-doc --doc_opt=markdown,docs.md
+          make dirhtml
+          cd ./_build/dirhtml/
+          cp -r ./ ../../../gen-html
+          cd -  # back to ./docs
+          rm -rf .
+          cp -r ../gen-html ./
+          ls -la
+          touch .nojekyll
+          cp 404/index.html 404.html
+          echo docs.jina.ai > CNAME
+          git status
+          git add api cli proto
+          git add . && git commit -m "chore(docs): update docs due to ${{github.event_name}} on ${{github.repository}}"
+          git push origin gh-pages
