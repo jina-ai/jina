@@ -148,7 +148,6 @@ def _benchmark_qps() -> Dict[str, float]:
                 index_generator(
                     num_docs=targets['index']['data'].shape[0], target=targets
                 ),
-                request_size=args.request_size,
                 show_progress=True,
             )
             index_time = time.perf_counter() - st
@@ -164,7 +163,6 @@ def _benchmark_qps() -> Dict[str, float]:
             f.search(
                 query_generator(num_docs=args.num_query, target=targets),
                 shuffle=True,
-                request_size=args.request_size,
                 parameters={'top_k': args.top_k},
                 show_progress=True,
             )

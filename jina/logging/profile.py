@@ -212,14 +212,20 @@ class ProgressBar(TimeContext):
         self._last_rendered_progress = 0
         self._num_update_called = 0
 
-    def update(self, progress: float = 1.0, all_completed: bool = False) -> None:
+    def update(
+        self,
+        progress: float = 1.0,
+        all_completed: bool = False,
+        first_enter: bool = False,
+    ) -> None:
         """
         Increment the progress bar by one unit.
 
         :param progress: The number of unit to increment.
         :param all_completed: Mark the task as fully completed.
+        :param first_enter: if this method is called by `__enter__`
         """
-        self._num_update_called += 1
+        self._num_update_called += 0 if first_enter else 1
         self._completed_progress += progress
         if (
             abs(self._completed_progress - self._last_rendered_progress) < 0.5
@@ -241,8 +247,18 @@ class ProgressBar(TimeContext):
         bar_color = 'yellow' if all_completed else 'green'
         unfinished_bar_color = 'yellow' if all_completed else 'white'
 
+        time_str = (
+            '-:--:--'
+            if first_enter
+            else str(datetime.timedelta(seconds=elapsed)).split('.')[0]
+        )
+        speed_str = (
+            'estimating...'
+            if first_enter
+            else f'{self._num_update_called / elapsed:3.1f} step/s'
+        )
         sys.stdout.write(
-            '{} {:<}{:<} {} {:3.1f} step/s    '.format(
+            '{} {:<}{:<} {} {}    '.format(
                 f'{self.task_name:>10}' if self.task_name else '',
                 colored('━' * num_fullbars, bar_color)
                 + (colored('╸', bar_color if num_halfbars else unfinished_bar_color)),
@@ -251,12 +267,12 @@ class ProgressBar(TimeContext):
                     unfinished_bar_color,
                     attrs=['dark'],
                 ),
-                colored(str(datetime.timedelta(seconds=elapsed)).split('.')[0], 'cyan'),
-                self._num_update_called / elapsed,
+                colored(time_str, 'cyan'),
+                speed_str,
             )
         )
         if num_bars >= self._bars_on_row:
-            sys.stdout.write("\033[K")
+            sys.stdout.write('\033[K')
         sys.stdout.flush()
 
     def __enter__(self):
@@ -264,7 +280,7 @@ class ProgressBar(TimeContext):
         return self
 
     def _enter_msg(self):
-        pass
+        self.update(first_enter=True)
 
     def _exit_msg(self):
         if self._num_update_called > 0:
@@ -273,3 +289,5 @@ class ProgressBar(TimeContext):
             sys.stdout.write(
                 f'\033[K{self._completed_progress:.0f} steps done in {self.readable_duration} ({speed:3.1f} step/s)\n'
             )
+        else:
+            sys.stdout.write('\033[A')
