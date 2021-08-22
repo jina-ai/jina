@@ -1,6 +1,5 @@
 import argparse
 import asyncio
-import inspect
 from typing import Optional, Callable
 
 import grpc

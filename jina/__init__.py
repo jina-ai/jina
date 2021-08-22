@@ -178,6 +178,7 @@ from jina.clients import Client
 # Document
 from jina.types.document import Document
 from jina.types.arrays.document import DocumentArray
+from jina.types.arrays.memmap import DocumentArrayMemmap
 
 # Executor
 from jina.executors import BaseExecutor as Executor
