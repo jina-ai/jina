@@ -100,11 +100,11 @@ def download_data(targets, download_proxy=None, task_name='download fashion-mnis
         )
         opener.add_handler(proxy)
     urllib.request.install_opener(opener)
-    with ProgressBar(task_name=task_name) as t:
+    with ProgressBar(description=task_name) as t:
         for k, v in targets.items():
             if not os.path.exists(v['filename']):
                 urllib.request.urlretrieve(
-                    v['url'], v['filename'], reporthook=lambda *x: t.update_tick(0.01)
+                    v['url'], v['filename'], reporthook=lambda *x: t.update(0.01)
                 )
 
 
