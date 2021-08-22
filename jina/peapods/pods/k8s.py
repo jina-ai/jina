@@ -85,7 +85,7 @@ class K8sPod(BasePod):
             container_args = (
                 f'["pea", '
                 f'"--uses", "BaseExecutor", '
-                # f'"--grpc-data-requests", "True", '
+                f'"--grpc-data-requests", '
                 f'"--runtime-cls", "GRPCDataRuntime", '
                 f'"--uses-metas", "{uses_metas}", '
                 + uses_with_string
@@ -96,7 +96,7 @@ class K8sPod(BasePod):
             container_args = (
                 f'["pea", '
                 f'"--uses", "config.yml", '
-                # f'"--grpc_data_requests", "True", '
+                f'"--grpc_data_requests", '
                 f'"--runtime-cls", "GRPCDataRuntime", '
                 f'"--uses-metas", "{uses_metas}", '
                 + uses_with_string
