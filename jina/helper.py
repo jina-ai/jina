@@ -718,15 +718,15 @@ class ArgNamespace:
         args = ArgNamespace.kwargs2list(kwargs)
         p_args, unknown_args = parser.parse_known_args(args)
         if warn_unknown and unknown_args:
-            _left_overs = set(unknown_args)
+            _leftovers = set(unknown_args)
             if fallback_parsers:
                 for p in fallback_parsers:
                     _, _unk_args = p.parse_known_args(args)
-                    _left_overs = _left_overs.intersection(_unk_args)
-                    if not _left_overs:
+                    _leftovers = _leftovers.intersection(_unk_args)
+                    if not _leftovers:
                         # all args have been resolved
                         break
-            warn_unknown_args(_left_overs)
+            warn_unknown_args(_leftovers)
 
         return p_args
 
