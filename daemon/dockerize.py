@@ -2,7 +2,7 @@ import os
 import re
 import socket
 import platform
-from typing import Dict, List, Tuple, TYPE_CHECKING, Optional
+from typing import Dict, List, TYPE_CHECKING, Optional
 
 import docker
 
@@ -22,7 +22,7 @@ from .excepts import (
 )
 from .helper import id_cleaner, classproperty, is_error_message
 from .models import DaemonID
-from .models.enums import IDLiterals
+from .models.enums import IDLiterals, OSOptions
 
 if TYPE_CHECKING:
     from .files import DaemonFile
@@ -250,6 +250,7 @@ class Dockerizer:
                 command=command,
                 entrypoint=entrypoint,
                 extra_hosts=cls.extrahosts(),
+                publish_all_ports=(container_id.jtype == IDLiterals.JFLOW),
             )
         except docker.errors.NotFound as e:
             cls.logger.critical(

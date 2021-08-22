@@ -97,9 +97,9 @@ class PeaDepends:
         # TAIL & SINGLETON peas are handled by dynamic routing
         return (
             __docker_host__
-            if PeaRoleType.from_string(self.params.pea_role)
+            if jinad_args.os != OSOptions.LINUX
+            and PeaRoleType.from_string(self.params.pea_role)
             in [PeaRoleType.PARALLEL, PeaRoleType.HEAD]
-            and jinad_args.os != OSOptions.LINUX
             else self.params.host_out
         )
 

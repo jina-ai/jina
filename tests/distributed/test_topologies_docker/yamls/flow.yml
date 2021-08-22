@@ -1,0 +1,11 @@
+jtype: Flow
+version: 1
+with:
+  port_expose: 9000
+  protocol: http
+  runs_in_docker: true
+executors:
+  - name: executor
+    uses: docker://test-mwu-encoder
+    docker_kwargs:
+      environment: ["JINA_LOG_LEVEL=DEBUG"]

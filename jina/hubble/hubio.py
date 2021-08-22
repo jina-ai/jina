@@ -105,7 +105,7 @@ class HubIO:
         print(
             Panel.fit(
                 '''
-[bold green]Executor[/bold green] is how Jina processes [bold]Document[/bold]. 
+[bold green]Executor[/bold green] is how Jina processes [bold]Document[/bold].
 
 This guide helps you to create your own Executor in 30 seconds.''',
                 title='Create New Executor',
@@ -161,10 +161,10 @@ This guide helps you to create your own Executor in 30 seconds.''',
             print(
                 Panel.fit(
                     '''
-[bold]Dockerfile[/bold] describes how this executor will be built. It is useful when 
-your executor has non-trivial dependencies or must be run under certain environment. 
+[bold]Dockerfile[/bold] describes how this executor will be built. It is useful when
+your executor has non-trivial dependencies or must be run under certain environment.
 
-- If the [bold]Dockerfile[/bold] is missing, Jina automatically generates one for you. 
+- If the [bold]Dockerfile[/bold] is missing, Jina automatically generates one for you.
 - If you provide one, then Jina will respect the given [bold]Dockerfile[/bold].''',
                     title='[Optional] [bold]Dockerfile[/bold]',
                     width=80,
