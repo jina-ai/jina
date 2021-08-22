@@ -34,8 +34,6 @@ jobs:
         run: |
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
-          git checkout gh-pages
-          git merge origin/master
           pip install .[devel]
           mkdir gen-html
           cd docs
@@ -59,7 +57,8 @@ jobs:
           touch .nojekyll
           cp 404/index.html 404.html
           echo docs.jina.ai > CNAME
-          git status
           cd ..
+          git status
+          git checkout gh-pages
           git add docs && git commit -m "chore(docs): update docs due to ${{github.event_name}} on ${{github.repository}}"
-          git push origin gh-pages
+          git push --force origin gh-pages
