@@ -1,52 +1,53 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="#" /><link rel="search" title="Search" href="../search/" />
 
-    <meta name="generator" content="sphinx-3.5.3, furo 2021.06.18.beta36"/><title>Index - Jina 2.0.21 documentation</title>
-<link rel="stylesheet" href="../_static/styles/furo.css?digest=9b17055c4366e8b2949c66d6a9d8b0efe4dbaa60">
-    <link rel="stylesheet" href="../_static/pygments.css">
+    <meta name="generator" content="sphinx-4.1.2, furo 2021.08.17.beta43"/><title>Index - Welcome to Jina</title>
+<link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=910ac4ccc9d7c023151c34010d7b500fb9777a51" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    <link rel="stylesheet" type="text/css" href="../_static/main.css" />
+    
     
 
 
 <style>
-  :root {
+  body {
     --color-code-background: #ffffff;
   --color-code-foreground: #4d4d4d;
+  --color-brand-primary: #009191;
+  --color-brand-content: #009191;
+  
+  }
+  body[data-theme="dark"] {
+    --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
   
   }
   @media (prefers-color-scheme: dark) {
-    :root {
+    body:not([data-theme="light"]) {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
   
     }
   }
-
-  /* For allowing end-user-specific overrides */
-  .override-light {
-    --color-code-background: #ffffff;
-  --color-code-foreground: #4d4d4d;
-  
-  }
-  .override-dark {
-    --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
-  
-  }
-</style><link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/main.css" />
-    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../_static/pygments_dark.css">
-    <link rel="stylesheet" href="../_static/styles/furo-extensions.css?digest=ee12cdd73c4bbac24afec78d92c4afd7c2d8ea7f"></head>
-  <body dir="">
+</style>
+    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../_static/pygments_dark.css"></head>
+  <body>
     
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-      stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z"/>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z" />
       <line x1="4" y1="6" x2="20" y2="6" />
       <line x1="10" y1="12" x2="20" y2="12" />
       <line x1="6" y1="18" x2="20" y2="18" />
@@ -54,9 +55,8 @@
   </symbol>
   <symbol id="svg-menu" viewBox="0 0 24 24">
     <title>Menu</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-      class="feather feather-menu">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="6" x2="21" y2="6"></line>
       <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -64,18 +64,57 @@
   </symbol>
   <symbol id="svg-arrow-right" viewBox="0 0 24 24">
     <title>Expand</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-      class="feather feather-chevron-right">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
       <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
     </svg>
   </symbol>
 </svg>
 
 <input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
 <input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation"></label>
-<label class="overlay toc-overlay" for="__toc"></label>
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
 
 
 
@@ -83,14 +122,24 @@
   <header class="mobile-header">
     <div class="header-left">
       <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
         <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
       </label>
     </div>
     <div class="header-center">
-      <a href="../"><div class="brand">Jina 2.0.21 documentation</div></a>
+      <a href="../"><div class="brand">Welcome to Jina</div></a>
     </div>
     <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
       <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
     </div>
@@ -101,27 +150,28 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../">
   
   <div class="sidebar-logo-container">
-    <img class="sidebar-logo only-light" src="../_static/logo-light.svg" alt="Light Logo"/>
-    <img class="sidebar-logo only-dark" src="../_static/logo-dark.svg" alt="Dark Logo"/>
+    <img class="sidebar-logo only-light" src="../_static/logo-new.gif" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../_static/logo-new.gif" alt="Dark Logo"/>
   </div>
   
   
-</a><form class="sidebar-search-container" method="get" action="../search/">
-  <input class="sidebar-search" placeholder=Search name="q">
+</a><form class="sidebar-search-container" method="get" action="../search/" role="search">
+  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
-</form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p class="caption"><span class="caption-text">Developer Reference</span></p>
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.clients.base/">jina.clients.base package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.clients.base/">jina.clients.base package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.clients.base.grpc/">jina.clients.base.grpc module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.clients.base.http/">jina.clients.base.http module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.clients.base.websocket/">jina.clients.base.websocket module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.clients.request/">jina.clients.request package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label for="toctree-checkbox-4"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.clients.request/">jina.clients.request package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.clients.request.asyncio/">jina.clients.request.asyncio module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.clients.request.helper/">jina.clients.request.helper module</a></li>
 </ul>
@@ -133,30 +183,30 @@
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.clients.websocket/">jina.clients.websocket module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.executors/">jina.executors package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label for="toctree-checkbox-5"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.executors/">jina.executors package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.executors.decorators/">jina.executors.decorators module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.executors.metas/">jina.executors.metas module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.flow/">jina.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label for="toctree-checkbox-6"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.flow/">jina.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.flow.asyncio/">jina.flow.asyncio module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.flow.base/">jina.flow.base module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.flow.builder/">jina.flow.builder module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.helloworld/">jina.helloworld package</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label for="toctree-checkbox-7"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.helloworld.chatbot/">jina.helloworld.chatbot package</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label for="toctree-checkbox-8"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.helloworld/">jina.helloworld package</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.helloworld.chatbot/">jina.helloworld.chatbot package</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.helloworld.chatbot.app/">jina.helloworld.chatbot.app module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.helloworld.chatbot.my_executors/">jina.helloworld.chatbot.my_executors module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.helloworld.fashion/">jina.helloworld.fashion package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.helloworld.fashion/">jina.helloworld.fashion package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.helloworld.fashion.app/">jina.helloworld.fashion.app module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.helloworld.fashion.helper/">jina.helloworld.fashion.helper module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.helloworld.fashion.my_executors/">jina.helloworld.fashion.my_executors module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.helloworld.multimodal/">jina.helloworld.multimodal package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.helloworld.multimodal/">jina.helloworld.multimodal package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.helloworld.multimodal.app/">jina.helloworld.multimodal.app module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.helloworld.multimodal.my_executors/">jina.helloworld.multimodal.my_executors module</a></li>
 </ul>
@@ -164,23 +214,23 @@
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.helloworld.fork/">jina.helloworld.fork module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.hubble/">jina.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label for="toctree-checkbox-11"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.hubble/">jina.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.hubble.helper/">jina.hubble.helper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.hubble.hubapi/">jina.hubble.hubapi module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.hubble.hubio/">jina.hubble.hubio module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.jaml/">jina.jaml package</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label for="toctree-checkbox-12"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.jaml.parsers/">jina.jaml.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label for="toctree-checkbox-13"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.jaml.parsers.default/">jina.jaml.parsers.default package</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label for="toctree-checkbox-14"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.jaml/">jina.jaml package</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.jaml.parsers/">jina.jaml.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.jaml.parsers.default/">jina.jaml.parsers.default package</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.jaml.parsers.default.v1/">jina.jaml.parsers.default.v1 module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.jaml.parsers.executor/">jina.jaml.parsers.executor package</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label for="toctree-checkbox-15"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.jaml.parsers.executor/">jina.jaml.parsers.executor package</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.jaml.parsers.executor.legacy/">jina.jaml.parsers.executor.legacy module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.jaml.parsers.flow/">jina.jaml.parsers.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.jaml.parsers.flow/">jina.jaml.parsers.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.jaml.parsers.flow.legacy/">jina.jaml.parsers.flow.legacy module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.jaml.parsers.flow.v1/">jina.jaml.parsers.flow.v1 module</a></li>
 </ul>
@@ -191,33 +241,33 @@
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.jaml.helper/">jina.jaml.helper module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.logging/">jina.logging package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.logging/">jina.logging package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.logging.formatter/">jina.logging.formatter module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.logging.logger/">jina.logging.logger module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.logging.predefined/">jina.logging.predefined module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.logging.profile/">jina.logging.profile module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.math/">jina.math package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.math/">jina.math package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.math.dimensionality_reduction/">jina.math.dimensionality_reduction module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.math.distance/">jina.math.distance module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.math.helper/">jina.math.helper module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.optimizers/">jina.optimizers package</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label for="toctree-checkbox-19"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.optimizers/">jina.optimizers package</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.optimizers.discovery/">jina.optimizers.discovery module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.optimizers.flow_runner/">jina.optimizers.flow_runner module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.optimizers.parameters/">jina.optimizers.parameters module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label for="toctree-checkbox-20"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.parsers.hubble/">jina.parsers.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label for="toctree-checkbox-21"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.parsers.hubble/">jina.parsers.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.parsers.hubble.pull/">jina.parsers.hubble.pull module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.parsers.hubble.push/">jina.parsers.hubble.push module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.parsers.peapods/">jina.parsers.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label for="toctree-checkbox-22"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.parsers.peapods.runtimes/">jina.parsers.peapods.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label for="toctree-checkbox-23"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.parsers.peapods/">jina.parsers.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.parsers.peapods.runtimes/">jina.parsers.peapods.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.parsers.peapods.runtimes.container/">jina.parsers.peapods.runtimes.container module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.parsers.peapods.runtimes.distributed/">jina.parsers.peapods.runtimes.distributed module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.parsers.peapods.runtimes.remote/">jina.parsers.peapods.runtimes.remote module</a></li>
@@ -241,27 +291,27 @@
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.parsers.ping/">jina.parsers.ping module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.peapods/">jina.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label for="toctree-checkbox-24"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.peapods/">jina.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.peapods.grpc/">jina.peapods.grpc package</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.peapods.peas/">jina.peapods.peas package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label for="toctree-checkbox-25"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.peapods.peas/">jina.peapods.peas package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.peapods.peas.helper/">jina.peapods.peas.helper module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.peapods.pods/">jina.peapods.pods package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label for="toctree-checkbox-26"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.peapods.pods/">jina.peapods.pods package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.peapods.pods.compound/">jina.peapods.pods.compound module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.peapods.pods.factory/">jina.peapods.pods.factory module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.peapods.runtimes/">jina.peapods.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label for="toctree-checkbox-27"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.peapods.runtimes/">jina.peapods.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.peapods.runtimes.container/">jina.peapods.runtimes.container package</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.peapods.runtimes.gateway/">jina.peapods.runtimes.gateway package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label for="toctree-checkbox-28"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.peapods.runtimes.gateway/">jina.peapods.runtimes.gateway package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.peapods.runtimes.gateway.grpc/">jina.peapods.runtimes.gateway.grpc package</a></li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.peapods.runtimes.gateway.http/">jina.peapods.runtimes.gateway.http package</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label for="toctree-checkbox-29"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.peapods.runtimes.gateway.http/">jina.peapods.runtimes.gateway.http package</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="../api/jina.peapods.runtimes.gateway.http.app/">jina.peapods.runtimes.gateway.http.app module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../api/jina.peapods.runtimes.gateway.http.models/">jina.peapods.runtimes.gateway.http.models module</a></li>
 </ul>
 </li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.peapods.runtimes.gateway.websocket/">jina.peapods.runtimes.gateway.websocket package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label for="toctree-checkbox-30"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.peapods.runtimes.gateway.websocket/">jina.peapods.runtimes.gateway.websocket package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="../api/jina.peapods.runtimes.gateway.websocket.app/">jina.peapods.runtimes.gateway.websocket.app module</a></li>
 </ul>
 </li>
@@ -270,11 +320,11 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.peapods.runtimes.grpc/">jina.peapods.runtimes.grpc package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.peapods.runtimes.request_handlers.data_request_handler/">jina.peapods.runtimes.request_handlers.data_request_handler module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" role="switch" type="checkbox"/><label for="toctree-checkbox-32"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.peapods.runtimes.zmq.asyncio/">jina.peapods.runtimes.zmq.asyncio module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.peapods.runtimes.zmq.base/">jina.peapods.runtimes.zmq.base module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
@@ -287,13 +337,13 @@
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.peapods.networking/">jina.peapods.networking module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label for="toctree-checkbox-33"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" role="switch" type="checkbox"/><label for="toctree-checkbox-33"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.proto.jina_pb2/">jina.proto.jina_pb2 module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.proto.jina_pb2_grpc/">jina.proto.jina_pb2_grpc module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.proto.serializer/">jina.proto.serializer module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.schemas/">jina.schemas package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label for="toctree-checkbox-34"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.schemas/">jina.schemas package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" role="switch" type="checkbox"/><label for="toctree-checkbox-34"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.schemas.executor/">jina.schemas.executor module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.schemas.flow/">jina.schemas.flow module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.schemas.helper/">jina.schemas.helper module</a></li>
@@ -301,8 +351,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.schemas.pod/">jina.schemas.pod module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/><label for="toctree-checkbox-35"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.arrays/">jina.types.arrays package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/><label for="toctree-checkbox-36"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" role="switch" type="checkbox"/><label for="toctree-checkbox-35"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.arrays/">jina.types.arrays package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" role="switch" type="checkbox"/><label for="toctree-checkbox-36"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.arrays.abstract/">jina.types.arrays.abstract module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.arrays.bpm/">jina.types.arrays.bpm module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.arrays.chunk/">jina.types.arrays.chunk module</a></li>
@@ -314,7 +364,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.arrays.traversable/">jina.types.arrays.traversable module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.document/">jina.types.document package</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" type="checkbox"/><label for="toctree-checkbox-37"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.document/">jina.types.document package</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" role="switch" type="checkbox"/><label for="toctree-checkbox-37"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.document.converters/">jina.types.document.converters module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
@@ -322,16 +372,16 @@
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" type="checkbox"/><label for="toctree-checkbox-38"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" role="switch" type="checkbox"/><label for="toctree-checkbox-38"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.message.common/">jina.types.message.common module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.ndarray/">jina.types.ndarray package</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" type="checkbox"/><label for="toctree-checkbox-39"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.types.ndarray.dense/">jina.types.ndarray.dense package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" type="checkbox"/><label for="toctree-checkbox-40"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.ndarray/">jina.types.ndarray package</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" role="switch" type="checkbox"/><label for="toctree-checkbox-39"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.types.ndarray.dense/">jina.types.ndarray.dense package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.ndarray.dense.numpy/">jina.types.ndarray.dense.numpy module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.types.ndarray.sparse/">jina.types.ndarray.sparse package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label for="toctree-checkbox-41"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.types.ndarray.sparse/">jina.types.ndarray.sparse package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.ndarray.sparse.numpy/">jina.types.ndarray.sparse.numpy module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.ndarray.sparse.pytorch/">jina.types.ndarray.sparse.pytorch module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.ndarray.sparse.scipy/">jina.types.ndarray.sparse.scipy module</a></li>
@@ -341,17 +391,17 @@
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.ndarray.generic/">jina.types.ndarray.generic module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.request.control/">jina.types.request.control module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.request.data/">jina.types.request.data module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.request.mixin/">jina.types.request.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" role="switch" type="checkbox"/><label for="toctree-checkbox-43"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.routing.table/">jina.types.routing.table module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" type="checkbox"/><label for="toctree-checkbox-44"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" role="switch" type="checkbox"/><label for="toctree-checkbox-44"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.score.map/">jina.types.score.map module</a></li>
 </ul>
 </li>
@@ -368,12 +418,12 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-45" name="toctree-checkbox-45" type="checkbox"/><label for="toctree-checkbox-45"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-45" name="toctree-checkbox-45" role="switch" type="checkbox"/><label for="toctree-checkbox-45"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../proto/docs/">Protocol Documentation</a></li>
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">Links</span></p>
+<p class="caption" role="heading"><span class="caption-text">Links</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jina#read-tutorials">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jina">GitHub repository</a></li>
@@ -386,12 +436,23 @@
       
     </div>
   </aside>
-  <main class="main">
+  <div class="main">
     <div class="content">
       <article role="main">
-        <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
-          <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
-        </label>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
         
 <section class="genindex-section">
   <h1 id="index">Index</h1>
@@ -419,9 +480,9 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.RemoteWorkspaceState.ACTIVE">ACTIVE (jina.enums.RemoteWorkspaceState attribute)</a>
 </li>
-        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.active_pod">active_pod() (jina.types.routing.table.RoutingTable property)</a>
+        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.active_pod">active_pod (jina.types.routing.table.RoutingTable property)</a>
 </li>
-        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.active_target_pod">active_target_pod() (jina.types.routing.table.RoutingTable property)</a>
+        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.active_target_pod">active_target_pod (jina.types.routing.table.RoutingTable property)</a>
 </li>
         <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore.add">add() (daemon.stores.base.BaseStore method)</a>
 
@@ -469,19 +530,19 @@
 </li>
         <li><a href="../api/jina.types.message/#jina.types.message.Message.add_route">add_route() (jina.types.message.Message method)</a>
 </li>
-        <li><a href="../api/jina/#jina.Flow.address_private">address_private() (jina.Flow property)</a>
+        <li><a href="../api/jina/#jina.Flow.address_private">address_private (jina.Flow property)</a>
 
         <ul>
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.address_private">(jina.flow.base.Flow property)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina/#jina.Flow.address_public">address_public() (jina.Flow property)</a>
+        <li><a href="../api/jina/#jina.Flow.address_public">address_public (jina.Flow property)</a>
 
         <ul>
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.address_public">(jina.flow.base.Flow property)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina/#jina.Document.adjacency">adjacency() (jina.Document property)</a>
+        <li><a href="../api/jina/#jina.Document.adjacency">adjacency (jina.Document property)</a>
 
         <ul>
           <li><a href="../api/jina.types.arrays.chunk/#jina.types.arrays.chunk.ChunkArray.adjacency">(jina.types.arrays.chunk.ChunkArray property)</a>
@@ -505,17 +566,17 @@
           <li><a href="../api/jina.peapods.runtimes.gateway.http.models/#jina.peapods.runtimes.gateway.http.models.JinaStatusModel.Config.alias_generator">(jina.peapods.runtimes.gateway.http.models.JinaStatusModel.Config method)</a>
 </li>
         </ul></li>
+        <li><a href="../api/daemon.clients/#daemon.clients.JinaDClient.alive">alive (daemon.clients.JinaDClient property)</a>
+</li>
         <li><a href="../api/daemon.clients.base/#daemon.clients.base.AsyncBaseClient.alive">alive() (daemon.clients.base.AsyncBaseClient method)</a>
 
         <ul>
-          <li><a href="../api/daemon.clients/#daemon.clients.JinaDClient.alive">(daemon.clients.JinaDClient property)</a>
-</li>
           <li><a href="../api/daemon.clients.mixin/#daemon.clients.mixin.AsyncToSyncMixin.alive">(daemon.clients.mixin.AsyncToSyncMixin method)</a>
 </li>
         </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.PollingType.ALL">ALL (jina.enums.PollingType attribute)</a>
 </li>
-        <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.Pod.all_args">all_args() (jina.peapods.pods.Pod property)</a>
+        <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.Pod.all_args">all_args (jina.peapods.pods.Pod property)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.PollingType.ALL_ASYNC">ALL_ASYNC (jina.enums.PollingType attribute)</a>
 </li>
@@ -659,9 +720,9 @@
         </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.DataInputType.AUTO">AUTO (jina.enums.DataInputType attribute)</a>
 </li>
-        <li><a href="../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyEvaluator.avg_precision">avg_precision() (jina.helloworld.fashion.my_executors.MyEvaluator property)</a>
+        <li><a href="../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyEvaluator.avg_precision">avg_precision (jina.helloworld.fashion.my_executors.MyEvaluator property)</a>
 </li>
-        <li><a href="../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyEvaluator.avg_recall">avg_recall() (jina.helloworld.fashion.my_executors.MyEvaluator property)</a>
+        <li><a href="../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyEvaluator.avg_recall">avg_recall (jina.helloworld.fashion.my_executors.MyEvaluator property)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -721,19 +782,19 @@
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../api/jina.optimizers/#jina.optimizers.ResultProcessor.best_parameters">best_parameters() (jina.optimizers.ResultProcessor property)</a>
+        <li><a href="../api/jina.optimizers/#jina.optimizers.ResultProcessor.best_parameters">best_parameters (jina.optimizers.ResultProcessor property)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.BetterEnum">BetterEnum (class in jina.enums)</a>
 </li>
         <li><a href="../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.binary_str">binary_str() (jina.types.mixin.ProtoTypeMixin method)</a>
 </li>
-        <li><a href="../api/jina/#jina.Document.blob">blob() (jina.Document property)</a>
+        <li><a href="../api/jina/#jina.Document.blob">blob (jina.Document property)</a>
 
         <ul>
           <li><a href="../api/jina.types.document/#jina.types.document.Document.blob">(jina.types.document.Document property)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.types.arrays.document/#jina.types.arrays.document.DocumentArrayGetAttrMixin.blobs">blobs() (jina.types.arrays.document.DocumentArrayGetAttrMixin property)</a>
+        <li><a href="../api/jina.types.arrays.document/#jina.types.arrays.document.DocumentArrayGetAttrMixin.blobs">blobs (jina.types.arrays.document.DocumentArrayGetAttrMixin property)</a>
 </li>
         <li><a href="../api/jina/#jina.Flow.block">block() (jina.Flow method)</a>
 
@@ -741,17 +802,17 @@
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.block">(jina.flow.base.Flow method)</a>
 </li>
         </ul></li>
+        <li><a href="../api/jina.types.request/#jina.types.request.Request.body">body (jina.types.request.Request property)</a>
+</li>
         <li><a href="../api/jina.types.request.mixin/#jina.types.request.mixin.DocsPropertyMixin.body">body() (jina.types.request.mixin.DocsPropertyMixin method)</a>
 
         <ul>
           <li><a href="../api/jina.types.request.mixin/#jina.types.request.mixin.GroundtruthPropertyMixin.body">(jina.types.request.mixin.GroundtruthPropertyMixin method)</a>
 </li>
-          <li><a href="../api/jina.types.request/#jina.types.request.Request.body">(jina.types.request.Request property)</a>
-</li>
         </ul></li>
         <li><a href="../api/daemon.api.endpoints.logs/#daemon.api.endpoints.logs.ConnectionManager.broadcast">broadcast() (daemon.api.endpoints.logs.ConnectionManager method)</a>
 </li>
-        <li><a href="../api/jina/#jina.Document.buffer">buffer() (jina.Document property)</a>
+        <li><a href="../api/jina/#jina.Document.buffer">buffer (jina.Document property)</a>
 
         <ul>
           <li><a href="../api/jina.types.document/#jina.types.document.Document.buffer">(jina.types.document.Document property)</a>
@@ -759,11 +820,11 @@
         </ul></li>
         <li><a href="../api/jina.types.arrays.bpm/#jina.types.arrays.bpm.BufferPoolManager">BufferPoolManager (class in jina.types.arrays.bpm)</a>
 </li>
+        <li><a href="../api/daemon.files/#daemon.files.DaemonFile.build">build (daemon.files.DaemonFile property)</a>
+</li>
         <li><a href="../api/daemon.dockerize/#daemon.dockerize.Dockerizer.build">build() (daemon.dockerize.Dockerizer class method)</a>
 
         <ul>
-          <li><a href="../api/daemon.files/#daemon.files.DaemonFile.build">(daemon.files.DaemonFile property)</a>
-</li>
           <li><a href="../api/jina/#jina.Flow.build">(jina.Flow method)</a>
 </li>
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.build">(jina.flow.base.Flow method)</a>
@@ -825,7 +886,7 @@
 </li>
         <li><a href="../api/jina.types.arrays.chunk/#jina.types.arrays.chunk.ChunkArray">ChunkArray (class in jina.types.arrays.chunk)</a>
 </li>
-        <li><a href="../api/jina/#jina.Document.chunks">chunks() (jina.Document property)</a>
+        <li><a href="../api/jina/#jina.Document.chunks">chunks (jina.Document property)</a>
 
         <ul>
           <li><a href="../api/jina.types.document/#jina.types.document.Document.chunks">(jina.types.document.Document property)</a>
@@ -897,7 +958,15 @@
 </li>
         </ul></li>
         <li><a href="../api/daemon.dockerize/#daemon.dockerize.Dockerizer.client">client (daemon.dockerize.Dockerizer attribute)</a>
+
+        <ul>
+          <li><a href="../api/jina.clients.base/#jina.clients.base.BaseClient.client">(jina.clients.base.BaseClient property)</a>
 </li>
+          <li><a href="../api/jina/#jina.Flow.client">(jina.Flow property)</a>
+</li>
+          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.client">(jina.flow.base.Flow property)</a>
+</li>
+        </ul></li>
         <li><a href="../api/cli.api/#cli.api.client">client() (in module cli.api)</a>
 </li>
         <li><a href="../api/jina/#jina.Client">Client() (in module jina)</a>
@@ -906,15 +975,7 @@
           <li><a href="../api/jina.clients/#jina.clients.Client">(in module jina.clients)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.clients.base/#jina.clients.base.BaseClient.client">client() (jina.clients.base.BaseClient property)</a>
-
-        <ul>
-          <li><a href="../api/jina/#jina.Flow.client">(jina.Flow property)</a>
-</li>
-          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.client">(jina.flow.base.Flow property)</a>
-</li>
-        </ul></li>
-        <li><a href="../api/jina/#jina.Flow.client_args">client_args() (jina.Flow property)</a>
+        <li><a href="../api/jina/#jina.Flow.client_args">client_args (jina.Flow property)</a>
 
         <ul>
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.client_args">(jina.flow.base.Flow property)</a>
@@ -942,14 +1003,16 @@
 </li>
         <li><a href="../api/jina.helper/#jina.helper.colored">colored() (in module jina.helper)</a>
 </li>
-        <li><a href="../api/jina.types.message/#jina.types.message.Message.colored_route">colored_route() (jina.types.message.Message property)</a>
+        <li><a href="../api/jina.types.message/#jina.types.message.Message.colored_route">colored_route (jina.types.message.Message property)</a>
 </li>
         <li><a href="../api/jina.logging.formatter/#jina.logging.formatter.ColorFormatter">ColorFormatter (class in jina.logging.formatter)</a>
 </li>
         <li><a href="../api/daemon.models.containers/#daemon.models.containers.ContainerArguments.command">command (daemon.models.containers.ContainerArguments attribute)</a>
+
+        <ul>
+          <li><a href="../api/jina.types.request.mixin/#jina.types.request.mixin.CommandMixin.command">(jina.types.request.mixin.CommandMixin property)</a>
 </li>
-        <li><a href="../api/jina.types.request.mixin/#jina.types.request.mixin.CommandMixin.command">command() (jina.types.request.mixin.CommandMixin property)</a>
-</li>
+        </ul></li>
         <li><a href="../api/jina.types.request.mixin/#jina.types.request.mixin.CommandMixin">CommandMixin (class in jina.types.request.mixin)</a>
 </li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.complete_path">complete_path() (in module jina.jaml.helper)</a>
@@ -966,7 +1029,7 @@
 </li>
         <li><a href="../api/daemon.api.endpoints.logs/#daemon.api.endpoints.logs.ConnectionManager.connect">connect() (daemon.api.endpoints.logs.ConnectionManager method)</a>
 </li>
-        <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.connect_to_predecessor">connect_to_predecessor() (jina.peapods.pods.BasePod property)</a>
+        <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.connect_to_predecessor">connect_to_predecessor (jina.peapods.pods.BasePod property)</a>
 </li>
         <li><a href="../api/daemon.api.endpoints.logs/#daemon.api.endpoints.logs.ConnectionManager">ConnectionManager (class in daemon.api.endpoints.logs)</a>
 </li>
@@ -1000,21 +1063,19 @@
 </li>
         <li><a href="../api/daemon.models.containers/#daemon.models.containers.ContainerStoreStatus">ContainerStoreStatus (class in daemon.models.containers)</a>
 </li>
+        <li><a href="../api/jina/#jina.Document.content">content (jina.Document property)</a>
+</li>
         <li><a href="../api/jina.enums/#jina.enums.DataInputType.CONTENT">CONTENT (jina.enums.DataInputType attribute)</a>
 </li>
-        <li><a href="../api/jina/#jina.Document.content">content() (jina.Document property)</a>
-
-        <ul>
-          <li><a href="../api/jina.types.document/#jina.types.document.Document.content">(jina.types.document.Document property)</a>
+        <li><a href="../api/jina.types.document/#jina.types.document.Document.content">content (jina.types.document.Document property)</a>
 </li>
-        </ul></li>
-        <li><a href="../api/jina/#jina.Document.content_hash">content_hash() (jina.Document property)</a>
+        <li><a href="../api/jina/#jina.Document.content_hash">content_hash (jina.Document property)</a>
 
         <ul>
           <li><a href="../api/jina.types.document/#jina.types.document.Document.content_hash">(jina.types.document.Document property)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina/#jina.Document.content_type">content_type() (jina.Document property)</a>
+        <li><a href="../api/jina/#jina.Document.content_type">content_type (jina.Document property)</a>
 
         <ul>
           <li><a href="../api/jina.types.document/#jina.types.document.Document.content_type">(jina.types.document.Document property)</a>
@@ -1524,7 +1585,7 @@
 </li>
         <li><a href="../api/jina.helper/#jina.helper.deprecated_alias">deprecated_alias() (in module jina.helper)</a>
 </li>
-        <li><a href="../api/jina.types.score/#jina.types.score.NamedScore.description">description() (jina.types.score.NamedScore property)</a>
+        <li><a href="../api/jina.types.score/#jina.types.score.NamedScore.description">description (jina.types.score.NamedScore property)</a>
 </li>
         <li><a href="../api/daemon.models.enums/#daemon.models.enums.DaemonBuild.DEVEL">DEVEL (daemon.models.enums.DaemonBuild attribute)</a>
 </li>
@@ -1565,9 +1626,11 @@
         <li><a href="../api/jina.excepts/#jina.excepts.DockerVersionError">DockerVersionError</a>
 </li>
         <li><a href="../api/jina.peapods.runtimes.gateway.http.models/#jina.peapods.runtimes.gateway.http.models.JinaResponseModel.DataRequestModel.docs">docs (jina.peapods.runtimes.gateway.http.models.JinaResponseModel.DataRequestModel attribute)</a>
+
+        <ul>
+          <li><a href="../api/jina.types.request.mixin/#jina.types.request.mixin.DocsPropertyMixin.docs">(jina.types.request.mixin.DocsPropertyMixin property)</a>
 </li>
-        <li><a href="../api/jina.types.request.mixin/#jina.types.request.mixin.DocsPropertyMixin.docs">docs() (jina.types.request.mixin.DocsPropertyMixin property)</a>
-</li>
+        </ul></li>
         <li><a href="../api/jina.types.arrays.bpm/#jina.types.arrays.bpm.BufferPoolManager.docs_to_flush">docs_to_flush() (jina.types.arrays.bpm.BufferPoolManager method)</a>
 </li>
         <li><a href="../api/jina.types.request.mixin/#jina.types.request.mixin.DocsPropertyMixin">DocsPropertyMixin (class in jina.types.request.mixin)</a>
@@ -1638,9 +1701,9 @@
   <h2>E</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.edge_features">edge_features() (jina.types.document.graph.GraphDocument property)</a>
+        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.edge_features">edge_features (jina.types.document.graph.GraphDocument property)</a>
 </li>
-        <li><a href="../api/jina/#jina.Document.embedding">embedding() (jina.Document property)</a>
+        <li><a href="../api/jina/#jina.Document.embedding">embedding (jina.Document property)</a>
 
         <ul>
           <li><a href="../api/jina.types.document/#jina.types.document.Document.embedding">(jina.types.document.Document property)</a>
@@ -1648,7 +1711,7 @@
         </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType">EmbeddingClsType (class in jina.enums)</a>
 </li>
-        <li><a href="../api/jina/#jina.DocumentArray.embeddings">embeddings() (jina.DocumentArray property)</a>
+        <li><a href="../api/jina/#jina.DocumentArray.embeddings">embeddings (jina.DocumentArray property)</a>
 
         <ul>
           <li><a href="../api/jina/#jina.DocumentArrayMemmap.embeddings">(jina.DocumentArrayMemmap property)</a>
@@ -1664,7 +1727,7 @@
 </li>
         <li><a href="../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyEncoder.encode">encode() (jina.helloworld.fashion.my_executors.MyEncoder method)</a>
 </li>
-        <li><a href="../api/jina.types.request.data/#jina.types.request.data.DataRequest.endpoint">endpoint() (jina.types.request.data.DataRequest property)</a>
+        <li><a href="../api/jina.types.request.data/#jina.types.request.data.DataRequest.endpoint">endpoint (jina.types.request.data.DataRequest property)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.EnumType">EnumType (class in jina.enums)</a>
 </li>
@@ -1686,7 +1749,7 @@
 </li>
         <li><a href="../api/jina.optimizers/#jina.optimizers.EvaluationCallback">EvaluationCallback (class in jina.optimizers)</a>
 </li>
-        <li><a href="../api/jina/#jina.Document.evaluations">evaluations() (jina.Document property)</a>
+        <li><a href="../api/jina/#jina.Document.evaluations">evaluations (jina.Document property)</a>
 
         <ul>
           <li><a href="../api/jina.types.document/#jina.types.document.Document.evaluations">(jina.types.document.Document property)</a>
@@ -1718,7 +1781,7 @@
 </li>
         <li><a href="../api/jina.helper/#jina.helper.expand_env_var">expand_env_var() (in module jina.helper)</a>
 </li>
-        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.expected_parts">expected_parts() (jina.types.routing.table.TargetPod property)</a>
+        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.expected_parts">expected_parts (jina.types.routing.table.TargetPod property)</a>
 </li>
         <li><a href="../api/cli.api/#cli.api.export_api">export_api() (in module cli.api)</a>
 </li>
@@ -1771,7 +1834,7 @@
           <li><a href="../api/jina.types.arrays.search_ops/#jina.types.arrays.search_ops.DocumentArraySearchOpsMixin.find">(jina.types.arrays.search_ops.DocumentArraySearchOpsMixin method)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.Pod.first_pea_args">first_pea_args() (jina.peapods.pods.Pod property)</a>
+        <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.Pod.first_pea_args">first_pea_args (jina.peapods.pods.Pod property)</a>
 </li>
         <li><a href="../api/jina.math.dimensionality_reduction/#jina.math.dimensionality_reduction.PCA.fit">fit() (jina.math.dimensionality_reduction.PCA method)</a>
 </li>
@@ -1811,10 +1874,12 @@
 </li>
         <li><a href="../api/jina.optimizers.flow_runner/#jina.optimizers.flow_runner.FlowRunner">FlowRunner (class in jina.optimizers.flow_runner)</a>
 </li>
-        <li><a href="../api/daemon.models/#daemon.models.DaemonStatus.flows">flows (daemon.models.DaemonStatus attribute)</a>
+        <li><a href="../api/daemon.clients/#daemon.clients.JinaDClient.flows">flows (daemon.clients.JinaDClient property)</a>
+
+        <ul>
+          <li><a href="../api/daemon.models/#daemon.models.DaemonStatus.flows">(daemon.models.DaemonStatus attribute)</a>
 </li>
-        <li><a href="../api/daemon.clients/#daemon.clients.JinaDClient.flows">flows() (daemon.clients.JinaDClient property)</a>
-</li>
+        </ul></li>
         <li><a href="../api/daemon.stores.flows/#daemon.stores.flows.FlowStore">FlowStore (class in daemon.stores.flows)</a>
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.FlowTopologyError">FlowTopologyError</a>
@@ -1851,9 +1916,9 @@
           <li><a href="../api/jina.proto.serializer/#jina.proto.serializer.RequestProto.FromString">(jina.proto.serializer.RequestProto static method)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.full_address">full_address() (jina.types.routing.table.TargetPod property)</a>
+        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.full_address">full_address (jina.types.routing.table.TargetPod property)</a>
 </li>
-        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.full_out_address">full_out_address() (jina.types.routing.table.TargetPod property)</a>
+        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.full_out_address">full_out_address (jina.types.routing.table.TargetPod property)</a>
 </li>
         <li><a href="../api/daemon.clients.mixin/#daemon.clients.mixin.AsyncToSyncMixin.func">func() (daemon.clients.mixin.AsyncToSyncMixin method)</a>
 </li>
@@ -1869,7 +1934,7 @@
 </li>
         <li><a href="../api/cli.api/#cli.api.gateway">gateway() (in module cli.api)</a>
 </li>
-        <li><a href="../api/jina/#jina.Flow.gateway_args">gateway_args() (jina.Flow property)</a>
+        <li><a href="../api/jina/#jina.Flow.gateway_args">gateway_args (jina.Flow property)</a>
 
         <ul>
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.gateway_args">(jina.flow.base.Flow property)</a>
@@ -2029,7 +2094,7 @@
 </li>
         <li><a href="../api/daemon.models.enums/#daemon.models.enums.DaemonBuild.GPU">GPU (daemon.models.enums.DaemonBuild attribute)</a>
 </li>
-        <li><a href="../api/jina/#jina.Document.granularity">granularity() (jina.Document property)</a>
+        <li><a href="../api/jina/#jina.Document.granularity">granularity (jina.Document property)</a>
 
         <ul>
           <li><a href="../api/jina.types.arrays.chunk/#jina.types.arrays.chunk.ChunkArray.granularity">(jina.types.arrays.chunk.ChunkArray property)</a>
@@ -2046,9 +2111,11 @@
         <li><a href="../api/jina.types.request.mixin/#jina.types.request.mixin.GroundtruthPropertyMixin">GroundtruthPropertyMixin (class in jina.types.request.mixin)</a>
 </li>
         <li><a href="../api/jina.peapods.runtimes.gateway.http.models/#jina.peapods.runtimes.gateway.http.models.JinaResponseModel.DataRequestModel.groundtruths">groundtruths (jina.peapods.runtimes.gateway.http.models.JinaResponseModel.DataRequestModel attribute)</a>
+
+        <ul>
+          <li><a href="../api/jina.types.request.mixin/#jina.types.request.mixin.GroundtruthPropertyMixin.groundtruths">(jina.types.request.mixin.GroundtruthPropertyMixin property)</a>
 </li>
-        <li><a href="../api/jina.types.request.mixin/#jina.types.request.mixin.GroundtruthPropertyMixin.groundtruths">groundtruths() (jina.types.request.mixin.GroundtruthPropertyMixin property)</a>
-</li>
+        </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.GatewayProtocolType.GRPC">GRPC (jina.enums.GatewayProtocolType attribute)</a>
 </li>
         <li><a href="../api/cli.api/#cli.api.grpc_data_runtime">grpc_data_runtime() (in module cli.api)</a>
@@ -2077,25 +2144,25 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.peapods.runtimes.request_handlers.data_request_handler/#jina.peapods.runtimes.request_handlers.data_request_handler.DataRequestHandler.handle">handle() (jina.peapods.runtimes.request_handlers.data_request_handler.DataRequestHandler method)</a>
 </li>
-        <li><a href="../api/jina.logging.logger/#jina.logging.logger.JinaLogger.handlers">handlers() (jina.logging.logger.JinaLogger property)</a>
+        <li><a href="../api/jina.logging.logger/#jina.logging.logger.JinaLogger.handlers">handlers (jina.logging.logger.JinaLogger property)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.FlowInspectType.HANG">HANG (jina.enums.FlowInspectType attribute)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.PeaRoleType.HEAD">HEAD (jina.enums.PeaRoleType attribute)</a>
 </li>
-        <li><a href="../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod.head_args">head_args (jina.peapods.pods.compound.CompoundPod attribute)</a>
-</li>
-        <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.head_args">head_args() (jina.peapods.pods.BasePod property)</a>
+        <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.head_args">head_args (jina.peapods.pods.BasePod property)</a>
 
         <ul>
+          <li><a href="../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod.head_args">(jina.peapods.pods.compound.CompoundPod attribute)</a>
+</li>
           <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.Pod.head_args">(jina.peapods.pods.Pod property)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.head_host">head_host() (jina.peapods.pods.BasePod property)</a>
+        <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.head_host">head_host (jina.peapods.pods.BasePod property)</a>
 </li>
-        <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.head_port_in">head_port_in() (jina.peapods.pods.BasePod property)</a>
+        <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.head_port_in">head_port_in (jina.peapods.pods.BasePod property)</a>
 </li>
-        <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.head_zmq_identity">head_zmq_identity() (jina.peapods.pods.BasePod property)</a>
+        <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.head_zmq_identity">head_zmq_identity (jina.peapods.pods.BasePod property)</a>
 </li>
         <li><a href="../api/cli.api/#cli.api.hello">hello() (in module cli.api)</a>
 </li>
@@ -2109,7 +2176,7 @@
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../api/jina/#jina.Flow.host">host() (jina.Flow property)</a>
+        <li><a href="../api/jina/#jina.Flow.host">host (jina.Flow property)</a>
 
         <ul>
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.host">(jina.flow.base.Flow property)</a>
@@ -2121,9 +2188,9 @@
           <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.host">(jina.types.routing.table.TargetPod property)</a>
 </li>
         </ul></li>
-        <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.PeaDepends.host_in">host_in() (daemon.api.dependencies.PeaDepends property)</a>
+        <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.PeaDepends.host_in">host_in (daemon.api.dependencies.PeaDepends property)</a>
 </li>
-        <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.PeaDepends.host_out">host_out() (daemon.api.dependencies.PeaDepends property)</a>
+        <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.PeaDepends.host_out">host_out (daemon.api.dependencies.PeaDepends property)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.GatewayProtocolType.HTTP">HTTP (jina.enums.GatewayProtocolType attribute)</a>
 </li>
@@ -2149,7 +2216,7 @@
   <h2>I</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../api/jina/#jina.Document.id">id() (jina.Document property)</a>
+        <li><a href="../api/jina/#jina.Document.id">id (jina.Document property)</a>
 
         <ul>
           <li><a href="../api/jina.types.document/#jina.types.document.Document.id">(jina.types.document.Document property)</a>
@@ -2157,7 +2224,7 @@
         </ul></li>
         <li><a href="../api/daemon.helper/#daemon.helper.id_cleaner">id_cleaner() (in module daemon.helper)</a>
 </li>
-        <li><a href="../api/jina/#jina.Flow.identity">identity() (jina.Flow property)</a>
+        <li><a href="../api/jina/#jina.Flow.identity">identity (jina.Flow property)</a>
 
         <ul>
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.identity">(jina.flow.base.Flow property)</a>
@@ -2197,7 +2264,7 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.LogVerbosity.INFO">INFO (jina.enums.LogVerbosity attribute)</a>
 </li>
-        <li><a href="../api/jina.clients.base/#jina.clients.base.BaseClient.inputs">inputs() (jina.clients.base.BaseClient property)</a>
+        <li><a href="../api/jina.clients.base/#jina.clients.base.BaseClient.inputs">inputs (jina.clients.base.BaseClient property)</a>
 </li>
         <li><a href="../api/jina/#jina.DocumentArray.insert">insert() (jina.DocumentArray method)</a>
 
@@ -2229,69 +2296,71 @@
 </li>
         <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.is_acyclic">is_acyclic() (jina.types.routing.table.RoutingTable method)</a>
 </li>
-        <li><a href="../api/jina.enums/#jina.enums.SocketType.is_bind">is_bind() (jina.enums.SocketType property)</a>
+        <li><a href="../api/jina.enums/#jina.enums.SocketType.is_bind">is_bind (jina.enums.SocketType property)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../api/jina.enums/#jina.enums.PollingType.is_block">is_block() (jina.enums.PollingType property)</a>
+        <li><a href="../api/jina.enums/#jina.enums.PollingType.is_block">is_block (jina.enums.PollingType property)</a>
 </li>
-        <li><a href="../api/jina.types.message/#jina.types.message.Message.is_data_request">is_data_request() (jina.types.message.Message property)</a>
+        <li><a href="../api/jina.types.message/#jina.types.message.Message.is_data_request">is_data_request (jina.types.message.Message property)</a>
 </li>
-        <li><a href="../api/jina.types.request/#jina.types.request.Request.is_decompressed">is_decompressed() (jina.types.request.Request property)</a>
+        <li><a href="../api/jina.types.request/#jina.types.request.Request.is_decompressed">is_decompressed (jina.types.request.Request property)</a>
 </li>
-        <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.is_dense">is_dense() (jina.enums.EmbeddingClsType property)</a>
+        <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.is_dense">is_dense (jina.enums.EmbeddingClsType property)</a>
 </li>
-        <li><a href="../api/jina.types.message/#jina.types.message.Message.is_error">is_error() (jina.types.message.Message property)</a>
+        <li><a href="../api/jina.types.message/#jina.types.message.Message.is_error">is_error (jina.types.message.Message property)</a>
 </li>
         <li><a href="../api/daemon.helper/#daemon.helper.is_error_message">is_error_message() (in module daemon.helper)</a>
 </li>
-        <li><a href="../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.is_idle">is_idle() (jina.peapods.runtimes.zmq.zed.ZEDRuntime property)</a>
+        <li><a href="../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.is_idle">is_idle (jina.peapods.runtimes.zmq.zed.ZEDRuntime property)</a>
 </li>
-        <li><a href="../api/jina.enums/#jina.enums.PodRoleType.is_inspect">is_inspect() (jina.enums.PodRoleType property)</a>
+        <li><a href="../api/jina.enums/#jina.enums.PodRoleType.is_inspect">is_inspect (jina.enums.PodRoleType property)</a>
 </li>
-        <li><a href="../api/jina.enums/#jina.enums.FlowInspectType.is_keep">is_keep() (jina.enums.FlowInspectType property)</a>
+        <li><a href="../api/jina.enums/#jina.enums.FlowInspectType.is_keep">is_keep (jina.enums.FlowInspectType property)</a>
 </li>
-        <li><a href="../api/jina.enums/#jina.enums.SocketType.is_pubsub">is_pubsub() (jina.enums.SocketType property)</a>
+        <li><a href="../api/jina.enums/#jina.enums.SocketType.is_pubsub">is_pubsub (jina.enums.SocketType property)</a>
 </li>
-        <li><a href="../api/jina.enums/#jina.enums.PollingType.is_push">is_push() (jina.enums.PollingType property)</a>
+        <li><a href="../api/jina.enums/#jina.enums.PollingType.is_push">is_push (jina.enums.PollingType property)</a>
 </li>
-        <li><a href="../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod.is_ready">is_ready() (jina.peapods.pods.compound.CompoundPod property)</a>
+        <li><a href="../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod.is_ready">is_ready (jina.peapods.pods.compound.CompoundPod property)</a>
 
         <ul>
           <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.Pod.is_ready">(jina.peapods.pods.Pod property)</a>
 </li>
           <li><a href="../api/jina.peapods.runtimes.container/#jina.peapods.runtimes.container.ContainerRuntime.is_ready">(jina.peapods.runtimes.container.ContainerRuntime property)</a>
 </li>
-          <li><a href="../api/jina.peapods.runtimes.grpc/#jina.peapods.runtimes.grpc.GRPCDataRuntime.is_ready">(jina.peapods.runtimes.grpc.GRPCDataRuntime static method)</a>
-</li>
-          <li><a href="../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.is_ready">(jina.peapods.runtimes.zmq.zed.ZEDRuntime static method)</a>
-</li>
           <li><a href="../api/jina.types.message/#jina.types.message.Message.is_ready">(jina.types.message.Message property)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.enums/#jina.enums.SocketType.is_receive">is_receive() (jina.enums.SocketType property)</a>
+        <li><a href="../api/jina.peapods.runtimes.grpc/#jina.peapods.runtimes.grpc.GRPCDataRuntime.is_ready">is_ready() (jina.peapods.runtimes.grpc.GRPCDataRuntime static method)</a>
+
+        <ul>
+          <li><a href="../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.is_ready">(jina.peapods.runtimes.zmq.zed.ZEDRuntime static method)</a>
+</li>
+        </ul></li>
+        <li><a href="../api/jina.enums/#jina.enums.SocketType.is_receive">is_receive (jina.enums.SocketType property)</a>
 </li>
         <li><a href="../api/jina.peapods.networking/#jina.peapods.networking.is_remote_local_connection">is_remote_local_connection() (in module jina.peapods.networking)</a>
 </li>
-        <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.is_scipy">is_scipy() (jina.enums.EmbeddingClsType property)</a>
+        <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.is_scipy">is_scipy (jina.enums.EmbeddingClsType property)</a>
 </li>
-        <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.is_scipy_stackable">is_scipy_stackable() (jina.enums.EmbeddingClsType property)</a>
+        <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.is_scipy_stackable">is_scipy_stackable (jina.enums.EmbeddingClsType property)</a>
 </li>
-        <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.is_singleton">is_singleton() (jina.peapods.pods.BasePod method)</a>
+        <li><a href="../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod.is_singleton">is_singleton (jina.peapods.pods.compound.CompoundPod property)</a>
 
         <ul>
-          <li><a href="../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod.is_singleton">(jina.peapods.pods.compound.CompoundPod property)</a>
-</li>
           <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.Pod.is_singleton">(jina.peapods.pods.Pod property)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.is_sparse">is_sparse() (jina.enums.EmbeddingClsType property)</a>
+        <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.is_singleton">is_singleton() (jina.peapods.pods.BasePod method)</a>
 </li>
-        <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.is_tf">is_tf() (jina.enums.EmbeddingClsType property)</a>
+        <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.is_sparse">is_sparse (jina.enums.EmbeddingClsType property)</a>
 </li>
-        <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.is_torch">is_torch() (jina.enums.EmbeddingClsType property)</a>
+        <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.is_tf">is_tf (jina.enums.EmbeddingClsType property)</a>
 </li>
-        <li><a href="../api/jina.types.document.multimodal/#jina.types.document.multimodal.MultimodalDocument.is_valid">is_valid() (jina.types.document.multimodal.MultimodalDocument property)</a>
+        <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.is_torch">is_torch (jina.enums.EmbeddingClsType property)</a>
+</li>
+        <li><a href="../api/jina.types.document.multimodal/#jina.types.document.multimodal.MultimodalDocument.is_valid">is_valid (jina.types.document.multimodal.MultimodalDocument property)</a>
 </li>
         <li><a href="../api/jina.hubble.helper/#jina.hubble.helper.is_valid_huburi">is_valid_huburi() (in module jina.hubble.helper)</a>
 </li>
@@ -2323,7 +2392,7 @@
 </li>
         <li><a href="../api/daemon.models.enums/#daemon.models.enums.IDLiterals.JFLOW">JFLOW (daemon.models.enums.IDLiterals attribute)</a>
 </li>
-        <li><a href="../api/daemon.models.id/#daemon.models.id.DaemonID.jid">jid() (daemon.models.id.DaemonID property)</a>
+        <li><a href="../api/daemon.models.id/#daemon.models.id.DaemonID.jid">jid (daemon.models.id.DaemonID property)</a>
 </li>
         <li>
     jina
@@ -3518,7 +3587,7 @@
 </li>
         <li><a href="../api/jina.peapods.runtimes.gateway.http.models/#jina.peapods.runtimes.gateway.http.models.JinaStatusModel.Config">JinaStatusModel.Config (class in jina.peapods.runtimes.gateway.http.models)</a>
 </li>
-        <li><a href="../api/daemon.files/#daemon.files.DaemonFile.jinav">jinav() (daemon.files.DaemonFile property)</a>
+        <li><a href="../api/daemon.files/#daemon.files.DaemonFile.jinav">jinav (daemon.files.DaemonFile property)</a>
 </li>
         <li><a href="../api/daemon.models.enums/#daemon.models.enums.IDLiterals.JNETWORK">JNETWORK (daemon.models.enums.IDLiterals attribute)</a>
 </li>
@@ -3556,7 +3625,7 @@
 </li>
         <li><a href="../api/jina.logging.formatter/#jina.logging.formatter.JsonFormatter">JsonFormatter (class in jina.logging.formatter)</a>
 </li>
-        <li><a href="../api/daemon.models.id/#daemon.models.id.DaemonID.jtype">jtype() (daemon.models.id.DaemonID property)</a>
+        <li><a href="../api/daemon.models.id/#daemon.models.id.DaemonID.jtype">jtype (daemon.models.id.DaemonID property)</a>
 </li>
         <li><a href="../api/daemon.models.enums/#daemon.models.enums.IDLiterals.JWORKSPACE">JWORKSPACE (daemon.models.enums.IDLiterals attribute)</a>
 </li>
@@ -3588,7 +3657,7 @@
   <h2>L</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../api/jina/#jina.Flow.last_pod">last_pod() (jina.Flow property)</a>
+        <li><a href="../api/jina/#jina.Flow.last_pod">last_pod (jina.Flow property)</a>
 
         <ul>
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.last_pod">(jina.flow.base.Flow property)</a>
@@ -3706,7 +3775,7 @@
         </ul></li>
         <li><a href="../api/jina.types.arrays.match/#jina.types.arrays.match.MatchArray">MatchArray (class in jina.types.arrays.match)</a>
 </li>
-        <li><a href="../api/jina/#jina.Document.matches">matches() (jina.Document property)</a>
+        <li><a href="../api/jina/#jina.Document.matches">matches (jina.Document property)</a>
 
         <ul>
           <li><a href="../api/jina.types.document/#jina.types.document.Document.matches">(jina.types.document.Document property)</a>
@@ -3740,7 +3809,7 @@
           <li><a href="../api/daemon.tasks/#daemon.tasks.DaemonWorker.metadata">(daemon.tasks.DaemonWorker attribute)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina/#jina.Document.mime_type">mime_type() (jina.Document property)</a>
+        <li><a href="../api/jina/#jina.Document.mime_type">mime_type (jina.Document property)</a>
 
         <ul>
           <li><a href="../api/jina.types.document/#jina.types.document.Document.mime_type">(jina.types.document.Document property)</a>
@@ -3788,15 +3857,15 @@
 </li>
         <li><a href="../api/jina.parsers.peapods.runtimes.zmq/#jina.parsers.peapods.runtimes.zmq.mixin_zmq_runtime_parser">mixin_zmq_runtime_parser() (in module jina.parsers.peapods.runtimes.zmq)</a>
 </li>
-        <li><a href="../api/jina.types.document.multimodal/#jina.types.document.multimodal.MultimodalDocument.modalities">modalities() (jina.types.document.multimodal.MultimodalDocument property)</a>
+        <li><a href="../api/jina.types.document.multimodal/#jina.types.document.multimodal.MultimodalDocument.modalities">modalities (jina.types.document.multimodal.MultimodalDocument property)</a>
 </li>
-        <li><a href="../api/jina/#jina.Document.modality">modality() (jina.Document property)</a>
+        <li><a href="../api/jina/#jina.Document.modality">modality (jina.Document property)</a>
 
         <ul>
           <li><a href="../api/jina.types.document/#jina.types.document.Document.modality">(jina.types.document.Document property)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.types.document.multimodal/#jina.types.document.multimodal.MultimodalDocument.modality_content_map">modality_content_map() (jina.types.document.multimodal.MultimodalDocument property)</a>
+        <li><a href="../api/jina.types.document.multimodal/#jina.types.document.multimodal.MultimodalDocument.modality_content_map">modality_content_map (jina.types.document.multimodal.MultimodalDocument property)</a>
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.ModelCheckpointNotExist">ModelCheckpointNotExist</a>
 </li>
@@ -4249,13 +4318,13 @@
   <h2>N</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.name">name() (jina.peapods.pods.BasePod property)</a>
+        <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.name">name (jina.peapods.pods.BasePod property)</a>
 </li>
         <li><a href="../api/jina.types.score/#jina.types.score.NamedScore">NamedScore (class in jina.types.score)</a>
 </li>
         <li><a href="../api/jina.types.score.map/#jina.types.score.map.NamedScoreMapping">NamedScoreMapping (class in jina.types.score.map)</a>
 </li>
-        <li><a href="../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.nbytes">nbytes() (jina.types.mixin.ProtoTypeMixin property)</a>
+        <li><a href="../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.nbytes">nbytes (jina.types.mixin.ProtoTypeMixin property)</a>
 </li>
         <li><a href="../api/jina.types.ndarray.generic/#jina.types.ndarray.generic.NdArray">NdArray (class in jina.types.ndarray.generic)</a>
 </li>
@@ -4295,13 +4364,13 @@
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.NoAvailablePortError">NoAvailablePortError</a>
 </li>
-        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.nodes">nodes() (jina.types.document.graph.GraphDocument property)</a>
+        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.nodes">nodes (jina.types.document.graph.GraphDocument property)</a>
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.NoExplicitMessage">NoExplicitMessage</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../api/jina/#jina.Document.non_empty_fields">non_empty_fields() (jina.Document property)</a>
+        <li><a href="../api/jina/#jina.Document.non_empty_fields">non_empty_fields (jina.Document property)</a>
 
         <ul>
           <li><a href="../api/jina.types.document/#jina.types.document.Document.non_empty_fields">(jina.types.document.Document property)</a>
@@ -4317,11 +4386,11 @@
 </li>
         <li><a href="../api/jina.logging.profile/#jina.logging.profile.TimeContext.now">now() (jina.logging.profile.TimeContext method)</a>
 </li>
-        <li><a href="../api/jina.types.ndarray/#jina.types.ndarray.BaseNdArray.null_proto">null_proto() (jina.types.ndarray.BaseNdArray property)</a>
+        <li><a href="../api/jina.types.ndarray/#jina.types.ndarray.BaseNdArray.null_proto">null_proto (jina.types.ndarray.BaseNdArray property)</a>
+</li>
+        <li><a href="../api/jina.types.ndarray.dense/#jina.types.ndarray.dense.BaseDenseNdArray.null_proto">null_proto() (jina.types.ndarray.dense.BaseDenseNdArray method)</a>
 
         <ul>
-          <li><a href="../api/jina.types.ndarray.dense/#jina.types.ndarray.dense.BaseDenseNdArray.null_proto">(jina.types.ndarray.dense.BaseDenseNdArray method)</a>
-</li>
           <li><a href="../api/jina.types.ndarray.dense.numpy/#jina.types.ndarray.dense.numpy.BaseDenseNdArray.null_proto">(jina.types.ndarray.dense.numpy.BaseDenseNdArray method)</a>
 </li>
           <li><a href="../api/jina.types.ndarray.generic/#jina.types.ndarray.generic.NdArray.null_proto">(jina.types.ndarray.generic.NdArray method)</a>
@@ -4333,11 +4402,11 @@
 </li>
         <li><a href="../api/daemon.models.base/#daemon.models.base.StoreStatus.num_del">num_del (daemon.models.base.StoreStatus attribute)</a>
 </li>
-        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.num_edges">num_edges() (jina.types.document.graph.GraphDocument property)</a>
+        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.num_edges">num_edges (jina.types.document.graph.GraphDocument property)</a>
 </li>
-        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.num_nodes">num_nodes() (jina.types.document.graph.GraphDocument property)</a>
+        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.num_nodes">num_nodes (jina.types.document.graph.GraphDocument property)</a>
 </li>
-        <li><a href="../api/jina/#jina.Flow.num_peas">num_peas() (jina.Flow property)</a>
+        <li><a href="../api/jina/#jina.Flow.num_peas">num_peas (jina.Flow property)</a>
 
         <ul>
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.num_peas">(jina.flow.base.Flow property)</a>
@@ -4347,7 +4416,7 @@
           <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.Pod.num_peas">(jina.peapods.pods.Pod property)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina/#jina.Flow.num_pods">num_pods() (jina.Flow property)</a>
+        <li><a href="../api/jina/#jina.Flow.num_pods">num_pods (jina.Flow property)</a>
 
         <ul>
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.num_pods">(jina.flow.base.Flow property)</a>
@@ -4371,9 +4440,9 @@
         </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.OnErrorStrategy">OnErrorStrategy (class in jina.enums)</a>
 </li>
-        <li><a href="../api/jina.types.score/#jina.types.score.NamedScore.op_name">op_name() (jina.types.score.NamedScore property)</a>
+        <li><a href="../api/jina.types.score/#jina.types.score.NamedScore.op_name">op_name (jina.types.score.NamedScore property)</a>
 </li>
-        <li><a href="../api/jina.types.score/#jina.types.score.NamedScore.operands">operands() (jina.types.score.NamedScore property)</a>
+        <li><a href="../api/jina.types.score/#jina.types.score.NamedScore.operands">operands (jina.types.score.NamedScore property)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
@@ -4387,7 +4456,7 @@
 </li>
         <li><a href="../api/jina.optimizers/#jina.optimizers.OptimizerCallback">OptimizerCallback (class in jina.optimizers)</a>
 </li>
-        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.out_edges">out_edges() (jina.types.routing.table.TargetPod property)</a>
+        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.out_edges">out_edges (jina.types.routing.table.TargetPod property)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -4401,15 +4470,17 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.SocketType.PAIR_CONNECT">PAIR_CONNECT (jina.enums.SocketType attribute)</a>
 </li>
-        <li><a href="../api/jina.enums/#jina.enums.SocketType.paired">paired() (jina.enums.SocketType property)</a>
+        <li><a href="../api/jina.enums/#jina.enums.SocketType.paired">paired (jina.enums.SocketType property)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.PeaRoleType.PARALLEL">PARALLEL (jina.enums.PeaRoleType attribute)</a>
 </li>
         <li><a href="../api/jina.peapods.runtimes.gateway.http.models/#jina.peapods.runtimes.gateway.http.models.JinaRequestModel.parameters">parameters (jina.peapods.runtimes.gateway.http.models.JinaRequestModel attribute)</a>
+
+        <ul>
+          <li><a href="../api/jina.types.request/#jina.types.request.Request.parameters">(jina.types.request.Request property)</a>
 </li>
-        <li><a href="../api/jina.types.request/#jina.types.request.Request.parameters">parameters() (jina.types.request.Request property)</a>
-</li>
-        <li><a href="../api/jina/#jina.Document.parent_id">parent_id() (jina.Document property)</a>
+        </ul></li>
+        <li><a href="../api/jina/#jina.Document.parent_id">parent_id (jina.Document property)</a>
 
         <ul>
           <li><a href="../api/jina.types.document/#jina.types.document.Document.parent_id">(jina.types.document.Document property)</a>
@@ -4485,15 +4556,17 @@
         </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.PeaRoleType">PeaRoleType (class in jina.enums)</a>
 </li>
-        <li><a href="../api/daemon.models/#daemon.models.DaemonStatus.peas">peas (daemon.models.DaemonStatus attribute)</a>
+        <li><a href="../api/daemon.clients/#daemon.clients.JinaDClient.peas">peas (daemon.clients.JinaDClient property)</a>
+
+        <ul>
+          <li><a href="../api/daemon.models/#daemon.models.DaemonStatus.peas">(daemon.models.DaemonStatus attribute)</a>
 </li>
-        <li><a href="../api/daemon.clients/#daemon.clients.JinaDClient.peas">peas() (daemon.clients.JinaDClient property)</a>
-</li>
+        </ul></li>
         <li><a href="../api/daemon.stores.peas/#daemon.stores.peas.PeaStore">PeaStore (class in daemon.stores.peas)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.RemoteWorkspaceState.PENDING">PENDING (jina.enums.RemoteWorkspaceState attribute)</a>
 </li>
-        <li><a href="../api/jina/#jina.DocumentArrayMemmap.physical_size">physical_size() (jina.DocumentArrayMemmap property)</a>
+        <li><a href="../api/jina/#jina.DocumentArrayMemmap.physical_size">physical_size (jina.DocumentArrayMemmap property)</a>
 
         <ul>
           <li><a href="../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap.physical_size">(jina.types.arrays.memmap.DocumentArrayMemmap property)</a>
@@ -4539,11 +4612,11 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.PodRoleType">PodRoleType (class in jina.enums)</a>
 </li>
-        <li><a href="../api/daemon.models/#daemon.models.DaemonStatus.pods">pods (daemon.models.DaemonStatus attribute)</a>
-</li>
-        <li><a href="../api/daemon.clients/#daemon.clients.JinaDClient.pods">pods() (daemon.clients.JinaDClient property)</a>
+        <li><a href="../api/daemon.clients/#daemon.clients.JinaDClient.pods">pods (daemon.clients.JinaDClient property)</a>
 
         <ul>
+          <li><a href="../api/daemon.models/#daemon.models.DaemonStatus.pods">(daemon.models.DaemonStatus attribute)</a>
+</li>
           <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.pods">(jina.types.routing.table.RoutingTable property)</a>
 </li>
         </ul></li>
@@ -4557,13 +4630,13 @@
           <li><a href="../api/jina.types.document/#jina.types.document.Document.pop">(jina.types.document.Document method)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.port">port() (jina.types.routing.table.TargetPod property)</a>
+        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.port">port (jina.types.routing.table.TargetPod property)</a>
 </li>
         <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.FlowDepends.port_expose">port_expose (daemon.api.dependencies.FlowDepends attribute)</a>
-</li>
-        <li><a href="../api/jina/#jina.Flow.port_expose">port_expose() (jina.Flow property)</a>
 
         <ul>
+          <li><a href="../api/jina/#jina.Flow.port_expose">(jina.Flow property)</a>
+</li>
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.port_expose">(jina.flow.base.Flow property)</a>
 </li>
           <li><a href="../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod.port_expose">(jina.peapods.pods.compound.CompoundPod property)</a>
@@ -4571,16 +4644,16 @@
           <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.Pod.port_expose">(jina.peapods.pods.Pod property)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.port_out">port_out() (jina.types.routing.table.TargetPod property)</a>
+        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.port_out">port_out (jina.types.routing.table.TargetPod property)</a>
 </li>
         <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.PeaDepends.ports">ports (daemon.api.dependencies.PeaDepends attribute)</a>
 
         <ul>
+          <li><a href="../api/daemon.files/#daemon.files.DaemonFile.ports">(daemon.files.DaemonFile property)</a>
+</li>
           <li><a href="../api/daemon.models.containers/#daemon.models.containers.ContainerMetadata.ports">(daemon.models.containers.ContainerMetadata attribute)</a>
 </li>
         </ul></li>
-        <li><a href="../api/daemon.files/#daemon.files.DaemonFile.ports">ports() (daemon.files.DaemonFile property)</a>
-</li>
         <li><a href="../api/jina.clients.mixin/#jina.clients.mixin.AsyncPostMixin.post">post() (jina.clients.mixin.AsyncPostMixin method)</a>
 
         <ul>
@@ -4613,19 +4686,19 @@
 </li>
         <li><a href="../api/jina.logging.profile/#jina.logging.profile.ProgressBar">ProgressBar (class in jina.logging.profile)</a>
 </li>
-        <li><a href="../api/jina.types.message/#jina.types.message.Message.proto">proto() (jina.types.message.Message property)</a>
+        <li><a href="../api/jina.types.message/#jina.types.message.Message.proto">proto (jina.types.message.Message property)</a>
 
         <ul>
           <li><a href="../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.proto">(jina.types.mixin.ProtoTypeMixin property)</a>
 </li>
-          <li><a href="../api/jina.types.request.mixin/#jina.types.request.mixin.CommandMixin.proto">(jina.types.request.mixin.CommandMixin method)</a>
-</li>
           <li><a href="../api/jina.types.request/#jina.types.request.Request.proto">(jina.types.request.Request property)</a>
 </li>
         </ul></li>
+        <li><a href="../api/jina.types.request.mixin/#jina.types.request.mixin.CommandMixin.proto">proto() (jina.types.request.mixin.CommandMixin method)</a>
+</li>
         <li><a href="../api/jina.peapods.runtimes.gateway.http.models/#jina.peapods.runtimes.gateway.http.models.protobuf_to_pydantic_model">protobuf_to_pydantic_model() (in module jina.peapods.runtimes.gateway.http.models)</a>
 </li>
-        <li><a href="../api/jina/#jina.Flow.protocol">protocol() (jina.Flow property)</a>
+        <li><a href="../api/jina/#jina.Flow.protocol">protocol (jina.Flow property)</a>
 
         <ul>
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.protocol">(jina.flow.base.Flow property)</a>
@@ -4663,7 +4736,7 @@
 </li>
         <li><a href="../api/daemon.models.id/#daemon.models.id.DaemonID.pydantic_validate">pydantic_validate() (daemon.models.id.DaemonID class method)</a>
 </li>
-        <li><a href="../api/daemon.files/#daemon.files.DaemonFile.python">python() (daemon.files.DaemonFile property)</a>
+        <li><a href="../api/daemon.files/#daemon.files.DaemonFile.python">python (daemon.files.DaemonFile property)</a>
 </li>
         <li><a href="../api/daemon.models.enums/#daemon.models.enums.PythonVersion">PythonVersion (class in daemon.models.enums)</a>
 </li>
@@ -4705,9 +4778,9 @@
         </ul></li>
         <li><a href="../api/jina.peapods.zmq/#jina.peapods.zmq.recv_message_async">recv_message_async() (in module jina.peapods.zmq)</a>
 </li>
-        <li><a href="../api/jina.types.score/#jina.types.score.NamedScore.ref_id">ref_id() (jina.types.score.NamedScore property)</a>
+        <li><a href="../api/jina.types.score/#jina.types.score.NamedScore.ref_id">ref_id (jina.types.score.NamedScore property)</a>
 </li>
-        <li><a href="../api/jina.types.arrays.chunk/#jina.types.arrays.chunk.ChunkArray.reference_doc">reference_doc() (jina.types.arrays.chunk.ChunkArray property)</a>
+        <li><a href="../api/jina.types.arrays.chunk/#jina.types.arrays.chunk.ChunkArray.reference_doc">reference_doc (jina.types.arrays.chunk.ChunkArray property)</a>
 
         <ul>
           <li><a href="../api/jina.types.arrays.match/#jina.types.arrays.match.MatchArray.reference_doc">(jina.types.arrays.match.MatchArray property)</a>
@@ -4745,7 +4818,7 @@
 </li>
         <li><a href="../api/jina.types.request/#jina.types.request.Request">Request (class in jina.types.request)</a>
 </li>
-        <li><a href="../api/jina.types.message/#jina.types.message.Message.request">request() (jina.types.message.Message property)</a>
+        <li><a href="../api/jina.types.message/#jina.types.message.Message.request">request (jina.types.message.Message property)</a>
 </li>
         <li><a href="../api/jina.clients.request/#jina.clients.request.request_generator">request_generator() (in module jina.clients.request)</a>
 
@@ -4755,7 +4828,7 @@
         </ul></li>
         <li><a href="../api/jina.peapods.runtimes.gateway.http.models/#jina.peapods.runtimes.gateway.http.models.JinaResponseModel.request_id">request_id (jina.peapods.runtimes.gateway.http.models.JinaResponseModel attribute)</a>
 </li>
-        <li><a href="../api/jina.types.request/#jina.types.request.Request.request_type">request_type() (jina.types.request.Request property)</a>
+        <li><a href="../api/jina.types.request/#jina.types.request.Request.request_type">request_type (jina.types.request.Request property)</a>
 </li>
         <li><a href="../api/jina.proto.serializer/#jina.proto.serializer.RequestProto">RequestProto (class in jina.proto.serializer)</a>
 </li>
@@ -4793,7 +4866,7 @@
 </li>
         <li><a href="../api/jina.types.request/#jina.types.request.Response">Response (class in jina.types.request)</a>
 </li>
-        <li><a href="../api/jina.types.message/#jina.types.message.Message.response">response() (jina.types.message.Message property)</a>
+        <li><a href="../api/jina.types.message/#jina.types.message.Message.response">response (jina.types.message.Message property)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
@@ -4827,7 +4900,7 @@
           <li><a href="../api/daemon.stores.workspaces/#daemon.stores.workspaces.WorkspaceStore.rm_network">(daemon.stores.workspaces.WorkspaceStore method)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.peapods.peas/#jina.peapods.peas.BasePea.role">role() (jina.peapods.peas.BasePea property)</a>
+        <li><a href="../api/jina.peapods.peas/#jina.peapods.peas.BasePea.role">role (jina.peapods.peas.BasePea property)</a>
 
         <ul>
           <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.role">(jina.peapods.pods.BasePod property)</a>
@@ -4855,11 +4928,11 @@
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.RoutingTableCyclicError">RoutingTableCyclicError</a>
 </li>
+        <li><a href="../api/daemon.files/#daemon.files.DaemonFile.run">run (daemon.files.DaemonFile property)</a>
+</li>
         <li><a href="../api/daemon.dockerize/#daemon.dockerize.Dockerizer.run">run() (daemon.dockerize.Dockerizer class method)</a>
 
         <ul>
-          <li><a href="../api/daemon.files/#daemon.files.DaemonFile.run">(daemon.files.DaemonFile property)</a>
-</li>
           <li><a href="../api/daemon.tasks/#daemon.tasks.ConsumerThread.run">(daemon.tasks.ConsumerThread method)</a>
 </li>
           <li><a href="../api/daemon.tasks/#daemon.tasks.DaemonWorker.run">(daemon.tasks.DaemonWorker method)</a>
@@ -4949,7 +5022,7 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.SCIPY_BSR">SCIPY_BSR (jina.enums.EmbeddingClsType attribute)</a>
 </li>
-        <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.scipy_cls_type">scipy_cls_type() (jina.enums.EmbeddingClsType property)</a>
+        <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.scipy_cls_type">scipy_cls_type (jina.enums.EmbeddingClsType property)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.SCIPY_COO">SCIPY_COO (jina.enums.EmbeddingClsType attribute)</a>
 </li>
@@ -4957,7 +5030,7 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.SCIPY_CSR">SCIPY_CSR (jina.enums.EmbeddingClsType attribute)</a>
 </li>
-        <li><a href="../api/jina/#jina.Document.scores">scores() (jina.Document property)</a>
+        <li><a href="../api/jina/#jina.Document.scores">scores (jina.Document property)</a>
 
         <ul>
           <li><a href="../api/jina.types.document/#jina.types.document.Document.scores">(jina.types.document.Document property)</a>
@@ -5057,7 +5130,7 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.PeaRoleType.SINGLETON">SINGLETON (jina.enums.PeaRoleType attribute)</a>
 </li>
-        <li><a href="../api/jina.types.message/#jina.types.message.Message.size">size() (jina.types.message.Message property)</a>
+        <li><a href="../api/jina.types.message/#jina.types.message.Message.size">size (jina.types.message.Message property)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.OnErrorStrategy.SKIP_HANDLE">SKIP_HANDLE (jina.enums.OnErrorStrategy attribute)</a>
 </li>
@@ -5139,14 +5212,16 @@
 </li>
         <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceItem.state">state (daemon.models.workspaces.WorkspaceItem attribute)</a>
 </li>
+        <li><a href="../api/daemon.clients/#daemon.clients.JinaDClient.status">status (daemon.clients.JinaDClient property)</a>
+
+        <ul>
+          <li><a href="../api/jina.peapods.runtimes.container/#jina.peapods.runtimes.container.ContainerRuntime.status">(jina.peapods.runtimes.container.ContainerRuntime property)</a>
+</li>
+        </ul></li>
         <li><a href="../api/daemon.clients.base/#daemon.clients.base.AsyncBaseClient.status">status() (daemon.clients.base.AsyncBaseClient method)</a>
 
         <ul>
-          <li><a href="../api/daemon.clients/#daemon.clients.JinaDClient.status">(daemon.clients.JinaDClient property)</a>
-</li>
           <li><a href="../api/daemon.clients.mixin/#daemon.clients.mixin.AsyncToSyncMixin.status">(daemon.clients.mixin.AsyncToSyncMixin method)</a>
-</li>
-          <li><a href="../api/jina.peapods.runtimes.container/#jina.peapods.runtimes.container.ContainerRuntime.status">(jina.peapods.runtimes.container.ContainerRuntime property)</a>
 </li>
           <li><a href="../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.status">(jina.peapods.runtimes.zmq.zed.ZEDRuntime static method)</a>
 </li>
@@ -5159,7 +5234,7 @@
 </li>
         <li><a href="../api/jina.types.struct/#jina.types.struct.StructView">StructView (class in jina.types.struct)</a>
 </li>
-        <li><a href="../api/jina.optimizers/#jina.optimizers.ResultProcessor.study">study() (jina.optimizers.ResultProcessor property)</a>
+        <li><a href="../api/jina.optimizers/#jina.optimizers.ResultProcessor.study">study (jina.optimizers.ResultProcessor property)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.SocketType.SUB_BIND">SUB_BIND (jina.enums.SocketType attribute)</a>
 </li>
@@ -5181,11 +5256,13 @@
   <h2>T</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../api/jina.hubble/#jina.hubble.HubExecutor.tag">tag (jina.hubble.HubExecutor attribute)</a>
+        <li><a href="../api/daemon.models.id/#daemon.models.id.DaemonID.tag">tag (daemon.models.id.DaemonID property)</a>
+
+        <ul>
+          <li><a href="../api/jina.hubble/#jina.hubble.HubExecutor.tag">(jina.hubble.HubExecutor attribute)</a>
 </li>
-        <li><a href="../api/daemon.models.id/#daemon.models.id.DaemonID.tag">tag() (daemon.models.id.DaemonID property)</a>
-</li>
-        <li><a href="../api/jina/#jina.Document.tags">tags() (jina.Document property)</a>
+        </ul></li>
+        <li><a href="../api/jina/#jina.Document.tags">tags (jina.Document property)</a>
 
         <ul>
           <li><a href="../api/jina.types.document/#jina.types.document.Document.tags">(jina.types.document.Document property)</a>
@@ -5193,15 +5270,15 @@
         </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.PeaRoleType.TAIL">TAIL (jina.enums.PeaRoleType attribute)</a>
 </li>
-        <li><a href="../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod.tail_args">tail_args (jina.peapods.pods.compound.CompoundPod attribute)</a>
-</li>
-        <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.tail_args">tail_args() (jina.peapods.pods.BasePod property)</a>
+        <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.tail_args">tail_args (jina.peapods.pods.BasePod property)</a>
 
         <ul>
+          <li><a href="../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod.tail_args">(jina.peapods.pods.compound.CompoundPod attribute)</a>
+</li>
           <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.Pod.tail_args">(jina.peapods.pods.Pod property)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.tail_port_out">tail_port_out() (jina.peapods.pods.BasePod property)</a>
+        <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.tail_port_out">tail_port_out (jina.peapods.pods.BasePod property)</a>
 </li>
         <li><a href="../api/jina.peapods.runtimes.gateway.http.models/#jina.peapods.runtimes.gateway.http.models.JinaRequestModel.target_peapod">target_peapod (jina.peapods.runtimes.gateway.http.models.JinaRequestModel attribute)</a>
 </li>
@@ -5223,7 +5300,7 @@
         </ul></li>
         <li><a href="../api/jina.peapods.peas/#jina.peapods.peas.BasePea.terminate">terminate() (jina.peapods.peas.BasePea method)</a>
 </li>
-        <li><a href="../api/jina/#jina.Document.text">text() (jina.Document property)</a>
+        <li><a href="../api/jina/#jina.Document.text">text (jina.Document property)</a>
 
         <ul>
           <li><a href="../api/jina.types.document/#jina.types.document.Document.text">(jina.types.document.Document property)</a>
@@ -5283,7 +5360,7 @@
           <li><a href="../api/jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence.traverse_flat_per_path">(jina.types.arrays.traversable.TraversableSequence method)</a>
 </li>
         </ul></li>
-        <li><a href="../api/daemon.models.id/#daemon.models.id.DaemonID.type">type() (daemon.models.id.DaemonID property)</a>
+        <li><a href="../api/daemon.models.id/#daemon.models.id.DaemonID.type">type (daemon.models.id.DaemonID property)</a>
 </li>
         <li><a href="../api/jina.helper/#jina.helper.typename">typename() (in module jina.helper)</a>
 </li>
@@ -5295,7 +5372,7 @@
   <h2>U</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.undirected">undirected() (jina.types.document.graph.GraphDocument property)</a>
+        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.undirected">undirected (jina.types.document.graph.GraphDocument property)</a>
 </li>
         <li><a href="../api/jina.jaml/#jina.jaml.JAML.unescape">unescape() (jina.jaml.JAML static method)</a>
 </li>
@@ -5370,10 +5447,10 @@
         <li><a href="../api/jina.hubble.helper/#jina.hubble.helper.upload_file">upload_file() (in module jina.hubble.helper)</a>
 </li>
         <li><a href="../api/daemon.models.containers/#daemon.models.containers.ContainerMetadata.uri">uri (daemon.models.containers.ContainerMetadata attribute)</a>
-</li>
-        <li><a href="../api/jina/#jina.Document.uri">uri() (jina.Document property)</a>
 
         <ul>
+          <li><a href="../api/jina/#jina.Document.uri">(jina.Document property)</a>
+</li>
           <li><a href="../api/jina.types.document/#jina.types.document.Document.uri">(jina.types.document.Document property)</a>
 </li>
         </ul></li>
@@ -5417,7 +5494,7 @@
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.ValidationError">ValidationError</a>
 </li>
-        <li><a href="../api/jina.types.ndarray/#jina.types.ndarray.BaseNdArray.value">value() (jina.types.ndarray.BaseNdArray property)</a>
+        <li><a href="../api/jina.types.ndarray/#jina.types.ndarray.BaseNdArray.value">value (jina.types.ndarray.BaseNdArray property)</a>
 
         <ul>
           <li><a href="../api/jina.types.ndarray.generic/#jina.types.ndarray.generic.NdArray.value">(jina.types.ndarray.generic.NdArray property)</a>
@@ -5495,7 +5572,7 @@
 </li>
         <li><a href="../api/jina.peapods.runtimes.gateway.websocket/#jina.peapods.runtimes.gateway.websocket.WebSocketRuntime">WebSocketRuntime (class in jina.peapods.runtimes.gateway.websocket)</a>
 </li>
-        <li><a href="../api/jina/#jina.Document.weight">weight() (jina.Document property)</a>
+        <li><a href="../api/jina/#jina.Document.weight">weight (jina.Document property)</a>
 
         <ul>
           <li><a href="../api/jina.types.document/#jina.types.document.Document.weight">(jina.types.document.Document property)</a>
@@ -5509,7 +5586,7 @@
         </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../api/jina.executors/#jina.executors.BaseExecutor.workspace">workspace() (jina.executors.BaseExecutor property)</a>
+        <li><a href="../api/jina.executors/#jina.executors.BaseExecutor.workspace">workspace (jina.executors.BaseExecutor property)</a>
 
         <ul>
           <li><a href="../api/jina/#jina.Flow.workspace">(jina.Flow property)</a>
@@ -5520,10 +5597,10 @@
         <li><a href="../api/daemon.files/#daemon.files.workspace_files">workspace_files() (in module daemon.files)</a>
 </li>
         <li><a href="../api/daemon.models.containers/#daemon.models.containers.ContainerItem.workspace_id">workspace_id (daemon.models.containers.ContainerItem attribute)</a>
-</li>
-        <li><a href="../api/jina/#jina.Flow.workspace_id">workspace_id() (jina.Flow property)</a>
 
         <ul>
+          <li><a href="../api/jina/#jina.Flow.workspace_id">(jina.Flow property)</a>
+</li>
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.workspace_id">(jina.flow.base.Flow property)</a>
 </li>
         </ul></li>
@@ -5537,10 +5614,12 @@
 </li>
         <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceMetadata">WorkspaceMetadata (class in daemon.models.workspaces)</a>
 </li>
-        <li><a href="../api/daemon.models/#daemon.models.DaemonStatus.workspaces">workspaces (daemon.models.DaemonStatus attribute)</a>
+        <li><a href="../api/daemon.clients/#daemon.clients.JinaDClient.workspaces">workspaces (daemon.clients.JinaDClient property)</a>
+
+        <ul>
+          <li><a href="../api/daemon.models/#daemon.models.DaemonStatus.workspaces">(daemon.models.DaemonStatus attribute)</a>
 </li>
-        <li><a href="../api/daemon.clients/#daemon.clients.JinaDClient.workspaces">workspaces() (daemon.clients.JinaDClient property)</a>
-</li>
+        </ul></li>
         <li><a href="../api/daemon.stores.workspaces/#daemon.stores.workspaces.WorkspaceStore">WorkspaceStore (class in daemon.stores.workspaces)</a>
 </li>
         <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceStoreStatus">WorkspaceStoreStatus (class in daemon.models.workspaces)</a>
@@ -5600,11 +5679,6 @@
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
             Last updated on Aug 22, 2021.
-            |
-            Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
-              and
-              <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
-              <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
         </div>
         
       </footer>
@@ -5614,13 +5688,13 @@
       
       
     </aside>
-  </main>
-</div>
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/scripts/main.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
-    <script src="../_static/scripts/main.js?digest=e931d09b2a40c1bb82b542effe772014573baf67"></script></body>
+    </body>
 </html>
