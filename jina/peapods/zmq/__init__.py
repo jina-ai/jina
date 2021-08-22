@@ -714,6 +714,9 @@ async def send_message_async(
     :param kwargs: keyword arguments
     :return: the size (in bytes) of the sent message
     """
+    import traceback
+    traceback.print_stack()
+
     try:
         print('send async...')
         _prep_send_socket(sock, timeout)
@@ -930,3 +933,4 @@ def _connect_socket(
     else:
         print('connect to', address)
         sock.connect(address)
+
