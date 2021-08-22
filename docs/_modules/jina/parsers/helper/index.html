@@ -483,12 +483,10 @@
                 <span class="n">captial_heading</span> <span class="o">=</span> <span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                     <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">heading</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">' '</span><span class="p">)</span>
                 <span class="p">)</span>
-                <span class="n">heading</span> <span class="o">=</span> <span class="s1">'⚙️  </span><span class="si">%*s%s</span><span class="se">\n</span><span class="s1">'</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">heading</span> <span class="o">=</span> <span class="s1">'</span><span class="si">%*s%s</span><span class="se">\n</span><span class="s1">'</span> <span class="o">%</span> <span class="p">(</span>
                     <span class="n">current_indent</span><span class="p">,</span>
                     <span class="s1">''</span><span class="p">,</span>
-                    <span class="n">colored</span><span class="p">(</span>
-                        <span class="n">captial_heading</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="s1">'underline'</span><span class="p">,</span> <span class="s1">'bold'</span><span class="p">,</span> <span class="s1">'reverse'</span><span class="p">]</span>
-                    <span class="p">),</span>
+                    <span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">'▮ </span><span class="si">{</span><span class="n">captial_heading</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="s1">'bold'</span><span class="p">]),</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">heading</span> <span class="o">=</span> <span class="s1">''</span>
@@ -673,7 +671,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 21, 2021.
+            Last updated on Aug 22, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

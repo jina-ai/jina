@@ -1038,18 +1038,31 @@
 <span class="k">def</span> <span class="nf">warn_unknown_args</span><span class="p">(</span><span class="n">unknown_args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
     <span class="sd">"""Creates warnings for all given arguments.</span>
 
-<span class="sd">    :param unknown_args: arguments that are unknown to Jina</span>
+<span class="sd">    :param unknown_args: arguments that are possibly unknown to Jina</span>
 <span class="sd">    """</span>
-    <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">unknown_args</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">.parsers.deprecated</span> <span class="kn">import</span> <span class="n">get_deprecated_replacement</span>
 
-        <span class="n">new_arg</span> <span class="o">=</span> <span class="n">get_deprecated_replacement</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">new_arg</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'''Ignored the deprecated argument '</span><span class="si">{</span><span class="n">arg</span><span class="si">}</span><span class="s1">'. Please use '</span><span class="si">{</span><span class="n">new_arg</span><span class="si">}</span><span class="s1">'.'''</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">'ignored unknown argument: </span><span class="si">{</span><span class="n">arg</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">cli.lookup</span> <span class="kn">import</span> <span class="n">_build_lookup_table</span>
+
+    <span class="n">all_args</span> <span class="o">=</span> <span class="n">_build_lookup_table</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">has_migration_tip</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">real_unknown_args</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">warn_strs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">unknown_args</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'--'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_args</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">.parsers.deprecated</span> <span class="kn">import</span> <span class="n">get_deprecated_replacement</span>
+
+            <span class="n">new_arg</span> <span class="o">=</span> <span class="n">get_deprecated_replacement</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">new_arg</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">has_migration_tip</span><span class="p">:</span>
+                    <span class="n">warn_strs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'Migration tips:'</span><span class="p">)</span>
+                    <span class="n">has_migration_tip</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">warn_strs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">`</span><span class="si">{</span><span class="n">arg</span><span class="si">}</span><span class="s1">` has been renamed to `</span><span class="si">{</span><span class="n">new_arg</span><span class="si">}</span><span class="s1">`'</span><span class="p">)</span>
+            <span class="n">real_unknown_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">real_unknown_args</span><span class="p">:</span>
+        <span class="n">warn_strs</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">'ignored unknown argument: </span><span class="si">{</span><span class="n">real_unknown_args</span><span class="si">}</span><span class="s1">.'</span><span class="p">]</span> <span class="o">+</span> <span class="n">warn_strs</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">warn_strs</span><span class="p">))</span>
 
 
 <div class="viewcode-block" id="ArgNamespace"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.ArgNamespace">[docs]</a><span class="k">class</span> <span class="nc">ArgNamespace</span><span class="p">:</span>
@@ -1087,6 +1100,7 @@
         <span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]],</span>
         <span class="n">parser</span><span class="p">:</span> <span class="n">ArgumentParser</span><span class="p">,</span>
         <span class="n">warn_unknown</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">fallback_parsers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ArgumentParser</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
         <span class="sd">"""</span>
 <span class="sd">        Convert dict to a namespace.</span>
@@ -1094,12 +1108,21 @@
 <span class="sd">        :param kwargs: dictionary of key-values to be converted</span>
 <span class="sd">        :param parser: the parser for building kwargs into a namespace</span>
 <span class="sd">        :param warn_unknown: True, if unknown arguments should be logged</span>
+<span class="sd">        :param fallback_parsers: a list of parsers to help resolving the args</span>
 <span class="sd">        :return: argument list</span>
 <span class="sd">        """</span>
         <span class="n">args</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2list</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">p_args</span><span class="p">,</span> <span class="n">unknown_args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_known_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">warn_unknown</span> <span class="ow">and</span> <span class="n">unknown_args</span><span class="p">:</span>
-            <span class="n">warn_unknown_args</span><span class="p">(</span><span class="n">unknown_args</span><span class="p">)</span>
+            <span class="n">_leftovers</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">unknown_args</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">fallback_parsers</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">fallback_parsers</span><span class="p">:</span>
+                    <span class="n">_</span><span class="p">,</span> <span class="n">_unk_args</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">parse_known_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+                    <span class="n">_leftovers</span> <span class="o">=</span> <span class="n">_leftovers</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">_unk_args</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">_leftovers</span><span class="p">:</span>
+                        <span class="c1"># all args have been resolved</span>
+                        <span class="k">break</span>
+            <span class="n">warn_unknown_args</span><span class="p">(</span><span class="n">_leftovers</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">p_args</span></div>
 
@@ -1734,7 +1757,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 21, 2021.
+            Last updated on Aug 22, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

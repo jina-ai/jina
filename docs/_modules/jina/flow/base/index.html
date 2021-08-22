@@ -426,6 +426,7 @@
 <span class="kn">from</span> <span class="nn">..jaml</span> <span class="kn">import</span> <span class="n">JAMLCompatible</span>
 <span class="kn">from</span> <span class="nn">..logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">..parsers</span> <span class="kn">import</span> <span class="n">set_gateway_parser</span><span class="p">,</span> <span class="n">set_pod_parser</span><span class="p">,</span> <span class="n">set_client_cli_parser</span>
+<span class="kn">from</span> <span class="nn">..parsers.flow</span> <span class="kn">import</span> <span class="n">set_flow_parser</span>
 <span class="kn">from</span> <span class="nn">..peapods</span> <span class="kn">import</span> <span class="n">CompoundPod</span><span class="p">,</span> <span class="n">Pod</span>
 <span class="kn">from</span> <span class="nn">..peapods.pods.factory</span> <span class="kn">import</span> <span class="n">PodFactory</span>
 <span class="kn">from</span> <span class="nn">..types.routing.table</span> <span class="kn">import</span> <span class="n">RoutingTable</span>
@@ -448,6 +449,12 @@
     <span class="kn">from</span> <span class="nn">.asyncio</span> <span class="kn">import</span> <span class="n">AsyncFlow</span>
 
 <span class="n">GATEWAY_NAME</span> <span class="o">=</span> <span class="s1">'gateway'</span>
+<span class="n">FALLBACK_PARSERS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">set_gateway_parser</span><span class="p">(),</span>
+    <span class="n">set_pod_parser</span><span class="p">(),</span>
+    <span class="n">set_client_cli_parser</span><span class="p">(),</span>
+    <span class="n">set_flow_parser</span><span class="p">(),</span>
+<span class="p">]</span>
 
 
 <div class="viewcode-block" id="Flow"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow">[docs]</a><span class="k">class</span> <span class="nc">Flow</span><span class="p">(</span><span class="n">PostMixin</span><span class="p">,</span> <span class="n">JAMLCompatible</span><span class="p">,</span> <span class="n">ExitStack</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">FlowType</span><span class="p">):</span>
@@ -700,7 +707,9 @@
 
         <span class="n">_flow_parser</span> <span class="o">=</span> <span class="n">set_flow_parser</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">args</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">args</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2namespace</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">_flow_parser</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2namespace</span><span class="p">(</span>
+                <span class="n">kwargs</span><span class="p">,</span> <span class="n">_flow_parser</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">fallback_parsers</span><span class="o">=</span><span class="n">FALLBACK_PARSERS</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
         <span class="c1"># common args should be the ones that can not be parsed by _flow_parser</span>
         <span class="n">known_keys</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
@@ -1077,7 +1086,9 @@
         <span class="k">if</span> <span class="n">pod_role</span> <span class="o">==</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">:</span>
             <span class="n">parser</span> <span class="o">=</span> <span class="n">set_gateway_parser</span><span class="p">()</span>
 
-        <span class="n">args</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2namespace</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2namespace</span><span class="p">(</span>
+            <span class="n">kwargs</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">fallback_parsers</span><span class="o">=</span><span class="n">FALLBACK_PARSERS</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">grpc_data_requests</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="s1">'ZEDRuntime'</span><span class="p">:</span>
             <span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="s1">'GRPCDataRuntime'</span>
@@ -2004,7 +2015,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 21, 2021.
+            Last updated on Aug 22, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

@@ -412,6 +412,10 @@
         <span class="n">new_argument</span> <span class="o">=</span> <span class="n">DEPRECATED_ARGS_MAPPING</span><span class="p">[</span><span class="n">normalized_arg</span><span class="p">]</span>
         <span class="k">if</span> <span class="s1">'-'</span> <span class="ow">in</span> <span class="n">dep_arg</span><span class="p">:</span>
             <span class="n">new_argument</span> <span class="o">=</span> <span class="n">new_argument</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'_'</span><span class="p">,</span> <span class="s1">'-'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dep_arg</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'--'</span><span class="p">):</span>
+            <span class="n">new_argument</span> <span class="o">=</span> <span class="s1">'--'</span> <span class="o">+</span> <span class="n">new_argument</span>
+        <span class="k">elif</span> <span class="n">dep_arg</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'-'</span><span class="p">):</span>
+            <span class="n">new_argument</span> <span class="o">=</span> <span class="s1">'-'</span> <span class="o">+</span> <span class="n">new_argument</span>
         <span class="k">return</span> <span class="n">new_argument</span></div>
 </pre></div>
       </article>
@@ -425,7 +429,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 21, 2021.
+            Last updated on Aug 22, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

@@ -614,7 +614,7 @@ explicitly stored.</p>
 </dd></dl>
 <dl class="py method">
 <dt id="jina.helper.ArgNamespace.kwargs2namespace">
-<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">kwargs2namespace</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parser</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warn_unknown</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#ArgNamespace.kwargs2namespace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.ArgNamespace.kwargs2namespace" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">kwargs2namespace</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parser</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warn_unknown</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fallback_parsers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#ArgNamespace.kwargs2namespace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.ArgNamespace.kwargs2namespace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert dict to a namespace.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -622,6 +622,7 @@ explicitly stored.</p>
 <li><p><strong>kwargs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]]) – dictionary of key-values to be converted</p></li>
 <li><p><strong>parser</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ArgumentParser</span></code>) – the parser for building kwargs into a namespace</p></li>
 <li><p><strong>warn_unknown</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – True, if unknown arguments should be logged</p></li>
+<li><p><strong>fallback_parsers</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ArgumentParser</span></code>]]) – a list of parsers to help resolving the args</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -886,7 +887,7 @@ sub context is called, even when there is an Exception in the
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 21, 2021.
+            Last updated on Aug 22, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
