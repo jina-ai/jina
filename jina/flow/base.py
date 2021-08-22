@@ -868,7 +868,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     pod.head_args.hosts_in_connect.append(
                         graph._get_target_pod(start).full_out_address
                     )
-
+                    if end not in graph.pods:
+                        end = end + '_head'
                     graph.add_edge(start, end, False)
                 else:
                     if end not in graph.pods:

@@ -11,7 +11,7 @@ from ... import __default_executor__
 
 class K8sPod(BasePod):
     def __init__(
-        self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
+            self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
     ):
         super().__init__()
         self.args = args
@@ -19,7 +19,7 @@ class K8sPod(BasePod):
         self.deployment_args = self._parse_args(args)
 
     def _parse_args(
-        self, args: Namespace
+            self, args: Namespace
     ) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:
         return self._parse_deployment_args(args)
 
@@ -65,7 +65,9 @@ class K8sPod(BasePod):
             image_name='gcr.io/jina-showcase/generic-gateway:latest',
             container_cmd='["jina"]',
             container_args=f'["gateway", '
-            f'{kubernetes_deployment.get_cli_params(self.args)}]',
+                           f'"--grpc_data_requests", '
+                           f'"--runtime-cls", "GRPCDataRuntime", '
+                           f'{kubernetes_deployment.get_cli_params(self.args)}]',
             logger=JinaLogger(f'deploy_{self.name}'),
             replicas=1,
             init_container=None,
@@ -83,24 +85,24 @@ class K8sPod(BasePod):
         if image_name == __default_executor__:
             image_name = 'gcr.io/jina-showcase/custom-jina:latest'
             container_args = (
-                f'["pea", '
-                f'"--uses", "BaseExecutor", '
-                f'"--grpc-data-requests", '
-                f'"--runtime-cls", "GRPCDataRuntime", '
-                f'"--uses-metas", "{uses_metas}", '
-                + uses_with_string
-                + f'{kubernetes_deployment.get_cli_params(self.args)}]'
+                    f'["pea", '
+                    f'"--uses", "BaseExecutor", '
+                    f'"--grpc-data-requests", '
+                    f'"--runtime-cls", "GRPCDataRuntime", '
+                    f'"--uses-metas", "{uses_metas}", '
+                    + uses_with_string
+                    + f'{kubernetes_deployment.get_cli_params(self.args)}]'
             )
 
         else:
             container_args = (
-                f'["pea", '
-                f'"--uses", "config.yml", '
-                f'"--grpc_data_requests", '
-                f'"--runtime-cls", "GRPCDataRuntime", '
-                f'"--uses-metas", "{uses_metas}", '
-                + uses_with_string
-                + f'{kubernetes_deployment.get_cli_params(self.args)}]'
+                    f'["pea", '
+                    f'"--uses", "config.yml", '
+                    f'"--grpc_data_requests", '
+                    f'"--runtime-cls", "GRPCDataRuntime", '
+                    f'"--uses-metas", "{uses_metas}", '
+                    + uses_with_string
+                    + f'{kubernetes_deployment.get_cli_params(self.args)}]'
             )
 
         kubernetes_deployment.deploy_service(
@@ -210,7 +212,7 @@ class K8sPod(BasePod):
                     }
                 )
             for deployment_id, deployment_arg in enumerate(
-                self.deployment_args['deployments']
+                    self.deployment_args['deployments']
             ):
                 name = kubernetes_deployment.to_dns_name(self.name + str(deployment_id))
                 res.append(

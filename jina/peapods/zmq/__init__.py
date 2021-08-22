@@ -732,7 +732,7 @@ async def send_message_async(
         print('send async... asyncio.CancelledError')
         default_logger.debug('all gateway tasks are cancelled')
     except Exception as ex:
-        print('send async... Exception')
+        print('send async... Exception', ex)
         raise ex
     finally:
         try:

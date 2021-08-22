@@ -29,6 +29,12 @@ def deploy_service(
 ):
     from jina.peapods.pods.kubernetes import kubernetes_tools
 
+    # small hack - we can always assume the ports are the same for all executors since they run on different k8s pods
+    port_expose = 8080
+    port_in = 8081
+    port_out = 8082
+    port_ctrl = 8083
+
     logger.info(
         f'🔋\tCreate Service for "{name}" with image "{name}" pulling from "{image_name}" \ncontainer_cmd: {container_cmd}\n{name} container_args: {container_args}'
     )
@@ -156,10 +162,11 @@ def get_cli_params(arguments, skip_list=()):
                 value = value.replace('\'', '').replace('"', '\\"')
                 cli_args.append(f'"--{cli_attribute}", "{value}"')
 
+    cli_args.append('"--port-expose", "8080"')
     cli_args.append('"--port-in", "8081"')
     cli_args.append('"--port-out", "8082"')
     cli_args.append('"--port-ctrl", "8083"')
-    cli_args.append('"--port-expose", "8080"')
+
     cli_string = ', '.join(cli_args)
     return cli_string
 

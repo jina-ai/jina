@@ -39,6 +39,7 @@ class ZEDRuntime(ZMQRuntime):
         :param kwargs: extra keyword arguments
         """
         super().__init__(args, **kwargs)
+        print('init ZMQRuntime runtime')
         self._id = random_identity()
         self._last_active_time = time.perf_counter()
         self.ctrl_addr = self.get_control_address(args.host, args.port_ctrl)

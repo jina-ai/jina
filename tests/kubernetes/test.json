@@ -3,21 +3,13 @@
   "pods": {
     "end-gateway": {
       "expected_parts": 1,
-      "host": "gateway0.search-flow3.svc.cluster.local",
+      "host": "gateway.search-flow.svc.cluster.local",
       "port": 8081,
       "port_out": 8082
     },
-    "image_data": {
-      "expected_parts": 1,
-      "out_edges": [
-        {
-          "pod": "end-gateway"
-        }
-      ]
-    },
     "image_data_0": {
       "expected_parts": 1,
-      "host": "image-data0.search-flow3.svc.cluster.local",
+      "host": "image-data0.search-flow.svc.cluster.local",
       "out_edges": [
         {
           "pod": "image_data_tail"
@@ -28,18 +20,7 @@
     },
     "image_data_1": {
       "expected_parts": 1,
-      "host": "image-data1.search-flow3.svc.cluster.local",
-      "out_edges": [
-        {
-          "pod": "image_data_tail"
-        }
-      ],
-      "port": 8081,
-      "port_out": 8082
-    },
-    "image_data_2": {
-      "expected_parts": 1,
-      "host": "image-data2.search-flow3.svc.cluster.local",
+      "host": "image-data1.search-flow.svc.cluster.local",
       "out_edges": [
         {
           "pod": "image_data_tail"
@@ -49,32 +30,35 @@
       "port_out": 8082
     },
     "image_data_head": {
-      "host": "image-data-head.search-flow3.svc.cluster.local",
+      "expected_parts": 1,
+      "host": "image-data-head.search-flow.svc.cluster.local",
       "out_edges": [
         {
           "pod": "image_data_0"
         },
         {
           "pod": "image_data_1"
-        },
-        {
-          "pod": "image_data_2"
         }
       ],
       "port": 8081,
       "port_out": 8082
     },
     "image_data_tail": {
-      "expected_parts": 3,
-      "host": "image-data-tail.search-flow3.svc.cluster.local",
+      "expected_parts": 2,
+      "host": "image-data-tail.search-flow.svc.cluster.local",
+      "out_edges": [
+        {
+          "pod": "end-gateway"
+        }
+      ],
       "port": 8081,
       "port_out": 8082
     },
     "start-gateway": {
-      "host": "gateway0.search-flow3.svc.cluster.local",
+      "host": "gateway.search-flow.svc.cluster.local",
       "out_edges": [
         {
-          "pod": "image_data"
+          "pod": "image_data_head"
         }
       ],
       "port": 8081,
