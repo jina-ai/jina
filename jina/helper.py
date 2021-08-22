@@ -644,16 +644,21 @@ def warn_unknown_args(unknown_args: List[str]):
 
     :param unknown_args: arguments that are unknown to Jina
     """
+
+    warn_str = f'ignored unknown argument: {unknown_args}. '
+
+    has_migration_tip = False
     for arg in unknown_args:
         from .parsers.deprecated import get_deprecated_replacement
 
         new_arg = get_deprecated_replacement(arg)
         if new_arg:
-            warnings.warn(
-                f'''Ignored the deprecated argument '{arg}'. Please use '{new_arg}'.'''
-            )
-        else:
-            warnings.warn(f'ignored unknown argument: {arg}')
+            if not has_migration_tip:
+                warn_str += '\nMigration tips:'
+                has_migration_tip = True
+            warn_str += f'\n\t`{arg}` has been renamed to `{new_arg}`'
+
+    warnings.warn(warn_str)
 
 
 class ArgNamespace:
