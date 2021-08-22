@@ -49,8 +49,11 @@ jobs:
           cd ./_build/dirhtml/
           cp -r ./ ../../../gen-html
           cd -  # back to ./docs
-          rm -rf .
-          cp -r ../gen-html ./
+          cd ..
+          rm -rf ./docs
+          mkdir docs
+          cp -r ../gen-html ./docs
+          cd docs
           ls -la
           touch .nojekyll
           cp 404/index.html 404.html
