@@ -15,4 +15,8 @@ def test_progressbar(total_steps, update_tick, task_name, capsys):
             time.sleep(0.01)
 
     captured = capsys.readouterr()
-    assert 'steps done' in captured.out
+    if total_steps:
+        assert 'steps done' in captured.out
+    else:
+        assert 'estimating' in captured.out
+        assert 'steps done' not in captured.out
