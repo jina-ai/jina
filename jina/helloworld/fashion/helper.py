@@ -143,13 +143,15 @@ def write_html(html_path):
         pass  # intentional pass, browser support isn't cross-platform
     finally:
         default_logger.info(
-            f'You should see a "hello-world.html" opened in your browser, '
+            f'You should see a "demo.html" opened in your browser, '
             f'if not you may open {url_html_path} manually'
         )
 
-    colored_url = colored('https://opensource.jina.ai', color='cyan', attrs='underline')
+    colored_url = colored(
+        'https://github.com/jina-ai/jina', color='cyan', attrs='underline'
+    )
     default_logger.info(
-        f'🤩 Intrigued? Play with "jina hello fashion --help" and learn more about Jina at {colored_url}'
+        f'🤩 Intrigued? Play with `jina hello fashion --help` and learn more about Jina at {colored_url}'
     )
 
 
