@@ -334,6 +334,7 @@ class Zmqlet:
         return next_routes
 
     def _send_message_dynamic(self, msg: 'Message'):
+        print('_send_message_dynamic')
         next_routes = self._get_dynamic_next_routes(msg)
         for routing_table, out_sock in next_routes:
             new_envelope = jina_pb2.EnvelopeProto()
@@ -353,6 +354,7 @@ class Zmqlet:
 
         :param msg: the protobuf message to send
         """
+        print('### send message zmq ')
         # choose output sock
         if msg.is_data_request:
             if self.args.dynamic_routing_out:
@@ -435,6 +437,7 @@ class AsyncZmqlet(Zmqlet):
             asyncio.create_task(self._send_message_via(self.out_sock, msg))
 
     async def _send_message_dynamic(self, msg: 'Message'):
+        print('### send message dynamic')
         for routing_table, out_sock in self._get_dynamic_next_routes(msg):
             new_envelope = jina_pb2.EnvelopeProto()
             new_envelope.CopyFrom(msg.envelope)
@@ -445,6 +448,7 @@ class AsyncZmqlet(Zmqlet):
 
     async def _send_message_via(self, socket, msg):
         try:
+            print('_send_message_via')
             num_bytes = await send_message_async(socket, msg, **self.send_recv_kwargs)
             self.bytes_sent += num_bytes
             self.msg_sent += 1
@@ -718,7 +722,7 @@ async def send_message_async(
     traceback.print_stack()
 
     try:
-        print('send async...')
+        print('send async... envelop', msg.envelope)
         _prep_send_socket(sock, timeout)
         await sock.send_multipart(msg.dump())
         return msg.size

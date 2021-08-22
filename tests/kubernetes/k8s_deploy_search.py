@@ -7,7 +7,7 @@ search_flow = Flow(
 ).add(
     name='image_data',
     shards=shards,
-    replicas=2,
+    replicas=1,
     polling='all',
     # uses='jinahub+docker://AnnoySearcher',
     # uses='gcr.io/mystical-sweep-320315/annoy-with-grpc',
