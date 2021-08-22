@@ -48,8 +48,9 @@ jobs:
           cp -r ./ ../../../gen-html
           cd -  # back to ./docs
           cd ..
+          git checkout gh-pages
           git rm -rf ./docs
-          mkdir docs
+          mkdir -p docs
           cd gen-html
           cp -r ./ ../docs
           cd ../docs
@@ -59,6 +60,5 @@ jobs:
           echo docs.jina.ai > CNAME
           cd ..
           git status
-          git checkout gh-pages
           git add docs && git commit -m "chore(docs): update docs due to ${{github.event_name}} on ${{github.repository}}"
           git push --force origin gh-pages
