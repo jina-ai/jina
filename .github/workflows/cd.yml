@@ -91,12 +91,6 @@ jobs:
     needs: update-schema
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
       - name: benc-uk/workflow-dispatch@v1
         with:
           workflow: Manual Docs Build

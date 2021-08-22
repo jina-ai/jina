@@ -26,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 100  # means max contribute history is limited to 100 lines
+          fetch-depth: 0
       - uses: actions/setup-python@v2
         with:
           python-version: 3.7
