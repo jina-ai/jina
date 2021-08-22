@@ -52,8 +52,9 @@ jobs:
           cd ..
           rm -rf ./docs
           mkdir docs
-          cp -r ./gen-html ./docs
-          cd docs
+          cd gen-html
+          cp -r . ../docs
+          cd ../docs
           ls -la
           touch .nojekyll
           cp 404/index.html 404.html
