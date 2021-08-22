@@ -53,7 +53,7 @@ jobs:
           rm -rf ./docs
           mkdir docs
           cd gen-html
-          cp -r . ../docs
+          cp -r ./ ../docs
           cd ../docs
           ls -la
           touch .nojekyll
