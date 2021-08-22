@@ -469,8 +469,7 @@
 <p>Run a fashion search demo</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hello</span> <span class="n">fashion</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workdir</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">download</span><span class="o">-</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">index</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">url</span><span class="p">]</span>
                    <span class="p">[</span><span class="o">--</span><span class="n">index</span><span class="o">-</span><span class="n">labels</span><span class="o">-</span><span class="n">url</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">query</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">url</span><span class="p">]</span>
-                   <span class="p">[</span><span class="o">--</span><span class="n">query</span><span class="o">-</span><span class="n">labels</span><span class="o">-</span><span class="n">url</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">request</span><span class="o">-</span><span class="n">size</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">query</span><span class="p">]</span>
-                   <span class="p">[</span><span class="o">--</span><span class="n">top</span><span class="o">-</span><span class="n">k</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">query</span><span class="o">-</span><span class="n">labels</span><span class="o">-</span><span class="n">url</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">query</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">top</span><span class="o">-</span><span class="n">k</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="section" id="General arguments">
@@ -478,7 +477,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “1e2f73a4-f4c0-48d0-bc74-551cb6558932”</p>
+<p>Default: “1b56eab0-14e1-42d3-8973-4893ca358643”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -508,10 +507,6 @@
 <dt><kbd>--query-labels-url</kbd></dt>
 <dd><p>The url of query labels data (should be in idx3-ubyte.gz format)</p>
 <p>Default: “<a class="reference external" href="http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-labels-idx1-ubyte.gz">http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-labels-idx1-ubyte.gz</a>”</p>
-</dd>
-<dt><kbd>--request-size</kbd></dt>
-<dd><p>The request size in indexing (the maximum number of documents that will be included in a Request before sending it)</p>
-<p>Default: 1024</p>
 </dd>
 <dt><kbd>--num-query</kbd></dt>
 <dd><p>The number of queries to visualize</p>
@@ -553,7 +548,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “4f811c73-fc39-4d27-af74-10ef24a5b663”</p>
+<p>Default: “ec57818c-8528-4f36-bea3-9307275ca82f”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -586,7 +581,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “15d4cce4-6bfc-449a-9281-6e667d50bf01”</p>
+<p>Default: “5b6a3cce-0fb9-4f0f-b5b3-da20e64b16d7”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -677,7 +672,7 @@
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 37487</p>
+<p>Default: 38677</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -739,11 +734,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 43701</p>
+<p>Default: 42733</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 38173</p>
+<p>Default: 33603</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -832,7 +827,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 53693</p>
+<p>Default: 53027</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1066,7 +1061,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 43811</p>
+<p>Default: 52911</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1128,11 +1123,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 35057</p>
+<p>Default: 36801</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 60927</p>
+<p>Default: 47161</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1258,7 +1253,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 53845</p>
+<p>Default: 57729</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1476,7 +1471,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 52373</p>
+<p>Default: 54739</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1538,11 +1533,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 38259</p>
+<p>Default: 42339</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 59783</p>
+<p>Default: 59365</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1631,7 +1626,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 40517</p>
+<p>Default: 45437</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1766,7 +1761,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 33379</p>
+<p>Default: 37757</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1828,11 +1823,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 42581</p>
+<p>Default: 54981</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 55759</p>
+<p>Default: 56351</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1921,7 +1916,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 55971</p>
+<p>Default: 41859</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -2050,7 +2045,7 @@ peas are running on host provided by the argument <code class="docutils literal 
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 49637</p>
+<p>Default: 35547</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>

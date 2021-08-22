@@ -545,13 +545,14 @@ def foo():</p>
 <dd></dd></dl>
 <dl class="py method">
 <dt id="jina.logging.profile.ProgressBar.update">
-<code class="sig-name descname"><span class="pre">update</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_completed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/logging/profile/#ProgressBar.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.profile.ProgressBar.update" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">update</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_completed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_enter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/logging/profile/#ProgressBar.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.profile.ProgressBar.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Increment the progress bar by one unit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>progress</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The number of unit to increment.</p></li>
 <li><p><strong>all_completed</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Mark the task as fully completed.</p></li>
+<li><p><strong>first_enter</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if this method is called by <cite>__enter__</cite></p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>

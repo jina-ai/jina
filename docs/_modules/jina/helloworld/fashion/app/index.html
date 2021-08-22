@@ -478,7 +478,6 @@
     <span class="k">with</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">index</span><span class="p">(</span>
             <span class="n">index_generator</span><span class="p">(</span><span class="n">num_docs</span><span class="o">=</span><span class="n">targets</span><span class="p">[</span><span class="s1">'index'</span><span class="p">][</span><span class="s1">'data'</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">target</span><span class="o">=</span><span class="n">targets</span><span class="p">),</span>
-            <span class="n">request_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">request_size</span><span class="p">,</span>
             <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -489,7 +488,6 @@
             <span class="p">),</span>
             <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">on_done</span><span class="o">=</span><span class="n">print_result</span><span class="p">,</span>
-            <span class="n">request_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">request_size</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">'top_k'</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">top_k</span><span class="p">},</span>
             <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>

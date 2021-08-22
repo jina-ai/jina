@@ -539,13 +539,15 @@
         <span class="k">pass</span>  <span class="c1"># intentional pass, browser support isn't cross-platform</span>
     <span class="k">finally</span><span class="p">:</span>
         <span class="n">default_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'You should see a "hello-world.html" opened in your browser, '</span>
+            <span class="sa">f</span><span class="s1">'You should see a "demo.html" opened in your browser, '</span>
             <span class="sa">f</span><span class="s1">'if not you may open </span><span class="si">{</span><span class="n">url_html_path</span><span class="si">}</span><span class="s1"> manually'</span>
         <span class="p">)</span>
 
-    <span class="n">colored_url</span> <span class="o">=</span> <span class="n">colored</span><span class="p">(</span><span class="s1">'https://opensource.jina.ai'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'cyan'</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">)</span>
+    <span class="n">colored_url</span> <span class="o">=</span> <span class="n">colored</span><span class="p">(</span>
+        <span class="s1">'https://github.com/jina-ai/jina'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'cyan'</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span>
+    <span class="p">)</span>
     <span class="n">default_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s1">'🤩 Intrigued? Play with "jina hello fashion --help" and learn more about Jina at </span><span class="si">{</span><span class="n">colored_url</span><span class="si">}</span><span class="s1">'</span>
+        <span class="sa">f</span><span class="s1">'🤩 Intrigued? Play with `jina hello fashion --help` and learn more about Jina at </span><span class="si">{</span><span class="n">colored_url</span><span class="si">}</span><span class="s1">'</span>
     <span class="p">)</span></div>
 
 
