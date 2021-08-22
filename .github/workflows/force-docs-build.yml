@@ -50,7 +50,7 @@ jobs:
           cp -r ./ ../../../gen-html
           cd -  # back to ./docs
           cd ..
-          rm -rf ./docs
+          git rm -rf ./docs
           mkdir docs
           cd gen-html
           cp -r ./ ../docs
@@ -60,6 +60,6 @@ jobs:
           cp 404/index.html 404.html
           echo docs.jina.ai > CNAME
           git status
-          git add api cli proto
-          git add . && git commit -m "chore(docs): update docs due to ${{github.event_name}} on ${{github.repository}}"
+          cd ..
+          git add docs && git commit -m "chore(docs): update docs due to ${{github.event_name}} on ${{github.repository}}"
           git push origin gh-pages
