@@ -32,7 +32,6 @@ def test_tag_update():
 
     f = Flow(
         port_expose=PORT_EXPOSE,
-        restful=True,
         protocol='http',
     ).add(uses=TestExecutor)
 

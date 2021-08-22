@@ -274,6 +274,7 @@ def get_main_parser():
             description='Start a Pod. '
             'You should rarely use this directly unless you '
             'are doing low-level orchestration',
+            formatter_class=_chf,
             **(dict(help='Start a Pod')) if _SHOW_ALL_ARGS else {},
         )
     )

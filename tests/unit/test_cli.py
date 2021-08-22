@@ -35,6 +35,14 @@ def test_main_cli():
     subprocess.check_call(['jina'])
 
 
+def test_cli_help():
+    subprocess.check_call(['jina', 'help', 'pod'])
+
+
+def test_cli_warn_unknown_args():
+    subprocess.check_call(['jina', 'help', 'pod', '--abcdefg'])
+
+
 @pytest.mark.parametrize('cli', ac_table['commands'])
 def test_all_cli(cli):
     subprocess.check_call(['jina', cli, '--help'])
