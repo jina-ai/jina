@@ -523,7 +523,7 @@ def foo():</p>
 </dd></dl>
 <dl class="py class">
 <dt id="jina.logging.profile.ProgressBar">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.logging.profile.</span></code><code class="sig-name descname"><span class="pre">ProgressBar</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bar_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/logging/profile/#ProgressBar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.profile.ProgressBar" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.logging.profile.</span></code><code class="sig-name descname"><span class="pre">ProgressBar</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Working...'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/logging/profile/#ProgressBar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.profile.ProgressBar" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#jina.logging.profile.TimeContext" title="jina.logging.profile.TimeContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.logging.profile.TimeContext</span></code></a></p>
 <p>A simple progress bar.</p>
 <dl>
@@ -536,36 +536,22 @@ def foo():</p>
 <p>Create the ProgressBar.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>bar_len</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Total length of the bar.</p></li>
-<li><p><strong>task_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The name of the task, will be displayed in front of the bar.</p></li>
-<li><p><strong>logger</strong> – Jina logger</p></li>
-</ul>
+<dd class="field-odd"><p><strong>description</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The name of the task, will be displayed in front of the bar.</p>
 </dd>
 </dl>
-<dl class="py method">
-<dt id="jina.logging.profile.ProgressBar.update_tick">
-<code class="sig-name descname"><span class="pre">update_tick</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tick</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/logging/profile/#ProgressBar.update_tick"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.profile.ProgressBar.update_tick" title="Permalink to this definition">¶</a></dt>
-<dd><p>Increment the progress bar by one tick, when the ticks accumulate to one, trigger one <a class="reference internal" href="#jina.logging.profile.ProgressBar.update" title="jina.logging.profile.ProgressBar.update"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update()</span></code></a>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>tick</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – A float unit to increment (should &lt; 1).</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
+<dl class="py attribute">
+<dt id="jina.logging.profile.ProgressBar.bar_color">
+<code class="sig-name descname"><span class="pre">bar_color</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['green',</span> <span class="pre">'yellow']</span></em><a class="headerlink" href="#jina.logging.profile.ProgressBar.bar_color" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 <dl class="py method">
 <dt id="jina.logging.profile.ProgressBar.update">
-<code class="sig-name descname"><span class="pre">update</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/logging/profile/#ProgressBar.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.profile.ProgressBar.update" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">update</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_completed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/logging/profile/#ProgressBar.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.profile.ProgressBar.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Increment the progress bar by one unit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>progress</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – The number of unit to increment.</p></li>
-<li><p><strong>args</strong> – extra arguments</p></li>
-<li><p><strong>kwargs</strong> – keyword arguments</p></li>
+<li><p><strong>progress</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The number of unit to increment.</p></li>
+<li><p><strong>all_completed</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Mark the task as fully completed.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
