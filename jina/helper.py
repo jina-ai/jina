@@ -642,23 +642,31 @@ class ColorContext:
 def warn_unknown_args(unknown_args: List[str]):
     """Creates warnings for all given arguments.
 
-    :param unknown_args: arguments that are unknown to Jina
+    :param unknown_args: arguments that are possibly unknown to Jina
     """
 
-    warn_str = f'ignored unknown argument: {unknown_args}. '
+    from cli.lookup import _build_lookup_table
+
+    all_args = _build_lookup_table()[0]
 
     has_migration_tip = False
+    real_unknown_args = []
+    warn_strs = []
     for arg in unknown_args:
-        from .parsers.deprecated import get_deprecated_replacement
+        if arg.replace('--', '') not in all_args:
+            from .parsers.deprecated import get_deprecated_replacement
 
-        new_arg = get_deprecated_replacement(arg)
-        if new_arg:
-            if not has_migration_tip:
-                warn_str += '\nMigration tips:'
-                has_migration_tip = True
-            warn_str += f'\n\t`{arg}` has been renamed to `{new_arg}`'
+            new_arg = get_deprecated_replacement(arg)
+            if new_arg:
+                if not has_migration_tip:
+                    warn_strs.append('Migration tips:')
+                    has_migration_tip = True
+                warn_strs.append(f'\t`{arg}` has been renamed to `{new_arg}`')
+            real_unknown_args.append(arg)
 
-    warnings.warn(warn_str)
+    if real_unknown_args:
+        warn_strs = [f'ignored unknown argument: {real_unknown_args}.'] + warn_strs
+        warnings.warn(''.join(warn_strs))
 
 
 class ArgNamespace:
@@ -696,6 +704,7 @@ class ArgNamespace:
         kwargs: Dict[str, Union[str, int, bool]],
         parser: ArgumentParser,
         warn_unknown: bool = False,
+        fallback_parsers: List[ArgumentParser] = None,
     ) -> Namespace:
         """
         Convert dict to a namespace.
@@ -703,12 +712,21 @@ class ArgNamespace:
         :param kwargs: dictionary of key-values to be converted
         :param parser: the parser for building kwargs into a namespace
         :param warn_unknown: True, if unknown arguments should be logged
+        :param fallback_parsers: a list of parsers to help resolving the args
         :return: argument list
         """
         args = ArgNamespace.kwargs2list(kwargs)
         p_args, unknown_args = parser.parse_known_args(args)
         if warn_unknown and unknown_args:
-            warn_unknown_args(unknown_args)
+            _left_overs = set(unknown_args)
+            if fallback_parsers:
+                for p in fallback_parsers:
+                    _, _unk_args = p.parse_known_args(args)
+                    _left_overs = _left_overs.intersection(_unk_args)
+                    if not _left_overs:
+                        # all args have been resolved
+                        break
+            warn_unknown_args(_left_overs)
 
         return p_args
 
