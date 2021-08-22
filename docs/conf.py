@@ -31,7 +31,7 @@ except FileNotFoundError:
 version = __version__
 release = __version__
 
-templates_path = ['template']
+templates_path = ['_templates']
 exclude_patterns = [
     '_build',
     'Thumbs.db',
@@ -50,9 +50,18 @@ sitemap_locales = [None]
 sitemap_filename = "sitemap.xml"
 
 html_theme_options = {
-    'light_logo': 'logo-light.svg',
-    'dark_logo': 'logo-dark.svg',
+    'light_logo': 'logo-new.gif',
+    'dark_logo': 'logo-new.gif',
     "sidebar_hide_name": True,
+    "light_css_variables": {
+        "color-brand-primary": "#009191",
+        "color-brand-content": "#009191",
+    },
+    "dark_css_variables": {
+        "color-brand-primary": "#FBCB67",
+        "color-brand-content": "#FBCB67",
+    },
+    "show_sphinx": False
 }
 
 html_static_path = ['_static']
@@ -60,6 +69,7 @@ html_extra_path = ['html_extra']
 html_css_files = ['main.css']
 htmlhelp_basename = slug
 html_show_sourcelink = False
+html_title = 'Welcome to Jina'
 
 latex_documents = [(master_doc, f'{slug}.tex', project, author, 'manual')]
 man_pages = [(master_doc, slug, project, [author], 1)]
