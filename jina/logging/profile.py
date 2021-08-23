@@ -195,7 +195,8 @@ class ProgressBar(TimeContext):
                 do_busy()
     """
 
-    bar_color = ['green', 'yellow']
+    col_width = 100
+    clear_line = '\r{}\r'.format(' ' * col_width)
 
     def __init__(
         self,
@@ -233,7 +234,7 @@ class ProgressBar(TimeContext):
         ):
             return
         self._last_rendered_progress = self._completed_progress
-        sys.stdout.write('\r')
+        sys.stdout.write(self.clear_line)
         elapsed = time.perf_counter() - self.start
         num_bars = self._completed_progress % self._bars_on_row
         num_bars = (
@@ -245,7 +246,7 @@ class ProgressBar(TimeContext):
         num_halfbars = 1 if (num_bars - num_fullbars <= 0.5) else 0
 
         bar_color = 'yellow' if all_completed else 'green'
-        unfinished_bar_color = 'yellow' if all_completed else 'white'
+        unfinished_bar_color = 'yellow' if all_completed else 'green'
 
         time_str = (
             '-:--:--'
@@ -271,8 +272,6 @@ class ProgressBar(TimeContext):
                 speed_str,
             )
         )
-        if num_bars >= self._bars_on_row:
-            sys.stdout.write('\033[K')
         sys.stdout.flush()
 
     def __enter__(self):
@@ -290,4 +289,5 @@ class ProgressBar(TimeContext):
                 f'\033[K{self._completed_progress:.0f} steps done in {self.readable_duration} ({speed:3.1f} step/s)\n'
             )
         else:
-            sys.stdout.write('\033[A')
+            sys.stdout.write(self.clear_line)
+        sys.stdout.flush()
