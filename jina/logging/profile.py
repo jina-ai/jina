@@ -196,6 +196,7 @@ class ProgressBar(TimeContext):
     """
 
     col_width = 100
+    clear_line = '\r' + ' ' * col_width + '\r'
 
     def __init__(
         self,
@@ -233,7 +234,7 @@ class ProgressBar(TimeContext):
         ):
             return
         self._last_rendered_progress = self._completed_progress
-        sys.stdout.write('\r' + ' ' * self.col_width + '\r')
+        sys.stdout.write(self.clear_line)
         elapsed = time.perf_counter() - self.start
         num_bars = self._completed_progress % self._bars_on_row
         num_bars = (
@@ -290,5 +291,5 @@ class ProgressBar(TimeContext):
                 f'\033[K{self._completed_progress:.0f} steps done in {self.readable_duration} ({speed:3.1f} step/s)\n'
             )
         else:
-            sys.stdout.write('\r' + ' ' * self.col_width + '\r')
+            sys.stdout.write(self.clear_line)
         sys.stdout.flush()
