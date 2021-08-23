@@ -20,3 +20,10 @@ def test_progressbar(total_steps, update_tick, task_name, capsys):
     else:
         assert 'estimating' in captured.out
         assert 'steps done' not in captured.out
+
+
+def test_never_call_update(capsys):
+    with ProgressBar():
+        pass
+    captured = capsys.readouterr()
+    assert captured.out.endswith(ProgressBar.clear_line)
