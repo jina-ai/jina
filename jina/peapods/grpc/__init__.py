@@ -50,12 +50,10 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         :param kwargs: Additional arguments.
         """
 
-        self._logger.info('### self._next_targets', self._next_targets)
         if self._next_targets:
             for pod_address in self._next_targets:
                 self._send_message(msg, pod_address)
         else:
-            self._logger.info('### msg.envelope.routing_table', msg.envelope.routing_table)
             routing_table = RoutingTable(msg.envelope.routing_table)
             next_targets = routing_table.get_next_targets()
             for target, _ in next_targets:
@@ -65,7 +63,6 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
                 )
 
     def _send_message(self, msg, pod_address):
-        self._logger.info('### pod_address not in self._stubs', pod_address not in self._stubs)
         if pod_address not in self._stubs:
             self._stubs[pod_address] = Grpclet._create_grpc_stub(pod_address)
         try:
