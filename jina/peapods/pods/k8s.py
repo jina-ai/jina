@@ -62,14 +62,15 @@ class K8sPod(BasePod):
             port_out=self.args.port_out,
             port_ctrl=self.args.port_ctrl,
             port_expose=self.args.port_expose,
-            image_name='gcr.io/jina-showcase/generic-gateway:latest',
+            image_name='gcr.io/jina-showcase/custom-jina:latest',
             container_cmd='["jina"]',
             container_args=f'["gateway", '
-                           f'"--grpc_data_requests", '
+                           f'"--grpc-data-requests", '
                            f'"--runtime-cls", "GRPCDataRuntime", '
-                           f'{kubernetes_deployment.get_cli_params(self.args)}]',
+                           f'{kubernetes_deployment.get_cli_params(self.args, ("pod_role", ))}]',
             logger=JinaLogger(f'deploy_{self.name}'),
             replicas=1,
+            pull_policy='Always',
             init_container=None,
         )
 
@@ -98,7 +99,7 @@ class K8sPod(BasePod):
             container_args = (
                     f'["pea", '
                     f'"--uses", "config.yml", '
-                    f'"--grpc_data_requests", '
+                    f'"--grpc-data-requests", '
                     f'"--runtime-cls", "GRPCDataRuntime", '
                     f'"--uses-metas", "{uses_metas}", '
                     + uses_with_string
@@ -117,6 +118,7 @@ class K8sPod(BasePod):
             container_args=container_args,
             logger=JinaLogger(f'deploy_{self.name}'),
             replicas=replicas,
+            pull_policy='Always',
             init_container=init_container_args,
         )
 

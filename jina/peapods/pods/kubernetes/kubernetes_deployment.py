@@ -4,9 +4,9 @@ from jina.hubble.hubio import HubIO
 IS_LOCAL = False
 
 if IS_LOCAL:
-    gateway_image = 'generic-gateway'
+    gateway_image = 'custom-jina'
 else:
-    gateway_image = 'gcr.io/jina-showcase/generic-gateway:latest'
+    gateway_image = 'gcr.io/jina-showcase/custom-jina:latest'
 
 
 def to_dns_name(name):
@@ -25,6 +25,7 @@ def deploy_service(
     container_args,
     logger,
     replicas,
+    pull_policy,
     init_container=None,
 ):
     from jina.peapods.pods.kubernetes import kubernetes_tools
@@ -44,10 +45,10 @@ def deploy_service(
             'name': name,
             'target': name,
             'namespace': namespace,
+            'port_expose': port_expose,
             'port_in': port_in,
             'port_out': port_out,
             'port_ctrl': port_ctrl,
-            'port_expose': port_expose,
             'type': 'ClusterIP',
         },
     )
@@ -66,10 +67,11 @@ def deploy_service(
                 'replicas': replicas,
                 'command': container_cmd,
                 'args': container_args,
+                'port_expose': port_expose,
                 'port_in': port_in,
                 'port_out': port_out,
                 'port_ctrl': port_ctrl,
-                'port_expose': port_expose,
+                'pull_policy': pull_policy,
                 **init_container,
             },
         )
@@ -83,10 +85,11 @@ def deploy_service(
                 'replicas': replicas,
                 'command': container_cmd,
                 'args': container_args,
+                'port_expose': port_expose,
                 'port_in': port_in,
                 'port_out': port_out,
                 'port_ctrl': port_ctrl,
-                'port_expose': port_expose,
+                'pull_policy': pull_policy,
             },
         )
     return f'{name}.{namespace}.svc.cluster.local'
@@ -114,7 +117,7 @@ def deploy_service(
 #             glue_executor.port_out,
 #             glue_executor.port_ctrl,
 #             glue_executor.port_expose,
-#             'gcr.io/jina-showcase/generic-gateway:latest',
+#             'gcr.io/jina-showcase/custom-jina:latest',
 #             '["jina"]',
 #             f'["executor", "--uses", "{glue_executor.uses}", {get_cli_params(glue_executor, skip_list=["uses_with"])}]',
 #             logger,
@@ -372,7 +375,7 @@ def get_init_container_args(pod):
 #         gateway_args.port_out,
 #         gateway_args.port_ctrl,
 #         gateway_args.port_expose,
-#         'gcr.io/jina-showcase/generic-gateway:latest',
+#         'gcr.io/jina-showcase/custom-jina:latest',
 #         container_cmd='["jina"]',
 #         container_args=f'["gateway", ' f'{get_cli_params(gateway_args)}]',
 #         logger=k8s_flow.logger,

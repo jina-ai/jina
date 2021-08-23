@@ -718,11 +718,11 @@ async def send_message_async(
     :param kwargs: keyword arguments
     :return: the size (in bytes) of the sent message
     """
-    import traceback
-    traceback.print_stack()
+    # import traceback
+    # traceback.print_stack()
 
     try:
-        print('send async... envelop', msg.envelope)
+        # print('send async... envelop', msg.envelope)
         _prep_send_socket(sock, timeout)
         await sock.send_multipart(msg.dump())
         return msg.size
