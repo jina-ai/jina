@@ -272,8 +272,6 @@ class ProgressBar(TimeContext):
                 speed_str,
             )
         )
-        if num_bars >= self._bars_on_row:
-            sys.stdout.write('\033[K')
         sys.stdout.flush()
 
     def __enter__(self):
