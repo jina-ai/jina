@@ -91,38 +91,13 @@ jobs:
     needs: update-schema
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: benc-uk/workflow-dispatch@v1
         with:
-          fetch-depth: 0
-      - uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
-      - name: push-to-gh-pages-branch
-        run: |
-          git config --local user.email "dev-bot@jina.ai"
-          git config --local user.name "Jina Dev Bot"
-          git checkout gh-pages
-          git merge origin/master
-          pip install .[devel]
-          cd docs
-          pip install -r requirements.txt
-          docker run --rm \
-            -v $(pwd)/proto:/out \
-            -v $(pwd)/../jina/proto:/protos \
-            pseudomuto/protoc-gen-doc --doc_opt=markdown,docs.md
-          make dirhtml
-          cd ./_build/dirhtml/
-          cp -r ./ ../../
-          cd -
-          rm -rf ./_build/dirhtml/
-          ls -la
-          touch .nojekyll
-          cp 404/index.html 404.html
-          echo docs.jina.ai > CNAME
-          git add api cli proto
-          git add . && git commit -m "chore(docs): update docs due to ${{github.event_name}} on ${{github.repository}}"
-          git status
-          git push origin gh-pages
+          workflow: Manual Docs Build
+          inputs: '{ "release_token": "${{ env.release_token }}", "triggered_by": "CD"}'
+          token: ${{ secrets.JINA_DEV_BOT }}
+        env:
+          release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}
 
   update-docker:
     needs: [update-doc, update-schema]

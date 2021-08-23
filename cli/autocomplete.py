@@ -24,7 +24,6 @@ ac_table = {
             '--index-labels-url',
             '--query-data-url',
             '--query-labels-url',
-            '--request-size',
             '--num-query',
             '--top-k',
         ],

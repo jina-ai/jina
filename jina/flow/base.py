@@ -37,6 +37,7 @@ from ..jaml import JAMLCompatible
 
 from ..logging.logger import JinaLogger
 from ..parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
+from ..parsers.flow import set_flow_parser
 from ..peapods import CompoundPod, Pod
 from ..peapods.pods.factory import PodFactory
 from ..types.routing.table import RoutingTable
@@ -59,6 +60,12 @@ if False:
     from .asyncio import AsyncFlow
 
 GATEWAY_NAME = 'gateway'
+FALLBACK_PARSERS = [
+    set_gateway_parser(),
+    set_pod_parser(),
+    set_client_cli_parser(),
+    set_flow_parser(),
+]
 
 
 class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
@@ -313,7 +320,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         _flow_parser = set_flow_parser()
         if args is None:
-            args = ArgNamespace.kwargs2namespace(kwargs, _flow_parser, True)
+            args = ArgNamespace.kwargs2namespace(
+                kwargs, _flow_parser, True, fallback_parsers=FALLBACK_PARSERS
+            )
         self.args = args
         # common args should be the ones that can not be parsed by _flow_parser
         known_keys = vars(args)
@@ -693,7 +702,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if pod_role == PodRoleType.GATEWAY:
             parser = set_gateway_parser()
 
-        args = ArgNamespace.kwargs2namespace(kwargs, parser, True)
+        args = ArgNamespace.kwargs2namespace(
+            kwargs, parser, True, fallback_parsers=FALLBACK_PARSERS
+        )
 
         if args.grpc_data_requests and args.runtime_cls == 'ZEDRuntime':
             args.runtime_cls = 'GRPCDataRuntime'

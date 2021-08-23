@@ -84,6 +84,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -296,6 +297,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`2.0.17`)](#release-note-2017)
 - [Release Note (`2.0.18`)](#release-note-2018)
 - [Release Note (`2.0.19`)](#release-note-2019)
+- [Release Note (`2.0.20`)](#release-note-2020)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -10111,4 +10113,55 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```caa019a7```](https://github.com/jina-ai/jina/commit/caa019a780dec5f64bffc42acafbfac2830d7853)] __-__ update readme (*Han Xiao*)
  - [[```30157b4a```](https://github.com/jina-ai/jina/commit/30157b4a3b89db76ac6f48be83151e0a6039c090)] __-__ __docs__: fix readme typo (*Han Xiao*)
  - [[```91161fbe```](https://github.com/jina-ai/jina/commit/91161fbe06c081b74be16b0f05bc5a7e596c0033)] __-__ __version__: the next version will be 2.0.19 (*Jina Dev Bot*)
+
+<a name=release-note-2-0-20></a>
+## Release Note (`2.0.20`)
+
+> Release time: 2021-08-22 12:31:55
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Deepankar Mahapatro,  David Buchaca Prats,  Maximilian Werk,  Tobias Jacobowitz,  Tadej Svetina,  Roshan Jossy,  Piper,  Joan Fontanals,  Zhaofeng Miao,  Nan Wang,  🙇
+
+
+### 🆕 New Features
+
+ - [[```fcf17a9c```](https://github.com/jina-ai/jina/commit/fcf17a9c27d4d960703a7647b45e1cdf3d64c176)] __-__ __daemon__: add timeout to client (#3236) (*Deepankar Mahapatro*)
+ - [[```b4526c97```](https://github.com/jina-ai/jina/commit/b4526c977493cf27a60267bf9eb1d7ce4fd55673)] __-__ __routing__: add static routing table feature (#3222) (*Tobias Jacobowitz*)
+ - [[```83f60053```](https://github.com/jina-ai/jina/commit/83f600532d3930a7bcccca7dfba9f8738fa96402)] __-__ add structuring executor repositories best practices (#3156) (*Tadej Svetina*)
+ - [[```a41205be```](https://github.com/jina-ai/jina/commit/a41205be9b758b668948ac42d9b974ed99eb272d)] __-__ __hubio__: modify fields of manifest produced by jina hub new (#3215) (*Zhaofeng Miao*)
+
+### ⚡ Performance Improvements
+
+ - [[```c659685a```](https://github.com/jina-ai/jina/commit/c659685a9debde32e9bd18c4f371434e771f28df)] __-__ __helloworld__: optimize the performance of hello fashion (#3239) (*Han Xiao*)
+ - [[```de6d3429```](https://github.com/jina-ai/jina/commit/de6d3429e4782f994f179fcbe4e9c09fb61025ff)] __-__ remove environment variable reading from init (#3235) (*David Buchaca Prats*)
+
+### 🐞 Bug fixes
+
+ - [[```8e13ad2c```](https://github.com/jina-ai/jina/commit/8e13ad2ceb253d841e182fb746220a7fa3494487)] __-__ __helper__: fix bad warning message on unknown cli (#3237) (*Han Xiao*)
+ - [[```0649cce1```](https://github.com/jina-ai/jina/commit/0649cce18c9b81d1019b142e432b9180ef34d972)] __-__ no warning for metas in executor (#3219) (*Maximilian Werk*)
+ - [[```4d86d781```](https://github.com/jina-ai/jina/commit/4d86d7810205355133b7216c6119b37a3a882d7b)] __-__ __types__: fix split swallow the category at float zero (#3226) (*Han Xiao*)
+ - [[```b31c4c2d```](https://github.com/jina-ai/jina/commit/b31c4c2d8763b6fd96f32c2de06b29b591bf5c66)] __-__ fix graph plot (#3220) (*Joan Fontanals*)
+ - [[```664bf1ad```](https://github.com/jina-ai/jina/commit/664bf1ad1b11d5bc037068e543fcf3c9d054cbba)] __-__ add jina-bot to the cla whitelist (#3216) (*Nan Wang*)
+ - [[```21a3dfa4```](https://github.com/jina-ai/jina/commit/21a3dfa44b51d700bf94165cb8011eb893637d7a)] __-__ fix listview insert, append (#3212) (*Joan Fontanals*)
+ - [[```1517ce8c```](https://github.com/jina-ai/jina/commit/1517ce8c29688de9e70e65f38f73377c05c8def3)] __-__ license should be included in distribution (#3213) (*Tadej Svetina*)
+
+### 🧼 Code Refactoring
+
+ - [[```91be0f76```](https://github.com/jina-ai/jina/commit/91be0f7612df8c39c32f1ea80a17b2547822e5da)] __-__ __helper__: make progressbar more useful and modern (#3238) (*Han Xiao*)
+ - [[```706b41cc```](https://github.com/jina-ai/jina/commit/706b41cc2420a9ddd5b0363f434960dfb03a5a2f)] __-__ __except__: rename Flow version except (#3224) (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```fd2c6500```](https://github.com/jina-ai/jina/commit/fd2c6500b0700cd709f01adf874829afc63aad8e)] __-__ __readme__: update links for tutorials and blogs (#3214) (*Roshan Jossy*)
+ - [[```957fbee9```](https://github.com/jina-ai/jina/commit/957fbee99958ba17a2cf5296dbbdc6af5e80d0d9)] __-__ update the number of slack members (#3228) (*Piper*)
+
+### 🍹 Other Improvements
+
+ - [[```31273bd8```](https://github.com/jina-ai/jina/commit/31273bd888150b80fd85ae58c44868e8ae1da179)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```53f49e33```](https://github.com/jina-ai/jina/commit/53f49e33eefd89bcbca40744c6a4c9228f3546f8)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```8d9ee246```](https://github.com/jina-ai/jina/commit/8d9ee246d28f1acd2c1bfb2fe494a4d68503b9c8)] __-__ changed pull_request_target to pull_request (#3189) (*Deepankar Mahapatro*)
+ - [[```55c49447```](https://github.com/jina-ai/jina/commit/55c49447d66b6e05b9242c99ad58c56a6d199126)] __-__ comment out walkthroughs until links fixed (*Han Xiao*)
+ - [[```88d8a6fb```](https://github.com/jina-ai/jina/commit/88d8a6fb0614b87b10c1e3ded3cd3425548874a8)] __-__ __version__: the next version will be 2.0.20 (*Jina Dev Bot*)
 
