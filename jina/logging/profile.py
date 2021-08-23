@@ -196,7 +196,7 @@ class ProgressBar(TimeContext):
     """
 
     col_width = 100
-    clear_line = '\r' + ' ' * col_width + '\r'
+    clear_line = '\r{}\r'.format(' ' * col_width)
 
     def __init__(
         self,
