@@ -72,7 +72,10 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     @app.on_event('shutdown')
     async def _shutdown():
         await servicer.close()
-        await iolet.close()
+        if inspect.iscoroutine(iolet.close):
+            await iolet.close()
+        else:
+            iolet.close()
 
     openapi_tags = []
     if not args.no_debug_endpoints:

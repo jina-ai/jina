@@ -1,4 +1,5 @@
 import argparse
+import inspect
 from typing import List
 
 from ..prefetch import PrefetchCaller
@@ -49,7 +50,10 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     @app.on_event('shutdown')
     async def _shutdown():
         await servicer.close()
-        await iolet.close()
+        if inspect.iscoroutine(iolet.close):
+            await iolet.close()
+        else:
+            iolet.close()
 
     @app.websocket('/')
     async def websocket_endpoint(websocket: WebSocket):
