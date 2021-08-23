@@ -5,27 +5,101 @@ from .... import helper
 from ....enums import CompressAlgo
 
 
-def mixin_remote_parser(parser):
+def mixin_remote_runtime_parser(parser):
     """Add the options for remote expose
     :param parser: the parser
     """
     gp = add_arg_group(parser, title='Expose')
+    _add_host(gp)
 
     gp.add_argument(
+        '--port-jinad',
+        type=int,
+        default=helper.random_port(),
+        help='The port of the remote machine for usage with JinaD',
+    )
+
+    gp.add_argument(
+        '--port-expose',  # TODO: remove with Jina 3.0. Here for backwards compatibility
+        type=int,
+        dest='port_jinad',
+        help='Deprecated. Please use `--port-jinad` when starting a remote runtime via JinaD.',
+    )
+
+
+def mixin_remote_jinad_parser(parser):
+    """Add the options for remote expose
+    :param parser: the parser
+    """
+    gp = add_arg_group(parser, title='Expose')
+    _add_host(gp)
+
+    gp.add_argument(
+        '--port',
+        type=int,
+        default=helper.random_port(),
+        help='The port of the host exposed for connecting to',
+    )
+
+    gp.add_argument(
+        '--port-expose',  # TODO (maximilian): remove with Jina 3.0. Here for backwards compatibility
+        type=int,
+        dest='port',
+        help='Deprecated. Please use `--port` when starting JinaD.',
+    )
+
+
+def mixin_client_gateway_parser(parser):
+    """Add the options for remote expose
+    :param parser: the parser
+    """
+    gp = add_arg_group(parser, title='Expose')
+    _add_host(gp)
+    _add_proxy(gp)
+
+    gp.add_argument(
+        '--port-gateway',
+        type=int,
+        default=helper.random_port(),
+        help='The port of the Gateway, which the client should connect to',
+    )
+
+    gp.add_argument(
+        '--port-expose',  # TODO (maximilian): remove with Jina 3.0. Here for backwards compatibility
+        type=int,
+        dest='port_gateway',
+        help='Deprecated. Please use `--port-gateway` when starting a client.',
+    )
+
+
+def mixin_grpc_gateway_parser(parser):
+    """Add the options for remote expose
+    :param parser: the parser
+    """
+    gp = add_arg_group(parser, title='Expose')
+    _add_host(gp)
+    _add_proxy(gp)
+
+    gp.add_argument(
+        '--port-expose',
+        type=int,
+        dest='port_gateway',
+        help='The port that the gateway exposes for clients for GRPC connections.',
+    )
+
+
+def _add_host(arg_group):
+    arg_group.add_argument(
         '--host',
         type=str,
         default=__default_host__,
         help=f'The host address of the runtime, by default it is {__default_host__}.',
     )
 
-    gp.add_argument(
-        '--port-expose',
-        type=int,
-        default=helper.random_port(),
-        help='The port of the host exposed to the public',
-    )
 
-    gp.add_argument(
+def _add_proxy(arg_group):
+
+    arg_group.add_argument(
         '--proxy',
         action='store_true',
         default=False,

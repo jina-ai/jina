@@ -6,7 +6,7 @@ from jina import __resources_path__
 from jina.parsers.base import set_base_parser
 from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS
 from jina.parsers.peapods.base import mixin_base_ppr_parser
-from jina.parsers.peapods.runtimes.remote import mixin_remote_parser
+from jina.parsers.peapods.runtimes.remote import mixin_remote_jinad_parser
 from .models.enums import PartialDaemonModes
 
 
@@ -50,7 +50,7 @@ def get_main_parser():
 
     parser = set_base_parser()
 
-    mixin_remote_parser(parser)
+    mixin_remote_jinad_parser(parser)
     mixin_base_ppr_parser(parser)
     mixin_daemon_parser(parser)
 
