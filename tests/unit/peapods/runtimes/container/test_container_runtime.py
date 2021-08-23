@@ -210,7 +210,7 @@ def test_tail_host_docker2local():
         .add(name='d13')
     )
     with f:
-        assert getattr(f._pod_nodes['d12'].tail_args, 'host_out') == localhost
+        assert getattr(f._pod_nodes['d12'].tail_args, 'host_out') == defaulthost
 
 
 def test_pass_arbitrary_kwargs(monkeypatch, mocker):
