@@ -122,7 +122,11 @@ class GRPCDataRuntime(BaseRuntime, ABC):
         :param control_address: the address where the control message needs to be sent
         :param kwargs: extra keyword arguments
         """
-        Grpclet.send_ctrl_msg(control_address, 'TERMINATE')
+        try:
+            Grpclet.send_ctrl_msg(control_address, 'TERMINATE')
+        except RpcError:
+            # TERMINATE can fail if the the runtime dies before sending the return value
+            pass
 
     @staticmethod
     def wait_for_ready_or_shutdown(

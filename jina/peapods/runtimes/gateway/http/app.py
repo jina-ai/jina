@@ -1,10 +1,12 @@
 import argparse
+import inspect
 import json
 from typing import Dict
 
 from google.protobuf.json_format import MessageToDict
 
 from ..prefetch import PrefetchCaller
+from ....grpc import Grpclet
 from ....zmq import AsyncZmqlet
 from ..... import __version__
 from .....clients.request import request_generator
@@ -57,13 +59,23 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             'CORS is enabled. This service is now accessible from any website!'
         )
 
-    zmqlet = AsyncZmqlet(args, logger)
-    servicer = PrefetchCaller(args, zmqlet)
+    if args.grpc_data_requests:
+        iolet = Grpclet(
+            args=args,
+            message_callback=None,
+            logger=logger,
+        )
+    else:
+        iolet = AsyncZmqlet(args, logger)
+    servicer = PrefetchCaller(args, iolet)
 
     @app.on_event('shutdown')
     async def _shutdown():
         await servicer.close()
-        zmqlet.close()
+        if inspect.iscoroutine(iolet.close):
+            await iolet.close()
+        else:
+            iolet.close()
 
     openapi_tags = []
     if not args.no_debug_endpoints:

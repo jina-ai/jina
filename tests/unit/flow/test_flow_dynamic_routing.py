@@ -67,7 +67,6 @@ def test_static_routing_table_parallel():
     f = Flow(static_routing_table=True).add(uses=SimplAddExecutor, parallel=2)
 
     with f:
-        print(f._get_routing_table().json())
         results = f.post(on='/index', inputs=[Document(text='1')], return_results=True)
         assert len(results[0].docs) == 2
 
