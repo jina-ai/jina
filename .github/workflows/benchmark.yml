@@ -1,0 +1,19 @@
+name: Benchmarking
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - "v*" 
+
+jobs:
+  benchmark-jina:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: benchmark-jina
+          repo: jina-ai/jina-terraform
+          token: ${{ secrets.JINA_DEV_BOT }}
+          inputs: '{ "git_tags": ["$GITHUB_REF"], "pypi_releases": [] }'
