@@ -9,7 +9,7 @@ def mixin_remote_runtime_parser(parser):
     """Add the options for remote expose
     :param parser: the parser
     """
-    gp = add_arg_group(parser, title='Expose')
+    gp = add_arg_group(parser, title='RemoteRuntime')
     _add_host(gp)
 
     gp.add_argument(
@@ -20,10 +20,10 @@ def mixin_remote_runtime_parser(parser):
     )
 
     gp.add_argument(
-        '--port-expose',  # TODO: remove with Jina 3.0. Here for backwards compatibility
+        '--port-expose',  # TODO (maximilian): remove with Jina 3.0. Here for backwards compatibility
         type=int,
-        dest='port_jinad',
-        help='Deprecated. Please use `--port-jinad` when starting a remote runtime via JinaD.',
+        dest='port',
+        help='Deprecated. Please use `--port-jinad` when starting JinaD.',
     )
 
 
@@ -31,7 +31,7 @@ def mixin_remote_jinad_parser(parser):
     """Add the options for remote expose
     :param parser: the parser
     """
-    gp = add_arg_group(parser, title='Expose')
+    gp = add_arg_group(parser, title='RemoteJinad')
     _add_host(gp)
 
     gp.add_argument(
@@ -53,7 +53,7 @@ def mixin_client_gateway_parser(parser):
     """Add the options for remote expose
     :param parser: the parser
     """
-    gp = add_arg_group(parser, title='Expose')
+    gp = add_arg_group(parser, title='ClientGateway')
     _add_host(gp)
     _add_proxy(gp)
 
@@ -61,7 +61,7 @@ def mixin_client_gateway_parser(parser):
         '--port-gateway',
         type=int,
         default=helper.random_port(),
-        help='The port of the Gateway, which the client should connect to',
+        help='The port of the Gateway, which the client should connect to.',
     )
 
     gp.add_argument(
@@ -76,14 +76,14 @@ def mixin_grpc_gateway_parser(parser):
     """Add the options for remote expose
     :param parser: the parser
     """
-    gp = add_arg_group(parser, title='Expose')
+    gp = add_arg_group(parser, title='GRPCGateway')
     _add_host(gp)
     _add_proxy(gp)
 
     gp.add_argument(
         '--port-expose',
         type=int,
-        dest='port_gateway',
+        default=helper.random_port(),
         help='The port that the gateway exposes for clients for GRPC connections.',
     )
 

@@ -249,7 +249,7 @@ def test_yaml_filepath_validate_good(val):
         '''
     shards: $JINA_SHARDS_INDEXERS
     host: $JINA_REDIS_INDEXER_HOST
-    port_expose: 8000
+    port_jinad: 8000
     polling: all
     timeout_ready: 100000 # larger timeout as in query time will read all the data
     uses_after: merge_and_topk.yml

@@ -40,14 +40,14 @@ class WebSocketBaseClient(BaseClient):
             # https://websockets.readthedocs.io/en/stable/api.html?highlight=1009#module-websockets.protocol
 
             async with websockets.connect(
-                f'ws://{self.args.host}:{self.args.port_expose}/',
+                f'ws://{self.args.host}:{self.args.port_gateway}/',
                 max_size=None,
                 ping_interval=None,
             ) as websocket:
                 # To enable websockets debug logs
                 # https://websockets.readthedocs.io/en/stable/cheatsheet.html#debugging
                 self.logger.debug(
-                    f'connected to {self.args.host}:{self.args.port_expose}'
+                    f'connected to {self.args.host}:{self.args.port_gateway}'
                 )
                 self.num_requests = 0
                 self.num_responses = 0

@@ -353,15 +353,6 @@ class Pod(BasePod, ExitFIFO):
         return self.peas_args['peas'][0]
 
     @property
-    def port_expose(self) -> int:
-        """Get the grpc port number
-
-
-        .. # noqa: DAR201
-        """
-        return self.first_pea_args.port_expose
-
-    @property
     def host(self) -> str:
         """Get the host name of this Pod
 

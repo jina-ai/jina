@@ -57,7 +57,7 @@ def get_main_parser():
     from jina import __resources_path__
 
     parser.set_defaults(
-        port_expose=8000,
+        port=8000,
         workspace='/tmp/jinad',
         log_config=os.getenv(
             'JINAD_LOG_CONFIG',

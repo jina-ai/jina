@@ -30,7 +30,7 @@ def doc_to_index():
 
 @pytest.fixture
 def client():
-    return Client(host='localhost', port_expose=45678)
+    return Client(host='localhost', port_gateway=45678)
 
 
 @pytest.fixture

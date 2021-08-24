@@ -678,9 +678,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             if (
                 kwargs.get('host', __default_host__) != __default_host__
                 and m
-                and 'port_expose' not in kwargs
+                and 'port_jinad' not in kwargs
             ):
-                kwargs['port_expose'] = m.group(2)
+                kwargs['port_jinad'] = m.group(2)
                 kwargs['host'] = m.group(1)
 
         # update kwargs of this Pod
@@ -1069,7 +1069,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         kwargs = dict(
             host=self.host,
-            port_expose=self.port_expose,
+            port_gateway=self.port_expose,
             protocol=self.protocol,
         )
         kwargs.update(self._common_kwargs)
@@ -1275,7 +1275,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         .. # noqa: DAR201
         """
         if GATEWAY_NAME in self._pod_nodes:
-            return self._pod_nodes[GATEWAY_NAME].port_expose
+            return self._pod_nodes[GATEWAY_NAME].args.port_expose
         else:
             return self._common_kwargs.get('port_expose', None)
 

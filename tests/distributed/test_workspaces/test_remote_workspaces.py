@@ -170,12 +170,12 @@ async def test_custom_project():
                 return
 
     async for resp in Client(
-        asyncio=True, host=HOST, port_expose=42860, show_progress=True
+        asyncio=True, host=HOST, port_gateway=42860, show_progress=True
     ).post(on='/index', inputs=gen_docs):
         pass
 
     async for resp in Client(
-        asyncio=True, host=HOST, port_expose=42860, show_progress=True
+        asyncio=True, host=HOST, port_gateway=42860, show_progress=True
     ).post(
         on='/search',
         inputs=Document(tags={'key': 'first', 'value': 's'}),

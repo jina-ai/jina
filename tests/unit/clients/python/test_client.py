@@ -47,7 +47,7 @@ def test_img_2():
     'inputs', [iter([b'1234', b'45467']), iter([DocumentProto(), DocumentProto()])]
 )
 def test_check_input_success(inputs):
-    client = Client(host='localhost', port_expose=12345)
+    client = Client(host='localhost', port_jinad=12345)
     client.check_input(inputs)
 
 
@@ -55,7 +55,7 @@ def test_check_input_success(inputs):
     'inputs', [iter([list(), list(), [12, 2, 3]]), iter([set(), set()])]
 )
 def test_check_input_fail(inputs):
-    client = Client(host='localhost', port_expose=12345)
+    client = Client(host='localhost', port_jinad=12345)
     with pytest.raises(BadClientInput):
         client.check_input(inputs)
 
@@ -160,13 +160,13 @@ def test_client_websocket(mocker, flow_with_websocket):
 
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_client_from_kwargs(protocol):
-    Client(port_expose=12345, host='0.0.0.1', protocol=protocol)
+    Client(port_gateway=12345, host='0.0.0.1', protocol=protocol)
 
 
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_independent_client(protocol):
     with Flow(protocol=protocol) as f:
-        c = Client(host='localhost', port_expose=f.port_expose, protocol=protocol)
+        c = Client(host='localhost', port_gateway=f.port_expose, protocol=protocol)
         assert type(c) == type(f.client)
         c.post('/')
 

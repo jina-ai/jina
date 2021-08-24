@@ -2,6 +2,7 @@ DEPRECATED_ARGS_MAPPING = {
     'override_with': 'uses_with',
     'override_metas': 'uses_metas',
     'override_requests': 'uses_requests',
+    'port_expose': 'One of port, port_jinad or port_gateway, depending on the context',
 }
 
 
