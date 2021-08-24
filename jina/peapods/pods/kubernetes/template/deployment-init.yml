@@ -25,7 +25,7 @@ spec:
         command: {init-command}
         volumeMounts:
           - name: shared
-            mountPath: /shared
+            mountPath: {mount-path}
       containers:
       - name: executor
         image: {image}
@@ -45,5 +45,5 @@ spec:
           value: "uvicorn.workers.UvicornH11Worker"
         volumeMounts:
           - name: shared
-            mountPath: /shared
+            mountPath: {mount-path}
 

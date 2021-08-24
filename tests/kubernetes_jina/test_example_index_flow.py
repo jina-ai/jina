@@ -93,6 +93,7 @@ def k8s_flow_with_init_container(test_executor_image: str, executor_merger_image
             uses=test_executor_image,
             k8s_init_container_command=["python", "dump.py", "/shared/test_file.txt"],
             k8s_uses_init=dummy_dumper_image,
+            k8s_mount_path='/shared'
         )
     )
     return flow
