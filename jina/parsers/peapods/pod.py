@@ -115,6 +115,14 @@ def mixin_k8s_pod_parser(parser):
         else argparse.SUPPRESS,
     )
     parser.add_argument(
+        '--k8s-mount-path',
+        type=str,
+        # default='',
+        help='Path where the init container and the executor can exchange files.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+    parser.add_argument(
         '--k8s-init-container-command',
         nargs='+',
         help='Arguments for the init container.'

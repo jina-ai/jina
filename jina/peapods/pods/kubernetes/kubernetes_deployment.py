@@ -147,7 +147,8 @@ def get_cli_params(arguments, skip_list=()):
         'port_ctrl',
         'port_expose',
         'k8s_init_container_command',
-        'k8s_uses_init'
+        'k8s_uses_init',
+        'k8s_mount_path',
     ] + list(skip_list)
     arg_list = [
         [attribute, attribute.replace('_', '-'), value]
@@ -308,6 +309,7 @@ def get_init_container_args(pod):
         init_container = {
             'init-name': 'init',
             'init-image': pod.args.k8s_uses_init,
+            'mount-path': pod.args.k8s_mount_path,
             'init-command': f'{pod.args.k8s_container_init_command}',
         }
     else:
