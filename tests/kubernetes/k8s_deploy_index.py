@@ -23,7 +23,7 @@ def _get_postgres_config_for_table(table_name: str) -> Dict:
 
 GCP_REGISTRY_PROJECT_NAME = 'mystical-sweep-320315'
 index_flow = (
-    Flow(name='index-flow', port_expose=8080, protocol='http', type='k8s')
+    Flow(name='index-flow', port_expose=8080, protocol='http', infrastructure='k8s')
     .add(
         name='segmenter',
         uses=f'gcr.io/{GCP_REGISTRY_PROJECT_NAME}/doc-segmenter:v.0.0.1',
