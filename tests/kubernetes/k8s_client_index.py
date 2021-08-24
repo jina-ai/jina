@@ -3,9 +3,11 @@ from multiprocessing import Pool
 import requests
 import time
 
-from jina.kubernetes import kubernetes_tools
+
 
 # kubernetes_tools.get_pod_logs("search-flow")
+from jina.peapods.pods.kubernetes import kubernetes_tools
+
 kubernetes_tools.get_pod_logs("index-flow")
 
 time.sleep(2)
