@@ -97,7 +97,6 @@ class PrefetchCaller:
             :param fetch_to: the task list storing requests
             :return: False if append task to :param:`fetch_to` else False
             """
-            print('### prefetch req')
             for _ in range(num_req):
                 try:
                     if hasattr(request_iterator, '__anext__'):

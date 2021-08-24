@@ -67,7 +67,6 @@ class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        print('### init async new loop runtime ')
         self._loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._loop)
 

@@ -39,7 +39,6 @@ class ZEDRuntime(ZMQRuntime):
         :param kwargs: extra keyword arguments
         """
         super().__init__(args, **kwargs)
-        print('init ZMQRuntime runtime')
         self._id = random_identity()
         self._last_active_time = time.perf_counter()
         self.ctrl_addr = self.get_control_address(args.host, args.port_ctrl)
@@ -91,7 +90,6 @@ class ZEDRuntime(ZMQRuntime):
         :param msg: received message
         :return: `ZEDRuntime`
         """
-        print('pre hook, request type: ', msg.envelope.request_type)
         msg.add_route(self.name, self._id)
 
         expected_parts = self._expect_parts(msg)
@@ -177,7 +175,6 @@ class ZEDRuntime(ZMQRuntime):
         :param msg: received message
         :return: the transformed message.
         """
-        print(f'handle {msg.envelope.request_type}')
         # skip executor for non-DataRequest
         if msg.envelope.request_type != 'DataRequest':
             self.logger.debug(f'skip executor: not data request')
@@ -185,10 +182,8 @@ class ZEDRuntime(ZMQRuntime):
 
         # migrated from the previously RouteDriver logic
         # set dealer id
-        print(f'are there idle dealers for data request? {self._idle_dealer_ids}')
         if self._idle_dealer_ids:
             dealer_id = self._idle_dealer_ids.pop()
-            print(f'handle idle dealer {dealer_id}')
             msg.envelope.receiver_id = dealer_id
 
             # when no available dealer, pause the pollin from upstream
@@ -212,7 +207,6 @@ class ZEDRuntime(ZMQRuntime):
 
     def _handle_control_req(self, msg: 'Message'):
         # migrated from previous ControlDriver logic
-        print('handle control request', msg.request.command)
         if msg.request.command == 'TERMINATE':
             msg.envelope.status.code = jina_pb2.StatusProto.SUCCESS
             raise RuntimeTerminated
@@ -220,7 +214,6 @@ class ZEDRuntime(ZMQRuntime):
             msg.envelope.status.code = jina_pb2.StatusProto.READY
             msg.request.parameters = vars(self.args)
         elif msg.request.command == 'IDLE':
-            print(f'dealer added {msg.envelope.receiver_id}')
             self._idle_dealer_ids.add(msg.envelope.receiver_id)
             self._zmqstreamlet.resume_pollin()
             self.logger.debug(

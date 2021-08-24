@@ -44,7 +44,6 @@ class GRPCRuntime(AsyncNewLoopRuntime):
         )
 
         if self.args.grpc_data_requests:
-            print('create grpclet')
             self._grpclet = Grpclet(
                 args=self.args,
                 message_callback=None,
@@ -52,7 +51,6 @@ class GRPCRuntime(AsyncNewLoopRuntime):
             )
             self._prefetcher = GRPCPrefetchCall(self.args, iolet=self._grpclet)
         else:
-            print('create zmqlet')
             self.zmqlet = AsyncZmqlet(self.args, logger=self.logger)
             self._prefetcher = GRPCPrefetchCall(self.args, iolet=self.zmqlet)
 

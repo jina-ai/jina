@@ -30,7 +30,6 @@ class GRPCDataRuntime(BaseRuntime, ABC):
         :param args: args from CLI
         :param kwargs: extra keyword arguments
         """
-        print('### init grpc data runtime')
         super().__init__(args, **kwargs)
         self._id = random_identity()
         self._loop = get_or_reuse_loop()
