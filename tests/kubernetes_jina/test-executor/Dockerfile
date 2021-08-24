@@ -7,7 +7,7 @@ RUN pip install fastapi
 
 RUN pip install bcolors
 RUN pip install kubernetes==18.20.0b1
-RUN pip install git+https://github.com/jina-ai/jina.git@18e953f5ce53bd99f422111490875ba4a9eb7c39
+RUN pip install git+https://github.com/jina-ai/jina.git@f2f733c58c8ae0fa7102dcec5ad213ff5a59f6a0
 # setup the workspace
 COPY . /workspace
 WORKDIR /workspace
