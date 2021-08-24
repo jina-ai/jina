@@ -79,7 +79,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
         :param host: The host address of the runtime, by default it is 0.0.0.0.
-        :param port_gateway: Deprecated. Please use `--port-gateway` when starting a client.
+        :param port_gateway: The port of the Gateway, which the client should connect to.
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
 
@@ -471,7 +471,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         polling: Optional[str] = 'ANY',
         port_ctrl: Optional[int] = None,
         port_in: Optional[int] = None,
-        port_jinad: Optional[int] = None,
+        port_jinad: Optional[int] = 12345,
         port_out: Optional[int] = None,
         pull_latest: Optional[bool] = False,
         py_modules: Optional[List[str]] = None,
@@ -555,7 +555,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - ALL: all Peas poll the message (like a broadcast)
         :param port_ctrl: The port for controlling the runtime, default a random port between [49152, 65535]
         :param port_in: The port for input data, default a random port between [49152, 65535]
-        :param port_jinad: Deprecated. Please use `--port-jinad` when starting JinaD.
+        :param port_jinad: The port of the remote machine for usage with JinaD.
         :param port_out: The port for output data, default a random port between [49152, 65535]
         :param pull_latest: Pull the latest image before running
         :param py_modules: The customized python modules need to be imported before loading the executor
