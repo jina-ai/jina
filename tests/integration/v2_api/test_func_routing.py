@@ -245,7 +245,7 @@ def test_target_peapod_with_two_pathways_one_skip():
             return_results=True,
             target_peapod='my_target',
         )
-        assert len(results[0].data.docs) == 2
+        assert len(results[0].data.docs) == 1
 
 
 def test_target_peapod_with_parallel():
