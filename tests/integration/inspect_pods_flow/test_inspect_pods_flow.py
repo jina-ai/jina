@@ -132,14 +132,18 @@ class AddEvaluationExecutor(Executor):
 
 @pytest.mark.repeat(5)
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc'])
-def test_flow_returned_collect(protocol, mocker):
+def test_flow_returned_collect(protocol):
     # TODO(Joan): This test passes because we pass the `SlowExecutor` but I do not know how to make the `COLLECT` pod
     # use an specific executor.
 
     def validate_func(resp):
+        num_evaluations = 0
+        scores = set()
         for doc in resp.data.docs:
-            assert len(NamedScoreMapping(doc.evaluations)) == 1
-            assert NamedScoreMapping(doc.evaluations)['evaluate'].value == 10.0
+            num_evaluations += len(NamedScoreMapping(doc.evaluations))
+            scores.add(NamedScoreMapping(doc.evaluations)['evaluate'].value)
+        assert num_evaluations == 1
+        assert 10.0 in scores
 
     f = (
         Flow(protocol=protocol, inspect='COLLECT')
@@ -149,11 +153,9 @@ def test_flow_returned_collect(protocol, mocker):
         )
     )
 
-    mock = mocker.Mock()
     with f:
-        f.index(inputs=docs, on_done=mock)
-
-    validate_callback(mock, validate_func)
+        response = f.index(inputs=docs, return_results=True)
+        validate_func(response[0])
 
 
 @pytest.mark.repeat(5)

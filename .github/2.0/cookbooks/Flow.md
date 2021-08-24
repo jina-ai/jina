@@ -626,8 +626,8 @@ def post(
     :param on_done: the function to be called when the :class:`Request` object is resolved.
     :param on_error: the function to be called when the :class:`Request` object is rejected.
     :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
-    :param target_peapod: a regex string represent the certain peas/pods request targeted
-    :param parameters: the kwargs that will be sent to the executor
+    :param target_peapod: a regex string. Only matching Executors will process the request.
+    :param parameters: the kwargs that will be sent to the Executor
     :param request_size: the number of Documents per request. <=0 means all inputs in one request.
     :param show_progress: if set, client will show a progress bar on receiving every request.
     :param continue_on_error: if set, a Request that causes callback error will be logged only without blocking the further requests.

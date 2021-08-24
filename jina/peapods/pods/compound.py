@@ -105,7 +105,6 @@ class CompoundPod(BasePod, ExitStack):
             self._enter_pea(self.head_pea)
             for _args in self.replicas_args:
                 _args.noblock_on_start = True
-                _args.polling = PollingType.ALL
                 self._enter_replica(Pod(_args))
             tail_args = self.tail_args
             tail_args.noblock_on_start = True
@@ -119,7 +118,6 @@ class CompoundPod(BasePod, ExitStack):
                 self.head_pea = Pea(head_args)
                 self._enter_pea(self.head_pea)
                 for _args in self.replicas_args:
-                    _args.polling = PollingType.ALL
                     self._enter_replica(Pod(_args))
                 tail_args = self.tail_args
                 self.tail_pea = Pea(tail_args)
@@ -223,6 +221,7 @@ class CompoundPod(BasePod, ExitStack):
             _args.port_ctrl = helper.random_port()
             _args.socket_out = SocketType.PUSH_CONNECT
             _args.socket_in = SocketType.DEALER_CONNECT
+            _args.polling = PollingType.ALL
             _args.dynamic_routing = False
             # ugly trick to avoid Head of Replica to have wrong host in
             tmp_args = copy.deepcopy(_args)
