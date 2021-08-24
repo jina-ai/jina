@@ -4,6 +4,7 @@ import sys
 import time
 from collections import defaultdict
 from functools import wraps
+from typing import Optional
 
 from .logger import JinaLogger
 from ..helper import colored, get_readable_size, get_readable_time
@@ -216,6 +217,8 @@ class ProgressBar(TimeContext):
     def update(
         self,
         progress: float = 1.0,
+        description: Optional[str] = None,
+        details: Optional[str] = None,
         all_completed: bool = False,
         first_enter: bool = False,
     ) -> None:
@@ -223,6 +226,8 @@ class ProgressBar(TimeContext):
         Increment the progress bar by one unit.
 
         :param progress: The number of unit to increment.
+        :param description: Change the description text before the progress bar on update.
+        :param details: Change the details text after the progress bar on update.
         :param all_completed: Mark the task as fully completed.
         :param first_enter: if this method is called by `__enter__`
         """
@@ -258,9 +263,13 @@ class ProgressBar(TimeContext):
             if first_enter
             else f'{self._num_update_called / elapsed:3.1f} step/s'
         )
+
+        description_str = description or self.task_name or ''
+        details_str = details or ''
+
         sys.stdout.write(
-            '{} {:<}{:<} {} {}    '.format(
-                f'{self.task_name:>10}' if self.task_name else '',
+            '{:>10} {:<}{:<} {} {} {}'.format(
+                description_str,
                 colored('━' * num_fullbars, bar_color)
                 + (colored('╸', bar_color if num_halfbars else unfinished_bar_color)),
                 colored(
@@ -270,13 +279,10 @@ class ProgressBar(TimeContext):
                 ),
                 colored(time_str, 'cyan'),
                 speed_str,
+                details_str,
             )
         )
         sys.stdout.flush()
-
-    def __enter__(self):
-        super().__enter__()
-        return self
 
     def _enter_msg(self):
         self.update(first_enter=True)

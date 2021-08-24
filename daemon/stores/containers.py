@@ -136,6 +136,7 @@ class ContainerStore(BaseStore):
         workspace_id: DaemonID,
         params: 'BaseModel',
         ports: Dict,
+        envs: Dict[str, str] = {},
         **kwargs,
     ) -> DaemonID:
         """Add a container to the store
@@ -144,6 +145,7 @@ class ContainerStore(BaseStore):
         :param workspace_id: workspace id where the container lives
         :param params: pydantic model representing the args for the container
         :param ports: ports to be mapped to local
+        :param envs: dict of env vars to be passed
         :param kwargs: keyword args
         :raises KeyError: if workspace_id doesn't exist in the store
         :raises PartialDaemonConnectionException: if jinad cannot connect to partial
@@ -174,7 +176,11 @@ class ContainerStore(BaseStore):
             )
 
             container, network, ports = Dockerizer.run(
-                workspace_id=workspace_id, container_id=id, command=command, ports=ports
+                workspace_id=workspace_id,
+                container_id=id,
+                command=command,
+                ports=ports,
+                envs=envs,
             )
             if not await self.ready(uri):
                 raise PartialDaemonConnectionException(
