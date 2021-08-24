@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends
 from fastapi.exceptions import HTTPException
 
-from ..dependencies import FlowDepends
 from ... import Runtime400Exception
-from ...models import DaemonID, ContainerItem, ContainerStoreStatus, FlowModel
+from ..dependencies import FlowDepends
 from ...models.enums import UpdateOperation
+from ...models import DaemonID, ContainerItem, ContainerStoreStatus, FlowModel
 from ...stores import flow_store as store
 
 router = APIRouter(prefix='/flows', tags=['flows'])
@@ -35,6 +35,7 @@ async def _create(flow: FlowDepends = Depends(FlowDepends)):
             workspace_id=flow.workspace_id,
             params=flow.params,
             ports=flow.ports,
+            envs=flow.envs,
             port_expose=flow.port_expose,
         )
     except Exception as ex:
