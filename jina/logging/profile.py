@@ -292,7 +292,7 @@ class ProgressBar(TimeContext):
             speed = self._completed_progress / self.duration
             self.update(0, all_completed=True)
             sys.stdout.write(
-                f'\033[K{self._completed_progress:.0f} steps done in {self.readable_duration} ({speed:3.1f} step/s)\n'
+                f'\033[K{self._completed_progress:.0f} steps done in {self.readable_duration}\n'
             )
         else:
             sys.stdout.write(self.clear_line)
