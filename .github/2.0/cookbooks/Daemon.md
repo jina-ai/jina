@@ -10,29 +10,34 @@ the same host.
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 Table of Contents
 
-- [Minimum Working Example](#minimum-working-example)
-- [Setup JinaD Server](#setup-jinad-server)
-  - [Run](#run)
-    - [Points to note](#points-to-note)
-    - [API Docs](#api-docs)
-- [Start JinaD Client](#start-jinad-client)
-    - [Check if remote server is alive](#check-if-remote-server-is-alive)
-    - [Get the status of the remote server](#get-the-status-of-the-remote-server)
-- [Workspace](#workspace)
-  - [Create a workspace (redoc)](#create-a-workspace-redoc)
-  - [Get details of a workspace (redoc)](#get-details-of-a-workspace-redoc)
-  - [List all workspaces (redoc)](#list-all-workspaces-redoc)
-  - [Delete a workspace (redoc)](#delete-a-workspace-redoc)
-- [Create Remote Executors](#create-remote-executors)
-- [Create Remote Flows](#create-remote-flows)
-  - [Create a Flow (<a href="https://api.jina.ai/daemon/#operation/_create_flows_post">redoc</a>)](#create-a-flow-a-hrefhttpsapijinaaidaemonoperation_create_flows_postredoca)
-  - [Get details of a Flow (<a href="https://api.jina.ai/daemon/#operation/_status_flows__id__get">redoc</a>)](#get-details-of-a-flow-a-hrefhttpsapijinaaidaemonoperation_status_flows__id__getredoca)
-  - [Terminate a Flow (<a href="https://api.jina.ai/daemon/#operation/_delete_flows__id__delete">redoc</a>)](#terminate-a-flow-a-hrefhttpsapijinaaidaemonoperation_delete_flows__id__deleteredoca)
-- [Streaming Remote Logs](#streaming-remote-logs)
-- [Development using JinaD](#development-using-jinad)
-    - [Build](#build)
-    - [Run](#run-1)
-    - [Why?](#why)
+- [Cookbook on `JinaD` API](#cookbook-on-jinad-api)
+  - [Minimum Working Example](#minimum-working-example)
+  - [Setup JinaD Server](#setup-jinad-server)
+    - [Run](#run)
+      - [Points to note](#points-to-note)
+      - [API Docs](#api-docs)
+  - [Start JinaD Client](#start-jinad-client)
+      - [Check if remote server is alive](#check-if-remote-server-is-alive)
+      - [Get the status of the remote server](#get-the-status-of-the-remote-server)
+  - [Workspace](#workspace)
+    - [Create a workspace (redoc)](#create-a-workspace-redoc)
+    - [Get details of a workspace (redoc)](#get-details-of-a-workspace-redoc)
+    - [List all workspaces (redoc)](#list-all-workspaces-redoc)
+    - [Delete a workspace (redoc)](#delete-a-workspace-redoc)
+  - [Create Remote Executors](#create-remote-executors)
+        - [Get all accepted arguments](#get-all-accepted-arguments)
+        - [Create a Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_create_peas_post">redoc</a>)](#create-a-peapod-redoc)
+        - [Get details of a Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_status_peas__id__get">redoc</a>)](#get-details-of-a-peapod-redoc)
+        - [Terminate a Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_delete_peas__id__delete">redoc</a>)](#terminate-a-peapod-redoc)
+  - [Create Remote Flows](#create-remote-flows)
+    - [Create a Flow (<a href="https://api.jina.ai/daemon/#operation/_create_flows_post">redoc</a>)](#create-a-flow-redoc)
+    - [Get details of a Flow (<a href="https://api.jina.ai/daemon/#operation/_status_flows__id__get">redoc</a>)](#get-details-of-a-flow-redoc)
+    - [Terminate a Flow (<a href="https://api.jina.ai/daemon/#operation/_delete_flows__id__delete">redoc</a>)](#terminate-a-flow-redoc)
+  - [Streaming Remote Logs](#streaming-remote-logs)
+  - [Development using JinaD](#development-using-jinad)
+      - [Build](#build)
+      - [Run](#run-1)
+      - [Why?](#why)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -461,13 +466,17 @@ JinaD enables management of (remote + containerized) Flows with all your depende
 
 This creates a new container using the base image, connects it to the network defined by `workspace_id` and starts a
 Flow inside the container. Only the ports needed for external communication are mapped to local. Make sure you've added
-all your config files while creating the workspace in the previous step.
+all your config files while creating the workspace in the previous step. You can also pass environment variables to be set while starting a remote Flow using `envs`.
 
 ```python
 from daemon.clients import JinaDClient
 
 client = JinaDClient(host=HOST, port=PORT)
-client.flows.create(workspace_id=workspace_id, filename='my_awesome_flow.yml')
+client.flows.create(
+  workspace_id=workspace_id,
+  filename='my_awesome_flow.yml',
+  envs={'PORT_EXPOSE': 12345}
+)
 # jflow-a71cc28f-a5db-4cc0-bb9e-bb7797172cc9
 ```
 
