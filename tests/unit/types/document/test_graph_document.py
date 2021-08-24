@@ -138,7 +138,7 @@ def test_remove_nodes(graph):
         num_nodes = graph.num_nodes
         num_edges = graph.num_edges
         num_edges_to_remove = graph.get_in_degree(node) + graph.get_out_degree(node)
-        graph.remove_node(node)
+        graph.remove_single_node(node)
         assert graph.num_nodes == num_nodes - 1
         assert graph.num_edges == num_edges - num_edges_to_remove
 
@@ -152,7 +152,7 @@ def test_remove_edges(graph):
     num_edge_features = len(graph.edge_features.keys())
     for doc1, doc2 in edges:
         num_edges = graph.num_edges
-        graph.remove_edge(doc1, doc2)
+        graph.remove_single_edge(doc1, doc2)
         num_edge_features -= 1
         assert graph.num_edges == num_edges - 1
 
@@ -292,7 +292,7 @@ def test_added_edges_in_edge_features(graph, expected_output):
     doc1 = Document(text='Document1')
 
     graph.add_single_edge(doc0, doc1)
-    edge_key = graph._get_edge_key(doc0, doc1)
+    edge_key = graph._get_edge_key(doc0.id, doc1.id)
 
     assert edge_key in graph.edge_features
     assert graph.edge_features[edge_key] is None
@@ -307,7 +307,7 @@ def test_manual_update_edges_features(graph, expected_output):
     doc1 = Document(text='Document1')
 
     graph.add_single_edge(doc0, doc1)
-    edge_key = graph._get_edge_key(doc0, doc1)
+    edge_key = graph._get_edge_key(doc0.id, doc1.id)
 
     graph._pb_body.graph.edge_features[edge_key] = {'number_value': 1234}
 
@@ -320,7 +320,7 @@ def test_edge_update_nested_lists():
     doc1 = Document(text='Document1')
 
     graph.add_single_edge(doc0, doc1)
-    edge_key = graph._get_edge_key(doc0, doc1)
+    edge_key = graph._get_edge_key(doc0.id, doc1.id)
     graph.edge_features[edge_key] = {
         'hey': {'nested': True, 'list': ['elem1', 'elem2', {'inlist': 'here'}]},
         'hoy': [0, 1],
@@ -338,24 +338,6 @@ def test_edge_update_nested_lists():
 
 def test_graph_plot_does_not_fail(graph):
     graph.plot()
-
-
-def test_add_node_deprecated():
-    graph = GraphDocument()
-    graph.add_node(Document())
-    graph.add_node(Document())
-    assert len(graph.nodes) == 2
-
-
-def test_add_edge_deprecated():
-    graph = GraphDocument()
-
-    doc0 = Document(text='Document0')
-    doc1 = Document(text='Document1')
-
-    graph.add_edge(doc0, doc1, features={'text': 'I connect Doc0 and Doc1'})
-    assert graph.num_nodes == 2
-    assert graph.num_edges == 1
 
 
 def test_graph_add_multiple_edges():
@@ -431,4 +413,30 @@ def test_graph_add_multiple_nodes():
     doc3 = Document(text='Document3')
     graph.add_nodes([doc0, doc1, doc2, doc3])
     assert graph.num_nodes == 4
+    assert graph.num_edges == 0
+
+
+def test_add_remove_node_deprecated():
+    graph = GraphDocument()
+    d1 = Document(id='1')
+    d2 = Document(id='2')
+    graph.add_node(d1)
+    graph.add_node(d2)
+    assert len(graph.nodes) == 2
+    graph.remove_node(d1)
+    graph.remove_node(d2)
+    assert len(graph.nodes) == 0
+
+
+def test_add_remove_edge_deprecated():
+    graph = GraphDocument()
+
+    doc0 = Document(text='Document0')
+    doc1 = Document(text='Document1')
+
+    graph.add_edge(doc0, doc1, features={'text': 'I connect Doc0 and Doc1'})
+    assert graph.num_nodes == 2
+    assert graph.num_edges == 1
+    graph.remove_edge(doc0, doc1)
+    assert graph.num_nodes == 2
     assert graph.num_edges == 0
