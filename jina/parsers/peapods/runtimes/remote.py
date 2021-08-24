@@ -15,15 +15,8 @@ def mixin_remote_runtime_parser(parser):
     gp.add_argument(
         '--port-jinad',
         type=int,
-        default=helper.random_port(),
-        help='The port of the remote machine for usage with JinaD',
-    )
-
-    gp.add_argument(
-        '--port-expose',  # TODO (maximilian): remove with Jina 3.0. Here for backwards compatibility
-        type=int,
-        dest='port_jinad',
-        help='Deprecated. Please use `--port-jinad` when starting JinaD.',
+        default=12345,  # helper.random_port(),
+        help='The port of the remote machine for usage with JinaD.',
     )
 
 
@@ -38,14 +31,7 @@ def mixin_remote_jinad_parser(parser):
         '--port',
         type=int,
         default=helper.random_port(),
-        help='The port of the host exposed for connecting to',
-    )
-
-    gp.add_argument(
-        '--port-expose',  # TODO (maximilian): remove with Jina 3.0. Here for backwards compatibility
-        type=int,
-        dest='port',
-        help='Deprecated. Please use `--port` when starting JinaD.',
+        help='The port of the host exposed for connecting to.',
     )
 
 
@@ -62,13 +48,6 @@ def mixin_client_gateway_parser(parser):
         type=int,
         default=helper.random_port(),
         help='The port of the Gateway, which the client should connect to.',
-    )
-
-    gp.add_argument(
-        '--port-expose',  # TODO (maximilian): remove with Jina 3.0. Here for backwards compatibility
-        type=int,
-        dest='port_gateway',
-        help='Deprecated. Please use `--port-gateway` when starting a client.',
     )
 
 
