@@ -1,4 +1,4 @@
-from typing import Optional, Iterator, Tuple, Dict, Iterable
+from typing import Optional, Iterator, Tuple, Dict, Iterable, Collection
 
 import numpy as np
 
@@ -94,6 +94,15 @@ class GraphDocument(Document):
             .. # noqa: DAR201
         """
         return self.add_single_node(*args, **kwargs)
+
+    def add_nodes(self, nodes: Iterable['Document']):
+        """
+        Add a set of nodes into the graph
+
+        :param nodes: the nodes to be added to the graph
+        """
+        for node in nodes:
+            self.add_node(node)
 
     def remove_node(self, node: 'Document'):
         """
@@ -217,6 +226,65 @@ class GraphDocument(Document):
             .. # noqa: DAR201
         """
         return self.add_single_edge(*args, **kwargs)
+
+    def add_edges(
+        self,
+        source_docs: Collection['Document'],
+        dest_docs: Collection['Document'],
+        edge_features: Optional[Collection[Optional[Dict]]] = None,
+    ):
+        """
+        Add edges to the graph connecting docs from `source_docs` with docs from `dest_docs`
+
+        :param source_docs: Iterable of docs contanining the source nodes
+        :param dest_docs: Iterable of docs contanining the destination nodess
+        :param edge_features: Optional features dictionary to be added to the new created edges
+        """
+        assert len(source_docs) == len(dest_docs), (
+            'the number of source documents must match the number of '
+            'destination documents '
+        )
+        assert edge_features is None or len(source_docs) == len(edge_features)
+        self.add_nodes(source_docs)
+        self.add_nodes(dest_docs)
+        edge_keys = [
+            self._get_edge_key(doc1, doc2) for doc1, doc2 in zip(source_docs, dest_docs)
+        ]
+        if edge_features is not None:
+            for edge_key, features in zip(edge_keys, edge_features):
+                self.edge_features[edge_key] = features
+        else:
+            for edge_key in edge_keys:
+                if edge_key not in self.edge_features:
+                    self.edge_features[edge_key] = None
+
+        # manipulate the adjacency matrix in a single shot
+        current_adjacency = self.adjacency
+        source_node_offsets = [
+            self._node_id_to_offset[source.id] for source in source_docs
+        ]
+        target_node_offsets = [
+            self._node_id_to_offset[target.id] for target in dest_docs
+        ]
+        row = (
+            np.append(current_adjacency.row, source_node_offsets)
+            if current_adjacency is not None
+            else np.array(source_node_offsets)
+        )
+        col = (
+            np.append(current_adjacency.col, target_node_offsets)
+            if current_adjacency is not None
+            else np.array(target_node_offsets)
+        )
+        data = (
+            np.append(current_adjacency.data, [1] * len(source_node_offsets))
+            if current_adjacency is not None
+            else np.array([1] * len(source_node_offsets))
+        )
+
+        SparseNdArray(
+            self._pb_body.graph.adjacency, sp_format='coo'
+        ).value = coo_matrix((data, (row, col)))
 
     def _remove_edge_id(self, edge_id: int, edge_feature_key: str):
         from scipy.sparse import coo_matrix
