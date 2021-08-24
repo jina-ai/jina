@@ -469,7 +469,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         parallel: Optional[int] = 1,
         peas_hosts: Optional[List[str]] = None,
         polling: Optional[str] = 'ANY',
-        port: Optional[int] = None,
         port_ctrl: Optional[int] = None,
         port_in: Optional[int] = None,
         port_jinad: Optional[int] = None,
@@ -554,10 +553,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param polling: The polling strategy of the Pod (when `parallel>1`)
           - ANY: only one (whoever is idle) Pea polls the message
           - ALL: all Peas poll the message (like a broadcast)
-        :param port: Deprecated. Please use `--port-jinad` when starting JinaD.
         :param port_ctrl: The port for controlling the runtime, default a random port between [49152, 65535]
         :param port_in: The port for input data, default a random port between [49152, 65535]
-        :param port_jinad: The port of the remote machine for usage with JinaD
+        :param port_jinad: Deprecated. Please use `--port-jinad` when starting JinaD.
         :param port_out: The port for output data, default a random port between [49152, 65535]
         :param pull_latest: Pull the latest image before running
         :param py_modules: The customized python modules need to be imported before loading the executor
