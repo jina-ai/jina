@@ -22,7 +22,7 @@ def mixin_remote_runtime_parser(parser):
     gp.add_argument(
         '--port-expose',  # TODO (maximilian): remove with Jina 3.0. Here for backwards compatibility
         type=int,
-        dest='port',
+        dest='port_jinad',
         help='Deprecated. Please use `--port-jinad` when starting JinaD.',
     )
 

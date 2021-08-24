@@ -22,4 +22,3 @@ pods:
     host: flow
     uses: merge.yml
     needs: [pod2, pod3]
-    read_only: true
