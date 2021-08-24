@@ -1587,9 +1587,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         # noqa: DAR201
         """
-        return ArgNamespace.kwargs2namespace(
-            self._common_kwargs, set_client_cli_parser()
-        )
+        if 'port_expose' in self._common_kwargs:
+            kwargs = copy.deepcopy(self._common_kwargs)
+            kwargs['port_gateway'] = self._common_kwargs['port_expose']
+
+        return ArgNamespace.kwargs2namespace(kwargs, set_client_cli_parser())
 
     @property
     def gateway_args(self) -> argparse.Namespace:

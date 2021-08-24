@@ -348,7 +348,7 @@ assert success_deleted
 ## Create Remote Executors
 
 You can use the below code by passing `host`
-and `port_expose` to an executor with a Flow. Internally it uses `JinaD` for remote management.
+and `port_jinad` to an executor with a Flow. Internally it uses `JinaD` for remote management.
 
 ```python
 from jina import Flow
@@ -435,7 +435,7 @@ client.pods.get(pod_id)
         ...
       }
     },
-    "command": "--port-expose 37389 --mode pea --workspace-id 4df83da5-e227-4ecd-baac-3a54cdf7a22a"
+    "command": "--port-jinad 37389 --mode pea --workspace-id 4df83da5-e227-4ecd-baac-3a54cdf7a22a"
   },
   "workspace_id": "jworkspace-4df83da5-e227-4ecd-baac-3a54cdf7a22a"
 }

@@ -139,7 +139,7 @@ def print_matches(resp: Response):  # the callback function invoked when task is
         print(f'[{idx}]{d.scores["euclidean"].value:2f}: "{d.text}"')
 
 
-c = Client(protocol='http', port_expose=12345)  # connect to localhost:12345
+c = Client(protocol='http', port_gateway=12345)  # connect to localhost:12345
 c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
 ```
 

@@ -138,7 +138,7 @@ def test_client_websocket(mocker, flow_with_websocket):
         time.sleep(0.5)
         client = Client(
             host='localhost',
-            port_expose=str(flow_with_websocket.port_expose),
+            port_gateway=str(flow_with_websocket.port_expose),
             protocol='websocket',
         )
         # Test that a regular index request triggers the correct callbacks
