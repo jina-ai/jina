@@ -338,3 +338,97 @@ def test_edge_update_nested_lists():
 
 def test_graph_plot_does_not_fail(graph):
     graph.plot()
+
+
+def test_add_node_deprecated():
+    graph = GraphDocument()
+    graph.add_node(Document())
+    graph.add_node(Document())
+    assert len(graph.nodes) == 2
+
+
+def test_add_edge_deprecated():
+    graph = GraphDocument()
+
+    doc0 = Document(text='Document0')
+    doc1 = Document(text='Document1')
+
+    graph.add_edge(doc0, doc1, features={'text': 'I connect Doc0 and Doc1'})
+    assert graph.num_nodes == 2
+    assert graph.num_edges == 1
+
+
+def test_graph_add_multiple_edges():
+    graph = GraphDocument()
+
+    doc0 = Document(text='Document0')
+    doc1 = Document(text='Document1')
+    doc2 = Document(text='Document2')
+    doc3 = Document(text='Document3')
+    graph.add_edges(
+        [doc0, doc0, doc2, doc1, doc2],
+        [doc1, doc2, doc1, doc3, doc3],
+        edge_features=[
+            {'text': 'I connect Doc0 and Doc1'},
+            {'text': 'I connect Doc0 and Doc2'},
+            {'text': 'I connect Doc2 and Doc1'},
+            {'text': 'I connect Doc1 and Doc3'},
+            {'text': 'I connect Doc2 and Doc3'},
+        ],
+    )
+    assert graph.num_nodes == 4
+    assert graph.num_edges == 5
+
+    doc0 = graph.chunks[0]
+    assert doc0.text == 'Document0'
+    doc1 = graph.chunks[1]
+    assert doc1.text == 'Document1'
+    doc2 = graph.chunks[2]
+    assert doc2.text == 'Document2'
+    doc3 = graph.chunks[3]
+    assert doc3.text == 'Document3'
+
+    edge_features = graph.edge_features
+    for i, (d1, d2) in enumerate(graph):
+        if i == 0:
+            assert (
+                edge_features[f'{d1.id}-{d2.id}']['text'] == 'I connect Doc0 and Doc1'
+            )
+            assert d1.text == 'Document0'
+            assert d2.text == 'Document1'
+        if i == 1:
+            assert (
+                edge_features[f'{d1.id}-{d2.id}']['text'] == 'I connect Doc0 and Doc2'
+            )
+            assert d1.text == 'Document0'
+            assert d2.text == 'Document2'
+        if i == 2:
+            assert (
+                edge_features[f'{d1.id}-{d2.id}']['text'] == 'I connect Doc2 and Doc1'
+            )
+            assert d1.text == 'Document2'
+            assert d2.text == 'Document1'
+        if i == 3:
+            assert (
+                edge_features[f'{d1.id}-{d2.id}']['text'] == 'I connect Doc1 and Doc3'
+            )
+            assert d1.text == 'Document1'
+            assert d2.text == 'Document3'
+        if i == 4:
+            assert (
+                edge_features[f'{d1.id}-{d2.id}']['text'] == 'I connect Doc2 and Doc3'
+            )
+            assert d1.text == 'Document2'
+            assert d2.text == 'Document3'
+
+
+def test_graph_add_multiple_nodes():
+    graph = GraphDocument()
+
+    doc0 = Document(text='Document0')
+    doc1 = Document(text='Document1')
+    doc2 = Document(text='Document2')
+    doc3 = Document(text='Document3')
+    graph.add_nodes([doc0, doc1, doc2, doc3])
+    assert graph.num_nodes == 4
+    assert graph.num_edges == 0

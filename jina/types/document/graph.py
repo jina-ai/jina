@@ -1,4 +1,4 @@
-from typing import Optional, Iterator, Tuple, Dict, Iterable, Collection
+from typing import Optional, Iterator, Tuple, Dict, Iterable, Collection, Union
 
 import numpy as np
 
@@ -152,7 +152,9 @@ class GraphDocument(Document):
             node.id: offset for offset, node in enumerate(self.nodes)
         }
 
-    def _get_edge_key(self, doc1: 'Document', doc2: 'Document') -> str:
+    def _get_edge_key(
+        self, doc1: Union['Document', str], doc2: Union['Document', str]
+    ) -> str:
         """
         Create a key that is lexicographically sorted in the case of undirected graphs
 
@@ -160,16 +162,20 @@ class GraphDocument(Document):
         :param doc2: the ending node for this edge
         :return: lexicographically sorted key where doc1 < doc2 if undirected
         """
-
+        doc1_id = doc1.id if isinstance(doc1, Document) else doc1
+        doc2_id = doc2.id if isinstance(doc2, Document) else doc1
         if self.undirected:
             return (
-                f'{doc1.id}-{doc2.id}' if doc1.id < doc2.id else f'{doc2.id}-{doc1.id}'
+                f'{doc1_id}-{doc2_id}' if doc1_id < doc2_id else f'{doc2_id}-{doc1_id}'
             )
         else:
-            return f'{doc1.id}-{doc2.id}'
+            return f'{doc1_id}-{doc2_id}'
 
     def add_single_edge(
-        self, doc1: 'Document', doc2: 'Document', features: Optional[Dict] = None
+        self,
+        doc1: Union['Document', str],
+        doc2: Union['Document', str],
+        features: Optional[Dict] = None,
     ):
         """
         Add an edge to the graph connecting `doc1` with `doc2`
@@ -184,8 +190,18 @@ class GraphDocument(Document):
 
         if edge_key not in self.edge_features:
             self.edge_features[edge_key] = features
-            self.add_single_node(doc1)
-            self.add_single_node(doc2)
+            if isinstance(doc1, Document):
+                self.add_single_node(doc1)
+            else:
+                assert (
+                    doc1 in self.nodes
+                ), 'trying to add an edge from a node not in the graph'
+            if isinstance(doc2, Document):
+                self.add_single_node(doc2)
+            else:
+                assert (
+                    doc2 in self.nodes
+                ), 'trying to add an edge to a node not in the graph'
 
             current_adjacency = self.adjacency
 
@@ -229,27 +245,41 @@ class GraphDocument(Document):
 
     def add_edges(
         self,
-        source_docs: Collection['Document'],
-        dest_docs: Collection['Document'],
+        source_docs: Collection[Union['Document', str]],
+        dest_docs: Collection[Union['Document', str]],
         edge_features: Optional[Collection[Optional[Dict]]] = None,
     ):
         """
         Add edges to the graph connecting docs from `source_docs` with docs from `dest_docs`
 
-        :param source_docs: Iterable of docs contanining the source nodes
-        :param dest_docs: Iterable of docs contanining the destination nodess
+        :param source_docs: Iterable of docs containing the source nodes
+        :param dest_docs: Iterable of docs containing the destination nodes
         :param edge_features: Optional features dictionary to be added to the new created edges
         """
+        from scipy.sparse import coo_matrix
+
         assert len(source_docs) == len(dest_docs), (
             'the number of source documents must match the number of '
             'destination documents '
         )
         assert edge_features is None or len(source_docs) == len(edge_features)
-        self.add_nodes(source_docs)
-        self.add_nodes(dest_docs)
-        edge_keys = [
-            self._get_edge_key(doc1, doc2) for doc1, doc2 in zip(source_docs, dest_docs)
-        ]
+
+        edge_keys = []
+        for doc1, doc2 in zip(source_docs, dest_docs):
+            if isinstance(doc1, Document):
+                self.add_single_node(doc1)
+            else:
+                assert (
+                    doc1 in self.nodes
+                ), 'trying to add an edge from a node not in the graph'
+            if isinstance(doc2, Document):
+                self.add_single_node(doc2)
+            else:
+                assert (
+                    doc2 in self.nodes
+                ), 'trying to add an edge from a node not in the graph'
+            edge_keys.append(self._get_edge_key(doc1, doc2))
+
         if edge_features is not None:
             for edge_key, features in zip(edge_keys, edge_features):
                 self.edge_features[edge_key] = features
@@ -261,10 +291,16 @@ class GraphDocument(Document):
         # manipulate the adjacency matrix in a single shot
         current_adjacency = self.adjacency
         source_node_offsets = [
-            self._node_id_to_offset[source.id] for source in source_docs
+            self._node_id_to_offset[
+                source.id if isinstance(source, Document) else source
+            ]
+            for source in source_docs
         ]
         target_node_offsets = [
-            self._node_id_to_offset[target.id] for target in dest_docs
+            self._node_id_to_offset[
+                target.id if isinstance(target, Document) else target
+            ]
+            for target in dest_docs
         ]
         row = (
             np.append(current_adjacency.row, source_node_offsets)
