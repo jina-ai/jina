@@ -6,76 +6,59 @@ from http import HTTPStatus
 
 import requests
 
-from jina import Flow
+from jina import Flow, Document
 
 
 @pytest.fixture()
-def products() -> List[Dict]:
-    data = [
-        {
-            "name": f"Gucci Handbag {i+1}",
-            "description": "Black handbag from Gucci with golden decorations.",
-            "uri": "https://media.gucci.com/style/"
-                   "DarkGray_Center_0_0_1200x1200/"
-                   "1538487908/474575_DTD1T_1000_001_100_0023_Light-GG-Marmont-matelass-mini-bag.jpg",
-        }
-        for i in range(10)
-    ]
-    return data
-
-
-@pytest.fixture()
-def k8s_index_flow(executor_image) -> Flow:
-    # TODO: Fix: implicitly pulls Gateway and JoinAll executor from remote should be avoided
+def k8s_flow_with_needs(test_executor_image: str, executor_merger_image: str) -> Flow:
     index_flow = (
         Flow(name='index-flow', port_expose=8080, infrastructure='K8S', protocol='http')
         .add(
             name='segmenter',
-            uses=executor_image,
-            uses_with={'name': 'segmenter'}
+            uses=test_executor_image,
         ).add(
             name='textencoder',
-            uses=executor_image,
+            uses=test_executor_image,
             needs='segmenter',
-            uses_with={'name': 'textencoder'}
         )
         .add(
             name='textstorage',
-            uses=executor_image,
+            uses=test_executor_image,
             needs='textencoder',
-            uses_with={'name': 'textstorage'},
         )
         .add(
             name='imageencoder',
-            uses=executor_image,
+            uses=test_executor_image,
             needs='segmenter',
-            uses_with={'name': 'imageencoder'},
         )
         .add(
             name='imagestorage',
-            uses=executor_image,
+            uses=test_executor_image,
             needs='imageencoder',
-            uses_with={'name': 'imagestorage'},
+        ).
+        add(
+            name='merger',
+            uses=executor_merger_image,
+            needs=['imagestorage', 'textstorage']
         )
     )
-    # ).needs_all()
     return index_flow
 
 
 @pytest.mark.timeout(360)
-def test_deploy(k8s_cluster, executor_image, k8s_index_flow: Flow, products: List[Dict], logger):
-    expected_running_pods = 6  # TODO: set to 7 when joiner is finished
+def test_flow_with_needs(k8s_cluster, test_executor_image, executor_merger_image, k8s_flow_with_needs: Flow, logger):
+    expected_running_pods = 7
 
     # image pull anyways must be Never or IfNotPresent otherwise kubernetes will try to pull the image anyway
-    logger.debug(f'Loading docker image {executor_image} into kind cluster...')
-    k8s_cluster.needs_docker_image(executor_image)
-    logger.debug(f'Done loading docker image {executor_image} into kind cluster...')
+    logger.debug(f'Loading docker image into kind cluster...')
+    k8s_cluster.needs_docker_image(test_executor_image)
+    k8s_cluster.needs_docker_image(executor_merger_image)
+    logger.debug(f'Done loading docker image into kind cluster...')
 
     logger.debug(f'Starting flow on kind cluster...')
-    k8s_index_flow.start()
+    k8s_flow_with_needs.start()
     logger.debug(f'Done starting flow on kind cluster...')
 
-    # TODO: Is there a better way to wait for pods to reach Running phase?
     logger.debug(f'Starting to wait for pods in kind cluster to reach "RUNNING" state...')
     waiting = True
     while waiting:
@@ -86,16 +69,82 @@ def test_deploy(k8s_cluster, executor_image, k8s_index_flow: Flow, products: Lis
         logger.debug(f'Still waiting for pods to reach running state '
                      f'(Current Status: {num_running_pods}/{expected_running_pods}).')
 
-    expected_traversed_executors = ['segmenter', 'imageencoder', 'textencoder', 'imagestorage', 'textstorage']
+    expected_traversed_executors = {'segmenter', 'imageencoder', 'textencoder', 'imagestorage', 'textstorage'}
 
     logger.debug(f'Starting port-forwarding to gateway service...')
     with k8s_cluster.port_forward('service/gateway', 8080, 8080, 'index-flow') as _:
         logger.debug(f'Port-forward running...')
 
-        resp = requests.post(f'http://localhost:8080/index', json={'data': products})
-        logger.debug(resp.status_code)
+        resp = requests.post(f'http://localhost:8080/simpleTag', json={'data': [Document() for _ in range(10)]})
 
     assert resp.status_code == HTTPStatus.OK
     docs = resp.json()['data']['docs']
+    assert len(docs) == 10
     for doc in docs:
-        assert sorted(list(doc['tags']['traversed-executors'])) == sorted(expected_traversed_executors)
+        assert set(doc['tags']['traversed-executors']) == expected_traversed_executors
+
+
+@pytest.fixture()
+def k8s_flow_with_init_container(test_executor_image: str, executor_merger_image: str, dummy_dumper_image: str) -> Flow:
+    flow = (
+        Flow(name='query-flow', port_expose=8080, infrastructure='K8S', protocol='http')
+        .add(
+            name='test_executor',
+            uses=test_executor_image,
+            k8s_init_container_command=["python", "dump.py", "/shared/test_file.txt"],
+            k8s_uses_init=dummy_dumper_image,
+        )
+    )
+    return flow
+
+
+@pytest.mark.timeout(360)
+def test_deploy_query_flow(k8s_cluster, test_executor_image, k8s_flow_with_init_container, logger):
+    expected_running_pods = 5
+
+    # image pull anyways must be Never or IfNotPresent otherwise kubernetes will try to pull the image anyway
+    logger.debug(f'Loading docker image {test_executor_image} into kind cluster...')
+    k8s_cluster.needs_docker_image(test_executor_image)
+    logger.debug(f'Done loading docker image {test_executor_image} into kind cluster...')
+
+    logger.debug(f'Starting flow on kind cluster...')
+    k8s_flow_with_init_container.start()
+    logger.debug(f'Done starting flow on kind cluster...')
+
+    logger.debug(f'Starting to wait for pods in kind cluster to reach "RUNNING" state...')
+    waiting = True
+    while waiting:
+        num_running_pods = len(k8s_cluster.list_ready_pods('query-flow'))
+        if num_running_pods == expected_running_pods:
+            waiting = False
+        time.sleep(3)
+        logger.debug(f'Still waiting for pods to reach running state '
+                     f'(Current Status: {num_running_pods}/{expected_running_pods}).')
+
+    logger.debug(f'Starting port-forwarding to gateway service...')
+    with k8s_cluster.port_forward('service/gateway', 8080, 8080, 'index-flow') as _:
+        logger.debug(f'Port-forward running...')
+
+        resp = requests.post(f'http://localhost:8080/readFile', json={'data': [Document() for _ in range(10)]})
+
+    assert resp.status_code == HTTPStatus.OK
+    docs = resp.json()['data']['docs']
+    assert len(docs) == 10
+    for doc in docs:
+        assert doc['tags']
+
+
+@pytest.fixture()
+def k8s_flow_with_sharding(test_executor_image: str, executor_merger_image: str, dummy_dumper_image: str) -> Flow:
+    flow = (
+        Flow(name='query-flow', port_expose=8080, infrastructure='K8S', protocol='http')
+        .add(
+            name='image_data',
+            shards=3,
+            replicas=2,
+            polling='all',
+            uses=test_executor_image,
+            uses_after=executor_merger_image
+        )
+    )
+    return flow

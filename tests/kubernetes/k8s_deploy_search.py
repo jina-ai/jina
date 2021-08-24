@@ -13,7 +13,7 @@ search_flow = Flow(
     # uses='gcr.io/mystical-sweep-320315/annoy-with-grpc',
     uses_with={'dump_path': '/shared'},
     uses_after='jinahub+docker://MatchMerger',
-    k8s_uses_with_init={
+    k8s_uses_with_init={  # TODO: Change to list
         'table_name': 'image_data',
         'postgres_svc': 'postgres.postgres.svc.cluster.local',
         'shards': shards,

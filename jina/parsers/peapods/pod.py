@@ -115,10 +115,8 @@ def mixin_k8s_pod_parser(parser):
         else argparse.SUPPRESS,
     )
     parser.add_argument(
-        '--k8s-uses-with-init',
-        action=KVAppendAction,
-        metavar='KEY: VALUE',
-        nargs='*',
+        '--k8s-init-container-command',
+        nargs='+',
         help='Arguments for the init container.'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,

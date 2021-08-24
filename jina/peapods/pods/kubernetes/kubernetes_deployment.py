@@ -146,7 +146,7 @@ def get_cli_params(arguments, skip_list=()):
         'port_out',
         'port_ctrl',
         'port_expose',
-        'k8s_uses_with_init',
+        'k8s_init_container_command',
         'k8s_uses_init'
     ] + list(skip_list)
     arg_list = [
@@ -308,7 +308,7 @@ def get_init_container_args(pod):
         init_container = {
             'init-name': 'init',
             'init-image': pod.args.k8s_uses_init,
-            'init-command': f'["python", "dump.py", "{dictionary_to_cli_param(pod.args.k8s_uses_with_init)}"]',
+            'init-command': f'{pod.args.k8s_container_init_command}',
         }
     else:
         init_container = None

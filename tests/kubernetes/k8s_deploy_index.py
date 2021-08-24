@@ -28,37 +28,36 @@ index_flow = (
         name='segmenter',
         uses=f'gcr.io/{GCP_REGISTRY_PROJECT_NAME}/doc-segmenter:v.0.0.1',
     )
-    .add(
-        name='textfilter',
-        uses=f'gcr.io/{GCP_REGISTRY_PROJECT_NAME}/text-filter:v.0.0.2',
-        needs='segmenter',
-    )
-    .add(
-        name='textencoder', uses='jinahub+docker://CLIPTextEncoder', needs='textfilter'
-    )
-    .add(
-        name='textstorage',
-        uses='jinahub+docker://PostgreSQLStorage',
-        uses_with=_get_postgres_config_for_table('text_data'),
-        needs='textencoder',
-    )
-    .add(
-        name='semanticsegmentimage',
-        uses=f'gcr.io/{GCP_REGISTRY_PROJECT_NAME}/semantic-image-segmenter:v.0.0.2',
-        needs='segmenter',
-    )
-    .add(
-        name='imageencoder',
-        uses='jinahub+docker://CLIPImageEncoder',
-        needs='semanticsegmentimage',
-    )
-    .add(
-        name='imagestorage',
-        uses='jinahub+docker://PostgreSQLStorage',
-        uses_with=_get_postgres_config_for_table('image_data'),
-        needs='imageencoder',
-
-    )
+    # .add(
+    #     name='textfilter',
+    #     uses=f'gcr.io/{GCP_REGISTRY_PROJECT_NAME}/text-filter:v.0.0.2',
+    #     needs='segmenter',
+    # )
+    # .add(
+    #     name='textencoder', uses='jinahub+docker://CLIPTextEncoder', needs='textfilter'
+    # )
+    # .add(
+    #     name='textstorage',
+    #     uses='jinahub+docker://PostgreSQLStorage',
+    #     uses_with=_get_postgres_config_for_table('text_data'),
+    #     needs='textencoder',
+    # )
+    # .add(
+    #     name='semanticsegmentimage',
+    #     uses=f'gcr.io/{GCP_REGISTRY_PROJECT_NAME}/semantic-image-segmenter:v.0.0.2',
+    #     needs='segmenter',
+    # )
+    # .add(
+    #     name='imageencoder',
+    #     uses='jinahub+docker://CLIPImageEncoder',
+    #     needs='semanticsegmentimage',
+    # )
+    # .add(
+    #     name='imagestorage',
+    #     uses='jinahub+docker://PostgreSQLStorage',
+    #     uses_with=_get_postgres_config_for_table('image_data'),
+    #     needs='imageencoder',
+    # )
 )
 index_flow.plot('index-flow.jpg')
 print('deploy index flow')

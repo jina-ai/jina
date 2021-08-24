@@ -62,7 +62,7 @@ class K8sPod(BasePod):
             port_out=self.args.port_out,
             port_ctrl=self.args.port_ctrl,
             port_expose=self.args.port_expose,
-            image_name='gcr.io/jina-showcase/custom-jina:latest',
+            image_name='jinaai/jina:master-py38-standard',
             container_cmd='["jina"]',
             container_args=f'["gateway", '
                            f'"--grpc-data-requests", '
@@ -76,7 +76,8 @@ class K8sPod(BasePod):
 
     def _deploy_runtime(self, deployment_args, replicas, k8s_namespace, deployment_id):
         image_name = kubernetes_deployment.get_image_name(self.args.uses)
-        dns_name = kubernetes_deployment.to_dns_name(self.name + str(deployment_id))
+        name_suffix = self.name + ('-' + str(deployment_id) if self.args.parallel > 1 else '')
+        dns_name = kubernetes_deployment.to_dns_name(name_suffix)
         init_container_args = kubernetes_deployment.get_init_container_args(self)
         uses_metas = kubernetes_deployment.dictionary_to_cli_param(
             {'pea_id': deployment_id}
@@ -118,7 +119,7 @@ class K8sPod(BasePod):
             container_args=container_args,
             logger=JinaLogger(f'deploy_{self.name}'),
             replicas=replicas,
-            pull_policy='Always',
+            pull_policy='IfNotPresent',  # TODO: Parameterize
             init_container=init_container_args,
         )
 
@@ -216,10 +217,12 @@ class K8sPod(BasePod):
             for deployment_id, deployment_arg in enumerate(
                     self.deployment_args['deployments']
             ):
-                name = kubernetes_deployment.to_dns_name(self.name + str(deployment_id))
+                service_name = self.name + ('-' + str(deployment_id) if len(self.deployment_args['deployments']) > 1 else '')
+                name = kubernetes_deployment.to_dns_name(service_name)
+                name_suffix = f'_{deployment_id}' if len(self.deployment_args['deployments']) > 1 else ''
                 res.append(
                     {
-                        'name': f'{self.name}_{deployment_id}',
+                        'name': f'{self.name}{name_suffix}',
                         'head_host': f'{name}.{self.args.k8s_namespace}.svc.cluster.local',
                         'head_port_in': 8081,
                         'tail_port_out': 8082,

@@ -21,8 +21,28 @@ def logger():
 
 
 @pytest.fixture()
-def executor_image(logger: JinaLogger):
-    image, build_logs = client.images.build(path=os.path.join(cur_dir, 'test-executor'), tag='test-executor:0.7.0')
+def test_executor_image(logger: JinaLogger):
+    image, build_logs = client.images.build(path=os.path.join(cur_dir, 'test-executor'), tag='test-executor:0.11.0')
+    for chunk in build_logs:
+        if 'stream' in chunk:
+            for line in chunk['stream'].splitlines():
+                logger.debug(line)
+    return image.tags[-1]
+
+
+@pytest.fixture()
+def executor_merger_image(logger: JinaLogger):
+    image, build_logs = client.images.build(path=os.path.join(cur_dir, 'executor-merger'), tag='merger-executor:0.1.0')
+    for chunk in build_logs:
+        if 'stream' in chunk:
+            for line in chunk['stream'].splitlines():
+                logger.debug(line)
+    return image.tags[-1]
+
+
+@pytest.fixture()
+def dummy_dumper_image(logger: JinaLogger):
+    image, build_logs = client.images.build(path=os.path.join(cur_dir, 'dummy-dumper'), tag='dummy-dumper:0.1.0')
     for chunk in build_logs:
         if 'stream' in chunk:
             for line in chunk['stream'].splitlines():
