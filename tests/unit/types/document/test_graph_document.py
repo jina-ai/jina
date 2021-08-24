@@ -152,7 +152,7 @@ def test_remove_edges(graph):
     num_edge_features = len(graph.edge_features.keys())
     for doc1, doc2 in edges:
         num_edges = graph.num_edges
-        graph.remove_edge(doc1, doc2)
+        graph.remove_single_edge(doc1, doc2)
         num_edge_features -= 1
         assert graph.num_edges == num_edges - 1
 
@@ -292,7 +292,7 @@ def test_added_edges_in_edge_features(graph, expected_output):
     doc1 = Document(text='Document1')
 
     graph.add_single_edge(doc0, doc1)
-    edge_key = graph._get_edge_key(doc0, doc1)
+    edge_key = graph._get_edge_key(doc0.id, doc1.id)
 
     assert edge_key in graph.edge_features
     assert graph.edge_features[edge_key] is None
@@ -307,7 +307,7 @@ def test_manual_update_edges_features(graph, expected_output):
     doc1 = Document(text='Document1')
 
     graph.add_single_edge(doc0, doc1)
-    edge_key = graph._get_edge_key(doc0, doc1)
+    edge_key = graph._get_edge_key(doc0.id, doc1.id)
 
     graph._pb_body.graph.edge_features[edge_key] = {'number_value': 1234}
 
@@ -320,7 +320,7 @@ def test_edge_update_nested_lists():
     doc1 = Document(text='Document1')
 
     graph.add_single_edge(doc0, doc1)
-    edge_key = graph._get_edge_key(doc0, doc1)
+    edge_key = graph._get_edge_key(doc0.id, doc1.id)
     graph.edge_features[edge_key] = {
         'hey': {'nested': True, 'list': ['elem1', 'elem2', {'inlist': 'here'}]},
         'hoy': [0, 1],

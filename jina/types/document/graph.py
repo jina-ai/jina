@@ -1,4 +1,4 @@
-from typing import Optional, Iterator, Tuple, Dict, Iterable, Collection, Union
+from typing import Optional, Iterator, Tuple, Dict, Iterable, Sequence, Union
 
 import numpy as np
 
@@ -152,18 +152,14 @@ class GraphDocument(Document):
             node.id: offset for offset, node in enumerate(self.nodes)
         }
 
-    def _get_edge_key(
-        self, doc1: Union['Document', str], doc2: Union['Document', str]
-    ) -> str:
+    def _get_edge_key(self, doc1_id: str, doc2_id: str) -> str:
         """
         Create a key that is lexicographically sorted in the case of undirected graphs
 
-        :param doc1: the starting node for this edge
-        :param doc2: the ending node for this edge
-        :return: lexicographically sorted key where doc1 < doc2 if undirected
+        :param doc1_id: the starting node for this edge
+        :param doc2_id: the ending node for this edge
+        :return: lexicographically sorted key where doc1_id < doc2_id if undirected
         """
-        doc1_id = doc1.id if isinstance(doc1, Document) else doc1
-        doc2_id = doc2.id if isinstance(doc2, Document) else doc1
         if self.undirected:
             return (
                 f'{doc1_id}-{doc2_id}' if doc1_id < doc2_id else f'{doc2_id}-{doc1_id}'
@@ -186,7 +182,9 @@ class GraphDocument(Document):
         """
         from scipy.sparse import coo_matrix
 
-        edge_key = self._get_edge_key(doc1, doc2)
+        doc1_id = doc1.id if isinstance(doc1, Document) else doc1
+        doc2_id = doc2.id if isinstance(doc2, Document) else doc2
+        edge_key = self._get_edge_key(doc1_id, doc2_id)
 
         if edge_key not in self.edge_features:
             self.edge_features[edge_key] = features
@@ -194,22 +192,22 @@ class GraphDocument(Document):
                 self.add_single_node(doc1)
             else:
                 assert (
-                    doc1 in self.nodes
+                    doc1_id in self.nodes
                 ), 'trying to add an edge from a node not in the graph'
             if isinstance(doc2, Document):
                 self.add_single_node(doc2)
             else:
                 assert (
-                    doc2 in self.nodes
+                    doc2_id in self.nodes
                 ), 'trying to add an edge to a node not in the graph'
 
             current_adjacency = self.adjacency
 
-            source_id = doc1.id
-            target_id = doc2.id
-            if self.undirected and doc1.id > doc2.id:
-                source_id = doc2.id
-                target_id = doc1.id
+            source_id = doc1_id
+            target_id = doc2_id
+            if self.undirected and doc1_id > doc2_id:
+                source_id = doc2_id
+                target_id = doc1_id
 
             source_node_offset = self._node_id_to_offset[source_id]
             target_node_offset = self._node_id_to_offset[target_id]
@@ -245,9 +243,9 @@ class GraphDocument(Document):
 
     def add_edges(
         self,
-        source_docs: Collection[Union['Document', str]],
-        dest_docs: Collection[Union['Document', str]],
-        edge_features: Optional[Collection[Optional[Dict]]] = None,
+        source_docs: Sequence[Union['Document', str]],
+        dest_docs: Sequence[Union['Document', str]],
+        edge_features: Optional[Sequence[Optional[Dict]]] = None,
     ):
         """
         Add edges to the graph connecting docs from `source_docs` with docs from `dest_docs`
@@ -265,20 +263,24 @@ class GraphDocument(Document):
         assert edge_features is None or len(source_docs) == len(edge_features)
 
         edge_keys = []
+        is_documents_source = isinstance(source_docs[0], Document)
+        is_documents_dest = isinstance(dest_docs[0], Document)
         for doc1, doc2 in zip(source_docs, dest_docs):
-            if isinstance(doc1, Document):
+            doc1_id = doc1.id if is_documents_source else doc1
+            doc2_id = doc2.id if is_documents_source else doc2
+            if is_documents_source:
                 self.add_single_node(doc1)
             else:
                 assert (
-                    doc1 in self.nodes
+                    doc1_id in self.nodes
                 ), 'trying to add an edge from a node not in the graph'
-            if isinstance(doc2, Document):
+            if is_documents_dest:
                 self.add_single_node(doc2)
             else:
                 assert (
-                    doc2 in self.nodes
+                    doc2_id in self.nodes
                 ), 'trying to add an edge from a node not in the graph'
-            edge_keys.append(self._get_edge_key(doc1, doc2))
+            edge_keys.append(self._get_edge_key(doc1_id, doc2_id))
 
         if edge_features is not None:
             for edge_key, features in zip(edge_keys, edge_features):
@@ -291,15 +293,11 @@ class GraphDocument(Document):
         # manipulate the adjacency matrix in a single shot
         current_adjacency = self.adjacency
         source_node_offsets = [
-            self._node_id_to_offset[
-                source.id if isinstance(source, Document) else source
-            ]
+            self._node_id_to_offset[source.id if is_documents_source else source]
             for source in source_docs
         ]
         target_node_offsets = [
-            self._node_id_to_offset[
-                target.id if isinstance(target, Document) else target
-            ]
+            self._node_id_to_offset[target.id if is_documents_dest else target]
             for target in dest_docs
         ]
         row = (
@@ -345,20 +343,26 @@ class GraphDocument(Document):
             if edge_feature_key in self.edge_features:
                 del self.edge_features[edge_feature_key]
 
-    def remove_edge(self, doc1: 'Document', doc2: 'Document'):
+    def remove_single_edge(
+        self,
+        doc1: Union['Document', str],
+        doc2: Union['Document', str],
+    ):
         """
         Remove the edge between doc1 and doc2 from the graph
 
         :param doc1: the starting node for this edge
         :param doc2: the ending node for this edge
         """
-        offset1 = self._node_id_to_offset[doc1.id]
-        offset2 = self._node_id_to_offset[doc2.id]
+        doc1_id = doc1.id if isinstance(doc1, Document) else doc1
+        doc2_id = doc2.id if isinstance(doc2, Document) else doc2
+        offset1 = self._node_id_to_offset[doc1_id]
+        offset2 = self._node_id_to_offset[doc2_id]
         for edge_id, (row, col) in enumerate(
             zip(self.adjacency.row, self.adjacency.col)
         ):
             if row.item() == offset1 and col.item() == offset2:
-                edge_key = self._get_edge_key(doc1, doc2)
+                edge_key = self._get_edge_key(doc1_id, doc2_id)
                 self._remove_edge_id(edge_id, edge_key)
 
     @property
