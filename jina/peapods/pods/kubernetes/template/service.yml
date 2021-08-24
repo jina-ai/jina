@@ -8,6 +8,10 @@ metadata:
 spec:
   type: {type}
   ports:
+    - port: {port_expose}
+      targetPort: {port_expose}
+      name: port-expose
+      protocol: TCP
     - port: {port_in}
       targetPort: {port_in}
       name: port-in
@@ -19,10 +23,6 @@ spec:
     - port: {port_ctrl}
       targetPort: {port_ctrl}
       name: port-ctrl
-      protocol: TCP
-    - port: {port_expose}
-      targetPort: {port_expose}
-      name: port-expose
       protocol: TCP
   selector:
     app: {target}
