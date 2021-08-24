@@ -8,6 +8,7 @@ from ..ndarray.sparse.scipy import SparseNdArray
 from ..struct import StructView
 from ...importer import ImportExtensions
 from ...logging.predefined import default_logger
+from ...helper import deprecated_method
 
 __all__ = ['GraphDocument']
 
@@ -71,7 +72,7 @@ class GraphDocument(Document):
             ):
                 JINA_GLOBAL.scipy_installed = True
 
-    def add_node(self, node: 'Document'):
+    def add_single_node(self, node: 'Document'):
         """
         Add a a node to the graph
 
@@ -83,6 +84,16 @@ class GraphDocument(Document):
 
         self._node_id_to_offset[node.id] = len(self.nodes)
         self.nodes.append(node)
+
+    @deprecated_method(new_function_name='add_single_node')
+    def add_node(self, *args, **kwargs):
+        """
+        Add a a node to the graph
+
+            .. # noqa: DAR101
+            .. # noqa: DAR201
+        """
+        return self.add_single_node(*args, **kwargs)
 
     def remove_node(self, node: 'Document'):
         """
@@ -148,7 +159,7 @@ class GraphDocument(Document):
         else:
             return f'{doc1.id}-{doc2.id}'
 
-    def add_edge(
+    def add_single_edge(
         self, doc1: 'Document', doc2: 'Document', features: Optional[Dict] = None
     ):
         """
@@ -164,8 +175,8 @@ class GraphDocument(Document):
 
         if edge_key not in self.edge_features:
             self.edge_features[edge_key] = features
-            self.add_node(doc1)
-            self.add_node(doc2)
+            self.add_single_node(doc1)
+            self.add_single_node(doc2)
 
             current_adjacency = self.adjacency
 
@@ -196,6 +207,16 @@ class GraphDocument(Document):
             SparseNdArray(
                 self._pb_body.graph.adjacency, sp_format='coo'
             ).value = coo_matrix((data, (row, col)))
+
+    @deprecated_method(new_function_name='add_single_edge')
+    def add_edge(self, *args, **kwargs):
+        """
+        Add an edge to the graph
+
+            .. # noqa: DAR101
+            .. # noqa: DAR201
+        """
+        return self.add_single_edge(*args, **kwargs)
 
     def _remove_edge_id(self, edge_id: int, edge_feature_key: str):
         from scipy.sparse import coo_matrix
@@ -374,10 +395,10 @@ class GraphDocument(Document):
         for node in dgl_graph.nodes():
             node_doc = Document()
             nodeid_to_doc[int(node)] = node_doc
-            jina_graph.add_node(node_doc)
+            jina_graph.add_single_node(node_doc)
 
         for node_source, node_destination in zip(*dgl_graph.edges()):
-            jina_graph.add_edge(
+            jina_graph.add_single_edge(
                 nodeid_to_doc[int(node_source)], nodeid_to_doc[int(node_destination)]
             )
 

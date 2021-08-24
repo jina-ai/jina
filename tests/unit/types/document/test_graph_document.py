@@ -15,11 +15,11 @@ def graph():
     doc2 = Document(text='Document2')
     doc3 = Document(text='Document3')
 
-    graph.add_edge(doc0, doc1, features={'text': 'I connect Doc0 and Doc1'})
-    graph.add_edge(doc0, doc2, features={'text': 'I connect Doc0 and Doc2'})
-    graph.add_edge(doc2, doc1, features={'text': 'I connect Doc2 and Doc1'})
-    graph.add_edge(doc1, doc3, features={'text': 'I connect Doc1 and Doc3'})
-    graph.add_edge(doc2, doc3, features={'text': 'I connect Doc2 and Doc3'})
+    graph.add_single_edge(doc0, doc1, features={'text': 'I connect Doc0 and Doc1'})
+    graph.add_single_edge(doc0, doc2, features={'text': 'I connect Doc0 and Doc2'})
+    graph.add_single_edge(doc2, doc1, features={'text': 'I connect Doc2 and Doc1'})
+    graph.add_single_edge(doc1, doc3, features={'text': 'I connect Doc1 and Doc3'})
+    graph.add_single_edge(doc2, doc3, features={'text': 'I connect Doc2 and Doc3'})
     return graph
 
 
@@ -249,8 +249,8 @@ def test_graph_edge_behaviour_creation(graph, expected_output):
     doc0 = Document(text='Document0')
     doc1 = Document(text='Document1')
 
-    graph.add_edge(doc0, doc1)
-    graph.add_edge(doc1, doc0)
+    graph.add_single_edge(doc0, doc1)
+    graph.add_single_edge(doc1, doc0)
 
     assert graph.num_edges == expected_output
 
@@ -263,8 +263,8 @@ def test_graph_edge_behaviour_creation(graph, expected_output):
     doc0 = Document(text='Document0')
     doc1 = Document(text='Document1')
 
-    graph.add_edge(doc0, doc1)
-    graph.add_edge(doc1, doc0)
+    graph.add_single_edge(doc0, doc1)
+    graph.add_single_edge(doc1, doc0)
 
     assert graph.num_edges == expected_output
 
@@ -277,8 +277,8 @@ def test_graph_count_invariance(graph, expected_output):
     doc0 = Document(text='Document0')
     doc1 = Document(text='Document1')
 
-    graph.add_edge(doc0, doc1)
-    graph.add_edge(doc0, doc1)
+    graph.add_single_edge(doc0, doc1)
+    graph.add_single_edge(doc0, doc1)
 
     assert graph.num_edges == expected_output
 
@@ -291,7 +291,7 @@ def test_added_edges_in_edge_features(graph, expected_output):
     doc0 = Document(text='Document0')
     doc1 = Document(text='Document1')
 
-    graph.add_edge(doc0, doc1)
+    graph.add_single_edge(doc0, doc1)
     edge_key = graph._get_edge_key(doc0, doc1)
 
     assert edge_key in graph.edge_features
@@ -306,7 +306,7 @@ def test_manual_update_edges_features(graph, expected_output):
     doc0 = Document(text='Document0')
     doc1 = Document(text='Document1')
 
-    graph.add_edge(doc0, doc1)
+    graph.add_single_edge(doc0, doc1)
     edge_key = graph._get_edge_key(doc0, doc1)
 
     graph._pb_body.graph.edge_features[edge_key] = {'number_value': 1234}
@@ -319,7 +319,7 @@ def test_edge_update_nested_lists():
     doc0 = Document(text='Document0')
     doc1 = Document(text='Document1')
 
-    graph.add_edge(doc0, doc1)
+    graph.add_single_edge(doc0, doc1)
     edge_key = graph._get_edge_key(doc0, doc1)
     graph.edge_features[edge_key] = {
         'hey': {'nested': True, 'list': ['elem1', 'elem2', {'inlist': 'here'}]},
