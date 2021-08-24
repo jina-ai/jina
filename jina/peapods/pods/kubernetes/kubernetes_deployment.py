@@ -308,7 +308,7 @@ def get_init_container_args(pod):
         init_container = {
             'init-name': 'init',
             'init-image': pod.args.k8s_uses_init,
-            'init-command': f'{pod.args.k8s_container_init_command}',
+            'init-command': f'{pod.args.k8s_init_container_command}',
         }
     else:
         init_container = None

@@ -11,8 +11,8 @@ from jina import Flow, Document
 
 @pytest.fixture()
 def k8s_flow_with_needs(test_executor_image: str, executor_merger_image: str) -> Flow:
-    index_flow = (
-        Flow(name='index-flow', port_expose=8080, infrastructure='K8S', protocol='http')
+    flow = (
+        Flow(name='test-flow', port_expose=8080, infrastructure='K8S', protocol='http')
         .add(
             name='segmenter',
             uses=test_executor_image,
@@ -42,7 +42,7 @@ def k8s_flow_with_needs(test_executor_image: str, executor_merger_image: str) ->
             needs=['imagestorage', 'textstorage']
         )
     )
-    return index_flow
+    return flow
 
 
 @pytest.mark.timeout(360)
@@ -62,7 +62,7 @@ def test_flow_with_needs(k8s_cluster, test_executor_image, executor_merger_image
     logger.debug(f'Starting to wait for pods in kind cluster to reach "RUNNING" state...')
     waiting = True
     while waiting:
-        num_running_pods = len(k8s_cluster.list_ready_pods('index-flow'))
+        num_running_pods = len(k8s_cluster.list_ready_pods(namespace=k8s_flow_with_needs.args.name))
         if num_running_pods == expected_running_pods:
             waiting = False
         time.sleep(3)
@@ -72,7 +72,7 @@ def test_flow_with_needs(k8s_cluster, test_executor_image, executor_merger_image
     expected_traversed_executors = {'segmenter', 'imageencoder', 'textencoder', 'imagestorage', 'textstorage'}
 
     logger.debug(f'Starting port-forwarding to gateway service...')
-    with k8s_cluster.port_forward('service/gateway', 8080, 8080, 'index-flow') as _:
+    with k8s_cluster.port_forward('service/gateway', 8080, 8080, k8s_flow_with_needs.args.name) as _:
         logger.debug(f'Port-forward running...')
 
         resp = requests.post(f'http://localhost:8080/simpleTag', json={'data': [Document() for _ in range(10)]})
@@ -87,7 +87,7 @@ def test_flow_with_needs(k8s_cluster, test_executor_image, executor_merger_image
 @pytest.fixture()
 def k8s_flow_with_init_container(test_executor_image: str, executor_merger_image: str, dummy_dumper_image: str) -> Flow:
     flow = (
-        Flow(name='query-flow', port_expose=8080, infrastructure='K8S', protocol='http')
+        Flow(name='test-flow', port_expose=8080, infrastructure='K8S', protocol='http')
         .add(
             name='test_executor',
             uses=test_executor_image,
@@ -99,12 +99,13 @@ def k8s_flow_with_init_container(test_executor_image: str, executor_merger_image
 
 
 @pytest.mark.timeout(360)
-def test_deploy_query_flow(k8s_cluster, test_executor_image, k8s_flow_with_init_container, logger):
-    expected_running_pods = 5
+def test_flow_with_init(k8s_cluster, test_executor_image, dummy_dumper_image: str, k8s_flow_with_init_container: Flow, logger):
+    expected_running_pods = 2
 
     # image pull anyways must be Never or IfNotPresent otherwise kubernetes will try to pull the image anyway
     logger.debug(f'Loading docker image {test_executor_image} into kind cluster...')
     k8s_cluster.needs_docker_image(test_executor_image)
+    k8s_cluster.needs_docker_image(dummy_dumper_image)
     logger.debug(f'Done loading docker image {test_executor_image} into kind cluster...')
 
     logger.debug(f'Starting flow on kind cluster...')
@@ -114,7 +115,7 @@ def test_deploy_query_flow(k8s_cluster, test_executor_image, k8s_flow_with_init_
     logger.debug(f'Starting to wait for pods in kind cluster to reach "RUNNING" state...')
     waiting = True
     while waiting:
-        num_running_pods = len(k8s_cluster.list_ready_pods('query-flow'))
+        num_running_pods = len(k8s_cluster.list_ready_pods(namespace=k8s_flow_with_init_container.args.name))
         if num_running_pods == expected_running_pods:
             waiting = False
         time.sleep(3)
@@ -122,7 +123,7 @@ def test_deploy_query_flow(k8s_cluster, test_executor_image, k8s_flow_with_init_
                      f'(Current Status: {num_running_pods}/{expected_running_pods}).')
 
     logger.debug(f'Starting port-forwarding to gateway service...')
-    with k8s_cluster.port_forward('service/gateway', 8080, 8080, 'index-flow') as _:
+    with k8s_cluster.port_forward('service/gateway', 8080, 8080, k8s_flow_with_init_container.args.name) as _:
         logger.debug(f'Port-forward running...')
 
         resp = requests.post(f'http://localhost:8080/readFile', json={'data': [Document() for _ in range(10)]})
@@ -131,7 +132,7 @@ def test_deploy_query_flow(k8s_cluster, test_executor_image, k8s_flow_with_init_
     docs = resp.json()['data']['docs']
     assert len(docs) == 10
     for doc in docs:
-        assert doc['tags']
+        assert doc['tags']['file'] == '1\n2\n3'
 
 
 @pytest.fixture()
