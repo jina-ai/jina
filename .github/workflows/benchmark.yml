@@ -23,9 +23,10 @@ jobs:
           echo "NEXT_VER=$NEXT_VER" >> $GITHUB_ENV
       - uses: benc-uk/workflow-dispatch@v1
         with:
+          token: ${{ secrets.JINA_DEV_BOT }}
           workflow: Benchmark Jina
           repo: jina-ai/jina-terraform
-          token: ${{ secrets.JINA_DEV_BOT }}
+          ref: "main"
           inputs: '{ "pypi_releases": "[\"${{ env.NEXT_VER }}\"]"}'
 
   benchmark-tag:
@@ -37,7 +38,8 @@ jobs:
           echo "TAG=$TAG" >> $GITHUB_ENV
       - uses: benc-uk/workflow-dispatch@v1
         with:
+          token: ${{ secrets.JINA_DEV_BOT }}
           workflow: Benchmark Jina
           repo: jina-ai/jina-terraform
-          token: ${{ secrets.JINA_DEV_BOT }}
+          ref: "main"
           inputs: '{ "git_tags": "[\"${{ env.TAG }}\"]"}'
