@@ -303,7 +303,6 @@ class BasePod:
             'head_zmq_identity': self.head_zmq_identity,
         }]
 
-
 class Pod(BasePod, ExitFIFO):
     """A BasePod is an immutable set of peas, which run in parallel. They share the same input and output socket.
     Internally, the peas can run with the process/thread backend. They can be also run in their own containers
@@ -312,15 +311,15 @@ class Pod(BasePod, ExitFIFO):
     """
 
     def __init__(
-            self,
-            args: Union['Namespace', Dict],
-            needs: Optional[Set[str]] = None,
+        self,
+        args: Union['Namespace', Dict],
+        needs: Optional[Set[str]] = None,
     ):
         super().__init__()
         args.upload_files = BasePod._set_upload_files(args)
         self.args = args
         self.needs = (
-                needs or set()
+            needs or set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
 
         self.is_head_router = False
