@@ -151,7 +151,7 @@ c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
          Client@1608[S]:connected to the gateway at localhost:12345!
 [0]0.168526: "@requests(on='/index')"
 [1]0.181676: "@requests(on='/search')"
-[2]0.192049: "query.matches = [Document(self._docs[int(idx)], copy=True, score=d) for idx, d in enumerate(dist)]"
+[2]0.218218: "from jina import Document, DocumentArray, Executor, Flow, requests"
 ```
 <sup>😔 Doesn't work? Our bad! <a href="https://github.com/jina-ai/jina/issues/new?assignees=&labels=kind%2Fbug&template=---found-a-bug-and-i-solved-it.md&title=">Please report it here.</a></sup>
 
