@@ -334,7 +334,6 @@ class Zmqlet:
         return next_routes
 
     def _send_message_dynamic(self, msg: 'Message'):
-        print('_send_message_dynamic')
         next_routes = self._get_dynamic_next_routes(msg)
         for routing_table, out_sock in next_routes:
             new_envelope = jina_pb2.EnvelopeProto()
@@ -354,7 +353,6 @@ class Zmqlet:
 
         :param msg: the protobuf message to send
         """
-        print('### send message zmq ')
         # choose output sock
         if msg.is_data_request:
             if self.args.dynamic_routing_out:
@@ -370,9 +368,7 @@ class Zmqlet:
         self.bytes_sent += send_message(socket, msg, **self.send_recv_kwargs)
         self.msg_sent += 1
 
-        print('send idle after send message?')
         if self._active and socket == self.out_sock and self.in_sock_type == zmq.DEALER:
-            print('send idle')
             self._send_idle_to_router()
 
     def _send_control_to_router(self, command, raise_exception=False):
@@ -437,7 +433,6 @@ class AsyncZmqlet(Zmqlet):
             asyncio.create_task(self._send_message_via(self.out_sock, msg))
 
     async def _send_message_dynamic(self, msg: 'Message'):
-        print('### send message dynamic')
         for routing_table, out_sock in self._get_dynamic_next_routes(msg):
             new_envelope = jina_pb2.EnvelopeProto()
             new_envelope.CopyFrom(msg.envelope)
@@ -448,7 +443,6 @@ class AsyncZmqlet(Zmqlet):
 
     async def _send_message_via(self, socket, msg):
         try:
-            print('_send_message_via')
             num_bytes = await send_message_async(socket, msg, **self.send_recv_kwargs)
             self.bytes_sent += num_bytes
             self.msg_sent += 1
@@ -664,30 +658,23 @@ def send_message(
     """
     num_bytes = 0
     try:
-        print(
-            'try send_message, is data request', msg.is_data_request, 'size: ', msg.size
-        )
         _prep_send_socket(sock, timeout)
         sock.send_multipart(msg.dump())
         num_bytes = msg.size
     except zmq.error.Again:
-        print('zmq.error.Again')
         raise TimeoutError(
             f'cannot send message to sock {sock} after timeout={timeout}ms, please check the following:'
             'is the server still online? is the network broken? are "port" correct?'
         )
     except zmq.error.ZMQError as ex:
-        print('zmq.error.ZMQError')
         if raise_exception:
             raise ex
         else:
             default_logger.critical(ex)
     finally:
         try:
-            print('try sock.setsockopt(zmq.SNDTIMEO, -1)')
             sock.setsockopt(zmq.SNDTIMEO, -1)
         except zmq.error.ZMQError:
-            print('zmq.error.ZMQError sock.setsockopt(zmq.SNDTIMEO, -1)')
             pass
 
     return num_bytes
@@ -718,32 +705,23 @@ async def send_message_async(
     :param kwargs: keyword arguments
     :return: the size (in bytes) of the sent message
     """
-    # import traceback
-    # traceback.print_stack()
-
     try:
-        # print('send async... envelop', msg.envelope)
         _prep_send_socket(sock, timeout)
         await sock.send_multipart(msg.dump())
         return msg.size
     except zmq.error.Again:
-        print('send async... zmq.error.Again')
         raise TimeoutError(
             f'cannot send message to sock {sock.getsockopt_string(zmq.LAST_ENDPOINT)} after timeout={timeout}ms, '
             'please check the following: is the server still online? is the network broken? are "port" correct? '
         )
     except zmq.error.ZMQError as ex:
-        print('send async... zmq.error.ZMQError')
         default_logger.critical(ex)
     except asyncio.CancelledError:
-        print('send async... asyncio.CancelledError')
         default_logger.debug('all gateway tasks are cancelled')
     except Exception as ex:
-        print('send async... Exception', ex)
         raise ex
     finally:
         try:
-            print('send async... finally sock.setsockopt(zmq.SNDTIMEO, -1)')
             sock.setsockopt(zmq.SNDTIMEO, -1)
         except zmq.error.ZMQError:
             pass
@@ -761,21 +739,17 @@ def recv_message(sock: 'zmq.Socket', timeout: int = -1, **kwargs) -> 'Message':
             - the size of the message in bytes
     """
     try:
-        print('try recv_message')
         _prep_recv_socket(sock, timeout)
         msg_data = sock.recv_multipart()
         msg = _parse_from_frames(sock.type, msg_data)
-        print('massage received', msg)
         return msg
 
     except zmq.error.Again:
-        print('timeout')
         raise TimeoutError(
             f'no response from sock {sock.getsockopt_string(zmq.LAST_ENDPOINT)} after timeout={timeout}ms, '
             f'please check the following: is the server still online? is the network broken? are "port" correct? '
         )
     except Exception as ex:
-        print('another exception')
         raise ex
     finally:
         sock.setsockopt(zmq.RCVTIMEO, -1)
@@ -935,6 +909,5 @@ def _connect_socket(
     if ssh_server is not None:
         tunnel_connection(sock, address, ssh_server, ssh_keyfile, ssh_password)
     else:
-        print('connect to', address)
         sock.connect(address)
 

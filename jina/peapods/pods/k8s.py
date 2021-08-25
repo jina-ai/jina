@@ -3,10 +3,9 @@ from argparse import Namespace
 from typing import Optional, Dict, Union, Set, List
 
 from .kubernetes import kubernetes_deployment, kubernetes_tools
-
-from ...logging.logger import JinaLogger
 from .. import BasePod
 from ... import __default_executor__
+from ...logging.logger import JinaLogger
 
 
 class K8sPod(BasePod):
@@ -67,7 +66,7 @@ class K8sPod(BasePod):
             container_args=f'["gateway", '
                            f'"--grpc-data-requests", '
                            f'"--runtime-cls", "GRPCDataRuntime", '
-                           f'{kubernetes_deployment.get_cli_params(self.args, ("pod_role", ))}]',
+                           f'{kubernetes_deployment.get_cli_params(self.args, ("pod_role",))}]',
             logger=JinaLogger(f'deploy_{self.name}'),
             replicas=1,
             pull_policy='Always',
@@ -217,7 +216,8 @@ class K8sPod(BasePod):
             for deployment_id, deployment_arg in enumerate(
                     self.deployment_args['deployments']
             ):
-                service_name = self.name + ('-' + str(deployment_id) if len(self.deployment_args['deployments']) > 1 else '')
+                service_name = self.name + (
+                    '-' + str(deployment_id) if len(self.deployment_args['deployments']) > 1 else '')
                 name = kubernetes_deployment.to_dns_name(service_name)
                 name_suffix = f'_{deployment_id}' if len(self.deployment_args['deployments']) > 1 else ''
                 res.append(

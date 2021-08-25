@@ -118,6 +118,7 @@ ac_table = {
             '--env',
             '--inspect',
             '--static-routing-table',
+            '--infrastructure',
         ],
         'ping': ['--help', '--timeout', '--retries', '--print-response'],
         'gateway': [
@@ -186,9 +187,6 @@ ac_table = {
             '--routing-table',
             '--dynamic-routing',
             '--connect-to-predecessor',
-            '--k8s-uses-init',
-            '--k8s-uses-with-init',
-            '--k8s-namespace',
         ],
         'hub new': ['--help'],
         'hub push': [
@@ -333,6 +331,10 @@ ac_table = {
             '--pod-role',
             '--no-dynamic-routing',
             '--connect-to-predecessor',
+            '--k8s-uses-init',
+            '--k8s-mount-path',
+            '--k8s-init-container-command',
+            '--k8s-namespace',
         ],
         'client': [
             '--help',
