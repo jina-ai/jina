@@ -55,7 +55,7 @@ class HTTPRuntime(AsyncNewLoopRuntime):
                 app=extend_rest_interface(get_fastapi_app(self.args, self.logger)),
                 host=__default_host__,
                 port=self.args.port_expose,
-                log_level=os.getenv('JINA_LOG_LEVEL', 'error').lower()
+                log_level=os.getenv('JINA_LOG_LEVEL', 'error').lower(),
             )
         )
         await self._server.setup()

@@ -17,7 +17,7 @@ class PodFactory:
     def build_pod(
         args: 'Namespace',
         needs: Optional[Set[str]] = None,
-        infrastructure: InfrastructureType = InfrastructureType.LOCAL,
+        infrastructure: InfrastructureType = InfrastructureType.JINA,
     ) -> BasePod:
         """Build an implementation of a `BasePod` interface
 

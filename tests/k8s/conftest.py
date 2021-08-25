@@ -122,4 +122,4 @@ def k8s_cluster(kind_cluster: KindCluster, logger: JinaLogger) -> KindClusterWra
 @pytest.fixture()
 def k8s_cluster_namespaced(k8s_cluster) -> KindClusterWrapper:
     yield k8s_cluster
-    # k8s_cluster._cluster.kubectl('delete', 'namespace', 'test-flow')
+    k8s_cluster._cluster.kubectl('delete', 'namespace', 'test-flow')

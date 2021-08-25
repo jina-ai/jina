@@ -191,7 +191,6 @@ def k8s_flow_with_sharding(
         name='test_executor',
         shards=3,
         replicas=2,
-        polling='all',
         uses=test_executor_image,
         uses_after=executor_merger_image,
     )

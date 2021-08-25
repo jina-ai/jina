@@ -741,8 +741,7 @@ def recv_message(sock: 'zmq.Socket', timeout: int = -1, **kwargs) -> 'Message':
     try:
         _prep_recv_socket(sock, timeout)
         msg_data = sock.recv_multipart()
-        msg = _parse_from_frames(sock.type, msg_data)
-        return msg
+        return _parse_from_frames(sock.type, msg_data)
 
     except zmq.error.Again:
         raise TimeoutError(

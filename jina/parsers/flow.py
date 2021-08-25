@@ -53,7 +53,7 @@ def mixin_k8s_parser(parser):
         '--infrastructure',
         type=InfrastructureType.from_string,
         choices=list(InfrastructureType),
-        default=InfrastructureType.LOCAL,
+        default=InfrastructureType.JINA,
         help='Infrastructure where the Flow runs on. Currently, `local` and `k8s` are supported',
     )
 
