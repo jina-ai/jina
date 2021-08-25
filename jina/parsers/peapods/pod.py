@@ -128,6 +128,7 @@ def mixin_k8s_pod_parser(parser):
     )
     parser.add_argument(
         '--k8s-init-container-command',
+        type=str,
         nargs='+',
         help='Arguments for the init container.'
         if _SHOW_ALL_ARGS

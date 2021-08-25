@@ -251,7 +251,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def __init__(
         self,
         env: Optional[dict] = None,
-        infrastructure: Optional[str] = 'LOCAL',
+        infrastructure: Optional[str] = InfrastructureType.JINA,
         inspect: Optional[str] = 'COLLECT',
         log_config: Optional[str] = None,
         name: Optional[str] = None,
@@ -825,7 +825,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             },
         )
 
-    # THIS NEEDS TO BE REWRITTEN
+    # TODO needs to be refactored
     def _get_routing_table(self) -> RoutingTable:
         graph = RoutingTable()
         for pod_id, pod in self._pod_nodes.items():
@@ -860,7 +860,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             if end == GATEWAY_NAME:
                 end = f'end-{GATEWAY_NAME}'
 
-            # In K8sPod will not be needed
             if pod.head_args.hosts_in_connect is None:
                 pod.head_args.hosts_in_connect = []
 
