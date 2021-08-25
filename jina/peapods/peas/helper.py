@@ -2,8 +2,13 @@ import multiprocessing
 import threading
 from functools import partial
 from typing import Union
+from copy import deepcopy
 
-from ...enums import RuntimeBackendType
+from ... import __default_host__
+from ...hubble.hubio import HubIO
+from ...hubble.helper import is_valid_huburi
+from ...enums import GatewayProtocolType, RuntimeBackendType
+from ...parsers.hubble import set_hub_pull_parser
 
 
 def _get_event(obj) -> Union[multiprocessing.Event, threading.Event]:
@@ -66,3 +71,35 @@ class ConditionalEvent:
         e._state_changed = changed_callback
         e.set = partial(self._custom_set, e)
         e.clear = partial(self._custom_clear, e)
+
+
+def runtime_cls_from(args):
+    """Get runtime_cls as a string from args
+
+    :param args: pea/pod namespace args
+    :return: runtime class as a string
+    """
+    _args = deepcopy(args)
+    gateway_runtime_dict = {
+        GatewayProtocolType.GRPC: 'GRPCRuntime',
+        GatewayProtocolType.WEBSOCKET: 'WebSocketRuntime',
+        GatewayProtocolType.HTTP: 'HTTPRuntime',
+    }
+    if (
+        _args.runtime_cls not in gateway_runtime_dict.values()
+        and _args.host != __default_host__
+        and not _args.disable_remote
+    ):
+        _args.runtime_cls = 'JinadRuntime'
+    if _args.runtime_cls == 'ZEDRuntime' and _args.uses.startswith('docker://'):
+        _args.runtime_cls = 'ContainerRuntime'
+    if _args.runtime_cls == 'ZEDRuntime' and is_valid_huburi(_args.uses):
+        _args.uses = HubIO(
+            set_hub_pull_parser().parse_args([_args.uses, '--no-usage'])
+        ).pull()
+        if _args.uses.startswith('docker://'):
+            _args.runtime_cls = 'ContainerRuntime'
+    if hasattr(_args, 'protocol'):
+        _args.runtime_cls = gateway_runtime_dict[_args.protocol]
+
+    return _args.runtime_cls

@@ -417,9 +417,12 @@ class ContainerRuntime(ZMQRuntime):
             ctrl_host = __docker_host__
         elif network:
             # If the caller is already in a docker network, replace ctrl-host with network gateway
-            ctrl_host = client.networks.get(network).attrs['IPAM']['Config'][0][
-                'Gateway'
-            ]
+            try:
+                ctrl_host = client.networks.get(network).attrs['IPAM']['Config'][0][
+                    'Gateway'
+                ]
+            except Exception:
+                ctrl_host = __docker_host__
         else:
             ctrl_host = host
 

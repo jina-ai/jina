@@ -8,6 +8,7 @@ from fastapi import HTTPException
 from jina.flow.base import Flow
 from jina.enums import GatewayProtocolType
 from daemon.api import dependencies
+from daemon.helper import change_cwd
 from daemon.models.id import DaemonID
 from daemon.api.dependencies import FlowDepends, Environment
 
@@ -43,25 +44,26 @@ def test_flow_depends_load_and_dump(monkeypatch, tmpdir):
         filename=filename,
         envs=Environment(envs=['a=b']),
     )
-    f: Flow = Flow.load_config(fd.params.uses).build()
-    assert f.port_expose == 12345
-    assert f.protocol == GatewayProtocolType.HTTP
-    assert f['gateway'].args.runs_in_docker
-    assert f['executor1'].args.runs_in_docker
-    assert f['executor1'].args.port_in == 45678
-    assert f['executor1'].args.port_in is not None
-    assert all(
-        port in list(fd.ports.values())
-        for port in [
-            f.port_expose,
-            f['gateway'].args.port_in,
-            f['gateway'].args.port_out,
-            f['gateway'].args.port_ctrl,
-            f['executor1'].args.port_in,
-            f['executor1'].args.port_out,
-            f['executor1'].args.port_ctrl,
-        ]
-    )
+    with change_cwd(tmpdir):
+        f: Flow = Flow.load_config(fd.params.uses).build()
+        assert f.port_expose == 12345
+        assert f.protocol == GatewayProtocolType.HTTP
+        assert f['gateway'].args.runs_in_docker
+        assert f['executor1'].args.runs_in_docker
+        assert f['executor1'].args.port_in == 45678
+        assert f['executor1'].args.port_in is not None
+        assert all(
+            port in list(fd.ports.values())
+            for port in [
+                f.port_expose,
+                f['gateway'].args.port_in,
+                f['gateway'].args.port_out,
+                f['gateway'].args.port_ctrl,
+                f['executor1'].args.port_in,
+                f['executor1'].args.port_out,
+                f['executor1'].args.port_ctrl,
+            ]
+        )
 
 
 @pytest.mark.parametrize(

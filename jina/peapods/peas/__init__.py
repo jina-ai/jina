@@ -7,13 +7,10 @@ from typing import Any, Tuple, Union, Dict, Optional
 
 from .helper import _get_event, ConditionalEvent
 from ... import __stop_msg__, __ready_msg__, __default_host__
-from ...enums import PeaRoleType, RuntimeBackendType, SocketType, GatewayProtocolType
+from ...enums import PeaRoleType, RuntimeBackendType, SocketType
 from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
 from ...helper import typename
-from ...hubble.helper import is_valid_huburi
-from ...hubble.hubio import HubIO
 from ...logging.logger import JinaLogger
-from ...parsers.hubble import set_hub_pull_parser
 
 __all__ = ['BasePea']
 
@@ -359,34 +356,14 @@ class BasePea:
         self.close()
 
     def _get_runtime_cls(self) -> Tuple[Any, bool]:
-        gateway_runtime_dict = {
-            GatewayProtocolType.GRPC: 'GRPCRuntime',
-            GatewayProtocolType.WEBSOCKET: 'WebSocketRuntime',
-            GatewayProtocolType.HTTP: 'HTTPRuntime',
-        }
-        if (
-            self.args.runtime_cls not in gateway_runtime_dict.values()
-            and self.args.host != __default_host__
-            and not self.args.disable_remote
-        ):
-            self.args.runtime_cls = 'JinadRuntime'
+        from .helper import runtime_cls_from
+        from ..runtimes import get_runtime
+
+        self.args.runtime_cls = runtime_cls_from(self.args)
+        if self.args.runtime_cls == 'JinadRuntime':
             # NOTE: remote pea would also create a remote workspace which might take alot of time.
             # setting it to -1 so that wait_start_success doesn't fail
             self.args.timeout_ready = -1
-        if self.args.runtime_cls == 'ZEDRuntime' and self.args.uses.startswith(
-            'docker://'
-        ):
-            self.args.runtime_cls = 'ContainerRuntime'
-        if self.args.runtime_cls == 'ZEDRuntime' and is_valid_huburi(self.args.uses):
-            self.args.uses = HubIO(
-                set_hub_pull_parser().parse_args([self.args.uses, '--no-usage'])
-            ).pull()
-            if self.args.uses.startswith('docker://'):
-                self.args.runtime_cls = 'ContainerRuntime'
-        if hasattr(self.args, 'protocol'):
-            self.args.runtime_cls = gateway_runtime_dict[self.args.protocol]
-        from ..runtimes import get_runtime
-
         return get_runtime(self.args.runtime_cls)
 
     @property

@@ -91,7 +91,7 @@ def test_r_l_r_docker(parallels, docker_image, mocker):
     response_mock.assert_called()
 
 
-@pytest.mark.parametrize('parallels', [1, 2])
+@pytest.mark.parametrize('parallels', [1])
 def test_r_r_r_docker(parallels, docker_image, mocker):
     response_mock = mocker.Mock()
 

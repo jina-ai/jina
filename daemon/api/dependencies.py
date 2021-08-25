@@ -11,48 +11,19 @@ from fastapi import HTTPException, UploadFile, File, Query, Depends
 
 from jina import Flow, __docker_host__
 from jina.helper import cached_property
-from jina.enums import PeaRoleType, SocketType, RemoteWorkspaceState
+from jina.peapods.pods import Pod
+from jina.peapods.pods.compound import CompoundPod
+from jina.peapods.peas.helper import runtime_cls_from
+from jina.enums import (
+    PeaRoleType,
+    SocketType,
+    RemoteWorkspaceState,
+    GatewayProtocolType,
+)
 from .. import daemon_logger
 from ..models import DaemonID, FlowModel, PodModel, PeaModel
 from ..helper import get_workspace_path, change_cwd, change_env
 from ..stores import workspace_store as store
-
-from copy import deepcopy
-from jina import __default_host__
-from jina.hubble.hubio import HubIO
-from jina.hubble.helper import is_valid_huburi
-from jina.enums import GatewayProtocolType
-from jina.parsers.hubble import set_hub_pull_parser
-
-
-gateway_runtime_dict = {
-    GatewayProtocolType.GRPC: 'GRPCRuntime',
-    GatewayProtocolType.WEBSOCKET: 'WebSocketRuntime',
-    GatewayProtocolType.HTTP: 'HTTPRuntime',
-}
-
-
-def runtime_cls_from(args):
-    # TODO: move this to core
-    _args = deepcopy(args)
-    if (
-        _args.runtime_cls not in gateway_runtime_dict.values()
-        and _args.host != __default_host__
-        and not _args.disable_remote
-    ):
-        _args.runtime_cls = 'JinadRuntime'
-    if _args.runtime_cls == 'ZEDRuntime' and _args.uses.startswith('docker://'):
-        _args.runtime_cls = 'ContainerRuntime'
-    if _args.runtime_cls == 'ZEDRuntime' and is_valid_huburi(_args.uses):
-        _args.uses = HubIO(
-            set_hub_pull_parser().parse_args([_args.uses, '--no-usage'])
-        ).pull()
-        if _args.uses.startswith('docker://'):
-            _args.runtime_cls = 'ContainerRuntime'
-    if hasattr(_args, 'protocol'):
-        _args.runtime_cls = gateway_runtime_dict[_args.protocol]
-
-    return _args.runtime_cls
 
 
 class Environment:
@@ -145,6 +116,11 @@ class FlowDepends:
         4. pass this new file as filename to `partial-daemon` to start the Flow
         """
         with ExitStack() as stack:
+            gateway_runtime_dict = {
+                GatewayProtocolType.GRPC: 'GRPCRuntime',
+                GatewayProtocolType.WEBSOCKET: 'WebSocketRuntime',
+                GatewayProtocolType.HTTP: 'HTTPRuntime',
+            }
             port_args = ['port_in', 'port_out', 'port_ctrl', 'port_expose']
             port_mapping = defaultdict(dict)
 
@@ -165,8 +141,15 @@ class FlowDepends:
                 runtime_cls = runtime_cls_from(v.args)
                 if runtime_cls in ['ZEDRuntime'] + list(gateway_runtime_dict.values()):
                     v.args.runs_in_docker = True
-                    for port_arg in port_args:
-                        port_mapping[k][port_arg] = getattr(v.args, port_arg)
+                    if isinstance(v, Pod):
+                        for port_arg in port_args:
+                            port_mapping[k][port_arg] = getattr(v.args, port_arg)
+                    elif isinstance(v, CompoundPod):
+                        for replica in v.replicas:
+                            for port_arg in port_args:
+                                port_mapping[f'{k}_{replica.name}'][port_arg] = getattr(
+                                    replica.args, port_arg
+                                )
             self.ports = port_mapping
 
             # save to a new file & set it for partial-daemon
@@ -182,8 +165,11 @@ class FlowDepends:
         return self._ports
 
     @ports.setter
-    def ports(self, port_mapping):
-        """setter for ports"""
+    def ports(self, port_mapping: Dict):
+        """setter for ports
+
+        :param port_mapping: port mapping
+        """
         self._ports = {
             f'{port}/tcp': port for v in port_mapping.values() for port in v.values()
         }
