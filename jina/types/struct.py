@@ -54,13 +54,18 @@ class StructView(ProtoTypeMixin, MutableMapping):
         else:
             return False
 
-    def update(self, d, **kwargs):  # pylint: disable=invalid-name
+    def update(
+        self, d: Union['StructView', struct_pb2.Struct], **kwargs
+    ):  # pylint: disable=invalid-name
         """
         # noqa: DAR101
         # noqa: DAR102
         # noqa: DAR103
         """
-        self._pb_body.update(d)
+        if isinstance(d, StructView):
+            self._pb_body.update(d._pb_body)
+        else:
+            self._pb_body.update(d)
 
     def clear(self) -> None:
         """

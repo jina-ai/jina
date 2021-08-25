@@ -411,7 +411,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
             if (
                 field == 'tags'
             ):  # For the tags, stay consistent with the python update method.
-                self._pb_body.tags.update(source.tags)
+                self.tags.update(source.tags)
             else:
                 self._pb_body.ClearField(field)
                 try:
