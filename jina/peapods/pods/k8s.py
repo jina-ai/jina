@@ -9,8 +9,10 @@ from ...logging.logger import JinaLogger
 
 
 class K8sPod(BasePod):
+    """The K8sPod (KubernetesPod)  is used for deployments on Kubernetes."""
+
     def __init__(
-            self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
+        self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
     ):
         super().__init__()
         self.args = args
@@ -18,7 +20,7 @@ class K8sPod(BasePod):
         self.deployment_args = self._parse_args(args)
 
     def _parse_args(
-            self, args: Namespace
+        self, args: Namespace
     ) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:
         return self._parse_deployment_args(args)
 
@@ -47,16 +49,18 @@ class K8sPod(BasePod):
 
     @property
     def port_expose(self) -> int:
+        """Not implemented"""
         raise NotImplementedError
 
     @property
     def host(self) -> str:
+        """Not implemented"""
         raise NotImplementedError
 
     def _deploy_gateway(self):
         kubernetes_deployment.deploy_service(
             self.name,
-            namespace=self.args.k8s_namespace,  # maybe new args for kubernetes Pod
+            namespace=self.args.k8s_namespace,
             port_in=self.args.port_in,
             port_out=self.args.port_out,
             port_ctrl=self.args.port_ctrl,
@@ -64,9 +68,9 @@ class K8sPod(BasePod):
             image_name='jinaai/jina:master-py38-standard',
             container_cmd='["jina"]',
             container_args=f'["gateway", '
-                           f'"--grpc-data-requests", '
-                           f'"--runtime-cls", "GRPCDataRuntime", '
-                           f'{kubernetes_deployment.get_cli_params(self.args, ("pod_role",))}]',
+            f'"--grpc-data-requests", '
+            f'"--runtime-cls", "GRPCDataRuntime", '
+            f'{kubernetes_deployment.get_cli_params(self.args, ("pod_role",))}]',
             logger=JinaLogger(f'deploy_{self.name}'),
             replicas=1,
             pull_policy='Always',
@@ -75,7 +79,9 @@ class K8sPod(BasePod):
 
     def _deploy_runtime(self, deployment_args, replicas, k8s_namespace, deployment_id):
         image_name = kubernetes_deployment.get_image_name(self.args.uses)
-        name_suffix = self.name + ('-' + str(deployment_id) if self.args.parallel > 1 else '')
+        name_suffix = self.name + (
+            '-' + str(deployment_id) if self.args.parallel > 1 else ''
+        )
         dns_name = kubernetes_deployment.to_dns_name(name_suffix)
         init_container_args = kubernetes_deployment.get_init_container_args(self)
         uses_metas = kubernetes_deployment.dictionary_to_cli_param(
@@ -86,24 +92,24 @@ class K8sPod(BasePod):
         if image_name == __default_executor__:
             image_name = 'gcr.io/jina-showcase/custom-jina:latest'
             container_args = (
-                    f'["pea", '
-                    f'"--uses", "BaseExecutor", '
-                    f'"--grpc-data-requests", '
-                    f'"--runtime-cls", "GRPCDataRuntime", '
-                    f'"--uses-metas", "{uses_metas}", '
-                    + uses_with_string
-                    + f'{kubernetes_deployment.get_cli_params(self.args)}]'
+                f'["pea", '
+                f'"--uses", "BaseExecutor", '
+                f'"--grpc-data-requests", '
+                f'"--runtime-cls", "GRPCDataRuntime", '
+                f'"--uses-metas", "{uses_metas}", '
+                + uses_with_string
+                + f'{kubernetes_deployment.get_cli_params(self.args)}]'
             )
 
         else:
             container_args = (
-                    f'["pea", '
-                    f'"--uses", "config.yml", '
-                    f'"--grpc-data-requests", '
-                    f'"--runtime-cls", "GRPCDataRuntime", '
-                    f'"--uses-metas", "{uses_metas}", '
-                    + uses_with_string
-                    + f'{kubernetes_deployment.get_cli_params(self.args)}]'
+                f'["pea", '
+                f'"--uses", "config.yml", '
+                f'"--grpc-data-requests", '
+                f'"--runtime-cls", "GRPCDataRuntime", '
+                f'"--uses-metas", "{uses_metas}", '
+                + uses_with_string
+                + f'{kubernetes_deployment.get_cli_params(self.args)}]'
             )
 
         kubernetes_deployment.deploy_service(
@@ -123,7 +129,10 @@ class K8sPod(BasePod):
         )
 
     def start(self) -> 'K8sPod':
-        # K8s start things
+        """Deploy the kubernetes pods via k8s Deployment and k8s Service.
+
+        :return: self
+        """
         kubernetes_tools.create('namespace', {'name': self.args.k8s_namespace})
 
         if self.name == 'gateway':
@@ -150,45 +159,73 @@ class K8sPod(BasePod):
                     self.args.k8s_namespace,
                     '_tail',
                 )
+        return self
 
-    def wait_start_success(self) -> None:
-        # if eventually we can check when the start is good
+    def wait_start_success(self):
+        """Not implemented. It should wait until the deployment is up and running"""
         pass
 
     def close(self):
-        # kill properly the deployments
+        """Not implemented. It should delete the namespace of the flow"""
         pass
 
     def join(self):
-        # Wait to make sure deployments are properly killed
+        """Not implemented. It should wait to make sure deployments are properly killed."""
         pass
 
     @property
     def is_ready(self) -> bool:
-        # if eventually we can check when the start is good
+        """Not implemented. It assumes it is ready.
+
+        :return: True
+        """
         return True
 
     @property
     def head_args(self) -> Namespace:
+        """Head args of the pod.
+
+        :return: namespace
+        """
         return self.args
 
     @property
     def tail_args(self) -> Namespace:
+        """Tail args of the pod
+
+        :return: namespace
+        """
         return self.args
 
     def is_singleton(self) -> bool:
-        return True  # only used in plot now
+        """The k8s pod is always a singleton
+
+        :return: True
+        """
+        return True
 
     @property
-    def num_peas(self):
+    def num_peas(self) -> int:
+        """Number of peas. Currently unused.
+
+        :return: number of peas
+        """
         return -1
 
     @property
-    def head_zmq_identity(self):
+    def head_zmq_identity(self) -> bytes:
+        """zmq identity is not needed for k8s deployment
+
+        :return: zmq identity
+        """
         return b''
 
     @property
-    def deployments(self):
+    def deployments(self) -> List[Dict]:
+        """Deployment information for the routing table creation.
+
+        :return: list of dictionaries defining the attributes used by the routing table
+        """
         res = []
         if self.args.name == 'gateway':
             name = kubernetes_deployment.to_dns_name(self.name)
@@ -214,12 +251,19 @@ class K8sPod(BasePod):
                     }
                 )
             for deployment_id, deployment_arg in enumerate(
-                    self.deployment_args['deployments']
+                self.deployment_args['deployments']
             ):
                 service_name = self.name + (
-                    '-' + str(deployment_id) if len(self.deployment_args['deployments']) > 1 else '')
+                    '-' + str(deployment_id)
+                    if len(self.deployment_args['deployments']) > 1
+                    else ''
+                )
                 name = kubernetes_deployment.to_dns_name(service_name)
-                name_suffix = f'_{deployment_id}' if len(self.deployment_args['deployments']) > 1 else ''
+                name_suffix = (
+                    f'_{deployment_id}'
+                    if len(self.deployment_args['deployments']) > 1
+                    else ''
+                )
                 res.append(
                     {
                         'name': f'{self.name}{name_suffix}',
