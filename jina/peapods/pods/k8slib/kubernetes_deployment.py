@@ -1,5 +1,9 @@
+from argparse import Namespace
+from typing import Dict, Optional, Tuple
+
 from jina.hubble.helper import parse_hub_uri
 from jina.hubble.hubio import HubIO
+from jina.logging.logger import JinaLogger
 from jina.peapods.pods.k8slib import kubernetes_tools
 
 IS_LOCAL = False
@@ -10,26 +14,39 @@ else:
     gateway_image = 'gcr.io/jina-showcase/custom-jina:latest'
 
 
-def to_dns_name(name):
+def to_dns_name(name: str) -> str:
+    """Converts the pod name to a dns compatible name.
+
+    :param name: name of the pod
+    :return: dns compatible name
+    """
     return name.replace('/', '-').replace('_', '-').lower()
 
 
 def deploy_service(
-        name,
-        namespace,
-        port_in,
-        port_out,
-        port_ctrl,
-        port_expose,
-        image_name,
-        container_cmd,
-        container_args,
-        logger,
-        replicas,
-        pull_policy,
-        init_container=None,
-):
+    name: str,
+    namespace: Namespace,
+    image_name: str,
+    container_cmd: str,
+    container_args: str,
+    logger: JinaLogger,
+    replicas: int,
+    pull_policy: str,
+    init_container: Dict = None,
+) -> str:
+    """Deploy service on Kubernetes.
 
+    :param name: name of the service and deployment
+    :param namespace: k8s namespace of the service and deployment
+    :param image_name: image for the k8s deployment
+    :param container_cmd: command executed on the k8s pods
+    :param container_args: arguments used for the k8s pod
+    :param logger: used logger
+    :param replicas: number of replicas
+    :param pull_policy: pull policy used for fetching the Docker images from the registry.
+    :param init_container: additional arguments used for the init container
+    :return: dns name of the created service
+    """
 
     # small hack - we can always assume the ports are the same for all executors since they run on different k8s pods
     port_expose = 8080
@@ -96,32 +113,39 @@ def deploy_service(
     return f'{name}.{namespace}.svc.cluster.local'
 
 
-def get_cli_params(arguments, skip_list=()):
+def get_cli_params(arguments: Namespace, skip_list: Tuple[str] = ()) -> str:
+    """Get cli parameters based on the arguments.
+
+    :param arguments: arguments where the cli parameters are generated from
+    :param skip_list: list of arguments which should be ignored
+
+    :return: string wich contains all cli parameters
+    """
     arguments.host = '0.0.0.0'
     skip_attributes = [
-                          'uses',  # set manually
-                          'uses_with',  # set manually
-                          'runtime_cls',  # set manually
-                          'workspace',
-                          'log_config',
-                          'dynamic_routing',
-                          'hosts_in_connect',
-                          'polling_type',
-                          'k8s_namespace',
-                          'uses_after',
-                          'uses_before',
-                          'replicas',
-                          'shards',
-                          'parallel',
-                          'polling',
-                          'port_in',
-                          'port_out',
-                          'port_ctrl',
-                          'port_expose',
-                          'k8s_init_container_command',
-                          'k8s_uses_init',
-                          'k8s_mount_path',
-                      ] + list(skip_list)
+        'uses',  # set manually
+        'uses_with',  # set manually
+        'runtime_cls',  # set manually
+        'workspace',
+        'log_config',
+        'dynamic_routing',
+        'hosts_in_connect',
+        'polling_type',
+        'k8s_namespace',
+        'uses_after',
+        'uses_before',
+        'replicas',
+        'shards',
+        'parallel',
+        'polling',
+        'port_in',
+        'port_out',
+        'port_ctrl',
+        'port_expose',
+        'k8s_init_container_command',
+        'k8s_uses_init',
+        'k8s_mount_path',
+    ] + list(skip_list)
     arg_list = [
         [attribute, attribute.replace('_', '-'), value]
         for attribute, value in arguments.__dict__.items()
@@ -147,7 +171,14 @@ def get_cli_params(arguments, skip_list=()):
     return cli_string
 
 
-def get_image_name(uses):
+def get_image_name(uses: str) -> str:
+    """The image can be provided in different formats by the user.
+    This function converts it to an image name which can be understood by k8s.
+    It uses the Hub api to get the image name and the latest tag on Docker Hub.
+    :param uses: image name
+
+    :return: normalized image name
+    """
     try:
         scheme, name, tag, secret = parse_hub_uri(uses)
         meta_data = HubIO.fetch_meta(name)
@@ -157,32 +188,21 @@ def get_image_name(uses):
         return uses.replace('docker://', '')
 
 
-def prepare_flow(flow):
-    namespace = flow.args.name
-    flow.args.host = f'gateway.{namespace}.svc.cluster.local'
-    flow.host = f'gateway.{namespace}.svc.cluster.local'
-    return flow.build(copy_flow=True)
+def dictionary_to_cli_param(dictionary) -> str:
+    """Convert the dictionary into a string to pass it as argument in k8s.
+    :param dictionary: dictionary which has to be passed as argument in k8s.
 
-
-def dictionary_to_cli_param(dictionary):
+    :return: string representation of the dictionary
+    """
     return dictionary.__str__().replace("'", "\\\"") if dictionary else ""
 
 
-def get_needs(flow, pod):
-    needs = []
-    for pod_name in pod.needs:
-        needed_pod = flow._pod_nodes[pod_name]
-        if pod_name != 'gateway' and needed_pod.args.parallel > 1:
-            needs.append(pod_name + '_tail')
-        else:
-            needs.append(pod_name)
+def get_init_container_args(pod) -> Optional[Dict]:
+    """Return the init container arguments for the k8s pod.
 
-
-def convert_to_table_name(pod_name):
-    return pod_name.replace('-', '_')
-
-
-def get_init_container_args(pod):
+    :param pod: pod where the init container is used.
+    :return: dictionary of init container arguments
+    """
     if pod.args.k8s_uses_init:
         init_container = {
             'init-name': 'init',

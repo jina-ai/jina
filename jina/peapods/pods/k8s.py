@@ -61,10 +61,6 @@ class K8sPod(BasePod):
         kubernetes_deployment.deploy_service(
             self.name,
             namespace=self.args.k8s_namespace,
-            port_in=self.args.port_in,
-            port_out=self.args.port_out,
-            port_ctrl=self.args.port_ctrl,
-            port_expose=self.args.port_expose,
             image_name='jinaai/jina:master-py38-standard',
             container_cmd='["jina"]',
             container_args=f'["gateway", '
@@ -114,11 +110,7 @@ class K8sPod(BasePod):
 
         kubernetes_deployment.deploy_service(
             dns_name,
-            namespace=k8s_namespace,  # maybe new args for kubernetes Pod
-            port_in=deployment_args.port_in,
-            port_out=deployment_args.port_out,
-            port_ctrl=deployment_args.port_ctrl,
-            port_expose=deployment_args.port_expose,
+            namespace=k8s_namespace,
             image_name=image_name,
             container_cmd='["jina"]',
             container_args=container_args,
