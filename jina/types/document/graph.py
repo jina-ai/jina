@@ -129,7 +129,9 @@ class GraphDocument(Document):
                 zip(self.adjacency.row, self.adjacency.col)
             ):
                 if row.item() == offset or col.item() == offset:
-                    edge_features_keys = f'{nodes[row.item()].id}-{nodes[col.item()]}'
+                    edge_features_keys = (
+                        f'{nodes[row.item()].id}-{nodes[col.item()].id}'
+                    )
                     edges_to_remove.append((edge_id, edge_features_keys))
 
             for edge_id, edge_features_key in reversed(edges_to_remove):
