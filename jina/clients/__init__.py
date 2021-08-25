@@ -17,7 +17,7 @@ if False:
 def Client(
     asyncio: Optional[bool] = False,
     host: Optional[str] = '0.0.0.0',
-    port_gateway: Optional[int] = None,
+    port: Optional[int] = None,
     protocol: Optional[str] = 'GRPC',
     proxy: Optional[bool] = False,
     **kwargs
@@ -33,7 +33,7 @@ def Client(
 
     :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
     :param host: The host address of the runtime, by default it is 0.0.0.0.
-    :param port_gateway: The port of the Gateway, which the client should connect to.
+    :param port: The port of the Gateway, which the client should connect to.
     :param protocol: Communication protocol between server and client.
     :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
     :return: the new Client object

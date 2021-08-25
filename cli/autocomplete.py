@@ -328,14 +328,7 @@ ac_table = {
             '--no-dynamic-routing',
             '--connect-to-predecessor',
         ],
-        'client': [
-            '--help',
-            '--host',
-            '--proxy',
-            '--port-gateway',
-            '--asyncio',
-            '--protocol',
-        ],
+        'client': ['--help', '--host', '--proxy', '--port', '--asyncio', '--protocol'],
         'export-api': ['--help', '--yaml-path', '--json-path', '--schema-path'],
     },
 }
