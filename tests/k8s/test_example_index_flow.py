@@ -1,8 +1,7 @@
 import time
-
-import pytest
 from http import HTTPStatus
 
+import pytest
 import requests
 
 from jina import Flow
