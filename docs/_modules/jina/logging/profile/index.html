@@ -461,7 +461,7 @@
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span>
 
 <span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">colored</span><span class="p">,</span> <span class="n">get_readable_size</span><span class="p">,</span> <span class="n">get_readable_time</span>
@@ -659,23 +659,26 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'Working...'</span><span class="p">,</span>
+        <span class="n">message_on_done</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Create the ProgressBar.</span>
 
 <span class="sd">        :param description: The name of the task, will be displayed in front of the bar.</span>
+<span class="sd">        :param message_on_done: The final message to print when the progress is complete</span>
 <span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">description</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_bars_on_row</span> <span class="o">=</span> <span class="mi">40</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_completed_progress</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_rendered_progress</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_num_update_called</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_on_done</span> <span class="o">=</span> <span class="n">message_on_done</span>
 
 <div class="viewcode-block" id="ProgressBar.update"><a class="viewcode-back" href="../../../../api/jina.logging.profile/#jina.logging.profile.ProgressBar.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">progress</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">details</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">message</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">all_completed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">first_enter</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -684,7 +687,7 @@
 
 <span class="sd">        :param progress: The number of unit to increment.</span>
 <span class="sd">        :param description: Change the description text before the progress bar on update.</span>
-<span class="sd">        :param details: Change the details text after the progress bar on update.</span>
+<span class="sd">        :param message: Change the message text followed after the progress bar on update.</span>
 <span class="sd">        :param all_completed: Mark the task as fully completed.</span>
 <span class="sd">        :param first_enter: if this method is called by `__enter__`</span>
 <span class="sd">        """</span>
@@ -722,7 +725,7 @@
         <span class="p">)</span>
 
         <span class="n">description_str</span> <span class="o">=</span> <span class="n">description</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_name</span> <span class="ow">or</span> <span class="s1">''</span>
-        <span class="n">details_str</span> <span class="o">=</span> <span class="n">details</span> <span class="ow">or</span> <span class="s1">''</span>
+        <span class="n">msg_str</span> <span class="o">=</span> <span class="n">message</span> <span class="ow">or</span> <span class="s1">''</span>
 
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
             <span class="s1">'</span><span class="si">{:&gt;10}</span><span class="s1"> </span><span class="si">{:&lt;}{:&lt;}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -736,7 +739,7 @@
                 <span class="p">),</span>
                 <span class="n">colored</span><span class="p">(</span><span class="n">time_str</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">),</span>
                 <span class="n">speed_str</span><span class="p">,</span>
-                <span class="n">details_str</span><span class="p">,</span>
+                <span class="n">msg_str</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
@@ -745,12 +748,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">first_enter</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_exit_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_update_called</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_rendered_progress</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">final_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="se">\033</span><span class="s1">[K</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_completed_progress</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1"> steps done in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">readable_duration</span><span class="si">}</span><span class="s1">'</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_done</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_done</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">final_msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_done</span>
+                <span class="k">elif</span> <span class="n">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_done</span><span class="p">):</span>
+                    <span class="n">final_msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_done</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">all_completed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'</span><span class="se">\033</span><span class="s1">[K</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_completed_progress</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1"> steps done in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">readable_duration</span><span class="si">}</span><span class="se">\n</span><span class="s1">'</span>
-            <span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">final_msg</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># no actual render happens</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clear_line</span><span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
 </pre></div>
