@@ -1,35 +1,16 @@
-name: Benchmarking
+name: Benchmark
 
 on:
   push:
-    tags: 
-      - "v*"
-  workflow_run:
-    workflows:
-      - "CD"
     branches:
       - "master"
-    types:
-      - "completed"
+    tags: 
+      - "v*"
 
 jobs:
-  benchmark-tag:
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')
-    steps:
-      - run: |
-          TAG=$(echo $GITHUB_REF | cut -d '/' -f 3)
-          echo "TAG=$TAG" >> $GITHUB_ENV
-      - uses: benc-uk/workflow-dispatch@v1
-        with:
-          workflow: Benchmark Jina
-          repo: jina-ai/jina-terraform
-          token: ${{ secrets.JINA_DEV_BOT }}
-          inputs: '{ "git_tags": ["${{ env.TAG }}"], "pypi_releases": [] }'
-
   benchmark-master:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.ref == 'refs/heads/master' }}
     steps:
       - run: |
           git fetch
@@ -45,3 +26,17 @@ jobs:
           repo: jina-ai/jina-terraform
           token: ${{ secrets.JINA_DEV_BOT }}
           inputs: '{ "git_tags": ["${{ env.NEXT_VER }}"], "pypi_releases": [] }'
+
+  benchmark-tag:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - run: |
+          TAG=$(echo $GITHUB_REF | cut -d '/' -f 3)
+          echo "TAG=$TAG" >> $GITHUB_ENV
+      - uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: Benchmark Jina
+          repo: jina-ai/jina-terraform
+          token: ${{ secrets.JINA_DEV_BOT }}
+          inputs: '{ "git_tags": ["${{ env.TAG }}"], "pypi_releases": [] }'
