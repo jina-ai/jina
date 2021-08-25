@@ -23,6 +23,7 @@ class PodFactory:
 
         :param args: pod arguments parsed from the CLI.
         :param needs: pod names of preceding pods
+        :param infrastructure: infrastructure where the flow should run
 
         :return: the created BasePod
         """
