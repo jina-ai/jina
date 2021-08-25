@@ -1,0 +1,7 @@
+jtype: Flow
+with:
+  protocol: http
+  port_expose: ${{PORT_EXPOSE}}
+executors:
+  - name: custom
+    uses: executor.yml

@@ -132,18 +132,27 @@ class DataRequestHandler:
             self.logger.debug(
                 f'skip executor: mismatch request, exec_endpoint: {msg.envelope.header.exec_endpoint}, requests: {self._executor.requests}'
             )
+            if partial_requests:
+                DataRequestHandler.replace_docs(
+                    msg,
+                    docs=_get_docs_from_msg(
+                        msg,
+                        partial_request=partial_requests,
+                        field='docs',
+                    ),
+                )
             return
 
         params = self._parse_params(msg.request.parameters, self._executor.metas.name)
-
+        docs = _get_docs_from_msg(
+            msg,
+            partial_request=partial_requests,
+            field='docs',
+        )
         # executor logic
         r_docs = self._executor(
             req_endpoint=msg.envelope.header.exec_endpoint,
-            docs=_get_docs_from_msg(
-                msg,
-                partial_request=partial_requests,
-                field='docs',
-            ),
+            docs=docs,
             parameters=params,
             docs_matrix=_get_docs_matrix_from_message(
                 msg,
@@ -174,8 +183,19 @@ class DataRequestHandler:
                 )
             elif r_docs != msg.request.docs:
                 # this means the returned DocArray is a completely new one
-                msg.request.docs.clear()
-                msg.request.docs.extend(r_docs)
+                DataRequestHandler.replace_docs(msg, r_docs)
+        elif partial_requests:
+            DataRequestHandler.replace_docs(msg, docs)
+
+    @staticmethod
+    def replace_docs(msg, docs):
+        """Replaces the docs in a message with new Documents.
+
+        :param msg: The message object
+        :param docs: the new docs to be used
+        """
+        msg.request.docs.clear()
+        msg.request.docs.extend(docs)
 
     def close(self):
         """ Close the data request handler, by closing the executor """

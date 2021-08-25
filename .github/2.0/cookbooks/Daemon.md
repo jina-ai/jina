@@ -461,13 +461,17 @@ JinaD enables management of (remote + containerized) Flows with all your depende
 
 This creates a new container using the base image, connects it to the network defined by `workspace_id` and starts a
 Flow inside the container. Only the ports needed for external communication are mapped to local. Make sure you've added
-all your config files while creating the workspace in the previous step.
+all your config files while creating the workspace in the previous step. You can also pass environment variables to be set while starting a remote Flow using `envs`.
 
 ```python
 from daemon.clients import JinaDClient
 
 client = JinaDClient(host=HOST, port=PORT)
-client.flows.create(workspace_id=workspace_id, filename='my_awesome_flow.yml')
+client.flows.create(
+  workspace_id=workspace_id,
+  filename='my_awesome_flow.yml',
+  envs={'PORT_EXPOSE': 12345}
+)
 # jflow-a71cc28f-a5db-4cc0-bb9e-bb7797172cc9
 ```
 
