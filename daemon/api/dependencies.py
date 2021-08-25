@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from http import HTTPStatus
 from contextlib import ExitStack
@@ -8,7 +9,7 @@ from pydantic import FilePath
 from pydantic.errors import PathNotAFileError
 from fastapi import HTTPException, UploadFile, File, Query, Depends
 
-from jina import __docker_host__
+from jina import Flow, __docker_host__
 from jina.helper import cached_property
 from jina.enums import PeaRoleType, SocketType, RemoteWorkspaceState
 from .. import daemon_logger
@@ -122,7 +123,7 @@ class FlowDepends:
 
         :return: return filepath to save flow config in
         """
-        return get_workspace_path(self.workspace_id, self.id, self.filename)
+        return get_workspace_path(self.workspace_id, f'{self.id}_{self.filename}')
 
     def load_and_dump(self) -> None:
         """
@@ -157,8 +158,6 @@ class FlowDepends:
             stack.enter_context(change_cwd(get_workspace_path(self.workspace_id)))
 
             # load and build
-            from jina import Flow
-
             f: Flow = Flow.load_config(str(self.localpath())).build()
 
             # get & set the ports mapping, set `runs_in_docker`
@@ -172,7 +171,7 @@ class FlowDepends:
 
             # save to a new file & set it for partial-daemon
             f.save_config(filename=self.newfile)
-            self.params.uses = self.newfile
+            self.params.uses = os.path.basename(self.newfile)
 
     @property
     def ports(self):

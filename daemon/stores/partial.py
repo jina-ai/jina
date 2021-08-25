@@ -87,7 +87,6 @@ class PartialFlowStore(PartialStore):
         """Starts a Flow in `partial-daemon`.
 
         :param args: namespace args for the flow
-        :param port_expose: port expose for the Flow
         :param kwargs: keyword args
         :return: Item describing the Flow object
         """
@@ -96,8 +95,8 @@ class PartialFlowStore(PartialStore):
                 raise ValueError('uses yaml file was not specified in flow definition')
 
             with open(args.uses) as yaml_file:
-                y_spec = yaml_file.read()
-            self.object: Flow = Flow.load_config(y_spec)
+                yaml_source = yaml_file.read()
+            self.object: Flow = Flow.load_config(yaml_source)
             self.object.workspace_id = jinad_args.workspace_id
             self.object = self.object.__enter__()
         except Exception as e:
@@ -109,10 +108,10 @@ class PartialFlowStore(PartialStore):
             self.item = PartialFlowItem(
                 arguments={
                     'port_expose': self.object.port_expose,
-                    'protocol': self.object.protocol,
+                    'protocol': self.object.protocol.name,
                     **vars(self.object.args),
                 },
-                yaml_source=y_spec,
+                yaml_source=yaml_source,
             )
             self._logger.success(f'Flow is created')
             return self.item
