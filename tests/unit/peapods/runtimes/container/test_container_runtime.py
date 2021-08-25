@@ -21,11 +21,6 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 img_name = 'jina/mwu-encoder'
 
 defaulthost = '0.0.0.0'
-localhost = (
-    defaulthost
-    if (platform == "linux" or platform == "linux2")
-    else 'host.docker.internal'
-)
 
 
 @pytest.fixture
