@@ -157,7 +157,7 @@ async def test_custom_project():
     )
     assert DaemonID(workspace_id).type == 'workspace'
     # Sleep to allow the workspace container to start
-    await asyncio.sleep(10)
+    await asyncio.sleep(20)
 
     async def gen_docs():
         import string
