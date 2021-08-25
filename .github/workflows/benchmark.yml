@@ -4,8 +4,9 @@ on:
   push:
     branches:
       - master
+      - feat-enable-automated-benchmarking # test purpose
     tags:
-      - "v*" 
+      - "v*"
 
 jobs:
   benchmark-tag:
