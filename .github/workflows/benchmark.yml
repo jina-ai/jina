@@ -11,7 +11,7 @@ on:
 jobs:
   benchmark-tag:
     runs-on: ubuntu-latest
-    if: ${{ GITHUB_REF != 'master' }}
+    if: ${{ github.ref != 'refs/heads/master' }}
     steps:
       - uses: benc-uk/workflow-dispatch@v1
         with:
@@ -22,10 +22,10 @@ jobs:
 
   benchmark-master:
     runs-on: ubuntu-latest
-    if: ${{ GITHUB_REF == 'master' }}
+    if: ${{ github.ref == 'refs/heads/master' }}
     steps:
       - run: |
-          git fetch --depth=1
+          git fetch
           INIT_FILE='jina/__init__.py'
           RELEASE_VER=$(sed -n '/^__version__/p' $INIT_FILE | cut -d \' -f2)
           LAST_VER=$(git tag -l | sort -V | tail -n1)
