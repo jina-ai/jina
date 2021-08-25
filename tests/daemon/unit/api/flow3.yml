@@ -1,0 +1,15 @@
+jtype: Flow
+with:
+  name: abc
+  port_expose: 12345
+  protocol: http
+executors:
+  - name: executor1
+    port_in: 45678
+    parallel: 2
+  - name: executor2
+    uses: docker://exec
+    host: 1.2.3.4
+  - name: executor3
+    uses: docker://exec
+    parallel: 2

@@ -12,7 +12,7 @@ from ..models.partial import PartialFlowItem, PartialStoreItem
 
 
 class PartialStore:
-    """A store spawned inside mini-jinad container"""
+    """A store spawned inside partial-daemon container"""
 
     def __init__(self):
         self._logger = JinaLogger(self.__class__.__name__, **vars(jinad_args))
@@ -45,12 +45,12 @@ class PartialStore:
 
 
 class PartialPeaStore(PartialStore):
-    """A Pea store spawned inside mini-jinad container"""
+    """A Pea store spawned inside partial-daemon container"""
 
     peapod_cls = Pea
 
     def add(self, args: Namespace, **kwargs) -> PartialStoreItem:
-        """Starts a Pea in `mini-jinad`
+        """Starts a Pea in `partial-daemon`
 
         :param args: namespace args for the pea/pod
         :param kwargs: keyword args
@@ -75,16 +75,16 @@ class PartialPeaStore(PartialStore):
 
 
 class PartialPodStore(PartialPeaStore):
-    """A Pod store spawned inside mini-jinad container"""
+    """A Pod store spawned inside partial-daemon container"""
 
     peapod_cls = Pod
 
 
 class PartialFlowStore(PartialStore):
-    """A Flow store spawned inside mini-jinad container"""
+    """A Flow store spawned inside partial-daemon container"""
 
-    def add(self, args: Namespace, port_expose: int, **kwargs) -> PartialStoreItem:
-        """Starts a Flow in `mini-jinad`.
+    def add(self, args: Namespace, **kwargs) -> PartialStoreItem:
+        """Starts a Flow in `partial-daemon`.
 
         :param args: namespace args for the flow
         :param port_expose: port expose for the Flow
@@ -93,14 +93,12 @@ class PartialFlowStore(PartialStore):
         """
         try:
             if not args.uses:
-                raise ValueError('Uses yaml file was not specified in flow definition')
+                raise ValueError('uses yaml file was not specified in flow definition')
 
             with open(args.uses) as yaml_file:
                 y_spec = yaml_file.read()
-            flow = Flow.load_config(y_spec)
-            flow.workspace_id = jinad_args.workspace_id
-            flow.port_expose = port_expose
-            self.object: Flow = flow
+            self.object: Flow = Flow.load_config(y_spec)
+            self.object.workspace_id = jinad_args.workspace_id
             self.object = self.object.__enter__()
         except Exception as e:
             if hasattr(self, 'object'):
@@ -111,6 +109,7 @@ class PartialFlowStore(PartialStore):
             self.item = PartialFlowItem(
                 arguments={
                     'port_expose': self.object.port_expose,
+                    'protocol': self.object.protocol,
                     **vars(self.object.args),
                 },
                 yaml_source=y_spec,
