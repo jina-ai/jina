@@ -104,7 +104,12 @@ The polling strategy of the Pod (when `parallel>1`)
         help='The head Pea of this Pod will connect to the TailPea of the predecessor Pod.',
     )
 
+
 def mixin_k8s_pod_parser(parser):
+    """Add mixin arguments required by :class:`K8sPod` into the given parser.
+
+    :param parser: the parser instance to which we add arguments
+    """
     parser.add_argument(
         '--k8s-uses-init',
         type=str,

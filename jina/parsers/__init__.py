@@ -263,8 +263,8 @@ def get_main_parser():
         sp.add_parser(
             'pea',
             description='Start a Pea. '
-                        'You should rarely use this directly unless you '
-                        'are doing low-level orchestration',
+            'You should rarely use this directly unless you '
+            'are doing low-level orchestration',
             formatter_class=_chf,
             **(dict(help='Start a Pea')) if _SHOW_ALL_ARGS else {},
         )

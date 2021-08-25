@@ -1,10 +1,16 @@
 import os
 import tempfile
+from typing import Dict
 
 cur_dir = os.path.dirname(__file__)
 
 
 class ClientsSingelton:
+    """
+    The Kubernetes api is wrapped into a class to have a lazy reading of the cluster configuration.
+
+    """
+
     def __init__(self):
         self.__k8s_client = None
         self.__v1 = None
@@ -25,24 +31,40 @@ class ClientsSingelton:
 
     @property
     def k8s_client(self):
+        """Client for making requests to Kubernetes
+
+        :return: k8s client
+        """
         if self.__k8s_client is None:
             self.__instantiate()
         return self.__k8s_client
 
     @property
     def v1(self):
+        """V1 client for core
+
+        :return: v1 client
+        """
         if self.__v1 is None:
             self.__instantiate()
         return self.__v1
 
     @property
     def beta(self):
+        """Beta client for using beta features
+
+        :return: beta client
+        """
         if self.__beta is None:
             self.__instantiate()
         return self.__beta
 
     @property
     def networking_v1_beta1_api(self):
+        """Networking client used for creating the ingress
+
+        :return: networking client
+        """
         if self.__networking_v1_beta1_api is None:
             self.__instantiate()
         return self.__networking_v1_beta1_api
@@ -51,11 +73,17 @@ class ClientsSingelton:
 __clients_singelton = ClientsSingelton()
 
 
-def create(template, params):
+def create(template: str, params: Dict):
+    """Create a resource on Kubernetes based on the `template`. It fills the `template` using the `params`.
+
+    :param template: path to the template file.
+    :param params: dictionary for replacing the placeholders (keys) with the actual values.
+    """
+
     from kubernetes.utils import FailToCreateError
     from kubernetes import utils
 
-    yaml = get_yaml(template, params)
+    yaml = _get_yaml(template, params)
     fd, path = tempfile.mkstemp()
     try:
         with os.fdopen(fd, 'w') as tmp:
@@ -73,15 +101,10 @@ def create(template, params):
         os.remove(path)
 
 
-def get_yaml(template, params):
+def _get_yaml(template: str, params: Dict):
     path = os.path.join(cur_dir, 'template', f'{template}.yml')
     with open(path) as f:
         content = f.read()
         for k, v in params.items():
             content = content.replace(f'{{{k}}}', str(v))
     return content
-
-
-def get_service_cluster_ip(service_name, namespace):
-    resp = __clients_singelton.v1.read_namespaced_service(service_name, namespace)
-    return resp.spec.cluster_ip
