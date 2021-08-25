@@ -10,18 +10,18 @@ on:
 jobs:
   benchmark-tag:
     runs-on: ubuntu-latest
-    if: ${{ env.GITHUB_REF != 'master' }}
+    if: ${{ GITHUB_REF != 'master' }}
     steps:
       - uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: benchmark-jina
           repo: jina-ai/jina-terraform
           token: ${{ secrets.JINA_DEV_BOT }}
-          inputs: '{ "git_tags": ["${{ env.GITHUB_REF }}"], "pypi_releases": [] }'
+          inputs: '{ "git_tags": ["${{ GITHUB_REF }}"], "pypi_releases": [] }'
 
   benchmark-master:
     runs-on: ubuntu-latest
-    if: ${{ env.GITHUB_REF == 'master' }}
+    if: ${{ GITHUB_REF == 'master' }}
     steps:
       - run: |
           git fetch --depth=1
