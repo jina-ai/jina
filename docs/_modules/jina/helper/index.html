@@ -582,6 +582,21 @@
     <span class="k">return</span> <span class="n">deco</span></div>
 
 
+<span class="k">def</span> <span class="nf">deprecated_method</span><span class="p">(</span><span class="n">new_function_name</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">deco</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'`</span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">` is renamed to `</span><span class="si">{</span><span class="n">new_function_name</span><span class="si">}</span><span class="s1">`, the usage of `</span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">` is '</span>
+                <span class="sa">f</span><span class="s1">'deprecated and will be removed.'</span><span class="p">,</span>
+                <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">wrapper</span>
+
+    <span class="k">return</span> <span class="n">deco</span>
+
+
 <div class="viewcode-block" id="get_readable_size"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.get_readable_size">[docs]</a><span class="k">def</span> <span class="nf">get_readable_size</span><span class="p">(</span><span class="n">num_bytes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">"""</span>
 <span class="sd">    Transform the bytes into readable value with different units (e.g. 1 KB, 20 MB, 30.1 GB).</span>

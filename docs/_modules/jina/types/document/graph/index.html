@@ -455,7 +455,7 @@
           </label>
         </div>
         <h1>Source code for jina.types.document.graph</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterable</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
@@ -465,6 +465,7 @@
 <span class="kn">from</span> <span class="nn">..struct</span> <span class="kn">import</span> <span class="n">StructView</span>
 <span class="kn">from</span> <span class="nn">...importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">...logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
+<span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">deprecated_method</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'GraphDocument'</span><span class="p">]</span>
 
@@ -528,7 +529,7 @@
             <span class="p">):</span>
                 <span class="n">JINA_GLOBAL</span><span class="o">.</span><span class="n">scipy_installed</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="GraphDocument.add_node"><a class="viewcode-back" href="../../../../../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.add_node">[docs]</a>    <span class="k">def</span> <span class="nf">add_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">):</span>
+<div class="viewcode-block" id="GraphDocument.add_single_node"><a class="viewcode-back" href="../../../../../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.add_single_node">[docs]</a>    <span class="k">def</span> <span class="nf">add_single_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Add a a node to the graph</span>
 
@@ -541,7 +542,26 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_to_offset</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="GraphDocument.remove_node"><a class="viewcode-back" href="../../../../../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.remove_node">[docs]</a>    <span class="k">def</span> <span class="nf">remove_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">):</span>
+    <span class="nd">@deprecated_method</span><span class="p">(</span><span class="n">new_function_name</span><span class="o">=</span><span class="s1">'add_single_node'</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">add_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Add a a node to the graph</span>
+
+<span class="sd">            .. # noqa: DAR101</span>
+<span class="sd">            .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_single_node</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GraphDocument.add_nodes"><a class="viewcode-back" href="../../../../../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.add_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">add_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">]):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Add a set of nodes into the graph</span>
+
+<span class="sd">        :param nodes: the nodes to be added to the graph</span>
+<span class="sd">        """</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphDocument.remove_single_node"><a class="viewcode-back" href="../../../../../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.remove_single_node">[docs]</a>    <span class="k">def</span> <span class="nf">remove_single_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
         <span class="sd">"""</span>
 <span class="sd">        Remove a node from the graph along with the edges that may contain it</span>
 
@@ -549,22 +569,25 @@
 <span class="sd">        """</span>
         <span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">coo_matrix</span>
 
-        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_to_offset</span><span class="p">:</span>
+        <span class="n">node_id</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">Document</span><span class="p">)</span> <span class="k">else</span> <span class="n">node</span>
+        <span class="k">if</span> <span class="n">node_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_to_offset</span><span class="p">:</span>
             <span class="n">default_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'Trying to remove document </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1"> from the graph while is not a node of the graph'</span>
+                <span class="sa">f</span><span class="s1">'Trying to remove document </span><span class="si">{</span><span class="n">node_id</span><span class="si">}</span><span class="s1"> from the graph while is not a node of the graph'</span>
             <span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_to_offset</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_to_offset</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_edges</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span>
+
             <span class="n">edges_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">edge_id</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
                 <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span><span class="o">.</span><span class="n">col</span><span class="p">)</span>
             <span class="p">):</span>
                 <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">==</span> <span class="n">offset</span> <span class="ow">or</span> <span class="n">col</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">==</span> <span class="n">offset</span><span class="p">:</span>
                     <span class="n">edge_features_keys</span> <span class="o">=</span> <span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">item</span><span class="p">()]</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">col</span><span class="o">.</span><span class="n">item</span><span class="p">()]</span><span class="si">}</span><span class="s1">'</span>
+                        <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">nodes</span><span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">item</span><span class="p">()]</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">nodes</span><span class="p">[</span><span class="n">col</span><span class="o">.</span><span class="n">item</span><span class="p">()]</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">'</span>
                     <span class="p">)</span>
                     <span class="n">edges_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">edge_id</span><span class="p">,</span> <span class="n">edge_features_keys</span><span class="p">))</span>
 
@@ -586,27 +609,39 @@
 
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">offset</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_to_offset</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">offset</span> <span class="k">for</span> <span class="n">offset</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+            <span class="n">present_node</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">offset</span> <span class="k">for</span> <span class="n">offset</span><span class="p">,</span> <span class="n">present_node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
         <span class="p">}</span></div>
 
-    <span class="k">def</span> <span class="nf">_get_edge_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc1</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">,</span> <span class="n">doc2</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="nd">@deprecated_method</span><span class="p">(</span><span class="n">new_function_name</span><span class="o">=</span><span class="s1">'remove_single_node'</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">remove_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Remove a node from the graph along with the edges that may contain it</span>
+
+<span class="sd">            .. # noqa: DAR101</span>
+<span class="sd">            .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_single_node</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_edge_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc1_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">doc2_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""</span>
 <span class="sd">        Create a key that is lexicographically sorted in the case of undirected graphs</span>
 
-<span class="sd">        :param doc1: the starting node for this edge</span>
-<span class="sd">        :param doc2: the ending node for this edge</span>
-<span class="sd">        :return: lexicographically sorted key where doc1 &lt; doc2 if undirected</span>
+<span class="sd">        :param doc1_id: the starting node for this edge</span>
+<span class="sd">        :param doc2_id: the ending node for this edge</span>
+<span class="sd">        :return: lexicographically sorted key where doc1_id &lt; doc2_id if undirected</span>
 <span class="sd">        """</span>
-
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">undirected</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">doc1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">doc2</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">'</span> <span class="k">if</span> <span class="n">doc1</span><span class="o">.</span><span class="n">id</span> <span class="o">&lt;</span> <span class="n">doc2</span><span class="o">.</span><span class="n">id</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">doc2</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">doc1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">doc1_id</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">doc2_id</span><span class="si">}</span><span class="s1">'</span> <span class="k">if</span> <span class="n">doc1_id</span> <span class="o">&lt;</span> <span class="n">doc2_id</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">doc2_id</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">doc1_id</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">doc1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">doc2</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">'</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">doc1_id</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">doc2_id</span><span class="si">}</span><span class="s1">'</span>
 
-<div class="viewcode-block" id="GraphDocument.add_edge"><a class="viewcode-back" href="../../../../../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.add_edge">[docs]</a>    <span class="k">def</span> <span class="nf">add_edge</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">doc1</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">,</span> <span class="n">doc2</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">,</span> <span class="n">features</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<div class="viewcode-block" id="GraphDocument.add_single_edge"><a class="viewcode-back" href="../../../../../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.add_single_edge">[docs]</a>    <span class="k">def</span> <span class="nf">add_single_edge</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">doc1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">doc2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">features</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Add an edge to the graph connecting `doc1` with `doc2`</span>
@@ -617,20 +652,32 @@
 <span class="sd">        """</span>
         <span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">coo_matrix</span>
 
-        <span class="n">edge_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_edge_key</span><span class="p">(</span><span class="n">doc1</span><span class="p">,</span> <span class="n">doc2</span><span class="p">)</span>
+        <span class="n">doc1_id</span> <span class="o">=</span> <span class="n">doc1</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc1</span><span class="p">,</span> <span class="n">Document</span><span class="p">)</span> <span class="k">else</span> <span class="n">doc1</span>
+        <span class="n">doc2_id</span> <span class="o">=</span> <span class="n">doc2</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc2</span><span class="p">,</span> <span class="n">Document</span><span class="p">)</span> <span class="k">else</span> <span class="n">doc2</span>
+        <span class="n">edge_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_edge_key</span><span class="p">(</span><span class="n">doc1_id</span><span class="p">,</span> <span class="n">doc2_id</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">edge_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_features</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">edge_features</span><span class="p">[</span><span class="n">edge_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">features</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">doc1</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">doc2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc1</span><span class="p">,</span> <span class="n">Document</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_single_node</span><span class="p">(</span><span class="n">doc1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="p">(</span>
+                    <span class="n">doc1_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span>
+                <span class="p">),</span> <span class="s1">'trying to add an edge from a node not in the graph'</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc2</span><span class="p">,</span> <span class="n">Document</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_single_node</span><span class="p">(</span><span class="n">doc2</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="p">(</span>
+                    <span class="n">doc2_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span>
+                <span class="p">),</span> <span class="s1">'trying to add an edge to a node not in the graph'</span>
 
             <span class="n">current_adjacency</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span>
 
-            <span class="n">source_id</span> <span class="o">=</span> <span class="n">doc1</span><span class="o">.</span><span class="n">id</span>
-            <span class="n">target_id</span> <span class="o">=</span> <span class="n">doc2</span><span class="o">.</span><span class="n">id</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">undirected</span> <span class="ow">and</span> <span class="n">doc1</span><span class="o">.</span><span class="n">id</span> <span class="o">&gt;</span> <span class="n">doc2</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
-                <span class="n">source_id</span> <span class="o">=</span> <span class="n">doc2</span><span class="o">.</span><span class="n">id</span>
-                <span class="n">target_id</span> <span class="o">=</span> <span class="n">doc1</span><span class="o">.</span><span class="n">id</span>
+            <span class="n">source_id</span> <span class="o">=</span> <span class="n">doc1_id</span>
+            <span class="n">target_id</span> <span class="o">=</span> <span class="n">doc2_id</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">undirected</span> <span class="ow">and</span> <span class="n">doc1_id</span> <span class="o">&gt;</span> <span class="n">doc2_id</span><span class="p">:</span>
+                <span class="n">source_id</span> <span class="o">=</span> <span class="n">doc2_id</span>
+                <span class="n">target_id</span> <span class="o">=</span> <span class="n">doc1_id</span>
 
             <span class="n">source_node_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_to_offset</span><span class="p">[</span><span class="n">source_id</span><span class="p">]</span>
             <span class="n">target_node_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_to_offset</span><span class="p">[</span><span class="n">target_id</span><span class="p">]</span>
@@ -653,6 +700,95 @@
             <span class="n">SparseNdArray</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">adjacency</span><span class="p">,</span> <span class="n">sp_format</span><span class="o">=</span><span class="s1">'coo'</span>
             <span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)))</span></div>
+
+    <span class="nd">@deprecated_method</span><span class="p">(</span><span class="n">new_function_name</span><span class="o">=</span><span class="s1">'add_single_edge'</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">add_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Add an edge to the graph</span>
+
+<span class="sd">            .. # noqa: DAR101</span>
+<span class="sd">            .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_single_edge</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GraphDocument.add_edges"><a class="viewcode-back" href="../../../../../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.add_edges">[docs]</a>    <span class="k">def</span> <span class="nf">add_edges</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">source_docs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span>
+        <span class="n">dest_docs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span>
+        <span class="n">edge_features</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Add edges to the graph connecting docs from `source_docs` with docs from `dest_docs`</span>
+
+<span class="sd">        :param source_docs: Iterable of docs containing the source nodes</span>
+<span class="sd">        :param dest_docs: Iterable of docs containing the destination nodes</span>
+<span class="sd">        :param edge_features: Optional features dictionary to be added to the new created edges</span>
+<span class="sd">        """</span>
+        <span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">coo_matrix</span>
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">source_docs</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">dest_docs</span><span class="p">),</span> <span class="p">(</span>
+            <span class="s1">'the number of source documents must match the number of '</span>
+            <span class="s1">'destination documents '</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">edge_features</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">source_docs</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge_features</span><span class="p">)</span>
+
+        <span class="n">edge_keys</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">is_documents_source</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source_docs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Document</span><span class="p">)</span>
+        <span class="n">is_documents_dest</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dest_docs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Document</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">doc1</span><span class="p">,</span> <span class="n">doc2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">source_docs</span><span class="p">,</span> <span class="n">dest_docs</span><span class="p">):</span>
+            <span class="n">doc1_id</span> <span class="o">=</span> <span class="n">doc1</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="n">is_documents_source</span> <span class="k">else</span> <span class="n">doc1</span>
+            <span class="n">doc2_id</span> <span class="o">=</span> <span class="n">doc2</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="n">is_documents_source</span> <span class="k">else</span> <span class="n">doc2</span>
+            <span class="k">if</span> <span class="n">is_documents_source</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_single_node</span><span class="p">(</span><span class="n">doc1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="p">(</span>
+                    <span class="n">doc1_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span>
+                <span class="p">),</span> <span class="s1">'trying to add an edge from a node not in the graph'</span>
+            <span class="k">if</span> <span class="n">is_documents_dest</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_single_node</span><span class="p">(</span><span class="n">doc2</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="p">(</span>
+                    <span class="n">doc2_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span>
+                <span class="p">),</span> <span class="s1">'trying to add an edge from a node not in the graph'</span>
+            <span class="n">edge_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_edge_key</span><span class="p">(</span><span class="n">doc1_id</span><span class="p">,</span> <span class="n">doc2_id</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">edge_features</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">edge_key</span><span class="p">,</span> <span class="n">features</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">edge_keys</span><span class="p">,</span> <span class="n">edge_features</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">edge_features</span><span class="p">[</span><span class="n">edge_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">features</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">edge_key</span> <span class="ow">in</span> <span class="n">edge_keys</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">edge_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_features</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">edge_features</span><span class="p">[</span><span class="n">edge_key</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># manipulate the adjacency matrix in a single shot</span>
+        <span class="n">current_adjacency</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span>
+        <span class="n">source_node_offsets</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_to_offset</span><span class="p">[</span><span class="n">source</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="n">is_documents_source</span> <span class="k">else</span> <span class="n">source</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">source_docs</span>
+        <span class="p">]</span>
+        <span class="n">target_node_offsets</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_to_offset</span><span class="p">[</span><span class="n">target</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="n">is_documents_dest</span> <span class="k">else</span> <span class="n">target</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">dest_docs</span>
+        <span class="p">]</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_adjacency</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="n">source_node_offsets</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">current_adjacency</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">source_node_offsets</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_adjacency</span><span class="o">.</span><span class="n">col</span><span class="p">,</span> <span class="n">target_node_offsets</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">current_adjacency</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">target_node_offsets</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_adjacency</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">source_node_offsets</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">current_adjacency</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">source_node_offsets</span><span class="p">))</span>
+        <span class="p">)</span>
+
+        <span class="n">SparseNdArray</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">adjacency</span><span class="p">,</span> <span class="n">sp_format</span><span class="o">=</span><span class="s1">'coo'</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)))</span></div>
 
     <span class="k">def</span> <span class="nf">_remove_edge_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">edge_feature_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">coo_matrix</span>
@@ -677,21 +813,37 @@
             <span class="k">if</span> <span class="n">edge_feature_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_features</span><span class="p">:</span>
                 <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_features</span><span class="p">[</span><span class="n">edge_feature_key</span><span class="p">]</span>
 
-<div class="viewcode-block" id="GraphDocument.remove_edge"><a class="viewcode-back" href="../../../../../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.remove_edge">[docs]</a>    <span class="k">def</span> <span class="nf">remove_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc1</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">,</span> <span class="n">doc2</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">):</span>
+<div class="viewcode-block" id="GraphDocument.remove_single_edge"><a class="viewcode-back" href="../../../../../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.remove_single_edge">[docs]</a>    <span class="k">def</span> <span class="nf">remove_single_edge</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">doc1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">doc2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+    <span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Remove the edge between doc1 and doc2 from the graph</span>
 
 <span class="sd">        :param doc1: the starting node for this edge</span>
 <span class="sd">        :param doc2: the ending node for this edge</span>
 <span class="sd">        """</span>
-        <span class="n">offset1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_to_offset</span><span class="p">[</span><span class="n">doc1</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
-        <span class="n">offset2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_to_offset</span><span class="p">[</span><span class="n">doc2</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+        <span class="n">doc1_id</span> <span class="o">=</span> <span class="n">doc1</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc1</span><span class="p">,</span> <span class="n">Document</span><span class="p">)</span> <span class="k">else</span> <span class="n">doc1</span>
+        <span class="n">doc2_id</span> <span class="o">=</span> <span class="n">doc2</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc2</span><span class="p">,</span> <span class="n">Document</span><span class="p">)</span> <span class="k">else</span> <span class="n">doc2</span>
+        <span class="n">offset1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_to_offset</span><span class="p">[</span><span class="n">doc1_id</span><span class="p">]</span>
+        <span class="n">offset2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_to_offset</span><span class="p">[</span><span class="n">doc2_id</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">edge_id</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
             <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span><span class="o">.</span><span class="n">col</span><span class="p">)</span>
         <span class="p">):</span>
             <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">==</span> <span class="n">offset1</span> <span class="ow">and</span> <span class="n">col</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">==</span> <span class="n">offset2</span><span class="p">:</span>
-                <span class="n">edge_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_edge_key</span><span class="p">(</span><span class="n">doc1</span><span class="p">,</span> <span class="n">doc2</span><span class="p">)</span>
+                <span class="n">edge_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_edge_key</span><span class="p">(</span><span class="n">doc1_id</span><span class="p">,</span> <span class="n">doc2_id</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_remove_edge_id</span><span class="p">(</span><span class="n">edge_id</span><span class="p">,</span> <span class="n">edge_key</span><span class="p">)</span></div>
+
+    <span class="nd">@deprecated_method</span><span class="p">(</span><span class="n">new_function_name</span><span class="o">=</span><span class="s1">'remove_single_edge'</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">remove_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Remove the edge between doc1 and doc2 from the graph</span>
+
+<span class="sd">            .. # noqa: DAR101</span>
+<span class="sd">            .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_single_edge</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">edge_features</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StructView</span><span class="p">:</span>
@@ -831,10 +983,10 @@
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">dgl_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
             <span class="n">node_doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
             <span class="n">nodeid_to_doc</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">node</span><span class="p">)]</span> <span class="o">=</span> <span class="n">node_doc</span>
-            <span class="n">jina_graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">node_doc</span><span class="p">)</span>
+            <span class="n">jina_graph</span><span class="o">.</span><span class="n">add_single_node</span><span class="p">(</span><span class="n">node_doc</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">node_source</span><span class="p">,</span> <span class="n">node_destination</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">dgl_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">()):</span>
-            <span class="n">jina_graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span>
+            <span class="n">jina_graph</span><span class="o">.</span><span class="n">add_single_edge</span><span class="p">(</span>
                 <span class="n">nodeid_to_doc</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">node_source</span><span class="p">)],</span> <span class="n">nodeid_to_doc</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">node_destination</span><span class="p">)]</span>
             <span class="p">)</span>
 

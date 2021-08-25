@@ -536,8 +536,8 @@ from known fields defined in Protobuf, all unknown fields are mapped to <code cl
 </div>
 </div>
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.types.document.graph.GraphDocument.add_node">
-<span class="sig-name descname"><span class="pre">add_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/graph/#GraphDocument.add_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.graph.GraphDocument.add_node" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="jina.types.document.graph.GraphDocument.add_single_node">
+<span class="sig-name descname"><span class="pre">add_single_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/graph/#GraphDocument.add_single_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.graph.GraphDocument.add_single_node" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a a node to the graph</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -546,42 +546,82 @@ from known fields defined in Protobuf, all unknown fields are mapped to <code cl
 </dl>
 </dd></dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.types.document.graph.GraphDocument.remove_node">
-<span class="sig-name descname"><span class="pre">remove_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/graph/#GraphDocument.remove_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.graph.GraphDocument.remove_node" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove a node from the graph along with the edges that may contain it</p>
+<dt class="sig sig-object py" id="jina.types.document.graph.GraphDocument.add_node">
+<span class="sig-name descname"><span class="pre">add_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.document.graph.GraphDocument.add_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.document.graph.GraphDocument.add_nodes">
+<span class="sig-name descname"><span class="pre">add_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/graph/#GraphDocument.add_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.graph.GraphDocument.add_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a set of nodes into the graph</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>node</strong> (<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>) – the node to be removed from the graph</p>
+<dd class="field-odd"><p><strong>nodes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>]) – the nodes to be added to the graph</p>
 </dd>
 </dl>
 </dd></dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.types.document.graph.GraphDocument.add_edge">
-<span class="sig-name descname"><span class="pre">add_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/graph/#GraphDocument.add_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.graph.GraphDocument.add_edge" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="jina.types.document.graph.GraphDocument.remove_single_node">
+<span class="sig-name descname"><span class="pre">remove_single_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/graph/#GraphDocument.remove_single_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.graph.GraphDocument.remove_single_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a node from the graph along with the edges that may contain it</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the node to be removed from the graph</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.document.graph.GraphDocument.remove_node">
+<span class="sig-name descname"><span class="pre">remove_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.document.graph.GraphDocument.remove_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.document.graph.GraphDocument.add_single_edge">
+<span class="sig-name descname"><span class="pre">add_single_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/graph/#GraphDocument.add_single_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.graph.GraphDocument.add_single_edge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add an edge to the graph connecting <cite>doc1</cite> with <cite>doc2</cite></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>doc1</strong> (<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>) – the starting node for this edge</p></li>
-<li><p><strong>doc2</strong> (<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>) – the ending node for this edge</p></li>
+<li><p><strong>doc1</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the starting node for this edge</p></li>
+<li><p><strong>doc2</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the ending node for this edge</p></li>
 <li><p><strong>features</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – Optional features dictionary to be added to this new created edge</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.types.document.graph.GraphDocument.remove_edge">
-<span class="sig-name descname"><span class="pre">remove_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/graph/#GraphDocument.remove_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.graph.GraphDocument.remove_edge" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove the edge between doc1 and doc2 from the graph</p>
+<dt class="sig sig-object py" id="jina.types.document.graph.GraphDocument.add_edge">
+<span class="sig-name descname"><span class="pre">add_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.document.graph.GraphDocument.add_edge" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.document.graph.GraphDocument.add_edges">
+<span class="sig-name descname"><span class="pre">add_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest_docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/graph/#GraphDocument.add_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.graph.GraphDocument.add_edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add edges to the graph connecting docs from <cite>source_docs</cite> with docs from <cite>dest_docs</cite></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>doc1</strong> (<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>) – the starting node for this edge</p></li>
-<li><p><strong>doc2</strong> (<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>) – the ending node for this edge</p></li>
+<li><p><strong>source_docs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – Iterable of docs containing the source nodes</p></li>
+<li><p><strong>dest_docs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – Iterable of docs containing the destination nodes</p></li>
+<li><p><strong>edge_features</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]]]) – Optional features dictionary to be added to the new created edges</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.document.graph.GraphDocument.remove_single_edge">
+<span class="sig-name descname"><span class="pre">remove_single_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/graph/#GraphDocument.remove_single_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.graph.GraphDocument.remove_single_edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the edge between doc1 and doc2 from the graph</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>doc1</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the starting node for this edge</p></li>
+<li><p><strong>doc2</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the ending node for this edge</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.document.graph.GraphDocument.remove_edge">
+<span class="sig-name descname"><span class="pre">remove_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.document.graph.GraphDocument.remove_edge" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.document.graph.GraphDocument.edge_features">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">edge_features</span></span><em class="property"><span class="pre">:</span> <span class="pre">jina.types.struct.StructView</span></em><a class="headerlink" href="#jina.types.document.graph.GraphDocument.edge_features" title="Permalink to this definition">¶</a></dt>
