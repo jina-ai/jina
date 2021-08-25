@@ -558,7 +558,7 @@ mentioned in the .jinad file (`run` section)
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="daemon.dockerize.Dockerizer.run">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">container_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ports</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entrypoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/dockerize/#Dockerizer.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.dockerize.Dockerizer.run" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">container_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ports</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">envs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entrypoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/dockerize/#Dockerizer.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.dockerize.Dockerizer.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs a container using an existing image (tagged with <cite>workspace_id</cite>).
 Maps <cite>ports</cite> to local dockerhost &amp; tags the container with name <cite>container_id</cite>
 .. note:</p>
@@ -572,6 +572,7 @@ Maps <cite>ports</cite> to local dockerhost &amp; tags the container with name <
 <li><p><strong>container_id</strong> (<a class="reference internal" href="../daemon.models.id/#daemon.models.id.DaemonID" title="daemon.models.id.DaemonID"><code class="xref py py-class docutils literal notranslate"><span class="pre">DaemonID</span></code></a>) – name of the container</p></li>
 <li><p><strong>command</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – command to be appended to default entrypoint</p></li>
 <li><p><strong>ports</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>) – ports to be mapped with local</p></li>
+<li><p><strong>envs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>) – dict of env vars to be set in the container</p></li>
 <li><p><strong>entrypoint</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – custom entrypoint</p></li>
 </ul>
 </dd>
@@ -632,10 +633,19 @@ Maps <cite>ports</cite> to local dockerhost &amp; tags the container with name <
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="daemon.dockerize.Dockerizer.environment">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">environment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/dockerize/#Dockerizer.environment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.dockerize.Dockerizer.environment" title="Permalink to this definition">¶</a></dt>
-<dd><p>Environment variables to be set inside the container during <cite>run</cite>
-:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
-:return: dict of env vars</p>
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">environment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">envs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/dockerize/#Dockerizer.environment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.dockerize.Dockerizer.environment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Environment variables to be set inside the container during <cite>run</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>envs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – dict of env vars to be set in the container</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dict of env vars</p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="daemon.dockerize.Dockerizer.remove">
@@ -694,7 +704,7 @@ Maps <cite>ports</cite> to local dockerhost &amp; tags the container with name <
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 22, 2021.
+            Last updated on Aug 25, 2021.
         </div>
         
       </footer>

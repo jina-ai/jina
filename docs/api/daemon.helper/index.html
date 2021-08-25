@@ -575,6 +575,22 @@
 </dd>
 </dl>
 </dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="daemon.helper.change_cwd">
+<span class="sig-prename descclassname"><span class="pre">daemon.helper.</span></span><span class="sig-name descname"><span class="pre">change_cwd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/helper/#change_cwd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.helper.change_cwd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change the current working dir to <code class="docutils literal notranslate"><span class="pre">path</span></code> in a context and set it back to the original one when leaves the context.
+Yields nothing
+:param path: Target path.
+:yields: nothing</p>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="daemon.helper.change_env">
+<span class="sig-prename descclassname"><span class="pre">daemon.helper.</span></span><span class="sig-name descname"><span class="pre">change_env</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/helper/#change_env"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.helper.change_env" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change the environment of <code class="docutils literal notranslate"><span class="pre">key</span></code> to <code class="docutils literal notranslate"><span class="pre">val</span></code> in a context and set it back to the original one when leaves the context.
+:param key: Old environment variable.
+:param val: New environment variable.
+:yields: nothing</p>
+</dd></dl>
 </div>
 
       </article>
@@ -588,7 +604,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 22, 2021.
+            Last updated on Aug 25, 2021.
         </div>
         
       </footer>

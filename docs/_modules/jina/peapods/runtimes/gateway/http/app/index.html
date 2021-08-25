@@ -456,12 +456,14 @@
         </div>
         <h1>Source code for jina.peapods.runtimes.gateway.http.app</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
 <span class="kn">from</span> <span class="nn">google.protobuf.json_format</span> <span class="kn">import</span> <span class="n">MessageToDict</span>
 
 <span class="kn">from</span> <span class="nn">..prefetch</span> <span class="kn">import</span> <span class="n">PrefetchCaller</span>
+<span class="kn">from</span> <span class="nn">....grpc</span> <span class="kn">import</span> <span class="n">Grpclet</span>
 <span class="kn">from</span> <span class="nn">....zmq</span> <span class="kn">import</span> <span class="n">AsyncZmqlet</span>
 <span class="kn">from</span> <span class="nn">.....</span> <span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span> <span class="nn">.....clients.request</span> <span class="kn">import</span> <span class="n">request_generator</span>
@@ -514,13 +516,23 @@
             <span class="s1">'CORS is enabled. This service is now accessible from any website!'</span>
         <span class="p">)</span>
 
-    <span class="n">zmqlet</span> <span class="o">=</span> <span class="n">AsyncZmqlet</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
-    <span class="n">servicer</span> <span class="o">=</span> <span class="n">PrefetchCaller</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">zmqlet</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">grpc_data_requests</span><span class="p">:</span>
+        <span class="n">iolet</span> <span class="o">=</span> <span class="n">Grpclet</span><span class="p">(</span>
+            <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
+            <span class="n">message_callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">iolet</span> <span class="o">=</span> <span class="n">AsyncZmqlet</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+    <span class="n">servicer</span> <span class="o">=</span> <span class="n">PrefetchCaller</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">iolet</span><span class="p">)</span>
 
     <span class="nd">@app</span><span class="o">.</span><span class="n">on_event</span><span class="p">(</span><span class="s1">'shutdown'</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_shutdown</span><span class="p">():</span>
         <span class="k">await</span> <span class="n">servicer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="n">zmqlet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">iscoroutine</span><span class="p">(</span><span class="n">iolet</span><span class="o">.</span><span class="n">close</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">iolet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">iolet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="n">openapi_tags</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">no_debug_endpoints</span><span class="p">:</span>
@@ -673,7 +685,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 22, 2021.
+            Last updated on Aug 25, 2021.
         </div>
         
       </footer>

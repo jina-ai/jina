@@ -479,8 +479,24 @@
         <div class="section" id="module-daemon.api.dependencies">
 <span id="daemon-api-dependencies-module"></span><h1>daemon.api.dependencies module<a class="headerlink" href="#module-daemon.api.dependencies" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
+<dt class="sig sig-object py" id="daemon.api.dependencies.Environment">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">daemon.api.dependencies.</span></span><span class="sig-name descname"><span class="pre">Environment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">envs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Query([])</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/api/dependencies/#Environment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.api.dependencies.Environment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Parses environment variables to be set inside the containers</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="daemon.api.dependencies.Environment.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">envs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/api/dependencies/#Environment.validate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.api.dependencies.Environment.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate and set env vars as a dict</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>envs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – list of env vars passed as query params</p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
 <dt class="sig sig-object py" id="daemon.api.dependencies.FlowDepends">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">daemon.api.dependencies.</span></span><span class="sig-name descname"><span class="pre">FlowDepends</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/api/dependencies/#FlowDepends"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.api.dependencies.FlowDepends" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">daemon.api.dependencies.</span></span><span class="sig-name descname"><span class="pre">FlowDepends</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">envs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Depends(Environment)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/api/dependencies/#FlowDepends"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.api.dependencies.FlowDepends" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Validates &amp; Sets host/port dependencies during Flow creation/update</p>
 <dl class="py method">
@@ -515,7 +531,7 @@ Raise 404 if filepath doesn’t exist in workspace.</p>
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="daemon.api.dependencies.PeaDepends">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">daemon.api.dependencies.</span></span><span class="sig-name descname"><span class="pre">PeaDepends</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pea</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/api/dependencies/#PeaDepends"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.api.dependencies.PeaDepends" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">daemon.api.dependencies.</span></span><span class="sig-name descname"><span class="pre">PeaDepends</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pea</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">envs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Depends(Environment)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/api/dependencies/#PeaDepends"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.api.dependencies.PeaDepends" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Validates &amp; Sets host/port dependencies during Pea creation/update</p>
 <dl class="py property">
@@ -597,7 +613,7 @@ TODO: HEAD/TAIL - can <cite>uses_before</cite> or <cite>uses_after</cite> be <ci
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="daemon.api.dependencies.PodDepends">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">daemon.api.dependencies.</span></span><span class="sig-name descname"><span class="pre">PodDepends</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pod</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/api/dependencies/#PodDepends"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.api.dependencies.PodDepends" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">daemon.api.dependencies.</span></span><span class="sig-name descname"><span class="pre">PodDepends</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pod</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">envs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Depends(Environment)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/api/dependencies/#PodDepends"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.api.dependencies.PodDepends" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#daemon.api.dependencies.PeaDepends" title="daemon.api.dependencies.PeaDepends"><code class="xref py py-class docutils literal notranslate"><span class="pre">daemon.api.dependencies.PeaDepends</span></code></a></p>
 <p>Validates &amp; Sets host/port dependencies during Pod creation/update</p>
 </dd></dl>
@@ -620,7 +636,7 @@ TODO: HEAD/TAIL - can <cite>uses_before</cite> or <cite>uses_after</cite> be <ci
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 22, 2021.
+            Last updated on Aug 25, 2021.
         </div>
         
       </footer>

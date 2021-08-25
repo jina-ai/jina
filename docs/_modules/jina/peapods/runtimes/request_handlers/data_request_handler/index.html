@@ -589,18 +589,27 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'skip executor: mismatch request, exec_endpoint: </span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span><span class="si">}</span><span class="s1">, requests: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">requests</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
+            <span class="k">if</span> <span class="n">partial_requests</span><span class="p">:</span>
+                <span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">replace_docs</span><span class="p">(</span>
+                    <span class="n">msg</span><span class="p">,</span>
+                    <span class="n">docs</span><span class="o">=</span><span class="n">_get_docs_from_msg</span><span class="p">(</span>
+                        <span class="n">msg</span><span class="p">,</span>
+                        <span class="n">partial_request</span><span class="o">=</span><span class="n">partial_requests</span><span class="p">,</span>
+                        <span class="n">field</span><span class="o">=</span><span class="s1">'docs'</span><span class="p">,</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
             <span class="k">return</span>
 
         <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_params</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-
+        <span class="n">docs</span> <span class="o">=</span> <span class="n">_get_docs_from_msg</span><span class="p">(</span>
+            <span class="n">msg</span><span class="p">,</span>
+            <span class="n">partial_request</span><span class="o">=</span><span class="n">partial_requests</span><span class="p">,</span>
+            <span class="n">field</span><span class="o">=</span><span class="s1">'docs'</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="c1"># executor logic</span>
         <span class="n">r_docs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="p">(</span>
             <span class="n">req_endpoint</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span><span class="p">,</span>
-            <span class="n">docs</span><span class="o">=</span><span class="n">_get_docs_from_msg</span><span class="p">(</span>
-                <span class="n">msg</span><span class="p">,</span>
-                <span class="n">partial_request</span><span class="o">=</span><span class="n">partial_requests</span><span class="p">,</span>
-                <span class="n">field</span><span class="o">=</span><span class="s1">'docs'</span><span class="p">,</span>
-            <span class="p">),</span>
+            <span class="n">docs</span><span class="o">=</span><span class="n">docs</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
             <span class="n">docs_matrix</span><span class="o">=</span><span class="n">_get_docs_matrix_from_message</span><span class="p">(</span>
                 <span class="n">msg</span><span class="p">,</span>
@@ -631,8 +640,19 @@
                 <span class="p">)</span>
             <span class="k">elif</span> <span class="n">r_docs</span> <span class="o">!=</span> <span class="n">msg</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">docs</span><span class="p">:</span>
                 <span class="c1"># this means the returned DocArray is a completely new one</span>
-                <span class="n">msg</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-                <span class="n">msg</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">r_docs</span><span class="p">)</span></div>
+                <span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">replace_docs</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">r_docs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">partial_requests</span><span class="p">:</span>
+            <span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">replace_docs</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">docs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataRequestHandler.replace_docs"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.request_handlers.data_request_handler/#jina.peapods.runtimes.request_handlers.data_request_handler.DataRequestHandler.replace_docs">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">replace_docs</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">docs</span><span class="p">):</span>
+        <span class="sd">"""Replaces the docs in a message with new Documents.</span>
+
+<span class="sd">        :param msg: The message object</span>
+<span class="sd">        :param docs: the new docs to be used</span>
+<span class="sd">        """</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DataRequestHandler.close"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.request_handlers.data_request_handler/#jina.peapods.runtimes.request_handlers.data_request_handler.DataRequestHandler.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">""" Close the data request handler, by closing the executor """</span>
@@ -649,7 +669,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 22, 2021.
+            Last updated on Aug 25, 2021.
         </div>
         
       </footer>

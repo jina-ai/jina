@@ -505,12 +505,13 @@
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.peapods.grpc.Grpclet.send_ctrl_msg">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">send_ctrl_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pod_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/grpc/#Grpclet.send_ctrl_msg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.grpc.Grpclet.send_ctrl_msg" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">send_ctrl_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pod_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/grpc/#Grpclet.send_ctrl_msg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.grpc.Grpclet.send_ctrl_msg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sends a control message via gRPC to pod_address
 :type pod_address: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
 :param pod_address: the pod to send the command to
 :type command: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
 :param command: the command to send (TERMINATE/ACTIVATE/…)
+:param timeout: optional timeout for the request in seconds
 :returns: Empty protobuf struct</p>
 </dd></dl>
 <dl class="py method">
@@ -567,7 +568,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 22, 2021.
+            Last updated on Aug 25, 2021.
         </div>
         
       </footer>

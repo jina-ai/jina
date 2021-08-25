@@ -457,30 +457,64 @@
         <h1>Source code for daemon.api.dependencies</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">http</span> <span class="kn">import</span> <span class="n">HTTPStatus</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">ExitStack</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">HTTPException</span><span class="p">,</span> <span class="n">UploadFile</span><span class="p">,</span> <span class="n">File</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">FilePath</span>
 <span class="kn">from</span> <span class="nn">pydantic.errors</span> <span class="kn">import</span> <span class="n">PathNotAFileError</span>
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">HTTPException</span><span class="p">,</span> <span class="n">UploadFile</span><span class="p">,</span> <span class="n">File</span><span class="p">,</span> <span class="n">Query</span><span class="p">,</span> <span class="n">Depends</span>
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__docker_host__</span><span class="p">,</span> <span class="n">Flow</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">PeaRoleType</span><span class="p">,</span> <span class="n">SocketType</span><span class="p">,</span> <span class="n">RemoteWorkspaceState</span>
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">cached_property</span><span class="p">,</span> <span class="n">random_port</span>
-<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">get_workspace_path</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">daemon_logger</span>
 <span class="kn">from</span> <span class="nn">..models</span> <span class="kn">import</span> <span class="n">DaemonID</span><span class="p">,</span> <span class="n">FlowModel</span><span class="p">,</span> <span class="n">PodModel</span><span class="p">,</span> <span class="n">PeaModel</span>
+<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">get_workspace_path</span><span class="p">,</span> <span class="n">change_cwd</span><span class="p">,</span> <span class="n">change_env</span>
 <span class="kn">from</span> <span class="nn">..stores</span> <span class="kn">import</span> <span class="n">workspace_store</span> <span class="k">as</span> <span class="n">store</span>
+
+
+<div class="viewcode-block" id="Environment"><a class="viewcode-back" href="../../../../api/daemon.api.dependencies/#daemon.api.dependencies.Environment">[docs]</a><span class="k">class</span> <span class="nc">Environment</span><span class="p">:</span>
+    <span class="sd">"""Parses environment variables to be set inside the containers"""</span>
+
+    <span class="n">_split_char</span> <span class="o">=</span> <span class="s1">'='</span>
+    <span class="n">_strip_chars</span> <span class="o">=</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">'</span><span class="se">\r</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="se">\t</span><span class="s1">'</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">envs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Query</span><span class="p">([]))</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vars</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">envs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Environment.validate"><a class="viewcode-back" href="../../../../api/daemon.api.dependencies/#daemon.api.dependencies.Environment.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">envs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+        <span class="sd">"""Validate and set env vars as a dict</span>
+
+<span class="sd">        :param envs: list of env vars passed as query params</span>
+<span class="sd">        """</span>
+        <span class="k">for</span> <span class="n">env</span> <span class="ow">in</span> <span class="n">envs</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_split_char</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_strip_chars</span><span class="p">)]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_strip_chars</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="n">daemon_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s1"> doesn</span><span class="se">\'</span><span class="s1">t follow required standard. please pass envs in `key</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_split_char</span><span class="si">}</span><span class="s1">value` format'</span>
+                <span class="p">)</span>
+                <span class="k">continue</span></div></div>
 
 
 <div class="viewcode-block" id="FlowDepends"><a class="viewcode-back" href="../../../../api/daemon.api.dependencies/#daemon.api.dependencies.FlowDepends">[docs]</a><span class="k">class</span> <span class="nc">FlowDepends</span><span class="p">:</span>
     <span class="sd">"""Validates &amp; Sets host/port dependencies during Flow creation/update"""</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workspace_id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">workspace_id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span>
+        <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">envs</span><span class="p">:</span> <span class="n">Environment</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">Environment</span><span class="p">),</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">workspace_id</span> <span class="o">=</span> <span class="n">workspace_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">DaemonID</span><span class="p">(</span><span class="s1">'jflow'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">FlowModel</span><span class="p">(</span>
             <span class="n">uses</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">workspace_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">workspace_id</span><span class="o">.</span><span class="n">jid</span><span class="p">,</span> <span class="n">identity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span>
         <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">envs</span> <span class="o">=</span> <span class="n">envs</span><span class="o">.</span><span class="n">vars</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
 
 <div class="viewcode-block" id="FlowDepends.localpath"><a class="viewcode-back" href="../../../../api/daemon.api.dependencies/#daemon.api.dependencies.FlowDepends.localpath">[docs]</a>    <span class="k">def</span> <span class="nf">localpath</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
@@ -503,13 +537,20 @@
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">port_expose</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""</span>
-<span class="sd">        Sets `port_expose` for the Flow started in `mini-jinad`.</span>
-<span class="sd">        NOTE: this port needs to be exposed before starting `mini-jinad`, hence set here.</span>
+<span class="sd">        Sets `port_expose` for the Flow started in `partial-daemon`.</span>
+<span class="sd">        This port needs to be exposed before starting `partial-daemon`, hence set here.</span>
+<span class="sd">        If env vars are passed, set them in current env, to make sure all values are replaced.</span>
+<span class="sd">        Before loading the flow yaml, change CWD to workspace dir.</span>
 
 <span class="sd">        :return: port_expose</span>
 <span class="sd">        """</span>
-        <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">localpath</span><span class="p">()))</span>
-        <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">port_expose</span> <span class="ow">or</span> <span class="n">random_port</span><span class="p">()</span>
+        <span class="k">with</span> <span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">envs</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">envs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">change_env</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">))</span>
+            <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">change_cwd</span><span class="p">(</span><span class="n">get_workspace_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workspace_id</span><span class="p">)))</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">localpath</span><span class="p">()))</span>
+            <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">port_expose</span> <span class="ow">or</span> <span class="n">random_port</span><span class="p">()</span>
 
 <div class="viewcode-block" id="FlowDepends.validate"><a class="viewcode-back" href="../../../../api/daemon.api.dependencies/#daemon.api.dependencies.FlowDepends.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Validates and sets arguments to be used in store"""</span>
@@ -519,11 +560,17 @@
 <div class="viewcode-block" id="PeaDepends"><a class="viewcode-back" href="../../../../api/daemon.api.dependencies/#daemon.api.dependencies.PeaDepends">[docs]</a><span class="k">class</span> <span class="nc">PeaDepends</span><span class="p">:</span>
     <span class="sd">"""Validates &amp; Sets host/port dependencies during Pea creation/update"""</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workspace_id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span> <span class="n">pea</span><span class="p">:</span> <span class="n">PeaModel</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">workspace_id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span>
+        <span class="n">pea</span><span class="p">:</span> <span class="n">PeaModel</span><span class="p">,</span>
+        <span class="n">envs</span><span class="p">:</span> <span class="n">Environment</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">Environment</span><span class="p">),</span>
+    <span class="p">):</span>
         <span class="c1"># Deepankar: adding quotes around PeaModel breaks things</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">workspace_id</span> <span class="o">=</span> <span class="n">workspace_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">pea</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">DaemonID</span><span class="p">(</span><span class="s1">'jpea'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">envs</span> <span class="o">=</span> <span class="n">envs</span><span class="o">.</span><span class="n">vars</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
 
     <span class="nd">@property</span>
@@ -637,10 +684,16 @@
 <div class="viewcode-block" id="PodDepends"><a class="viewcode-back" href="../../../../api/daemon.api.dependencies/#daemon.api.dependencies.PodDepends">[docs]</a><span class="k">class</span> <span class="nc">PodDepends</span><span class="p">(</span><span class="n">PeaDepends</span><span class="p">):</span>
     <span class="sd">"""Validates &amp; Sets host/port dependencies during Pod creation/update"""</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workspace_id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span> <span class="n">pod</span><span class="p">:</span> <span class="n">PodModel</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">workspace_id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span>
+        <span class="n">pod</span><span class="p">:</span> <span class="n">PodModel</span><span class="p">,</span>
+        <span class="n">envs</span><span class="p">:</span> <span class="n">Environment</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">Environment</span><span class="p">),</span>
+    <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">workspace_id</span> <span class="o">=</span> <span class="n">workspace_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">pod</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">DaemonID</span><span class="p">(</span><span class="s1">'jpod'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">envs</span> <span class="o">=</span> <span class="n">envs</span><span class="o">.</span><span class="n">vars</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span></div>
 
 
@@ -678,7 +731,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 22, 2021.
+            Last updated on Aug 25, 2021.
         </div>
         
       </footer>

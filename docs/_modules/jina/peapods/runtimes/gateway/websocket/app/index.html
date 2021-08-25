@@ -456,9 +456,11 @@
         </div>
         <h1>Source code for jina.peapods.runtimes.gateway.websocket.app</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
 <span class="kn">from</span> <span class="nn">..prefetch</span> <span class="kn">import</span> <span class="n">PrefetchCaller</span>
+<span class="kn">from</span> <span class="nn">....grpc</span> <span class="kn">import</span> <span class="n">Grpclet</span>
 <span class="kn">from</span> <span class="nn">....zmq</span> <span class="kn">import</span> <span class="n">AsyncZmqlet</span>
 <span class="kn">from</span> <span class="nn">.....importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">.....logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
@@ -492,13 +494,23 @@
 
     <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
 
-    <span class="n">zmqlet</span> <span class="o">=</span> <span class="n">AsyncZmqlet</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
-    <span class="n">servicer</span> <span class="o">=</span> <span class="n">PrefetchCaller</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">zmqlet</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">grpc_data_requests</span><span class="p">:</span>
+        <span class="n">iolet</span> <span class="o">=</span> <span class="n">Grpclet</span><span class="p">(</span>
+            <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
+            <span class="n">message_callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">iolet</span> <span class="o">=</span> <span class="n">AsyncZmqlet</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+    <span class="n">servicer</span> <span class="o">=</span> <span class="n">PrefetchCaller</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">iolet</span><span class="p">)</span>
 
     <span class="nd">@app</span><span class="o">.</span><span class="n">on_event</span><span class="p">(</span><span class="s1">'shutdown'</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_shutdown</span><span class="p">():</span>
         <span class="k">await</span> <span class="n">servicer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="n">zmqlet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">iscoroutine</span><span class="p">(</span><span class="n">iolet</span><span class="o">.</span><span class="n">close</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">iolet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">iolet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="nd">@app</span><span class="o">.</span><span class="n">websocket</span><span class="p">(</span><span class="s1">'/'</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">websocket_endpoint</span><span class="p">(</span><span class="n">websocket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">):</span>
@@ -531,7 +543,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 22, 2021.
+            Last updated on Aug 25, 2021.
         </div>
         
       </footer>

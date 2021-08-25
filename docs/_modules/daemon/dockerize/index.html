@@ -662,6 +662,7 @@
         <span class="n">container_id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span>
         <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">ports</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+        <span class="n">envs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
         <span class="n">entrypoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="s1">'Container'</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]:</span>
         <span class="sd">"""</span>
@@ -673,6 +674,7 @@
 <span class="sd">        :param container_id: name of the container</span>
 <span class="sd">        :param command: command to be appended to default entrypoint</span>
 <span class="sd">        :param ports: ports to be mapped with local</span>
+<span class="sd">        :param envs: dict of env vars to be set in the container</span>
 <span class="sd">        :param entrypoint: custom entrypoint</span>
 <span class="sd">        :raises DockerImageException: if image is not found locally</span>
 <span class="sd">        :raises DockerContainerException: if container creation fails</span>
@@ -697,7 +699,7 @@
                 <span class="n">image</span><span class="o">=</span><span class="n">image</span><span class="p">,</span>
                 <span class="n">name</span><span class="o">=</span><span class="n">container_id</span><span class="p">,</span>
                 <span class="n">volumes</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">volume</span><span class="p">(</span><span class="n">workspace_id</span><span class="p">),</span>
-                <span class="n">environment</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">environment</span><span class="p">(),</span>
+                <span class="n">environment</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">environment</span><span class="p">(</span><span class="n">envs</span><span class="p">),</span>
                 <span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span>
                 <span class="n">ports</span><span class="o">=</span><span class="n">ports</span><span class="p">,</span>
                 <span class="n">detach</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -780,9 +782,11 @@
         <span class="p">}</span></div>
 
 <div class="viewcode-block" id="Dockerizer.environment"><a class="viewcode-back" href="../../../api/daemon.dockerize/#daemon.dockerize.Dockerizer.environment">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">environment</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">environment</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">envs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="sd">"""</span>
 <span class="sd">        Environment variables to be set inside the container during `run`</span>
+
+<span class="sd">        :param envs: dict of env vars to be set in the container</span>
 <span class="sd">        :return: dict of env vars</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="p">{</span>
@@ -794,6 +798,7 @@
             <span class="p">),</span>
             <span class="s1">'JINA_HUB_CACHE_DIR'</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__partial_workspace__</span><span class="p">,</span> <span class="s1">'.cache'</span><span class="p">,</span> <span class="s1">'jina'</span><span class="p">),</span>
             <span class="s1">'HOME'</span><span class="p">:</span> <span class="n">__partial_workspace__</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">envs</span><span class="p">,</span>
         <span class="p">}</span></div>
 
 <div class="viewcode-block" id="Dockerizer.remove"><a class="viewcode-back" href="../../../api/daemon.dockerize/#daemon.dockerize.Dockerizer.remove">[docs]</a>    <span class="nd">@classmethod</span>
@@ -910,7 +915,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 22, 2021.
+            Last updated on Aug 25, 2021.
         </div>
         
       </footer>

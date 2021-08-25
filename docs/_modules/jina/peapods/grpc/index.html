@@ -491,7 +491,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg_sent</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pending_tasks</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_send_routing_table</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">send_routing_table</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'routing_table'</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">send_routing_table</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_routing_table</span> <span class="o">=</span> <span class="n">RoutingTable</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">routing_table</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_next_targets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_routing_table</span><span class="o">.</span><span class="n">get_next_target_addresses</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
@@ -537,15 +537,16 @@
             <span class="k">raise</span> <span class="n">ex</span>
 
 <div class="viewcode-block" id="Grpclet.send_ctrl_msg"><a class="viewcode-back" href="../../../../api/jina.peapods.grpc/#jina.peapods.grpc.Grpclet.send_ctrl_msg">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">send_ctrl_msg</span><span class="p">(</span><span class="n">pod_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">send_ctrl_msg</span><span class="p">(</span><span class="n">pod_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Sends a control message via gRPC to pod_address</span>
 <span class="sd">        :param pod_address: the pod to send the command to</span>
 <span class="sd">        :param command: the command to send (TERMINATE/ACTIVATE/...)</span>
+<span class="sd">        :param timeout: optional timeout for the request in seconds</span>
 <span class="sd">        :returns: Empty protobuf struct</span>
 <span class="sd">        """</span>
         <span class="n">stub</span> <span class="o">=</span> <span class="n">Grpclet</span><span class="o">.</span><span class="n">_create_grpc_stub</span><span class="p">(</span><span class="n">pod_address</span><span class="p">,</span> <span class="n">is_async</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">stub</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span><span class="n">ControlMessage</span><span class="p">(</span><span class="n">command</span><span class="p">))</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">stub</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span><span class="n">ControlMessage</span><span class="p">(</span><span class="n">command</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">response</span></div>
 
     <span class="nd">@staticmethod</span>
@@ -648,7 +649,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 22, 2021.
+            Last updated on Aug 25, 2021.
         </div>
         
       </footer>

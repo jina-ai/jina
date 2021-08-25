@@ -457,6 +457,7 @@
         <h1>Source code for daemon.helper</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span>
 
 <span class="kn">import</span> <span class="nn">aiohttp</span>
@@ -564,6 +565,41 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s1">'body'</span><span class="p">],</span> <span class="n">List</span><span class="p">)</span>
         <span class="k">else</span> <span class="n">response</span><span class="p">[</span><span class="s1">'body'</span><span class="p">]</span>
     <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="change_cwd"><a class="viewcode-back" href="../../../api/daemon.helper/#daemon.helper.change_cwd">[docs]</a><span class="nd">@contextmanager</span>
+<span class="k">def</span> <span class="nf">change_cwd</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Change the current working dir to ``path`` in a context and set it back to the original one when leaves the context.</span>
+<span class="sd">    Yields nothing</span>
+<span class="sd">    :param path: Target path.</span>
+<span class="sd">    :yields: nothing</span>
+<span class="sd">    """</span>
+    <span class="n">curdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">yield</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">curdir</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="change_env"><a class="viewcode-back" href="../../../api/daemon.helper/#daemon.helper.change_env">[docs]</a><span class="nd">@contextmanager</span>
+<span class="k">def</span> <span class="nf">change_env</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Change the environment of ``key`` to ``val`` in a context and set it back to the original one when leaves the context.</span>
+<span class="sd">    :param key: Old environment variable.</span>
+<span class="sd">    :param val: New environment variable.</span>
+<span class="sd">    :yields: nothing</span>
+<span class="sd">    """</span>
+    <span class="n">old_var</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">yield</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">old_var</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">old_var</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
 </pre></div>
       </article>
       <footer>
@@ -576,7 +612,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 22, 2021.
+            Last updated on Aug 25, 2021.
         </div>
         
       </footer>

@@ -543,6 +543,9 @@
         <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">_kwargs</span><span class="p">:</span>
             <span class="n">r</span><span class="p">[</span><span class="s1">'with'</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">_kwargs</span>
 
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">:</span>
+            <span class="n">r</span><span class="p">[</span><span class="s1">'with'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'with'</span><span class="p">,</span> <span class="p">{}),</span> <span class="o">**</span><span class="n">data</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">:</span>
             <span class="n">r</span><span class="p">[</span><span class="s1">'executors'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -582,7 +585,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 22, 2021.
+            Last updated on Aug 25, 2021.
         </div>
         
       </footer>

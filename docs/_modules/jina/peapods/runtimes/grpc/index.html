@@ -579,7 +579,11 @@
 <span class="sd">        :param control_address: the address where the control message needs to be sent</span>
 <span class="sd">        :param kwargs: extra keyword arguments</span>
 <span class="sd">        """</span>
-        <span class="n">Grpclet</span><span class="o">.</span><span class="n">send_ctrl_msg</span><span class="p">(</span><span class="n">control_address</span><span class="p">,</span> <span class="s1">'TERMINATE'</span><span class="p">)</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">Grpclet</span><span class="o">.</span><span class="n">send_ctrl_msg</span><span class="p">(</span><span class="n">control_address</span><span class="p">,</span> <span class="s1">'TERMINATE'</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">RpcError</span><span class="p">:</span>
+            <span class="c1"># TERMINATE can fail if the the runtime dies before sending the return value</span>
+            <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="GRPCDataRuntime.wait_for_ready_or_shutdown"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.grpc/#jina.peapods.runtimes.grpc.GRPCDataRuntime.wait_for_ready_or_shutdown">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">wait_for_ready_or_shutdown</span><span class="p">(</span>
@@ -764,7 +768,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 22, 2021.
+            Last updated on Aug 25, 2021.
         </div>
         
       </footer>

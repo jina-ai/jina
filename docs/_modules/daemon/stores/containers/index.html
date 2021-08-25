@@ -593,6 +593,7 @@
         <span class="n">workspace_id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span>
         <span class="n">params</span><span class="p">:</span> <span class="s1">'BaseModel'</span><span class="p">,</span>
         <span class="n">ports</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+        <span class="n">envs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DaemonID</span><span class="p">:</span>
         <span class="sd">"""Add a container to the store</span>
@@ -601,6 +602,7 @@
 <span class="sd">        :param workspace_id: workspace id where the container lives</span>
 <span class="sd">        :param params: pydantic model representing the args for the container</span>
 <span class="sd">        :param ports: ports to be mapped to local</span>
+<span class="sd">        :param envs: dict of env vars to be passed</span>
 <span class="sd">        :param kwargs: keyword args</span>
 <span class="sd">        :raises KeyError: if workspace_id doesn't exist in the store</span>
 <span class="sd">        :raises PartialDaemonConnectionException: if jinad cannot connect to partial</span>
@@ -631,7 +633,11 @@
             <span class="p">)</span>
 
             <span class="n">container</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">ports</span> <span class="o">=</span> <span class="n">Dockerizer</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-                <span class="n">workspace_id</span><span class="o">=</span><span class="n">workspace_id</span><span class="p">,</span> <span class="n">container_id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="n">command</span><span class="p">,</span> <span class="n">ports</span><span class="o">=</span><span class="n">ports</span>
+                <span class="n">workspace_id</span><span class="o">=</span><span class="n">workspace_id</span><span class="p">,</span>
+                <span class="n">container_id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span>
+                <span class="n">command</span><span class="o">=</span><span class="n">command</span><span class="p">,</span>
+                <span class="n">ports</span><span class="o">=</span><span class="n">ports</span><span class="p">,</span>
+                <span class="n">envs</span><span class="o">=</span><span class="n">envs</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">ready</span><span class="p">(</span><span class="n">uri</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">PartialDaemonConnectionException</span><span class="p">(</span>
@@ -772,7 +778,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 22, 2021.
+            Last updated on Aug 25, 2021.
         </div>
         
       </footer>

@@ -490,20 +490,31 @@
 
     <span class="nd">@if_alive</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">create</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">workspace_id</span><span class="p">:</span> <span class="s1">'DaemonID'</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">workspace_id</span><span class="p">:</span> <span class="s1">'DaemonID'</span><span class="p">,</span>
+        <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">envs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Start a Flow on remote JinaD</span>
 
 <span class="sd">        :param workspace_id: workspace id where flow will be created</span>
 <span class="sd">        :param filename: name of the flow yaml file in the workspace</span>
+<span class="sd">        :param envs: dict of env vars to be passed</span>
 <span class="sd">        :param args: positional args</span>
 <span class="sd">        :param kwargs: keyword args</span>
 <span class="sd">        :return: flow id</span>
 <span class="sd">        """</span>
+        <span class="n">envs</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">[(</span><span class="s1">'envs'</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">=</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">envs</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+            <span class="k">if</span> <span class="n">envs</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">envs</span><span class="p">,</span> <span class="n">Dict</span><span class="p">)</span>
+            <span class="k">else</span> <span class="p">[]</span>
+        <span class="p">)</span>
         <span class="k">async</span> <span class="k">with</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
             <span class="n">method</span><span class="o">=</span><span class="s1">'POST'</span><span class="p">,</span>
             <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">store_api</span><span class="p">,</span>
-            <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">'workspace_id'</span><span class="p">:</span> <span class="n">workspace_id</span><span class="p">,</span> <span class="s1">'filename'</span><span class="p">:</span> <span class="n">filename</span><span class="p">},</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">[(</span><span class="s1">'workspace_id'</span><span class="p">,</span> <span class="n">workspace_id</span><span class="p">),</span> <span class="p">(</span><span class="s1">'filename'</span><span class="p">,</span> <span class="n">filename</span><span class="p">)]</span> <span class="o">+</span> <span class="n">envs</span><span class="p">,</span>
             <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span>
         <span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
             <span class="n">response_json</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
@@ -583,7 +594,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 22, 2021.
+            Last updated on Aug 25, 2021.
         </div>
         
       </footer>

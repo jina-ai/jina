@@ -562,7 +562,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_enter_pea</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pea</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">_args</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">replicas_args</span><span class="p">:</span>
                 <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="n">_args</span><span class="o">.</span><span class="n">polling</span> <span class="o">=</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">ALL</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_enter_replica</span><span class="p">(</span><span class="n">Pod</span><span class="p">(</span><span class="n">_args</span><span class="p">))</span>
             <span class="n">tail_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail_args</span>
             <span class="n">tail_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
@@ -576,7 +575,6 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">head_pea</span> <span class="o">=</span> <span class="n">Pea</span><span class="p">(</span><span class="n">head_args</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_enter_pea</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pea</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">_args</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">replicas_args</span><span class="p">:</span>
-                    <span class="n">_args</span><span class="o">.</span><span class="n">polling</span> <span class="o">=</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">ALL</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_enter_replica</span><span class="p">(</span><span class="n">Pod</span><span class="p">(</span><span class="n">_args</span><span class="p">))</span>
                 <span class="n">tail_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail_args</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">tail_pea</span> <span class="o">=</span> <span class="n">Pea</span><span class="p">(</span><span class="n">tail_args</span><span class="p">)</span>
@@ -680,6 +678,7 @@
             <span class="n">_args</span><span class="o">.</span><span class="n">port_ctrl</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
             <span class="n">_args</span><span class="o">.</span><span class="n">socket_out</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">PUSH_CONNECT</span>
             <span class="n">_args</span><span class="o">.</span><span class="n">socket_in</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">DEALER_CONNECT</span>
+            <span class="n">_args</span><span class="o">.</span><span class="n">polling</span> <span class="o">=</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">ALL</span>
             <span class="n">_args</span><span class="o">.</span><span class="n">dynamic_routing</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="c1"># ugly trick to avoid Head of Replica to have wrong host in</span>
             <span class="n">tmp_args</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
@@ -738,7 +737,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 22, 2021.
+            Last updated on Aug 25, 2021.
         </div>
         
       </footer>

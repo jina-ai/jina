@@ -511,13 +511,18 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="StructView.update"><a class="viewcode-back" href="../../../../api/jina.types.struct/#jina.types.struct.StructView.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>  <span class="c1"># pylint: disable=invalid-name</span>
+<div class="viewcode-block" id="StructView.update"><a class="viewcode-back" href="../../../../api/jina.types.struct/#jina.types.struct.StructView.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'StructView'</span><span class="p">,</span> <span class="n">struct_pb2</span><span class="o">.</span><span class="n">Struct</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>  <span class="c1"># pylint: disable=invalid-name</span>
         <span class="sd">"""</span>
 <span class="sd">        # noqa: DAR101</span>
 <span class="sd">        # noqa: DAR102</span>
 <span class="sd">        # noqa: DAR103</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">d</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">StructView</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">d</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="StructView.clear"><a class="viewcode-back" href="../../../../api/jina.types.struct/#jina.types.struct.StructView.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""</span>
@@ -538,7 +543,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 22, 2021.
+            Last updated on Aug 25, 2021.
         </div>
         
       </footer>
