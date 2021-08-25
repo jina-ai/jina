@@ -3,19 +3,20 @@ import os
 import sys
 import time
 import warnings
-from typing import Union, Optional, Dict
+from typing import Union, Optional, Dict, TYPE_CHECKING
 from pathlib import Path
 from platform import uname
 
 from ..zmq.base import ZMQRuntime
 from ...zmq import Zmqlet
 from .... import __docker_host__
+from .helper import get_docker_network
 from ....excepts import BadImageNameError, DockerVersionError
 from ...zmq import send_ctrl_message
 from ....helper import ArgNamespace, slugify
 from ....enums import SocketType
 
-if False:
+if TYPE_CHECKING:
     import multiprocessing
     import threading
     from ....logging.logger import JinaLogger
@@ -403,12 +404,22 @@ class ContainerRuntime(ZMQRuntime):
         :param kwargs: extra keyword arguments
         :return: The corresponding control address
         """
+        import docker
+
+        client = docker.from_env()
+        network = get_docker_network(client)
+
         if (
             docker_kwargs
             and 'extra_hosts' in docker_kwargs
             and __docker_host__ in docker_kwargs['extra_hosts']
         ):
             ctrl_host = __docker_host__
+        elif network:
+            # If the caller is already in a docker network, replace ctrl-host with network gateway
+            ctrl_host = client.networks.get(network).attrs['IPAM']['Config'][0][
+                'Gateway'
+            ]
         else:
             ctrl_host = host
 
