@@ -910,4 +910,3 @@ def _connect_socket(
         tunnel_connection(sock, address, ssh_server, ssh_keyfile, ssh_password)
     else:
         sock.connect(address)
-

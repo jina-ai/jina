@@ -155,7 +155,10 @@ class RoutingTable(ProtoTypeMixin):
         """Adds a Pod vertex to the graph.
 
         :param pod_name: the name of the Pod. Should be unique to the graph.
-        :param pod: the Pod object to be added
+        :param head_host: head host of the pod
+        :param head_port_in: port in of the head of the pod
+        :param tail_port_out: port out of the tail of the pod
+        :param head_zmq_identity: identity of the head - only relevant for zmq
         """
         if pod_name in self.pods:
             raise ValueError(
