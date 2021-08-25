@@ -4,13 +4,14 @@ on:
   push:
     branches:
       - "master"
+      - feat-enable-automated-benchmarking # test purposes
     tags: 
       - "v*"
 
 jobs:
   benchmark-master:
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/master' }}
+    if: ${{ github.ref == 'refs/heads/master' }} || ${{ github.ref == 'refs/heads/feat-enable-automated-benchmarking' }}
     steps:
       - run: |
           git fetch
@@ -29,7 +30,7 @@ jobs:
 
   benchmark-tag:
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v') || ${{ github.ref == 'refs/heads/feat-enable-automated-benchmarking' }}
     steps:
       - run: |
           TAG=$(echo $GITHUB_REF | cut -d '/' -f 3)
