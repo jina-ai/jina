@@ -69,7 +69,7 @@ def set_gateway_parser(parser=None):
     from .peapods.runtimes.zmq import mixin_zmq_runtime_parser
     from .peapods.runtimes.zed import mixin_zed_runtime_parser
     from .peapods.runtimes.remote import (
-        mixin_grpc_gateway_parser,
+        mixin_gateway_parser,
         mixin_prefetch_parser,
         mixin_http_gateway_parser,
         mixin_compressor_parser,
@@ -83,7 +83,7 @@ def set_gateway_parser(parser=None):
     mixin_http_gateway_parser(parser)
     mixin_compressor_parser(parser)
     mixin_comm_protocol_parser(parser)
-    mixin_grpc_gateway_parser(parser)
+    mixin_gateway_parser(parser)
     mixin_pea_parser(parser)
 
     from ..enums import SocketType, PodRoleType

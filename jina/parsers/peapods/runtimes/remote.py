@@ -6,7 +6,7 @@ from ....enums import CompressAlgo
 
 
 def mixin_remote_runtime_parser(parser):
-    """Add the options for remote expose
+    """Add the options for a remote Executor
     :param parser: the parser
     """
     gp = add_arg_group(parser, title='RemoteRuntime')
@@ -15,28 +15,13 @@ def mixin_remote_runtime_parser(parser):
     gp.add_argument(
         '--port-jinad',
         type=int,
-        default=12345,  # helper.random_port(),
+        default=8000,
         help='The port of the remote machine for usage with JinaD.',
     )
 
 
-def mixin_remote_jinad_parser(parser):
-    """Add the options for remote expose
-    :param parser: the parser
-    """
-    gp = add_arg_group(parser, title='RemoteJinad')
-    _add_host(gp)
-
-    gp.add_argument(
-        '--port',
-        type=int,
-        default=helper.random_port(),
-        help='The port of the host exposed for connecting to.',
-    )
-
-
 def mixin_client_gateway_parser(parser):
-    """Add the options for remote expose
+    """Add the options for the client connecting to the Gateway
     :param parser: the parser
     """
     gp = add_arg_group(parser, title='ClientGateway')
@@ -51,11 +36,11 @@ def mixin_client_gateway_parser(parser):
     )
 
 
-def mixin_grpc_gateway_parser(parser):
-    """Add the options for remote expose
+def mixin_gateway_parser(parser):
+    """Add the options for remote expose at the Gateway
     :param parser: the parser
     """
-    gp = add_arg_group(parser, title='GRPCGateway')
+    gp = add_arg_group(parser, title='Gateway')
     _add_host(gp)
     _add_proxy(gp)
 

@@ -24,7 +24,7 @@ def test_flow_api(monkeypatch, partial_flow_client):
     def response_checker(response):
         assert response.docs[0].content == 'https://jina.ai'
 
-    Client(port_gateway=56789).post(
+    Client(port=56789).post(
         on='/any_endpoint', inputs=Document(), on_done=response_checker
     )
 

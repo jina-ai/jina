@@ -2,11 +2,10 @@ import argparse
 import os
 import sys
 
-from jina import __resources_path__
+from jina import __resources_path__, __default_host__
 from jina.parsers.base import set_base_parser
 from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS
 from jina.parsers.peapods.base import mixin_base_ppr_parser
-from jina.parsers.peapods.runtimes.remote import mixin_remote_jinad_parser
 from .models.enums import PartialDaemonModes
 
 
@@ -39,6 +38,30 @@ def mixin_daemon_parser(parser):
         help='Mode for partial jinad. Can be flow/pod/pea. If none provided main jinad is run.'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
+    )
+
+
+def mixin_remote_jinad_parser(parser):
+    """Add the networking options for JinaD
+    :param parser: the parser
+    """
+    gp = add_arg_group(parser, title='RemoteJinad')
+    _add_host(gp)
+
+    gp.add_argument(
+        '--port',
+        type=int,
+        default=8000,
+        help='The port of the host exposed for connecting to.',
+    )
+
+
+def _add_host(arg_group):
+    arg_group.add_argument(
+        '--host',
+        type=str,
+        default=__default_host__,
+        help=f'The host address of JinaD, by default it is {__default_host__}.',
     )
 
 

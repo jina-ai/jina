@@ -138,7 +138,7 @@ def test_client_websocket(mocker, flow_with_websocket):
         time.sleep(0.5)
         client = Client(
             host='localhost',
-            port_gateway=str(flow_with_websocket.port_expose),
+            port=str(flow_with_websocket.port_expose),
             protocol='websocket',
         )
         # Test that a regular index request triggers the correct callbacks
@@ -160,13 +160,13 @@ def test_client_websocket(mocker, flow_with_websocket):
 
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_client_from_kwargs(protocol):
-    Client(port_gateway=12345, host='0.0.0.1', protocol=protocol)
+    Client(port=12345, host='0.0.0.1', protocol=protocol)
 
 
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_independent_client(protocol):
     with Flow(protocol=protocol) as f:
-        c = Client(host='localhost', port_gateway=f.port_expose, protocol=protocol)
+        c = Client(host='localhost', port=f.port_expose, protocol=protocol)
         assert type(c) == type(f.client)
         c.post('/')
 
