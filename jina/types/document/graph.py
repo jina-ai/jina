@@ -115,7 +115,7 @@ class GraphDocument(Document):
         node_id = node.id if isinstance(node, Document) else node
         if node_id not in self._node_id_to_offset:
             default_logger.debug(
-                f'Trying to remove document {node.id} from the graph while is not a node of the graph'
+                f'Trying to remove document {node_id} from the graph while is not a node of the graph'
             )
             return
 
