@@ -13,8 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/master' }} || ${{ github.ref == 'refs/heads/feat-enable-automated-benchmarking' }}
     steps:
+      - uses: actions/checkout@v2
       - run: |
-          git fetch
           INIT_FILE='jina/__init__.py'
           RELEASE_VER=$(sed -n '/^__version__/p' $INIT_FILE | cut -d \' -f2)
           LAST_VER=$(git tag -l | sort -V | tail -n1)
