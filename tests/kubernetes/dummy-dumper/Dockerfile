@@ -1,3 +1,4 @@
+# TODO use fixed jina version for deterministic execution
 FROM jinaai/jina
 
 # setup the workspace
