@@ -36,7 +36,7 @@ def client():
 @pytest.fixture
 def grpc_client():
     args = set_client_cli_parser().parse_args(
-        ['--host', 'localhost', '--port-gateway', '45678']
+        ['--host', 'localhost', '--port', '45678']
     )
 
     return GRPCClient(args)
