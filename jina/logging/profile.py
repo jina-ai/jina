@@ -289,7 +289,6 @@ class ProgressBar(TimeContext):
 
     def _exit_msg(self):
         if self._num_update_called > 0:
-            speed = self._completed_progress / self.duration
             self.update(0, all_completed=True)
             sys.stdout.write(
                 f'\033[K{self._completed_progress:.0f} steps done in {self.readable_duration}\n'

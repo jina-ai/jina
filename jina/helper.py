@@ -125,6 +125,21 @@ def deprecated_alias(**aliases):
     return deco
 
 
+def deprecated_method(new_function_name):
+    def deco(func):
+        def wrapper(*args, **kwargs):
+            warnings.warn(
+                f'`{func.__name__}` is renamed to `{new_function_name}`, the usage of `{func.__name__}` is '
+                f'deprecated and will be removed.',
+                DeprecationWarning,
+            )
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return deco
+
+
 def get_readable_size(num_bytes: Union[int, float]) -> str:
     """
     Transform the bytes into readable value with different units (e.g. 1 KB, 20 MB, 30.1 GB).
