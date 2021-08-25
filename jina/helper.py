@@ -125,6 +125,21 @@ def deprecated_alias(**aliases):
     return deco
 
 
+def deprecated_method(new_function_name):
+    def deco(func):
+        def wrapper(*args, **kwargs):
+            warnings.warn(
+                f'`{func.__name__}` is renamed to `{new_function_name}`, the usage of `{func.__name__}` is '
+                f'deprecated and will be removed.',
+                DeprecationWarning,
+            )
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return deco
+
+
 def get_readable_size(num_bytes: Union[int, float]) -> str:
     """
     Transform the bytes into readable value with different units (e.g. 1 KB, 20 MB, 30.1 GB).
@@ -187,8 +202,9 @@ def batch_iterator(
             yield data[_ : _ + batch_size]
     elif isinstance(data, Iterable):
         # as iterator, there is no way to know the length of it
+        iterator = iter(data)
         while True:
-            chunk = tuple(islice(data, batch_size))
+            chunk = tuple(islice(iterator, batch_size))
             if not chunk:
                 return
             yield chunk
@@ -638,6 +654,36 @@ class ColorContext:
         print(_RESET, flush=True, end='')
 
 
+def warn_unknown_args(unknown_args: List[str]):
+    """Creates warnings for all given arguments.
+
+    :param unknown_args: arguments that are possibly unknown to Jina
+    """
+
+    from cli.lookup import _build_lookup_table
+
+    all_args = _build_lookup_table()[0]
+
+    has_migration_tip = False
+    real_unknown_args = []
+    warn_strs = []
+    for arg in unknown_args:
+        if arg.replace('--', '') not in all_args:
+            from .parsers.deprecated import get_deprecated_replacement
+
+            new_arg = get_deprecated_replacement(arg)
+            if new_arg:
+                if not has_migration_tip:
+                    warn_strs.append('Migration tips:')
+                    has_migration_tip = True
+                warn_strs.append(f'\t`{arg}` has been renamed to `{new_arg}`')
+            real_unknown_args.append(arg)
+
+    if real_unknown_args:
+        warn_strs = [f'ignored unknown argument: {real_unknown_args}.'] + warn_strs
+        warnings.warn(''.join(warn_strs))
+
+
 class ArgNamespace:
     """Helper function for argparse.Namespace object."""
 
@@ -670,23 +716,33 @@ class ArgNamespace:
 
     @staticmethod
     def kwargs2namespace(
-        kwargs: Dict[str, Union[str, int, bool]], parser: ArgumentParser
+        kwargs: Dict[str, Union[str, int, bool]],
+        parser: ArgumentParser,
+        warn_unknown: bool = False,
+        fallback_parsers: List[ArgumentParser] = None,
     ) -> Namespace:
         """
         Convert dict to a namespace.
 
         :param kwargs: dictionary of key-values to be converted
         :param parser: the parser for building kwargs into a namespace
+        :param warn_unknown: True, if unknown arguments should be logged
+        :param fallback_parsers: a list of parsers to help resolving the args
         :return: argument list
         """
         args = ArgNamespace.kwargs2list(kwargs)
-        try:
-            p_args, unknown_args = parser.parse_known_args(args)
-        except SystemExit:
-            raise ValueError(
-                f'bad arguments "{args}" with parser {parser}, '
-                'you may want to double check your args '
-            )
+        p_args, unknown_args = parser.parse_known_args(args)
+        if warn_unknown and unknown_args:
+            _leftovers = set(unknown_args)
+            if fallback_parsers:
+                for p in fallback_parsers:
+                    _, _unk_args = p.parse_known_args(args)
+                    _leftovers = _leftovers.intersection(_unk_args)
+                    if not _leftovers:
+                        # all args have been resolved
+                        break
+            warn_unknown_args(_leftovers)
+
         return p_args
 
     @staticmethod
@@ -816,16 +872,16 @@ def format_full_version_info(info: Dict, env_info: Dict) -> str:
 
 
 def _use_uvloop():
-    from .importer import ImportExtensions
-
-    with ImportExtensions(
-        required=False,
-        help_text='Jina uses uvloop to manage events and sockets, '
-        'it often yields better performance than builtin asyncio',
-    ):
+    if 'JINA_DISABLE_UVLOOP' in os.environ:
+        return
+    try:
         import uvloop
 
         asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+    except ModuleNotFoundError:
+        warnings.warn(
+            'Install `uvloop` via `pip install "jina[uvloop]"` for better performance.'
+        )
 
 
 def get_or_reuse_loop():
@@ -839,8 +895,7 @@ def get_or_reuse_loop():
         if loop.is_closed():
             raise RuntimeError
     except RuntimeError:
-        if 'JINA_DISABLE_UVLOOP' not in os.environ:
-            _use_uvloop()
+        _use_uvloop()
         # no running event loop
         # create a new loop
         loop = asyncio.new_event_loop()
@@ -908,6 +963,48 @@ class cached_property:
             if hasattr(cached_value, 'close'):
                 cached_value.close()
             del obj.__dict__[f'CACHED_{self.func.__name__}']
+
+
+class _cache_invalidate:
+    """Class for cache invalidation, remove strategy.
+
+    :param func: func to wrap as a decorator.
+    :param attribute: String as the function name to invalidate cached
+        data. E.g. in :class:`cached_property` we cache data inside the class obj
+        with the `key`: `CACHED_{func.__name__}`, the func name in `cached_property`
+        is the name to invalidate.
+    """
+
+    def __init__(self, func, attribute: str):
+        self.func = func
+        self.attribute = attribute
+
+    def __call__(self, *args, **kwargs):
+        obj = args[0]
+        cached_key = f'CACHED_{self.attribute}'
+        if cached_key in obj.__dict__:
+            del obj.__dict__[cached_key]  # invalidate
+        self.func(*args, **kwargs)
+
+    def __get__(self, obj, cls):
+        from functools import partial
+
+        return partial(self.__call__, obj)
+
+
+def cache_invalidate(attribute: str):
+    """The cache invalidator decorator to wrap the method call.
+
+    Check the implementation in :class:`_cache_invalidate`.
+
+    :param attribute: The func name as was stored in the obj to invalidate.
+    :return: wrapped method.
+    """
+
+    def _wrap(func):
+        return _cache_invalidate(func, attribute)
+
+    return _wrap
 
 
 def get_now_timestamp():
@@ -1059,11 +1156,15 @@ def run_async(func, *args, **kwargs):
     .. see_also:
         https://stackoverflow.com/questions/55409641/asyncio-run-cannot-be-called-from-a-running-event-loop
 
+    call `run_async(my_function, any_event_loop=True, *args, **kwargs)` to enable run with any eventloop
+
     :param func: function to run
     :param args: parameters
     :param kwargs: key-value parameters
     :return: asyncio.run(func)
     """
+
+    any_event_loop = kwargs.pop('any_event_loop', False)
 
     class _RunThread(threading.Thread):
         """Create a running thread when in Jupyter notebook."""
@@ -1080,7 +1181,7 @@ def run_async(func, *args, **kwargs):
     if loop and loop.is_running():
         # eventloop already exist
         # running inside Jupyter
-        if is_jupyter():
+        if any_event_loop or is_jupyter():
             thread = _RunThread()
             thread.start()
             thread.join()
@@ -1097,7 +1198,7 @@ def run_async(func, *args, **kwargs):
             raise RuntimeError(
                 'you have an eventloop running but not using Jupyter/ipython, '
                 'this may mean you are using Jina with other integration? if so, then you '
-                'may want to use Clien/Flow(asyncio=True). If not, then '
+                'may want to use Client/Flow(asyncio=True). If not, then '
                 'please report this issue here: https://github.com/jina-ai/jina'
             )
     else:

@@ -2,6 +2,7 @@ import copy
 from argparse import Namespace
 from itertools import cycle
 from typing import Optional, Dict, List, Union, Set
+from contextlib import ExitStack
 
 from .. import BasePod
 from .. import Pea
@@ -12,7 +13,7 @@ from ...enums import PollingType, SocketType
 from ...helper import random_identity
 
 
-class CompoundPod(BasePod):
+class CompoundPod(BasePod, ExitStack):
     """A CompoundPod is a immutable set of pods, which run in parallel.
     A CompoundPod is an abstraction using a composable pattern to abstract the usage of parallel Pods that act as replicas.
 
@@ -28,7 +29,12 @@ class CompoundPod(BasePod):
     def __init__(
         self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
     ):
-        super().__init__(args, needs)
+        super().__init__()
+        args.upload_files = BasePod._set_upload_files(args)
+        self.args = args
+        self.needs = (
+            needs or set()
+        )  #: used in the :class:`jina.flow.Flow` to build the graph
         self.replicas = []  # type: List['Pod']
         # we will see how to have `CompoundPods` in remote later when we add tests for it
         self.is_head_router = True
@@ -39,6 +45,10 @@ class CompoundPod(BasePod):
         self.replicas_args = self._set_replica_args(
             cargs, self.head_args, self.tail_args
         )
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        super().__exit__(exc_type, exc_val, exc_tb)
+        self.join()
 
     @property
     def port_expose(self) -> int:
@@ -95,7 +105,6 @@ class CompoundPod(BasePod):
             self._enter_pea(self.head_pea)
             for _args in self.replicas_args:
                 _args.noblock_on_start = True
-                _args.polling = PollingType.ALL
                 self._enter_replica(Pod(_args))
             tail_args = self.tail_args
             tail_args.noblock_on_start = True
@@ -109,7 +118,6 @@ class CompoundPod(BasePod):
                 self.head_pea = Pea(head_args)
                 self._enter_pea(self.head_pea)
                 for _args in self.replicas_args:
-                    _args.polling = PollingType.ALL
                     self._enter_replica(Pod(_args))
                 tail_args = self.tail_args
                 self.tail_pea = Pea(tail_args)
@@ -213,17 +221,23 @@ class CompoundPod(BasePod):
             _args.port_ctrl = helper.random_port()
             _args.socket_out = SocketType.PUSH_CONNECT
             _args.socket_in = SocketType.DEALER_CONNECT
+            _args.polling = PollingType.ALL
             _args.dynamic_routing = False
+            # ugly trick to avoid Head of Replica to have wrong host in
+            tmp_args = copy.deepcopy(_args)
+            if _args.parallel > 1:
+                tmp_args.runs_in_docker = False
+                tmp_args.uses = ''
 
             _args.host_in = get_connect_host(
                 bind_host=head_args.host,
                 bind_expose_public=head_args.expose_public,
-                connect_args=_args,
+                connect_args=tmp_args,
             )
             _args.host_out = get_connect_host(
                 bind_host=tail_args.host,
                 bind_expose_public=tail_args.expose_public,
-                connect_args=_args,
+                connect_args=tmp_args,
             )
             result.append(_args)
         return result
@@ -239,13 +253,10 @@ class CompoundPod(BasePod):
                 replica.close()
                 _args = self.replicas_args[i]
                 _args.noblock_on_start = False
-                # TODO better way to pass args to the new Pod
                 _args.dump_path = dump_path
                 new_replica = Pod(_args)
                 self.enter_context(new_replica)
                 self.replicas[i] = new_replica
-                # TODO might be required in order to allow time for the Replica to come online
-                # before taking down the next
         except:
             raise
 

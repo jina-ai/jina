@@ -32,13 +32,17 @@ class PostMixin:
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param parameters: the kwargs that will be sent to the executor
-        :param target_peapod: a regex string represent the certain peas/pods request targeted
+        :param target_peapod: a regex string. Only matching Executors will process the request.
         :param request_size: the number of Documents per request. <=0 means all inputs in one request.
         :param show_progress: if set, client will show a progress bar on receiving every request.
         :param continue_on_error: if set, a Request that causes callback error will be logged only without blocking the further requests.
         :param return_results: if set, the results of all Requests will be returned as a list. This is useful when one wants process Responses in bulk instead of using callback.
         :param kwargs: additional parameters
         :return: None or list of Response
+
+        .. warning::
+            ``target_peapod`` uses ``re.match`` for checking if the pattern is matched.
+             ``target_peapod=='foo'`` will match both pods with the name ``foo`` and ``foo_what_ever_suffix``.
         """
 
         async def _get_results(*args, **kwargs):
@@ -98,7 +102,7 @@ class AsyncPostMixin:
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param parameters: the kwargs that will be sent to the executor
-        :param target_peapod: a regex string represent the certain peas/pods request targeted
+        :param target_peapod: a regex string. Only matching Executors will process the request.
         :param request_size: the number of Documents per request. <=0 means all inputs in one request.
         :param show_progress: if set, client will show a progress bar on receiving every request.
         :param continue_on_error: if set, a Request that causes callback error will be logged only without blocking the further requests.

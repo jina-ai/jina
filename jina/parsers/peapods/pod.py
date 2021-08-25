@@ -2,7 +2,7 @@
 import argparse
 
 from jina.enums import PollingType, SchedulerType, PodRoleType
-from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS
+from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS, KVAppendAction
 
 
 def mixin_base_pod_parser(parser):
@@ -85,6 +85,55 @@ The polling strategy of the Pod (when `parallel>1`)
         type=PodRoleType.from_string,
         choices=list(PodRoleType),
         help='The role of this pod in the flow'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+
+    parser.add_argument(
+        '--no-dynamic-routing',
+        action='store_false',
+        dest='dynamic_routing',
+        default=True,
+        help='The Pod will setup the socket types of the HeadPea and TailPea depending on this argument.',
+    )
+
+    parser.add_argument(
+        '--connect-to-predecessor',
+        action='store_true',
+        default=False,
+        help='The head Pea of this Pod will connect to the TailPea of the predecessor Pod.',
+    )
+
+
+def mixin_k8s_pod_parser(parser):
+    parser.add_argument(
+        '--k8s-uses-init',
+        type=str,
+        # default='',
+        help='Init container for k8s pod. Usually retrieves some data which or waits until some condition is fulfilled.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+    parser.add_argument(
+        '--k8s-mount-path',
+        type=str,
+        # default='',
+        help='Path where the init container and the executor can exchange files.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+    parser.add_argument(
+        '--k8s-init-container-command',
+        nargs='+',
+        help='Arguments for the init container.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+    parser.add_argument(
+        '--k8s-namespace',
+        type=str,
+        default='',
+        help='Name of the namespace where Kubernetes deployment should be deployed, to be filled by flow name'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )

@@ -17,7 +17,7 @@ jobs:
       !startsWith(github.event.head_commit.message, 'chore') &&
       !startsWith(github.event.head_commit.message, 'build: hotfix') &&
       !endsWith(github.event.head_commit.message, 'reformatted by jina-dev-bot')
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
@@ -89,107 +89,31 @@ jobs:
 
   update-doc:
     needs: update-schema
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: benc-uk/workflow-dispatch@v1
         with:
-          fetch-depth: 0
-      - uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
-      - name: push-to-gh-pages-branch
-        run: |
-          git config --local user.email "dev-bot@jina.ai"
-          git config --local user.name "Jina Dev Bot"
-          git checkout gh-pages
-          git merge origin/master
-          pip install .[devel]
-          cd docs
-          pip install -r requirements.txt
-          docker run --rm \
-            -v $(pwd)/proto:/out \
-            -v $(pwd)/../jina/proto:/protos \
-            pseudomuto/protoc-gen-doc --doc_opt=markdown,docs.md
-          make dirhtml
-          cd ./_build/dirhtml/
-          cp -r ./ ../../
-          cd -
-          rm -rf ./_build/dirhtml/
-          ls -la
-          touch .nojekyll
-          cp 404/index.html 404.html
-          echo docs.jina.ai > CNAME
-          git add api cli proto
-          git add . && git commit -m "chore(docs): update docs due to ${{github.event_name}} on ${{github.repository}}"
-          git status
-          git push origin gh-pages
+          workflow: Manual Docs Build
+          inputs: '{ "release_token": "${{ env.release_token }}", "triggered_by": "CD"}'
+          token: ${{ secrets.JINA_DEV_BOT }}
+        env:
+          release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}
 
   update-docker:
     needs: [update-doc, update-schema]
-    runs-on: ubuntu-20.04
-    strategy:
-      fail-fast: false
-      matrix:
-        tag_stage: ["", "-standard", "-devel", "-daemon"]
-        tag_pyversion: ["-py37", "-py38", "-py39"]
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-#        with:
-#          submodules: true  # this job build devel image, devel image includes hub submodule
-      - name: Set envs and versions
-        run: |
-          echo "VCS_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-          echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
-          echo "JINA_VERSION=$(sed -n '/^__version__/p' ./jina/__init__.py | cut -d \' -f2)-master" >> $GITHUB_ENV
-
-          if [[ "${{ matrix.tag_pyversion }}" == "-py38" ]]; then
-            echo "PY_VERSION=3.8" >> $GITHUB_ENV
-          elif [[ "${{ matrix.tag_pyversion }}" == "-py39" ]]; then
-            echo "PY_VERSION=3.9" >> $GITHUB_ENV
-          else
-            echo "PY_VERSION=3.7" >> $GITHUB_ENV
-            echo "TAG_ALIAS=jinaai/jina:master${{ matrix.tag_stage }}" >> $GITHUB_ENV
-          fi
-
-          if [[ "${{ matrix.tag_stage }}" == "-daemon" ]]; then
-            echo "BUILD_ARG=jina_daemon" >> $GITHUB_ENV
-          elif [[ "${{ matrix.tag_stage }}" == "-devel" ]]; then
-            echo "BUILD_ARG=jina_devel" >> $GITHUB_ENV
-          elif [[ "${{ matrix.tag_stage }}" == "-standard" ]]; then
-            echo "BUILD_ARG=jina_standard" >> $GITHUB_ENV
-          else
-            echo "BUILD_ARG=jina_base" >> $GITHUB_ENV
-          fi
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v1
+      - uses: benc-uk/workflow-dispatch@v1
         with:
-          install: true
-      - name: Login to DockerHub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
-          password: ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
-      - run: |
-          docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-      - name: Build and push
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: Dockerfiles/debianx.Dockerfile
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: jinaai/jina:master${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.TAG_ALIAS}}
-          build-args: |
-            BUILD_DATE=${{env.BUILD_DATA}}
-            JINA_VERSION=${{env.JINA_VERSION}}
-            VCS_REF=${{env.VCS_REF}}
-            PY_VERSION=${{env.PY_VERSION}}
-          target: ${{env.BUILD_ARG}}
+          workflow: Manual Docker Build
+          inputs: '{ "release_token": "${{ env.release_token }}", "triggered_by": "CD"}'
+          token: ${{ secrets.JINA_DEV_BOT }}
+        env:
+          release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}
 
   prep-testbed:
     needs: [update-doc, update-schema]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 #        with:
@@ -216,7 +140,7 @@ jobs:
 
   core-test:
     needs: prep-testbed
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
       JINA_DAEMON_BUILD: DEVEL
     strategy:
@@ -232,14 +156,14 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Prepare enviroment
+      - name: Prepare environment
         run: |
           docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
           docker pull docker.pkg.github.com/jina-ai/jina/jina:test-pip
           docker tag docker.pkg.github.com/jina-ai/jina/jina:test-pip jinaai/jina:test-pip
           python -m pip install --upgrade pip
           python -m pip install wheel
-          pip install ".[cicd,test,daemon]" --no-cache-dir
+          pip install ".[all]" --no-cache-dir
           jina
           export JINA_LOG_LEVEL="ERROR"
         env:
@@ -249,9 +173,9 @@ jobs:
         run: |
           if [[ "${{ matrix.test-path }}" =~ ^tests/distributed/* || "${{ matrix.test-path }}" =~ ^tests/daemon/* ]]; then
             # Build daemon for all daemon/distributed tests
-            docker build -f Dockerfiles/debianx.Dockerfile -t jinaai/jina:test-daemon .
-            if [[ "${{ matrix.test-path }}" == "tests/distributed/test_against_external_daemon/" ]]; then
-              docker run --add-host=host.docker.internal:host-gateway --name jinad --env JINA_DAEMON_BUILD=DEVEL -v /var/run/docker.sock:/var/run/docker.sock -v /tmp/jinad:/tmp/jinad -p 8000:8000 -d jinaai/jina:test-daemon --store
+            docker build -f Dockerfiles/debianx.Dockerfile --build-arg PIP_TAG=daemon -t jinaai/jina:test-daemon .
+            if [[ "${{ matrix.test-path }}" =~ ^(tests/distributed/test_topologies/|tests/distributed/test_topologies_docker/|tests/distributed/test_workspaces/)$ ]]; then
+              docker run --add-host=host.docker.internal:host-gateway --name jinad --env JINA_DAEMON_BUILD=DEVEL -v /var/run/docker.sock:/var/run/docker.sock -v /tmp/jinad:/tmp/jinad -p 8000:8000 -d jinaai/jina:test-daemon
             fi
             pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=360 -v -s ${{ matrix.test-path }}
             docker rm -f jinad || true

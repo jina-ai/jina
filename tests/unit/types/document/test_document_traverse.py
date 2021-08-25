@@ -16,7 +16,7 @@ num_matches_per_chunk = 5
 
 @pytest.fixture
 def doc_req():
-    """Build a dummy request that has docs """
+    """Build a dummy request that has docs"""
     ds = list(random_docs(num_docs, num_chunks_per_doc))
     # add some random matches
     for d in ds:
@@ -202,3 +202,27 @@ def test_doc_iter_method():
 
     for d in DocumentArray(ds):
         assert d.text == 'modified'
+
+
+def test_traverse_matcharray():
+    doc = Document(
+        matches=[
+            Document(id=f'm{i}', chunks=[Document(id=f'm{i}c{j}') for j in range(3)])
+            for i in range(3)
+        ]
+    )
+    flat_docs = doc.matches.traverse_flat(['r', 'c'])
+    assert isinstance(flat_docs, DocumentArray)
+    assert len(flat_docs) == 12
+
+
+def test_traverse_chunkarray():
+    doc = Document(
+        chunks=[
+            Document(id=f'c{i}', matches=[Document(id=f'c{i}m{j}') for j in range(3)])
+            for i in range(3)
+        ]
+    )
+    flat_docs = doc.chunks.traverse_flat(['r', 'm'])
+    assert isinstance(flat_docs, DocumentArray)
+    assert len(flat_docs) == 12

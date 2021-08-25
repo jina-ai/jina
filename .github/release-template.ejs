@@ -1,5 +1,14 @@
-<% var groupCommits = [{
+<% var groupCommits = [
+{
+    name: 'breaking',
+    show: true,
+    list: []
+}, {
     name: 'feat',
+    show: true,
+    list: []
+}, {
+    name: 'perf',
     show: true,
     list: []
 }, {
@@ -44,9 +53,22 @@ commits.forEach(function (commit) {
 
     if (!(title in all_titles)) {
         all_titles[title] = 1
-
-        if(type == 'fix' || type == 'fixed'){
+        if(title.indexOf('💥')>-1){
+            groupCommits.find(item => item.name === 'breaking').list.push({
+                type: type,
+                scope: scope,
+                title: title,
+                commit: commit
+            })
+        } else if(type == 'fix' || type == 'fixed'){
             groupCommits.find(item => item.name === 'fix').list.push({
+                type: type,
+                scope: scope,
+                title: title,
+                commit: commit
+            })
+        } else if(type == 'perf' || type == 'performance'){
+            groupCommits.find(item => item.name === 'perf').list.push({
                 type: type,
                 scope: scope,
                 title: title,
@@ -122,14 +144,20 @@ list.forEach(function (ct) {
         for(var i of groupCommits){
     if(i.list.length == 0) continue;
 
-if (i.name === 'fix' && i.show) { %>
+if (i.name === 'breaking' && i.show) { %>
+### 💥 Breaking changes
+
+<%	} else if (i.name === 'fix' && i.show) { %>
 ### 🐞 Bug fixes
 
 <%	} else if( i.name === 'feat' && i.show) { %>
 ### 🆕 New Features
 
+<%	} else if(i.name === 'perf' && i.show) { %>
+### ⚡ Performance Improvements
+
 <%	} else if(i.name === 'refactor' && i.show) { %>
-### 🚧 Code Refactoring
+### 🧼 Code Refactoring
 
 <%	} else if(i.name === 'docs' && i.show) { %>
 ### 📗 Documentation

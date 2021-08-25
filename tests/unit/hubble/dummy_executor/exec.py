@@ -1,6 +1,6 @@
 from jina import Executor, requests
 
-from dep import hello
+from .dep import hello
 
 
 class MyExecutor(Executor):

@@ -1,16 +1,14 @@
+import asyncio
 import os
 import pathlib
 import random
 import shutil
 import string
+import tempfile
 import time
 
 import pytest
 from fastapi.testclient import TestClient
-
-from jina.enums import RemoteWorkspaceState
-from jina.excepts import NoAvailablePortError
-from jina.executors.metas import get_default_metas
 
 
 @pytest.fixture(scope='function')
@@ -22,6 +20,8 @@ def random_workspace_name():
 
 @pytest.fixture(scope='function')
 def test_metas(tmpdir, random_workspace_name):
+    from jina.executors.metas import get_default_metas
+
     os.environ[random_workspace_name] = str(tmpdir)
     metas = get_default_metas()
     metas['workspace'] = os.environ[random_workspace_name]
@@ -93,6 +93,7 @@ def docker_compose(request):
 def patched_random_port(mocker):
     used_ports = set()
     from jina.helper import random_port
+    from jina.excepts import NoAvailablePortError
 
     def _random_port():
 
@@ -148,6 +149,7 @@ def _create_workspace_directly(cur_dir):
         workspace_id=workspace_id, daemon_file=daemon_file, logger=daemon_logger
     )
     network_id = Dockerizer.network(workspace_id=workspace_id)
+    from jina.enums import RemoteWorkspaceState
 
     workspace_store[workspace_id] = WorkspaceItem(
         state=RemoteWorkspaceState.ACTIVE,
@@ -171,3 +173,29 @@ def test_envs(tmpdir):
     yield None
     del os.environ['JINA_HUB_ROOT']
     del os.environ['JINA_HUB_CACHE_DIR']
+
+
+@pytest.fixture(autouse=True)
+def test_log_level(monkeypatch):
+    monkeypatch.setenv('JINA_LOG_LEVEL', 'DEBUG')
+
+
+@pytest.fixture(autouse=True)
+def test_timeout_ctrl_time(monkeypatch):
+    monkeypatch.setenv('JINA_DEFAULT_TIMEOUT_CTRL', '500')
+
+
+@pytest.fixture(autouse=True)
+def tmpfile(tmpdir):
+    tmpfile = f'jina_test_{next(tempfile._get_candidate_names())}.db'
+    return tmpdir / tmpfile
+
+
+@pytest.fixture(scope="session")
+def event_loop(request):
+    """
+    Valid only for `pytest.mark.asyncio` tests
+    """
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+    yield loop
+    loop.close()

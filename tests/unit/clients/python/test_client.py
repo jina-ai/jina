@@ -88,6 +88,7 @@ def test_gateway_index(flow_with_http, test_img_1, test_img_2):
         assert resp['data']['docs'][0]['uri'] == test_img_1
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_mime_type(protocol):
     class MyExec(Executor):
@@ -106,6 +107,7 @@ def test_mime_type(protocol):
         f.index(from_files('*.py'), validate_mime_type)
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('func_name', ['index', 'search'])
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_client_ndjson(protocol, mocker, func_name):
@@ -117,6 +119,7 @@ def test_client_ndjson(protocol, mocker, func_name):
         mock.assert_called_once()
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('func_name', ['index', 'search'])
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_client_csv(protocol, mocker, func_name):
@@ -129,7 +132,7 @@ def test_client_csv(protocol, mocker, func_name):
 
 
 # Timeout is necessary to fail in case of hanging client requests
-@pytest.mark.timeout(5)
+@pytest.mark.timeout(60)
 def test_client_websocket(mocker, flow_with_websocket):
     with flow_with_websocket:
         time.sleep(0.5)
@@ -168,6 +171,7 @@ def test_independent_client(protocol):
         c.post('/')
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['http', 'grpc', 'websocket'])
 def test_all_sync_clients(protocol, mocker):
     from jina import requests

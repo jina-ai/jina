@@ -23,10 +23,6 @@ from ...types.message.common import ControlMessage
 from ...types.request import Request
 from ...types.routing.table import RoutingTable
 
-if False:
-    import multiprocessing
-    import threading
-
 
 class Zmqlet:
     """A `Zmqlet` object can send/receive data to/from ZeroMQ socket and invoke callback function. It
@@ -53,7 +49,7 @@ class Zmqlet:
             self.identity = args.zmq_identity
         else:
             self.identity = random_identity()
-        self.name = args.name or self.__class__.__name__
+        self.name = str(args.name) or self.__class__.__name__
         self.logger = logger
         self.send_recv_kwargs = vars(args)
         if ctrl_addr:
@@ -70,6 +66,9 @@ class Zmqlet:
         self.msg_sent = 0
         self.is_closed = False
         self.is_polling_paused = False
+        self.in_sock_type = None
+        self.out_sock_type = None
+        self.ctrl_sock_type = None
         self.opened_socks = []  # this must be here for `close()`
         (
             self.ctx,
@@ -89,6 +88,12 @@ class Zmqlet:
             self.opened_socks.append(self.in_connect_sock)
 
         self.out_sockets = {}
+        self._active = True
+        self._send_routing_table = args.send_routing_table
+        if hasattr(args, 'routing_table'):
+            self._routing_table = RoutingTable(args.routing_table)
+        else:
+            self._routing_table = None
 
     def _register_pollin(self):
         """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` (if :attr:`out_sock_type` is zmq.ROUTER)
@@ -212,7 +217,6 @@ class Zmqlet:
                 for address in self.args.hosts_in_connect:
                     if in_connect is None:
                         host, port = address.split(':')
-
                         in_connect, _ = _init_socket(
                             ctx,
                             host,
@@ -262,6 +266,9 @@ class Zmqlet:
         :param args: Extra positional arguments
         :param kwargs: Extra key-value arguments
         """
+        self._active = (
+            False  # Important to avoid sending idle back while flushing in socket
+        )
         if not self.is_closed:
             self.is_closed = True
             self._close_sockets()
@@ -279,6 +286,7 @@ class Zmqlet:
         )
 
     def _init_dynamic_out_socket(self, host_out, port_out):
+
         out_sock, _ = _init_socket(
             self.ctx,
             host_out,
@@ -289,9 +297,7 @@ class Zmqlet:
             ssh_keyfile=self.args.ssh_keyfile,
             ssh_password=self.args.ssh_password,
         )
-        self.logger.debug(
-            f'output {self.args.host_out}:{colored(self.args.port_out, "yellow")}'
-        )
+        self.logger.debug(f'output {host_out}:{colored(port_out, "yellow")}')
         return out_sock
 
     def _get_dynamic_out_socket(self, target_pod, as_streaming=False):
@@ -306,7 +312,12 @@ class Zmqlet:
         return out_sock
 
     def _get_dynamic_next_routes(self, message):
-        routing_table = RoutingTable(message.envelope.routing_table)
+        # use our own static routing table if available, otherwise use the one in the message
+        routing_table = (
+            self._routing_table
+            if self._routing_table
+            else RoutingTable(message.envelope.routing_table)
+        )
         next_targets = routing_table.get_next_targets()
         next_routes = []
         for target, send_as_bind in next_targets:
@@ -327,7 +338,8 @@ class Zmqlet:
         for routing_table, out_sock in next_routes:
             new_envelope = jina_pb2.EnvelopeProto()
             new_envelope.CopyFrom(msg.envelope)
-            new_envelope.routing_table.CopyFrom(routing_table.proto)
+            if self._send_routing_table:
+                new_envelope.routing_table.CopyFrom(routing_table.proto)
             new_message = Message(request=msg.request, envelope=new_envelope)
 
             new_message.envelope.receiver_id = (
@@ -356,7 +368,7 @@ class Zmqlet:
         self.bytes_sent += send_message(socket, msg, **self.send_recv_kwargs)
         self.msg_sent += 1
 
-        if socket == self.out_sock and self.in_sock_type == zmq.DEALER:
+        if self._active and socket == self.out_sock and self.in_sock_type == zmq.DEALER:
             self._send_idle_to_router()
 
     def _send_control_to_router(self, command, raise_exception=False):
@@ -379,6 +391,7 @@ class Zmqlet:
 
         :param raise_exception: if true: raise an exception which might occur during send, if false: log error
         """
+        self._active = False
         self._send_control_to_router('CANCEL', raise_exception)
 
     def recv_message(
@@ -423,7 +436,8 @@ class AsyncZmqlet(Zmqlet):
         for routing_table, out_sock in self._get_dynamic_next_routes(msg):
             new_envelope = jina_pb2.EnvelopeProto()
             new_envelope.CopyFrom(msg.envelope)
-            new_envelope.routing_table.CopyFrom(routing_table.proto)
+            if self._send_routing_table:
+                new_envelope.routing_table.CopyFrom(routing_table.proto)
             new_message = Message(request=msg.request, envelope=new_envelope)
             asyncio.create_task(self._send_message_via(out_sock, new_message))
 
@@ -446,7 +460,9 @@ class AsyncZmqlet(Zmqlet):
         :return: Received protobuf message. Or None in case of any error.
         """
         try:
-            msg = await recv_message_async(self.in_sock, **self.send_recv_kwargs)
+            msg = await recv_message_async(
+                self.in_connect_sock or self.in_sock, **self.send_recv_kwargs
+            )
             self.msg_recv += 1
             if msg is not None:
                 self.bytes_recv += msg.size
@@ -455,7 +471,7 @@ class AsyncZmqlet(Zmqlet):
                 else:
                     return msg
             else:
-                self.logger.error('Received message is empty.')
+                self.logger.debug('Received message is empty.')
         except (asyncio.CancelledError, TypeError) as ex:
             self.logger.error(f'receiving message error: {ex!r}, gateway cancelled?')
 
@@ -474,12 +490,10 @@ class ZmqStreamlet(Zmqlet):
 
     def __init__(
         self,
-        ready_event: Union['multiprocessing.Event', 'threading.Event'],
         *args,
         **kwargs,
     ):
         super().__init__(**kwargs)
-        self.is_ready_event = ready_event
 
     def _register_pollin(self):
         """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` in poller."""
@@ -488,7 +502,6 @@ class ZmqStreamlet(Zmqlet):
 
             get_or_reuse_loop()
             self.io_loop = tornado.ioloop.IOLoop.current()
-        self.io_loop.add_callback(callback=lambda: self.is_ready_event.set())
         self.in_sock = ZMQStream(self.in_sock, self.io_loop)
         self.out_sock = ZMQStream(self.out_sock, self.io_loop)
         self.ctrl_sock = ZMQStream(self.ctrl_sock, self.io_loop)
@@ -509,20 +522,31 @@ class ZmqStreamlet(Zmqlet):
         :param args: Extra positional arguments
         :param kwargs: Extra key-value arguments
         """
-        if not self.is_closed and self.in_sock_type == zmq.DEALER:
+
+        # if Address already in use `self.in_sock_type` is not set
+        if (
+            not self.is_closed
+            and hasattr(self, 'in_sock_type')
+            and self.in_sock_type == zmq.DEALER
+        ):
             try:
-                self._send_cancel_to_router(raise_exception=True)
+                if self._active:
+                    self._send_cancel_to_router(raise_exception=True)
             except zmq.error.ZMQError:
                 self.logger.debug(
                     f'The dealer {self.name} can not unsubscribe from the router. '
                     f'In case the router is down this is expected.'
                 )
+        self._active = (
+            False  # Important to avoid sending idle back while flushing in socket
+        )
         if not self.is_closed:
             # wait until the close signal is received
             time.sleep(0.01)
             if flush:
                 for s in self.opened_socks:
-                    s.flush()
+                    events = s.flush()
+                    self.logger.debug(f'Handled #{events} during flush of socket')
             super().close()
             if hasattr(self, 'io_loop'):
                 try:
@@ -553,7 +577,7 @@ class ZmqStreamlet(Zmqlet):
             self.in_sock.on_recv(self._in_sock_callback)
             self.is_polling_paused = False
 
-    def start(self, callback: Callable[['Message'], 'Message']):
+    def start(self, callback: Callable[['Message'], None]):
         """
         Open all sockets and start the ZMQ context associated to this `Zmqlet`.
 
@@ -565,10 +589,7 @@ class ZmqStreamlet(Zmqlet):
             self.bytes_recv += msg.size
             self.msg_recv += 1
 
-            msg = callback(msg)
-
-            if msg:
-                self.send_message(msg)
+            callback(msg)
 
         self._in_sock_callback = lambda x: _callback(x, self.in_sock_type)
         self.in_sock.on_recv(self._in_sock_callback)
@@ -585,13 +606,14 @@ class ZmqStreamlet(Zmqlet):
 
 
 def send_ctrl_message(
-    address: str, cmd: Union[str, Message], timeout: int
+    address: str, cmd: Union[str, Message], timeout: int, raise_exception: bool = False
 ) -> 'Message':
     """Send a control message to a specific address and wait for the response
 
     :param address: the socket address to send
     :param cmd: the control command to send
     :param timeout: the waiting time (in ms) for the response
+    :param raise_exception: raise exception when exception found
     :return: received message
     """
     if isinstance(cmd, str):
@@ -604,12 +626,15 @@ def send_ctrl_message(
     with zmq.Context() as ctx:
         ctx.setsockopt(zmq.LINGER, 0)
         sock, _ = _init_socket(ctx, address, None, SocketType.PAIR_CONNECT)
-        send_message(sock, msg, timeout)
+        send_message(sock, msg, raise_exception=raise_exception, timeout=timeout)
         r = None
         try:
             r = recv_message(sock, timeout)
-        except TimeoutError:
-            pass
+        except Exception as ex:
+            if raise_exception:
+                raise ex
+            else:
+                pass
         finally:
             sock.close()
         return r
@@ -686,13 +711,13 @@ async def send_message_async(
         return msg.size
     except zmq.error.Again:
         raise TimeoutError(
-            f'cannot send message to sock {sock} after timeout={timeout}ms, please check the following:'
-            'is the server still online? is the network broken? are "port" correct? '
+            f'cannot send message to sock {sock.getsockopt_string(zmq.LAST_ENDPOINT)} after timeout={timeout}ms, '
+            'please check the following: is the server still online? is the network broken? are "port" correct? '
         )
     except zmq.error.ZMQError as ex:
         default_logger.critical(ex)
     except asyncio.CancelledError:
-        default_logger.error('all gateway tasks are cancelled')
+        default_logger.debug('all gateway tasks are cancelled')
     except Exception as ex:
         raise ex
     finally:
@@ -716,12 +741,13 @@ def recv_message(sock: 'zmq.Socket', timeout: int = -1, **kwargs) -> 'Message':
     try:
         _prep_recv_socket(sock, timeout)
         msg_data = sock.recv_multipart()
-        return _parse_from_frames(sock.type, msg_data)
+        msg = _parse_from_frames(sock.type, msg_data)
+        return msg
 
     except zmq.error.Again:
         raise TimeoutError(
-            f'no response from sock {sock} after timeout={timeout}ms, please check the following:'
-            'is the server still online? is the network broken? are "port" correct? '
+            f'no response from sock {sock.getsockopt_string(zmq.LAST_ENDPOINT)} after timeout={timeout}ms, '
+            f'please check the following: is the server still online? is the network broken? are "port" correct? '
         )
     except Exception as ex:
         raise ex
@@ -756,7 +782,7 @@ async def recv_message_async(
     except zmq.error.ZMQError as ex:
         default_logger.critical(ex)
     except asyncio.CancelledError:
-        default_logger.error('all gateway tasks are cancelled')
+        default_logger.debug('all gateway tasks are cancelled')
     except Exception as ex:
         raise ex
     finally:
@@ -785,7 +811,8 @@ def _parse_from_frames(sock_type, frames: List[bytes]) -> 'Message':
         frames = [b' '] + frames
     elif sock_type == zmq.ROUTER:
         # the router appends dealer id when receive it, we need to remove it
-        frames.pop(0)
+        if len(frames) == 4:
+            frames.pop(0)
 
     return Message(frames[1], frames[2])
 
@@ -883,3 +910,4 @@ def _connect_socket(
         tunnel_connection(sock, address, ssh_server, ssh_keyfile, ssh_password)
     else:
         sock.connect(address)
+

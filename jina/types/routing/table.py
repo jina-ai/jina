@@ -8,9 +8,6 @@ from ...excepts import BadRequestType
 from ...helper import typename
 from ...proto import jina_pb2
 
-if False:
-    from ...peapods import BasePod
-
 
 class TargetPod(ProtoTypeMixin):
     """
@@ -34,6 +31,14 @@ class TargetPod(ProtoTypeMixin):
         return self.proto.port
 
     @property
+    def port_out(self) -> int:
+        """Returns the `port` field of this TargetPod
+
+        :return: port
+        """
+        return self.proto.port_out
+
+    @property
     def host(self) -> str:
         """Returns the `host` field of this TargetPod
 
@@ -48,6 +53,14 @@ class TargetPod(ProtoTypeMixin):
         :return: address
         """
         return f'{self.host}:{self.port}'
+
+    @property
+    def full_out_address(self) -> str:
+        """Return the full zmq adress of the tail of this TargetPod
+
+        :return: address
+        """
+        return f'{self.host}:{self.port_out}'
 
     @property
     def expected_parts(self) -> int:
@@ -136,7 +149,9 @@ class RoutingTable(ProtoTypeMixin):
         self._get_target_pod(from_pod).add_edge(to_pod, send_as_bind)
         self._get_target_pod(to_pod).expected_parts += 1
 
-    def add_pod(self, pod_name: str, pod: 'BasePod') -> None:
+    def add_pod(
+        self, pod_name: str, head_host, head_port_in, tail_port_out, head_zmq_identity
+    ) -> None:
         """Adds a Pod vertex to the graph.
 
         :param pod_name: the name of the Pod. Should be unique to the graph.
@@ -148,9 +163,10 @@ class RoutingTable(ProtoTypeMixin):
             )
         target = self.pods[pod_name]
 
-        target.host = pod.head_host
-        target.port = pod.head_port_in
-        target.target_identity = pod.head_zmq_identity
+        target.host = head_host
+        target.port = head_port_in
+        target.port_out = tail_port_out
+        target.target_identity = head_zmq_identity
 
     def _get_target_pod(self, pod: str) -> TargetPod:
         return TargetPod(self.pods[pod])
@@ -198,6 +214,17 @@ class RoutingTable(ProtoTypeMixin):
             new_graph = RoutingTable(self, copy=True)
             new_graph.active_pod = edge.pod
             targets.append((new_graph, edge.send_as_bind))
+        return targets
+
+    def get_next_target_addresses(self) -> List[str]:
+        """
+        Calculates next routing targets for all currently outgoing edges.
+
+        :return: list of addresses for next targets
+        """
+        targets = []
+        for edge in self._get_out_edges(self.active_pod):
+            targets.append(self._get_target_pod(edge.pod).full_address)
         return targets
 
     def is_acyclic(self) -> bool:

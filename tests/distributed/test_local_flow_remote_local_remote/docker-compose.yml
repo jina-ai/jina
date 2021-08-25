@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfiles/debianx.Dockerfile
+      args:
+        PIP_TAG: daemon
     ports:
       - "8000:8000"
       - "45000:45000"

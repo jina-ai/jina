@@ -1,6 +1,7 @@
 """Argparser module for Flow"""
 from .base import set_base_parser
 from .helper import add_arg_group, KVAppendAction
+from ..enums import InfrastructureType
 
 
 def mixin_flow_features_parser(parser):
@@ -16,7 +17,7 @@ def mixin_flow_features_parser(parser):
     gp.add_argument(
         '--env',
         action=KVAppendAction,
-        metavar='KEY=VALUE',
+        metavar='KEY: VALUE',
         nargs='*',
         help='The map of environment variables that are available inside runtime',
     )
@@ -31,6 +32,29 @@ def mixin_flow_features_parser(parser):
 
     If `REMOVE` is given then all inspect pods are removed when building the flow.
     ''',
+    )
+
+    gp.add_argument(
+        '--static-routing-table',
+        action='store_true',
+        default=False,
+        help='Defines if the routing table should be pre computed by the Flow. In this case it is statically defined for each Pod and not send on every data request.'
+        ' Can not be used in combination with external pods',
+    )
+
+
+def mixin_k8s_parser(parser):
+    """Add the arguments for the Kubernetes features to the parser
+
+    :param parser: the parser configure
+    """
+    gp = add_arg_group(parser, title='Kubernetes Feature')
+    gp.add_argument(
+        '--infrastructure',
+        type=InfrastructureType.from_string,
+        choices=list(InfrastructureType),
+        default=InfrastructureType.LOCAL,
+        help='Infrastructure where the Flow runs on. Currently, `local` and `k8s` are supported',
     )
 
 
@@ -51,5 +75,7 @@ def set_flow_parser(parser=None, with_identity=False):
     parser.set_defaults(workspace='./')
 
     mixin_flow_features_parser(parser)
+
+    mixin_k8s_parser(parser)
 
     return parser

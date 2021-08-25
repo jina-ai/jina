@@ -56,21 +56,21 @@ class ImportExtensions:
                         break
 
             if self._tags:
-                req_msg = 'fallback to default behavior'
-                if self._required:
-                    req_msg = 'and it is required'
-                err_msg = (
-                    f'Module "{missing_module}" is not installed, {req_msg}. '
-                    f'You are trying to use an extension feature not enabled by the '
-                    'current installation.\n'
-                    'This feature is available in: '
-                )
                 from .helper import colored
 
-                err_msg += ' '.join(
+                req_msg = colored('fallback to default behavior', color='yellow')
+                if self._required:
+                    req_msg = colored('and it is required', color='red')
+                err_msg = f'''Python package "{colored(missing_module, attrs='bold')}" is not installed, {req_msg}. 
+                    You are trying to use a feature not enabled by your current Jina installation.'''
+
+                avail_tags = ' '.join(
                     colored(f'[{tag}]', attrs='bold') for tag in self._tags
                 )
-                err_msg += f'\nUse {colored("pip install jina[TAG]", attrs="bold")} to enable it'
+                err_msg += (
+                    f'\n\nTo enable this feature, use {colored("pip install jina[TAG]", attrs="bold")}, '
+                    f'where {colored("[TAG]", attrs="bold")} is one of {avail_tags}.\n'
+                )
 
             else:
                 err_msg = f'{exc_val.msg}'
@@ -115,6 +115,7 @@ class PathImporter:
                 raise FileNotFoundError(
                     f'cannot import module from {p}, file not exist'
                 )
+
             module = PathImporter._path_import(p)
         return module
 
@@ -123,27 +124,30 @@ class PathImporter:
         import importlib.util
 
         try:
-            # I dont want to trust user path based on directory structure, "jinahub", period
-            spec = importlib.util.spec_from_file_location('jinahub', absolute_path)
-            module = importlib.util.module_from_spec(spec)
+            # I dont want to trust user path based on directory structure, "user_module", period
+            default_spec_name = 'user_module'
             user_module_name = os.path.splitext(os.path.basename(absolute_path))[0]
             if user_module_name == '__init__':
                 # __init__ can not be used as a module name
-                spec_name = spec.name
+                spec_name = default_spec_name
             elif user_module_name not in sys.modules:
                 spec_name = user_module_name
             else:
                 warnings.warn(
                     f'''
                 {user_module_name} shadows one of built-in Python module name.
-                It is imported as `jinahub.{user_module_name}`
+                It is imported as `{default_spec_name}.{user_module_name}`
                 
                 Affects:
-                - Either, change your code from using `from {user_module_name} import ...` to `from jinahub.{user_module_name} import ...`
+                - Either, change your code from using `from {user_module_name} import ...` 
+                  to `from {default_spec_name}.{user_module_name} import ...`
                 - Or, rename {user_module_name} to another name
                 '''
                 )
-                spec_name = f'{spec.name}.{user_module_name}'
+                spec_name = f'{default_spec_name}.{user_module_name}'
+
+            spec = importlib.util.spec_from_file_location(spec_name, absolute_path)
+            module = importlib.util.module_from_spec(spec)
             sys.modules[spec_name] = module
             spec.loader.exec_module(module)
         except Exception as ex:

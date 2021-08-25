@@ -1,45 +1,75 @@
-name: CI
+name: Latency Tracking
 
-# on:
-#  pull_request_target:
-# on:
-#   push:
-#     branches-ignore:
-#       - '**'  # temporally ignore all
 on:
-  workflow_dispatch:
+  - pull_request
 
 jobs:
-  latency-tracking:
+  lt-nth-releases:
     runs-on: ubuntu-latest
-    env:
-      NUM_LAST_RELEASE: 1
+    strategy:
+      matrix:
+        last_nth_release: [master, 1, 2]
     steps:
-      - uses: actions/checkout@v2
+#      - name: Cancel Previous Runs
+#        uses: styfle/cancel-workflow-action@0.9.0
 #        with:
-#          submodules: true
+#          access_token: ${{ github.token }}
+      - uses: actions/checkout@v2
       - name: Test docker install
         run: |
           docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:master .
-      - uses: actions/checkout@v2
-        with:
-          repository: jina-ai/latency-tracking
-          path: latency
       - uses: actions/setup-python@v2
         with:
           python-version: 3.7
-      - name: Run current latency vs. last ${{ env.NUM_LAST_RELEASE }} versions
+      - name: Tracking latency of nth version
         run: |
+          sudo rm -f .dockerignore
+          sudo mkdir -p /var/output
           sudo apt-get install jq
-          cd latency
-          docker build --build-arg JINA_VER=master . -t latency-tracking
-          docker run -v $(pwd)/output:/workspace/output -v $(pwd)/original:/workspace/original latency-tracking
-          bash batch.sh ${{ env.NUM_LAST_RELEASE }}
-          pip install prettytable
-          python ppstat.py ${{ env.NUM_LAST_RELEASE }} > comment.txt
+          cd scripts/latency-tracking
+          bash track.sh ${{ matrix.last_nth_release }}
+      - name: Upload output
+        uses: actions/upload-artifact@v2
+        with:
+          name: lt-${{ matrix.last_nth_release }}
+          path: /var/output/
+          if-no-files-found: error
+
+  comment-on-pr:
+    needs: lt-nth-releases
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          mkdir -p scripts/latency-tracking/output
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: lt-master
+          path: scripts/latency-tracking/output
+      - uses: actions/download-artifact@v2
+        with:
+          name: lt-1
+          path: scripts/latency-tracking/output
+      - uses: actions/download-artifact@v2
+        with:
+          name: lt-2
+          path: scripts/latency-tracking/output
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: scripts/latency-tracking/output
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: prepare comment
+        run: |
+          pip install packaging==21.0 prettytable==2.1.0
+          cd scripts/latency-tracking
+          python merge_outputs.py output stats.json
+          python ppstat.py output/stats.json > comment.txt
       - id: get-comment-body
         run: |
-          body=$(cat latency/comment.txt)
+          body=$(cat scripts/latency-tracking/comment.txt)
           body="${body//'%'/'%25'}"
           body="${body//$'\n'/'%0A'}"
           body="${body//$'\r'/'%0D'}"
@@ -59,7 +89,6 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           body: ${{ steps.get-comment-body.outputs.body }}
           reaction-type: "eyes"
-
       - name: Update comment
         if: ${{ steps.fc.outputs.comment-id != 0 }}
         uses: peter-evans/create-or-update-comment@v1
@@ -68,8 +97,3 @@ jobs:
           body: ${{ steps.get-comment-body.outputs.body }}
           reaction-type: "rocket"
           edit-mode: replace
-      - name: Upload latency result
-        uses: actions/upload-artifact@v2
-        with:
-          name: stats.json.zip
-          path: latency/output/stats.json

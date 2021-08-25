@@ -2,6 +2,7 @@ import argparse
 
 from jina.parsers.client import mixin_comm_protocol_parser
 from .helper import _SHOW_ALL_ARGS
+from .peapods.pod import mixin_k8s_pod_parser
 
 
 def set_pea_parser(parser=None):
@@ -50,6 +51,7 @@ def set_pod_parser(parser=None):
     from .peapods.pod import mixin_base_pod_parser
 
     mixin_base_pod_parser(parser)
+    mixin_k8s_pod_parser(parser)
 
     return parser
 
@@ -103,6 +105,22 @@ def set_gateway_parser(parser=None):
         help='Routing graph for the gateway' if _SHOW_ALL_ARGS else argparse.SUPPRESS,
     )
 
+    parser.add_argument(
+        '--dynamic-routing',
+        action='store_true',
+        default=True,
+        help='The Pod will setup the socket types of the HeadPea and TailPea depending on this argument.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+
+    parser.add_argument(
+        '--connect-to-predecessor',
+        action='store_true',
+        default=False,
+        help='The head Pea of this Pod will connect to the TailPea of the predecessor Pod.',
+    )
+
     return parser
 
 
@@ -124,6 +142,26 @@ def set_client_cli_parser(parser=None):
     mixin_client_features_parser(parser)
     mixin_comm_protocol_parser(parser)
 
+    return parser
+
+
+def set_help_parser(parser=None):
+    """Set the parser for the jina help lookup
+
+    :param parser: an optional existing parser to build upon
+    :return: the parser
+    """
+
+    if not parser:
+        from .base import set_base_parser
+
+        parser = set_base_parser()
+
+    parser.add_argument(
+        'query',
+        type=str,
+        help='Lookup the usage & mention of the argument name in Jina API. The name can be fuzzy',
+    )
     return parser
 
 
@@ -166,10 +204,9 @@ def get_main_parser():
         )
     )
 
-    set_pod_parser(
+    set_pea_parser(
         sp.add_parser(
             'executor',
-            aliases=['pod'],
             help='Start an Executor',
             description='Start an Executor. Executor is how Jina processes Document.',
             formatter_class=_chf,
@@ -212,16 +249,35 @@ def get_main_parser():
         )
     )
 
+    set_help_parser(
+        sp.add_parser(
+            'help',
+            help='Show help text of a CLI argument',
+            description='Show help text of a CLI argument',
+            formatter_class=_chf,
+        )
+    )
     # Below are low-level / internal / experimental CLIs, hidden from users by default
 
     set_pea_parser(
         sp.add_parser(
             'pea',
             description='Start a Pea. '
+                        'You should rarely use this directly unless you '
+                        'are doing low-level orchestration',
+            formatter_class=_chf,
+            **(dict(help='Start a Pea')) if _SHOW_ALL_ARGS else {},
+        )
+    )
+
+    set_pod_parser(
+        sp.add_parser(
+            'pod',
+            description='Start a Pod. '
             'You should rarely use this directly unless you '
             'are doing low-level orchestration',
             formatter_class=_chf,
-            **(dict(help='Start a Pea')) if _SHOW_ALL_ARGS else {},
+            **(dict(help='Start a Pod')) if _SHOW_ALL_ARGS else {},
         )
     )
 

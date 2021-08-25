@@ -321,6 +321,12 @@ class FlowInspectType(BetterEnum):
         """
         return self.value in {0, 2}
 
+class InfrastructureType(BetterEnum):
+    """Infrastructure where the Flow runs on."""
+
+    LOCAL = 0  # flow is started locally
+    K8S = 1  # flow is deployed on kubernetes
+
 
 class RemoteAccessType(BetterEnum):
     """Remote access type when connect to the host."""

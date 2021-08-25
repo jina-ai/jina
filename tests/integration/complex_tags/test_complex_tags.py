@@ -47,3 +47,9 @@ def test_send_complex_document(docs, executor_class, mocker):
         f.index(inputs=docs, on_done=mock)
 
     validate_callback(mock, validate)
+
+
+def test_copy_tags(docs):
+    for d in docs:
+        _d = Document(tags=d.tags)
+        assert _d.tags == d.tags

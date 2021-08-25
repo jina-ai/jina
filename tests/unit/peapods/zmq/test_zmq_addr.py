@@ -58,19 +58,6 @@ def test_init(request):
     assert runtime.port_expose == 45678
 
 
-def test_status(runtime, ctrl_messages, mocker):
-    mocker.patch('jina.peapods.runtimes.zmq.base.send_ctrl_message', return_value=123)
-    assert runtime.status == 123
-
-
-def test_is_ready(runtime, ctrl_messages, mocker):
-    mocker.patch(
-        'jina.peapods.runtimes.zmq.base.send_ctrl_message',
-        return_value=ctrl_messages[0],
-    )
-    assert runtime.is_ready is False
-
-
 @pytest.mark.parametrize('host', ['pi@192.0.0.1', '192.0.0.1'])
 def test_get_ctrl_addr(host):
     assert Zmqlet.get_ctrl_address(host, 56789, False)[0] == 'tcp://192.0.0.1:56789'

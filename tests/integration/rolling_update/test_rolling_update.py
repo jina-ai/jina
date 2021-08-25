@@ -1,5 +1,6 @@
 import collections
 import os
+import time
 import threading
 
 import numpy as np
@@ -75,7 +76,7 @@ def test_normal(docs):
         assert len(set(shard_list)) == NUM_SHARDS
 
 
-@pytest.mark.timeout(30)
+@pytest.mark.timeout(60)
 def test_simple_run(docs):
     flow = Flow().add(
         name='pod1',
@@ -89,15 +90,27 @@ def test_simple_run(docs):
         flow.search(docs)
 
 
+@pytest.fixture()
+def docker_image():
+    docker_file = os.path.join(cur_dir, 'Dockerfile')
+    os.system(f"docker build -f {docker_file} -t test_rolling_update_docker {cur_dir}")
+    time.sleep(3)
+    yield
+    os.system(f"docker rmi $(docker images | grep 'test_rolling_update_docker')")
+
+
 @pytest.mark.repeat(5)
-@pytest.mark.timeout(30)
-def test_thread_run(docs, mocker, reraise):
+@pytest.mark.timeout(60)
+@pytest.mark.parametrize('uses', ['docker://test_rolling_update_docker'])
+def test_thread_run(docs, mocker, reraise, docker_image, uses):
     def update_rolling(flow, pod_name):
         with reraise:
             flow.rolling_update(pod_name)
 
     error_mock = mocker.Mock()
+    total_responses = []
     with Flow().add(
+        uses=uses,
         name='pod1',
         replicas=2,
         parallel=2,
@@ -111,21 +124,26 @@ def test_thread_run(docs, mocker, reraise):
             ),
         )
         for i in range(50):
-            flow.search(docs, on_error=error_mock)
+            responses = flow.search(
+                docs, on_error=error_mock, request_size=10, return_results=True
+            )
+            total_responses.extend(responses)
             if i == 5:
                 x.start()
         x.join()
     error_mock.assert_not_called()
+    assert len(total_responses) == (len(docs) * 50 / 10)
 
 
 @pytest.mark.repeat(5)
-@pytest.mark.timeout(30)
+@pytest.mark.timeout(60)
 def test_vector_indexer_thread(config, docs, mocker, reraise):
     def update_rolling(flow, pod_name):
         with reraise:
             flow.rolling_update(pod_name)
 
     error_mock = mocker.Mock()
+    total_responses = []
     with Flow().add(
         name='pod1',
         uses=DummyMarkExecutor,
@@ -143,11 +161,15 @@ def test_vector_indexer_thread(config, docs, mocker, reraise):
             ),
         )
         for i in range(40):
-            flow.search(docs, on_error=error_mock)
+            responses = flow.search(
+                docs, on_error=error_mock, request_size=10, return_results=True
+            )
+            total_responses.extend(responses)
             if i == 5:
                 x.start()
         x.join()
     error_mock.assert_not_called()
+    assert len(total_responses) == (len(docs) * 40 / 10)
 
 
 def test_workspace(config, tmpdir, docs):
@@ -182,31 +204,6 @@ def test_workspace(config, tmpdir, docs):
     ),
 )
 def test_port_configuration(replicas_and_parallel):
-    def extract_pod_args(pod):
-        if 'replicas' not in pod.args or int(pod.args.replicas) == 1:
-            head_args = pod.peas_args['head']
-            tail_args = pod.peas_args['tail']
-            middle_args = pod.peas_args['peas']
-        else:
-            head_args = pod.head_args
-            tail_args = pod.tail_args
-            middle_args = pod.replicas_args
-        return pod, head_args, tail_args, middle_args
-
-    def get_outer_ports(pod, head_args, tail_args, middle_args):
-
-        if not 'replicas' in pod.args or int(pod.args.replicas) == 1:
-            if not 'parallel' in pod.args or int(pod.args.parallel) == 1:
-                assert tail_args is None
-                assert head_args is None
-                replica = middle_args[0]  # there is only one
-                return replica.port_in, replica.port_out
-            else:
-                return pod.head_args.port_in, pod.tail_args.port_out
-        else:
-            assert pod.args.replicas == len(middle_args)
-            return pod.head_args.port_in, pod.tail_args.port_out
-
     def validate_ports_replica(replica, replica_port_in, replica_port_out, parallel):
         assert replica_port_in == replica.args.port_in
         assert replica.args.port_out == replica_port_out
@@ -233,10 +230,6 @@ def test_port_configuration(replicas_and_parallel):
             name=f'pod{i}',
             replicas=replicas,
             parallel=parallel,
-            port_in=f'51{i}00',
-            # info: needs to be set in this test since the test is asserting pod args with pod tail args
-            port_out=f'51{i + 1}10',
-            # outside this test, it don't have to be set. Due to dynamic routing, it is irrelevant.
             copy_flow=False,
         )
 

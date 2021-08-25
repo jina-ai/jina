@@ -50,57 +50,66 @@ def test_use_from_local_dir_flow_level():
 
 
 @pytest.fixture
-def local_hub_executor(mocker, monkeypatch, tmpdir, test_envs):
-    class GetMockResponse:
-        def __init__(self, response_code: int = 201):
-            self.response_code = response_code
+def local_hub_executor(tmpdir, test_envs):
+    from jina.hubble import hubapi, helper, HubExecutor
 
-        def json(self):
-            return {
-                'keywords': [],
-                'id': 'hello',
-                'alias': 'alias_name',
-                'tag': 'v0',
-                'versions': [],
-                'visibility': 'public',
-                'image': 'jinahub/hello:v0',
-                'package': {
-                    'download': 'http://hubbleapi.jina.ai/files/helloworld_v0.zip',
-                    'md5': 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f',
-                },
-            }
-
-        @property
-        def text(self):
-            return json.dumps(self.json())
-
-        @property
-        def status_code(self):
-            return self.response_code
-
-    mock = mocker.Mock()
-
-    def _mock_get(url, headers=None):
-        mock(url=url)
-        return GetMockResponse(response_code=requests.codes.ok)
-
-    monkeypatch.setattr(requests, 'get', _mock_get)
-
-    from jina.hubble import hubapi, helper
+    hubapi._hub_root = Path(os.environ.get('JINA_HUB_ROOT'))
 
     pkg_path = Path(__file__).parent / 'dummyhub'
     stream_data = helper.archive_package(pkg_path)
     with open(tmpdir / 'dummy_test.zip', 'wb') as temp_zip_file:
         temp_zip_file.write(stream_data.getvalue())
-    hubapi.install_local(Path(tmpdir) / 'dummy_test.zip', 'hello', 'v0')
+
+    hubapi.install_local(
+        Path(tmpdir) / 'dummy_test.zip', HubExecutor(uuid='hello', tag='v0')
+    )
 
 
-def test_use_from_local_hub_pod_level(local_hub_executor):
+def test_use_from_local_hub_pod_level(
+    test_envs, mocker, monkeypatch, local_hub_executor
+):
+    from jina.hubble.hubio import HubIO, HubExecutor
+
+    mock = mocker.Mock()
+
+    def _mock_fetch(name, tag=None, secret=None):
+        mock(name=name)
+        return HubExecutor(
+            uuid='hello',
+            alias='alias_dummy',
+            tag='v0',
+            image_name='jinahub/pod.dummy_mwu_encoder',
+            md5sum=None,
+            visibility=True,
+            archive_url=None,
+        )
+
+    monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
     a = set_pod_parser().parse_args(['--uses', 'jinahub://hello'])
     with Pod(a):
         pass
 
 
-def test_use_from_local_hub_flow_level(local_hub_executor):
+def test_use_from_local_hub_flow_level(
+    test_envs, mocker, monkeypatch, local_hub_executor
+):
+    from jina.hubble.hubio import HubIO, HubExecutor
+
+    mock = mocker.Mock()
+
+    def _mock_fetch(name, tag=None, secret=None):
+        mock(name=name)
+        return HubExecutor(
+            uuid='hello',
+            alias='alias_dummy',
+            tag='v0',
+            image_name='jinahub/pod.dummy_mwu_encoder',
+            md5sum=None,
+            visibility=True,
+            archive_url=None,
+        )
+
+    monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
+
     with Flow().add(uses='jinahub://hello'):
         pass

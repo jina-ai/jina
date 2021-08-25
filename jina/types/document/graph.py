@@ -1,4 +1,4 @@
-from typing import Optional, Iterator, Tuple, Dict, Iterable
+from typing import Optional, Iterator, Tuple, Dict, Iterable, Sequence, Union
 
 import numpy as np
 
@@ -8,6 +8,7 @@ from ..ndarray.sparse.scipy import SparseNdArray
 from ..struct import StructView
 from ...importer import ImportExtensions
 from ...logging.predefined import default_logger
+from ...helper import deprecated_method
 
 __all__ = ['GraphDocument']
 
@@ -71,7 +72,7 @@ class GraphDocument(Document):
             ):
                 JINA_GLOBAL.scipy_installed = True
 
-    def add_node(self, node: 'Document'):
+    def add_single_node(self, node: 'Document'):
         """
         Add a a node to the graph
 
@@ -84,7 +85,26 @@ class GraphDocument(Document):
         self._node_id_to_offset[node.id] = len(self.nodes)
         self.nodes.append(node)
 
-    def remove_node(self, node: 'Document'):
+    @deprecated_method(new_function_name='add_single_node')
+    def add_node(self, *args, **kwargs):
+        """
+        Add a a node to the graph
+
+            .. # noqa: DAR101
+            .. # noqa: DAR201
+        """
+        return self.add_single_node(*args, **kwargs)
+
+    def add_nodes(self, nodes: Iterable['Document']):
+        """
+        Add a set of nodes into the graph
+
+        :param nodes: the nodes to be added to the graph
+        """
+        for node in nodes:
+            self.add_node(node)
+
+    def remove_single_node(self, node: Union['Document', str]):
         """
         Remove a node from the graph along with the edges that may contain it
 
@@ -92,22 +112,25 @@ class GraphDocument(Document):
         """
         from scipy.sparse import coo_matrix
 
-        if node.id not in self._node_id_to_offset:
+        node_id = node.id if isinstance(node, Document) else node
+        if node_id not in self._node_id_to_offset:
             default_logger.debug(
-                f'Trying to remove document {node.id} from the graph while is not a node of the graph'
+                f'Trying to remove document {node_id} from the graph while is not a node of the graph'
             )
             return
 
-        offset = self._node_id_to_offset[node.id]
+        offset = self._node_id_to_offset[node_id]
 
         if self.num_edges > 0:
+            nodes = self.nodes
+
             edges_to_remove = []
             for edge_id, (row, col) in enumerate(
                 zip(self.adjacency.row, self.adjacency.col)
             ):
                 if row.item() == offset or col.item() == offset:
                     edge_features_keys = (
-                        f'{self.nodes[row.item()].id}-{self.nodes[col.item()]}'
+                        f'{nodes[row.item()].id}-{nodes[col.item()].id}'
                     )
                     edges_to_remove.append((edge_id, edge_features_keys))
 
@@ -129,27 +152,39 @@ class GraphDocument(Document):
 
         del self.nodes[offset]
         self._node_id_to_offset = {
-            node.id: offset for offset, node in enumerate(self.nodes)
+            present_node.id: offset for offset, present_node in enumerate(self.nodes)
         }
 
-    def _get_edge_key(self, doc1: 'Document', doc2: 'Document') -> str:
+    @deprecated_method(new_function_name='remove_single_node')
+    def remove_node(self, *args, **kwargs):
+        """
+        Remove a node from the graph along with the edges that may contain it
+
+            .. # noqa: DAR101
+            .. # noqa: DAR201
+        """
+        return self.remove_single_node(*args, **kwargs)
+
+    def _get_edge_key(self, doc1_id: str, doc2_id: str) -> str:
         """
         Create a key that is lexicographically sorted in the case of undirected graphs
 
-        :param doc1: the starting node for this edge
-        :param doc2: the ending node for this edge
-        :return: lexicographically sorted key where doc1 < doc2 if undirected
+        :param doc1_id: the starting node for this edge
+        :param doc2_id: the ending node for this edge
+        :return: lexicographically sorted key where doc1_id < doc2_id if undirected
         """
-
         if self.undirected:
             return (
-                f'{doc1.id}-{doc2.id}' if doc1.id < doc2.id else f'{doc2.id}-{doc1.id}'
+                f'{doc1_id}-{doc2_id}' if doc1_id < doc2_id else f'{doc2_id}-{doc1_id}'
             )
         else:
-            return f'{doc1.id}-{doc2.id}'
+            return f'{doc1_id}-{doc2_id}'
 
-    def add_edge(
-        self, doc1: 'Document', doc2: 'Document', features: Optional[Dict] = None
+    def add_single_edge(
+        self,
+        doc1: Union['Document', str],
+        doc2: Union['Document', str],
+        features: Optional[Dict] = None,
     ):
         """
         Add an edge to the graph connecting `doc1` with `doc2`
@@ -160,20 +195,32 @@ class GraphDocument(Document):
         """
         from scipy.sparse import coo_matrix
 
-        edge_key = self._get_edge_key(doc1, doc2)
+        doc1_id = doc1.id if isinstance(doc1, Document) else doc1
+        doc2_id = doc2.id if isinstance(doc2, Document) else doc2
+        edge_key = self._get_edge_key(doc1_id, doc2_id)
 
         if edge_key not in self.edge_features:
             self.edge_features[edge_key] = features
-            self.add_node(doc1)
-            self.add_node(doc2)
+            if isinstance(doc1, Document):
+                self.add_single_node(doc1)
+            else:
+                assert (
+                    doc1_id in self.nodes
+                ), 'trying to add an edge from a node not in the graph'
+            if isinstance(doc2, Document):
+                self.add_single_node(doc2)
+            else:
+                assert (
+                    doc2_id in self.nodes
+                ), 'trying to add an edge to a node not in the graph'
 
             current_adjacency = self.adjacency
 
-            source_id = doc1.id
-            target_id = doc2.id
-            if self.undirected and doc1.id > doc2.id:
-                source_id = doc2.id
-                target_id = doc1.id
+            source_id = doc1_id
+            target_id = doc2_id
+            if self.undirected and doc1_id > doc2_id:
+                source_id = doc2_id
+                target_id = doc1_id
 
             source_node_offset = self._node_id_to_offset[source_id]
             target_node_offset = self._node_id_to_offset[target_id]
@@ -196,6 +243,95 @@ class GraphDocument(Document):
             SparseNdArray(
                 self._pb_body.graph.adjacency, sp_format='coo'
             ).value = coo_matrix((data, (row, col)))
+
+    @deprecated_method(new_function_name='add_single_edge')
+    def add_edge(self, *args, **kwargs):
+        """
+        Add an edge to the graph
+
+            .. # noqa: DAR101
+            .. # noqa: DAR201
+        """
+        return self.add_single_edge(*args, **kwargs)
+
+    def add_edges(
+        self,
+        source_docs: Sequence[Union['Document', str]],
+        dest_docs: Sequence[Union['Document', str]],
+        edge_features: Optional[Sequence[Optional[Dict]]] = None,
+    ):
+        """
+        Add edges to the graph connecting docs from `source_docs` with docs from `dest_docs`
+
+        :param source_docs: Iterable of docs containing the source nodes
+        :param dest_docs: Iterable of docs containing the destination nodes
+        :param edge_features: Optional features dictionary to be added to the new created edges
+        """
+        from scipy.sparse import coo_matrix
+
+        assert len(source_docs) == len(dest_docs), (
+            'the number of source documents must match the number of '
+            'destination documents '
+        )
+        assert edge_features is None or len(source_docs) == len(edge_features)
+
+        edge_keys = []
+        is_documents_source = isinstance(source_docs[0], Document)
+        is_documents_dest = isinstance(dest_docs[0], Document)
+        for doc1, doc2 in zip(source_docs, dest_docs):
+            doc1_id = doc1.id if is_documents_source else doc1
+            doc2_id = doc2.id if is_documents_source else doc2
+            if is_documents_source:
+                self.add_single_node(doc1)
+            else:
+                assert (
+                    doc1_id in self.nodes
+                ), 'trying to add an edge from a node not in the graph'
+            if is_documents_dest:
+                self.add_single_node(doc2)
+            else:
+                assert (
+                    doc2_id in self.nodes
+                ), 'trying to add an edge from a node not in the graph'
+            edge_keys.append(self._get_edge_key(doc1_id, doc2_id))
+
+        if edge_features is not None:
+            for edge_key, features in zip(edge_keys, edge_features):
+                self.edge_features[edge_key] = features
+        else:
+            for edge_key in edge_keys:
+                if edge_key not in self.edge_features:
+                    self.edge_features[edge_key] = None
+
+        # manipulate the adjacency matrix in a single shot
+        current_adjacency = self.adjacency
+        source_node_offsets = [
+            self._node_id_to_offset[source.id if is_documents_source else source]
+            for source in source_docs
+        ]
+        target_node_offsets = [
+            self._node_id_to_offset[target.id if is_documents_dest else target]
+            for target in dest_docs
+        ]
+        row = (
+            np.append(current_adjacency.row, source_node_offsets)
+            if current_adjacency is not None
+            else np.array(source_node_offsets)
+        )
+        col = (
+            np.append(current_adjacency.col, target_node_offsets)
+            if current_adjacency is not None
+            else np.array(target_node_offsets)
+        )
+        data = (
+            np.append(current_adjacency.data, [1] * len(source_node_offsets))
+            if current_adjacency is not None
+            else np.array([1] * len(source_node_offsets))
+        )
+
+        SparseNdArray(
+            self._pb_body.graph.adjacency, sp_format='coo'
+        ).value = coo_matrix((data, (row, col)))
 
     def _remove_edge_id(self, edge_id: int, edge_feature_key: str):
         from scipy.sparse import coo_matrix
@@ -220,21 +356,37 @@ class GraphDocument(Document):
             if edge_feature_key in self.edge_features:
                 del self.edge_features[edge_feature_key]
 
-    def remove_edge(self, doc1: 'Document', doc2: 'Document'):
+    def remove_single_edge(
+        self,
+        doc1: Union['Document', str],
+        doc2: Union['Document', str],
+    ):
         """
-        Remove a node from the graph along with the edges that may contain it
+        Remove the edge between doc1 and doc2 from the graph
 
         :param doc1: the starting node for this edge
         :param doc2: the ending node for this edge
         """
-        offset1 = self._node_id_to_offset[doc1.id]
-        offset2 = self._node_id_to_offset[doc2.id]
+        doc1_id = doc1.id if isinstance(doc1, Document) else doc1
+        doc2_id = doc2.id if isinstance(doc2, Document) else doc2
+        offset1 = self._node_id_to_offset[doc1_id]
+        offset2 = self._node_id_to_offset[doc2_id]
         for edge_id, (row, col) in enumerate(
             zip(self.adjacency.row, self.adjacency.col)
         ):
             if row.item() == offset1 and col.item() == offset2:
-                edge_key = self._get_edge_key(doc1, doc2)
+                edge_key = self._get_edge_key(doc1_id, doc2_id)
                 self._remove_edge_id(edge_id, edge_key)
+
+    @deprecated_method(new_function_name='remove_single_edge')
+    def remove_edge(self, *args, **kwargs):
+        """
+        Remove the edge between doc1 and doc2 from the graph
+
+            .. # noqa: DAR101
+            .. # noqa: DAR201
+        """
+        return self.remove_single_edge(*args, **kwargs)
 
     @property
     def edge_features(self) -> StructView:
@@ -374,10 +526,10 @@ class GraphDocument(Document):
         for node in dgl_graph.nodes():
             node_doc = Document()
             nodeid_to_doc[int(node)] = node_doc
-            jina_graph.add_node(node_doc)
+            jina_graph.add_single_node(node_doc)
 
         for node_source, node_destination in zip(*dgl_graph.edges()):
-            jina_graph.add_edge(
+            jina_graph.add_single_edge(
                 nodeid_to_doc[int(node_source)], nodeid_to_doc[int(node_destination)]
             )
 

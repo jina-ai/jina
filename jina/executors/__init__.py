@@ -77,12 +77,14 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         metas: Optional[Dict] = None,
         requests: Optional[Dict] = None,
         runtime_args: Optional[Dict] = None,
+        **kwargs,
     ):
         """`metas` and `requests` are always auto-filled with values from YAML config.
 
         :param metas: a dict of metas fields
         :param requests: a dict of endpoint-function mapping
         :param runtime_args: a dict of arguments injected from :class:`Runtime` during runtime
+        :param kwargs: additional extra keyword arguments to avoid failing when extra params ara passed that are not expected
         """
         self._add_metas(metas)
         self._add_requests(requests)
@@ -206,6 +208,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 complete_workspace = os.path.join(complete_workspace, str(replica_id))
             if pea_id is not None and pea_id != -1:
                 complete_workspace = os.path.join(complete_workspace, str(pea_id))
+            if not os.path.exists(complete_workspace):
+                os.makedirs(complete_workspace)
             return os.path.abspath(complete_workspace)
         else:
             raise Exception('can not find metas.workspace or runtime_args.workspace')

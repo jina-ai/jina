@@ -14,12 +14,13 @@ class DummyExecutor(Executor):
     @requests
     def do_something(self, docs, **kwargs):
         for doc in docs:
-            chunks = ChunkArray(
-                (d for d in doc.chunks if d.modality == self._mode), doc
-            )
-            assert chunks[0].content == self._mode
-            assert len(chunks) == 1
-            doc.chunks = chunks
+            if len(doc.chunks) > 0:
+                chunks = ChunkArray(
+                    (d for d in doc.chunks if d.modality == self._mode), doc
+                )
+                assert chunks[0].content == self._mode
+                assert len(chunks) == 1
+                doc.chunks = chunks
 
 
 class MatchMerger(Executor):
@@ -32,7 +33,7 @@ class MatchMerger(Executor):
                     results[doc.id].matches.extend(doc.matches)
                 else:
                     results[doc.id] = doc
-        return DocumentArray(results.values())
+        return DocumentArray(list(results.values()))
 
 
 class ChunkMerger(Executor):
@@ -45,10 +46,10 @@ class ChunkMerger(Executor):
                     results[doc.id].chunks.extend(doc.chunks)
                 else:
                     results[doc.id] = doc
-        return DocumentArray(results.values())
+        return DocumentArray(list(results.values()))
 
 
-@pytest.mark.timeout(5)
+@pytest.mark.timeout(60)
 @pytest.mark.parametrize('num_replicas, num_shards', [(1, 1), (2, 2)])
 def test_sharding_tail_pea(num_replicas, num_shards):
     """TODO(Maximilian): Make (1, 2) and (2, 1) also workable"""

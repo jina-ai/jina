@@ -32,7 +32,7 @@ def _write_to_logfile(content, append=False):
 
 def _write_to_workspace_logfile(content, append=False):
     with open(
-        get_workspace_path(workspace_id, 'logs', 'logging.log'),
+        get_workspace_path(workspace_id, 'logging.log'),
         'a' if append else 'w+',
     ) as f:
         f.writelines(content)
@@ -49,7 +49,7 @@ def _create_flow():
             network='',
             ports={},
             rest_api_uri='',
-            host="",
+            uri="",
         ),
         arguments=ContainerArguments(command='command', object=Flow()),
         workspace_id=workspace_id,

@@ -1,6 +1,7 @@
-import logging
+import pytest
 
 from jina import Flow
+from jina.logging.logger import JinaLogger
 from jina.parsers import set_pea_parser
 from jina.peapods.peas import BasePea
 from jina.peapods.zmq import Zmqlet
@@ -45,7 +46,7 @@ def test_simple_zmqlet():
         ]
     )
 
-    logger = logging.getLogger('zmq-test')
+    logger = JinaLogger('zmq-test')
     with BasePea(args2), Zmqlet(args, logger) as z:
         req = jina_pb2.RequestProto()
         req.request_id = random_identity()
@@ -55,6 +56,7 @@ def test_simple_zmqlet():
         z.send_message(msg)
 
 
+@pytest.mark.slow
 def test_flow_with_jump():
     f = (
         Flow()
@@ -73,6 +75,7 @@ def test_flow_with_jump():
         f.index(random_docs(10))
 
 
+@pytest.mark.slow
 def test_flow_with_parallel():
     f = Flow().add(name='r1').add(name='r2', parallel=3)
 

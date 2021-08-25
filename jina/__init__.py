@@ -13,30 +13,54 @@ import platform as _platform
 import signal as _signal
 import sys as _sys
 import types as _types
+import warnings as _warnings
+
 
 if _sys.version_info < (3, 7, 0) or _sys.version_info >= (3, 10, 0):
     raise OSError(f'Jina requires Python 3.7/3.8/3.9, but yours is {_sys.version_info}')
 
-# DO SOME OS-WISE PATCHES
-if _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
+
+def _warning_on_one_line(message, category, filename, lineno, *args, **kwargs):
+    return '\033[1;33m%s: %s\033[0m \033[1;30m(raised from %s:%s)\033[0m\n' % (
+        category.__name__,
+        message,
+        filename,
+        lineno,
+    )
+
+
+_warnings.formatwarning = _warning_on_one_line
+
+# fix fork error on MacOS but seems no effect? must do EXPORT manually before jina start
+_os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
+
+# JINA_MP_START_METHOD has higher priority than os-patch
+_start_method = _os.environ.get('JINA_MP_START_METHOD', None)
+
+if _start_method and _start_method.lower() in {'fork', 'spawn', 'forkserver'}:
+    from multiprocessing import set_start_method as _set_start_method
+
+    _set_start_method(_start_method.lower())
+    _warnings.warn(f'multiprocessing start method is set to `{_start_method.lower()}`')
+    _os.unsetenv('JINA_MP_START_METHOD')
+elif _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
+    # DO SOME OS-WISE PATCHES
+
     # temporary fix for python 3.8 on macos where the default start is set to "spawn"
     # https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
     from multiprocessing import set_start_method as _set_start_method
 
     _set_start_method('fork')
 
-# fix fork error on MacOS but seems no effect? must do EXPORT manually before jina start
-_os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
-
 # do not change this line manually
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
 
-__version__ = '2.0.3'
+__version__ = '2.0.21'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
-__proto_version__ = '0.0.84'
+__proto_version__ = '0.0.85'
 
 __uptime__ = _datetime.datetime.now().isoformat()
 
@@ -63,6 +87,7 @@ __jina_env__ = (
     'JINA_RANDOM_PORT_MAX',
     'JINA_RANDOM_PORT_MIN',
     'JINA_VCS_VERSION',
+    'JINA_MP_START_METHOD',
 )
 
 __default_host__ = _os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
@@ -77,7 +102,6 @@ __root_dir__ = _os.path.dirname(_os.path.abspath(__file__))
 __resources_path__ = _os.path.join(
     _os.path.dirname(_sys.modules['jina'].__file__), 'resources'
 )
-
 
 _names_with_underscore = [
     '__version__',
@@ -94,14 +118,12 @@ _names_with_underscore = [
     '__unset_msg__',
 ]
 
-
 # ADD GLOBAL NAMESPACE VARIABLES
 JINA_GLOBAL = _types.SimpleNamespace()
 JINA_GLOBAL.scipy_installed = None
 JINA_GLOBAL.tensorflow_installed = None
 JINA_GLOBAL.torch_installed = None
 JINA_GLOBAL.dgl_installed = None
-
 
 _signal.signal(_signal.SIGINT, _signal.default_int_handler)
 
@@ -156,6 +178,7 @@ from jina.clients import Client
 # Document
 from jina.types.document import Document
 from jina.types.arrays.document import DocumentArray
+from jina.types.arrays.memmap import DocumentArrayMemmap
 
 # Executor
 from jina.executors import BaseExecutor as Executor

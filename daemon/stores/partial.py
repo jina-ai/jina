@@ -1,11 +1,11 @@
-import os
-import signal
 from argparse import Namespace
+from typing import Union
 
-from jina import Flow, __docker_host__
 from jina.helper import colored
-from jina.logging.logger import JinaLogger
 from jina.peapods import Pea, Pod
+from jina import Flow, __docker_host__
+from jina.logging.logger import JinaLogger
+
 from .. import jinad_args
 from ..models.enums import UpdateOperation
 from ..models.partial import PartialFlowItem, PartialStoreItem
@@ -42,8 +42,6 @@ class PartialStore:
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise
-        finally:
-            os.kill(os.getpid(), signal.SIGINT)
 
 
 class PartialPeaStore(PartialStore):
@@ -64,9 +62,10 @@ class PartialPeaStore(PartialStore):
             # and on linux machines, we can access dockerhost inside containers
             if args.runtime_cls == 'ContainerRuntime':
                 args.docker_kwargs = {'extra_hosts': {__docker_host__: 'host-gateway'}}
-            self.object = self.peapod_cls(args).__enter__()
+            self.object: Union['Pea', 'Pod'] = self.peapod_cls(args).__enter__()
         except Exception as e:
-            self.object.__exit__(type(e), e, e.__traceback__)
+            if hasattr(self, 'object'):
+                self.object.__exit__(type(e), e, e.__traceback__)
             self._logger.error(f'{e!r}')
             raise
         else:
@@ -101,10 +100,11 @@ class PartialFlowStore(PartialStore):
             flow = Flow.load_config(y_spec)
             flow.workspace_id = jinad_args.workspace_id
             flow.port_expose = port_expose
-            self.object = flow
+            self.object: Flow = flow
             self.object = self.object.__enter__()
         except Exception as e:
-            self.object.__exit__(type(e), e, e.__traceback__)
+            if hasattr(self, 'object'):
+                self.object.__exit__(type(e), e, e.__traceback__)
             self._logger.error(f'{e!r}')
             raise
         else:
@@ -137,6 +137,9 @@ class PartialFlowStore(PartialStore):
         try:
             if kind == UpdateOperation.ROLLING_UPDATE:
                 self.object.rolling_update(pod_name=pod_name, dump_path=dump_path)
+            else:
+                self._logger.error(f'unsupoorted kind: {kind}, no changes done')
+                return self.item
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise

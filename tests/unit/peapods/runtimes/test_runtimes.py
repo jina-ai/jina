@@ -30,6 +30,7 @@ def test_zed_runtime(runtime, ctrl_ipc):
             assert isinstance(p.worker, multiprocessing.Process)
 
 
+@pytest.mark.slow
 @pytest.mark.skipif(
     'GITHUB_WORKFLOW' in os.environ,
     reason='for unknown reason, this test is flaky on Github action, '
@@ -81,32 +82,32 @@ def test_container_runtime_good_entrypoint(runtime):
 
 @pytest.mark.parametrize('runtime', ['thread', 'process'])
 def test_address_in_use(runtime):
-    p = ['--port-ctrl', '55555', '--runtime-backend', runtime]
+    # test does not work with same control port, because right now the `READYNESS` signal is done by sending to that port
+    p = ['--port-in', '55555', '--runtime-backend', runtime]
     args1 = set_pea_parser().parse_args(p)
     args2 = set_pea_parser().parse_args(p)
     with pytest.raises(RuntimeFailToStart):
+        args1.name = 'Pea-1'
+        args2.name = 'Pea-2'
         with Pea(args1), Pea(args2):
             pass
 
 
 @pytest.mark.parametrize('runtime', ['thread', 'process'])
 @pytest.mark.parametrize(
-    'cls, parser, args',
+    'parser, args',
     [
         (
-            ContainerRuntime,
             set_pea_parser,
             ['--uses', 'docker://jinaai/jina:test-pip', '--entrypoint', 'jina pod'],
         ),
-        (WebSocketRuntime, set_gateway_parser, []),
-        (ZEDRuntime, set_pea_parser, []),
+        (set_gateway_parser, ['--protocol', 'websocket']),
+        (set_gateway_parser, ['--protocol', 'http']),
+        (set_pea_parser, []),
     ],
 )
-def test_runtime_thread_process(runtime, cls, parser, args):
-    class Pea1(BasePea):
-        runtime_cls = cls
-
+def test_runtime_thread_process(runtime, parser, args):
     args.extend(['--runtime-backend', runtime])
     arg = parser().parse_args(args)
-    with Pea1(arg):
+    with BasePea(arg):
         pass

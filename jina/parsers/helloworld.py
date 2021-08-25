@@ -61,7 +61,7 @@ Remarks:
 
 - Pytorch, transformers & FastAPI are required to run this demo. To install all dependencies, use
 
-    pip install "jina[chatbot]"
+    pip install "jina[demo]"
 
 - The indexing could take 1~2 minute on a CPU machine.
 ''',
@@ -80,7 +80,7 @@ Remarks:
 
 - Pytorch, torchvision, transformers & FastAPI are required to run this demo. To install all dependencies, use
 
-    pip install "jina[multimodal]"
+    pip install "jina[demo]"
 
 - The indexing could take 2~3 minute on a CPU machine.
 - Downloading the dataset could take ~1 minute depending on your network.
@@ -136,14 +136,6 @@ def set_hw_parser(parser=None):
         type=str,
         default='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-labels-idx1-ubyte.gz',
         help='The url of query labels data (should be in idx3-ubyte.gz format)',
-    )
-
-    gp.add_argument(
-        '--request-size',
-        type=int,
-        default=1024,
-        help='The request size in indexing (the maximum number of documents that will be included in a '
-        'Request before sending it)',
     )
 
     gp.add_argument(

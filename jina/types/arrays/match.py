@@ -21,22 +21,16 @@ class MatchArray(DocumentArray):
         """Add a matched document to the current Document.
 
         :param document: Sub-document to be added
-        :type document: :class: `Document
         :param kwargs: Extra key value arguments
         :return: the newly added sub-document in :class:`Document` view
         :rtype: :class:`Document` view
         """
-        from ..document import Document
-
-        match = Document(document, copy=True)
-
+        super().append(document)
+        match = self[-1]
         match.set_attributes(
             granularity=self.granularity, adjacency=self.adjacency, **kwargs
         )
-        for score in match.scores.values():
-            score.ref_id = self._ref_doc.id
 
-        super().append(match)
         return match
 
     @property

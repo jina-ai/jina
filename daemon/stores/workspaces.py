@@ -1,5 +1,6 @@
 from pathlib import Path
 from shutil import rmtree
+from copy import deepcopy
 from typing import Union
 
 from jina.enums import RemoteWorkspaceState
@@ -119,7 +120,7 @@ class WorkspaceStore(BaseStore):
                     f'container {colored(container_id, "cyan")} is successfully removed'
                 )
             else:
-                self._logger.info(
+                self._logger.debug(
                     f'no container to delete for id {colored(id, "cyan")}'
                 )
             if container_id:
@@ -153,6 +154,8 @@ class WorkspaceStore(BaseStore):
         :param kwargs: keyword args
         :raises KeyError: if id doesn't exist in the store
         """
+        if files and network and container:
+            everything = True
         if everything:
             container = True
             network = True
@@ -182,3 +185,13 @@ class WorkspaceStore(BaseStore):
             self._logger.success(
                 f'{colored(str(id), "cyan")} is released from the store.'
             )
+
+    def clear(self, **kwargs) -> None:
+        """Delete all the objects in the store
+
+        :param kwargs: keyward args
+        """
+
+        _status = deepcopy(self.status)
+        for k in _status.items.keys():
+            self.delete(id=k, workspace=True, **kwargs)

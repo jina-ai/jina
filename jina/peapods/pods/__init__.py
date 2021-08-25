@@ -82,26 +82,11 @@ class ExitFIFO(ExitStack):
         return received_exc and suppressed_exc
 
 
-class BasePod(ExitFIFO):
+class BasePod:
     """A BasePod is an immutable set of peas. They share the same input and output socket.
     Internally, the peas can run with the process/thread backend.
     They can be also run in their own containers on remote machines.
     """
-
-    def __init__(
-        self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
-    ):
-        super().__init__()
-        args.upload_files = BasePod._set_upload_files(args)
-        self.args = args
-        self.needs = (
-            needs if needs else set()
-        )  #: used in the :class:`jina.flow.Flow` to build the graph
-
-        self.is_head_router = False
-        self.is_tail_router = False
-        self.deducted_head = None
-        self.deducted_tail = None
 
     def start(self) -> 'BasePod':
         """Start to run all :class:`BasePea` in this BasePod.
@@ -162,6 +147,13 @@ class BasePod(ExitFIFO):
         return self.args.name
 
     @property
+    def connect_to_predecessor(self) -> str:
+        """True, if the Pod should open a connect socket in the HeadPea to the predecessor Pod.
+        .. # noqa: DAR201
+        """
+        return self.args.connect_to_predecessor
+
+    @property
     def head_host(self) -> str:
         """Get the host of the HeadPea of this pod
         .. # noqa: DAR201
@@ -176,6 +168,13 @@ class BasePod(ExitFIFO):
         return self.head_args.port_in
 
     @property
+    def tail_port_out(self):
+        """Get the port_out of the TailPea of this pod
+        .. # noqa: DAR201
+        """
+        return self.tail_args.port_out
+
+    @property
     def head_zmq_identity(self):
         """Get the zmq_identity of the HeadPea of this pod
         .. # noqa: DAR201
@@ -186,13 +185,9 @@ class BasePod(ExitFIFO):
         with CatchAllCleanupContextManager(self):
             return self.start()
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
-        super().__exit__(exc_type, exc_val, exc_tb)
-        self.join()
-
     @staticmethod
     def _copy_to_head_args(
-        args: Namespace, polling_type: PollingType, as_router: bool = True
+            args: Namespace, polling_type: PollingType, as_router: bool = True
     ) -> Namespace:
         """
         Set the outgoing args of the head router
@@ -236,7 +231,7 @@ class BasePod(ExitFIFO):
 
     @staticmethod
     def _copy_to_tail_args(
-        args: Namespace, polling_type: PollingType, as_router: bool = True
+            args: Namespace, polling_type: PollingType, as_router: bool = True
     ) -> Namespace:
         """
         Set the incoming args of the tail router
@@ -298,8 +293,18 @@ class BasePod(ExitFIFO):
         """
         ...
 
+    @property
+    def deployments(self):
+        return [{
+            'name': self.name,
+            'head_host': self.head_host,
+            'head_port_in': self.head_port_in,
+            'tail_port_out': self.tail_port_out,
+            'head_zmq_identity': self.head_zmq_identity,
+        }]
 
-class Pod(BasePod):
+
+class Pod(BasePod, ExitFIFO):
     """A BasePod is an immutable set of peas, which run in parallel. They share the same input and output socket.
     Internally, the peas can run with the process/thread backend. They can be also run in their own containers
     :param args: arguments parsed from the CLI
@@ -307,16 +312,36 @@ class Pod(BasePod):
     """
 
     def __init__(
-        self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
+            self,
+            args: Union['Namespace', Dict],
+            needs: Optional[Set[str]] = None,
     ):
-        super().__init__(args, needs)
+        super().__init__()
+        args.upload_files = BasePod._set_upload_files(args)
+        self.args = args
+        self.needs = (
+                needs or set()
+        )  #: used in the :class:`jina.flow.Flow` to build the graph
+
+        self.is_head_router = False
+        self.is_tail_router = False
+        self.deducted_head = None
+        self.deducted_tail = None
         self.peas = []  # type: List['BasePea']
-        if isinstance(args, Dict):
-            # This is used when a Pod is created in a remote context, where peas & their connections are already given.
-            self.peas_args = args
-        else:
-            self.peas_args = self._parse_args(args)
+        self.update_pea_args()
         self._activated = False
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        super().__exit__(exc_type, exc_val, exc_tb)
+        self.join()
+
+    def update_pea_args(self):
+        """ Update args of its peas based on Pod args"""
+        if isinstance(self.args, Dict):
+            # This is used when a Pod is created in a remote context, where peas & their connections are already given.
+            self.peas_args = self.args
+        else:
+            self.peas_args = self._parse_args(self.args)
 
     @property
     def is_singleton(self) -> bool:
@@ -356,7 +381,7 @@ class Pod(BasePod):
         return self.first_pea_args.host
 
     def _parse_args(
-        self, args: Namespace
+            self, args: Namespace
     ) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:
         return self._parse_base_pod_args(args)
 
@@ -429,9 +454,9 @@ class Pod(BasePod):
         .. # noqa: DAR201
         """
         return (
-            ([self.peas_args['head']] if self.peas_args['head'] else [])
-            + ([self.peas_args['tail']] if self.peas_args['tail'] else [])
-            + self.peas_args['peas']
+                ([self.peas_args['head']] if self.peas_args['head'] else [])
+                + ([self.peas_args['tail']] if self.peas_args['tail'] else [])
+                + self.peas_args['peas']
         )
 
     @property
@@ -442,9 +467,9 @@ class Pod(BasePod):
         # For some reason, it seems that using `stack` and having `Head` started after the rest of Peas do not work and
         # some messages are not received by the inner peas. That's why ExitFIFO is needed
         return (
-            ([self.peas_args['head']] if self.peas_args['head'] else [])
-            + self.peas_args['peas']
-            + ([self.peas_args['tail']] if self.peas_args['tail'] else [])
+                ([self.peas_args['head']] if self.peas_args['head'] else [])
+                + self.peas_args['peas']
+                + ([self.peas_args['tail']] if self.peas_args['tail'] else [])
         )
 
     @property
@@ -535,20 +560,23 @@ class Pod(BasePod):
 
     @staticmethod
     def _set_peas_args(
-        args: Namespace,
-        head_args: Optional[Namespace] = None,
-        tail_args: Namespace = None,
+            args: Namespace,
+            head_args: Optional[Namespace] = None,
+            tail_args: Namespace = None,
     ) -> List[Namespace]:
         result = []
         _host_list = (
             args.peas_hosts
             if args.peas_hosts
             else [
-                args.host,
-            ]
+                     args.host,
+                 ]
+                 * (args.parallel + 2)
         )
 
-        for idx, pea_host in zip(range(args.parallel), cycle(_host_list)):
+        for idx, pea_host in zip(
+                range(args.parallel), _host_list[2:]
+        ):  # first two are taken by head and tail TODO refactor this hack
             _args = copy.deepcopy(args)
             _args.pea_id = idx
 
@@ -614,18 +642,22 @@ class Pod(BasePod):
             self.is_head_router = True
             self.is_tail_router = True
             parsed_args['head'] = BasePod._copy_to_head_args(args, args.polling)
+            if parsed_args['head'].peas_hosts:
+                parsed_args['head'].host = parsed_args['head'].peas_hosts[0]
             parsed_args['tail'] = BasePod._copy_to_tail_args(args, args.polling)
+            if parsed_args['tail'].peas_hosts:
+                parsed_args['tail'].host = parsed_args['tail'].peas_hosts[1]
             parsed_args['peas'] = self._set_peas_args(
                 args,
                 head_args=parsed_args['head'],
                 tail_args=parsed_args['tail'],
             )
         elif (
-            getattr(args, 'uses_before', None)
-            and args.uses_before != __default_executor__
+                getattr(args, 'uses_before', None)
+                and args.uses_before != __default_executor__
         ) or (
-            getattr(args, 'uses_after', None)
-            and args.uses_after != __default_executor__
+                getattr(args, 'uses_after', None)
+                and args.uses_after != __default_executor__
         ):
             args.scheduling = SchedulerType.ROUND_ROBIN
             if getattr(args, 'uses_before', None):

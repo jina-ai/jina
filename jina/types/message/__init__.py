@@ -115,8 +115,15 @@ class Message:
                 else None,
             )
             self._size += sys.getsizeof(val)
-        elif isinstance(val, (Request, jina_pb2.RequestProto)):
-            self._request = val  # type: Union['Request', 'jina_pb2.RequestProto']
+        elif isinstance(val, Request):
+            self._request = val
+        elif isinstance(val, jina_pb2.RequestProto):
+            self._request = Request(
+                val,
+                CompressAlgo.from_string(self.envelope.compression.algorithm)
+                if self.envelope
+                else None,
+            )
         else:
             raise TypeError(
                 f'expecting request to be bytes or jina_pb2.RequestProto, but receiving {type(val)}'
@@ -161,6 +168,7 @@ class Message:
         compress_min_bytes: int = 0,
         compress_min_ratio: float = 1.0,
         routing_table: Optional[str] = None,
+        send_routing_table: bool = True,
         *args,
         **kwargs,
     ) -> 'jina_pb2.EnvelopeProto':
@@ -181,6 +189,7 @@ class Message:
         :param compress_min_bytes: used for configuring compression
         :param compress_min_ratio: used for configuring compression
         :param routing_table: routing graph filled by gateway
+        :param send_routing_table: include the routing table in the envelope
         :return: the resulted protobuf message
         """
         envelope = jina_pb2.EnvelopeProto()
@@ -222,7 +231,7 @@ class Message:
         envelope.compression.min_ratio = compress_min_ratio
         envelope.compression.min_bytes = compress_min_bytes
         envelope.timeout = 5000
-        if routing_table is not None:
+        if routing_table is not None and send_routing_table:
             envelope.routing_table.CopyFrom(RoutingTable(routing_table).proto)
         self._add_version(envelope)
         self._add_route(pod_name, identity, envelope)
@@ -239,7 +248,7 @@ class Message:
         r2 = self._compress(r2)
 
         r0 = self.envelope.receiver_id.encode()
-        r1 = self.envelope.SerializeToString()
+        r1 = self.envelope.SerializePartialToString()
         m = [r0, r1, r2]
         self._size = sum(sys.getsizeof(r) for r in m)
         return m
@@ -308,7 +317,7 @@ class Message:
                 )
                 self.envelope.compression.algorithm = 'NONE'
         except Exception as ex:
-            default_logger.error(
+            default_logger.debug(
                 f'compression={str(ctag)} failed, fallback to compression="NONE". reason: {ex!r}'
             )
             self.envelope.compression.algorithm = 'NONE'

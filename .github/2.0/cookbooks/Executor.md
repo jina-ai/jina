@@ -34,14 +34,15 @@ Table of Contents
   - [YAML Interface](#yaml-interface)
   - [Load and Save Executor's YAML config](#load-and-save-executors-yaml-config)
   - [Use Executor out of the Flow](#use-executor-out-of-the-flow)
+  - [Close Executor](#close-executor)
+- [Structure of the Repository](#structure-of-the-repository)
+  - [Single python file](#single-python-file)
+  - [Multiple python files](#multiple-python-files)
 - [Executor Built-in Features](#executor-built-in-features)
-  - [1.x vs 2.0](#1x-vs-20)
   - [Workspace](#workspace)
   - [Metas](#metas)
   - [`.metas` & `.runtime_args`](#metas--runtime_args)
   - [Handle parameters](#handle-parameters)
-- [Migration in Practice](#migration-in-practice)
-  - [Encoder in `jina hello fashion`](#encoder-in-jina-hello-fashion)
 - [Executors in Action](#executors-in-action)
   - [Fastai](#fastai)
   - [Pytorch Lightning](#pytorch-lightning)
@@ -92,6 +93,9 @@ requests:
   /random_work: foo
 ```
 
+In this example your executor is defined in a single python file, `foo.py`. If you want to use multiple python files
+(for example, `foo.py` and `helper.py`), check out how to organize them in the section [Structure of the Repository](#structure-of-the-repository)
+
 Construct `Executor` from YAML:
 
 ```python
@@ -123,8 +127,6 @@ with f:
 ### Inheritance
 
 Every new executor should be inherited directly from `jina.Executor`.
-
-The 1.x inheritance tree is removed. `Executor` no longer has polymorphism.
 
 You can name your executor class freely.
 
@@ -278,7 +280,7 @@ Methods decorated with `@request` can return `Optional[DocumentArray]`.
 
 The return is optional. **All changes happen in-place.**
 
-- If the return not `None`, then the current `docs` field in the `Request` will be overridden by the
+- If the return is not `None`, then the current `docs` field in the `Request` will be overridden by the
   returned `DocumentArray`, which will be forwarded to the next Executor in the Flow.
 - If the return is just a shallow copy of `Request.docs`, then nothing happens. This is because the changes are already
   made in-place, there is no point to assign the value.
@@ -369,7 +371,7 @@ requests:
 
 - `jtype` is a string. Defines the class name, interchangeable with bang mark `!`;
 - `with` is a map. Defines kwargs of the class `__init__` method
-- `metas` is a map. Defines the meta information of that class. Compared to `1.x` it is reduced to the following fields:
+- `metas` is a dictionary. It defines the meta information of that class. It contains the following fields:
     - `name` is a string. Defines the name of the executor;
     - `description` is a string. Defines the description of this executor. It will be used in automatic docs UI;
     - `workspace` is a string. Defines the workspace of the executor;
@@ -412,7 +414,7 @@ Executor.load_config('y.yml')
 
 ### Use Executor out of the Flow
 
-`Executor` object can be used directly just like regular Python object. For example,
+`Executor` object can be used directly just like a regular Python object. For example,
 
 ```python
 from jina import Executor, requests, DocumentArray, Document
@@ -439,10 +441,128 @@ DocumentArray has 1 items:
 
 This is useful in debugging an Executor.
 
+### Close Executor
+
+You might need to execute some logic when your executor's destructor is called. For example, let's suppose you want to
+persist data to the disk (e.g in-memory indexed data, fine-tuned model,...). To do so, you can overwrite the
+method `close` and add your logic.
+
+```python
+from jina import Executor, requests, Document, DocumentArray
+
+
+class MyExec(Executor):
+
+    @requests
+    def foo(self, docs, **kwargs):
+        for doc in docs:
+            print(doc.text)
+
+    def close(self):
+        print("closing...")
+
+
+with MyExec() as executor:
+    executor.foo(DocumentArray([Document(text='hello world')]))
+```
+
+```text
+hello world
+closing...
+```
+
+## Structure of the Repository
+
+### Single python file
+
+When you are only working with a single python file (let's call it `my_executor.py`), you can simply put it at the root of the repository, and import it directly in `config.yml`
+
+```yaml
+jtype: MyExecutor
+metas:
+  py_modules:
+    - my_executor.py
+```
+
+### Multiple python files
+
+> This way of repository structure is currently not compatible with JinaD, when adding the executor to a Flow using `uses='config.yml'`, as JinaD only supports a flat file structure.  In this case, it is recommended that you containerize your executor, and use it with JinaD in your Flow either via `uses='jinahub+docker://...'` or `uses='docker://...'`.
+
+When you are working with multiple python files, you should organize them as a **python package** and put them in a special folder inside
+your repository (as you would normally do with python packages). Specifically, you should do the following:
+- put all your python files inside a special folder (call it `executor`, as a convention), and put an `__init__.py` file inside it
+    - because of how Jina registers executors, make sure to import your executor in this file (see the contents of `executor/__init__.py` in the example below).
+- use relative imports (`from .bar import foo`, and not `from bar import foo`) inside the python modules in this folder
+- Only list `executor/__init__.py` under `py_modules` in `config.yml` - this way Python knows that you are importing a package, and makes sure that all the relative imports within your package work properly
+
+To make things more specific, take this repository structure as an example
+
+```
+.
+├── config.yml
+└── executor
+    ├── helper.py
+    ├── __init__.py
+    └── my_executor.py
+```
+
+The contents of `executor/__init__.py` is 
+```python
+from .my_executor import MyExecutor
+```
+the contents of `executor/helper.py` is
+
+```python
+def print_something():
+    print('something')
+```
+
+and the contents of `executor/my_executor.py` is
+
+```python
+from jina import Executor, requests
+
+from .helper import print_something
+
+class MyExecutor(Executor):
+    @requests
+    def foo(self, **kwargs):
+        print_something()
+```
+
+Finally, the contents of `config.yml` - notice that only the `executor/__init__.py` file needs to be listed under `py_modules`
+
+```yaml
+jtype: MyExecutor
+metas:
+  py_modules:
+    - executor/__init__.py
+```
+
+This was a relatively simple example, but this way of structuring python modules works for any python package structure, however complex. Consider this slightly more complicated example
+
+```
+.
+├── config.yml           # Remains exactly the same as before
+└── executor
+    ├── helper.py
+    ├── __init__.py
+    ├── my_executor.py
+    └── utils/
+        ├── __init__.py  # Required inside all executor sub-folders
+        ├── data.py
+        └── io.py
+```
+
+Here you can then import from `utils/data.py` in `my_executor.py` like this: `from .utils.data import foo`, and do any other kinds of relative imports that python enables.
+
+The best thing is that no matter how complicated your package structure, "importing" it in your `config.yml` file is super easy - you always put only `executor/__init__.py` under `py_modules`.
+
 ## Executor Built-in Features
 
-In Jina 2.0 the Executor class has fewer built-in features compared to 1.x. The design principles are (`user` here
-means "Executor developer"):
+In Jina 2.0 the Executor class is generic to all categories of executors (`encoders`, `indexers`, `segmenters`,...) to
+keep development simple. We do not provide subclasses of `Executor` that are specific to each category. The design
+principles are (`user` here means "Executor developer"):
 
 - **Do not surprise the user**: keep `Executor` class as Pythonic as possible. It should be as light and unintrusive as
   a `mixin` class:
@@ -453,32 +573,8 @@ means "Executor developer"):
   interface while delivering just loosely-implemented features is bad for scaling the core framework. For
   example, `save`, `load`, `on_gpu`, etc.
 
-We want to give programming freedom back to the user. If a user is a good Python programmer, they should pick
-up `Executor` in no time - not spend extra time learning the implicit boilerplate as in 1.x. Plus,
-subclassing `Executor` should be easy.
-
-### 1.x vs 2.0
-
-- ❌: Completely removed. Users have to implement it on their own.
-- ✅: Preserved.
-
-| 1.x | 2.0 |
-| --- | --- |
-| `.save_config()` | ✅ |
-| `.load_config()` | ✅ |
-| `.close()` |  ✅ |
-| `workspace` interface |  ✅ [Refactored](#workspace). |
-| `metas` config | Moved to `self.metas.xxx`. [Number of fields greatly reduced](#yaml-interface). |
-| `._drivers` | Refactored and moved to `self.requests.xxx`. |
-| `.save()` | ❌ |
-| `.load()` | ❌ |
-| `.logger`  | ❌ |
-| Pickle interface | ❌ |
-| init boilerplates (`pre_init`, `post_init`) | ❌ |
-| Context manager interface |  ❌ |
-| Inline `import` coding style |  ❌ |
-
-![](1.xvs2.0%20BaseExecutor.svg)
+We want to give our users the freedom to customize their executors easily. If a user is a good Python programmer, they
+should pick up `Executor` in no time. It is as simple as subclassing `Executor` and adding an endpoint.
 
 ### Workspace
 
@@ -505,25 +601,29 @@ different purposes.
 
 In 2.0rc1, the following fields are valid for `metas` and `runtime_args`:
 
-|||
+| Attribute | Fields |
 | --- | --- |
 | `.metas` (static values from hard-coded values, YAML config) | `name`, `description`, `py_modules`, `workspace` |
-| `.runtime_args` (runtime values from its containers, e.g. `Runtime`, `Pea`, `Pod`) | `name`, `description`, `workspace`, `log_config`, `quiet`, `quiet_error`, `identity`, `port_ctrl`, `ctrl_with_ipc`, `timeout_ctrl`, `ssh_server`, `ssh_keyfile`, `ssh_password`, `uses`, `py_modules`, `port_in`, `port_out`, `host_in`, `host_out`, `socket_in`, `socket_out`, `memory_hwm`, `on_error_strategy`, `num_part`, `entrypoint`, `docker_kwargs`, `pull_latest`, `volumes`, `host`, `port_expose`, `quiet_remote_logs`, `upload_files`, `workspace_id`, `daemon`, `runtime_backend`, `runtime_cls`, `timeout_ready`, `env`, `expose_public`, `pea_id`, `pea_role`, `noblock_on_start`, `uses_before`, `uses_after`, `parallel`, `replicas`, `polling`, `scheduling`, `pod_role`, `peas_hosts` |
+| `.runtime_args` (runtime values from its containers, e.g. `Runtime`, `Pea`, `Pod`) | `name`, `description`, `workspace`, `log_config`, `quiet`, `quiet_error`, `identity`, `port_ctrl`, `ctrl_with_ipc`, `timeout_ctrl`, `ssh_server`, `ssh_keyfile`, `ssh_password`, `uses`, `py_modules`, `port_in`, `port_out`, `host_in`, `host_out`, `socket_in`, `socket_out`, `memory_hwm`, `on_error_strategy`, `num_part`, `entrypoint`, `docker_kwargs`, `pull_latest`, `volumes`, `host`, `port_expose`, `quiet_remote_logs`, `upload_files`, `workspace_id`, `daemon`, `runtime_backend`, `runtime_cls`, `timeout_ready`, `env`, `expose_public`, `pea_id`, `pea_role`, `noblock_on_start`, `uses_before`, `uses_after`, `parallel`, `replicas`, `polling`, `scheduling`, `pod_role`, `peas_hosts`, `proxy`, `uses_metas`, `external`, `gpus`, `zmq_identity`, `hosts_in_connect`, `uses_with` |
 
-**Notes** 
+**Notes**
 
 - the YAML API will ignore `.runtime_args` during save and load as they are not statically stored
-- for any other parametrization of the Executor, you can still access its constructor arguments (defined in the class `__init__`) and the request `parameters`
+- for any other parametrization of the Executor, you can still access its constructor arguments (defined in the
+  class `__init__`) and the request `parameters`
 - `workspace` will be retrieved from either `metas` or `runtime_args`, in that order
 
 ### Handle parameters
-Parameters are passed to executors via `request.parameters` with `Flow.post(..., parameters=)`. This way all the `executors` will receive 
-`parameters` as an argument to their `methods`. These `parameters` can be used to pass extra information or tune the `executor` behavior for a
-given request without updating the general configuration.
+
+Parameters are passed to executors via `request.parameters` with `Flow.post(..., parameters=)`. This way all
+the `executors` will receive
+`parameters` as an argument to their `methods`. These `parameters` can be used to pass extra information or tune
+the `executor` behavior for a given request without updating the general configuration.
 
 ```python
 from typing import Optional
 from jina import Executor, requests, DocumentArray, Flow
+
 
 class MyExecutor(Executor):
     def __init__(self, default_param: int = 1, *args, **kwargs):
@@ -536,18 +636,20 @@ class MyExecutor(Executor):
         # param may be overriden for this specific request
         assert param == 5
 
+
 with Flow().add(uses=MyExecutor) as f:
     f.post(on='/endpoint', inputs=DocumentArray([]), parameters={'param': 5})
 ```
 
-However, this can be a problem when the user wants different executors to have different values of the same parameters. 
-In that case one can specify specific parameters for the specific `executor` by adding a `dictionary` inside parameters with 
-the `executor` name as `key`. Jina will then take all these specific parameters and copy to the root of the parameters dictionary before 
-calling the executor `method`.
+However, this can be a problem when the user wants different executors to have different values of the same parameters.
+In that case one can specify specific parameters for the specific `executor` by adding a `dictionary` inside parameters
+with the `executor` name as `key`. Jina will then take all these specific parameters and copy to the root of the
+parameters dictionary before calling the executor `method`.
 
 ```python
 from typing import Optional
 from jina import Executor, requests, DocumentArray, Flow
+
 
 class MyExecutor(Executor):
     def __init__(self, default_param: int = 1, *args, **kwargs):
@@ -565,36 +667,11 @@ class MyExecutor(Executor):
             assert param == 5
 
 
-with Flow().\
-        add(uses={'jtype': 'MyExecutor', 'metas': {'name': 'my-executor-1'}}).\
-        add(uses={'jtype': 'MyExecutor', 'metas': {'name': 'my-executor-2'}}) as f:
+with (Flow().
+        add(uses={'jtype': 'MyExecutor', 'metas': {'name': 'my-executor-1'}}).
+        add(uses={'jtype': 'MyExecutor', 'metas': {'name': 'my-executor-2'}})) as f:
     f.post(on='/endpoint', inputs=DocumentArray([]), parameters={'param': 5, 'my-executor-1': {'param': 10}})
 ```
-
----
-
-## Migration in Practice
-
-### Encoder in `jina hello fashion`
-
-Left is 1.x, right is 2.0:
-
-![img.png](../migration-fashion.png?raw=true)
-
-Line number corresponds to the 1.x code:
-
-- `L5`: change imports to top-level namespace `jina`;
-- `L8`: all executors now subclass from `Executor` class;
-- `L13-14`: there is no need to inherit from `__init__`, no signature is enforced;
-- `L20`: `.touch()` is removed; for this particular encoder as long as the seed is fixed there is no need to store;
-- `L22`: adding `@requests` to decorate the core method, changing signature to `docs, **kwargs`;
-- `L32`:
-    - content extraction and embedding assignment are now done manually;
-    - replacing previous `Blob2PngURI` and `ExcludeQL` driver logic using `Document` built-in
-      methods `convert_blob_to_uri` and `pop`
-    - there is nothing to return, as the change is done in-place.
-
----
 
 ## Executors in Action
 
@@ -605,8 +682,8 @@ by [fastai](https://github.com/fastai/fastai).
 
 The `encode` function of this executor generates a feature vector for each image in each `Document` of the
 input `DocumentArray`. The feature vector generated is the output activations of the neural network (a vector of 1000
-components). Note the embedding of each text is performed in a joined operation (all embeddings are created for all images
-in a single function call) to achieve higher performance.
+components). Note the embedding of each text is performed in a joined operation (all embeddings are created for all
+images in a single function call) to achieve higher performance.
 
 As a result each `Document` in the input `DocumentArray`  _docs_ will have an `embedding` after `encode()` has
 completed.
@@ -668,15 +745,14 @@ class PLMwuAutoEncoder(Executor):
 
 ### Paddle
 
-The example below use PaddlePaddle [Ernie](https://github.com/PaddlePaddle/ERNIE) model as encoder.
-The Executor load pre-trained Ernie family of tokenizer and model.
-Convert Jina Document ``doc.text`` into Paddle Tensor and encode it as embedding.
-As a result, each `Document` in the `DocumentArray` will have an `embedding` after `encode()` has completed.
+The example below use PaddlePaddle [Ernie](https://github.com/PaddlePaddle/ERNIE) model as encoder. The Executor load
+pre-trained Ernie family of tokenizer and model. Convert Jina Document ``doc.text`` into Paddle Tensor and encode it as
+embedding. As a result, each `Document` in the `DocumentArray` will have an `embedding` after `encode()` has completed.
 
 ```python
-import paddle as P # paddle==2.1.0
+import paddle as P  # paddle==2.1.0
 import numpy as np
-from ernie.modeling_ernie import ErnieModel # paddle-ernie 0.2.0.dev1
+from ernie.modeling_ernie import ErnieModel  # paddle-ernie 0.2.0.dev1
 from ernie.tokenizing_ernie import ErnieTokenizer
 
 from jina import Executor, requests
@@ -686,7 +762,7 @@ class PaddleErineExecutor(Executor):
     def __init__(self, **kwargs):
         super().__init__()
         self.tokenizer = ErnieTokenizer.from_pretrained('ernie-1.0')
-        self.model = ErnieModel.from_pretrained('ernie-1.0') 
+        self.model = ErnieModel.from_pretrained('ernie-1.0')
         self.model.eval()
 
     @requests
@@ -821,9 +897,9 @@ class TFIDFTextEncoder(Executor):
 
 ### PyTorch
 
-The code snippet below takes ``docs`` as input and perform feature extraction with ``modelnet v2``. It
-leverages Pytorch's ``Tensor`` conversion and operation. Finally, the ``embedding`` of each document will be set as the
-extracted features.
+The code snippet below takes ``docs`` as input and perform feature extraction with ``modelnet v2``. It leverages
+Pytorch's ``Tensor`` conversion and operation. Finally, the ``embedding`` of each document will be set as the extracted
+features.
 
 ```python
 import torch  # 1.8.1
@@ -848,7 +924,8 @@ class PytorchMobilNetExecutor(Executor):
 
 ### ONNX-Runtime
 
-The code snippet bellow converts a `Pytorch` model to the `ONNX` and leverage `onnxruntime` to run inference tasks on models from `hugging-face transformers`.
+The code snippet bellow converts a `Pytorch` model to the `ONNX` and leverage `onnxruntime` to run inference tasks on
+models from `hugging-face transformers`.
 
 ```python
 from pathlib import Path

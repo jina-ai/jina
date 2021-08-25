@@ -5,9 +5,10 @@ import numpy as np
 import pytest
 
 from jina import Executor
-from jina.excepts import BadFlowYAMLVersion
+from jina.excepts import BadYAMLVersion
 from jina import Flow
 from jina.jaml import JAML
+from jina.enums import GatewayProtocolType
 from jina.jaml.parsers import get_supported_versions
 from jina.parsers.flow import set_flow_parser
 from jina.types.document.generators import from_ndarray
@@ -34,10 +35,11 @@ def test_load_legacy_and_v1():
     # this should fallback to v1
     Flow.load_config('yaml/flow-v1.0-syntax.yml')
 
-    with pytest.raises(BadFlowYAMLVersion):
+    with pytest.raises(BadYAMLVersion):
         Flow.load_config('yaml/flow-v99-syntax.yml')
 
 
+@pytest.mark.slow
 def test_add_needs_inspect(tmpdir):
     f1 = (
         Flow()
@@ -63,6 +65,41 @@ def test_load_dump_load(tmpdir):
     f1.save_config(str(Path(tmpdir) / 'a0.yml'))
     f2 = Flow.load_config('yaml/flow-v1.0-syntax.yml')
     f2.save_config(str(Path(tmpdir) / 'a1.yml'))
+
+
+def test_load_modify_dump_load(tmpdir):
+    f: Flow = Flow.load_config('yaml/flow-gateway.yml')
+    # assert vars inside `with`
+    assert f._kwargs['name'] == 'abc'
+    assert f.port_expose == 12345
+    assert f.protocol == GatewayProtocolType.HTTP
+    # assert executor args
+    assert f._pod_nodes['custom1'].args.uses == 'jinahub://CustomExecutor1'
+    assert f._pod_nodes['custom2'].args.uses == 'CustomExecutor2'
+    assert f._pod_nodes['custom2'].args.port_in == 23456
+    assert f._pod_nodes['custom2'].args.port_out == 34567
+
+    # change args inside `with`
+    f.port_expose = 12346
+    f.protocol = GatewayProtocolType.WEBSOCKET
+    # change executor args
+    f._pod_nodes['custom2'].args.port_in = 23457
+    f._pod_nodes['custom2'].args.port_out = 34568
+
+    f.save_config(str(Path(tmpdir) / 'a0.yml'))
+    f1: Flow = Flow.load_config(str(Path(tmpdir) / 'a0.yml'))
+
+    # assert args from original yaml
+    assert f1._kwargs['name'] == 'abc'
+    assert 'custom1' in f1._pod_nodes
+    assert 'custom2' in f1._pod_nodes
+    assert f1._pod_nodes['custom1'].args.uses == 'jinahub://CustomExecutor1'
+    assert f1._pod_nodes['custom2'].args.uses == 'CustomExecutor2'
+    # assert args modified in code
+    assert f1.port_expose == 12346
+    assert f1.protocol == GatewayProtocolType.WEBSOCKET
+    assert f1._pod_nodes['custom2'].args.port_in == 23457
+    assert f1._pod_nodes['custom2'].args.port_out == 34568
 
 
 def test_load_flow_with_port():
@@ -113,3 +150,15 @@ def test_flow_uses_from_dict():
     d1 = {'jtype': 'DummyEncoder', 'metas': {'name': 'dummy1'}}
     with Flow().add(uses=d1):
         pass
+
+
+def test_flow_yaml_override_with_protocol():
+    from jina.enums import GatewayProtocolType
+
+    path = os.path.join(cur_dir.parent, 'yaml/examples/faiss/flow-index.yml')
+    f1 = Flow.load_config(path)
+    assert f1.protocol == GatewayProtocolType.GRPC
+    f2 = Flow.load_config(path, override_with={'protocol': 'http'})
+    assert f2.protocol == GatewayProtocolType.HTTP
+    f3 = Flow.load_config(path, override_with={'protocol': 'websocket'})
+    assert f3.protocol == GatewayProtocolType.WEBSOCKET

@@ -94,6 +94,7 @@ class JinaLogger:
         self.critical = self.logger.critical
         self.error = self.logger.error
         self.info = self.logger.info
+        self.debug_enabled = self.logger.isEnabledFor(logging.DEBUG)
 
     @property
     def handlers(self):

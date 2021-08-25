@@ -1,3 +1,5 @@
+import datetime
+import math
 import sys
 import time
 from collections import defaultdict
@@ -194,76 +196,103 @@ class ProgressBar(TimeContext):
                 do_busy()
     """
 
+    col_width = 100
+    clear_line = '\r{}\r'.format(' ' * col_width)
+
     def __init__(
         self,
-        bar_len: int = 20,
-        task_name: str = '',
-        logger=None,
+        description: str = 'Working...',
     ):
         """
         Create the ProgressBar.
 
-        :param bar_len: Total length of the bar.
-        :param task_name: The name of the task, will be displayed in front of the bar.
-        :param logger: Jina logger
+        :param description: The name of the task, will be displayed in front of the bar.
         """
-        super().__init__(task_name, logger)
-        self.bar_len = bar_len
-        self.num_docs = 0
-        self._ticks = 0
+        super().__init__(description, None)
+        self._bars_on_row = 40
+        self._completed_progress = 0
+        self._last_rendered_progress = 0
+        self._num_update_called = 0
 
-    def update_tick(self, tick: float = 0.1) -> None:
-        """
-        Increment the progress bar by one tick, when the ticks accumulate to one, trigger one :meth:`update`.
-
-        :param tick: A float unit to increment (should < 1).
-        """
-        self._ticks += tick
-        if self._ticks > 1:
-            self.update()
-            self._ticks = 0
-
-    def update(self, progress: Optional[int] = None, *args, **kwargs) -> None:
+    def update(
+        self,
+        progress: float = 1.0,
+        description: Optional[str] = None,
+        details: Optional[str] = None,
+        all_completed: bool = False,
+        first_enter: bool = False,
+    ) -> None:
         """
         Increment the progress bar by one unit.
 
         :param progress: The number of unit to increment.
-        :param args: extra arguments
-        :param kwargs: keyword arguments
+        :param description: Change the description text before the progress bar on update.
+        :param details: Change the details text after the progress bar on update.
+        :param all_completed: Mark the task as fully completed.
+        :param first_enter: if this method is called by `__enter__`
         """
-        self.num_reqs += 1
-        sys.stdout.write('\r')
+        self._num_update_called += 0 if first_enter else 1
+        self._completed_progress += progress
+        if (
+            abs(self._completed_progress - self._last_rendered_progress) < 0.5
+            and not all_completed
+        ):
+            return
+        self._last_rendered_progress = self._completed_progress
+        sys.stdout.write(self.clear_line)
         elapsed = time.perf_counter() - self.start
-        num_bars = self.num_reqs % self.bar_len
-        num_bars = self.bar_len if not num_bars and self.num_reqs else max(num_bars, 1)
-        if progress:
-            self.num_docs += progress
+        num_bars = self._completed_progress % self._bars_on_row
+        num_bars = (
+            self._bars_on_row
+            if not num_bars and self._completed_progress
+            else max(num_bars, 1)
+        )
+        num_fullbars = math.floor(num_bars)
+        num_halfbars = 1 if (num_bars - num_fullbars <= 0.5) else 0
+
+        bar_color = 'yellow' if all_completed else 'green'
+        unfinished_bar_color = 'yellow' if all_completed else 'green'
+
+        time_str = (
+            '-:--:--'
+            if first_enter
+            else str(datetime.timedelta(seconds=elapsed)).split('.')[0]
+        )
+        speed_str = (
+            'estimating...'
+            if first_enter
+            else f'{self._num_update_called / elapsed:3.1f} step/s'
+        )
+
+        description_str = description or self.task_name or ''
+        details_str = details or ''
 
         sys.stdout.write(
-            '⏳ {:>10} |{:<{}}| ⏱️ {:3.1f}s 🐎 {:3.1f} RPS'.format(
-                colored(self.task_name, 'cyan'),
-                colored('█' * num_bars, 'green'),
-                self.bar_len + 9,
-                elapsed,
-                self.num_reqs / elapsed,
+            '{:>10} {:<}{:<} {} {} {}'.format(
+                description_str,
+                colored('━' * num_fullbars, bar_color)
+                + (colored('╸', bar_color if num_halfbars else unfinished_bar_color)),
+                colored(
+                    '━' * (self._bars_on_row - num_fullbars),
+                    unfinished_bar_color,
+                    attrs=['dark'],
+                ),
+                colored(time_str, 'cyan'),
+                speed_str,
+                details_str,
             )
         )
-        if num_bars == self.bar_len:
-            sys.stdout.write('\n')
         sys.stdout.flush()
 
-    def __enter__(self):
-        super().__enter__()
-        self.num_reqs = -1
-        self.num_docs = 0
-        self.update()
-        return self
-
     def _enter_msg(self):
-        pass
+        self.update(first_enter=True)
 
     def _exit_msg(self):
-        speed = self.num_reqs / self.duration
-        sys.stdout.write(
-            f'{f"✅ {self.num_reqs} requests done in ⏱ {self.readable_duration} 🐎 {speed:3.1f} RPS"}\n'
-        )
+        if self._num_update_called > 0:
+            self.update(0, all_completed=True)
+            sys.stdout.write(
+                f'\033[K{self._completed_progress:.0f} steps done in {self.readable_duration}\n'
+            )
+        else:
+            sys.stdout.write(self.clear_line)
+        sys.stdout.flush()

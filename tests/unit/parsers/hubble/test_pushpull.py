@@ -11,27 +11,39 @@ def test_push_parser():
 
     mixin_hub_push_parser(parser)
 
-    args = parser.parse_args(['foo/'])
-    assert args.path == 'foo/'
+    args = parser.parse_args(['/tmp'])
+    assert args.path == '/tmp'
     assert args.force is None
     assert args.secret is None
     assert not hasattr(args, 'public')
     assert not hasattr(args, 'private')
 
-    args = parser.parse_args(['foo/', '--public'])
+    args = parser.parse_args(['/tmp', '-t', 'v1', '-t', 'v2'])
+    assert args.tag == ['v1', 'v2']
+
+    args = parser.parse_args(['/tmp', '--tag', 'v1', '--tag', 'v2'])
+    assert args.tag == ['v1', 'v2']
+
+    args = parser.parse_args(['/tmp', '-f', 'Dockerfile'])
+    assert args.docker_file == 'Dockerfile'
+
+    args = parser.parse_args(['/tmp', '--docker-file', 'Dockerfile'])
+    assert args.docker_file == 'Dockerfile'
+
+    args = parser.parse_args(['/tmp', '--public'])
     assert args.public is True
     assert not hasattr(args, 'private')
 
-    args = parser.parse_args(['foo/', '--private'])
+    args = parser.parse_args(['/tmp', '--private'])
     assert not hasattr(args, 'public')
     assert args.private is True
 
     with pytest.raises(SystemExit) as pytest_wrapped_e:
-        args = parser.parse_args(['foo/', '--private', '--public'])
+        args = parser.parse_args(['/tmp', '--private', '--public'])
     assert pytest_wrapped_e.type == SystemExit
     assert pytest_wrapped_e.value.code == 2
 
-    args = parser.parse_args(['foo/', '--force', '8iag38yu', '--secret', '8iag38yu'])
+    args = parser.parse_args(['/tmp', '--force', '8iag38yu', '--secret', '8iag38yu'])
     assert args.force == '8iag38yu'
     assert args.secret == '8iag38yu'
     assert not hasattr(args, 'public')

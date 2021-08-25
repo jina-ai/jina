@@ -1,0 +1,14 @@
+jtype: Flow
+version: 1
+with:
+  name: abc
+  port_expose: 12345
+  protocol: http
+  abc: def
+executors:
+  - name: custom1
+    uses: jinahub://CustomExecutor1
+  - name: custom2
+    uses: CustomExecutor2
+    port_in: 23456
+    port_out: 34567

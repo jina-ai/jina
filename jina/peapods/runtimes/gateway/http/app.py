@@ -1,10 +1,12 @@
 import argparse
+import inspect
 import json
 from typing import Dict
 
 from google.protobuf.json_format import MessageToDict
 
 from ..prefetch import PrefetchCaller
+from ....grpc import Grpclet
 from ....zmq import AsyncZmqlet
 from ..... import __version__
 from .....clients.request import request_generator
@@ -57,12 +59,23 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             'CORS is enabled. This service is now accessible from any website!'
         )
 
-    zmqlet = AsyncZmqlet(args, logger)
-    servicer = PrefetchCaller(args, zmqlet)
+    if args.grpc_data_requests:
+        iolet = Grpclet(
+            args=args,
+            message_callback=None,
+            logger=logger,
+        )
+    else:
+        iolet = AsyncZmqlet(args, logger)
+    servicer = PrefetchCaller(args, iolet)
 
     @app.on_event('shutdown')
-    def _shutdown():
-        zmqlet.close()
+    async def _shutdown():
+        await servicer.close()
+        if inspect.iscoroutine(iolet.close):
+            await iolet.close()
+        else:
+            iolet.close()
 
     openapi_tags = []
     if not args.no_debug_endpoints:
@@ -197,7 +210,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         :param req_iter: request iterator, with length of 1
         :return: the first result from the request iterator
         """
-        async for k in servicer.Call(request_iterator=req_iter):
+        async for k in servicer.send(request_iterator=req_iter):
             return MessageToDict(
                 k, including_default_value_fields=True, use_integers_for_enums=True
             )  # DO NOT customize other serialization here. Scheme is handled by Pydantic in `models.py`

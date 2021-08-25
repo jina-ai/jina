@@ -47,7 +47,7 @@ def mixin_pea_parser(parser):
     gp.add_argument(
         '--env',
         action=KVAppendAction,
-        metavar='KEY=VALUE',
+        metavar='KEY: VALUE',
         nargs='*',
         help='The map of environment variables that are available inside runtime',
     )
@@ -86,15 +86,6 @@ def mixin_pea_parser(parser):
         default=False,
         help='If set, starting a Pea/Pod does not block the thread/process. It then relies on '
         '`wait_start_success` at outer function for the postpone check.'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
-    )
-
-    gp.add_argument(
-        '--runs-in-docker',
-        action='store_true',
-        default=False,
-        help='Informs a Pea that runs in a container. Important to properly set networking information'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )

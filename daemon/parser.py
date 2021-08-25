@@ -24,11 +24,11 @@ def mixin_daemon_parser(parser):
         help='do not start fluentd, no log streaming',
     )
     gp.add_argument(
-        '--store',
+        '--no-store',
         action='store_true',
-        default=True,
+        default=False,
         help='''
-    Load from local store (if any), while starting JinaD
+    Disable loading from local store (if any), while starting JinaD
     ''',
     )
     gp.add_argument(
@@ -81,7 +81,8 @@ def _get_run_args(print_args: bool = True):
     from argparse import _StoreAction, _StoreTrueAction
 
     args, argv = parser.parse_known_args()
-    if print_args:
+    # avoid printing for partial daemon (args.mode is set)
+    if print_args and args.mode is None:
 
         default_args = {
             a.dest: a.default

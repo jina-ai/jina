@@ -50,11 +50,11 @@ def graph():
     doc2 = Document(text='Document2')
     doc3 = Document(text='Document3')
 
-    graph.add_edge(doc0, doc1, features={'weight': 1})
-    graph.add_edge(doc0, doc2, features={'weight': 1})
-    graph.add_edge(doc2, doc1, features={'weight': 10})
-    graph.add_edge(doc1, doc3, features={'weight': 1})
-    graph.add_edge(doc2, doc3, features={'weight': 1})
+    graph.add_single_edge(doc0, doc1, features={'weight': 1})
+    graph.add_single_edge(doc0, doc2, features={'weight': 1})
+    graph.add_single_edge(doc2, doc1, features={'weight': 10})
+    graph.add_single_edge(doc1, doc3, features={'weight': 1})
+    graph.add_single_edge(doc2, doc3, features={'weight': 1})
     return graph
 
 
