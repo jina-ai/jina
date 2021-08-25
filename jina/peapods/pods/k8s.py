@@ -2,7 +2,7 @@ import copy
 from argparse import Namespace
 from typing import Optional, Dict, Union, Set, List
 
-from .kubernetes import kubernetes_deployment, kubernetes_tools
+from .k8slib import kubernetes_deployment, kubernetes_tools
 from .. import BasePod
 from ... import __default_executor__
 from ...logging.logger import JinaLogger

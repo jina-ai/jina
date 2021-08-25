@@ -34,9 +34,7 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         self.msg_sent = 0
         self._pending_tasks = []
         self._send_routing_table = args.send_routing_table
-        self._logger.info('### has routing table?')
         if not args.send_routing_table:
-            self._logger.info('### args.routing_table', args.routing_table)
             self._routing_table = RoutingTable(args.routing_table)
             self._next_targets = self._routing_table.get_next_target_addresses()
         else:

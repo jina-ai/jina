@@ -1,5 +1,6 @@
 from jina.hubble.helper import parse_hub_uri
 from jina.hubble.hubio import HubIO
+from jina.peapods.pods.k8slib import kubernetes_tools
 
 IS_LOCAL = False
 
@@ -28,7 +29,7 @@ def deploy_service(
         pull_policy,
         init_container=None,
 ):
-    from jina.peapods.pods.kubernetes import kubernetes_tools
+
 
     # small hack - we can always assume the ports are the same for all executors since they run on different k8s pods
     port_expose = 8080

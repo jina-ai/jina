@@ -52,7 +52,7 @@ def dummy_dumper_image(logger: JinaLogger):
 
 class KindClusterWrapper:
 
-    def __init__(self, kind_cluster: KindCluster, logger: JinaLogger):
+    def __init__(self, kind_cluster: KindCluster):
         self._cluster = kind_cluster
         self._kube_config_path = os.path.join(
             os.getcwd(), '.pytest-kind/pytest-kind/kubeconfig')
@@ -112,5 +112,11 @@ class KindClusterWrapper:
 
 
 @pytest.fixture()
-def k8s_cluster(kind_cluster: KindCluster, logger: JinaLogger) -> KindClusterWrapper:
-    yield KindClusterWrapper(kind_cluster, logger)
+def k8s_cluster(kind_cluster: KindCluster) -> KindClusterWrapper:
+    yield KindClusterWrapper(kind_cluster)
+
+
+@pytest.fixture()
+def k8s_cluster_namespaced(k8s_cluster) -> KindClusterWrapper:
+    yield k8s_cluster
+    k8s_cluster._cluster.kubectl('delete', 'namespace', 'test-flow')
