@@ -251,7 +251,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def __init__(
         self,
         env: Optional[dict] = None,
-        infrastructure: Optional[str] = 'LOCAL',
+        infrastructure: Optional[str] = 'JINA',
         inspect: Optional[str] = 'COLLECT',
         log_config: Optional[str] = None,
         name: Optional[str] = None,
