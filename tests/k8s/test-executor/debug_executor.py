@@ -13,7 +13,7 @@ class TestExecutor(Executor):
         self.logger = JinaLogger(self.__class__.__name__)
         self._name = self.runtime_args.name
 
-    @requests(on='/simpleTag')
+    @requests(on='/index')
     def debug(self, docs: DocumentArray, parameters: Dict, **kwargs):
         self.logger.debug(f'Received doc array in test-executor {self._name} with length {len(docs)}.')
         key = 'traversed-executors'
@@ -25,12 +25,13 @@ class TestExecutor(Executor):
             traversed.append(self._name)
             doc.tags[key] = traversed
 
-    @requests(on='/readFile')
+    @requests(on='/search')
     def read_file(self, docs: DocumentArray, parameters: Dict, **kwargs):
         self.logger.debug(f'Received doc array in test-executor {self._name} with length {len(docs)}.')
         key = 'file'
         file_path = '/shared/test_file.txt'
 
         with open(file_path, 'r') as text_file:
-            for doc in docs:
-                doc.tags[key] = text_file.readlines()
+            lines = text_file.readlines()
+        for doc in docs:
+            doc.tags[key] = lines

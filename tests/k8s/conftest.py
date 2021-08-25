@@ -22,7 +22,7 @@ def logger():
 
 @pytest.fixture()
 def test_executor_image(logger: JinaLogger):
-    image, build_logs = client.images.build(path=os.path.join(cur_dir, 'test-executor'), tag='test-executor:0.11.0')
+    image, build_logs = client.images.build(path=os.path.join(cur_dir, 'test-executor'), tag='test-executor:0.13.0')
     for chunk in build_logs:
         if 'stream' in chunk:
             for line in chunk['stream'].splitlines():
@@ -52,8 +52,9 @@ def dummy_dumper_image(logger: JinaLogger):
 
 class KindClusterWrapper:
 
-    def __init__(self, kind_cluster: KindCluster):
+    def __init__(self, kind_cluster: KindCluster, logger: JinaLogger):
         self._cluster = kind_cluster
+        self._cluster.ensure_kubectl()
         self._kube_config_path = os.path.join(
             os.getcwd(), '.pytest-kind/pytest-kind/kubeconfig')
         self._kind_exec_path = os.path.join(
@@ -112,11 +113,11 @@ class KindClusterWrapper:
 
 
 @pytest.fixture()
-def k8s_cluster(kind_cluster: KindCluster) -> KindClusterWrapper:
-    yield KindClusterWrapper(kind_cluster)
+def k8s_cluster(kind_cluster: KindCluster, logger: JinaLogger) -> KindClusterWrapper:
+    yield KindClusterWrapper(kind_cluster, logger)
 
 
 @pytest.fixture()
 def k8s_cluster_namespaced(k8s_cluster) -> KindClusterWrapper:
     yield k8s_cluster
-    k8s_cluster._cluster.kubectl('delete', 'namespace', 'test-flow')
+    # k8s_cluster._cluster.kubectl('delete', 'namespace', 'test-flow')
