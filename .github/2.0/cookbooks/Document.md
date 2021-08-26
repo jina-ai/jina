@@ -530,7 +530,7 @@ from jina.types.document.graph import GraphDocument
 from jina import Document
 
 graph = GraphDocument()
-graph.add_node(Document(text='hello world'))
+graph.add_single_node(Document(text='hello world'))
 graph.nodes[0]
 ```
 
@@ -548,7 +548,7 @@ from jina.types.document.graph import GraphDocument
 graph = GraphDocument()
 d1 = Document(id='1', text='hello world')
 d2 = Document(id='2', text='goodbye world')
-graph.add_edge(d1, d2, features={"text": "both documents are linked"})
+graph.add_single_edge(d1, d2, features={"text": "both documents are linked"})
 graph.nodes
 ```
 
@@ -585,8 +585,8 @@ graph = GraphDocument()
 d1 = Document(id='1', text='hello world')
 d2 = Document(id='2', text='goodbye world')
 d3 = Document(id='3')
-graph.add_edge(d1, d2)
-graph.add_edge(d1, d3)
+graph.add_single_edge(d1, d2)
+graph.add_single_edge(d1, d3)
 
 assert graph.get_out_degree(d1) == 2
 

@@ -21,11 +21,6 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 img_name = 'jina/mwu-encoder'
 
 defaulthost = '0.0.0.0'
-localhost = (
-    defaulthost
-    if (platform == "linux" or platform == "linux2")
-    else 'host.docker.internal'
-)
 
 
 @pytest.fixture
@@ -210,7 +205,7 @@ def test_tail_host_docker2local():
         .add(name='d13')
     )
     with f:
-        assert getattr(f._pod_nodes['d12'].tail_args, 'host_out') == localhost
+        assert getattr(f._pod_nodes['d12'].tail_args, 'host_out') == defaulthost
 
 
 def test_pass_arbitrary_kwargs(monkeypatch, mocker):

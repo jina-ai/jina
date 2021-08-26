@@ -21,7 +21,7 @@ def test_port_expose_env_var(port_expose, func):
         envs={'PORT_EXPOSE': port_expose, 'FUNC': func},
     )
 
-    r = Client(host='localhost', port_expose=port_expose, protocol='http').post(
+    r = Client(host='localhost', port=port_expose, protocol='http').post(
         on='/blah',
         inputs=(Document(text=f'text {i}') for i in range(2)),
         return_results=True,

@@ -10,34 +10,29 @@ the same host.
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 Table of Contents
 
-- [Cookbook on `JinaD` API](#cookbook-on-jinad-api)
-  - [Minimum Working Example](#minimum-working-example)
-  - [Setup JinaD Server](#setup-jinad-server)
-    - [Run](#run)
-      - [Points to note](#points-to-note)
-      - [API Docs](#api-docs)
-  - [Start JinaD Client](#start-jinad-client)
-      - [Check if remote server is alive](#check-if-remote-server-is-alive)
-      - [Get the status of the remote server](#get-the-status-of-the-remote-server)
-  - [Workspace](#workspace)
-    - [Create a workspace (redoc)](#create-a-workspace-redoc)
-    - [Get details of a workspace (redoc)](#get-details-of-a-workspace-redoc)
-    - [List all workspaces (redoc)](#list-all-workspaces-redoc)
-    - [Delete a workspace (redoc)](#delete-a-workspace-redoc)
-  - [Create Remote Executors](#create-remote-executors)
-        - [Get all accepted arguments](#get-all-accepted-arguments)
-        - [Create a Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_create_peas_post">redoc</a>)](#create-a-peapod-redoc)
-        - [Get details of a Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_status_peas__id__get">redoc</a>)](#get-details-of-a-peapod-redoc)
-        - [Terminate a Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_delete_peas__id__delete">redoc</a>)](#terminate-a-peapod-redoc)
-  - [Create Remote Flows](#create-remote-flows)
-    - [Create a Flow (<a href="https://api.jina.ai/daemon/#operation/_create_flows_post">redoc</a>)](#create-a-flow-redoc)
-    - [Get details of a Flow (<a href="https://api.jina.ai/daemon/#operation/_status_flows__id__get">redoc</a>)](#get-details-of-a-flow-redoc)
-    - [Terminate a Flow (<a href="https://api.jina.ai/daemon/#operation/_delete_flows__id__delete">redoc</a>)](#terminate-a-flow-redoc)
-  - [Streaming Remote Logs](#streaming-remote-logs)
-  - [Development using JinaD](#development-using-jinad)
-      - [Build](#build)
-      - [Run](#run-1)
-      - [Why?](#why)
+- [Minimum Working Example](#minimum-working-example)
+- [Setup JinaD Server](#setup-jinad-server)
+  - [Run](#run)
+    - [Points to note](#points-to-note)
+    - [API Docs](#api-docs)
+- [Start JinaD Client](#start-jinad-client)
+    - [Check if remote server is alive](#check-if-remote-server-is-alive)
+    - [Get the status of the remote server](#get-the-status-of-the-remote-server)
+- [Workspace](#workspace)
+  - [Create a workspace (redoc)](#create-a-workspace-redoc)
+  - [Get details of a workspace (redoc)](#get-details-of-a-workspace-redoc)
+  - [List all workspaces (redoc)](#list-all-workspaces-redoc)
+  - [Delete a workspace (redoc)](#delete-a-workspace-redoc)
+- [Create Remote Executors](#create-remote-executors)
+- [Create Remote Flows](#create-remote-flows)
+  - [Create a Flow (<a href="https://api.jina.ai/daemon/#operation/_create_flows_post">redoc</a>)](#create-a-flow-a-hrefhttpsapijinaaidaemonoperation_create_flows_postredoca)
+  - [Get details of a Flow (<a href="https://api.jina.ai/daemon/#operation/_status_flows__id__get">redoc</a>)](#get-details-of-a-flow-a-hrefhttpsapijinaaidaemonoperation_status_flows__id__getredoca)
+  - [Terminate a Flow (<a href="https://api.jina.ai/daemon/#operation/_delete_flows__id__delete">redoc</a>)](#terminate-a-flow-a-hrefhttpsapijinaaidaemonoperation_delete_flows__id__deleteredoca)
+- [Streaming Remote Logs](#streaming-remote-logs)
+- [Development using JinaD](#development-using-jinad)
+    - [Build](#build)
+    - [Run](#run-1)
+    - [Why?](#why)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -353,7 +348,7 @@ assert success_deleted
 ## Create Remote Executors
 
 You can use the below code by passing `host`
-and `port_expose` to an executor with a Flow. Internally it uses `JinaD` for remote management.
+and `port_jinad` to an executor with a Flow. Internally it uses `JinaD` for remote management.
 
 ```python
 from jina import Flow
@@ -440,7 +435,7 @@ client.pods.get(pod_id)
         ...
       }
     },
-    "command": "--port-expose 37389 --mode pea --workspace-id 4df83da5-e227-4ecd-baac-3a54cdf7a22a"
+    "command": "--port-jinad 37389 --mode pea --workspace-id 4df83da5-e227-4ecd-baac-3a54cdf7a22a"
   },
   "workspace_id": "jworkspace-4df83da5-e227-4ecd-baac-3a54cdf7a22a"
 }

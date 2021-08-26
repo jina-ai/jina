@@ -37,7 +37,7 @@ class JinadRuntime(AsyncNewLoopRuntime):
         self.ctrl_addr = self.get_control_address(args.host, args.port_ctrl)
         self.timeout_ctrl = args.timeout_ctrl
         self.host = args.host
-        self.port_expose = args.port_expose
+        self.port_jinad = args.port_jinad
 
     async def async_setup(self):
         """Create Workspace, Pea on remote JinaD server"""
@@ -53,7 +53,7 @@ class JinadRuntime(AsyncNewLoopRuntime):
         # NOTE: args.timeout_ready is always set to -1 for JinadRuntime so that wait_for_success doesn't fail in Pea,
         # so it can't be used for Client timeout.
         self.client = AsyncJinaDClient(
-            host=self.args.host, port=self.args.port_expose, logger=self.logger
+            host=self.args.host, port=self.args.port_jinad, logger=self.logger
         )
         if not await self.client.alive:
             raise DaemonConnectivityError

@@ -60,7 +60,7 @@ class HTTPBaseClient(BaseClient):
 
             try:
                 cm1 = ProgressBar() if self.show_progress else nullcontext()
-                url = f'http://{self.args.host}:{self.args.port_expose}/post'
+                url = f'http://{self.args.host}:{self.args.port}/post'
 
                 with cm1 as p_bar:
                     all_responses = []

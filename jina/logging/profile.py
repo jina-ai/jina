@@ -4,7 +4,7 @@ import sys
 import time
 from collections import defaultdict
 from functools import wraps
-from typing import Optional
+from typing import Optional, Union, Callable
 
 from .logger import JinaLogger
 from ..helper import colored, get_readable_size, get_readable_time
@@ -202,23 +202,26 @@ class ProgressBar(TimeContext):
     def __init__(
         self,
         description: str = 'Working...',
+        message_on_done: Union[str, Callable[..., str], None] = None,
     ):
         """
         Create the ProgressBar.
 
         :param description: The name of the task, will be displayed in front of the bar.
+        :param message_on_done: The final message to print when the progress is complete
         """
         super().__init__(description, None)
         self._bars_on_row = 40
         self._completed_progress = 0
         self._last_rendered_progress = 0
         self._num_update_called = 0
+        self._on_done = message_on_done
 
     def update(
         self,
         progress: float = 1.0,
         description: Optional[str] = None,
-        details: Optional[str] = None,
+        message: Optional[str] = None,
         all_completed: bool = False,
         first_enter: bool = False,
     ) -> None:
@@ -227,7 +230,7 @@ class ProgressBar(TimeContext):
 
         :param progress: The number of unit to increment.
         :param description: Change the description text before the progress bar on update.
-        :param details: Change the details text after the progress bar on update.
+        :param message: Change the message text followed after the progress bar on update.
         :param all_completed: Mark the task as fully completed.
         :param first_enter: if this method is called by `__enter__`
         """
@@ -265,7 +268,7 @@ class ProgressBar(TimeContext):
         )
 
         description_str = description or self.task_name or ''
-        details_str = details or ''
+        msg_str = message or ''
 
         sys.stdout.write(
             '{:>10} {:<}{:<} {} {} {}'.format(
@@ -279,7 +282,7 @@ class ProgressBar(TimeContext):
                 ),
                 colored(time_str, 'cyan'),
                 speed_str,
-                details_str,
+                msg_str,
             )
         )
         sys.stdout.flush()
@@ -288,12 +291,17 @@ class ProgressBar(TimeContext):
         self.update(first_enter=True)
 
     def _exit_msg(self):
-        if self._num_update_called > 0:
-            speed = self._completed_progress / self.duration
+        if self._last_rendered_progress > 1:
+            final_msg = f'\033[K{self._completed_progress:.0f} steps done in {self.readable_duration}'
+            if self._on_done:
+                if isinstance(self._on_done, str):
+                    final_msg = self._on_done
+                elif callable(self._on_done):
+                    final_msg = self._on_done()
             self.update(0, all_completed=True)
-            sys.stdout.write(
-                f'\033[K{self._completed_progress:.0f} steps done in {self.readable_duration} ({speed:3.1f} step/s)\n'
-            )
+            sys.stdout.write(final_msg)
+            sys.stdout.write('\n')
         else:
+            # no actual render happens
             sys.stdout.write(self.clear_line)
         sys.stdout.flush()
