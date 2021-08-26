@@ -106,7 +106,7 @@ class PartialFlowStore(PartialStore):
             # `runs_in_docker` to be False. Since `Flow` args are sent to all Pods, `runs_in_docker` gets set
             # for the `CompoundPod`, which blocks the requests. Below we unset that (hacky & ugly)
             for pod in self.object._pod_nodes.values():
-                runtime_cls = update_runtime_cls(pod.args, copy=False).runtime_cls
+                runtime_cls = update_runtime_cls(pod.args, copy=True).runtime_cls
                 if runtime_cls in ['ZEDRuntime'] + list(GATEWAY_RUNTIME_DICT.values()):
                     if isinstance(pod, CompoundPod):
                         pod.args.runs_in_docker = False

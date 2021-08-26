@@ -132,7 +132,7 @@ class FlowDepends:
 
             # get & set the ports mapping, set `runs_in_docker`
             for pod_name, pod in f._pod_nodes.items():
-                runtime_cls = update_runtime_cls(pod.args, copy=False).runtime_cls
+                runtime_cls = update_runtime_cls(pod.args, copy=True).runtime_cls
                 if runtime_cls in ['ZEDRuntime'] + list(GATEWAY_RUNTIME_DICT.values()):
                     if isinstance(pod, CompoundPod):
                         # For a `CompoundPod`, publish ports only for head Pea & tail Pea
