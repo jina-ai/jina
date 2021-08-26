@@ -49,9 +49,9 @@ def test_flow_depends_load_and_dump(monkeypatch, tmpdir):
         assert f.port_expose == 12345
         assert f.protocol == GatewayProtocolType.HTTP
         assert f['gateway'].args.runs_in_docker
-        assert f['executor1'].args.runs_in_docker
-        assert f['executor1'].args.port_in == 45678
-        assert f['executor1'].args.port_in is not None
+        assert f['local_shards'].args.runs_in_docker
+        assert f['local_shards'].args.port_in == 45678
+        assert f['local_shards'].args.port_in is not None
         assert all(
             port in list(fd.ports.values())
             for port in [
@@ -59,9 +59,11 @@ def test_flow_depends_load_and_dump(monkeypatch, tmpdir):
                 f['gateway'].args.port_in,
                 f['gateway'].args.port_out,
                 f['gateway'].args.port_ctrl,
-                f['executor1'].args.port_in,
-                f['executor1'].args.port_out,
-                f['executor1'].args.port_ctrl,
+                f['local_shards'].args.port_in,
+                f['local_shards'].args.port_out,
+                f['local_shards'].args.port_ctrl,
+                f['local_compound'].head_args.port_in,
+                f['local_compound'].tail_args.port_out,
             ]
         )
 

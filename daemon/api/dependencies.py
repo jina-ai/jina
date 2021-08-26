@@ -11,17 +11,15 @@ from fastapi import HTTPException, UploadFile, File, Query, Depends
 
 from jina import Flow, __docker_host__
 from jina.helper import cached_property
-from jina.peapods.pods import Pod
-from jina.peapods.pods.compound import CompoundPod
+from jina.peapods import CompoundPod
 from jina.peapods.peas.helper import runtime_cls_from
 from jina.enums import (
     PeaRoleType,
     SocketType,
     RemoteWorkspaceState,
-    GatewayProtocolType,
 )
 from .. import daemon_logger
-from ..models import DaemonID, FlowModel, PodModel, PeaModel
+from ..models import DaemonID, FlowModel, PodModel, PeaModel, GATEWAY_RUNTIME_DICT
 from ..helper import get_workspace_path, change_cwd, change_env
 from ..stores import workspace_store as store
 
@@ -116,11 +114,7 @@ class FlowDepends:
         4. pass this new file as filename to `partial-daemon` to start the Flow
         """
         with ExitStack() as stack:
-            gateway_runtime_dict = {
-                GatewayProtocolType.GRPC: 'GRPCRuntime',
-                GatewayProtocolType.WEBSOCKET: 'WebSocketRuntime',
-                GatewayProtocolType.HTTP: 'HTTPRuntime',
-            }
+
             port_args = ['port_in', 'port_out', 'port_ctrl', 'port_expose']
             port_mapping = defaultdict(dict)
 
@@ -137,19 +131,25 @@ class FlowDepends:
             f: Flow = Flow.load_config(str(self.localpath())).build()
 
             # get & set the ports mapping, set `runs_in_docker`
-            for k, v in f._pod_nodes.items():
-                runtime_cls = runtime_cls_from(v.args)
-                if runtime_cls in ['ZEDRuntime'] + list(gateway_runtime_dict.values()):
-                    v.args.runs_in_docker = True
-                    if isinstance(v, Pod):
-                        for port_arg in port_args:
-                            port_mapping[k][port_arg] = getattr(v.args, port_arg)
-                    elif isinstance(v, CompoundPod):
-                        for replica in v.replicas:
+            for pod_name, pod in f._pod_nodes.items():
+                runtime_cls = runtime_cls_from(pod.args)
+                if runtime_cls in ['ZEDRuntime'] + list(GATEWAY_RUNTIME_DICT.values()):
+                    if isinstance(pod, CompoundPod):
+                        # For a `CompoundPod`, publish ports only for head Pea & tail Pea
+                        # Check daemon.stores.partial.PartialFlowStore.add() for addtional logic
+                        # to handle `CompoundPod` inside partial-daemon.
+                        for pea_args in [pod.head_args, pod.tail_args]:
+                            pea_args.runs_in_docker = False
                             for port_arg in port_args:
-                                port_mapping[f'{k}_{replica.name}'][port_arg] = getattr(
-                                    replica.args, port_arg
+                                port_mapping[pea_args.name][port_arg] = getattr(
+                                    pea_args, port_arg
                                 )
+                    else:
+                        pod.args.runs_in_docker = True
+                        for port_arg in port_args:
+                            port_mapping[pod_name][port_arg] = getattr(
+                                pod.args, port_arg
+                            )
             self.ports = port_mapping
 
             # save to a new file & set it for partial-daemon
