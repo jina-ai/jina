@@ -170,7 +170,7 @@ def _start_uvicorn(app: 'FastAPI'):
     config = Config(
         app=app,
         host=jinad_args.host,
-        port=jinad_args.port_expose,
+        port=jinad_args.port,
         loop='uvloop',
         log_level='error',
     )
