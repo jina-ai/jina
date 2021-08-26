@@ -1,6 +1,13 @@
 Jina Documentation
 ******************
 
+
+.. toctree::
+   :caption: Topic Guides
+   :hidden:
+
+   cookbooks/document/index
+
 .. toctree::
    :titlesonly:
    :maxdepth: 1

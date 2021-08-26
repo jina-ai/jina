@@ -9,3 +9,7 @@ h1, h2, h3 {
 table.docutils {
     border: thin;
 }
+
+.highlight {
+    background: #f5f5f5;
+}
