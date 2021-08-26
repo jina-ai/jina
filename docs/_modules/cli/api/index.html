@@ -491,13 +491,23 @@
 
 <div class="viewcode-block" id="executor_native"><a class="viewcode-back" href="../../../api/cli.api/#cli.api.executor_native">[docs]</a><span class="k">def</span> <span class="nf">executor_native</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="s1">'Namespace'</span><span class="p">):</span>
     <span class="sd">"""</span>
-<span class="sd">    Starts an Executor in ZEDRuntime</span>
+<span class="sd">    Starts an Executor in ZEDRuntime or GRPCDataRuntime depending on the `runtime_cls`</span>
 
 <span class="sd">    :param args: arguments coming from the CLI.</span>
 <span class="sd">    """</span>
     <span class="kn">from</span> <span class="nn">jina.peapods.runtimes.zmq.zed</span> <span class="kn">import</span> <span class="n">ZEDRuntime</span>
+    <span class="kn">from</span> <span class="nn">jina.peapods.runtimes.grpc</span> <span class="kn">import</span> <span class="n">GRPCDataRuntime</span>
 
-    <span class="k">with</span> <span class="n">ZEDRuntime</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="k">as</span> <span class="n">rt</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="s1">'ZEDRuntime'</span><span class="p">:</span>
+        <span class="n">runtime_cls</span> <span class="o">=</span> <span class="n">ZEDRuntime</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="s1">'GRPCDataRuntime'</span><span class="p">:</span>
+        <span class="n">runtime_cls</span> <span class="o">=</span> <span class="n">GRPCDataRuntime</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">' runtime_cls </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span><span class="si">}</span><span class="s1"> is not supported with `--native` argument. `ZEDRuntime` and `GRPCDataRuntime` are supported'</span>
+        <span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">runtime_cls</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="k">as</span> <span class="n">rt</span><span class="p">:</span>
         <span class="n">rt</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">' Executor </span><span class="si">{</span><span class="n">rt</span><span class="o">.</span><span class="n">_data_request_handler</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> started'</span>
         <span class="p">)</span>
@@ -704,7 +714,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 25, 2021.
+            Last updated on Aug 26, 2021.
         </div>
         
       </footer>
