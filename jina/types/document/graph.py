@@ -295,10 +295,12 @@ class GraphDocument(Document):
                     doc2_id in self.nodes
                 ), 'trying to add an edge from a node not in the graph'
 
+            edge_key = self._get_edge_key(doc1_id, doc2_id)
+
             if edge_features is not None:
                 self.edge_features[edge_key] = edge_features[k]
             else:
-                if self._get_edge_key(doc1_id, doc2_id) not in self.edge_features:
+                if edge_key not in self.edge_features:
                     self.edge_features[edge_key] = None
 
         # manipulate the adjacency matrix in a single shot
