@@ -356,14 +356,10 @@ class BasePea:
         self.close()
 
     def _get_runtime_cls(self) -> Tuple[Any, bool]:
-        from .helper import runtime_cls_from
+        from .helper import update_runtime_cls
         from ..runtimes import get_runtime
 
-        self.args.runtime_cls = runtime_cls_from(self.args)
-        if self.args.runtime_cls == 'JinadRuntime':
-            # NOTE: remote pea would also create a remote workspace which might take alot of time.
-            # setting it to -1 so that wait_start_success doesn't fail
-            self.args.timeout_ready = -1
+        update_runtime_cls(self.args)
         return get_runtime(self.args.runtime_cls)
 
     @property

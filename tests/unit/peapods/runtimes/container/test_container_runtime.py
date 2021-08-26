@@ -415,6 +415,9 @@ def test_pass_native_arg(monkeypatch, mocker):
         def __init__(self):
             pass
 
+        def get(self, *args):
+            pass
+
         def run(self, *args, **kwargs):
             assert '--native' in args[1]
             return MockContainers.MockContainer()

@@ -2,11 +2,13 @@ from argparse import Namespace
 from typing import Union
 
 from jina.helper import colored
-from jina.peapods import Pea, Pod
+from jina.peapods import Pea, Pod, CompoundPod
+from jina.peapods.peas.helper import update_runtime_cls
 from jina import Flow, __docker_host__
 from jina.logging.logger import JinaLogger
 
 from .. import jinad_args
+from ..models import GATEWAY_RUNTIME_DICT
 from ..models.enums import UpdateOperation
 from ..models.partial import PartialFlowItem, PartialStoreItem
 
@@ -96,8 +98,20 @@ class PartialFlowStore(PartialStore):
 
             with open(args.uses) as yaml_file:
                 yaml_source = yaml_file.read()
-            self.object: Flow = Flow.load_config(yaml_source)
+
+            self.object: Flow = Flow.load_config(yaml_source).build()
             self.object.workspace_id = jinad_args.workspace_id
+
+            # In dependencies, we set `runs_in_docker` for the `gateway` and for `CompoundPod` we need
+            # `runs_in_docker` to be False. Since `Flow` args are sent to all Pods, `runs_in_docker` gets set
+            # for the `CompoundPod`, which blocks the requests. Below we unset that (hacky & ugly)
+            for pod in self.object._pod_nodes.values():
+                runtime_cls = update_runtime_cls(pod.args, copy=False).runtime_cls
+                if runtime_cls in ['ZEDRuntime'] + list(GATEWAY_RUNTIME_DICT.values()):
+                    if isinstance(pod, CompoundPod):
+                        pod.args.runs_in_docker = False
+                        for replica_args in pod.replicas_args:
+                            replica_args.runs_in_docker = False
             self.object = self.object.__enter__()
         except Exception as e:
             if hasattr(self, 'object'):
