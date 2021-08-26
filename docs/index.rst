@@ -3,10 +3,13 @@ Jina Documentation
 
 
 .. toctree::
-   :caption: Topic Guides
+   :caption: Cookbooks
    :hidden:
 
    cookbooks/document/index
+   cookbooks/executor/index
+   cookbooks/flow/index
+   cookbooks/hub/index
 
 .. toctree::
    :titlesonly:
