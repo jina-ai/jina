@@ -117,10 +117,10 @@ def k8s_flow_with_sharding(
         name='test-flow', port_expose=8080, infrastructure='K8S', protocol='http'
     ).add(
         name='test_executor',
-        # shards=3,
-        # replicas=2,
+        shards=3,
+        replicas=2,
         uses=test_executor_image,
-        # uses_after=executor_merger_image,
+        uses_after=executor_merger_image,
     )
     return flow
 
@@ -181,35 +181,30 @@ def test_flow_with_init(
         assert doc['tags']['file'] == ['1\n', '2\n', '3']
 
 
-#
-# @pytest.mark.timeout(3600)
-# def test_flow_with_sharding(
-#     k8s_cluster_namespaced,
-#     test_executor_image,
-#     executor_merger_image,
-#     k8s_flow_with_sharding: Flow,
-#     logger,
-# ):
-#
-#     resp = run_test(
-#         [test_executor_image, executor_merger_image],
-#         k8s_cluster_namespaced,
-#         k8s_flow_with_sharding,
-#         logger,
-#         expected_running_pods=9,
-#         endpoint='index'
-#     )
-#
-#     expected_traversed_executors = {
-#         'segmenter',
-#         'imageencoder',
-#         'textencoder',
-#         'imagestorage',
-#         'textstorage',
-#     }
-#
-#     assert resp.status_code == HTTPStatus.OK
-#     docs = resp.json()['data']['docs']
-#     assert len(docs) == 10
-#     for doc in docs:
-#         assert set(doc['tags']['traversed-executors']) == expected_traversed_executors
+@pytest.mark.timeout(3600)
+def test_flow_with_sharding(
+    k8s_cluster_namespaced,
+    test_executor_image,
+    executor_merger_image,
+    k8s_flow_with_sharding: Flow,
+    logger,
+):
+
+    resp = run_test(
+        [test_executor_image, executor_merger_image],
+        k8s_cluster_namespaced,
+        k8s_flow_with_sharding,
+        logger,
+        expected_running_pods=9,
+        endpoint='index',
+    )
+
+    expected_traversed_executors = {
+        'test_executor',
+    }
+
+    assert resp.status_code == HTTPStatus.OK
+    docs = resp.json()['data']['docs']
+    assert len(docs) == 10
+    for doc in docs:
+        assert set(doc['tags']['traversed-executors']) == expected_traversed_executors

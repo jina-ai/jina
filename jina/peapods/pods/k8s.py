@@ -35,9 +35,13 @@ class K8sPod(BasePod):
             # reasons to separate head and tail from peas is that they
             # can be deducted based on the previous and next pods
             parsed_args['head_deployment'] = copy.copy(args)
-            parsed_args['head_deployment'].uses = args.uses_before
+            parsed_args['head_deployment'].uses = (
+                args.uses_before or __default_executor__
+            )
             parsed_args['tail_deployment'] = copy.copy(args)
-            parsed_args['tail_deployment'].uses = args.uses_after
+            parsed_args['tail_deployment'].uses = (
+                args.uses_after or __default_executor__
+            )
             parsed_args['deployments'] = [args] * parallel
         else:
             parsed_args['deployments'] = [args]
@@ -74,7 +78,7 @@ class K8sPod(BasePod):
         )
 
     def _deploy_runtime(self, deployment_args, replicas, k8s_namespace, deployment_id):
-        image_name = kubernetes_deployment.get_image_name(self.args.uses)
+        image_name = kubernetes_deployment.get_image_name(deployment_args.uses)
         name_suffix = self.name + (
             '-' + str(deployment_id) if self.args.parallel > 1 else ''
         )
@@ -83,7 +87,9 @@ class K8sPod(BasePod):
         uses_metas = kubernetes_deployment.dictionary_to_cli_param(
             {'pea_id': deployment_id}
         )
-        uses_with = kubernetes_deployment.dictionary_to_cli_param(self.args.uses_with)
+        uses_with = kubernetes_deployment.dictionary_to_cli_param(
+            deployment_args.uses_with
+        )
         uses_with_string = f'"--uses-with", "{uses_with}", ' if uses_with else ''
         if image_name == __default_executor__:
             image_name = 'gcr.io/jina-showcase/custom-jina:latest'
@@ -94,7 +100,7 @@ class K8sPod(BasePod):
                 f'"--runtime-cls", "GRPCDataRuntime", '
                 f'"--uses-metas", "{uses_metas}", '
                 + uses_with_string
-                + f'{kubernetes_deployment.get_cli_params(self.args)}]'
+                + f'{kubernetes_deployment.get_cli_params(deployment_args)}]'
             )
 
         else:
@@ -105,7 +111,7 @@ class K8sPod(BasePod):
                 f'"--runtime-cls", "GRPCDataRuntime", '
                 f'"--uses-metas", "{uses_metas}", '
                 + uses_with_string
-                + f'{kubernetes_deployment.get_cli_params(self.args)}]'
+                + f'{kubernetes_deployment.get_cli_params(deployment_args)}]'
             )
 
         kubernetes_deployment.deploy_service(
@@ -135,7 +141,7 @@ class K8sPod(BasePod):
                     self.deployment_args['head_deployment'],
                     1,
                     self.args.k8s_namespace,
-                    '_head',
+                    'head',
                 )
 
             for i in range(self.args.parallel):
@@ -149,7 +155,7 @@ class K8sPod(BasePod):
                     self.deployment_args['tail_deployment'],
                     1,
                     self.args.k8s_namespace,
-                    '_tail',
+                    'tail',
                 )
         return self
 
@@ -159,7 +165,7 @@ class K8sPod(BasePod):
 
     def close(self):
         """Not implemented. It should delete the namespace of the flow"""
-        pass
+        kubernetes_tools.delete_namespace(self.args.k8s_namespace)
 
     def join(self):
         """Not implemented. It should wait to make sure deployments are properly killed."""

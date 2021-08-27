@@ -5,7 +5,7 @@ from typing import Dict
 cur_dir = os.path.dirname(__file__)
 
 
-class ClientsSingelton:
+class K8SClients:
     """
     The Kubernetes api is wrapped into a class to have a lazy reading of the cluster configuration.
 
@@ -70,7 +70,7 @@ class ClientsSingelton:
         return self.__networking_v1_beta1_api
 
 
-__clients_singelton = ClientsSingelton()
+__k8s_clients = K8SClients()
 
 
 def create(template: str, params: Dict):
@@ -89,7 +89,7 @@ def create(template: str, params: Dict):
         with os.fdopen(fd, 'w') as tmp:
             tmp.write(yaml)
         try:
-            utils.create_from_yaml(__clients_singelton.k8s_client, path)
+            utils.create_from_yaml(__k8s_clients.k8s_client, path)
         except FailToCreateError as e:
             if e.api_exceptions[0].status == 409:
                 print('exists already')
@@ -108,3 +108,14 @@ def _get_yaml(template: str, params: Dict):
         for k, v in params.items():
             content = content.replace(f'{{{k}}}', str(v))
     return content
+
+
+def delete_namespace(k8s_namespace):
+    """Remove the namespace
+
+    :param k8s_namespace: namespace to remove
+    """
+    # from kubernetes import utils
+    #
+    # utils
+    pass
