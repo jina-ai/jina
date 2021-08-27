@@ -8,6 +8,7 @@ if [ "${PWD##*/}" != "jina" ]
 fi
 
 pip install pytest
+pip install numpy
 
 pytest -sv ./tests/k8s
 
