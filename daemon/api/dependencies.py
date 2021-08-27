@@ -115,7 +115,7 @@ class FlowDepends:
         """
         with ExitStack() as stack:
 
-            port_args = ['port_in', 'port_out', 'port_ctrl', 'port_expose']
+            port_args = ['port_in', 'port_out', 'port_ctrl']
             port_mapping = defaultdict(dict)
 
             # set env vars
@@ -131,6 +131,7 @@ class FlowDepends:
             f: Flow = Flow.load_config(str(self.localpath())).build()
 
             # get & set the ports mapping, set `runs_in_docker`
+            port_mapping['gateway']['port_expose'] = f.port_expose
             for pod_name, pod in f._pod_nodes.items():
                 runtime_cls = update_runtime_cls(pod.args, copy=True).runtime_cls
                 if runtime_cls in ['ZEDRuntime'] + list(GATEWAY_RUNTIME_DICT.values()):

@@ -146,7 +146,7 @@ def test_remote_flow_containerized_executors(docker_image, mocker):
         args = client.flows.get(flow_id)['arguments']['object']['arguments']
         Client(
             host=__default_host__,
-            port_expose=args['port_expose'],
+            port=args['port_expose'],
             protocol=args['protocol'],
         ).post(
             on='/',
