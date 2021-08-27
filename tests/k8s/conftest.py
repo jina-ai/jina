@@ -123,7 +123,7 @@ class KindClusterWrapper:
             filter(operator.attrgetter("ready"), self.list_pods(logger, namespace))
         )
 
-    def get_node_info(self):
+    def get_node_info(self, logger):
         nodes = []
         for node in pykube.Node.objects(self._pykube_api):
             try:
