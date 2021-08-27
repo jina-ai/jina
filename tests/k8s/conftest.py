@@ -126,6 +126,21 @@ class KindClusterWrapper:
     def get_node_info(self):
         nodes = []
         for node in pykube.Node.objects(self._pykube_api):
+            try:
+                logger.debug(f'### conditions 1: {node.obj["status"]["conditions"]}')
+            except:
+                logger.debug('###conditions 1 not working')
+
+            try:
+                logger.debug(f'### conditions 2: {node.obj["metadata"]["conditions"]}')
+            except:
+                logger.debug('###conditions 2 not working')
+
+            try:
+                logger.debug(f'### conditions 3: {node.obj["conditions"]}')
+            except:
+                logger.debug('###conditions 3 not working')
+
             nodes.append(node.obj)
         return nodes
 
