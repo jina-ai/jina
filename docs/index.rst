@@ -10,6 +10,10 @@ Jina Documentation
    cookbooks/executor/index
    cookbooks/flow/index
    cookbooks/hub/index
+   cookbooks/daemon/index
+   cookbooks/math/index
+   cookbooks/serving/index
+   cookbooks/clean-code/index
 
 .. toctree::
    :titlesonly:

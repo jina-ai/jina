@@ -95,7 +95,8 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinxext.opengraph',
     'notfound.extension',
-    'myst_parser'
+    'myst_parser',
+    'sphinx_design',
 ]
 
 # -- Custom 404 page

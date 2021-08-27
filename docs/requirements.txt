@@ -11,4 +11,5 @@ gitpython==3.1.13
 sphinx-sitemap==2.2.0
 sphinxext-opengraph
 furo
-
+myst-parser==0.15.1
+sphinx-design==0.0.12
