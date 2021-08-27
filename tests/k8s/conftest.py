@@ -102,13 +102,18 @@ class KindClusterWrapper:
                 service_name, service_port, local_port=local_port, retries=20
             )
 
-    def list_pods(self, namespace: str = None) -> List:
+    def list_pods(self, logger, namespace: str = None) -> List:
         if namespace:
-            return list(pykube.Pod.objects(self._pykube_api, namespace=namespace))
-        return list(pykube.Pod.objects(self._pykube_api))
+            pod_list = list(pykube.Pod.objects(self._pykube_api, namespace=namespace))
+        else:
+            pod_list = list(pykube.Pod.objects(self._pykube_api))
+        self.logger.debug(f'pod list: {pod_list}')
+        return pod_list
 
-    def list_ready_pods(self, namespace: str = None) -> List:
-        return list(filter(operator.attrgetter("ready"), self.list_pods(namespace)))
+    def list_ready_pods(self, logger, namespace: str = None) -> List:
+        return list(
+            filter(operator.attrgetter("ready"), self.list_pods(logger, namespace))
+        )
 
     def needs_docker_image(self, image_name: str):
         self._cluster.load_docker_image(image_name)

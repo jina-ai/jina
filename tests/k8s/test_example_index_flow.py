@@ -82,7 +82,9 @@ def start_flow(expected_running_pods, k8s_cluster_namespaced, flow, logger):
     waiting = True
     while waiting:
         num_running_pods = len(
-            k8s_cluster_namespaced.list_ready_pods(namespace=flow.args.name)
+            k8s_cluster_namespaced.list_ready_pods(
+                namespace=flow.args.name, logger=logger
+            )
         )
         if num_running_pods == expected_running_pods:
             waiting = False
