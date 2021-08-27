@@ -53,11 +53,13 @@ class GraphDocument(Document):
     ):
         self._check_installed_array_packages()
         super().__init__(document=document, copy=copy, **kwargs)
-        self._node_id_to_offset = {
-            node.id: offset for offset, node in enumerate(self.nodes)
-        }  # dangerous because document is stateless, try to work only with proto
         if force_undirected:
             self._pb_body.graph.undirected = force_undirected
+        self._update_nodes_cache()
+
+    def _update_nodes_cache(self):
+        # cache the `nodes` into an object so that we do not have to call `self.nodes` every time which is expensive
+        self._nodes = self.nodes
 
     @staticmethod
     def _check_installed_array_packages():
@@ -78,12 +80,12 @@ class GraphDocument(Document):
 
         :param node: the node to be added to the graph
         """
-        if node.id in self._node_id_to_offset:
+        if node.id in self._nodes:
             default_logger.debug(f'Document {node.id} is already a node of the graph')
             return
-
-        self._node_id_to_offset[node.id] = len(self.nodes)
-        self.nodes.append(node)
+        nodes = self.nodes
+        nodes.append(node)
+        self._nodes = nodes
 
     @deprecated_method(new_function_name='add_single_node')
     def add_node(self, *args, **kwargs):
@@ -113,16 +115,16 @@ class GraphDocument(Document):
         from scipy.sparse import coo_matrix
 
         node_id = node.id if isinstance(node, Document) else node
-        if node_id not in self._node_id_to_offset:
+        if node_id not in self._nodes:
             default_logger.debug(
                 f'Trying to remove document {node_id} from the graph while is not a node of the graph'
             )
             return
 
-        offset = self._node_id_to_offset[node_id]
+        offset = self._nodes._id_to_index[node_id]
 
         if self.num_edges > 0:
-            nodes = self.nodes
+            nodes = self._nodes
 
             edges_to_remove = []
             for edge_id, (row, col) in enumerate(
@@ -151,9 +153,7 @@ class GraphDocument(Document):
                 ).value = coo_matrix((data, (row, col)))
 
         del self.nodes[offset]
-        self._node_id_to_offset = {
-            present_node.id: offset for offset, present_node in enumerate(self.nodes)
-        }
+        self._update_nodes_cache()
 
     @deprecated_method(new_function_name='remove_single_node')
     def remove_node(self, *args, **kwargs):
@@ -205,13 +205,13 @@ class GraphDocument(Document):
                 self.add_single_node(doc1)
             else:
                 assert (
-                    doc1_id in self.nodes
+                    doc1_id in self._nodes
                 ), 'trying to add an edge from a node not in the graph'
             if isinstance(doc2, Document):
                 self.add_single_node(doc2)
             else:
                 assert (
-                    doc2_id in self.nodes
+                    doc2_id in self._nodes
                 ), 'trying to add an edge to a node not in the graph'
 
             current_adjacency = self.adjacency
@@ -222,8 +222,8 @@ class GraphDocument(Document):
                 source_id = doc2_id
                 target_id = doc1_id
 
-            source_node_offset = self._node_id_to_offset[source_id]
-            target_node_offset = self._node_id_to_offset[target_id]
+            source_node_offset = self._nodes._id_to_index[source_id]
+            target_node_offset = self._nodes._id_to_index[target_id]
             row = (
                 np.append(current_adjacency.row, source_node_offset)
                 if current_adjacency is not None
@@ -306,11 +306,11 @@ class GraphDocument(Document):
         # manipulate the adjacency matrix in a single shot
         current_adjacency = self.adjacency
         source_node_offsets = [
-            self._node_id_to_offset[source.id if is_documents_source else source]
+            self._nodes._id_to_index[source.id if is_documents_source else source]
             for source in source_docs
         ]
         target_node_offsets = [
-            self._node_id_to_offset[target.id if is_documents_dest else target]
+            self._nodes._id_to_index[target.id if is_documents_dest else target]
             for target in dest_docs
         ]
         row = (
@@ -369,8 +369,8 @@ class GraphDocument(Document):
         """
         doc1_id = doc1.id if isinstance(doc1, Document) else doc1
         doc2_id = doc2.id if isinstance(doc2, Document) else doc2
-        offset1 = self._node_id_to_offset[doc1_id]
-        offset2 = self._node_id_to_offset[doc2_id]
+        offset1 = self._nodes._id_to_index[doc1_id]
+        offset2 = self._nodes._id_to_index[doc2_id]
         for edge_id, (row, col) in enumerate(
             zip(self.adjacency.row, self.adjacency.col)
         ):
@@ -470,6 +470,7 @@ class GraphDocument(Document):
         :param value: the array of nodes of this document
         """
         self.chunks = value
+        self._update_nodes_cache()
 
     def get_outgoing_nodes(self, doc: 'Document') -> Optional[ChunkArray]:
         """
@@ -478,11 +479,11 @@ class GraphDocument(Document):
         .. # noqa: DAR201
         :param doc: the document node from which to extract the outgoing nodes.
         """
-        if self.adjacency is not None and doc.id in self._node_id_to_offset:
-            offset = self._node_id_to_offset[doc.id]
+        if self.adjacency is not None and doc.id in self._nodes:
+            offset = self._nodes._id_to_index[doc.id]
             return ChunkArray(
                 [
-                    self.nodes[col.item()]
+                    self._nodes[col.item()]
                     for (row, col) in zip(self.adjacency.row, self.adjacency.col)
                     if row.item() == offset
                 ],
@@ -496,11 +497,11 @@ class GraphDocument(Document):
         .. # noqa: DAR201
         :param doc: the document node from which to extract the incoming nodes.
         """
-        if self.adjacency is not None and doc.id in self._node_id_to_offset:
-            offset = self._node_id_to_offset[doc.id]
+        if self.adjacency is not None and doc.id in self._nodes:
+            offset = self._nodes._id_to_index[doc.id]
             return ChunkArray(
                 [
-                    self.nodes[row.item()]
+                    self._nodes[row.item()]
                     for (row, col) in zip(self.adjacency.row, self.adjacency.col)
                     if col.item() == offset
                 ],
@@ -596,20 +597,20 @@ class GraphDocument(Document):
     def __iter__(self) -> Iterator[Tuple['Document']]:
         if self.adjacency is not None:
             for (row, col) in zip(self.adjacency.row, self.adjacency.col):
-                yield self.nodes[row.item()], self.nodes[col.item()]
+                yield self._nodes[row.item()], self._nodes[col.item()]
         else:
             default_logger.debug(f'Trying to iterate over a graph without edges')
 
     def __mermaid_str__(self) -> str:
 
-        if len(self.nodes) == 0:
+        if len(self._nodes) == 0:
             return super().__mermaid_str__()
 
         results = []
         printed_ids = set()
         _node_id_node_mermaid_id = {}
 
-        for node in self.nodes:
+        for node in self._nodes:
             _node_id_node_mermaid_id[node.id] = node._mermaid_id
 
         for in_node, out_node in self:
