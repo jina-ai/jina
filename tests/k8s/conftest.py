@@ -107,7 +107,7 @@ class KindClusterWrapper:
             pod_list = list(pykube.Pod.objects(self._pykube_api, namespace=namespace))
         else:
             pod_list = list(pykube.Pod.objects(self._pykube_api))
-        logger.debug(f'pod list: {pod_list}')
+        logger.debug(f'pod list: {[p.obj for p in pod_list]}')
         return pod_list
 
     def list_ready_pods(self, logger, namespace: str = None) -> List:
