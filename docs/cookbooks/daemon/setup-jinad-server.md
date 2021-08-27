@@ -18,13 +18,17 @@ docker run --add-host host.docker.internal:host-gateway \
            -d jinaai/jina:master-daemon
 ```
 
-#### Points to note
+````{admonition} Note
+:class: note
+You can change the port via the `-p` argument. Following code assumes that `HOST` is the public IP of the above
+instance and `PORT` is as passed in the docker run cpmmand.
+````
 
-- You can change the port via the `-p` argument. Following code assumes that `HOST` is the public IP of the above
-  instance and `PORT` is as passed in the docker run cpmmand.
-
-- `JinaD` should always be deployed as a docker container. Simply starting the server using `jinad` command would not
-  work.
+````{admonition} Important
+:class: important
+`JinaD` should always be deployed as a docker container. Simply starting the server using `jinad` command would not
+work.
+````
 
 #### API Docs
 

@@ -8,9 +8,15 @@ Everything is iterating in Internet world. We also provide a way to update your 
 $ jina hub push [--public/--private] --force <UUID> --secret <SECRET> <path_to_executor_folder>
 ```
 
-**Notes**:
-- With `--public` option, the resulted Executor will be **visible to public**.
-- With `--private` options, the resulted Executor will be **invisible to public**.
+````{admonition} Note
+:class: note
+With `--public` option, the resulted Executor will be **visible to public**.
+````
+
+````{admonition} Note
+:class: note
+With `--private` options, the resulted Executor will be **invisible to public**.
+````
 
 ### 3.2 Advanced
 

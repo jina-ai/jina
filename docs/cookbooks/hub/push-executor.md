@@ -10,10 +10,16 @@ $ jina hub push [--public/--private] <path_to_executor_folder>
 
 It will return an **UUID** as well as a **SECRET**. You would need these two items when using or update the Executor later. **Please keep them carefully.**
 
-**Notes**:
 
-- When no `--public` or `--private` visibility options are provided. **By default, it's public.**
-- There is only one difference between `--public` and `--private`. You can use public Executor once you know the `UUID`, but you must know `SECRET` and `UUID` if you want to use a private Executor.
+````{admonition} Note
+:class: note
+When no `--public` or `--private` visibility options are provided. **By default, it's public.**
+````
+
+````{admonition} Important
+:class: important
+There is only one difference between `--public` and `--private`. You can use public Executor once you know the `UUID`, but you must know `SECRET` and `UUID` if you want to use a private Executor.
+````
 
 ### 2.2 Advanced
 

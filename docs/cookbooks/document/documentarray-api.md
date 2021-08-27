@@ -296,7 +296,9 @@ will produce the same output as `np.stack(da.get_attributes('embedding'))` but t
  [7 8 9]]
 ```
 
-**Note: using .embeddings in a DocumenArray or DocumentArrayMemmap with different shapes or dtypes might yield to unnexpected results.**
+````{admonition} Note
+Using `.embeddings` in a DocumenArray or DocumentArrayMemmap with different shapes or dtypes might yield to unnexpected results.**
+````
 
 
 

@@ -407,8 +407,11 @@ You can add **chunks** (sub-Document) and **matches** (neighbour-Document) to a 
   d.matches.append(Document())
   ```
 
-Note that both `doc.chunks` and `doc.matches` return `ChunkArray` and `MatchArray`, which are sub-classes
-of [`DocumentArray`](#documentarray-api). We will introduce `DocumentArray later.
+````{admonition} Note
+:class: note
+Both `doc.chunks` and `doc.matches` return `ChunkArray` and `MatchArray`, which are sub-classes
+of [`DocumentArray`](#documentarray-api). We will introduce `DocumentArray` later.
+````
 
 
 ### Construct `GraphDocument`

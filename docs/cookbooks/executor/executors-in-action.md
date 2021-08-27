@@ -7,8 +7,13 @@ by [fastai](https://github.com/fastai/fastai).
 
 The `encode` function of this executor generates a feature vector for each image in each `Document` of the
 input `DocumentArray`. The feature vector generated is the output activations of the neural network (a vector of 1000
-components). Note the embedding of each text is performed in a joined operation (all embeddings are created for all
+components). 
+
+````{admonition} Note
+:class: note
+The embedding of each text is performed in a joined operation (all embeddings are created for all
 images in a single function call) to achieve higher performance.
+````
 
 As a result each `Document` in the input `DocumentArray`  _docs_ will have an `embedding` after `encode()` has
 completed.
@@ -187,8 +192,13 @@ feature vector to generate sparse embeddings for text search.
 The class `TFIDFTextEncoder` extracts stores a `tfidf_vectorizer` object that it is fitted with a dataset already
 present in `sklearn`. The executor provides an `encode` method that recieves a `DocumentArray` and updates each document
 in the  `DocumentArray` with an `embedding` attribute that is the tf-idf representation of the text found in the
-document. Note the embedding of each text is perfomed in a joined operation (all embeddings are creted for all texts in
+document.
+
+````{admonition} Note
+:class: note
+The embedding of each text is perfomed in a joined operation (all embeddings are creted for all texts in
 a single function call) to achieve higher performance.
+````
 
 As a result, each `Document` in the `DocumentArray` will have an `embedding` after `encode()` has completed.
 

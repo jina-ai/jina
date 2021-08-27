@@ -207,7 +207,10 @@ c = Client(protocol='http', port_expose=12345)
 c.post('/', ...)
 ```
 
-Note this HTTP client is less-performant on large data, it does not stream. Hence, it should be only used for debugging & testing.
+````{admonition} Warning
+:class: warning
+This HTTP client is less-performant on large data, it does not stream. Hence, it should be only used for debugging & testing.
+````
 
 #### Enable Cross-origin-resources-sharing (CORS)
 

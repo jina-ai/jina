@@ -31,10 +31,18 @@ class MyExecutor(Executor):
 ```
 
 Here, `kwargs` contains `metas` and `requests` (representing the request-to-function mapping) values from the YAML
-config and `runtime_args` injected on startup. Note that you can access their values in `__init__` body via `self.metas`
-/`self.requests`/`self.runtime_args`, or modifying their values before sending to `super().__init__()`.
+config and `runtime_args` injected on startup. 
 
+````{admonition} Note
+:class: note
+You can access the values of these arguments in `__init__` body via `self.metas`/`self.requests`/`self.runtime_args`, 
+or modifying their values before sending to `super().__init__()`.
+````
+
+````{admonition} Hint
+:class: hint
 No need to implement `__init__` if your `Executor` does not contain initial states.
+````
 
 ### Method naming
 
@@ -130,10 +138,15 @@ The Executor's method receive the following arguments in order:
 | `groundtruths`   | `Optional[DocumentArray]`  | `Request.groundtruths`. Same behavior as `docs`  |
 | `groundtruths_matrix`  | `List[DocumentArray]`  | Same behavior as `docs_matrix` but on `Request.groundtruths` |
 
-Note, executor's methods not decorated with `@request` do not enjoy these arguments.
+````{admonition} Note
+:class: note
+Executor's methods not decorated with `@request` do not enjoy these arguments.
+````
 
 The arguments order is designed as common-usage-first. Not alphabetical order or semantic closeness.
 
+````{admonition} Hint
+:class: hint
 If you don't need some arguments, you can suppress them into `**kwargs`. For example:
 
 ```python
@@ -156,6 +169,7 @@ class MyExecutor(Executor):
         # the args are suppressed into kwargs
         print(kwargs['docs_matrix'])
 ```
+````
 
 ### Method Returns
 
