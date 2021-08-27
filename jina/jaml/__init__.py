@@ -513,13 +513,26 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             no_tag_yml = JAML.load_no_tags(fp)
             if no_tag_yml:
                 no_tag_yml.update(**kwargs)
+
                 # if there is `override_with` u should make sure that `uses_with` does not remain in the yaml
-                if override_with is not None and 'uses_with' in no_tag_yml:
-                    del no_tag_yml['uses_with']
-                if override_metas is not None and 'uses_metas' in no_tag_yml:
-                    del no_tag_yml['uses_metas']
-                if override_requests is not None and 'uses_requests' in no_tag_yml:
-                    del no_tag_yml['uses_requests']
+                def _delitem(
+                    obj,
+                    key,
+                ):
+                    value = obj.get(key, None)
+                    if value:
+                        del obj[key]
+                        return
+                    for k, v in obj.items():
+                        if isinstance(v, dict):
+                            _delitem(v, key)
+
+                if override_with is not None:
+                    _delitem(no_tag_yml, key='uses_with')
+                if override_metas is not None:
+                    _delitem(no_tag_yml, key='uses_metas')
+                if override_requests is not None:
+                    _delitem(no_tag_yml, key='uses_requests')
                 cls._override_yml_params(no_tag_yml, 'with', override_with)
                 cls._override_yml_params(no_tag_yml, 'metas', override_metas)
                 cls._override_yml_params(no_tag_yml, 'requests', override_requests)

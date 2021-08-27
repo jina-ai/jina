@@ -26,3 +26,12 @@ def test_single_import(patched_path_import):
     )
     with flow:
         pass
+
+
+def test_single_import_metas(patched_path_import):
+    flow = Flow().add(
+        uses='ExecutorImportedOnce',
+        uses_metas=dict(py_modules=['executors/executor_fails_import_twice.py']),
+    )
+    with flow:
+        pass
