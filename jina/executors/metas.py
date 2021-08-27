@@ -15,5 +15,4 @@ def get_default_metas() -> Dict:
         'name': '',  #: a string, the name of the executor
         'description': '',  #: a string, the description of this executor. It will be used in automatics docs UI
         'workspace': '',  #: a string, the workspace of the executor
-        'py_modules': '',  #: a list of strings, the python dependencies of the executor
     }
