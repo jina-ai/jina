@@ -107,7 +107,13 @@ class KindClusterWrapper:
             pod_list = list(pykube.Pod.objects(self._pykube_api, namespace=namespace))
         else:
             pod_list = list(pykube.Pod.objects(self._pykube_api))
-        logger.debug(f'pod list: {[p.obj for p in pod_list]}')
+        for pod in pod_list:
+            logger.debug(f'metadata: {pod.obj["metadata"]}')
+            logger.debug(f'metadata: {pod.obj["status"]["phase"]}')
+            logger.debug(f'metadata: {pod.obj["status"]["conditions"]}')
+            if "containerStatuses" in pod.obj["status"]:
+                logger.debug(f'metadata: {pod.obj["status"]["containerStatuses"]}')
+
         return pod_list
 
     def list_ready_pods(self, logger, namespace: str = None) -> List:
