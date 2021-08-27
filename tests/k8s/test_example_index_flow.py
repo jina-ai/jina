@@ -94,6 +94,10 @@ def start_flow(expected_running_pods, k8s_cluster_namespaced, flow, logger):
             f'(Current Status: {num_running_pods}/{expected_running_pods}).'
         )
 
+        nodes_info = k8s_cluster_namespaced.get_node_info()
+        for n in nodes_info:
+            logger.debug(f'Node info {n}')
+
 
 @pytest.fixture()
 def k8s_flow_with_init_container(

@@ -109,10 +109,12 @@ class KindClusterWrapper:
             pod_list = list(pykube.Pod.objects(self._pykube_api))
         for pod in pod_list:
             logger.debug(f'metadata: {pod.obj["metadata"]}')
-            logger.debug(f'metadata: {pod.obj["status"]["phase"]}')
-            logger.debug(f'metadata: {pod.obj["status"]["conditions"]}')
+            logger.debug(f'phase: {pod.obj["status"]["phase"]}')
+            logger.debug(f'conditions: {pod.obj["status"]["conditions"]}')
             if "containerStatuses" in pod.obj["status"] and True:
-                logger.debug(f'metadata: {pod.obj["status"]["containerStatuses"]}')
+                logger.debug(
+                    f'containerStatuses: {pod.obj["status"]["containerStatuses"]}'
+                )
 
         return pod_list
 
@@ -120,6 +122,12 @@ class KindClusterWrapper:
         return list(
             filter(operator.attrgetter("ready"), self.list_pods(logger, namespace))
         )
+
+    def get_node_info(self):
+        nodes = []
+        for node in pykube.Node.objects(self._pykube_api):
+            nodes.append(node.obj)
+        return nodes
 
     def needs_docker_image(self, image_name: str):
         self._cluster.load_docker_image(image_name)
