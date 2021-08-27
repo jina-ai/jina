@@ -189,10 +189,10 @@ jobs:
 #        with:
 #          access_token: ${{ github.token }}
       - uses: actions/checkout@v2
-#      - name: Set up Python 3.7
-#        uses: actions/setup-python@v2
-#        with:
-#          python-version: 3.7
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
       - name: Test hubapp with hubpods
         run: |
           ./tests/jinahub/test_integration.sh
@@ -205,10 +205,10 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python 3.7
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
+#      - name: Set up Python 3.7
+#        uses: actions/setup-python@v2
+#        with:
+#          python-version: 3.7
       - name: Prepare enviroment
         run: |
           docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
