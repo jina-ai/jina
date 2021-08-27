@@ -13,3 +13,4 @@ sphinxext-opengraph
 furo
 myst-parser==0.15.1
 sphinx-design==0.0.12
+sphinx-inline-tabs==2021.8.17b10

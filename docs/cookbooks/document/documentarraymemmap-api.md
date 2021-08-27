@@ -87,133 +87,110 @@ However, there are practices to **avoid**. Mainly, you should not modify documen
 might not be in the buffer pool. Here are some practices to avoid:
 
 1. Keep more  references than the buffer pool size and modify them:
-   <table>
-   <tr>
-   <td>
-   <b><center>❌ Don't</center></b>
-   </td>
-   <td>
-   <b><center>✅ Do</center></b>
-   </td>
-   </tr>
-   <tr>
-   <td>
-   
-   ```python
-   from jina import Document
-   from jina.types.arrays.memmap import DocumentArrayMemmap
-   
-   docs = [Document(text='hello') for _ in range(100)]
-   dam = DocumentArrayMemmap('./my-memmap', buffer_pool_size=10)
-   dam.extend(docs)
-   for doc in docs:
-       doc.text = 'goodbye'
-   
-   dam[50].text
-   ```
-    ```text
-    hello
-    ```
 
+````{tab} ❌ Don't
+```python
+from jina import Document
+from jina.types.arrays.memmap import DocumentArrayMemmap
 
-   </td>
-   <td>
-   Use the dam object to modify instead:
+docs = [Document(text='hello') for _ in range(100)]
+dam = DocumentArrayMemmap('./my-memmap', buffer_pool_size=10)
+dam.extend(docs)
+for doc in docs:
+    doc.text = 'goodbye'
 
-   ```python
-   from jina import Document
-   from jina.types.arrays.memmap import DocumentArrayMemmap
+dam[50].text
+```
    
-   docs = [Document(text='hello') for _ in range(100)]
-   dam = DocumentArrayMemmap('./my-memmap', buffer_pool_size=10)
-   dam.extend(docs)
-   for doc in dam:
-       doc.text = 'goodbye'
-   
-   dam[50].text
-   ```
-   ```text
-   goodbye
-   ```
+```text
+hello
+```
+````
 
-   It's also okay if you reference docs less than the buffer pool size:
+````{tab} ✅ Do
+Use the dam object to modify instead:
 
-   ```python
-   from jina import Document
-   from jina.types.arrays.memmap import DocumentArrayMemmap
-   
-   docs = [Document(text='hello') for _ in range(100)]
-   dam = DocumentArrayMemmap('./my-memmap', buffer_pool_size=1000)
-   dam.extend(docs)
-   for doc in docs:
-       doc.text = 'goodbye'
-   
-   dam[50].text
-   ```
-   ```text
-   goodbye
-   ```
+```python
+from jina import Document
+from jina.types.arrays.memmap import DocumentArrayMemmap
 
-   </td>
-   </tr>
-   </table>
+docs = [Document(text='hello') for _ in range(100)]
+dam = DocumentArrayMemmap('./my-memmap', buffer_pool_size=10)
+dam.extend(docs)
+for doc in dam:
+    doc.text = 'goodbye'
 
+dam[50].text
+```
+
+```text
+goodbye
+```
+
+It's also okay if you reference docs less than the buffer pool size:
+
+```python
+from jina import Document
+from jina.types.arrays.memmap import DocumentArrayMemmap
+
+docs = [Document(text='hello') for _ in range(100)]
+dam = DocumentArrayMemmap('./my-memmap', buffer_pool_size=1000)
+dam.extend(docs)
+for doc in docs:
+    doc.text = 'goodbye'
+
+dam[50].text
+```
+
+```text
+goodbye
+```
+````
 
 2. Modify a reference that might have left the buffer pool :
-   <table>
-   <tr>
-   <td>
-   <b><center>❌ Don't</center></b>
-   </td>
-   <td>
-   <b><center>✅ Do</center></b>
-   </td>
-   </tr>
-   <tr>
-   <td>
-   
-   ```python
-   from jina import Document
-   from jina.types.arrays.memmap import DocumentArrayMemmap
-   
-   dam = DocumentArrayMemmap('./my-memmap', buffer_pool_size=10)
-   my_doc = Document(text='hello')
-   dam.append(my_doc)
-   
-   # my_doc leaves the buffer pool after extend
-   dam.extend([Document(text='hello') for _ in range(99)])
-   my_doc.text = 'goodbye'
-   dam[0].text
-   ```
-    ```text
-    hello
-    ```
 
+````{tab} ❌ Don't
+```python
+from jina import Document
+from jina.types.arrays.memmap import DocumentArrayMemmap
 
-   </td>
-   <td>
-   Get the document from the dam object and then modify it:
+dam = DocumentArrayMemmap('./my-memmap', buffer_pool_size=10)
+my_doc = Document(text='hello')
+dam.append(my_doc)
 
-   ```python
-   from jina import Document
-   from jina.types.arrays.memmap import DocumentArrayMemmap
-   
-   dam = DocumentArrayMemmap('./my-memmap', buffer_pool_size=10)
-   my_doc = Document(text='hello')
-   dam.append(my_doc)
-   
-   # my_doc leaves the buffer pool after extend
-   dam.extend([Document(text='hello') for _ in range(99)])
-   dam[my_doc.id].text = 'goodbye' # or dam[0].text = 'goodbye'
-   dam[0].text
-   ```
-   ```text
-   goodbye
-   ```
+# my_doc leaves the buffer pool after extend
+dam.extend([Document(text='hello') for _ in range(99)])
+my_doc.text = 'goodbye'
+dam[0].text
+```
 
-   </td>
-   </tr>
-   </table>
+```text
+hello
+```
+````
+
+````{tab} ✅ Do
+Get the document from the dam object and then modify it:
+
+```python
+from jina import Document
+from jina.types.arrays.memmap import DocumentArrayMemmap
+
+dam = DocumentArrayMemmap('./my-memmap', buffer_pool_size=10)
+my_doc = Document(text='hello')
+dam.append(my_doc)
+
+# my_doc leaves the buffer pool after extend
+dam.extend([Document(text='hello') for _ in range(99)])
+dam[my_doc.id].text = 'goodbye' # or dam[0].text = 'goodbye'
+dam[0].text
+```
+
+```text
+goodbye
+```
+````
+
 
 To summarize, it's a best practice to **rely on the `dam` object to reference the docs that you modify**.
 

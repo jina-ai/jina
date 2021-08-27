@@ -658,9 +658,6 @@ as `lists` of values.
 To better see the Document's recursive structure, you can use `.plot()` function. If you are using JupyterLab/Notebook,
 all `Document` objects will be auto-rendered:
 
-<table>
-  <tr>
-    <td>
 
 ```python
 import numpy as np
@@ -678,23 +675,5 @@ d0.matches.append(d3)
 d0.plot()  # simply `d0` on JupyterLab
 ```
 
-</td>
-<td>
-<img src="../../images/four-symbol-docs.svg?raw=true"/>
-</td>
-</tr>
-</table>
 
-```{eval-rst}
- +---------------------------------------+---------------------------------------+
- | .. code-block:: c                     |      .. code-block:: c                |
- |    :caption: foo.c                    |         :caption: bar.c               |
- |                                       |                                       |
- |    extern int bar(int y);             |         extern int foo(int x);        |
- |    int foo(int x)                     |         int bar(int y)                |
- |    {                                  |         {                             |
- |       return x > 0 ? bar(x-1)+1       |            return y > 0 ? foo(x-1)*2  |
- |                    : 0;               |                         : 0;          |
- |    }                                  |         }                             |
- +---------------------------------------+---------------------------------------+
-```
+![](../../../.github/images/four-symbol-docs.svg)

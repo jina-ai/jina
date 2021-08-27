@@ -1,4 +1,4 @@
-# Cookbook on Clean & Efficient Code
+# Writing Clean & Efficient Code with Jina
 
 Jina is designed as a lean and efficient framework. Solutions built on top of Jina also mean to be so. Here are some
 tips to help you write beautiful and efficient code.

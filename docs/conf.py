@@ -97,7 +97,10 @@ extensions = [
     'notfound.extension',
     'myst_parser',
     'sphinx_design',
+    'sphinx_inline_tabs',
 ]
+
+myst_enable_extensions = ['colon_fence']
 
 # -- Custom 404 page
 
