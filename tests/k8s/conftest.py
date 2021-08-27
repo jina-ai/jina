@@ -111,7 +111,7 @@ class KindClusterWrapper:
             logger.debug(f'metadata: {pod.obj["metadata"]}')
             logger.debug(f'metadata: {pod.obj["status"]["phase"]}')
             logger.debug(f'metadata: {pod.obj["status"]["conditions"]}')
-            if "containerStatuses" in pod.obj["status"]:
+            if "containerStatuses" in pod.obj["status"] and True:
                 logger.debug(f'metadata: {pod.obj["status"]["containerStatuses"]}')
 
         return pod_list
