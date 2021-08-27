@@ -211,7 +211,7 @@ jobs:
           python-version: 3.7
       - name: Test k8s
         run: |
-          pytest -sv ./tests/k8s
+          ./tests/test_k8s.sh
         timeout-minutes: 30
 
 
