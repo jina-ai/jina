@@ -34,16 +34,14 @@ class GRPCBaseClient(BaseClient):
             self.inputs = inputs
             req_iter = self._get_requests(**kwargs)
             async with grpc.aio.insecure_channel(
-                f'{self.args.host}:{self.args.port_expose}',
+                f'{self.args.host}:{self.args.port}',
                 options=[
                     ('grpc.max_send_message_length', -1),
                     ('grpc.max_receive_message_length', -1),
                 ],
             ) as channel:
                 stub = jina_pb2_grpc.JinaRPCStub(channel)
-                self.logger.debug(
-                    f'connected to {self.args.host}:{self.args.port_expose}'
-                )
+                self.logger.debug(f'connected to {self.args.host}:{self.args.port}')
 
                 cm1 = ProgressBar() if self.show_progress else nullcontext()
 

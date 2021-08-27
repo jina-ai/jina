@@ -127,7 +127,7 @@ class ContainerStore(BaseStore):
         :param workspace_id: workspace id
         :return: command for mini-jinad container
         """
-        return f'--port-expose {port} --mode {self._kind} --workspace-id {workspace_id.jid}'
+        return f'--port {port} --mode {self._kind} --workspace-id {workspace_id.jid}'
 
     @BaseStore.dump
     async def add(

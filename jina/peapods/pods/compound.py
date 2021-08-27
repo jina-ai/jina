@@ -51,12 +51,12 @@ class CompoundPod(BasePod, ExitStack):
         self.join()
 
     @property
-    def port_expose(self) -> int:
-        """Get the grpc port number
+    def port_jinad(self) -> int:
+        """Get the JinaD remote port
 
         .. # noqa: DAR201
         """
-        return self.head_args.port_expose
+        return self.head_args.port_jinad
 
     @property
     def host(self) -> str:
