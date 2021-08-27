@@ -308,7 +308,7 @@ function requires all documents to be compared have an `embedding` and all embed
 The following image shows how `DocumentArrayA` finds `limit=5` matches from the documents in `DocumentArrayB`. By
 default, the cosine similarity is used to evaluate the score between documents.
 
-![match_illustration_5](../../images/match_illustration_5.svg)
+![match_illustration_5](../../../.github/images/match_illustration_5.svg)
 
 More generally, given two `DocumentArray` objects `da_1` and `da_2` the
 function `da_1.match(da_2, metric=some_metric, normalization=(0, 1), limit=N)` finds for each document in `da_1`
@@ -530,4 +530,4 @@ da.visualize()
 
 ```
 
-![](../document-array-visualize.png?raw=true)
+![](../../../.github/2.0/document-array-visualize.png)

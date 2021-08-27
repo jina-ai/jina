@@ -28,4 +28,4 @@ MyExecutor/
 
 Example usage:
 
-![Demo](../jina-hub-new.gif)
+![Demo](../../../.github/2.0/jina-hub-new.gif)

@@ -132,7 +132,7 @@ You can get a visualization of a `Document` object in Jupyter Notebook or by cal
 
 #### Exclusivity of `doc.content`
 
-![](../doc.content.svg?raw=true)
+![](../../../.github/2.0/doc.content.svg)
 
 Note that one `Document` can only contain one type of `content`: it is either `text`, `buffer`, `blob` or `uri`.
 Setting `text` first and then setting `uri` will clear the `text` field.
@@ -686,15 +686,15 @@ d0.plot()  # simply `d0` on JupyterLab
 </table>
 
 ```{eval-rst}
- +----------------------------------+----------------------------------+
- | .. code-block:: c                | .. code-block:: c                |
- |    :caption: foo.c               |    :caption: bar.c               |
- |                                  |                                  |
- |    extern int bar(int y);        |    extern int foo(int x);        |
- |    int foo(int x)                |    int bar(int y)                |
- |    {                             |    {                             |
- |       return x > 0 ? bar(x-1)+1  |       return y > 0 ? foo(x-1)*2  |
- |                    : 0;          |                    : 0;          |
- |    }                             |    }                             |
- +----------------------------------+----------------------------------+
+ +---------------------------------------+---------------------------------------+
+ | .. code-block:: c                     |      .. code-block:: c                |
+ |    :caption: foo.c                    |         :caption: bar.c               |
+ |                                       |                                       |
+ |    extern int bar(int y);             |         extern int foo(int x);        |
+ |    int foo(int x)                     |         int bar(int y)                |
+ |    {                                  |         {                             |
+ |       return x > 0 ? bar(x-1)+1       |            return y > 0 ? foo(x-1)*2  |
+ |                    : 0;               |                         : 0;          |
+ |    }                                  |         }                             |
+ +---------------------------------------+---------------------------------------+
 ```

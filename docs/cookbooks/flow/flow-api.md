@@ -54,7 +54,7 @@ from jina import Flow
 f = Flow().add().plot('f.svg')
 ```
 
-<img src="../../2.0/empty-flow.svg?raw=true"/>
+![](../../../.github/2.0/empty-flow.svg)
 
 In Jupyter Lab/Notebook, the `Flow` object is rendered automatically without needing to call `plot()`.
 
@@ -101,7 +101,7 @@ from jina import Flow
 f = Flow().add().add().add().add()
 ```
 
-<img src="../../2.0/chain-flow.svg?raw=true"/>
+![](../../../.github/2.0/chain-flow.svg)
 
 #### Define What Executor to Use via `uses`
 
@@ -396,7 +396,7 @@ f = (Flow()
      .needs(['p1', 'p2', 'p3'], name='r1'))
 ```
 
-<img src="../../simple-plot3.svg?raw=true"/>
+![](../../../.github/simple-plot3.svg)
 
 `p1`, `p2`, `p3` now subscribe to `Gateway` and conduct their work in parallel. The last `.needs()` blocks all Executors
 until they finish their work.
@@ -437,7 +437,7 @@ f = (Flow()
      .add(name='p2'))
 ```
 
-<img src="../../2.0/parallel-explain.svg?raw=true"/>
+![](../../../.github/2.0/parallel-explain.svg)
 
 Note, by default:
 
@@ -465,8 +465,7 @@ f = (Flow()
      .needs(['p1', 'p3'], name='r1'))
 ```
 
-<img src="../../simple-plot4.svg?raw=true"/>
-
+![](../../../.github/simple-plot4.svg)
 
 
 
