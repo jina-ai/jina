@@ -22,7 +22,9 @@ $ jina hub pull jinahub://<UUID>[:<SECRET>][/<TAG>]
 
 It will store Executor source code to `~/.jina/hub-packages`.
 
-**Note**:
 
+```{admonition} Note
+:class: note
 - For public Executor, you can ignore the `SECRET` option.
 - For private Executor, you must provide the `SECRET` option.
+```

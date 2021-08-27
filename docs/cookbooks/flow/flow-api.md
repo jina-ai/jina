@@ -33,19 +33,27 @@ with f:
     ...
 ```
 
-Note that,
+````{admonition} Note
+:class: note
+Flow follows a lazy construction pattern: it won't actually run until you use `with` to open it.
+````
 
-- Flow follows a lazy construction pattern: it won't actually run until you use `with` to open it.
-- Once a Flow is open via `with`, you can send data requests to it. However, you cannot change its construction
-  via `.add()` any more until it leaves the `with` context.
-- The context exits when its inner code is finished. A Flow's context without inner code will immediately exit. To
-  prevent that, use `.block()` to suspend the current process.
+````{admonition} Warning
+:class: warning
+Once a Flow is open via `with`, you can send data requests to it. However, you cannot change its construction
+via `.add()` any more until it leaves the `with` context.
+````
 
-  ```python
-  with f:
-      f.block()  # block the current process
-  ```
+````{admonition} Important
+:class: important
+The context exits when its inner code is finished. A Flow's context without inner code will immediately exit. To
+prevent that, use `.block()` to suspend the current process.
 
+```python
+with f:
+    f.block()  # block the current process
+```
+````
 ### Visualize a Flow
 
 ```python
@@ -169,7 +177,9 @@ with f:
     ...
 ```
 
-Note that, YAML file can be also inline:
+````{admonition} Note
+:class: note
+YAML file can be also inline:
 
 ```python
 from jina import Flow
@@ -186,6 +196,7 @@ requests:
   /random_work: foo    
     '''))
 ```
+````
 
 ##### Add Executor via `Dict`
 
@@ -447,12 +458,15 @@ f = (Flow()
 :align: center
 ```
 
-Note, by default:
+````{admonition} Note
+:class: note
+By default:
 
 - only one `p1` will receive a message.
 - `p2` will be called when *any one of* `p1` finished.
+````
 
-To change that behavior, you can add `polling` argument to `.add()`, e.g. `.add(parallel=3, polling='ALL')`.
+To change the default behavior, you can add `polling` argument to `.add()`, e.g. `.add(parallel=3, polling='ALL')`.
 Specifically,
 
 | `polling` | Who will receive from upstream? | When will downstream be called? | 
@@ -530,7 +544,9 @@ def post(
     """
 ```
 
-Note, you can also use CRUD methods (`index`, `search`, `update`, `delete`) which are just sugary syntax of `post`
+````{admonition} Hint
+:class: hint
+You can also use CRUD methods (`index`, `search`, `update`, `delete`) which are just sugary syntax of `post`
 with `on='/index'`
 , `on='/search'`, etc. Precisely, they are defined as:
 
@@ -540,6 +556,7 @@ search = partialmethod(post, '/search')
 update = partialmethod(post, '/update')
 delete = partialmethod(post, '/delete')
 ```
+````
 
 #### Define Data via `inputs`
 
@@ -647,7 +664,9 @@ with f:
     f.post('/', Document(), parameters={'hello': 'world'})
 ```
 
-Note that you can send a parameters-only data request via:
+````{admonition} Note
+:class: note
+You can send a parameters-only data request via:
 
 ```python
 with f:
@@ -655,6 +674,7 @@ with f:
 ```
 
 This is useful to control `Executor` objects in the runtime.
+````
 
 #### Fine-grained Control on Request
 
@@ -735,10 +755,13 @@ with f:
 
 ```
 
-Note, turning on `return_results` breaks the streaming of the system. If you are sending 1000 requests,
+````{admonition} Caution
+:class: caution
+Turning on `return_results` breaks the streaming of the system. If you are sending 1000 requests,
 then `return_results=True` means you will get nothing until the 1000th response returns. Moreover, if each response
 takes 10MB memory, it means you will consume upto 10GB memory! On contrary, with callback and `return_results=False`,
 your memory usage will stay constant at 10MB.
+````
 
 ### Asynchronous Flow
 

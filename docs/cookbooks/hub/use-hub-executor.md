@@ -15,7 +15,8 @@ f = Flow().add(uses='jinahub+docker://<UUID>[:<SECRET>][/<TAG>]')
 
 If there is no `/<TAG>` provided when using, it by default equals to `/latest`, which means using the `latest` tag.
 
-**Attention:**
+````{admonition} Attention
+:class: attention
 
 If you are a Mac user, please use `host.docker.internal` as your url when you want to connect a local port from Executor
 docker container.
@@ -33,6 +34,7 @@ with f:
     resp = f.post(on='/index', inputs=Document(), return_results=True)
     print(f'{resp}')
 ```
+````
 
 ### 5.2 Using source codes
 
