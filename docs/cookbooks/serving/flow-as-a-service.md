@@ -5,7 +5,9 @@ A `Flow` _is_ a service by nature. Though implicitly, you are already using it a
 When you start a `Flow` and call `.post()` inside the context, a `jina.Client` object is created and used for
 communication.
 
-![](../../../.github/2.0/implict-vs-explicit-service.svg)
+```{figure} ../../../.github/2.0/implict-vs-explicit-service.svg
+:align: center
+```
 
 Many times we need to use `Flow` & `Client` in a more explicit way, often due to one of the following reasons:
 
@@ -30,7 +32,9 @@ Jina supports `grpc`, `websocket`, `http` three communication protocols between 
 
 The protocol is controlled by `protocol=` argument in `Flow`/`Client`'s constructor.
 
-![](../../../.github/2.0/client-server.svg)
+```{figure} ../../../.github/2.0/client-server.svg
+:align: center
+```
 
 ### via gRPC
 
@@ -130,7 +134,9 @@ with f:
 
 You can navigate to the Swagger docs UI via `http://localhost:12345/docs`:
 
-![](../../../.github/2.0/swagger-ui.png)
+```{figure} ../../../.github/2.0/swagger-ui.png
+:align: center
+```
 
 #### Use `curl` to Send HTTP Request
 
@@ -237,14 +243,18 @@ f = Flow(protocol='http',
          no_crud_endpoints=True)
 ```
 
-![img.png](../../../.github/2.0/hide-crud-debug-endpoints.png)
+```{figure} ../../../.github/2.0/hide-crud-debug-endpoints.png
+:align: center
+```
 
 
 ##### Expose Customized Endpoints to HTTP Interface
 
 `Flow.expose_endpoint` can be used to expose executor's endpoint to HTTP interface, e.g.
 
-![img.png](../../../.github/2.0/expose-endpoints.svg)
+```{figure} ../../../.github/2.0/expose-endpoints.svg
+:align: center
+```
 
 ```python
 from jina import Executor, requests, Flow
@@ -261,7 +271,9 @@ with f:
     f.block()
 ```
 
-![img.png](../../../.github/2.0/customized-foo-endpoint.png)
+```{figure} ../../../.github/2.0/customized-foo-endpoint.png
+:align: center
+```
 
 Now, sending HTTP data request to `/foo` is equivalent as calling `f.post('/foo', ...)` in Python.
 
@@ -275,7 +287,9 @@ f.expose_endpoint('/bar',
                   )
 ```
 
-![img.png](../../../.github/2.0/rich-openapi.png)
+```{figure} ../../../.github/2.0/rich-openapi.png
+:align: center
+```
 
 
 ##### Add non-Jina Related Routes
@@ -305,7 +319,9 @@ with f:
 
 And you will see `/hello` is now available:
 
-![img.png](../../../.github/2.0/swagger-extend.png)
+```{figure} ../../../.github/2.0/swagger-extend.png
+:align: center
+```
 
 ### Switch Between Communication Protocols
 

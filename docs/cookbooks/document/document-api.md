@@ -132,7 +132,9 @@ You can get a visualization of a `Document` object in Jupyter Notebook or by cal
 
 #### Exclusivity of `doc.content`
 
-![](../../../.github/2.0/doc.content.svg)
+```{image} ../../../.github/2.0/doc.content.svg
+:align: center
+```
 
 Note that one `Document` can only contain one type of `content`: it is either `text`, `buffer`, `blob` or `uri`.
 Setting `text` first and then setting `uri` will clear the `text` field.
@@ -676,4 +678,6 @@ d0.plot()  # simply `d0` on JupyterLab
 ```
 
 
-![](../../../.github/images/four-symbol-docs.svg)
+```{figure} ../../../.github/images/four-symbol-docs.svg
+:align: center
+```

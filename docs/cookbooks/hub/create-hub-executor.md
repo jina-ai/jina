@@ -28,4 +28,6 @@ MyExecutor/
 
 Example usage:
 
-![Demo](../../../.github/2.0/jina-hub-new.gif)
+```{figure} ../../../.github/2.0/jina-hub-new.gif
+:align: center
+```

@@ -21,7 +21,9 @@ should pick up `Executor` in no time. It is as simple as subclassing `Executor` 
 Executor's workspace is inherited according to the following rule (`OR` is a python `or`, i.e. first thing first, if NA
 then second):
 
-![](../../../.github/2.0/workspace-inherit.svg)
+```{figure} ../../../.github/2.0/workspace-inherit.svg
+:align: center
+```
 
 ### Metas
 
