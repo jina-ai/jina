@@ -37,7 +37,7 @@ function pub_pypi {
     clean_build
     cp extra-requirements.txt jina/resources/
     python setup.py sdist
-#    twine upload dist/*
+    twine upload dist/*
     clean_build
 }
 
