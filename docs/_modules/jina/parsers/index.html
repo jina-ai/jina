@@ -476,7 +476,7 @@
     <span class="kn">from</span> <span class="nn">.peapods.runtimes.zmq</span> <span class="kn">import</span> <span class="n">mixin_zmq_runtime_parser</span>
     <span class="kn">from</span> <span class="nn">.peapods.runtimes.zed</span> <span class="kn">import</span> <span class="n">mixin_zed_runtime_parser</span>
     <span class="kn">from</span> <span class="nn">.peapods.runtimes.container</span> <span class="kn">import</span> <span class="n">mixin_container_runtime_parser</span>
-    <span class="kn">from</span> <span class="nn">.peapods.runtimes.remote</span> <span class="kn">import</span> <span class="n">mixin_remote_parser</span>
+    <span class="kn">from</span> <span class="nn">.peapods.runtimes.remote</span> <span class="kn">import</span> <span class="n">mixin_remote_runtime_parser</span>
     <span class="kn">from</span> <span class="nn">.peapods.pea</span> <span class="kn">import</span> <span class="n">mixin_pea_parser</span>
     <span class="kn">from</span> <span class="nn">.peapods.runtimes.distributed</span> <span class="kn">import</span> <span class="n">mixin_distributed_feature_parser</span>
 
@@ -484,7 +484,7 @@
     <span class="n">mixin_zmq_runtime_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="n">mixin_zed_runtime_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="n">mixin_container_runtime_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
-    <span class="n">mixin_remote_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+    <span class="n">mixin_remote_runtime_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="n">mixin_distributed_feature_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="n">mixin_pea_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
 
@@ -526,7 +526,7 @@
     <span class="kn">from</span> <span class="nn">.peapods.runtimes.zmq</span> <span class="kn">import</span> <span class="n">mixin_zmq_runtime_parser</span>
     <span class="kn">from</span> <span class="nn">.peapods.runtimes.zed</span> <span class="kn">import</span> <span class="n">mixin_zed_runtime_parser</span>
     <span class="kn">from</span> <span class="nn">.peapods.runtimes.remote</span> <span class="kn">import</span> <span class="p">(</span>
-        <span class="n">mixin_remote_parser</span><span class="p">,</span>
+        <span class="n">mixin_gateway_parser</span><span class="p">,</span>
         <span class="n">mixin_prefetch_parser</span><span class="p">,</span>
         <span class="n">mixin_http_gateway_parser</span><span class="p">,</span>
         <span class="n">mixin_compressor_parser</span><span class="p">,</span>
@@ -540,7 +540,7 @@
     <span class="n">mixin_http_gateway_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="n">mixin_compressor_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="n">mixin_comm_protocol_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
-    <span class="n">mixin_remote_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+    <span class="n">mixin_gateway_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="n">mixin_pea_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
 
     <span class="kn">from</span> <span class="nn">..enums</span> <span class="kn">import</span> <span class="n">SocketType</span><span class="p">,</span> <span class="n">PodRoleType</span>
@@ -590,10 +590,10 @@
 
         <span class="n">parser</span> <span class="o">=</span> <span class="n">set_base_parser</span><span class="p">()</span>
 
-    <span class="kn">from</span> <span class="nn">.peapods.runtimes.remote</span> <span class="kn">import</span> <span class="n">mixin_remote_parser</span>
+    <span class="kn">from</span> <span class="nn">.peapods.runtimes.remote</span> <span class="kn">import</span> <span class="n">mixin_client_gateway_parser</span>
     <span class="kn">from</span> <span class="nn">.client</span> <span class="kn">import</span> <span class="n">mixin_client_features_parser</span><span class="p">,</span> <span class="n">mixin_comm_protocol_parser</span>
 
-    <span class="n">mixin_remote_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+    <span class="n">mixin_client_gateway_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="n">mixin_client_features_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="n">mixin_comm_protocol_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
 
@@ -767,7 +767,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 26, 2021.
+            Last updated on Aug 28, 2021.
         </div>
         
       </footer>

@@ -456,7 +456,7 @@
         </div>
         <h1>Source code for jina.peapods.runtimes.request_handlers.data_request_handler</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">from</span> <span class="nn">....</span> <span class="kn">import</span> <span class="n">__default_endpoint__</span>
 <span class="kn">from</span> <span class="nn">....excepts</span> <span class="kn">import</span> <span class="p">(</span>
@@ -468,7 +468,7 @@
 <span class="kn">from</span> <span class="nn">....types.arrays.document</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 <span class="kn">from</span> <span class="nn">....types.message</span> <span class="kn">import</span> <span class="n">Message</span><span class="p">,</span> <span class="n">Request</span>
 
-<span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">argparse</span>
     <span class="kn">from</span> <span class="nn">....logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 
@@ -521,15 +521,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_load_plugins</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_executor</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">_load_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Load the plugins if needed necessary to load executors."""</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">py_modules</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">....importer</span> <span class="kn">import</span> <span class="n">PathImporter</span>
-
-            <span class="n">PathImporter</span><span class="o">.</span><span class="n">add_modules</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">py_modules</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_load_executor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Load the executor to this runtime, specified by ``uses`` CLI argument."""</span>
@@ -669,7 +661,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 26, 2021.
+            Last updated on Aug 28, 2021.
         </div>
         
       </footer>

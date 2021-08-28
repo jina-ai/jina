@@ -970,9 +970,30 @@
             <span class="n">no_tag_yml</span> <span class="o">=</span> <span class="n">JAML</span><span class="o">.</span><span class="n">load_no_tags</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">no_tag_yml</span><span class="p">:</span>
                 <span class="n">no_tag_yml</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+                <span class="c1"># if there is `override_with` u should make sure that `uses_with` does not remain in the yaml</span>
+                <span class="k">def</span> <span class="nf">_delitem</span><span class="p">(</span>
+                    <span class="n">obj</span><span class="p">,</span>
+                    <span class="n">key</span><span class="p">,</span>
+                <span class="p">):</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+                        <span class="k">del</span> <span class="n">obj</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                        <span class="k">return</span>
+                    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                            <span class="n">_delitem</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">override_with</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">_delitem</span><span class="p">(</span><span class="n">no_tag_yml</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">'uses_with'</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">override_metas</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">_delitem</span><span class="p">(</span><span class="n">no_tag_yml</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">'uses_metas'</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">override_requests</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">_delitem</span><span class="p">(</span><span class="n">no_tag_yml</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">'uses_requests'</span><span class="p">)</span>
                 <span class="bp">cls</span><span class="o">.</span><span class="n">_override_yml_params</span><span class="p">(</span><span class="n">no_tag_yml</span><span class="p">,</span> <span class="s1">'with'</span><span class="p">,</span> <span class="n">override_with</span><span class="p">)</span>
                 <span class="bp">cls</span><span class="o">.</span><span class="n">_override_yml_params</span><span class="p">(</span><span class="n">no_tag_yml</span><span class="p">,</span> <span class="s1">'metas'</span><span class="p">,</span> <span class="n">override_metas</span><span class="p">)</span>
                 <span class="bp">cls</span><span class="o">.</span><span class="n">_override_yml_params</span><span class="p">(</span><span class="n">no_tag_yml</span><span class="p">,</span> <span class="s1">'requests'</span><span class="p">,</span> <span class="n">override_requests</span><span class="p">)</span>
+
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">BadConfigSource</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'can not construct </span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s1"> from an empty </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s1">. nothing to read from there'</span>
@@ -1021,7 +1042,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 26, 2021.
+            Last updated on Aug 28, 2021.
         </div>
         
       </footer>

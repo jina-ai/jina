@@ -732,12 +732,13 @@
         <span class="p">)</span>
         <span class="k">assert</span> <span class="n">edge_features</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">source_docs</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge_features</span><span class="p">)</span>
 
-        <span class="n">edge_keys</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">is_documents_source</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source_docs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Document</span><span class="p">)</span>
         <span class="n">is_documents_dest</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dest_docs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Document</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">doc1</span><span class="p">,</span> <span class="n">doc2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">source_docs</span><span class="p">,</span> <span class="n">dest_docs</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="p">(</span><span class="n">doc1</span><span class="p">,</span> <span class="n">doc2</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">source_docs</span><span class="p">,</span> <span class="n">dest_docs</span><span class="p">)):</span>
             <span class="n">doc1_id</span> <span class="o">=</span> <span class="n">doc1</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="n">is_documents_source</span> <span class="k">else</span> <span class="n">doc1</span>
             <span class="n">doc2_id</span> <span class="o">=</span> <span class="n">doc2</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="n">is_documents_source</span> <span class="k">else</span> <span class="n">doc2</span>
+
             <span class="k">if</span> <span class="n">is_documents_source</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_single_node</span><span class="p">(</span><span class="n">doc1</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -750,13 +751,12 @@
                 <span class="k">assert</span> <span class="p">(</span>
                     <span class="n">doc2_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span>
                 <span class="p">),</span> <span class="s1">'trying to add an edge from a node not in the graph'</span>
-            <span class="n">edge_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_edge_key</span><span class="p">(</span><span class="n">doc1_id</span><span class="p">,</span> <span class="n">doc2_id</span><span class="p">))</span>
 
-        <span class="k">if</span> <span class="n">edge_features</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">edge_key</span><span class="p">,</span> <span class="n">features</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">edge_keys</span><span class="p">,</span> <span class="n">edge_features</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">edge_features</span><span class="p">[</span><span class="n">edge_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">features</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">edge_key</span> <span class="ow">in</span> <span class="n">edge_keys</span><span class="p">:</span>
+            <span class="n">edge_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_edge_key</span><span class="p">(</span><span class="n">doc1_id</span><span class="p">,</span> <span class="n">doc2_id</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">edge_features</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">edge_features</span><span class="p">[</span><span class="n">edge_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_features</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">edge_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_features</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">edge_features</span><span class="p">[</span><span class="n">edge_key</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -1103,7 +1103,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 26, 2021.
+            Last updated on Aug 28, 2021.
         </div>
         
       </footer>

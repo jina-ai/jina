@@ -552,16 +552,49 @@
                 <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># suppress the error</span></div>
 
 
+<span class="k">def</span> <span class="nf">_path_import</span><span class="p">(</span><span class="n">absolute_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">importlib.util</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># I dont want to trust user path based on directory structure, "user_module", period</span>
+        <span class="n">default_spec_name</span> <span class="o">=</span> <span class="s1">'user_module'</span>
+        <span class="n">user_module_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">absolute_path</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">user_module_name</span> <span class="o">==</span> <span class="s1">'__init__'</span><span class="p">:</span>
+            <span class="c1"># __init__ can not be used as a module name</span>
+            <span class="n">spec_name</span> <span class="o">=</span> <span class="n">default_spec_name</span>
+        <span class="k">elif</span> <span class="n">user_module_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>
+            <span class="n">spec_name</span> <span class="o">=</span> <span class="n">user_module_name</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'''</span>
+<span class="s1">            </span><span class="si">{</span><span class="n">user_module_name</span><span class="si">}</span><span class="s1"> shadows one of built-in Python module name.</span>
+<span class="s1">            It is imported as `</span><span class="si">{</span><span class="n">default_spec_name</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">user_module_name</span><span class="si">}</span><span class="s1">`</span>
+<span class="s1">            </span>
+<span class="s1">            Affects:</span>
+<span class="s1">            - Either, change your code from using `from </span><span class="si">{</span><span class="n">user_module_name</span><span class="si">}</span><span class="s1"> import ...` </span>
+<span class="s1">              to `from </span><span class="si">{</span><span class="n">default_spec_name</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">user_module_name</span><span class="si">}</span><span class="s1"> import ...`</span>
+<span class="s1">            - Or, rename </span><span class="si">{</span><span class="n">user_module_name</span><span class="si">}</span><span class="s1"> to another name</span>
+<span class="s1">            '''</span>
+            <span class="p">)</span>
+            <span class="n">spec_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">default_spec_name</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">user_module_name</span><span class="si">}</span><span class="s1">'</span>
+
+        <span class="n">spec</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">spec_from_file_location</span><span class="p">(</span><span class="n">spec_name</span><span class="p">,</span> <span class="n">absolute_path</span><span class="p">)</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">module_from_spec</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">spec_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">module</span>
+        <span class="n">spec</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">exec_module</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'can not import module from </span><span class="si">{</span><span class="n">absolute_path</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">ex</span>
+
+
 <div class="viewcode-block" id="PathImporter"><a class="viewcode-back" href="../../../api/jina.importer/#jina.importer.PathImporter">[docs]</a><span class="k">class</span> <span class="nc">PathImporter</span><span class="p">:</span>
     <span class="sd">"""The class to import modules from paths."""</span>
 
 <div class="viewcode-block" id="PathImporter.add_modules"><a class="viewcode-back" href="../../../api/jina.importer/#jina.importer.PathImporter.add_modules">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">add_modules</span><span class="p">(</span><span class="o">*</span><span class="n">paths</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ModuleType</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">add_modules</span><span class="p">(</span><span class="o">*</span><span class="n">paths</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Import modules from paths.</span>
 
 <span class="sd">        :param paths: Paths of the modules.</span>
-<span class="sd">        :return: The target module.</span>
 <span class="sd">        """</span>
         <span class="kn">from</span> <span class="nn">.jaml.helper</span> <span class="kn">import</span> <span class="n">complete_path</span>
 
@@ -573,43 +606,7 @@
                     <span class="sa">f</span><span class="s1">'cannot import module from </span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s1">, file not exist'</span>
                 <span class="p">)</span>
 
-            <span class="n">module</span> <span class="o">=</span> <span class="n">PathImporter</span><span class="o">.</span><span class="n">_path_import</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">module</span></div>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_path_import</span><span class="p">(</span><span class="n">absolute_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ModuleType</span><span class="p">]:</span>
-        <span class="kn">import</span> <span class="nn">importlib.util</span>
-
-        <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># I dont want to trust user path based on directory structure, "user_module", period</span>
-            <span class="n">default_spec_name</span> <span class="o">=</span> <span class="s1">'user_module'</span>
-            <span class="n">user_module_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">absolute_path</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">user_module_name</span> <span class="o">==</span> <span class="s1">'__init__'</span><span class="p">:</span>
-                <span class="c1"># __init__ can not be used as a module name</span>
-                <span class="n">spec_name</span> <span class="o">=</span> <span class="n">default_spec_name</span>
-            <span class="k">elif</span> <span class="n">user_module_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>
-                <span class="n">spec_name</span> <span class="o">=</span> <span class="n">user_module_name</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'''</span>
-<span class="s1">                </span><span class="si">{</span><span class="n">user_module_name</span><span class="si">}</span><span class="s1"> shadows one of built-in Python module name.</span>
-<span class="s1">                It is imported as `</span><span class="si">{</span><span class="n">default_spec_name</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">user_module_name</span><span class="si">}</span><span class="s1">`</span>
-<span class="s1">                </span>
-<span class="s1">                Affects:</span>
-<span class="s1">                - Either, change your code from using `from </span><span class="si">{</span><span class="n">user_module_name</span><span class="si">}</span><span class="s1"> import ...` </span>
-<span class="s1">                  to `from </span><span class="si">{</span><span class="n">default_spec_name</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">user_module_name</span><span class="si">}</span><span class="s1"> import ...`</span>
-<span class="s1">                - Or, rename </span><span class="si">{</span><span class="n">user_module_name</span><span class="si">}</span><span class="s1"> to another name</span>
-<span class="s1">                '''</span>
-                <span class="p">)</span>
-                <span class="n">spec_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">default_spec_name</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">user_module_name</span><span class="si">}</span><span class="s1">'</span>
-
-            <span class="n">spec</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">spec_from_file_location</span><span class="p">(</span><span class="n">spec_name</span><span class="p">,</span> <span class="n">absolute_path</span><span class="p">)</span>
-            <span class="n">module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">module_from_spec</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">spec_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">module</span>
-            <span class="n">spec</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">exec_module</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'can not import module from </span><span class="si">{</span><span class="n">absolute_path</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">ex</span>
-        <span class="k">return</span> <span class="n">module</span></div>
+            <span class="n">_path_import</span><span class="p">(</span><span class="n">p</span><span class="p">)</span></div></div>
 </pre></div>
       </article>
       <footer>
@@ -622,7 +619,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 26, 2021.
+            Last updated on Aug 28, 2021.
         </div>
         
       </footer>

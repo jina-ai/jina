@@ -584,7 +584,7 @@
 <span class="sd">        :param workspace_id: workspace id</span>
 <span class="sd">        :return: command for mini-jinad container</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">'--port-expose </span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1"> --mode </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1"> --workspace-id </span><span class="si">{</span><span class="n">workspace_id</span><span class="o">.</span><span class="n">jid</span><span class="si">}</span><span class="s1">'</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'--port </span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1"> --mode </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1"> --workspace-id </span><span class="si">{</span><span class="n">workspace_id</span><span class="o">.</span><span class="n">jid</span><span class="si">}</span><span class="s1">'</span>
 
     <span class="nd">@BaseStore</span><span class="o">.</span><span class="n">dump</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
@@ -778,7 +778,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 26, 2021.
+            Last updated on Aug 28, 2021.
         </div>
         
       </footer>

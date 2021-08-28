@@ -459,11 +459,10 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__resources_path__</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__resources_path__</span><span class="p">,</span> <span class="n">__default_host__</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.base</span> <span class="kn">import</span> <span class="n">set_base_parser</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">add_arg_group</span><span class="p">,</span> <span class="n">_SHOW_ALL_ARGS</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.peapods.base</span> <span class="kn">import</span> <span class="n">mixin_base_ppr_parser</span>
-<span class="kn">from</span> <span class="nn">jina.parsers.peapods.runtimes.remote</span> <span class="kn">import</span> <span class="n">mixin_remote_parser</span>
 <span class="kn">from</span> <span class="nn">.models.enums</span> <span class="kn">import</span> <span class="n">PartialDaemonModes</span>
 
 
@@ -499,6 +498,30 @@
     <span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="mixin_remote_jinad_parser"><a class="viewcode-back" href="../../../api/daemon.parser/#daemon.parser.mixin_remote_jinad_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_remote_jinad_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+    <span class="sd">"""Add the networking options for JinaD</span>
+<span class="sd">    :param parser: the parser</span>
+<span class="sd">    """</span>
+    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'RemoteJinad'</span><span class="p">)</span>
+    <span class="n">_add_host</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--port'</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">8000</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'The port of the host exposed for connecting to.'</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_add_host</span><span class="p">(</span><span class="n">arg_group</span><span class="p">):</span>
+    <span class="n">arg_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--host'</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">__default_host__</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s1">'The host address of JinaD, by default it is </span><span class="si">{</span><span class="n">__default_host__</span><span class="si">}</span><span class="s1">.'</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
 <div class="viewcode-block" id="get_main_parser"><a class="viewcode-back" href="../../../api/daemon.parser/#daemon.parser.get_main_parser">[docs]</a><span class="k">def</span> <span class="nf">get_main_parser</span><span class="p">():</span>
     <span class="sd">"""</span>
 <span class="sd">    Return main parser</span>
@@ -507,14 +530,14 @@
 
     <span class="n">parser</span> <span class="o">=</span> <span class="n">set_base_parser</span><span class="p">()</span>
 
-    <span class="n">mixin_remote_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+    <span class="n">mixin_remote_jinad_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="n">mixin_base_ppr_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="n">mixin_daemon_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
 
     <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__resources_path__</span>
 
     <span class="n">parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span>
-        <span class="n">port_expose</span><span class="o">=</span><span class="mi">8000</span><span class="p">,</span>
+        <span class="n">port</span><span class="o">=</span><span class="mi">8000</span><span class="p">,</span>
         <span class="n">workspace</span><span class="o">=</span><span class="s1">'/tmp/jinad'</span><span class="p">,</span>
         <span class="n">log_config</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span>
             <span class="s1">'JINAD_LOG_CONFIG'</span><span class="p">,</span>
@@ -571,7 +594,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 26, 2021.
+            Last updated on Aug 28, 2021.
         </div>
         
       </footer>

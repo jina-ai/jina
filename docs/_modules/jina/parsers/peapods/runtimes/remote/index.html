@@ -462,34 +462,72 @@
 <span class="kn">from</span> <span class="nn">....enums</span> <span class="kn">import</span> <span class="n">CompressAlgo</span>
 
 
-<div class="viewcode-block" id="mixin_remote_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.peapods.runtimes.remote/#jina.parsers.peapods.runtimes.remote.mixin_remote_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_remote_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
-    <span class="sd">"""Add the options for remote expose</span>
+<div class="viewcode-block" id="mixin_remote_runtime_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.peapods.runtimes.remote/#jina.parsers.peapods.runtimes.remote.mixin_remote_runtime_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_remote_runtime_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+    <span class="sd">"""Add the options for a remote Executor</span>
 <span class="sd">    :param parser: the parser</span>
 <span class="sd">    """</span>
-    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Expose'</span><span class="p">)</span>
+    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'RemoteRuntime'</span><span class="p">)</span>
+    <span class="n">_add_host</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--port-jinad'</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">8000</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'The port of the remote machine for usage with JinaD.'</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mixin_client_gateway_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.peapods.runtimes.remote/#jina.parsers.peapods.runtimes.remote.mixin_client_gateway_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_client_gateway_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+    <span class="sd">"""Add the options for the client connecting to the Gateway</span>
+<span class="sd">    :param parser: the parser</span>
+<span class="sd">    """</span>
+    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'ClientGateway'</span><span class="p">)</span>
+    <span class="n">_add_host</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
+    <span class="n">_add_proxy</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--port'</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">(),</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'The port of the Gateway, which the client should connect to.'</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mixin_gateway_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.peapods.runtimes.remote/#jina.parsers.peapods.runtimes.remote.mixin_gateway_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_gateway_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+    <span class="sd">"""Add the options for remote expose at the Gateway</span>
+<span class="sd">    :param parser: the parser</span>
+<span class="sd">    """</span>
+    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Gateway'</span><span class="p">)</span>
+    <span class="n">_add_host</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
+    <span class="n">_add_proxy</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--port-expose'</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">(),</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'The port that the gateway exposes for clients for GRPC connections.'</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_add_host</span><span class="p">(</span><span class="n">arg_group</span><span class="p">):</span>
+    <span class="n">arg_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--host'</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="n">__default_host__</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s1">'The host address of the runtime, by default it is </span><span class="si">{</span><span class="n">__default_host__</span><span class="si">}</span><span class="s1">.'</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--port-expose'</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">(),</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'The port of the host exposed to the public'</span><span class="p">,</span>
-    <span class="p">)</span>
 
-    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">_add_proxy</span><span class="p">(</span><span class="n">arg_group</span><span class="p">):</span>
+
+    <span class="n">arg_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--proxy'</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">'If set, respect the http_proxy and https_proxy environment variables. '</span>
         <span class="s1">'otherwise, it will unset these proxy variables before start. '</span>
         <span class="s1">'gRPC seems to prefer no proxy'</span><span class="p">,</span>
-    <span class="p">)</span></div>
+    <span class="p">)</span>
 
 
 <div class="viewcode-block" id="mixin_http_gateway_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.peapods.runtimes.remote/#jina.parsers.peapods.runtimes.remote.mixin_http_gateway_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_http_gateway_parser</span><span class="p">(</span><span class="n">parser</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -619,7 +657,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 26, 2021.
+            Last updated on Aug 28, 2021.
         </div>
         
       </footer>

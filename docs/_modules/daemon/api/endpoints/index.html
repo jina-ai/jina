@@ -473,10 +473,10 @@
     <span class="n">daemon_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
         <span class="sa">f</span><span class="s1">'''</span>
 <span class="s1">Welcome to Jina daemon - the manager of distributed Jina</span>
-<span class="s1">💬 Swagger UI     :</span><span class="se">\t</span><span class="s1">http://localhost:</span><span class="si">{</span><span class="n">jinad_args</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">/docs</span>
-<span class="s1">📚 Redoc          :</span><span class="se">\t</span><span class="s1">http://localhost:</span><span class="si">{</span><span class="n">jinad_args</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">/redoc</span>
-<span class="s1">🔒 Private address:</span><span class="se">\t</span><span class="s1">http://</span><span class="si">{</span><span class="n">get_internal_ip</span><span class="p">()</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">jinad_args</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1"></span>
-<span class="s1">🌐 Public address :</span><span class="se">\t</span><span class="s1">http://</span><span class="si">{</span><span class="n">get_public_ip</span><span class="p">()</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">jinad_args</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">'''</span>
+<span class="s1">💬 Swagger UI     :</span><span class="se">\t</span><span class="s1">http://localhost:</span><span class="si">{</span><span class="n">jinad_args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/docs</span>
+<span class="s1">📚 Redoc          :</span><span class="se">\t</span><span class="s1">http://localhost:</span><span class="si">{</span><span class="n">jinad_args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/redoc</span>
+<span class="s1">🔒 Private address:</span><span class="se">\t</span><span class="s1">http://</span><span class="si">{</span><span class="n">get_internal_ip</span><span class="p">()</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">jinad_args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1"></span>
+<span class="s1">🌐 Public address :</span><span class="se">\t</span><span class="s1">http://</span><span class="si">{</span><span class="n">get_public_ip</span><span class="p">()</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">jinad_args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'''</span>
     <span class="p">)</span>
     <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__ready_msg__</span>
 
@@ -522,7 +522,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 26, 2021.
+            Last updated on Aug 28, 2021.
         </div>
         
       </footer>
