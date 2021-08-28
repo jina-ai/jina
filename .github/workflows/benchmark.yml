@@ -10,9 +10,15 @@ on:
 jobs:
   benchmark-master:
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/master' }}
+    if: |
+      ${{ github.ref == 'refs/heads/master' }} &&
+      !startsWith(github.event.head_commit.message, 'chore') &&
+      !startsWith(github.event.head_commit.message, 'build: hotfix') &&
+      !endsWith(github.event.head_commit.message, 'reformatted by jina-dev-bot')
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - run: |
           INIT_FILE='jina/__init__.py'
           RELEASE_VER=$(sed -n '/^__version__/p' $INIT_FILE | cut -d \' -f2)
@@ -32,6 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
+      - uses: actions/checkout@v2
       - run: |
           TAG=$(echo $GITHUB_REF | cut -d '/' -f 3)
           echo "TAG=$TAG" >> $GITHUB_ENV
