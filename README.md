@@ -67,7 +67,7 @@ to help us with [native Windows support](https://github.com/jina-ai/jina/issues/
 
 ## Get Started
 
-Document, Executor, and Flow are the three fundamental concepts in Jina.
+The document, Executor, and Flow are the three fundamental concepts in Jina.
 
 - [📄 **Document**](.github/2.0/cookbooks/Document.md) is the basic data type in Jina;
 - [⚙️ **Executor**](.github/2.0/cookbooks/Executor.md) is how Jina processes Documents;
@@ -190,8 +190,7 @@ c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
     
 ## Support
 
-- Join our [Slack community](https://slack.jina.ai) to chat to our engineers about your use cases, questions, and
-  support queries.
+- Join our [Slack community](https://slack.jina.ai) to chat to our engineers about your use cases, questions, and support queries.
 - Join our [Engineering All Hands](https://youtube.com/playlist?list=PL3UBBWOUVhFYRUa_gpYYKBqEAkO4sxmne) meet-up to discuss your use case and learn Jina's new features.
     - **When?** The second Tuesday of every month
     - **Where?**
