@@ -85,6 +85,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -10164,4 +10165,66 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```8d9ee246```](https://github.com/jina-ai/jina/commit/8d9ee246d28f1acd2c1bfb2fe494a4d68503b9c8)] __-__ changed pull_request_target to pull_request (#3189) (*Deepankar Mahapatro*)
  - [[```55c49447```](https://github.com/jina-ai/jina/commit/55c49447d66b6e05b9242c99ad58c56a6d199126)] __-__ comment out walkthroughs until links fixed (*Han Xiao*)
  - [[```88d8a6fb```](https://github.com/jina-ai/jina/commit/88d8a6fb0614b87b10c1e3ded3cd3425548874a8)] __-__ __version__: the next version will be 2.0.20 (*Jina Dev Bot*)
+
+<a name=release-note-2-0-21></a>
+## Release Note (`2.0.21`)
+
+> Release time: 2021-08-28 10:19:06
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  David Buchaca Prats,  felix-wang,  Tadej Svetina,  Maksudur Rahman Maateen,  Jina Dev Bot,  Joan Fontanals,  Maximilian Werk,  Paul-Louis NECH,  Yongxuan Zhang,  Deepankar Mahapatro,  Tobias Jacobowitz,  🙇
+
+
+### 🆕 New Features
+
+ - [[```329e3d46```](https://github.com/jina-ai/jina/commit/329e3d46f179bdc7993f2db60d5b067dd96db686)] __-__ add conda recipe script (#3174) (*Tadej Svetina*)
+ - [[```0a66a7c0```](https://github.com/jina-ai/jina/commit/0a66a7c01f7d288f54cc07b77bacc6a3330934a9)] __-__ add edges and nodes in batches (#3259) (*Joan Fontanals*)
+ - [[```e46d974c```](https://github.com/jina-ai/jina/commit/e46d974c7353b35b339680e1c56e3646f9774e08)] __-__ make docs behavior consistent :boom:  (#3227) (*Maximilian Werk*)
+ - [[```384e91bd```](https://github.com/jina-ai/jina/commit/384e91bd39fd890045851ec87261c14f368f2622)] __-__ __ci__: enabled automated benchmarking (#3248) (*Maksudur Rahman Maateen*)
+ - [[```d8d80708```](https://github.com/jina-ai/jina/commit/d8d807083795ae72ecc1e7f2954eac92fbfd6681)] __-__ __daemon__: support envvars (#3251) (*Deepankar Mahapatro*)
+ - [[```3fa30c37```](https://github.com/jina-ai/jina/commit/3fa30c37f71bf41c7d895f6abdfca647fb146ee2)] __-__ __helper__: add update desc &amp; details for progressbar (#3255) (*Han Xiao*)
+
+### ⚡ Performance Improvements
+
+ - [[```53f961d4```](https://github.com/jina-ai/jina/commit/53f961d4f85f128ec21bbdc84a34fe522e197d7f)] __-__ reuse loop to add edge features (#3274) (*David Buchaca Prats*)
+
+### 🐞 Bug fixes
+
+ - [[```0147ad76```](https://github.com/jina-ai/jina/commit/0147ad769bbcd8c2181083b2aade4eece82d1b3d)] __-__ __script__: fix port_expose in jinad (*Han Xiao*)
+ - [[```cb16849f```](https://github.com/jina-ai/jina/commit/cb16849fd4be8972e722b613632064f76352a0ee)] __-__ __dam__: warning truncate doc id (#3264) (*felix-wang*)
+ - [[```fa444fa9```](https://github.com/jina-ai/jina/commit/fa444fa9009cc584d8325a12436665174da1cd73)] __-__ __ci__: fixed benchmark ci (#3285) (*Maksudur Rahman Maateen*)
+ - [[```07f7636d```](https://github.com/jina-ai/jina/commit/07f7636d3c6e3a7d20ad71441f340e589e7090f4)] __-__ fix multiple import problem (#3276) (*Joan Fontanals*)
+ - [[```ff2f9a3f```](https://github.com/jina-ai/jina/commit/ff2f9a3f54a1e121dfbe4983032bcaf065b7f56f)] __-__ check runtime class executor native (#3273) (*Joan Fontanals*)
+ - [[```0e038ea2```](https://github.com/jina-ai/jina/commit/0e038ea265bfc70ddada480946f51bac7ef2a9f2)] __-__ __helper__: fix on done rendering for progressbar (#3269) (*Han Xiao*)
+ - [[```dc605e6d```](https://github.com/jina-ai/jina/commit/dc605e6d8dee77fbf16685b6ca79db569af01cff)] __-__ __ci__: fixed benchmark ci error (#3268) (*Maksudur Rahman Maateen*)
+ - [[```caf132db```](https://github.com/jina-ai/jina/commit/caf132dbe136828f147b75a0f58a0d2dcc687b55)] __-__ fix document update (#3263) (*Joan Fontanals*)
+ - [[```dbb599b1```](https://github.com/jina-ai/jina/commit/dbb599b143273f8db6e6556f15c31d8cb265b475)] __-__ __ci__: fixed benchmark workflow syntax (#3262) (*Maksudur Rahman Maateen*)
+ - [[```8a67a40e```](https://github.com/jina-ai/jina/commit/8a67a40ec580584a588cf944753ec8757a0c6ea9)] __-__ with args in flow.save_config (#3256) (*Deepankar Mahapatro*)
+ - [[```7dd9db88```](https://github.com/jina-ai/jina/commit/7dd9db885acc01a2681152da788bd1baf9d736d4)] __-__ __grpc__: enable grpc runtime for http and websocket gateway (#3244) (*Tobias Jacobowitz*)
+ - [[```c1c8d396```](https://github.com/jina-ai/jina/commit/c1c8d39614e48aec9413bf83373c3017279148fa)] __-__ __helper__: fix small progressbar rendering problem (#3246) (*Han Xiao*)
+
+### 🧼 Code Refactoring
+
+ - [[```03df9f48```](https://github.com/jina-ai/jina/commit/03df9f48eef2e69133909dd9d655d45496539333)] __-__ port renaming :boom:  (#3254) (*Maximilian Werk*)
+
+### 📗 Documentation
+
+ - [[```701729de```](https://github.com/jina-ai/jina/commit/701729de861374bb97fa0f7905bfa3a11aa2b95a)] __-__ __readme__: update console output to match (#3100) (*Paul-Louis NECH*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```791bb567```](https://github.com/jina-ai/jina/commit/791bb5678a57c9950566dad64fb8601db55559a5)] __-__ fix test on mac (#3249) (*Yongxuan Zhang*)
+
+### 🍹 Other Improvements
+
+ - [[```d7a85f58```](https://github.com/jina-ai/jina/commit/d7a85f58ed3e174efcfbf394eb447b1fb4f2f0b1)] __-__ comment out twine upload (*Han Xiao*)
+ - [[```b4385d28```](https://github.com/jina-ai/jina/commit/b4385d2870158075655c4dae7d5376673365bbe9)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```d68d532d```](https://github.com/jina-ai/jina/commit/d68d532d21dedd32ae9fa5558d491272e4a6efce)] __-__ __ci__: fix doc build job (*Han Xiao*)
+ - [[```553d2116```](https://github.com/jina-ai/jina/commit/553d2116f0eeda127fc8e45abe243606ad89077c)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```243475f7```](https://github.com/jina-ai/jina/commit/243475f7b14e2cbb209e0da88f439f0fe3520465)] __-__ __helper__: remove redundant progress info (*Han Xiao*)
+ - [[```4967d6a8```](https://github.com/jina-ai/jina/commit/4967d6a85699ca168fbe949933aaa6c302ec5356)] __-__ fix doc gen job (*Han Xiao*)
+ - [[```ef71b991```](https://github.com/jina-ai/jina/commit/ef71b99156a9498af2bd05dcdd625aae7a69fac5)] __-__ update doc website theme (*Han Xiao*)
+ - [[```a7cb0921```](https://github.com/jina-ai/jina/commit/a7cb0921cd25b4772051c6d566bf15cd688a7fe4)] __-__ __version__: the next version will be 2.0.21 (*Jina Dev Bot*)
 
