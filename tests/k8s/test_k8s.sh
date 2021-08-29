@@ -3,6 +3,7 @@ set -ex
 
 echo "kubeconfig: ${KUBECONFIG}"
 ls -a ~/
+ls -a ~/.kube
 kubectl config current-context
 
 docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
