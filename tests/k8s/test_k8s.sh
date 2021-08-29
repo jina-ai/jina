@@ -1,5 +1,7 @@
 set -ex
 
+
+echo "kubeconfig: ${KUBECONFIG}"
 docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
 if [ "${PWD##*/}" != "jina" ]
   then
