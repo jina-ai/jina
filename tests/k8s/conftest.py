@@ -102,45 +102,19 @@ class KindClusterWrapper:
                 service_name, service_port, local_port=local_port, retries=20
             )
 
-    def list_pods(self, logger, namespace: str = None) -> List:
+    def list_pods(self, namespace: str = None) -> List:
         if namespace:
             pod_list = list(pykube.Pod.objects(self._pykube_api, namespace=namespace))
         else:
             pod_list = list(pykube.Pod.objects(self._pykube_api))
-        # for pod in pod_list:
-        #     logger.debug(f'metadata: {pod.obj["metadata"]}')
-        #     logger.debug(f'phase: {pod.obj["status"]["phase"]}')
-        #     logger.debug(f'conditions: {pod.obj["status"]["conditions"]}')
-        #     if "containerStatuses" in pod.obj["status"] and True:
-        #         logger.debug(
-        #             f'containerStatuses: {pod.obj["status"]["containerStatuses"]}'
-        #         )
-
         return pod_list
 
-    def list_ready_pods(self, logger, namespace: str = None) -> List:
-        return list(
-            filter(operator.attrgetter("ready"), self.list_pods(logger, namespace))
-        )
+    def list_ready_pods(self, namespace: str = None) -> List:
+        return list(filter(operator.attrgetter("ready"), self.list_pods(namespace)))
 
-    def get_node_info(self, logger):
+    def get_node_info(self):
         nodes = []
         for node in pykube.Node.objects(self._pykube_api):
-            try:
-                logger.debug(f'### conditions 1: {node.obj["status"]["conditions"]}')
-            except:
-                logger.debug('###conditions 1 not working')
-
-            try:
-                logger.debug(f'### conditions 2: {node.obj["metadata"]["conditions"]}')
-            except:
-                logger.debug('###conditions 2 not working')
-
-            try:
-                logger.debug(f'### conditions 3: {node.obj["conditions"]}')
-            except:
-                logger.debug('###conditions 3 not working')
-
             nodes.append(node.obj)
         return nodes
 

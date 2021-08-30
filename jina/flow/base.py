@@ -1394,7 +1394,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def _show_success_message(self):
 
         if self.args.infrastructure == InfrastructureType.K8S:
-            self.logger.info('🎉 Kubernetes deployment done!\n')
+            self.logger.info('🎉 Kubernetes deployment done!')
         else:
             address_table = [
                 f'\t🔗 Protocol: \t\t{colored(self.protocol, attrs="bold")}',
