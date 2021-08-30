@@ -44,7 +44,7 @@ if _start_method and _start_method.lower() in {'fork', 'spawn', 'forkserver'}:
 
     _set_start_method(_start_method.lower())
     _warnings.warn(f'multiprocessing start method is set to `{_start_method.lower()}`')
-    del _os.environ['JINA_MP_START_METHOD']
+    _os.environ.pop('JINA_MP_START_METHOD')
 elif _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
     # DO SOME OS-WISE PATCHES
 

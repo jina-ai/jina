@@ -1229,8 +1229,10 @@ def is_yaml_filepath(val) -> bool:
     :param val: Path of target file.
     :return: True if the file is YAML else False.
     """
-    if sys.platform == 'win32':
-        r = r'.*.ya?ml$'  # temp
+    from . import __windows__
+
+    if __windows__:
+        r = r'.*.ya?ml$'  # TODO: might not be exhaustive
     else:
         r = r'^[/\w\-\_\.]+.ya?ml$'
     return re.match(r, val.strip()) is not None

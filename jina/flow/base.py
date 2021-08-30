@@ -966,8 +966,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         # unset all envs to avoid any side-effect
         if self.args.env:
             for k in self.args.env.keys():
-                if k in os.environ:
-                    del os.environ[k]
+                os.environ.pop(k, None)
         if GATEWAY_NAME in self._pod_nodes:
             self._pod_nodes.pop(GATEWAY_NAME)
         self._build_level = FlowBuildLevel.EMPTY
