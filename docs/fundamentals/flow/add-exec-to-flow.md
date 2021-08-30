@@ -1,4 +1,4 @@
-## Add `Executor`
+# Add Executor
 
 
 `.add()` is the core method to add an Executor to a `Flow` object. Each `add` creates a new Executor, and these
@@ -7,7 +7,7 @@ Docker container.
 
 
 
-#### Chain `.add()`
+## Chain `.add()`
 
 Chaining `.add()`s creates a sequential Flow.
 
@@ -21,7 +21,7 @@ f = Flow().add().add().add().add()
 :align: center
 ```
 
-#### Define What Executor to Use via `uses`
+## Define What Executor to Use via `uses`
 
 `uses` parameter to specify the [Executor](Executor.md).
 
@@ -117,7 +117,10 @@ f = Flow().add(
     })
 ```
 ````
-##### Add an already spawned Executor
+
+## Add Remote Executors
+
+### Add an already spawned Executor
 
 A Flow does not have to be local-only. You can use any Executor on remote(s). 
 
@@ -131,17 +134,14 @@ f.add(host='localhost', port_in=12345, external=True)
 f.add(host='123.45.67.89', port_in=12345, external=True)
 ```
 
-##### Add & spawn a Remote `Executor` via `jinad`
+##### Add & spawn a remote `Executor` via `jinad`
 
 In the example below, the Executor with
 the `host`
 keyword `gpu-exec`, is put to a remote machine for parallelization, whereas other Executors stay local. Extra file
 dependencies that need to be uploaded are specified via the `upload_files` keyword.
 
-<table>
-    <tr>
-    <td>123.45.67.89</td>
-    <td>
+````{tab} 123.45.67.89
 
 ```bash
 # have docker installed
@@ -150,13 +150,9 @@ docker run --name=jinad --network=host -v /var/run/docker.sock:/var/run/docker.s
 docker rm -f jinad
 ```
 
-</td>
-</tr>
-  <tr>
-    <td>
-    Local
-    </td>
-    <td>
+````
+
+````{tab} Local
 
 ```python
 from jina import Flow
@@ -171,11 +167,10 @@ f = (Flow()
      .add())
 ```
 
-</tr>
+````
 
-</table>
-
-###### Commonly used arguments for deployment in `.add`
+````{admonition} Commonly used arguments for deployment in 
+:class: tip 
 
 | Name | default | Description |
 | --- | --- | --- |
@@ -187,6 +182,8 @@ f = (Flow()
 | `external` | `False` | Stops `Flow` from context managing an Executor. This allows spawning of an external Executor and reusing across multiple Flows. |
 | `uses`, `uses_before` and `uses_after` prefix | No prefix | When prefixing one of the `uses` arguments with `docker` or `jinahub+docker`, the Executor does not run natively, but is spawned inside a container. |
 
+````
+
 ````{admonition} See Also
 :class: seealso
 {ref}`JinaD <daemon-cookbook>`
@@ -195,7 +192,7 @@ f = (Flow()
 ````
 
 
-##### Forcing an Executor in the remote-local configuration
+### Forcing an Executor in the remote-local configuration
 
 Sometimes you want to use a remote Executor in your local Flow (e.g. using an expensive encoder on a remote GPU). Then
 the remote cannot talk back to the next local Executor directly. This is similar to a server that cannot talk to a
@@ -207,10 +204,11 @@ the `connect_to_predecessor` argument and `port_out` to the Executor in front.
 f.add(name='remote', host='123.45.67.89', port_out=23456).add(name='local', connect_to_predecessor=True)
 ```
 
-#### Override Executor configuration
-You can override 3 types of executor configurations when creating a flow:
+## Override Executor Configs
 
-##### `metas` configuration
+You can override an executor's meta configs when creating a flow:
+
+### Override `metas` configuration
 To override the `metas` configuration of an executor (described 
 [here](https://github.com/jina-ai/jina/blob/master/.github/2.0/cookbooks/Executor.md#metas)), use `uses_metas`:
 ```python
@@ -239,7 +237,7 @@ different_workspace
 ```
 
 
-##### `with` configuration
+### Override `with` configuration
 To override the `with` configuration of an executor, use `uses_with`. The `with` configuration refers to user-defined 
 constructor kwargs.
 ```python
@@ -276,7 +274,7 @@ param3: 30
 ```
 
 
-##### `requests` configuration
+### Override `requests` configuration
 You can override the `requests` configuration of an executor and bind methods to endpoints that you provide:
 
 

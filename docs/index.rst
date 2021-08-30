@@ -20,6 +20,7 @@ Jina is a deep learning-powered search framework for building cross-/multi-modal
    fundamentals/document/index
    fundamentals/executor/index
    fundamentals/flow/index
+   fundamentals/clean-code
 
 .. toctree::
    :caption: Advanced
@@ -38,7 +39,6 @@ Jina is a deep learning-powered search framework for building cross-/multi-modal
 
    ./tutorials/index
    cookbooks/clean-code/index
-   Starter kits <https://github.com/jina-ai/starter-kits>
 
 .. toctree::
    :titlesonly:
@@ -52,11 +52,11 @@ Jina is a deep learning-powered search framework for building cross-/multi-modal
 .. toctree::
    :caption: Links
 
-   Jina in action <https://showcase.jina.ai>
-   Tutorials <https://github.com/jina-ai/jina#read-tutorials>
+   Showcase <https://showcase.jina.ai>
    GitHub repository <https://github.com/jina-ai/jina>
    Slack community <https://slack.jina.ai>
-   Company website <https://www.jina.ai>
+   Starter kits <https://github.com/jina-ai/starter-kits>
+   Company website <https://jina.ai>
 
 * :ref:`genindex`
 * :ref:`modindex`

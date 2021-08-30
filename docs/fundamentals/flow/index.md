@@ -93,9 +93,9 @@ with f:
 :hidden:
 
 flow-api
+send-recv
 add-exec-to-flow
 parallel
-send-recv
 async-flow
 remarks
 ```

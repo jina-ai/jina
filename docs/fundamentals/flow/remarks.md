@@ -1,15 +1,7 @@
-## Remarks
-
-### Setting the Flow's port and host
-
-If you need to change the networking of the Flow, the respective arguments go directly into the Flow initialization.
-
-```python
-Flow(host='123.45.67.89', port_in=12345)
-```
+# Remarks
 
 
-### Joining/Merging
+## Joining/Merging
 
 Combining `docs` from multiple requests is already done by the `ZEDRuntime` before feeding them to the Executor's
 function. Hence, simple joining is just returning this `docs`. Complicated joining should be implemented at `Document`

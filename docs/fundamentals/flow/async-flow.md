@@ -1,4 +1,4 @@
-## Asynchronous Flow
+# Asynchronous Flow
 
 `AsyncFlow` is an "async version" of the `Flow` class.
 
@@ -6,6 +6,9 @@ The quote mark represents the explicit async when using `AsyncFlow`.
 
 While synchronous from outside, `Flow` also runs asynchronously under the hood: it manages the eventloop(s) for
 scheduling the jobs. If the user wants more control over the eventloop, then `AsyncFlow` can be used.
+
+
+## Create AsyncFlow
 
 To create an `AsyncFlow`, simply
 
@@ -22,6 +25,8 @@ from jina import Flow
 
 f = Flow(asyncio=True)
 ```
+
+## Input & output
 
 Unlike `Flow`, `AsyncFlow` accepts input and output functions
 as [async generators](https://www.python.org/dev/peps/pep-0525/). This is useful when your data sources involve other
@@ -43,6 +48,8 @@ with AsyncFlow().add() as f:
     async for resp in f.post('/', async_inputs):
         print(resp)
 ```
+
+## Using AsyncFlow for overlapping heavy-lifting job
 
 `AsyncFlow` is particularly useful when Jina and another heavy-lifting job are running concurrently:
 

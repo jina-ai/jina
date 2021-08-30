@@ -1,8 +1,7 @@
-### Send & Receive Data
+# Flow IO
 
-`.post()` is the core method for sending data to a `Flow` object.
+`.post()` is the core method for sending data to a `Flow` object, it provides multiple callbacks for fetching results from the Flow.
 
-`.post()` must be called *inside* the `with` context:
 
 ```python
 from jina import Flow
@@ -13,7 +12,12 @@ with f:
     f.post(...)
 ```
 
-#### Function Signature
+```{caution}
+
+`.post()` must be called *inside* the `with` context.
+```
+
+## Input Data to Flow
 
 ```python
 def post(
@@ -63,7 +67,86 @@ delete = partialmethod(post, '/delete')
 ```
 ````
 
-#### Define Data via `inputs`
+
+### Send request parameters
+
+To send parameters to the Executor, use
+
+```python
+from jina import Document, Executor, Flow, requests
+
+
+class MyExecutor(Executor):
+
+    @requests
+    def foo(self, parameters, **kwargs):
+        print(parameters['hello'])
+
+
+f = Flow().add(uses=MyExecutor)
+
+with f:
+    f.post('/', Document(), parameters={'hello': 'world'})
+```
+
+````{admonition} Note
+:class: note
+You can send a parameters-only data request via:
+
+```python
+with f:
+    f.post('/', parameters={'hello': 'world'})
+```
+
+This is useful to control `Executor` objects in the runtime.
+````
+
+### Fine-grained control on input
+
+#### Size of the Request
+
+You can control how many `Documents` in each request by `request_size`. Say your `inputs` has length of 100, whereas
+you `request_size` is set to `10`. Then `f.post` will send ten requests and return 10 responses:
+
+```python
+from jina import Flow, Document
+
+f = Flow()
+
+with f:
+    f.post('/', (Document() for _ in range(100)), request_size=10)
+```
+
+```console
+        gateway@137489[L]:ready and listening
+           Flow@137489[I]:🎉 Flow is ready to use!
+	🔗 Protocol: 		GRPC
+	🏠 Local access:	0.0.0.0:44249
+	🔒 Private network:	192.168.1.100:44249
+	🌐 Public address:	197.28.126.36:44249
+
+```
+
+To see that more clearly, you can turn on the progress-bar by `show_progress`.
+
+```python
+with f:
+    f.post('/', (Document() for _ in range(100)), request_size=10, show_progress=True)
+```
+
+```console
+        gateway@137489[L]:ready and listening
+           Flow@137489[I]:🎉 Flow is ready to use!
+	🔗 Protocol: 		GRPC
+	🏠 Local access:	0.0.0.0:59109
+	🔒 Private network:	192.168.1.100:59109
+	🌐 Public address:	197.28.126.36:59109
+⏳   |██████████          | ⏱️ 0.0s 🐎 429.0 RPS✅ 10 requests done in ⏱ 0 seconds 🐎 425.1 RPS
+
+```
+
+
+### Input Data Types
 
 `inputs` can take a single `Document` object, an iterator of `Document`, a generator of `Document`, a `DocumentArray`
 object, and None.
@@ -108,7 +191,7 @@ with f, open('my.csv') as fp:
     f.index(from_csv(fp, field_resolver={'question': 'text'}))
 ```
 
-#### Callback Functions
+## Fetch Flow Output
 
 Once a request is returned, callback functions are fired. Jina Flow implements a Promise-like interface. You can add
 callback functions `on_done`, `on_error`, `on_always` to hook different events.
@@ -148,84 +231,7 @@ with Flow().add() as f, open('output.txt', 'w') as fp:
            on_always=lambda x: x.docs.save(fp))
 ```
 
-#### Send Parameters
-
-To send parameters to the Executor, use
-
-```python
-from jina import Document, Executor, Flow, requests
-
-
-class MyExecutor(Executor):
-
-    @requests
-    def foo(self, parameters, **kwargs):
-        print(parameters['hello'])
-
-
-f = Flow().add(uses=MyExecutor)
-
-with f:
-    f.post('/', Document(), parameters={'hello': 'world'})
-```
-
-````{admonition} Note
-:class: note
-You can send a parameters-only data request via:
-
-```python
-with f:
-    f.post('/', parameters={'hello': 'world'})
-```
-
-This is useful to control `Executor` objects in the runtime.
-````
-
-#### Fine-grained Control on Request
-
-##### Size of the Request
-
-You can control how many `Documents` in each request by `request_size`. Say your `inputs` has length of 100, whereas
-you `request_size` is set to `10`. Then `f.post` will send ten requests and return 10 responses:
-
-```python
-from jina import Flow, Document
-
-f = Flow()
-
-with f:
-    f.post('/', (Document() for _ in range(100)), request_size=10)
-```
-
-```console
-        gateway@137489[L]:ready and listening
-           Flow@137489[I]:🎉 Flow is ready to use!
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	0.0.0.0:44249
-	🔒 Private network:	192.168.1.100:44249
-	🌐 Public address:	197.28.126.36:44249
-
-```
-
-To see that more clearly, you can turn on the progress-bar by `show_progress`.
-
-```python
-with f:
-    f.post('/', (Document() for _ in range(100)), request_size=10, show_progress=True)
-```
-
-```console
-        gateway@137489[L]:ready and listening
-           Flow@137489[I]:🎉 Flow is ready to use!
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	0.0.0.0:59109
-	🔒 Private network:	192.168.1.100:59109
-	🌐 Public address:	197.28.126.36:59109
-⏳   |██████████          | ⏱️ 0.0s 🐎 429.0 RPS✅ 10 requests done in ⏱ 0 seconds 🐎 425.1 RPS
-
-```
-
-#### Get All Responses
+### Get All Responses
 
 In some scenarios (e.g. testing), you may want to get the all responses in bulk and then process them; instead of
 processing responses on the fly. To do that, you can turn on `return_results`:

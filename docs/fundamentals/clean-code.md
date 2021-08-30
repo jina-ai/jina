@@ -3,10 +3,13 @@
 Jina is designed as a lean and efficient framework. Solutions built on top of Jina also mean to be so. Here are some
 tips to help you write beautiful and efficient code.
 
+## Clean import
 
-1. `from jina import Document, DocumentArray, Executor, Flow, requests` is all you need. Copy-paste it as the first line of your code.
+`from jina import Document, DocumentArray, Executor, Flow, requests` is all you need. Copy-paste it as the first line of your code.
 
-1. Use [Python generator](https://docs.python.org/3/glossary.html#term-generator) as the input to the Flow. Generator can lazily build `Document` one at a time, instead of building all at once. This can greatly speedup the overall performance and reduces the memory footprint.
+## Generator as Flow input
+
+Use [Python generator](https://docs.python.org/3/glossary.html#term-generator) as the input to the Flow. Generator can lazily build `Document` one at a time, instead of building all at once. This can greatly speedup the overall performance and reduces the memory footprint.
 ````{tab} ✅ Do
 ```{code-block} python
 ---
@@ -36,8 +39,9 @@ with f:
 ```
 ````
 
+## Set `request_size`
 
-1. Set `request_size`. `request_size` decides how many Documents in each request. When combining with Generator, `request_size` determines how long will it take before sending the first request. You can change `request_size` to overlap the time of request generation and Flow computation.
+`request_size` decides how many Documents in each request. When combining with Generator, `request_size` determines how long will it take before sending the first request. You can change `request_size` to overlap the time of request generation and Flow computation.
 
 ````{tab} ✅ Do
 ```{code-block} python
@@ -75,8 +79,9 @@ with f:
 ```
 ````
 
+## Skip unnecessary `__init__` 
 
-1. No need to implement `__init__` if your `Executor` does not contain initial states.
+No need to implement `__init__` if your `Executor` does not contain initial states.
    
 ````{tab} ✅ Do
 ```python
@@ -103,8 +108,10 @@ class MyExecutor(Executor):
       ...
 ```
 ````
+
+## Skip unnecessary `@requests(on=...)`
    
-1. Use `@requests` without specifying `on=` if your function mean to work on all requests. You can use it for catching all requests that are not for this Executor.
+Use `@requests` without specifying `on=` if your function mean to work on all requests. You can use it for catching all requests that are not for this Executor.
 ````{tab} ✅ Do
 ```python
 from jina import Executor, requests
@@ -135,7 +142,9 @@ class MyExecutor(Executor):
 ```
 ````
 
-1. Fold unnecessary arguments into `**kwargs`, only get what you need.
+## Skip unnecessary `**kwargs`
+
+Fold unnecessary arguments into `**kwargs`, only get what you need.
 ````{tab} ✅ Do
 ```{code-block} python
 ---
@@ -166,8 +175,9 @@ class MyExecutor(Executor):
 ```
 ````
 
+## Debug Executor outside of a Flow
 
-1. To debug an `Executor`, there is no need to use it in the Flow. Simply initiate it as an object and call its method.
+To debug an `Executor`, there is no need to use it in the Flow. Simply initiate it as an object and call its method.
 ````{tab} ✅ Do
 ```python
 from jina import Executor, requests, DocumentArray, Document
@@ -208,8 +218,10 @@ with Flow().add(uses=MyExec) as f:
 ```
 ````
 
+
+## Send `parameters`-only request
    
-1. Send `parameters` only request to a Flow if you don't need `docs`.
+Send `parameters` only request to a Flow if you don't need `docs`.
 
 ````{tab} ✅ Do
 ```{code-block} python
@@ -251,8 +263,9 @@ with f:
 ```
 ````
 
+## Add Chunk in correct order
 
-1. Add `Chunks` to root `Document`, do not create them in one line to keep recursive document structure correct. This is because `chunks` use `ref_doc` to control its `granularity`, at `chunk` creation time, it didn't know anything about its parent, and will get a wrong `granularity` value.
+Add `Chunks` to root `Document`, do not create them in one line to keep recursive document structure correct. This is because `chunks` use `ref_doc` to control its `granularity`, at `chunk` creation time, it didn't know anything about its parent, and will get a wrong `granularity` value.
 
 ````{tab} ✅ Do
 ```python
