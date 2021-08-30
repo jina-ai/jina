@@ -61,7 +61,7 @@ class ImportExtensions:
                 req_msg = colored('fallback to default behavior', color='yellow')
                 if self._required:
                     req_msg = colored('and it is required', color='red')
-                err_msg = f'''Python package "{colored(missing_module, attrs='bold')}" is not installed, {req_msg}. 
+                err_msg = f'''Python package "{colored(missing_module, attrs='bold')}" is not installed, {req_msg}.
                     You are trying to use a feature not enabled by your current Jina installation.'''
 
                 avail_tags = ' '.join(
@@ -137,9 +137,9 @@ class PathImporter:
                     f'''
                 {user_module_name} shadows one of built-in Python module name.
                 It is imported as `{default_spec_name}.{user_module_name}`
-                
+
                 Affects:
-                - Either, change your code from using `from {user_module_name} import ...` 
+                - Either, change your code from using `from {user_module_name} import ...`
                   to `from {default_spec_name}.{user_module_name} import ...`
                 - Or, rename {user_module_name} to another name
                 '''

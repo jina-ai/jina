@@ -871,18 +871,23 @@ def format_full_version_info(info: Dict, env_info: Dict) -> str:
     return version_info + '\n' + env_info
 
 
-def _use_uvloop():
-    if 'JINA_DISABLE_UVLOOP' in os.environ:
+def _update_policy():
+    from . import __windows__
+
+    if __windows__:
+        asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+
+    elif 'JINA_DISABLE_UVLOOP' in os.environ:
         return
-    try:
-        import uvloop
+    else:
+        try:
+            import uvloop
 
-        asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-    except ModuleNotFoundError:
-        warnings.warn(
-            'Install `uvloop` via `pip install "jina[uvloop]"` for better performance.'
-        )
-
+            asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+        except ModuleNotFoundError:
+            warnings.warn(
+                'Install `uvloop` via `pip install "jina[uvloop]"` for better performance.'
+            )
 
 def get_or_reuse_loop():
     """
@@ -895,7 +900,7 @@ def get_or_reuse_loop():
         if loop.is_closed():
             raise RuntimeError
     except RuntimeError:
-        _use_uvloop()
+        _update_policy()
         # no running event loop
         # create a new loop
         loop = asyncio.new_event_loop()
@@ -1223,7 +1228,10 @@ def is_yaml_filepath(val) -> bool:
     :param val: Path of target file.
     :return: True if the file is YAML else False.
     """
-    r = r'^[/\w\-\_\.]+.ya?ml$'
+    if sys.platform == 'win32':
+        r = r'.*.ya?ml$' # temp
+    else:
+        r = r'^[/\w\-\_\.]+.ya?ml$'
     return re.match(r, val.strip()) is not None
 
 

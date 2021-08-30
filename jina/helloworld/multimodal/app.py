@@ -50,6 +50,8 @@ def hello_world(args):
 
     # this envs are referred in index and query flow YAMLs
     os.environ['HW_WORKDIR'] = args.workdir
+    # sets the app directory from where py_module will get used (must be used in Windows)
+    os.environ['APP_DIR'] = os.path.dirname(os.path.abspath(__file__))
     # now comes the real work
     # load index flow from a YAML file
 

@@ -6,6 +6,7 @@ from collections import defaultdict
 from functools import wraps
 from typing import Optional, Union, Callable
 
+from .. import __windows__
 from .logger import JinaLogger
 from ..helper import colored, get_readable_size, get_readable_time
 
@@ -17,6 +18,10 @@ def used_memory(unit: int = 1024 * 1024 * 1024) -> float:
     :param unit: Unit of the memory, default in Gigabytes.
     :return: Memory usage of the current process.
     """
+    if __windows__:
+        # TODO: windows doesn't include `resource` module
+        return 0
+
     import resource
 
     return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / unit

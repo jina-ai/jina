@@ -66,9 +66,11 @@ class HubIO:
             import docker
             from docker import APIClient
 
+            from .. import __windows__
+
             try:
                 # low-level client
-                self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
+                self._raw_client = APIClient(base_url=docker.constants.DEFAULT_NPIPE if __windows__ else docker.constants.DEFAULT_UNIX_SOCKET)
             except docker.errors.DockerException:
                 self.logger.critical(
                     f'Docker daemon seems not running. Please run Docker daemon and try again.'
@@ -105,7 +107,7 @@ class HubIO:
         print(
             Panel.fit(
                 '''
-[bold green]Executor[/bold green] is how Jina processes [bold]Document[/bold]. 
+[bold green]Executor[/bold green] is how Jina processes [bold]Document[/bold].
 
 This guide helps you to create your own Executor in 30 seconds.''',
                 title='Create New Executor',
@@ -161,10 +163,10 @@ This guide helps you to create your own Executor in 30 seconds.''',
             print(
                 Panel.fit(
                     '''
-[bold]Dockerfile[/bold] describes how this executor will be built. It is useful when 
-your executor has non-trivial dependencies or must be run under certain environment. 
+[bold]Dockerfile[/bold] describes how this executor will be built. It is useful when
+your executor has non-trivial dependencies or must be run under certain environment.
 
-- If the [bold]Dockerfile[/bold] is missing, Jina automatically generates one for you. 
+- If the [bold]Dockerfile[/bold] is missing, Jina automatically generates one for you.
 - If you provide one, then Jina will respect the given [bold]Dockerfile[/bold].''',
                     title='[Optional] [bold]Dockerfile[/bold]',
                     width=80,

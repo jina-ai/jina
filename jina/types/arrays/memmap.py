@@ -17,6 +17,7 @@ from typing import (
 
 import numpy as np
 
+from ... import __windows__
 from .abstract import AbstractDocumentArray
 from .bpm import BufferPoolManager
 from .document import DocumentArray, DocumentArrayGetAttrMixin
@@ -269,8 +270,10 @@ class DocumentArrayMemmap(
     @property
     def _mmap(self) -> 'mmap':
         if self._last_mmap is None:
-            self._last_mmap = mmap.mmap(
-                self._body_fileno, length=0, prot=mmap.PROT_READ
+            self._last_mmap = (
+                mmap.mmap(self._body_fileno, length=0)
+                if __windows__
+                else mmap.mmap(self._body_fileno, length=0, prot=mmap.PROT_READ)
             )
         return self._last_mmap
 

@@ -1,5 +1,5 @@
 import re
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, TYPE_CHECKING
 
 from .... import __default_endpoint__
 from ....excepts import (
@@ -11,7 +11,7 @@ from ....helper import typename
 from ....types.arrays.document import DocumentArray
 from ....types.message import Message, Request
 
-if False:
+if TYPE_CHECKING:
     import argparse
     from ....logging.logger import JinaLogger
 

@@ -19,6 +19,8 @@ import warnings as _warnings
 if _sys.version_info < (3, 7, 0) or _sys.version_info >= (3, 10, 0):
     raise OSError(f'Jina requires Python 3.7/3.8/3.9, but yours is {_sys.version_info}')
 
+__windows__ = _sys.platform == 'win32'
+
 
 def _warning_on_one_line(message, category, filename, lineno, *args, **kwargs):
     return '\033[1;33m%s: %s\033[0m \033[1;30m(raised from %s:%s)\033[0m\n' % (
@@ -42,7 +44,7 @@ if _start_method and _start_method.lower() in {'fork', 'spawn', 'forkserver'}:
 
     _set_start_method(_start_method.lower())
     _warnings.warn(f'multiprocessing start method is set to `{_start_method.lower()}`')
-    _os.unsetenv('JINA_MP_START_METHOD')
+    del _os.environ['JINA_MP_START_METHOD']
 elif _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
     # DO SOME OS-WISE PATCHES
 
@@ -90,7 +92,9 @@ __jina_env__ = (
     'JINA_MP_START_METHOD',
 )
 
-__default_host__ = _os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
+__default_host__ = _os.environ.get(
+    'JINA_DEFAULT_HOST', '127.0.0.1' if __windows__ else '0.0.0.0'
+)
 __docker_host__ = 'host.docker.internal'
 __default_executor__ = 'BaseExecutor'
 __default_endpoint__ = '/default'
@@ -116,6 +120,7 @@ _names_with_underscore = [
     '__default_executor__',
     '__num_args_executor_func__',
     '__unset_msg__',
+    '__windows__',
 ]
 
 # ADD GLOBAL NAMESPACE VARIABLES
