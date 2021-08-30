@@ -1,3 +1,4 @@
+(documentarray)=
 ## DocumentArray API
 
 A `DocumentArray` is a list of `Document` objects. You can construct, delete, insert, sort and traverse

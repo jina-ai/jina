@@ -1,3 +1,4 @@
+(executor)=
 ## Executor API
 
 `Executor` process `DocumentArray` in-place via functions decorated with `@requests`.

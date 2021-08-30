@@ -5,7 +5,15 @@ To create your Hub Executor, you just need to run this command in your terminal:
 ```terminal
 jina hub new
 ```
+````{admonition} Note
+:class: note
+A `Hub Executor` is an executor that is published in JinaHub. Such an executor can be easily used in a flow like this:
+```python
+from jina import Flow
 
+f = Flow().add(uses='jinahub+docker://MyExecutor')
+``` 
+````
 A wizard will ask you some questions about the Executor. For the basic configuration, you will be asked two things: The Executor’s name and where it should be saved. The wizard will ask if you want to have a more advanced configuration, but it is unnecessary for most of user cases.
 
 After running the command, a project with the following structure will be generated:

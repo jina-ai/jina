@@ -410,7 +410,7 @@ You can add **chunks** (sub-Document) and **matches** (neighbour-Document) to a 
 ````{admonition} Note
 :class: note
 Both `doc.chunks` and `doc.matches` return `ChunkArray` and `MatchArray`, which are sub-classes
-of [`DocumentArray`](#documentarray-api). We will introduce `DocumentArray` later.
+of {ref}`DocumentArray<documentarray>`. We will introduce `DocumentArray` later.
 ````
 
 
