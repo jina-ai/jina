@@ -14,3 +14,13 @@ table.docutils {
 h1, h2, h3 {
     margin-top: 3rem;
 }
+
+.highlight-console .highlight {
+    background: #00232b !important;
+    color: whitesmoke;
+}
+
+.highlight-text .highlight {
+    background: #00232b !important;
+    color: whitesmoke;
+}
