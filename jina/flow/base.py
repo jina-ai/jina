@@ -937,18 +937,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         op_flow._build_level = FlowBuildLevel.GRAPH
         return op_flow
 
-    def _resolve_host(self, host: str) -> str:
-        try:
-            ip_address = socket.gethostbyname(host)
-            if ip_address == get_internal_ip():
-                return __default_host__
-            else:
-                return host
-        except socket.gaierror:
-            self.logger.warning(f'{host} can not be resolved into a valid IP address.')
-            # return the original one, as it might be some special docker host literal
-            return host
-
     def __call__(self, *args, **kwargs):
         """Builds the Flow
         :param args: args for build
