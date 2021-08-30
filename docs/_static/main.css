@@ -24,3 +24,8 @@ h1, h2, h3 {
     background: #00232b !important;
     color: whitesmoke;
 }
+
+.highlight-json .highlight {
+    background: #00232b !important;
+    color: whitesmoke;
+}

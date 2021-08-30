@@ -1,4 +1,4 @@
-## 1. Create Hub Executor
+# Create Hub Executor
 
 To create your Hub Executor, you just need to run this command in your terminal:
 
@@ -19,6 +19,10 @@ When you run the command above, a wizard will ask you some questions about the E
 you will be asked two things: The Executor’s name and where it should be saved. The wizard will ask if you want to have 
 a more advanced configuration, but it is unnecessary for most of use cases.
 
+```{figure} ../../../.github/2.0/jina-hub-new.gif
+:align: center
+```
+
 After running the command, a project with the following structure will be generated:
 
 ```text
@@ -36,9 +40,3 @@ MyExecutor/
 - `requirements.txt` describes the Python dependencies of the Executor.
 - `executor.py` should contain the main logic of your Executor.
 - `README.md` should describe the usage of the Executor.
-
-Example usage:
-
-```{figure} ../../../.github/2.0/jina-hub-new.gif
-:align: center
-```

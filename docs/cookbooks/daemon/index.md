@@ -1,5 +1,5 @@
 (daemon-cookbook)=
-# JinaD
+# Daemon (JinaD)
 
 `JinaD` is a [daemon](https://en.wikipedia.org/wiki/Daemon_(computing)) for deploying and managing Jina on remote via a
 RESTful interface. It allows users to create/update/delete Executors and Flows on remote hosts. It achieves isolation of
@@ -9,11 +9,7 @@ the same host.
 
 ## Minimum Working Example
 
-<table>
-    <tr>
-    <td>1.2.3.4</td>
-    <td>
-
+````{tab} Remote (1.2.3.4) 
 ```bash
 # have docker installed
 docker run --add-host host.docker.internal:host-gateway \
@@ -24,13 +20,9 @@ docker run --add-host host.docker.internal:host-gateway \
            -d jinaai/jina:master-daemon
 ```
 
-</td>
-</tr>
-  <tr>
-    <td>
-    Local
-    </td>
-    <td>
+````
+
+````{tab} Local
 
 ```python
 from jina import Flow
@@ -44,9 +36,7 @@ with f:
     ...
 ```
 
-</tr>
-
-</table>
+````
 
 
 ```{toctree}

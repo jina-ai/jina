@@ -1,6 +1,39 @@
-## Flow-as-a-service
+# Serving a Flow
+
+
+If you come to this page, most likely you have already built some cool stuff with Jina and now want to share it to the world. This cookbook will
+guide you from basic serving for demo purpose to advanced serving in production.
+
+
+## Minimum Working Example
+
+````{tab} Server
+
+```python
+from jina import Flow
+
+f = Flow(protocol='grpc', port_expose=12345)
+with f:
+    f.block()
+```
+
+````
+
+````{tab} Client
+
+```python
+from jina import Client, Document
+
+c = Client(protocol='grpc', port_expose=12345)
+c.post('/', Document())
+```
+
+````
+
+## Flow-as-a-Service
 
 A `Flow` _is_ a service by nature. Though implicitly, you are already using it as a service.
+
 
 When you start a `Flow` and call `.post()` inside the context, a `jina.Client` object is created and used for
 communication.
@@ -20,7 +53,7 @@ Many times we need to use `Flow` & `Client` in a more explicit way, often due to
 Before this cookbook, you are mostly using Flow as an implicit service. In the sequel, we will show you how to serve
 Flow in an explicit C/S style.
 
-### Supported Communication Protocols
+## Supported Communication Protocols
 
 Jina supports `grpc`, `websocket`, `http` three communication protocols between `Flow` and `Client`.
 
@@ -35,6 +68,7 @@ The protocol is controlled by `protocol=` argument in `Flow`/`Client`'s construc
 ```{figure} ../../../.github/2.0/client-server.svg
 :align: center
 ```
+
 
 ### via gRPC
 
@@ -130,7 +164,35 @@ with f:
 	📚 Redoc:		http://localhost:12345/redoc
 ```
 
-#### Use Swagger UI to Send HTTP Request
+### Switch Between Communication Protocols
+
+You can switch to other protocol also via `.protocol` property setter. This setter works even in Flow runtime.
+
+```python
+from jina import Flow, Document
+
+f = Flow(protocol='grpc') 
+
+with f:
+    f.post('/', Document())
+    f.protocol = 'http'  # switch to HTTP protocol request
+    f.block()
+```
+
+## Flow with HTTP protocol
+
+### Enable Cross-origin-resources-sharing (CORS)
+
+CORS is by default disabled for security. That means you can not access the service from a webpage with different domain. To override this, simply do:
+
+```python
+from jina import Flow
+
+f = Flow(cors=True, protocol='http')
+```
+
+
+### Use Swagger UI to Send HTTP Request
 
 You can navigate to the Swagger docs UI via `http://localhost:12345/docs`:
 
@@ -138,7 +200,7 @@ You can navigate to the Swagger docs UI via `http://localhost:12345/docs`:
 :align: center
 ```
 
-#### Use `curl` to Send HTTP Request
+### Use `curl` to Send HTTP Request
 
 Now you can send data request via `curl`/Postman:
 
@@ -196,7 +258,7 @@ $ curl --request POST 'http://localhost:12345/post' --header 'Content-Type: appl
 }
 ```
 
-#### Use Python to Send HTTP Request
+### Use Python to Send HTTP Request
 
 One can also use Python Client to send HTTP request, simply:
 
@@ -212,17 +274,8 @@ c.post('/', ...)
 This HTTP client is less-performant on large data, it does not stream. Hence, it should be only used for debugging & testing.
 ````
 
-#### Enable Cross-origin-resources-sharing (CORS)
 
-CORS is by default disabled for security. That means you can not access the service from a webpage with different domain. To override this, simply do:
-
-```python
-from jina import Flow
-
-f = Flow(cors=True, protocol='http')
-```
-
-#### Extend HTTP Interface
+### Extend HTTP Interface
 
 By default the following endpoints are exposed to the public:
 
@@ -235,7 +288,7 @@ By default the following endpoints are exposed to the public:
 | `/update` | Corresponds to `f.post('/update')` method in Python |
 | `/delete` | Corresponds to `f.post('/delete')` method in Python |
 
-##### Hide CRUD and Debug Endpoints from HTTP Interface
+#### Hide CRUD and Debug Endpoints from HTTP Interface
 
 User can decide to hide CRUD and debug endpoints in production, or when the context is not applicable. For example, in the code snippet below, we didn't implement any CRUD endpoints for the executor, hence it does not make sense to expose them to public.
 
@@ -251,7 +304,7 @@ f = Flow(protocol='http',
 ```
 
 
-##### Expose Customized Endpoints to HTTP Interface
+#### Expose Customized Endpoints to HTTP Interface
 
 `Flow.expose_endpoint` can be used to expose executor's endpoint to HTTP interface, e.g.
 
@@ -295,7 +348,7 @@ f.expose_endpoint('/bar',
 ```
 
 
-##### Add non-Jina Related Routes
+#### Add non-Jina Related Routes
 
 If you want to add more customized routes, configs, options to HTTP interface, you can simply
 override `jina.helper.extend_rest_interface` function as follows:
@@ -326,17 +379,3 @@ And you will see `/hello` is now available:
 :align: center
 ```
 
-### Switch Between Communication Protocols
-
-You can switch to other protocol also via `.protocol` property setter. This setter works even in Flow runtime.
-
-```python
-from jina import Flow, Document
-
-f = Flow(protocol='grpc') 
-
-with f:
-    f.post('/', Document())
-    f.protocol = 'http'  # switch to HTTP protocol request
-    f.block()
-```

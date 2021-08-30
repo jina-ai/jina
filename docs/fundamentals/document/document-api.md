@@ -427,6 +427,38 @@ Both `doc.chunks` and `doc.matches` return `ChunkArray` and `MatchArray`, which 
 of {ref}`DocumentArray<documentarray>`. We will introduce `DocumentArray` later.
 ````
 
+#### Caveat: Add Chunks in correct order
+
+When adding `Chunks` to a `Document`, do not create them in one line to keep recursive document structure correct. This is because `chunks` use `ref_doc` to control its `granularity`, at `chunk` creation time, it didn't know anything about its parent, and will get a wrong `granularity` value.
+
+````{tab} ✅ Do
+```python
+from jina import Document
+
+root_document = Document(text='i am root')
+# add one chunk to root
+root_document.chunks.append(Document(text='i am chunk 1'))
+root_document.chunks.extend([
+   Document(text='i am chunk 2'),
+   Document(text='i am chunk 3'),
+])  # add multiple chunks to root
+```
+````
+
+````{tab} 😔 Don't
+```python
+from jina import Document
+
+root_document = Document(
+   text='i am root',
+   chunks=[
+      Document(text='i am chunk 2'),
+      Document(text='i am chunk 3'),
+   ]
+)
+```
+````
+
 
 ### Construct `GraphDocument`
 

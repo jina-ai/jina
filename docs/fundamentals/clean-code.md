@@ -1,4 +1,4 @@
-# Writing Clean & Efficient Code with Jina
+# Clean & Efficient Code
 
 Jina is designed as a lean and efficient framework. Solutions built on top of Jina also mean to be so. Here are some
 tips to help you write beautiful and efficient code.
@@ -263,34 +263,4 @@ with f:
 ```
 ````
 
-## Add Chunk in correct order
 
-Add `Chunks` to root `Document`, do not create them in one line to keep recursive document structure correct. This is because `chunks` use `ref_doc` to control its `granularity`, at `chunk` creation time, it didn't know anything about its parent, and will get a wrong `granularity` value.
-
-````{tab} ✅ Do
-```python
-from jina import Document
-
-root_document = Document(text='i am root')
-# add one chunk to root
-root_document.chunks.append(Document(text='i am chunk 1'))
-root_document.chunks.extend([
-   Document(text='i am chunk 2'),
-   Document(text='i am chunk 3'),
-])  # add multiple chunks to root
-```
-````
-
-````{tab} 😔 Don't
-```python
-from jina import Document
-
-root_document = Document(
-   text='i am root',
-   chunks=[
-      Document(text='i am chunk 2'),
-      Document(text='i am chunk 3'),
-   ]
-)
-```
-````

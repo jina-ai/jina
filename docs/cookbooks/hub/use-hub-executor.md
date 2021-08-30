@@ -1,9 +1,7 @@
 (use-hub-executor)=
-## 5. Use in Jina Flow
+# Reuse Hub Executor
 
-It will pull Executor automatically if you didn't pull it before.
-
-### 5.1 Using docker images
+## via Docker
 
 Use the prebuilt images from `Hubble` in your python codes,
 
@@ -15,6 +13,9 @@ f = Flow().add(uses='jinahub+docker://<UUID>[:<SECRET>][/<TAG>]')
 ```
 
 If there is no `/<TAG>` provided when using, it by default equals to `/latest`, which means using the `latest` tag.
+
+It will pull Executor automatically if you didn't pull it before.
+
 
 ````{admonition} Attention
 :class: attention
@@ -37,7 +38,7 @@ with f:
 ```
 ````
 
-### 5.2 Using source codes
+## via source code
 
 Use the source codes from `Hubble` in your python codes,
 
@@ -47,7 +48,7 @@ from jina import Flow
 f = Flow().add(uses='jinahub://<UUID>[:<SECRET>][/<TAG>]')
 ```
 
-### 5.3 Override Default Parameters
+## Override default parameters
 
 It is possible that the default parameters of the published Executor may not be ideal for your use case. You can override
 any of these parameters by passing `uses_with` and `uses_metas` as parameters.

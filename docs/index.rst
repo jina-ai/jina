@@ -28,22 +28,21 @@ Jina is a deep learning-powered search framework for building cross-/multi-modal
 
    cookbooks/hub/index
    cookbooks/daemon/index
-   cookbooks/math/index
-   cookbooks/serving/index
-   cookbooks/clean-code/index
+
 
 .. toctree::
    :titlesonly:
    :hidden:
-   :caption: Build with Jina
+   :caption: Tutorials
 
-   ./tutorials/index
-   cookbooks/clean-code/index
+   tutorials/chatbot
+   tutorials/executors
 
 .. toctree::
    :titlesonly:
    :maxdepth: 1
    :caption: Developer Reference
+   :hidden:
 
    api/jina
    cli/index
@@ -51,6 +50,7 @@ Jina is a deep learning-powered search framework for building cross-/multi-modal
 
 .. toctree::
    :caption: Links
+   :hidden:
 
    Showcase <https://showcase.jina.ai>
    GitHub repository <https://github.com/jina-ai/jina>

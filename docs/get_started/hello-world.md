@@ -1,4 +1,4 @@
-# Jina "Hello, World!" 👋🌍
+# Run Hello World 👋🌍
 
 Just starting out? Try Jina's "Hello, World" - `jina hello --help`
 

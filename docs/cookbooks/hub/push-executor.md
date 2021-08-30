@@ -1,8 +1,8 @@
-## 2. Push Executor to JinaHub
+# Publish Executor
 
 If you want to share your Executors to other persons or colleges, you can push your local Executor to JinaHub.
 
-### 2.1 Basic
+## Basic Push
 
 ```bash
 $ jina hub push [--public/--private] <path_to_executor_folder>
@@ -21,7 +21,26 @@ When no `--public` or `--private` visibility options are provided. **By default,
 There is only one difference between `--public` and `--private`. You can use public Executor once you know the `UUID`, but you must know `SECRET` and `UUID` if you want to use a private Executor.
 ````
 
-### 2.2 Advanced
+
+## Update a published Executor
+
+Everything is iterating in Internet world. We also provide a way to update your existing Executor in JinaHub. To update one Executor, you must have both `UUID` and `SECRET`.
+
+```bash
+$ jina hub push [--public/--private] --force <UUID> --secret <SECRET> <path_to_executor_folder>
+```
+
+````{admonition} Note
+:class: note
+With `--public` option, the resulted Executor will be **visible to public**.
+````
+
+````{admonition} Note
+:class: note
+With `--private` options, the resulted Executor will be **invisible to public**.
+````
+
+## Advanced: tagging your published Executor
 
 ```bash
 $ jina hub push <path_to_executor_folder> -t TAG1 -t TAG2 -f <path_to_dockerfile>
@@ -35,4 +54,10 @@ If there is no `-t` parameter provided, the default tag is `latest`. And if you 
 $ jina hub push .                     # Result in one tag: latest
 $ jina hub push . -t v1.0.0           # Result in one tag: v1.0.0
 $ jina hub push . -t v1.0.0 -t latest # Result in two tags: v1.0.0, latest
+```
+
+If you want to make a new tag on the existing Executor, you can also add the `-t` option here:
+
+```bash
+$ jina hub push [--public/--private] --force <UUID> --secret <SECRET> -t TAG <path_to_executor_folder>
 ```
