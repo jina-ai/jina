@@ -222,23 +222,17 @@ class GraphDocument(Document):
                 source_id = doc2_id
                 target_id = doc1_id
 
-            source_node_offset = self._nodes._id_to_index[source_id]
-            target_node_offset = self._nodes._id_to_index[target_id]
-            row = (
-                np.append(current_adjacency.row, source_node_offset)
-                if current_adjacency is not None
-                else np.array([source_node_offset])
-            )
-            col = (
-                np.append(current_adjacency.col, target_node_offset)
-                if current_adjacency is not None
-                else np.array([target_node_offset])
-            )
-            data = (
-                np.append(current_adjacency.data, 1)
-                if current_adjacency is not None
-                else np.array([1])
-            )
+            source_node_offset = np.array([self._nodes._id_to_index[source_id]])
+            target_node_offset = np.array([self._nodes._id_to_index[target_id]])
+
+            if current_adjacency is None:
+                row = source_node_offset
+                col = target_node_offset
+                data = np.array([1])
+            else:
+                row = np.append(current_adjacency.row, source_node_offset)
+                col = np.append(current_adjacency.col, target_node_offset)
+                data = np.append(current_adjacency.data, 1)
 
             SparseNdArray(
                 self._pb_body.graph.adjacency, sp_format='coo'
@@ -278,9 +272,11 @@ class GraphDocument(Document):
         edge_keys = []
         is_documents_source = isinstance(source_docs[0], Document)
         is_documents_dest = isinstance(dest_docs[0], Document)
+
         for doc1, doc2 in zip(source_docs, dest_docs):
             doc1_id = doc1.id if is_documents_source else doc1
-            doc2_id = doc2.id if is_documents_source else doc2
+            doc2_id = doc2.id if is_documents_dest else doc2
+
             if is_documents_source:
                 self.add_single_node(doc1)
             else:
@@ -305,29 +301,29 @@ class GraphDocument(Document):
 
         # manipulate the adjacency matrix in a single shot
         current_adjacency = self.adjacency
-        source_node_offsets = [
-            self._nodes._id_to_index[source.id if is_documents_source else source]
-            for source in source_docs
-        ]
-        target_node_offsets = [
-            self._nodes._id_to_index[target.id if is_documents_dest else target]
-            for target in dest_docs
-        ]
-        row = (
-            np.append(current_adjacency.row, source_node_offsets)
-            if current_adjacency is not None
-            else np.array(source_node_offsets)
+        source_node_offsets = np.array(
+            [
+                self._nodes._id_to_index[source.id if is_documents_source else source]
+                for source in source_docs
+            ]
         )
-        col = (
-            np.append(current_adjacency.col, target_node_offsets)
-            if current_adjacency is not None
-            else np.array(target_node_offsets)
+        target_node_offsets = np.array(
+            [
+                self._nodes._id_to_index[target.id if is_documents_dest else target]
+                for target in dest_docs
+            ]
         )
-        data = (
-            np.append(current_adjacency.data, [1] * len(source_node_offsets))
-            if current_adjacency is not None
-            else np.array([1] * len(source_node_offsets))
-        )
+
+        if current_adjacency is None:
+            row = source_node_offsets
+            col = target_node_offsets
+            data = np.ones(len(source_node_offsets), dtype=int)
+        else:
+            row = np.append(current_adjacency.row, source_node_offsets)
+            col = np.append(current_adjacency.col, target_node_offsets)
+            data = np.append(
+                current_adjacency.data, np.ones(len(source_node_offsets), dtype=int)
+            )
 
         SparseNdArray(
             self._pb_body.graph.adjacency, sp_format='coo'
