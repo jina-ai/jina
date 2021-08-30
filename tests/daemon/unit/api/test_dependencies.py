@@ -14,10 +14,10 @@ from daemon.api.dependencies import FlowDepends, Environment
 
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
-filename = os.path.join(cur_dir, 'flow1.yml')
 
 
 def test_flow_depends_localpath(monkeypatch, tmpdir):
+    filename = os.path.join(cur_dir, 'flow1.yml')
     monkeypatch.setattr(dependencies, 'change_cwd', nullcontext)
     monkeypatch.setattr(dependencies, 'get_workspace_path', lambda *args: filename)
     monkeypatch.setattr(FlowDepends, 'newfile', os.path.join(tmpdir, 'abc.yml'))
@@ -31,7 +31,7 @@ def test_flow_depends_localpath(monkeypatch, tmpdir):
 
 
 def test_flow_depends_load_and_dump(monkeypatch, tmpdir):
-    filename = os.path.join(cur_dir, 'flow3.yml')
+    filename = os.path.join(cur_dir, 'flow2.yml')
     monkeypatch.setattr(dependencies, 'get_workspace_path', lambda *args: tmpdir)
     monkeypatch.setattr(
         FlowDepends, 'localpath', lambda *args: os.path.join(tmpdir, filename)
@@ -66,6 +66,30 @@ def test_flow_depends_load_and_dump(monkeypatch, tmpdir):
                 f['local_compound'].tail_args.port_out,
             ]
         )
+
+
+def test_dump_grpc_data_requests(monkeypatch, tmpdir):
+    filename = os.path.join(cur_dir, 'flow3.yml')
+    monkeypatch.setattr(dependencies, 'get_workspace_path', lambda *args: tmpdir)
+    monkeypatch.setattr(
+        FlowDepends, 'localpath', lambda *args: os.path.join(tmpdir, filename)
+    )
+    monkeypatch.setattr(FlowDepends, 'newfile', os.path.join(tmpdir, 'abc.yml'))
+    copy(os.path.join(cur_dir, filename), tmpdir)
+
+    fd = FlowDepends(
+        workspace_id=DaemonID('jworkspace'),
+        filename=filename,
+        envs=Environment(envs=['a=b']),
+    )
+    with change_cwd(tmpdir):
+        f: Flow = Flow.load_config(fd.params.uses).build()
+        assert f.port_expose == 12345
+        assert f.protocol == GatewayProtocolType.HTTP
+        assert f['gateway'].args.runs_in_docker
+        assert f['local_shards'].args.runs_in_docker
+        assert f['local_shards'].args.port_in == 45678
+        assert f.gateway_args.grpc_data_requests
 
 
 @pytest.mark.parametrize(
