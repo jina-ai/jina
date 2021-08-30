@@ -1,3 +1,4 @@
+(daemon)=
 # JinaD
 
 `JinaD` is a [daemon](https://en.wikipedia.org/wiki/Daemon_(computing)) for deploying and managing Jina on remote via a

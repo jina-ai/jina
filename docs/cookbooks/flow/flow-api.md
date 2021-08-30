@@ -120,8 +120,9 @@ f = Flow().add().add().add().add()
 `uses` parameter to specify the [Executor](Executor.md).
 
 `uses` accepts multiple value types including class name, Docker image, (inline) YAML.
+Therefore, you can add an executor via:
 
-##### Add Executor via its Class Name
+````{tab} Class Name
 
 ```python
 from jina import Flow, Executor
@@ -136,9 +137,9 @@ f = Flow().add(uses=MyExecutor)
 with f:
     ...
 ```
+````
 
-##### Add Executor via YAML file
-
+`````{tab} YAML file
 `myexec.py`:
 
 ```python
@@ -197,9 +198,9 @@ requests:
     '''))
 ```
 ````
+`````
 
-##### Add Executor via `Dict`
-
+````{tab} Dict
 ```python
 from jina import Flow
 
@@ -209,7 +210,7 @@ f = Flow().add(
         'with': {'bar': 123}
     })
 ```
-
+````
 ##### Add an already spawned Executor
 
 A Flow does not have to be local-only. You can use any Executor on remote(s). 
@@ -279,6 +280,13 @@ f = (Flow()
 | `connect_to_predecessor` | `False` | Forces a Head to connect to the previous Tail. This is only used in the remote-local use-case described below. |
 | `external` | `False` | Stops `Flow` from context managing an Executor. This allows spawning of an external Executor and reusing across multiple Flows. |
 | `uses`, `uses_before` and `uses_after` prefix | No prefix | When prefixing one of the `uses` arguments with `docker` or `jinahub+docker`, the Executor does not run natively, but is spawned inside a container. |
+
+````{admonition} See Also
+:class: seealso
+{ref}`JinaD <daemon>`
+
+{ref}`JinaHub <jinahub>`
+````
 
 
 ##### Forcing an Executor in the remote-local configuration

@@ -8,9 +8,6 @@ Executor's input and output.
 
 You could say `Document` is to Jina is what `np.float` is to Numpy, and `DocumentArray` is similar to `np.ndarray`.
 
-````{admonition} See Also
-{ref}`Executor <executor>`
-````
 ## Minimum working example
 
 ```python
@@ -19,6 +16,10 @@ from jina import Document
 d = Document() 
 ```
 
+````{admonition} See Also
+:class: seealso
+{ref}`Executor <executor>`
+````
 
 ```{toctree}
 :hidden:

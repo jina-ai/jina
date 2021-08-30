@@ -1,3 +1,4 @@
+(use-hub-executor)=
 ## 5. Use in Jina Flow
 
 It will pull Executor automatically if you didn't pull it before.
@@ -59,4 +60,4 @@ f = Flow().add(uses='jinahub://<UUID>[:<SECRET>][/<TAG>]',
                uses_metas={'name': 'new_name'})
 ```
 
-This way, the Executor will work with the overrode parameters.
+This way, the Executor will work with the overridden parameters.

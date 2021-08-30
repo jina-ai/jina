@@ -55,10 +55,14 @@ dam = DocumentArrayMemmap('./my-memmap', buffer_pool_size=10)
 dam.extend([Document() for _ in range(100)])
 ```
 
+````{admonition} Warning
+:class: warning
 The buffer pool ensures that in-memory modified documents are persisted to disk. Therefore, you should not reference 
-documents manually and modify them if they might be outside of the buffer pool. The next section explains the best 
-practices when modifying documents.
+documents manually and modify them if they might be outside of the buffer pool. The {ref}`next section <modify-memmap>` 
+explains the best practices when modifying documents.
+````
 
+(modify-memmap)=
 ### Modifying elements of `DocumentArrayMemmap`
 
 Modifying elements of a `DocumentArrayMemmap` is possible due to the fact that accessed and modified documents are kept

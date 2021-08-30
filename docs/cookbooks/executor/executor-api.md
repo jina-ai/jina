@@ -144,7 +144,10 @@ The Executor's method receive the following arguments in order:
 Executor's methods not decorated with `@request` do not enjoy these arguments.
 ````
 
+````{admonition} Note
+:class: note
 The arguments order is designed as common-usage-first. Not alphabetical order or semantic closeness.
+````
 
 ````{admonition} Hint
 :class: hint

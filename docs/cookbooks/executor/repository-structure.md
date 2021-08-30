@@ -1,3 +1,4 @@
+(structure-of-the-repository)=
 ## Structure of the Repository
 
 ### Single python file

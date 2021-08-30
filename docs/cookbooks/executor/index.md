@@ -50,7 +50,8 @@ requests:
 ```
 
 In this example your executor is defined in a single python file, `foo.py`. If you want to use multiple python files
-(for example, `foo.py` and `helper.py`), check out how to organize them in the section [Structure of the Repository](#structure-of-the-repository)
+(for example, `foo.py` and `helper.py`), check out how to organize them in the section 
+{ref}`Structure of the Repository<structure-of-the-repository>`
 
 Construct `Executor` from YAML:
 
@@ -70,6 +71,11 @@ f = Flow().add(uses='my.yml')
 with f:
     f.post(on='/random_work', inputs=Document(), on_done=print)
 ```
+
+````{admonition} See Also
+:class: seealso
+{ref}`Flow <flow>`
+````
 
 ```{toctree}
 :hidden:

@@ -13,8 +13,11 @@ from jina import Flow
 
 f = Flow().add(uses='jinahub+docker://MyExecutor')
 ``` 
+We'll discuss more how to use hub executors in this {ref}`section <use-hub-executor>`
 ````
-A wizard will ask you some questions about the Executor. For the basic configuration, you will be asked two things: The Executor’s name and where it should be saved. The wizard will ask if you want to have a more advanced configuration, but it is unnecessary for most of user cases.
+When you run the command above, a wizard will ask you some questions about the Executor. For the basic configuration, 
+you will be asked two things: The Executor’s name and where it should be saved. The wizard will ask if you want to have 
+a more advanced configuration, but it is unnecessary for most of use cases.
 
 After running the command, a project with the following structure will be generated:
 

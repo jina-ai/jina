@@ -592,22 +592,11 @@ for evaluation_key, evaluation_score in d.evaluations.items():
 ### Serialize `Document` to binary/`Dict`/JSON
 
 You can serialize a `Document` into JSON string or Python dict or binary string:
-
+````{tab} JSON
 ```python
 from jina import Document
 
 d = Document(content='hello, world')
-```
-
-```python
-d.binary_str()
-```
-
-```
-b'\n$6a1c7f34-aef7-11eb-b075-1e008a366d48R\ntext/plainj\x0bhello world'
-```
-
-```python
 d.json()
 ```
 
@@ -618,15 +607,33 @@ d.json()
   "text": "hello world"
 }
 ```
+````
 
-
+````{tab} Binary
 ```python
+from jina import Document
+
+d = Document(content='hello, world')
+d.binary_str()
+```
+
+```
+b'\n$6a1c7f34-aef7-11eb-b075-1e008a366d48R\ntext/plainj\x0bhello world'
+```
+````
+
+````{tab} Dict
+```python
+from jina import Document
+
+d = Document(content='hello, world')
 d.dict()
 ```
 
 ```
 {'id': '6a1c7f34-aef7-11eb-b075-1e008a366d48', 'mimeType': 'text/plain', 'text': 'hello world'}
 ```
+````
 
 
 In order to have a nicer representation of
