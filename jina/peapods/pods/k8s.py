@@ -3,6 +3,7 @@ from argparse import Namespace
 from typing import Optional, Dict, Union, Set, List
 
 from .k8slib import kubernetes_deployment, kubernetes_tools
+from .k8slib.kubernetes_deployment import CustomDeploymentConfig
 from .. import BasePod
 from ... import __default_executor__
 from ...logging.logger import JinaLogger
@@ -12,7 +13,7 @@ class K8sPod(BasePod):
     """The K8sPod (KubernetesPod)  is used for deployments on Kubernetes."""
 
     def __init__(
-        self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
+            self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
     ):
         super().__init__()
         self.args = args
@@ -20,7 +21,7 @@ class K8sPod(BasePod):
         self.deployment_args = self._parse_args(args)
 
     def _parse_args(
-        self, args: Namespace
+            self, args: Namespace
     ) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:
         return self._parse_deployment_args(args)
 
@@ -36,15 +37,20 @@ class K8sPod(BasePod):
             # can be deducted based on the previous and next pods
             parsed_args['head_deployment'] = copy.copy(args)
             parsed_args['head_deployment'].uses = (
-                args.uses_before or __default_executor__
+                    args.uses_before or __default_executor__
             )
             parsed_args['tail_deployment'] = copy.copy(args)
             parsed_args['tail_deployment'].uses = (
-                args.uses_after or __default_executor__
+                    args.uses_after or __default_executor__
             )
             parsed_args['deployments'] = [args] * parallel
         else:
             parsed_args['deployments'] = [args]
+
+        custom_deployment_args = getattr(args, 'k8s_custom_deployment_args', None)
+        if custom_deployment_args:
+            parsed_args['k8s_custom_deployment_args'] = CustomDeploymentConfig(**custom_deployment_args)
+
         return parsed_args
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -68,9 +74,9 @@ class K8sPod(BasePod):
             image_name='jinaai/jina:master-py38-standard',
             container_cmd='["jina"]',
             container_args=f'["gateway", '
-            f'"--grpc-data-requests", '
-            f'"--runtime-cls", "GRPCDataRuntime", '
-            f'{kubernetes_deployment.get_cli_params(self.args, ("pod_role",))}]',
+                           f'"--grpc-data-requests", '
+                           f'"--runtime-cls", "GRPCDataRuntime", '
+                           f'{kubernetes_deployment.get_cli_params(self.args, ("pod_role",))}]',
             logger=JinaLogger(f'deploy_{self.name}'),
             replicas=1,
             pull_policy='Always',
@@ -94,24 +100,24 @@ class K8sPod(BasePod):
         if image_name == __default_executor__:
             image_name = 'gcr.io/jina-showcase/custom-jina:latest'
             container_args = (
-                f'["pea", '
-                f'"--uses", "BaseExecutor", '
-                f'"--grpc-data-requests", '
-                f'"--runtime-cls", "GRPCDataRuntime", '
-                f'"--uses-metas", "{uses_metas}", '
-                + uses_with_string
-                + f'{kubernetes_deployment.get_cli_params(deployment_args)}]'
+                    f'["pea", '
+                    f'"--uses", "BaseExecutor", '
+                    f'"--grpc-data-requests", '
+                    f'"--runtime-cls", "GRPCDataRuntime", '
+                    f'"--uses-metas", "{uses_metas}", '
+                    + uses_with_string
+                    + f'{kubernetes_deployment.get_cli_params(deployment_args)}]'
             )
 
         else:
             container_args = (
-                f'["pea", '
-                f'"--uses", "config.yml", '
-                f'"--grpc-data-requests", '
-                f'"--runtime-cls", "GRPCDataRuntime", '
-                f'"--uses-metas", "{uses_metas}", '
-                + uses_with_string
-                + f'{kubernetes_deployment.get_cli_params(deployment_args)}]'
+                    f'["pea", '
+                    f'"--uses", "config.yml", '
+                    f'"--grpc-data-requests", '
+                    f'"--runtime-cls", "GRPCDataRuntime", '
+                    f'"--uses-metas", "{uses_metas}", '
+                    + uses_with_string
+                    + f'{kubernetes_deployment.get_cli_params(deployment_args)}]'
             )
 
         kubernetes_deployment.deploy_service(
@@ -124,6 +130,7 @@ class K8sPod(BasePod):
             replicas=replicas,
             pull_policy='IfNotPresent',  # TODO: Parameterize
             init_container=init_container_args,
+            custom_deployment_config=self.deployment_args.get('k8s_custom_deployment_args')
         )
 
     def start(self) -> 'K8sPod':
@@ -249,7 +256,7 @@ class K8sPod(BasePod):
                     }
                 )
             for deployment_id, deployment_arg in enumerate(
-                self.deployment_args['deployments']
+                    self.deployment_args['deployments']
             ):
                 service_name = self.name + (
                     '-' + str(deployment_id)

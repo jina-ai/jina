@@ -142,3 +142,12 @@ def mixin_k8s_pod_parser(parser):
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
+    import json
+    parser.add_argument(
+        '--k8s-custom-deployment-args',
+        type=json.loads,
+        default={},
+        help=''
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
