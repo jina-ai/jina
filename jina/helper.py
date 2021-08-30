@@ -889,6 +889,7 @@ def _update_policy():
                 'Install `uvloop` via `pip install "jina[uvloop]"` for better performance.'
             )
 
+
 def get_or_reuse_loop():
     """
     Get a new eventloop or reuse the current opened eventloop.
@@ -1229,7 +1230,7 @@ def is_yaml_filepath(val) -> bool:
     :return: True if the file is YAML else False.
     """
     if sys.platform == 'win32':
-        r = r'.*.ya?ml$' # temp
+        r = r'.*.ya?ml$'  # temp
     else:
         r = r'^[/\w\-\_\.]+.ya?ml$'
     return re.match(r, val.strip()) is not None

@@ -71,11 +71,17 @@ def hello_world(args):
     os.environ['JINA_ARRAY_QUANT'] = 'fp16'
     # now comes the real work
     # load index flow from a YAML file
-    py_modules = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'my_executors.py')
+    py_modules = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), 'my_executors.py'
+    )
     f = (
         Flow()
         .add(uses=MyEncoder, parallel=2, py_modules=py_modules if __windows__ else None)
-        .add(uses=MyIndexer, workspace=args.workdir, py_modules=py_modules if __windows__ else None)
+        .add(
+            uses=MyIndexer,
+            workspace=args.workdir,
+            py_modules=py_modules if __windows__ else None,
+        )
         .add(uses=MyEvaluator, py_modules=py_modules if __windows__ else None)
     )
 

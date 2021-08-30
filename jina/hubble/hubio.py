@@ -70,7 +70,11 @@ class HubIO:
 
             try:
                 # low-level client
-                self._raw_client = APIClient(base_url=docker.constants.DEFAULT_NPIPE if __windows__ else docker.constants.DEFAULT_UNIX_SOCKET)
+                self._raw_client = APIClient(
+                    base_url=docker.constants.DEFAULT_NPIPE
+                    if __windows__
+                    else docker.constants.DEFAULT_UNIX_SOCKET
+                )
             except docker.errors.DockerException:
                 self.logger.critical(
                     f'Docker daemon seems not running. Please run Docker daemon and try again.'
