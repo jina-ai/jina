@@ -322,7 +322,10 @@ assert id(d) == id(d1)  # False
 
 You can partially update a `Document` according to another source `Document`:
 
-```python
+```{code-block} python
+---
+emphasize-lines: 17, 20
+---
 from jina import Document
 
 s = Document(
@@ -445,7 +448,10 @@ parameter `force_undirected`. It's a boolean flag that, when set to `True`, forc
 
 * `add_node`: adds a document to the graoh:
 
-```python
+```{code-block} python
+---
+emphasize-lines: 5
+---
 from jina.types.document.graph import GraphDocument
 from jina import Document
 
@@ -461,7 +467,10 @@ graph.nodes[0]
 * `add_edge`: Adds an edge between 2 documents. If a document does not exist in the graph, it is added. You can also add
   dict features to the edge with parameter `features`
 
-```python
+```{code-block} python
+---
+emphasize-lines: 7
+---
 from jina import Document
 from jina.types.document.graph import GraphDocument
 
@@ -671,7 +680,10 @@ To better see the Document's recursive structure, you can use `.plot()` function
 all `Document` objects will be auto-rendered:
 
 
-```python
+```{code-block} python
+---
+emphasize-lines: 13
+---
 import numpy as np
 from jina import Document
 

@@ -158,7 +158,10 @@ DocumentArray([
 `DocumentArray` is a subclass of `MutableSequence`, therefore you can use built-in Python `sort` to sort elements in
 a `DocumentArray` object, e.g.
 
-```python
+```{code-block} python
+---
+emphasize-lines: 11
+---
 from jina import DocumentArray, Document
 
 da = DocumentArray(
@@ -188,7 +191,10 @@ To sort elements in `da` in-place, using `tags[id]` value in a descending manner
 You can use Python's [built-in `filter()`](https://docs.python.org/3/library/functions.html#filter) to filter elements
 in a `DocumentArray` object:
 
-```python
+```{code-block} python
+---
+emphasize-lines: 8
+---
 from jina import DocumentArray, Document
 
 da = DocumentArray([Document() for _ in range(6)])
@@ -232,7 +238,10 @@ advanced "iterator algebra" on the `DocumentArray`.
 
 For instance, you can group a `DocumentArray` by `parent_id`:
 
-```python
+```{code-block} python
+---
+emphasize-lines: 5
+---
 from jina import DocumentArray, Document
 from itertools import groupby
 
@@ -252,7 +261,10 @@ for key, group in groups:
 `DocumentArray` implements powerful getters that lets you fetch multiple attributes from the Documents it contains in
 one-shot:
 
-```python
+```{code-block} python
+---
+emphasize-lines: 9
+---
 import numpy as np
 
 from jina import DocumentArray, Document
@@ -327,7 +339,10 @@ then `N` documents from `da_2` with the lowest metric values according to `some_
 The following example find the 3 closest documents, according to the euclidean distance, for each element in `da_1` from
 the elements in `da_2`.
 
-```python
+```{code-block} python
+---
+emphasize-lines: 18
+---
 from jina import Document, DocumentArray
 import numpy as np
 
@@ -363,7 +378,10 @@ match emb = [1.  0.1 0.  0.  0. ] score = 1.6763054132461548
 
 We can use sparse embeddings and do the `.match` using `is_sparse=True`
 
-```python
+```{code-block} python
+---
+emphasize-lines: 18
+---
 from jina import Document, DocumentArray
 import scipy.sparse as sp
 
@@ -409,7 +427,10 @@ number of regular expressions that need to be matched in order to select a docum
 Let us consider the following example, where we want to select documents form a `DocumentArray` if the `city` tag
 contains a city that starts with `'B'`.
 
-```python
+```{code-block} python
+---
+emphasize-lines: 9
+---
 d1 = Document(tags={'city': 'Barcelona', 'phone': 'None'})
 d2 = Document(tags={'city': 'Berlin', 'phone': '648907348'})
 d3 = Document(tags={'city': 'Paris', 'phone': 'None'})
@@ -461,7 +482,10 @@ document array.
 
 To make use of the function:
 
-```python
+```{code-block} python
+---
+emphasize-lines: 6, 7
+---
 from jina import Document, DocumentArray
 
 da = DocumentArray()  # initialize a random document array
@@ -478,7 +502,10 @@ sampled_da_with_seed = da.sample(k=10, seed=1)  # sample 10 documents with seed.
 
 To make use of the function:
 
-```python
+```{code-block} python
+---
+emphasize-lines: 6, 7
+---
 from jina import Document, DocumentArray
 
 da = DocumentArray()  # initialize a random document array
@@ -495,7 +522,10 @@ It returns a python `dict` where `Documents` with the same value on `tag` are gr
 
 To make use of the function:
 
-```python
+```{code-block} python
+---
+emphasize-lines: 10
+---
 from jina import Document, DocumentArray
 
 da = DocumentArray()
@@ -518,7 +548,10 @@ to project in 2D space: `pca` and `tsne`.
 
 In the following example, we add 3 different distributions of embeddings and see 3 kinds of point clouds in the graph.
 
-```python
+```{code-block} python
+---
+emphasize-lines: 13
+---
 import numpy as np
 from jina import Document, DocumentArray
 

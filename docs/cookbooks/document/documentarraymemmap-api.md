@@ -26,7 +26,10 @@ dam = DocumentArrayMemmap('./my-memmap')
 
 ### Add Documents to `DocumentArrayMemmap`
 
-```python
+```{code-block} python
+---
+emphasize-lines: 8
+---
 from jina.types.arrays.memmap import DocumentArrayMemmap
 from jina import Document
 
@@ -93,7 +96,10 @@ might not be in the buffer pool. Here are some practices to avoid:
 1. Keep more  references than the buffer pool size and modify them:
 
 ````{tab} ❌ Don't
-```python
+```{code-block} python
+---
+emphasize-lines: 7, 8
+---
 from jina import Document
 from jina.types.arrays.memmap import DocumentArrayMemmap
 
@@ -114,7 +120,10 @@ hello
 ````{tab} ✅ Do
 Use the dam object to modify instead:
 
-```python
+```{code-block} python
+---
+emphasize-lines: 7, 8
+---
 from jina import Document
 from jina.types.arrays.memmap import DocumentArrayMemmap
 
@@ -133,7 +142,10 @@ goodbye
 
 It's also okay if you reference docs less than the buffer pool size:
 
-```python
+```{code-block} python
+---
+emphasize-lines: 4, 5
+---
 from jina import Document
 from jina.types.arrays.memmap import DocumentArrayMemmap
 
@@ -154,7 +166,10 @@ goodbye
 2. Modify a reference that might have left the buffer pool :
 
 ````{tab} ❌ Don't
-```python
+```{code-block} python
+---
+emphasize-lines: 10
+---
 from jina import Document
 from jina.types.arrays.memmap import DocumentArrayMemmap
 
@@ -176,7 +191,10 @@ hello
 ````{tab} ✅ Do
 Get the document from the dam object and then modify it:
 
-```python
+```{code-block} python
+---
+emphasize-lines: 10
+---
 from jina import Document
 from jina.types.arrays.memmap import DocumentArrayMemmap
 

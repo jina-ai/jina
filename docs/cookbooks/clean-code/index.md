@@ -8,7 +8,10 @@ tips to help you write beautiful and efficient code.
 
 1. Use [Python generator](https://docs.python.org/3/glossary.html#term-generator) as the input to the Flow. Generator can lazily build `Document` one at a time, instead of building all at once. This can greatly speedup the overall performance and reduces the memory footprint.
 ````{tab} ✅ Do
-```python
+```{code-block} python
+---
+emphasize-lines: 3, 4, 5
+---
 from jina import Flow, Document
 
 def my_input():
@@ -37,7 +40,10 @@ with f:
 1. Set `request_size`. `request_size` decides how many Documents in each request. When combining with Generator, `request_size` determines how long will it take before sending the first request. You can change `request_size` to overlap the time of request generation and Flow computation.
 
 ````{tab} ✅ Do
-```python
+```{code-block} python
+---
+emphasize-lines: 10
+---
 from jina import Flow, Document
 
 def my_input():
@@ -52,7 +58,10 @@ with f:
 ````
 
 ````{tab} 😔 Don't
-```python
+```{code-block} python
+---
+emphasize-lines: 10
+---
 from jina import Flow, Document
 
 def my_input():
@@ -80,7 +89,10 @@ class MyExecutor(Executor):
 ````
 
 ````{tab} 😔 Don't
-```python
+```{code-block} python
+---
+emphasize-lines: 4, 5
+---
 from jina import Executor
 
 class MyExecutor(Executor):
@@ -106,7 +118,10 @@ class MyExecutor(Executor):
 ````
 
 ````{tab} 😔 Don't
-```python
+```{code-block} python
+---
+emphasize-lines: 4, 8
+---
 from jina import Executor
 
 class MyExecutor(Executor):
@@ -122,7 +137,10 @@ class MyExecutor(Executor):
 
 1. Fold unnecessary arguments into `**kwargs`, only get what you need.
 ````{tab} ✅ Do
-```python
+```{code-block} python
+---
+emphasize-lines: 6
+---
 from jina import Executor, requests
 
 class MyExecutor(Executor):
@@ -134,7 +152,10 @@ class MyExecutor(Executor):
 ````
 
 ````{tab} 😔 Don't
-```python
+```{code-block} python
+---
+emphasize-lines: 6
+---
 from jina import Executor, requests
 
 class MyExecutor(Executor):
@@ -191,7 +212,10 @@ with Flow().add(uses=MyExec) as f:
 1. Send `parameters` only request to a Flow if you don't need `docs`.
 
 ````{tab} ✅ Do
-```python
+```{code-block} python
+---
+emphasize-lines: 12
+---
 from jina import Executor, Flow, requests
 
 class MyExecutor(Executor):
@@ -208,7 +232,10 @@ with f:
 ````
 
 ````{tab} 😔 Don't
-```python
+```{code-block} python
+---
+emphasize-lines: 12
+---
 from jina import Executor, Flow, Document, requests
 
 class MyExecutor(Executor):
