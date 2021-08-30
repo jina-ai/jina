@@ -6,13 +6,6 @@ from jina.hubble.hubio import HubIO
 from jina.logging.logger import JinaLogger
 from jina.peapods.pods.k8slib import kubernetes_tools
 
-IS_LOCAL = False
-
-if IS_LOCAL:
-    gateway_image = 'custom-jina'
-else:
-    gateway_image = 'gcr.io/jina-showcase/custom-jina:latest'
-
 
 def to_dns_name(name: str) -> str:
     """Converts the pod name to a dns compatible name.
@@ -55,7 +48,7 @@ def deploy_service(
     port_ctrl = 8083
 
     logger.info(
-        f'🔋\tCreate Service for "{name}" with image "{name}" pulling from "{image_name}" \ncontainer_cmd: {container_cmd}\n{name} container_args: {container_args}'
+        f'🔋\tCreate Service for "{name}" with image "{name}" pulling from "{image_name}"'
     )
     kubernetes_tools.create(
         'service',

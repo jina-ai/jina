@@ -2,6 +2,9 @@ import copy
 from argparse import Namespace
 from typing import Optional, Dict, Union, Set, List
 
+import requests
+
+import jina
 from .k8slib import kubernetes_deployment, kubernetes_tools
 from .. import BasePod
 from ... import __default_executor__
@@ -61,11 +64,11 @@ class K8sPod(BasePod):
         """Not implemented"""
         raise NotImplementedError
 
-    def _deploy_gateway(self):
+    def _deploy_gateway(self, version):
         kubernetes_deployment.deploy_service(
             self.name,
             namespace=self.args.k8s_namespace,
-            image_name='jinaai/jina:master-py38-standard',
+            image_name=f'jinaai/jina:{version}-py38-standard',
             container_cmd='["jina"]',
             container_args=f'["gateway", '
             f'"--grpc-data-requests", '
@@ -77,7 +80,9 @@ class K8sPod(BasePod):
             init_container=None,
         )
 
-    def _deploy_runtime(self, deployment_args, replicas, k8s_namespace, deployment_id):
+    def _deploy_runtime(
+        self, deployment_args, replicas, k8s_namespace, deployment_id, version
+    ):
         image_name = kubernetes_deployment.get_image_name(deployment_args.uses)
         name_suffix = self.name + (
             '-' + str(deployment_id) if self.args.parallel > 1 else ''
@@ -92,7 +97,7 @@ class K8sPod(BasePod):
         )
         uses_with_string = f'"--uses-with", "{uses_with}", ' if uses_with else ''
         if image_name == __default_executor__:
-            image_name = 'gcr.io/jina-showcase/custom-jina:latest'
+            image_name = f'jinaai/jina:{version}-py38-standard'
             container_args = (
                 f'["pea", '
                 f'"--uses", "BaseExecutor", '
@@ -122,7 +127,7 @@ class K8sPod(BasePod):
             container_args=container_args,
             logger=JinaLogger(f'deploy_{self.name}'),
             replicas=replicas,
-            pull_policy='IfNotPresent',  # TODO: Parameterize
+            pull_policy='IfNotPresent',
             init_container=init_container_args,
         )
 
@@ -133,8 +138,9 @@ class K8sPod(BasePod):
         """
         kubernetes_tools.create('namespace', {'name': self.args.k8s_namespace})
 
+        version = self._get_base_executor_version()
         if self.name == 'gateway':
-            self._deploy_gateway()
+            self._deploy_gateway(version)
         else:
             if self.deployment_args['head_deployment'] is not None:
                 self._deploy_runtime(
@@ -142,12 +148,17 @@ class K8sPod(BasePod):
                     1,
                     self.args.k8s_namespace,
                     'head',
+                    version,
                 )
 
             for i in range(self.args.parallel):
                 deployment_args = self.deployment_args['deployments'][i]
                 self._deploy_runtime(
-                    deployment_args, self.args.replicas, self.args.k8s_namespace, i
+                    deployment_args,
+                    self.args.replicas,
+                    self.args.k8s_namespace,
+                    i,
+                    version,
                 )
 
             if self.deployment_args['tail_deployment'] is not None:
@@ -156,6 +167,7 @@ class K8sPod(BasePod):
                     1,
                     self.args.k8s_namespace,
                     'tail',
+                    version,
                 )
         return self
 
@@ -283,3 +295,12 @@ class K8sPod(BasePod):
                     }
                 )
         return res
+
+    def _get_base_executor_version(self):
+        url = 'https://registry.hub.docker.com/v1/repositories/jinaai/jina/tags'
+        tags = requests.get(url).json()
+        name_set = {tag['name'] for tag in tags}
+        if jina.__version__ in name_set:
+            return jina.__version__
+        else:
+            return 'master'
