@@ -1388,9 +1388,6 @@
 
         <span class="n">op_flow</span><span class="o">.</span><span class="n">_set_initial_dynamic_routing_table</span><span class="p">()</span>
 
-        <span class="k">for</span> <span class="n">pod</span> <span class="ow">in</span> <span class="n">op_flow</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_host</span><span class="p">(</span><span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>
-
         <span class="n">hanging_pods</span> <span class="o">=</span> <span class="n">_hanging_pods</span><span class="p">(</span><span class="n">op_flow</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">hanging_pods</span><span class="p">:</span>
             <span class="n">op_flow</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
@@ -1399,18 +1396,6 @@
             <span class="p">)</span>
         <span class="n">op_flow</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">GRAPH</span>
         <span class="k">return</span> <span class="n">op_flow</span></div>
-
-    <span class="k">def</span> <span class="nf">_resolve_host</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">ip_address</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">gethostbyname</span><span class="p">(</span><span class="n">host</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">ip_address</span> <span class="o">==</span> <span class="n">get_internal_ip</span><span class="p">():</span>
-                <span class="k">return</span> <span class="n">__default_host__</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">host</span>
-        <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">gaierror</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s1"> can not be resolved into a valid IP address.'</span><span class="p">)</span>
-            <span class="c1"># return the original one, as it might be some special docker host literal</span>
-            <span class="k">return</span> <span class="n">host</span>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""Builds the Flow</span>
