@@ -110,14 +110,3 @@ def _get_yaml(template: str, params: Dict):
         for k, v in params.items():
             content = content.replace(f'{{{k}}}', str(v))
     return content
-
-
-def delete_namespace(k8s_namespace):
-    """Remove the namespace
-
-    :param k8s_namespace: namespace to remove
-    """
-    # from kubernetes import utils
-    #
-    # utils
-    pass

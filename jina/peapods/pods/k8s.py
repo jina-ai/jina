@@ -2,8 +2,6 @@ import copy
 from argparse import Namespace
 from typing import Optional, Dict, Union, Set, List
 
-import requests
-
 import jina
 from .k8slib import kubernetes_deployment, kubernetes_tools
 from .. import BasePod
@@ -177,7 +175,7 @@ class K8sPod(BasePod):
 
     def close(self):
         """Not implemented. It should delete the namespace of the flow"""
-        kubernetes_tools.delete_namespace(self.args.k8s_namespace)
+        pass
 
     def join(self):
         """Not implemented. It should wait to make sure deployments are properly killed."""
@@ -232,7 +230,7 @@ class K8sPod(BasePod):
 
     @property
     def deployments(self) -> List[Dict]:
-        """Deployment information for the routing table creation.
+        """Deployment information which describes the interface of the pod.
 
         :return: list of dictionaries defining the attributes used by the routing table
         """
@@ -297,6 +295,8 @@ class K8sPod(BasePod):
         return res
 
     def _get_base_executor_version(self):
+        import requests
+
         url = 'https://registry.hub.docker.com/v1/repositories/jinaai/jina/tags'
         tags = requests.get(url).json()
         name_set = {tag['name'] for tag in tags}
