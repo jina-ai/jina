@@ -1,11 +1,10 @@
-# Contains reusable fixtures for the kubernetes testing module
 import operator
 import os
 from typing import List
 
+import docker
 import pykube
 import pytest
-import docker
 from pytest_kind import KindCluster
 
 from jina.logging.logger import JinaLogger
@@ -22,7 +21,9 @@ def logger():
 
 @pytest.fixture()
 def test_executor_image(logger: JinaLogger):
-    image, build_logs = client.images.build(path=os.path.join(cur_dir, 'test-executor'), tag='test-executor:0.13.0')
+    image, build_logs = client.images.build(
+        path=os.path.join(cur_dir, 'test-executor'), tag='test-executor:0.13.1'
+    )
     for chunk in build_logs:
         if 'stream' in chunk:
             for line in chunk['stream'].splitlines():
@@ -32,7 +33,9 @@ def test_executor_image(logger: JinaLogger):
 
 @pytest.fixture()
 def executor_merger_image(logger: JinaLogger):
-    image, build_logs = client.images.build(path=os.path.join(cur_dir, 'executor-merger'), tag='merger-executor:0.1.0')
+    image, build_logs = client.images.build(
+        path=os.path.join(cur_dir, 'executor-merger'), tag='merger-executor:0.1.1'
+    )
     for chunk in build_logs:
         if 'stream' in chunk:
             for line in chunk['stream'].splitlines():
@@ -42,7 +45,9 @@ def executor_merger_image(logger: JinaLogger):
 
 @pytest.fixture()
 def dummy_dumper_image(logger: JinaLogger):
-    image, build_logs = client.images.build(path=os.path.join(cur_dir, 'dummy-dumper'), tag='dummy-dumper:0.1.0')
+    image, build_logs = client.images.build(
+        path=os.path.join(cur_dir, 'dummy-dumper'), tag='dummy-dumper:0.1.1'
+    )
     for chunk in build_logs:
         if 'stream' in chunk:
             for line in chunk['stream'].splitlines():
@@ -51,12 +56,12 @@ def dummy_dumper_image(logger: JinaLogger):
 
 
 class KindClusterWrapper:
-
     def __init__(self, kind_cluster: KindCluster, logger: JinaLogger):
         self._cluster = kind_cluster
         self._cluster.ensure_kubectl()
         self._kube_config_path = os.path.join(
-            os.getcwd(), '.pytest-kind/pytest-kind/kubeconfig')
+            os.getcwd(), '.pytest-kind/pytest-kind/kubeconfig'
+        )
         self._kind_exec_path = os.path.join(
             os.getcwd(), '.pytest-kind/pytest-kind/kind'
         )
@@ -77,11 +82,11 @@ class KindClusterWrapper:
         return self._kind_exec_path
 
     def port_forward(
-            self,
-            service_name: str,
-            local_port: int,
-            service_port: int,
-            namespace: str = None
+        self,
+        service_name: str,
+        local_port: int,
+        service_port: int,
+        namespace: str = None,
     ):
         if namespace:
             return self._cluster.port_forward(
@@ -90,23 +95,54 @@ class KindClusterWrapper:
                 '-n',
                 namespace,
                 local_port=local_port,
-                retries=20
+                retries=20,
             )
         else:
             return self._cluster.port_forward(
-                service_name,
-                service_port,
-                local_port=local_port,
-                retries=20
+                service_name, service_port, local_port=local_port, retries=20
             )
 
-    def list_pods(self, namespace: str = None) -> List:
+    def list_pods(self, logger, namespace: str = None) -> List:
         if namespace:
-            return list(pykube.Pod.objects(self._pykube_api, namespace=namespace))
-        return list(pykube.Pod.objects(self._pykube_api))
+            pod_list = list(pykube.Pod.objects(self._pykube_api, namespace=namespace))
+        else:
+            pod_list = list(pykube.Pod.objects(self._pykube_api))
+        # for pod in pod_list:
+        #     logger.debug(f'metadata: {pod.obj["metadata"]}')
+        #     logger.debug(f'phase: {pod.obj["status"]["phase"]}')
+        #     logger.debug(f'conditions: {pod.obj["status"]["conditions"]}')
+        #     if "containerStatuses" in pod.obj["status"] and True:
+        #         logger.debug(
+        #             f'containerStatuses: {pod.obj["status"]["containerStatuses"]}'
+        #         )
 
-    def list_ready_pods(self, namespace: str = None) -> List:
-        return list(filter(operator.attrgetter("ready"), self.list_pods(namespace)))
+        return pod_list
+
+    def list_ready_pods(self, logger, namespace: str = None) -> List:
+        return list(
+            filter(operator.attrgetter("ready"), self.list_pods(logger, namespace))
+        )
+
+    def get_node_info(self, logger):
+        nodes = []
+        for node in pykube.Node.objects(self._pykube_api):
+            try:
+                logger.debug(f'### conditions 1: {node.obj["status"]["conditions"]}')
+            except:
+                logger.debug('###conditions 1 not working')
+
+            try:
+                logger.debug(f'### conditions 2: {node.obj["metadata"]["conditions"]}')
+            except:
+                logger.debug('###conditions 2 not working')
+
+            try:
+                logger.debug(f'### conditions 3: {node.obj["conditions"]}')
+            except:
+                logger.debug('###conditions 3 not working')
+
+            nodes.append(node.obj)
+        return nodes
 
     def needs_docker_image(self, image_name: str):
         self._cluster.load_docker_image(image_name)
@@ -120,4 +156,4 @@ def k8s_cluster(kind_cluster: KindCluster, logger: JinaLogger) -> KindClusterWra
 @pytest.fixture()
 def k8s_cluster_namespaced(k8s_cluster) -> KindClusterWrapper:
     yield k8s_cluster
-    # k8s_cluster._cluster.kubectl('delete', 'namespace', 'test-flow')
+    k8s_cluster._cluster.kubectl('delete', 'namespace', 'test-flow')

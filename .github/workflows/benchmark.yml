@@ -1,0 +1,44 @@
+name: Benchmark
+
+on:
+  push:
+    branches:
+      - "master"
+    tags: 
+      - "v*"
+
+jobs:
+  benchmark-master:
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/master' }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          INIT_FILE='jina/__init__.py'
+          RELEASE_VER=$(sed -n '/^__version__/p' $INIT_FILE | cut -d \' -f2)
+          LAST_VER=$(git tag -l | sort -V | tail -n1)
+          COMMITS_SINCE_LAST_VER=$(git rev-list $LAST_VER..HEAD --count)
+          NEXT_VER=$RELEASE_VER".dev"$COMMITS_SINCE_LAST_VER
+          echo "NEXT_VER=$NEXT_VER" >> $GITHUB_ENV
+      - uses: benc-uk/workflow-dispatch@v1
+        with:
+          token: ${{ secrets.JINA_DEV_BOT }}
+          workflow: Benchmark Jina
+          repo: jina-ai/jina-terraform
+          ref: "main"
+          inputs: '{ "pypi_releases": "[\"${{ env.NEXT_VER }}\"]"}'
+
+  benchmark-tag:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - run: |
+          TAG=$(echo $GITHUB_REF | cut -d '/' -f 3)
+          echo "TAG=$TAG" >> $GITHUB_ENV
+      - uses: benc-uk/workflow-dispatch@v1
+        with:
+          token: ${{ secrets.JINA_DEV_BOT }}
+          workflow: Benchmark Jina
+          repo: jina-ai/jina-terraform
+          ref: "main"
+          inputs: '{ "git_tags": "[\"${{ env.TAG }}\"]"}'

@@ -1,11 +1,9 @@
-# Test Executor
 from typing import Dict
 
-from jina import Executor, requests, DocumentArray, Document
+from jina import Executor, requests, DocumentArray
 
 
 class TestExecutor(Executor):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         from jina.logging.logger import JinaLogger
@@ -15,7 +13,9 @@ class TestExecutor(Executor):
 
     @requests(on='/index')
     def debug(self, docs: DocumentArray, parameters: Dict, **kwargs):
-        self.logger.debug(f'Received doc array in test-executor {self._name} with length {len(docs)}.')
+        self.logger.debug(
+            f'Received doc array in test-executor {self._name} with length {len(docs)}.'
+        )
         key = 'traversed-executors'
 
         for doc in docs:
@@ -27,7 +27,9 @@ class TestExecutor(Executor):
 
     @requests(on='/search')
     def read_file(self, docs: DocumentArray, parameters: Dict, **kwargs):
-        self.logger.debug(f'Received doc array in test-executor {self._name} with length {len(docs)}.')
+        self.logger.debug(
+            f'Received doc array in test-executor {self._name} with length {len(docs)}.'
+        )
         key = 'file'
         file_path = '/shared/test_file.txt'
 

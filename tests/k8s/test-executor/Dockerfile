@@ -1,5 +1,5 @@
 # TODO use fixed jina version for deterministic execution
-FROM jinaai/jina:master-py38-standard
+FROM jinaai/jina:test-pip
 
 # setup the workspace
 COPY . /workspace

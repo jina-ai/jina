@@ -12,6 +12,7 @@ spec:
     metadata:
       labels:
         app: {name}
+        ns: {namespace}
     spec:
       containers:
       - name: executor

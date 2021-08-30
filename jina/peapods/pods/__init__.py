@@ -187,7 +187,7 @@ class BasePod:
 
     @staticmethod
     def _copy_to_head_args(
-            args: Namespace, polling_type: PollingType, as_router: bool = True
+        args: Namespace, polling_type: PollingType, as_router: bool = True
     ) -> Namespace:
         """
         Set the outgoing args of the head router
@@ -231,7 +231,7 @@ class BasePod:
 
     @staticmethod
     def _copy_to_tail_args(
-            args: Namespace, polling_type: PollingType, as_router: bool = True
+        args: Namespace, polling_type: PollingType, as_router: bool = True
     ) -> Namespace:
         """
         Set the incoming args of the tail router
@@ -294,14 +294,20 @@ class BasePod:
         ...
 
     @property
-    def deployments(self):
-        return [{
-            'name': self.name,
-            'head_host': self.head_host,
-            'head_port_in': self.head_port_in,
-            'tail_port_out': self.tail_port_out,
-            'head_zmq_identity': self.head_zmq_identity,
-        }]
+    def deployments(self) -> List[Dict]:
+        """Get deployments of the pod. The BasePod just gives one deployment.
+
+        :return: list of deployments
+        """
+        return [
+            {
+                'name': self.name,
+                'head_host': self.head_host,
+                'head_port_in': self.head_port_in,
+                'tail_port_out': self.tail_port_out,
+                'head_zmq_identity': self.head_zmq_identity,
+            }
+        ]
 
 
 class Pod(BasePod, ExitFIFO):
@@ -312,15 +318,15 @@ class Pod(BasePod, ExitFIFO):
     """
 
     def __init__(
-            self,
-            args: Union['Namespace', Dict],
-            needs: Optional[Set[str]] = None,
+        self,
+        args: Union['Namespace', Dict],
+        needs: Optional[Set[str]] = None,
     ):
         super().__init__()
         args.upload_files = BasePod._set_upload_files(args)
         self.args = args
         self.needs = (
-                needs or set()
+            needs or set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
 
         self.is_head_router = False
@@ -363,15 +369,6 @@ class Pod(BasePod, ExitFIFO):
         return self.peas_args['peas'][0]
 
     @property
-    def port_expose(self) -> int:
-        """Get the grpc port number
-
-
-        .. # noqa: DAR201
-        """
-        return self.first_pea_args.port_expose
-
-    @property
     def host(self) -> str:
         """Get the host name of this Pod
 
@@ -381,7 +378,7 @@ class Pod(BasePod, ExitFIFO):
         return self.first_pea_args.host
 
     def _parse_args(
-            self, args: Namespace
+        self, args: Namespace
     ) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:
         return self._parse_base_pod_args(args)
 
@@ -454,9 +451,9 @@ class Pod(BasePod, ExitFIFO):
         .. # noqa: DAR201
         """
         return (
-                ([self.peas_args['head']] if self.peas_args['head'] else [])
-                + ([self.peas_args['tail']] if self.peas_args['tail'] else [])
-                + self.peas_args['peas']
+            ([self.peas_args['head']] if self.peas_args['head'] else [])
+            + ([self.peas_args['tail']] if self.peas_args['tail'] else [])
+            + self.peas_args['peas']
         )
 
     @property
@@ -467,9 +464,9 @@ class Pod(BasePod, ExitFIFO):
         # For some reason, it seems that using `stack` and having `Head` started after the rest of Peas do not work and
         # some messages are not received by the inner peas. That's why ExitFIFO is needed
         return (
-                ([self.peas_args['head']] if self.peas_args['head'] else [])
-                + self.peas_args['peas']
-                + ([self.peas_args['tail']] if self.peas_args['tail'] else [])
+            ([self.peas_args['head']] if self.peas_args['head'] else [])
+            + self.peas_args['peas']
+            + ([self.peas_args['tail']] if self.peas_args['tail'] else [])
         )
 
     @property
@@ -560,23 +557,20 @@ class Pod(BasePod, ExitFIFO):
 
     @staticmethod
     def _set_peas_args(
-            args: Namespace,
-            head_args: Optional[Namespace] = None,
-            tail_args: Namespace = None,
+        args: Namespace,
+        head_args: Optional[Namespace] = None,
+        tail_args: Namespace = None,
     ) -> List[Namespace]:
         result = []
         _host_list = (
             args.peas_hosts
             if args.peas_hosts
             else [
-                     args.host,
-                 ]
-                 * (args.parallel + 2)
+                args.host,
+            ]
         )
 
-        for idx, pea_host in zip(
-                range(args.parallel), _host_list[2:]
-        ):  # first two are taken by head and tail TODO refactor this hack
+        for idx, pea_host in zip(range(args.parallel), cycle(_host_list)):
             _args = copy.deepcopy(args)
             _args.pea_id = idx
 
@@ -642,22 +636,18 @@ class Pod(BasePod, ExitFIFO):
             self.is_head_router = True
             self.is_tail_router = True
             parsed_args['head'] = BasePod._copy_to_head_args(args, args.polling)
-            if parsed_args['head'].peas_hosts:
-                parsed_args['head'].host = parsed_args['head'].peas_hosts[0]
             parsed_args['tail'] = BasePod._copy_to_tail_args(args, args.polling)
-            if parsed_args['tail'].peas_hosts:
-                parsed_args['tail'].host = parsed_args['tail'].peas_hosts[1]
             parsed_args['peas'] = self._set_peas_args(
                 args,
                 head_args=parsed_args['head'],
                 tail_args=parsed_args['tail'],
             )
         elif (
-                getattr(args, 'uses_before', None)
-                and args.uses_before != __default_executor__
+            getattr(args, 'uses_before', None)
+            and args.uses_before != __default_executor__
         ) or (
-                getattr(args, 'uses_after', None)
-                and args.uses_after != __default_executor__
+            getattr(args, 'uses_after', None)
+            and args.uses_after != __default_executor__
         ):
             args.scheduling = SchedulerType.ROUND_ROBIN
             if getattr(args, 'uses_before', None):

@@ -1,29 +1,63 @@
 from pathlib import Path
 from http import HTTPStatus
+from contextlib import ExitStack
 from typing import Dict, List, Optional
 
-from fastapi import HTTPException, UploadFile, File
 from pydantic import FilePath
 from pydantic.errors import PathNotAFileError
+from fastapi import HTTPException, UploadFile, File, Query, Depends
 
 from jina import __docker_host__, Flow
 from jina.enums import PeaRoleType, SocketType, RemoteWorkspaceState
 from jina.helper import cached_property, random_port
-from ..helper import get_workspace_path
+from .. import daemon_logger
 from ..models import DaemonID, FlowModel, PodModel, PeaModel
+from ..helper import get_workspace_path, change_cwd, change_env
 from ..stores import workspace_store as store
+
+
+class Environment:
+    """Parses environment variables to be set inside the containers"""
+
+    _split_char = '='
+    _strip_chars = ''.join(['\r', '\n', '\t'])
+
+    def __init__(self, envs: List[str] = Query([])) -> None:
+        self.vars = {}
+        self.validate(envs)
+
+    def validate(self, envs: List[str]):
+        """Validate and set env vars as a dict
+
+        :param envs: list of env vars passed as query params
+        """
+        for env in envs:
+            try:
+                k, v = env.split(self._split_char)
+                self.vars[k.strip(self._strip_chars)] = v.strip(self._strip_chars)
+            except ValueError:
+                daemon_logger.warning(
+                    f'{env} doesn\'t follow required standard. please pass envs in `key{self._split_char}value` format'
+                )
+                continue
 
 
 class FlowDepends:
     """Validates & Sets host/port dependencies during Flow creation/update"""
 
-    def __init__(self, workspace_id: DaemonID, filename: str) -> None:
+    def __init__(
+        self,
+        workspace_id: DaemonID,
+        filename: str,
+        envs: Environment = Depends(Environment),
+    ) -> None:
         self.workspace_id = workspace_id
         self.filename = filename
         self.id = DaemonID('jflow')
         self.params = FlowModel(
             uses=self.filename, workspace_id=self.workspace_id.jid, identity=self.id
         )
+        self.envs = envs.vars
         self.validate()
 
     def localpath(self) -> Path:
@@ -46,13 +80,20 @@ class FlowDepends:
     @cached_property
     def port_expose(self) -> str:
         """
-        Sets `port_expose` for the Flow started in `mini-jinad`.
-        NOTE: this port needs to be exposed before starting `mini-jinad`, hence set here.
+        Sets `port_expose` for the Flow started in `partial-daemon`.
+        This port needs to be exposed before starting `partial-daemon`, hence set here.
+        If env vars are passed, set them in current env, to make sure all values are replaced.
+        Before loading the flow yaml, change CWD to workspace dir.
 
         :return: port_expose
         """
-        f = Flow.load_config(str(self.localpath()))
-        return f.port_expose or random_port()
+        with ExitStack() as stack:
+            if self.envs:
+                for key, val in self.envs.items():
+                    stack.enter_context(change_env(key, val))
+            stack.enter_context(change_cwd(get_workspace_path(self.workspace_id)))
+            f = Flow.load_config(str(self.localpath()))
+            return f.port_expose or random_port()
 
     def validate(self) -> None:
         """Validates and sets arguments to be used in store"""
@@ -62,11 +103,17 @@ class FlowDepends:
 class PeaDepends:
     """Validates & Sets host/port dependencies during Pea creation/update"""
 
-    def __init__(self, workspace_id: DaemonID, pea: PeaModel):
+    def __init__(
+        self,
+        workspace_id: DaemonID,
+        pea: PeaModel,
+        envs: Environment = Depends(Environment),
+    ):
         # Deepankar: adding quotes around PeaModel breaks things
         self.workspace_id = workspace_id
         self.params = pea
         self.id = DaemonID('jpea')
+        self.envs = envs.vars
         self.validate()
 
     @property
@@ -180,10 +227,16 @@ class PeaDepends:
 class PodDepends(PeaDepends):
     """Validates & Sets host/port dependencies during Pod creation/update"""
 
-    def __init__(self, workspace_id: DaemonID, pod: PodModel):
+    def __init__(
+        self,
+        workspace_id: DaemonID,
+        pod: PodModel,
+        envs: Environment = Depends(Environment),
+    ):
         self.workspace_id = workspace_id
         self.params = pod
         self.id = DaemonID('jpod')
+        self.envs = envs.vars
         self.validate()
 
 

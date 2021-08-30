@@ -77,7 +77,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self,
         asyncio: Optional[bool] = False,
         host: Optional[str] = '0.0.0.0',
-        port_expose: Optional[int] = None,
+        port: Optional[int] = None,
         protocol: Optional[str] = 'GRPC',
         proxy: Optional[bool] = False,
         **kwargs,
@@ -86,7 +86,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
         :param host: The host address of the runtime, by default it is 0.0.0.0.
-        :param port_expose: The port of the host exposed to the public
+        :param port: The port of the Gateway, which the client should connect to.
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
 
@@ -199,7 +199,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something
           is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.
         :param port_ctrl: The port for controlling the runtime, default a random port between [49152, 65535]
-        :param port_expose: The port of the host exposed to the public
+        :param port_expose: The port that the gateway exposes for clients for GRPC connections.
         :param port_in: The port for input data, default a random port between [49152, 65535]
         :param port_out: The port for output data, default a random port between [49152, 65535]
         :param prefetch: The number of pre-fetched requests from the client
@@ -251,7 +251,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def __init__(
         self,
         env: Optional[dict] = None,
-        infrastructure: Optional[str] = 'LOCAL',
+        infrastructure: Optional[str] = 'JINA',
         inspect: Optional[str] = 'COLLECT',
         log_config: Optional[str] = None,
         name: Optional[str] = None,
@@ -482,10 +482,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         peas_hosts: Optional[List[str]] = None,
         polling: Optional[str] = 'ANY',
         port_ctrl: Optional[int] = None,
-        port_expose: Optional[int] = None,
         port_in: Optional[int] = None,
+        port_jinad: Optional[int] = 8000,
         port_out: Optional[int] = None,
-        proxy: Optional[bool] = False,
         pull_latest: Optional[bool] = False,
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
@@ -567,10 +566,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - ANY: only one (whoever is idle) Pea polls the message
           - ALL: all Peas poll the message (like a broadcast)
         :param port_ctrl: The port for controlling the runtime, default a random port between [49152, 65535]
-        :param port_expose: The port of the host exposed to the public
         :param port_in: The port for input data, default a random port between [49152, 65535]
+        :param port_jinad: The port of the remote machine for usage with JinaD.
         :param port_out: The port for output data, default a random port between [49152, 65535]
-        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param pull_latest: Pull the latest image before running
         :param py_modules: The customized python modules need to be imported before loading the executor
 
@@ -690,9 +688,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             if (
                 kwargs.get('host', __default_host__) != __default_host__
                 and m
-                and 'port_expose' not in kwargs
+                and 'port_jinad' not in kwargs
             ):
-                kwargs['port_expose'] = m.group(2)
+                kwargs['port_jinad'] = m.group(2)
                 kwargs['host'] = m.group(1)
 
         # update kwargs of this Pod
@@ -825,7 +823,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             },
         )
 
-    # THIS NEEDS TO BE REWRITTEN
+    # TODO needs to be refactored
     def _get_routing_table(self) -> RoutingTable:
         graph = RoutingTable()
         for pod_id, pod in self._pod_nodes.items():
@@ -860,7 +858,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             if end == GATEWAY_NAME:
                 end = f'end-{GATEWAY_NAME}'
 
-            # In K8sPod will not be needed
             if pod.head_args.hosts_in_connect is None:
                 pod.head_args.hosts_in_connect = []
 
@@ -1121,7 +1118,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         kwargs = dict(
             host=self.host,
-            port_expose=self.port_expose,
+            port=self.port_expose,
             protocol=self.protocol,
         )
         kwargs.update(self._common_kwargs)
@@ -1327,7 +1324,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         .. # noqa: DAR201
         """
         if GATEWAY_NAME in self._pod_nodes:
-            return self._pod_nodes[GATEWAY_NAME].port_expose
+            return self._pod_nodes[GATEWAY_NAME].args.port_expose
         else:
             return self._common_kwargs.get('port_expose', None)
 
@@ -1644,9 +1641,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         # noqa: DAR201
         """
-        return ArgNamespace.kwargs2namespace(
-            self._common_kwargs, set_client_cli_parser()
-        )
+        if 'port_expose' in self._common_kwargs:
+            kwargs = copy.deepcopy(self._common_kwargs)
+            kwargs['port'] = self._common_kwargs['port_expose']
+
+        return ArgNamespace.kwargs2namespace(kwargs, set_client_cli_parser())
 
     @property
     def gateway_args(self) -> argparse.Namespace:

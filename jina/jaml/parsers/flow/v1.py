@@ -86,6 +86,9 @@ class V1Parser(VersionedYAMLParser):
         if data._kwargs:
             r['with'] = data._kwargs
 
+        if data._common_kwargs:
+            r['with'] = dict(r.get('with', {}), **data._common_kwargs)
+
         if data._pod_nodes:
             r['executors'] = []
 

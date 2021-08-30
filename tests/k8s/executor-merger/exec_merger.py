@@ -1,11 +1,10 @@
-# Test Executor
-from typing import Dict, List
 from itertools import chain
+from typing import Dict, List
+
 from jina import Executor, requests, DocumentArray, Document
 
 
 class ExecMerger(Executor):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         from jina.logging.logger import JinaLogger
@@ -14,7 +13,9 @@ class ExecMerger(Executor):
 
     @requests
     def debug(self, docs_matrix: List[DocumentArray], parameters: Dict, **kwargs):
-        self.logger.debug(f'Received doc matrix in exec-merger with length {len(docs_matrix)}.')
+        self.logger.debug(
+            f'Received doc matrix in exec-merger with length {len(docs_matrix)}.'
+        )
 
         result = DocumentArray()
         for docs in zip(*docs_matrix):

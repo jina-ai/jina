@@ -1,4 +1,3 @@
-# call: python dump.py /shared/some_file.txt
 import sys
 
 

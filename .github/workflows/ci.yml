@@ -201,6 +201,36 @@ jobs:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
           JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
 
+  k8s-test:
+    runs-on: ubuntu-latest #self-hosted
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Prepare enviroment
+        run: |
+          docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+          python -m pip install --upgrade pip
+          python -m pip install wheel
+          pip install ".[all]" --no-cache-dir
+          jina
+          export JINA_LOG_LEVEL="ERROR"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#      - name: Create k8s Kind Cluster
+#        uses: helm/kind-action@v1.2.0
+#        with:
+##          config: ./.pytest-kind/pytest-kind/kubeconfig # can not find file
+#          cluster_name: pytest-kind
+#          log_level: debug
+      - name: Test k8s
+        run: |
+          ./tests/k8s/test_k8s.sh
+        timeout-minutes: 30
+
+
   prep-testbed:
     runs-on: ubuntu-latest
     needs: [commit-lint, lint-flake-8, code-injection]

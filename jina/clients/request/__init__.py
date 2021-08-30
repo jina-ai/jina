@@ -39,7 +39,7 @@ def request_generator(
     :param data_type: if ``data`` is an iterator over self-contained document, i.e. :class:`DocumentSourceType`;
             or an iterator over possible Document content (set to text, blob and buffer).
     :param parameters: a dictionary of parameters to be sent to the executor
-    :param target_peapod: a regex string represent the certain peas/pods request targeted
+    :param target_peapod: a regex string. Only matching Executors will process the request.
     :param kwargs: additional arguments
     :yield: request
     """
