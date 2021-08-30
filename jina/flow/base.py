@@ -251,7 +251,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def __init__(
         self,
         env: Optional[dict] = None,
-        infrastructure: Optional[str] = 'JINA',
         inspect: Optional[str] = 'COLLECT',
         log_config: Optional[str] = None,
         name: Optional[str] = None,
@@ -265,7 +264,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina flow` CLI.
 
         :param env: The map of environment variables that are available inside runtime
-        :param infrastructure: Infrastructure where the Flow runs on. Currently, `local` and `k8s` are supported
         :param inspect: The strategy on those inspect pods in the flow.
 
               If `REMOVE` is given then all inspect pods are removed when building the flow.
@@ -861,6 +859,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             if pod.head_args.hosts_in_connect is None:
                 pod.head_args.hosts_in_connect = []
 
+            if end not in graph.pods:
+                end = end + '_head'
+
             for start in pod.needs:
                 if start == GATEWAY_NAME:
                     start = f'start-{GATEWAY_NAME}'
@@ -876,12 +877,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     pod.head_args.hosts_in_connect.append(
                         graph._get_target_pod(start).full_out_address
                     )
-                    if end not in graph.pods:
-                        end = end + '_head'
-                    graph.add_edge(start, end, False)
+
+                    graph.add_edge(start, end, True)
                 else:
-                    if end not in graph.pods:
-                        end = end + '_head'
                     graph.add_edge(start, end)
 
         # ADD INTERNAL POD BETWEEN EDGES

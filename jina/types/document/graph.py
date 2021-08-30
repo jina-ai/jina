@@ -275,12 +275,13 @@ class GraphDocument(Document):
         )
         assert edge_features is None or len(source_docs) == len(edge_features)
 
-        edge_keys = []
         is_documents_source = isinstance(source_docs[0], Document)
         is_documents_dest = isinstance(dest_docs[0], Document)
-        for doc1, doc2 in zip(source_docs, dest_docs):
+
+        for k, (doc1, doc2) in enumerate(zip(source_docs, dest_docs)):
             doc1_id = doc1.id if is_documents_source else doc1
             doc2_id = doc2.id if is_documents_source else doc2
+
             if is_documents_source:
                 self.add_single_node(doc1)
             else:
@@ -293,13 +294,12 @@ class GraphDocument(Document):
                 assert (
                     doc2_id in self.nodes
                 ), 'trying to add an edge from a node not in the graph'
-            edge_keys.append(self._get_edge_key(doc1_id, doc2_id))
 
-        if edge_features is not None:
-            for edge_key, features in zip(edge_keys, edge_features):
-                self.edge_features[edge_key] = features
-        else:
-            for edge_key in edge_keys:
+            edge_key = self._get_edge_key(doc1_id, doc2_id)
+
+            if edge_features is not None:
+                self.edge_features[edge_key] = edge_features[k]
+            else:
                 if edge_key not in self.edge_features:
                     self.edge_features[edge_key] = None
 

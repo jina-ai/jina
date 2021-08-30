@@ -141,6 +141,7 @@ elif 'JINA_PIP_INSTALL_PERF' in os.environ:
 setup(
     name=pkg_name,
     packages=find_packages(),
+    package_data={'package': ['']},
     version=__version__,
     include_package_data=True,
     description='Jina is the cloud-native neural search framework for any kind of data',

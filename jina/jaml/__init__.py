@@ -513,9 +513,30 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             no_tag_yml = JAML.load_no_tags(fp)
             if no_tag_yml:
                 no_tag_yml.update(**kwargs)
+
+                # if there is `override_with` u should make sure that `uses_with` does not remain in the yaml
+                def _delitem(
+                    obj,
+                    key,
+                ):
+                    value = obj.get(key, None)
+                    if value:
+                        del obj[key]
+                        return
+                    for k, v in obj.items():
+                        if isinstance(v, dict):
+                            _delitem(v, key)
+
+                if override_with is not None:
+                    _delitem(no_tag_yml, key='uses_with')
+                if override_metas is not None:
+                    _delitem(no_tag_yml, key='uses_metas')
+                if override_requests is not None:
+                    _delitem(no_tag_yml, key='uses_requests')
                 cls._override_yml_params(no_tag_yml, 'with', override_with)
                 cls._override_yml_params(no_tag_yml, 'metas', override_metas)
                 cls._override_yml_params(no_tag_yml, 'requests', override_requests)
+
             else:
                 raise BadConfigSource(
                     f'can not construct {cls} from an empty {source}. nothing to read from there'
