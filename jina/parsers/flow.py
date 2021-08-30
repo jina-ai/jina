@@ -1,6 +1,8 @@
 """Argparser module for Flow"""
+import argparse
+
 from .base import set_base_parser
-from .helper import add_arg_group, KVAppendAction
+from .helper import add_arg_group, KVAppendAction, _SHOW_ALL_ARGS
 from ..enums import InfrastructureType
 
 
@@ -54,7 +56,9 @@ def mixin_k8s_parser(parser):
         type=InfrastructureType.from_string,
         choices=list(InfrastructureType),
         default=InfrastructureType.JINA,
-        help='Infrastructure where the Flow runs on. Currently, `local` and `k8s` are supported',
+        help='Infrastructure where the Flow runs on. Currently, `local` and `k8s` are supported'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
     )
 
 

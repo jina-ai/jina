@@ -2,6 +2,8 @@ import time
 from http import HTTPStatus
 from pytest_kind import cluster
 
+# kind version has to be bumped to v0.11.1 since pytest-kind is just using v0.10.0 which does not work on ubuntu in ci
+# TODO don't use pytest-kind anymore
 cluster.KIND_VERSION = 'v0.11.1'
 import pytest
 import requests
