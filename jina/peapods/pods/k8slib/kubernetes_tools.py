@@ -102,7 +102,9 @@ def create(template: str, params: Dict):
 
 
 def _get_yaml(template: str, params: Dict):
-    path = os.path.join('jina', 'resources', 'k8s', 'template', f'{template}.yml')
+    path = os.path.join(
+        cur_dir, '..', '..', '..', 'resources', 'k8s', 'template', f'{template}.yml'
+    )
     with open(path) as f:
         content = f.read()
         for k, v in params.items():
