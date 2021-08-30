@@ -1,11 +1,12 @@
 import argparse
 import asyncio
-from typing import Optional, Callable
+from typing import Optional, Callable, Type
 
 import grpc
 from google.protobuf import struct_pb2
 
 from jina.logging.logger import JinaLogger
+from jina.peapods.networking import GrpcConnectionPool
 from jina.proto import jina_pb2_grpc, jina_pb2
 from jina.types.message import Message
 from jina.types.message.common import ControlMessage
@@ -25,11 +26,15 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         args: argparse.Namespace,
         message_callback: Callable[['Message'], None],
         logger: Optional['JinaLogger'] = None,
+        connection_pool: Type['GrpcConnectionPool'] = None,
     ):
         self.args = args
-        self._stubs = {}
         self._logger = logger or JinaLogger(self.__class__.__name__)
         self.callback = message_callback
+        if connection_pool:
+            self._connection_pool = connection_pool
+        else:
+            self._connection_pool = GrpcConnectionPool()
         self.msg_recv = 0
         self.msg_sent = 0
         self._pending_tasks = []
@@ -61,19 +66,13 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
                 )
 
     def _send_message(self, msg, pod_address):
-        if pod_address not in self._stubs:
-            self._stubs[pod_address] = Grpclet._create_grpc_stub(pod_address)
         try:
             self.msg_sent += 1
 
-            # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
-            # the grpc call function is not a coroutine but some _AioCall
-            async def task_wrapper(new_message, pod_address):
-                await self._stubs[pod_address].Call(new_message)
-
             self._pending_tasks.append(
-                asyncio.create_task(task_wrapper(msg, pod_address))
+                self._connection_pool.send_message(msg, pod_address)
             )
+
             self._update_pending_tasks()
         except grpc.RpcError as ex:
             self._logger.error('Sending data request via grpc failed', ex)
@@ -133,6 +132,7 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         :param kwargs: Extra key-value arguments
         """
         self._update_pending_tasks()
+
         try:
             await asyncio.wait_for(asyncio.gather(*self._pending_tasks), timeout=1.0)
         except asyncio.TimeoutError:
@@ -140,6 +140,8 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
             self._logger.warning(
                 f'Could not gracefully complete {len(self._pending_tasks)} pending tasks on close.'
             )
+
+        self._connection_pool.close()
         self._logger.debug('Close grpc server')
         await self._grpc_server.stop(grace_period)
 

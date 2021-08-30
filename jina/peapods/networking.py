@@ -1,8 +1,273 @@
-from argparse import Namespace
+import asyncio
 import ipaddress
+from argparse import Namespace
+from threading import Thread
+from typing import List, Dict, Union
 
+import grpc
+
+from jina.logging.logger import JinaLogger
+from jina.proto import jina_pb2_grpc
+from jina.types.message import Message
 from .. import __default_host__, __docker_host__
 from ..helper import get_public_ip, get_internal_ip
+
+
+class ConnectionList:
+    """
+    Maintains a list of connections and uses round roubin for selecting a connection
+
+    :param port: port to use for the connections
+    """
+
+    def __init__(self, port: int):
+        self.port = port
+        self._connections = []
+        self._ip_to_connection_idx = {}
+        self._rr_counter = 0
+
+    def add_connection(self, ip: str, connection):
+        """
+        Add connection with ip to the connection list
+        :param ip: Target IP of this connection
+        :param connection: The connection to add
+        """
+        if ip not in self._ip_to_connection_idx:
+            self._ip_to_connection_idx[ip] = len(self._connections)
+            self._connections.append(connection)
+
+    def remove_connection(self, ip: str):
+        """
+        Remove connection with ip from the connection list
+        :param ip: Remove connection for this ip
+        :returns: The removed connection or None if there was not any for the given ip
+        """
+        if ip in self._ip_to_connection_idx:
+            return self._connections.pop(self._ip_to_connection_idx.pop(ip))
+
+        return None
+
+    def get_connection(self):
+        """
+        Returns a connection from the list. Strategy is round robin
+        :returns: A connection from the pool
+        """
+        connection = self._connections[self._rr_counter]
+        self._rr_counter = (self._rr_counter + 1) % len(self._connections)
+        return connection
+
+    def pop_connection(self):
+        """
+        Removes and returns a connection from the list. Strategy is round robin
+        :returns: The connection removed from the pool
+        """
+        if self._connections:
+            connection = self._connections.pop(self._rr_counter)
+            self._rr_counter = (
+                (self._rr_counter + 1) % len(self._connections)
+                if len(self._connections)
+                else 0
+            )
+            return connection
+        else:
+            return None
+
+    def has_connection(self, ip: str) -> bool:
+        """
+        Checks if a connection for ip exists in the list
+        :param ip: The ip to check
+        :returns: True if a connection for the ip exists in the list
+        """
+        return ip in self._ip_to_connection_idx
+
+
+class ConnectionPool:
+    """
+    Manages a list of connections.
+
+    :param logger: the logger to use
+    :param on_demand_connection: Flag to indicate if connections should be created on demand
+    """
+
+    def __init__(self, logger: JinaLogger = None, on_demand_connection=True):
+        self._connections = {}
+        self._on_demand_connection = on_demand_connection
+
+        self._logger = logger or JinaLogger(self.__class__.__name__)
+
+    def send_message(self, msg: Message, target_address: str):
+        """Send msg to target_address via one of the pooled connections
+
+        :param msg: message to send
+        :param target_address: address to send to, should include the port like 1.1.1.1:53
+        :return: result of the actual send method
+        """
+        host = target_address[: target_address.rfind(':')]
+        if host in self._connections:
+            pooled_connection = self._connections[host].get_connection()
+            return self._send_message(msg, pooled_connection)
+        elif self._on_demand_connection:
+            # If the pool is disabled and an unknown connection is requested: create it
+            connection_pool = self._create_connection_pool(target_address, host)
+            return self._send_message(msg, connection_pool.get_connection())
+        else:
+            raise ValueError(f'Unknown address {target_address}')
+
+    def _create_connection_pool(self, target_address, host):
+        port = target_address[target_address.rfind(':') + 1 :]
+        connection_pool = ConnectionList(port=port)
+        connection_pool.add_connection(
+            host, self._create_connection(target=target_address)
+        )
+        self._connections[host] = connection_pool
+        return connection_pool
+
+    def close(self):
+        """
+        Closes the connection pool
+        """
+        self._connections.clear()
+
+    def _send_message(self, msg: Message, connection):
+        raise NotImplementedError
+
+    def _create_connection(self, target):
+        raise NotImplementedError
+
+
+class GrpcConnectionPool(ConnectionPool):
+    """
+    GrpcConnectionPool which uses gRPC as the communication mechanism
+    """
+
+    def _send_message(self, msg: Message, connection):
+        # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
+        # the grpc call function is not a coroutine but some _AioCall
+        async def task_wrapper(new_message, stub):
+            await stub.Call(new_message)
+
+        return asyncio.create_task(task_wrapper(msg, connection))
+
+    def _create_connection(self, target):
+        self._logger.debug(f'create connection to {target}')
+        channel = grpc.aio.insecure_channel(
+            target,
+            options=[
+                ('grpc.max_send_message_length', -1),
+                ('grpc.max_receive_message_length', -1),
+            ],
+        )
+
+        return jina_pb2_grpc.JinaDataRequestRPCStub(channel)
+
+
+class K8sGrpcConnectionPool(GrpcConnectionPool):
+    """
+    Manages grpc connections to replicas in a K8s deployment.
+
+    :param namespace: K8s namespace the deployments redide in
+    :param deployments: deployments to manage connections for, needs to have (deployment) name and head_host, head_port_in
+    :param client: K8s client
+    :param logger: the logger to use
+    """
+
+    from kubernetes.client import CoreV1Api
+
+    def __init__(
+        self,
+        namespace: str,
+        deployments: List[Dict[str, Union[str, int]]],
+        client: CoreV1Api,
+        logger: JinaLogger = None,
+    ):
+        super().__init__(logger=logger, on_demand_connection=False)
+
+        self._namespace = namespace
+        self._deployment_hostaddresses = {}
+        self._k8s_client = client
+        self.enabled = False
+
+        self.deployments = deployments
+        for deployment in self.deployments:
+            self._deployment_hostaddresses[deployment['name']] = deployment['head_host']
+            self._connections[deployment['head_host']] = ConnectionList(
+                deployment['head_port_in']
+            )
+
+        self._fetch_initial_state()
+
+        self.update_thread = Thread(target=self.run)
+        self.update_thread.start()
+
+    def _fetch_initial_state(self):
+        namespaced_pods = self._k8s_client.list_namespaced_pod(self._namespace)
+        for item in namespaced_pods.items:
+            self._process_item(item)
+
+    def run(self):
+        """
+        Subscribes on MODIFIED events from list_namespaced_pod AK8s PI
+        """
+        from kubernetes import watch
+
+        self.enabled = True
+        while self.enabled:
+            w = watch.Watch()
+            for event in w.stream(
+                self._k8s_client.list_namespaced_pod, self._namespace
+            ):
+                if event['type'] == 'MODIFIED':
+                    self._process_item(event['object'])
+
+    def close(self):
+        """
+        Closes the connection pool
+        """
+        self.enabled = False
+        super().close()
+
+    @staticmethod
+    def _pod_is_up(item):
+        return item.status.pod_ip is not None and item.status.phase == 'Running'
+
+    def _process_item(self, item):
+        deployment_name = item.metadata.labels["app"]
+        is_deleted = item.metadata.deletion_timestamp is not None
+
+        if not is_deleted and self._pod_is_up(item):
+            if deployment_name in self._deployment_hostaddresses:
+                target = item.status.pod_ip
+                if not self._connections[
+                    self._deployment_hostaddresses[deployment_name]
+                ].has_connection(target):
+                    self._logger.debug(
+                        f'Adding connection to {target} for deployment {deployment_name} at {self._deployment_hostaddresses[deployment_name]}'
+                    )
+
+                    connection_pool = self._connections[
+                        self._deployment_hostaddresses[deployment_name]
+                    ]
+                    connection_pool.add_connection(
+                        target,
+                        self._create_connection(
+                            target=f'{target}:{connection_pool.port}'
+                        ),
+                    )
+            else:
+                self._logger.debug(
+                    f'Observed state change in unknown deployment {deployment_name}'
+                )
+        elif is_deleted and self._pod_is_up(item):
+            target = item.status.pod_ip
+            if self._connections[
+                self._deployment_hostaddresses[deployment_name]
+            ].has_connection(target):
+                self._logger.debug(
+                    f'Removing connection to {target} for deployment {deployment_name} at {self._deployment_hostaddresses[deployment_name]}'
+                )
+                self._connections[
+                    self._deployment_hostaddresses[deployment_name]
+                ].remove_connection(target)
 
 
 def is_remote_local_connection(first: str, second: str):
