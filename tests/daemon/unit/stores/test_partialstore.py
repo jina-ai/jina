@@ -55,25 +55,23 @@ def test_peastore_add(partial_pea_store):
 
 
 def test_flowstore_add(monkeypatch, partial_flow_store):
-    port_expose = helper.random_port()
     flow_model = FlowModel()
     flow_model.uses = f'{cur_dir}/flow.yml'
     args = ArgNamespace.kwargs2namespace(flow_model.dict(), set_flow_parser())
-    partial_store_item = partial_flow_store.add(args, port_expose)
+    partial_store_item = partial_flow_store.add(args)
 
     assert partial_store_item
     assert isinstance(partial_flow_store.object, Flow)
     assert 'pod1' in partial_store_item.yaml_source
-    assert partial_flow_store.object.port_expose == port_expose
+    assert partial_flow_store.object.port_expose == 12345
 
 
 def test_flowstore_update(partial_flow_store, mocker):
     flow_model = FlowModel()
     flow_model.uses = f'{cur_dir}/flow.yml'
-    port_expose = helper.random_port()
     args = ArgNamespace.kwargs2namespace(flow_model.dict(), set_flow_parser())
 
-    partial_flow_store.add(args, port_expose)
+    partial_flow_store.add(args)
 
     update_mock = mocker.Mock()
     partial_flow_store.object.rolling_update = update_mock

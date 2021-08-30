@@ -191,7 +191,5 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
         '--runs-in-docker',
         action='store_true',
         default=False,
-        help='Informs a Pea that runs in a container. Important to properly set networking information'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
+        help='Informs a Pea that runs in a container. Important to properly set networking information',
     )

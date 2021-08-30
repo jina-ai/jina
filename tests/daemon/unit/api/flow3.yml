@@ -1,0 +1,10 @@
+jtype: Flow
+with:
+  name: abc
+  grpc_data_requests: true
+  port_expose: 12345
+  protocol: http
+executors:
+  - name: local_shards
+    port_in: 45678
+    parallel: 2
