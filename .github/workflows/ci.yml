@@ -219,12 +219,12 @@ jobs:
           export JINA_LOG_LEVEL="ERROR"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Create k8s Kind Cluster
-        uses: helm/kind-action@v1.2.0
-        with:
-#          config: ./.pytest-kind/pytest-kind/kubeconfig # can not find file
-          cluster_name: pytest-kind
-          log_level: debug
+#      - name: Create k8s Kind Cluster
+#        uses: helm/kind-action@v1.2.0
+#        with:
+##          config: ./.pytest-kind/pytest-kind/kubeconfig # can not find file
+#          cluster_name: pytest-kind
+#          log_level: debug
       - name: Test k8s
         run: |
           ./tests/k8s/test_k8s.sh
