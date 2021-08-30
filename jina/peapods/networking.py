@@ -171,13 +171,11 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
     :param logger: the logger to use
     """
 
-    from kubernetes.client import CoreV1Api
-
     def __init__(
         self,
         namespace: str,
         deployments: List[Dict[str, Union[str, int]]],
-        client: CoreV1Api,
+        client,
         logger: JinaLogger = None,
     ):
         super().__init__(logger=logger, on_demand_connection=False)
