@@ -1,5 +1,7 @@
 !Flow
 version: '1.0'
+with:
+  port_expose: 56789
 pods:
   - uses: dummy_executor.yml
   - name: dummy_executor
