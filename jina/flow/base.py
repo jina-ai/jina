@@ -859,6 +859,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             if pod.head_args.hosts_in_connect is None:
                 pod.head_args.hosts_in_connect = []
 
+            if end not in graph.pods:
+                end = end + '_head'
+
             for start in pod.needs:
                 if start == GATEWAY_NAME:
                     start = f'start-{GATEWAY_NAME}'
@@ -874,12 +877,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     pod.head_args.hosts_in_connect.append(
                         graph._get_target_pod(start).full_out_address
                     )
-                    if end not in graph.pods:
-                        end = end + '_head'
-                    graph.add_edge(start, end, False)
+
+                    graph.add_edge(start, end, True)
                 else:
-                    if end not in graph.pods:
-                        end = end + '_head'
                     graph.add_edge(start, end)
 
         # ADD INTERNAL POD BETWEEN EDGES
