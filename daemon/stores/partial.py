@@ -1,7 +1,8 @@
+from pathlib import Path
 from argparse import Namespace
-from typing import Union
+from typing import List, Optional, Union
 
-from jina.helper import colored
+from jina.helper import colored, random_port
 from jina.peapods import Pea, Pod, CompoundPod
 from jina.peapods.peas.helper import update_runtime_cls
 from jina import Flow, __docker_host__
@@ -10,6 +11,7 @@ from jina.logging.logger import JinaLogger
 from .. import jinad_args
 from ..models import GATEWAY_RUNTIME_DICT
 from ..models.enums import UpdateOperation
+from ..models.ports import Ports, PortMappings
 from ..models.partial import PartialFlowItem, PartialStoreItem
 
 
@@ -85,16 +87,21 @@ class PartialPodStore(PartialPeaStore):
 class PartialFlowStore(PartialStore):
     """A Flow store spawned inside partial-daemon container"""
 
-    def add(self, args: Namespace, **kwargs) -> PartialStoreItem:
+    def add(
+        self, args: Namespace, port_mapping: Optional[PortMappings] = None, **kwargs
+    ) -> PartialStoreItem:
         """Starts a Flow in `partial-daemon`.
 
         :param args: namespace args for the flow
+        :param port_mapping: ports to be set
         :param kwargs: keyword args
         :return: Item describing the Flow object
         """
         try:
             if not args.uses:
                 raise ValueError('uses yaml file was not specified in flow definition')
+            elif not Path(args.uses).is_file():
+                raise ValueError(f'uses {args.uses} not found in workspace')
 
             with open(args.uses) as yaml_file:
                 yaml_source = yaml_file.read()
@@ -102,17 +109,41 @@ class PartialFlowStore(PartialStore):
             self.object: Flow = Flow.load_config(yaml_source).build()
             self.object.workspace_id = jinad_args.workspace_id
 
-            # In dependencies, we set `runs_in_docker` for the `gateway` and for `CompoundPod` we need
-            # `runs_in_docker` to be False. Since `Flow` args are sent to all Pods, `runs_in_docker` gets set
-            # for the `CompoundPod`, which blocks the requests. Below we unset that (hacky & ugly).
-            # We do it only for runtimes that starts on local (not container or remote)
             for pod in self.object._pod_nodes.values():
                 runtime_cls = update_runtime_cls(pod.args, copy=True).runtime_cls
-                if runtime_cls in ['ZEDRuntime'] + list(GATEWAY_RUNTIME_DICT.values()):
-                    if isinstance(pod, CompoundPod):
+                if isinstance(pod, CompoundPod):
+                    # In dependencies, we set `runs_in_docker` for the `gateway` and for `CompoundPod` we need
+                    # `runs_in_docker` to be False. Since `Flow` args are sent to all Pods, `runs_in_docker` gets set
+                    # for the `CompoundPod`, which blocks the requests. Below we unset that (hacky & ugly).
+                    # We do it only for runtimes that starts on local (not container or remote)
+                    if runtime_cls in ['ZEDRuntime', 'ContainerRuntime'] + list(
+                        GATEWAY_RUNTIME_DICT.values()
+                    ):
                         pod.args.runs_in_docker = False
                         for replica_args in pod.replicas_args:
                             replica_args.runs_in_docker = False
+                        if port_mapping:
+                            # Ports for Head & Tail Peas in a CompoundPod set here.
+                            # This is specifically needed as `save_config` doesn't save `port_out` for a HeadPea
+                            # and `port_in` for a TailPea, which might be useful if replicas and head/tail Peas
+                            # are in different containers.
+                            for pea_args in [pod.head_args, pod.tail_args]:
+                                if pea_args.name in port_mapping.pea_names:
+                                    for port_name in Ports.__fields__:
+                                        if hasattr(pea_args, port_name):
+                                            setattr(
+                                                pea_args,
+                                                port_name,
+                                                getattr(
+                                                    port_mapping[pea_args.name].ports,
+                                                    port_name,
+                                                    random_port(),
+                                                ),
+                                            )
+                            # Update replica_args according to updated head & tail args
+                            pod.replicas_args = CompoundPod._set_replica_args(
+                                pod.args, pod.head_args, pod.tail_args
+                            )
             self.object = self.object.__enter__()
         except Exception as e:
             if hasattr(self, 'object'):

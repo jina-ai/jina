@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 from http import HTTPStatus
 from contextlib import ExitStack
-from collections import defaultdict
 from typing import Dict, List, Optional
 
 from pydantic import FilePath
@@ -19,6 +18,7 @@ from jina.enums import (
     RemoteWorkspaceState,
 )
 from .. import daemon_logger
+from ..models.ports import Ports, PortMapping, PortMappings
 from ..models import DaemonID, FlowModel, PodModel, PeaModel, GATEWAY_RUNTIME_DICT
 from ..helper import get_workspace_path, change_cwd, change_env
 from ..stores import workspace_store as store
@@ -105,7 +105,7 @@ class FlowDepends:
         2. `build` the Flow so that `gateway` gets added.
             - get the list of ports to be published (port_expose, port_in, port_out, port_ctrl)
             - ports need to be published for gateway & executors that are not `ContainerRuntime` or `JinadRuntime` based
-            - note that, Pod level args for ports are enough, as we don't need to publish Pea ports
+            - Pod level args for ports are enough, as we don't need to publish Pea ports
             - all the above Pods also run in docker, hence we set `runs_in_docker`
         3. `save` the Flow config.
             - saves port configs of all `executors` into the new yaml.
@@ -114,10 +114,6 @@ class FlowDepends:
         4. pass this new file as filename to `partial-daemon` to start the Flow
         """
         with ExitStack() as stack:
-
-            port_args = ['port_in', 'port_out', 'port_ctrl']
-            port_mapping = defaultdict(dict)
-
             # set env vars
             stack.enter_context(change_env('JINA_FULL_CLI', 'true'))
             if self.envs:
@@ -131,7 +127,14 @@ class FlowDepends:
             f: Flow = Flow.load_config(str(self.localpath())).build()
 
             # get & set the ports mapping, set `runs_in_docker`
-            port_mapping['gateway']['port_expose'] = f.port_expose
+            port_mapping = []
+            port_mapping.append(
+                PortMapping(
+                    pod_name='gateway',
+                    pea_name='gateway',
+                    ports=Ports(port_expose=f.port_expose),
+                )
+            )
             for pod_name, pod in f._pod_nodes.items():
                 runtime_cls = update_runtime_cls(pod.args, copy=True).runtime_cls
                 if isinstance(pod, CompoundPod):
@@ -143,31 +146,46 @@ class FlowDepends:
                     ):
                         for pea_args in [pod.head_args, pod.tail_args]:
                             pea_args.runs_in_docker = False
-                            for port_arg in port_args:
-                                _getattr = getattr(pea_args, port_arg)
-                                print(
-                                    f'\nname: {pea_args.name} port_arg: {port_arg} port: {_getattr} \n'
+                            current_ports = Ports()
+                            for port_name in Ports.__fields__:
+                                # Get port from Namespace args & set to PortMappings
+                                setattr(
+                                    current_ports,
+                                    port_name,
+                                    getattr(pea_args, port_name, None),
                                 )
-                                port_mapping[pea_args.name][port_arg] = _getattr
+                            port_mapping.append(
+                                PortMapping(
+                                    pod_name=pod_name,
+                                    pea_name=pea_args.name,
+                                    ports=current_ports,
+                                )
+                            )
                 else:
                     if runtime_cls in ['ZEDRuntime'] + list(
                         GATEWAY_RUNTIME_DICT.values()
                     ):
                         pod.args.runs_in_docker = True
-                        for port_arg in port_args:
-                            port_mapping[pod_name][port_arg] = getattr(
-                                pod.args, port_arg
+                        current_ports = Ports()
+                        for port_name in Ports.__fields__:
+                            setattr(
+                                current_ports,
+                                port_name,
+                                getattr(pod.args, port_name, None),
                             )
+                        port_mapping.append(
+                            PortMapping(
+                                pod_name=pod_name, pea_name='', ports=current_ports
+                            )
+                        )
 
             self.ports = port_mapping
-            print(f'\n\n\n\nport_mapping: {port_mapping}')
-            print(f'ports: {self.ports}\n\n')
             # save to a new file & set it for partial-daemon
             f.save_config(filename=self.newfile)
             self.params.uses = os.path.basename(self.newfile)
 
     @property
-    def ports(self):
+    def ports(self) -> PortMappings:
         """getter for ports
 
         :return: ports to be mapped
@@ -175,14 +193,12 @@ class FlowDepends:
         return self._ports
 
     @ports.setter
-    def ports(self, port_mapping: Dict):
+    def ports(self, port_mapping: List[PortMapping]):
         """setter for ports
 
         :param port_mapping: port mapping
         """
-        self._ports = {
-            f'{port}/tcp': port for v in port_mapping.values() for port in v.values()
-        }
+        self._ports = PortMappings.parse_obj(port_mapping)
 
 
 class PeaDepends:
