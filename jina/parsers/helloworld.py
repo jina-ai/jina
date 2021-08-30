@@ -139,10 +139,17 @@ def set_hw_parser(parser=None):
     )
 
     gp.add_argument(
-        '--num-query', type=int, default=128, help='The number of queries to visualize'
+        '--num-query', type=int, default=64, help='The number of queries to visualize'
     )
     gp.add_argument(
-        '--top-k', type=int, default=50, help='Top-k results to retrieve and visualize'
+        '--top-k', type=int, default=30, help='Top-k results to retrieve and visualize'
+    )
+    gp.add_argument(
+        '--lsh',
+        type=str,
+        default=False,
+        choices=["False", "True"],
+        help='Use locality sensitive hashing for nearest neighbor search'
     )
     return parser
 

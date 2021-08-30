@@ -36,6 +36,7 @@ class MyIndexer(Executor):
             metric='cosine',
             normalization=(1, 0),
             limit=int(parameters['top_k']),
+            lsh=bool(parameters['lsh']), # adding the lsh parameter
         )
 
 

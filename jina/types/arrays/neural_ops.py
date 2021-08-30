@@ -5,6 +5,7 @@ import numpy as np
 from ... import Document
 from ...importer import ImportExtensions
 from ...math.helper import top_k, minmax_normalize, update_rows_x_mat_best
+from ...math.lsh import LSH 
 
 if False:
     from .document import DocumentArray
@@ -25,6 +26,7 @@ class DocumentArrayNeuralOpsMixin:
         use_scipy: bool = False,
         metric_name: Optional[str] = None,
         batch_size: Optional[int] = None,
+        lsh = False,
     ) -> None:
         """Compute embedding based nearest neighbour in `another` for each Document in `self`,
         and store results in `matches`.
@@ -49,8 +51,9 @@ class DocumentArrayNeuralOpsMixin:
         :param batch_size: if provided, then `darray` is loaded in chunks of, at most, batch_size elements. This option
                            will be slower but more memory efficient. Specialy indicated if `darray` is a big
                            DocumentArrayMemmap.
+        :param lsh: if True, then matches will be found using locality sensitive hashing
         """
-
+        print("\nUsing LSH", lsh)
         if callable(metric):
             cdist = metric
         elif isinstance(metric, str):
@@ -66,12 +69,27 @@ class DocumentArrayNeuralOpsMixin:
         metric_name = metric_name or (metric.__name__ if callable(metric) else metric)
         limit = len(darray) if limit is None else limit
 
-        if batch_size:
-            dist, idx = self._match_online(
-                darray, cdist, limit, normalization, metric_name, batch_size
-            )
+        if not lsh or metric_name != 'cosine':
+            if batch_size:
+                dist, idx = self._match_online(
+                    darray, cdist, limit, normalization, metric_name, batch_size
+                )
+            else:
+                dist, idx = self._match(darray, cdist, limit, normalization, metric_name)
         else:
-            dist, idx = self._match(darray, cdist, limit, normalization, metric_name)
+            nr_hashes = 250
+            dist, idx = self._lsh_match(darray, cdist, limit, normalization, nr_hashes) 
+        for _q, _ids, _dists in zip(self, idx, dist):
+            _q.matches.clear()
+            for _id, _dist in zip(_ids, _dists):
+                # Note, when match self with other, or both of them share the same Document
+                # we might have recursive matches .
+                # checkout https://github.com/jina-ai/jina/issues/3034
+                d = darray[int(_id)]
+                if d.id in self:
+                    d = Document(d, copy=True)
+                    d.pop('matches')
+                _q.matches.append(d, scores={metric_name: _dist})
 
         for _q, _ids, _dists in zip(self, idx, dist):
             _q.matches.clear()
@@ -84,6 +102,71 @@ class DocumentArrayNeuralOpsMixin:
                     d = Document(d, copy=True)
                     d.pop('matches')
                 _q.matches.append(d, scores={metric_name: _dist})
+
+
+    def _lsh_match(self, darray, cdist, limit, normalization, nr_hashes):
+        """
+        Compute the nearest neighbors for darray from the dataset indexed in self
+        using locality sensitive hashing. Currently works only for cosine similarity.
+
+        :param darray: the other DocumentArray or DocumentArrayMemmap to match against
+        :param cdist: the distance metric
+        :param limit: the maximum number of matches, when not given
+                      all Documents in `darray` are considered as matches
+        :param normalization: a tuple [a, b] to be used with min-max normalization,
+                                the min distance will be rescaled to `a`, the max distance will be rescaled to `b`
+                                all values will be rescaled into range `[a, b]`.
+        :param nr_hashes: the number od separating hyperplanes in LSH
+        """
+
+        if isinstance(darray[0].embedding, np.ndarray):
+            x_mat = self.embeddings
+            y_mat = darray.embeddings
+
+        else:
+            raise Exception("Not implemented")
+
+        print("x mat shape", x_mat.shape)
+        print("y mat shape", y_mat.shape)
+
+        lsh = LSH(nr_hashes, y_mat.shape[1])
+        # the following are hard coded hyperparameters that should be fine tuned for a given dataset
+        # see the LSH class
+        nr_perms = 3
+        nr_coord = 60
+        bins, random_seed = lsh.hash_to_binary_code(y_mat, nr_perms=nr_perms, nr_coordinates=nr_coord)
+        print("length of bins", len(bins), len(bins[0]))
+
+        candidates = lsh.get_candidates_for_queries(x_mat, bins, random_seed)
+        print('candidates length')
+        avg_len = 0
+        avg_sim = 0
+        distances = []
+        indices = []
+        for i, v in candidates.items():
+            distances_i = []
+            # print(i, len(v))
+            avg_len += len(v)
+            if len(v) < limit:
+                print("No candidates. Generating random candidates")
+                v.update(np.random.choice(y_mat.shape[0], 10*limit)) # generate a list with random candidates
+            
+            list_v = list(v)
+            dists_tmp = cdist(np.reshape(x_mat[i], (1,-1)), y_mat[list_v], 'cosine')
+            avg_sim += np.mean(dists_tmp, axis=-1)
+            distances_i, idx = top_k(dists_tmp, min(limit, dists_tmp.shape[1]), descending=False)
+            idx = [list_v[i] for i in idx.flatten()]
+            indices.append(idx)
+            distances.append(distances_i.flatten())
+        print('Average length of queries', avg_len/len(candidates))
+        print('Average cos sim', avg_sim/len(candidates))
+
+        distances = np.array(distances)
+        print(distances.shape)
+        min_d = np.min(distances, axis=-1, keepdims=True)
+        max_d = np.max(distances, axis=-1, keepdims=True)
+        distances = minmax_normalize(distances, normalization, (3*min_d, 3*max_d))
+        return distances, indices
 
     def _match(self, darray, cdist, limit, normalization, metric_name):
         """

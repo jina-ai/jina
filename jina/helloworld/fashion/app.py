@@ -92,7 +92,7 @@ def hello_world(args):
             ),
             shuffle=True,
             on_done=print_result,
-            parameters={'top_k': args.top_k},
+            parameters={'top_k': args.top_k, 'lsh': args.lsh=='True'},
             show_progress=True,
         )
 
@@ -102,4 +102,5 @@ def hello_world(args):
 
 if __name__ == '__main__':
     args = set_hw_parser().parse_args()
+    print("Arguments: num-query: {}, top-k: {}, lsh: {}".format(args.num_query, args.top_k, args.lsh))
     hello_world(args)
