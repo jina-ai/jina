@@ -64,15 +64,7 @@ class DataRequestHandler:
         super().__init__()
         self.args = args
         self.logger = logger
-        self._load_plugins()
         self._load_executor()
-
-    def _load_plugins(self):
-        """Load the plugins if needed necessary to load executors."""
-        if self.args.py_modules:
-            from ....importer import PathImporter
-
-            PathImporter.add_modules(*self.args.py_modules)
 
     def _load_executor(self):
         """Load the executor to this runtime, specified by ``uses`` CLI argument."""

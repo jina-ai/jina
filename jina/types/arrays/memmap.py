@@ -25,6 +25,8 @@ from .neural_ops import DocumentArrayNeuralOpsMixin
 from .search_ops import DocumentArraySearchOpsMixin
 from .traversable import TraversableSequence
 from ..document import Document
+from ...logging.predefined import default_logger
+
 
 HEADER_NONE_ENTRY = (-1, -1, -1)
 PAGE_SIZE = mmap.ALLOCATIONGRANULARITY
@@ -176,6 +178,12 @@ class DocumentArrayMemmap(
 
         if idx is not None:
             self._header.seek(idx * self._header_entry_size, 0)
+
+        if (doc.id is not None) and len(doc.id) > self._key_length:
+            default_logger.warning(
+                f'The ID of doc ({doc.id}) will be truncated to the maximum length {self._key_length}'
+            )
+
         self._header.write(
             np.array(
                 (doc.id, p, r, r + l),
