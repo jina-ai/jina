@@ -1,8 +1,21 @@
 (flow-cookbook)=
 # Flow
+
 The `Flow` ties Executors together into a processing pipeline to perform a bigger task, like indexing or querying a 
 dataset. Documents "flow" through the created pipeline and are processed by Executors.
 `Flow` also provides synchronization mechanisms to manage dependencies between executors and their order.
+
+A `Flow` object has the following common methods:
+
+| Group | Description |
+|---|---|
+|Construct Flow| `.add()`, `.needs()` |
+|Run Flow| `with` context manager |
+|Visualize Flow| `.plot()` |
+|Send Request| `.post()`|
+|Control| `.block()` |
+
+
 
 ## Minimum working example
 
@@ -80,5 +93,9 @@ with f:
 :hidden:
 
 flow-api
+add-exec-to-flow
+parallel
+send-recv
+async-flow
 remarks
 ```
