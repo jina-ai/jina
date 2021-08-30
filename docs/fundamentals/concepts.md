@@ -82,39 +82,3 @@ with f:
 ```
 
 ````
-
-## Hub
-
-Jina Hub is a one-stop shop for sharing and reusing Executors. With Hub you can pull prebuilt Executors to dramatically reduce the
-effort and complexity needed in your search system, or push your own custom Executors to share privately or publicly.
-
-````{admonition} Example code
-:class: tip
-
-```python
-from jina import Flow
-
-f = (Flow()
-        .add(uses="jinahub+docker://ImageNormalizer")
-        .add(uses="jinahub+docker://BigTransferEncoder")
-        .add(uses="jinahub+docker://SimpleIndexer"))
-```
-
-
-````
-
-```{admonition} See Also
-:class: seealso
-{ref}`Read more in the Hub Cookbook <hub-cookbook>`
-```
-
-## Daemon
-
-`JinaD` is a daemon for deploying and managing Jina on remote via a RESTful interface. It allows users to
-create/update/delete Executors and Flows on remote hosts. It achieves isolation of deployments by defining a `workspace`
-for each Jina object, hence allowing a multi-tenant setup with parallel Flows on the same host.
-
-```{admonition} See Also
-:class: seealso
-{ref}`Read more in the Daemon Cookbook <daemon-cookbook>`
-```
