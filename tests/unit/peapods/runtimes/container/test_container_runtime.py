@@ -228,6 +228,9 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
         def __init__(self):
             pass
 
+        def get(self, *args):
+            pass
+
         def run(self, *args, **kwargs):
             mock_kwargs = {k: kwargs[k] for k in ['hello', 'ports', 'environment']}
             mock(**mock_kwargs)
@@ -405,6 +408,9 @@ def test_pass_native_arg(monkeypatch, mocker):
                 return []
 
         def __init__(self):
+            pass
+
+        def get(self, *args):
             pass
 
         def run(self, *args, **kwargs):

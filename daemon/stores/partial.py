@@ -2,17 +2,19 @@ from argparse import Namespace
 from typing import Union
 
 from jina.helper import colored
-from jina.peapods import Pea, Pod
+from jina.peapods import Pea, Pod, CompoundPod
+from jina.peapods.peas.helper import update_runtime_cls
 from jina import Flow, __docker_host__
 from jina.logging.logger import JinaLogger
 
 from .. import jinad_args
+from ..models import GATEWAY_RUNTIME_DICT
 from ..models.enums import UpdateOperation
 from ..models.partial import PartialFlowItem, PartialStoreItem
 
 
 class PartialStore:
-    """A store spawned inside mini-jinad container"""
+    """A store spawned inside partial-daemon container"""
 
     def __init__(self):
         self._logger = JinaLogger(self.__class__.__name__, **vars(jinad_args))
@@ -45,12 +47,12 @@ class PartialStore:
 
 
 class PartialPeaStore(PartialStore):
-    """A Pea store spawned inside mini-jinad container"""
+    """A Pea store spawned inside partial-daemon container"""
 
     peapod_cls = Pea
 
     def add(self, args: Namespace, **kwargs) -> PartialStoreItem:
-        """Starts a Pea in `mini-jinad`
+        """Starts a Pea in `partial-daemon`
 
         :param args: namespace args for the pea/pod
         :param kwargs: keyword args
@@ -75,32 +77,42 @@ class PartialPeaStore(PartialStore):
 
 
 class PartialPodStore(PartialPeaStore):
-    """A Pod store spawned inside mini-jinad container"""
+    """A Pod store spawned inside partial-daemon container"""
 
     peapod_cls = Pod
 
 
 class PartialFlowStore(PartialStore):
-    """A Flow store spawned inside mini-jinad container"""
+    """A Flow store spawned inside partial-daemon container"""
 
-    def add(self, args: Namespace, port_expose: int, **kwargs) -> PartialStoreItem:
-        """Starts a Flow in `mini-jinad`.
+    def add(self, args: Namespace, **kwargs) -> PartialStoreItem:
+        """Starts a Flow in `partial-daemon`.
 
         :param args: namespace args for the flow
-        :param port_expose: port expose for the Flow
         :param kwargs: keyword args
         :return: Item describing the Flow object
         """
         try:
             if not args.uses:
-                raise ValueError('Uses yaml file was not specified in flow definition')
+                raise ValueError('uses yaml file was not specified in flow definition')
 
             with open(args.uses) as yaml_file:
-                y_spec = yaml_file.read()
-            flow = Flow.load_config(y_spec)
-            flow.workspace_id = jinad_args.workspace_id
-            flow.port_expose = port_expose
-            self.object: Flow = flow
+                yaml_source = yaml_file.read()
+
+            self.object: Flow = Flow.load_config(yaml_source).build()
+            self.object.workspace_id = jinad_args.workspace_id
+
+            # In dependencies, we set `runs_in_docker` for the `gateway` and for `CompoundPod` we need
+            # `runs_in_docker` to be False. Since `Flow` args are sent to all Pods, `runs_in_docker` gets set
+            # for the `CompoundPod`, which blocks the requests. Below we unset that (hacky & ugly).
+            # We do it only for runtimes that starts on local (not container or remote)
+            for pod in self.object._pod_nodes.values():
+                runtime_cls = update_runtime_cls(pod.args, copy=True).runtime_cls
+                if runtime_cls in ['ZEDRuntime'] + list(GATEWAY_RUNTIME_DICT.values()):
+                    if isinstance(pod, CompoundPod):
+                        pod.args.runs_in_docker = False
+                        for replica_args in pod.replicas_args:
+                            replica_args.runs_in_docker = False
             self.object = self.object.__enter__()
         except Exception as e:
             if hasattr(self, 'object'):
@@ -111,9 +123,10 @@ class PartialFlowStore(PartialStore):
             self.item = PartialFlowItem(
                 arguments={
                     'port_expose': self.object.port_expose,
+                    'protocol': self.object.protocol.name,
                     **vars(self.object.args),
                 },
-                yaml_source=y_spec,
+                yaml_source=yaml_source,
             )
             self._logger.success(f'Flow is created')
             return self.item
