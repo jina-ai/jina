@@ -1,4 +1,4 @@
-(flow)=
+(flow-cookbook)=
 # Flow
 The `Flow` ties Executors together into a processing pipeline to perform a bigger task, like indexing or querying a 
 dataset. Documents "flow" through the created pipeline and are processed by Executors.

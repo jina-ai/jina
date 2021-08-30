@@ -283,9 +283,9 @@ f = (Flow()
 
 ````{admonition} See Also
 :class: seealso
-{ref}`JinaD <daemon>`
+{ref}`JinaD <daemon-cookbook>`
 
-{ref}`JinaHub <jinahub>`
+{ref}`JinaHub <hub-cookbook>`
 ````
 
 

@@ -1,3 +1,4 @@
+(executor-cookbook)=
 # Executor
 
 Executor represents a processing component in a Jina Flow. It performs a single task on a `Document` or 
@@ -74,7 +75,7 @@ with f:
 
 ````{admonition} See Also
 :class: seealso
-{ref}`Flow <flow>`
+{ref}`Flow <flow-cookbook>`
 ````
 
 ```{toctree}

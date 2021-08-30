@@ -1,3 +1,4 @@
+(document-cookbook)=
 # Document/DocumentArray
 
 `Document` is the basic data type that Jina operates with text, picture, video, audio, image or 3D mesh: They are
