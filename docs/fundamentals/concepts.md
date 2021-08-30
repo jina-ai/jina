@@ -1,6 +1,7 @@
-# Key Jina Concepts
+# Basic Concepts
 
-Document, Executor, and Flow are the three fundamental concepts in Jina. Understanding these will help build your search.
+Document, Executor, and Flow are the three fundamental concepts in Jina. Understanding these will help build your
+search.
 
 - [**Document**](Document.md) is the basic data type in Jina;
 - [**Executor**](Executor.md) is how Jina processes Documents;
@@ -21,13 +22,14 @@ You could say `Document` is to Jina is what `np.float` is to Numpy, and `Documen
 ### Example code
 
 ```python
-from jina import Document
+from jina import Document, DocumentArray
 
 doc1 = Document(text="hello world")
 doc2 = Document(uri="cute_kittens.png")
 
 docs = DocumentArray([doc1, doc2])
 ```
+
 ````{admonition} See Also
 :class: seealso
 {ref}`Read more in Document Cookbook <document-cookbook>`
@@ -35,17 +37,12 @@ docs = DocumentArray([doc1, doc2])
 
 ## ⚙️ Executor
 
-An `Executor` performs a single task on a `Document` or `DocumentArray`. Executors can fall into different categories:
+An `Executor` performs a single task on a `Document` or `DocumentArray`.
 
-- Segmenter
-- Crafter
-- Encoder
-- Indexer
-- Ranker
 ### Example code
 
 ```python
-from jina import Executor, Flow, Document, requests
+from jina import Executor, requests
 
 
 class MyExecutor(Executor):
@@ -54,11 +51,6 @@ class MyExecutor(Executor):
     def foo(self, **kwargs):
         print(kwargs)
 
-
-flow = Flow().add(uses=MyExecutor)
-
-with flow:
-    flow.post(on='/random_work', inputs=Document(), on_done=print)
 ```
 
 ````{admonition} See Also
@@ -68,7 +60,8 @@ with flow:
 
 ## 🔀 Flow
 
-The `Flow` ties Executors together into a processing pipeline to perform a bigger task, like indexing or querying a dataset
+The `Flow` ties Executors together into a processing pipeline to perform a bigger task, like indexing or querying a
+dataset
 
 ### Example code
 
@@ -89,25 +82,25 @@ with f:
     f.post(on='/bar', inputs=Document(), on_done=print)
 ```
 
-
 ````{admonition} See Also
 :class: seealso
 {ref}`Read more in the Flow Cookbook <flow-cookbook>`
 ````
 
-## Hub
+## 📦 Hub
 
-Jina Hub is a one-stop shop for Executors. By using Hub you can pull prebuilt Executors to dramatically reduce the effort and complexity needed in your search system, or push your own custom Executors to share privately or publicly.
+Jina Hub is a one-stop shop for sharing and reusing Executors. With Hub you can pull prebuilt Executors to dramatically reduce the
+effort and complexity needed in your search system, or push your own custom Executors to share privately or publicly.
 
 ### Example code
 
 ```python
-flow = (
-    Flow()
-    .add(uses="jinahub+docker://ImageNormalizer")
-    .add(uses="jinahub+docker://BigTransferEncoder")
-    .add(uses="jinahub+docker://SimpleIndexer")
-)
+from jina import Flow
+
+f = (Flow()
+        .add(uses="jinahub+docker://ImageNormalizer")
+        .add(uses="jinahub+docker://BigTransferEncoder")
+        .add(uses="jinahub+docker://SimpleIndexer"))
 ```
 
 ````{admonition} See Also
@@ -117,10 +110,9 @@ flow = (
 
 ## 👹 Daemon
 
-`JinaD` is a daemon for deploying and managing Jina on remote via a
-RESTful interface. It allows users to create/update/delete Executors and Flows on remote hosts. It achieves isolation of
-deployments by defining a `workspace` for each Jina object, hence allowing a multi-tenant setup with parallel Flows on
-the same host.
+`JinaD` is a daemon for deploying and managing Jina on remote via a RESTful interface. It allows users to
+create/update/delete Executors and Flows on remote hosts. It achieves isolation of deployments by defining a `workspace`
+for each Jina object, hence allowing a multi-tenant setup with parallel Flows on the same host.
 
 ````{admonition} See Also
 :class: seealso

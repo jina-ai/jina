@@ -1,20 +1,63 @@
-## Executor Built-in Features
+## Executor Features
 
-In Jina 2.0 the Executor class is generic to all categories of executors (`encoders`, `indexers`, `segmenters`,...) to
-keep development simple. We do not provide subclasses of `Executor` that are specific to each category. The design
-principles are (`user` here means "Executor developer"):
 
-- **Do not surprise the user**: keep `Executor` class as Pythonic as possible. It should be as light and unintrusive as
-  a `mixin` class:
-    - do not customize the class constructor logic;
-    - do not change its built-in interfaces `__getstate__`, `__setstate__`;
-    - do not add new members to the `Executor` object unless needed.
-- **Do not overpromise to the user**: do not promise features that we can hardly deliver. Trying to control the
-  interface while delivering just loosely-implemented features is bad for scaling the core framework. For
-  example, `save`, `load`, `on_gpu`, etc.
+### YAML Interface
 
-We want to give our users the freedom to customize their executors easily. If a user is a good Python programmer, they
-should pick up `Executor` in no time. It is as simple as subclassing `Executor` and adding an endpoint.
+An Executor can be loaded from and stored to a YAML file. The YAML file has the following format:
+
+```yaml
+jtype: MyExecutor
+with:
+  ...
+metas:
+  ...
+requests:
+  ...
+```
+
+- `jtype` is a string. Defines the class name, interchangeable with bang mark `!`;
+- `with` is a map. Defines kwargs of the class `__init__` method
+- `metas` is a dictionary. It defines the meta information of that class. It contains the following fields:
+    - `name` is a string. Defines the name of the executor;
+    - `description` is a string. Defines the description of this executor. It will be used in automatic docs UI;
+    - `workspace` is a string. Defines the workspace of the executor;
+    - `py_modules` is a list of strings. Defines the Python dependencies of the executor;
+- `requests` is a map. Defines the mapping from endpoint to class method name;
+
+### Load and Save Executor's YAML config
+
+You can use class method `Executor.load_config` and object method `exec.save_config` to load and save YAML config:
+
+```python
+from jina import Executor
+
+
+class MyExecutor(Executor):
+
+    def __init__(self, bar: int, **kwargs):
+        super().__init__(**kwargs)
+        self.bar = bar
+
+    def foo(self, **kwargs):
+        pass
+
+
+y_literal = """
+jtype: MyExecutor
+with:
+  bar: 123
+metas:
+  name: awesomeness
+  description: my first awesome executor
+requests:
+  /random_work: foo
+"""
+
+exec = Executor.load_config(y_literal)
+exec.save_config('y.yml')
+Executor.load_config('y.yml')
+```
+
 
 ### Workspace
 
@@ -30,7 +73,7 @@ then second):
 The meta attributes of an `Executor` object are now gathered in `self.metas`, instead of directly posting them to `self`
 , e.g. to access `name` use `self.metas.name`.
 
-### `.metas` & `.runtime_args`
+#### `.metas` & `.runtime_args`
 
 By default, an `Executor` object contains two collections of attributes: `.metas` and `.runtime_args`. They are both
 in `SimpleNamespace` type and contain some key-value information. However, they are defined differently and serve

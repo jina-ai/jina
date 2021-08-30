@@ -1,4 +1,15 @@
-## Document API
+## Document
+
+`Document` is the basic data type that Jina operates with text, picture, video, audio, image or 3D mesh: They are
+all `Document`s in Jina.
+
+### Minimum working example
+
+```python
+from jina import Document
+
+d = Document() 
+```
 
 ### `Document` attributes
 
@@ -499,7 +510,7 @@ graph.edge_features['1-2']
 
 * `GraphDocument` exposes methods that return node-specific information:
 
-| method | Description |
+| Method | Description |
 |---|---|
 | `get_out_degree` | node outdegree  |
 | `get_in_degree` | node indegree |

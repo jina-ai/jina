@@ -1,4 +1,4 @@
-## DocumentArrayMemmap API
+## DocumentArrayMemmap
 
 When your `DocumentArray` object contains a large number of `Document`, holding it in memory can be very demanding. You
 may want to use `DocumentArrayMemmap` to alleviate this issue. A `DocumentArrayMemmap` stores all Documents directly on

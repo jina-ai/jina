@@ -1,5 +1,5 @@
 (executor)=
-## Executor API
+## Create an Executor
 
 `Executor` process `DocumentArray` in-place via functions decorated with `@requests`.
 
@@ -256,62 +256,6 @@ class MyIndexer(Executor):
         return DocumentArray([Document(id=d.id) for d in docs])
 ```
 
-### YAML Interface
-
-An Executor can be loaded from and stored to a YAML file. The YAML file has the following format:
-
-```yaml
-jtype: MyExecutor
-with:
-  ...
-metas:
-  ...
-requests:
-  ...
-```
-
-- `jtype` is a string. Defines the class name, interchangeable with bang mark `!`;
-- `with` is a map. Defines kwargs of the class `__init__` method
-- `metas` is a dictionary. It defines the meta information of that class. It contains the following fields:
-    - `name` is a string. Defines the name of the executor;
-    - `description` is a string. Defines the description of this executor. It will be used in automatic docs UI;
-    - `workspace` is a string. Defines the workspace of the executor;
-    - `py_modules` is a list of strings. Defines the Python dependencies of the executor;
-- `requests` is a map. Defines the mapping from endpoint to class method name;
-
-### Load and Save Executor's YAML config
-
-You can use class method `Executor.load_config` and object method `exec.save_config` to load and save YAML config:
-
-```python
-from jina import Executor
-
-
-class MyExecutor(Executor):
-
-    def __init__(self, bar: int, **kwargs):
-        super().__init__(**kwargs)
-        self.bar = bar
-
-    def foo(self, **kwargs):
-        pass
-
-
-y_literal = """
-jtype: MyExecutor
-with:
-  bar: 123
-metas:
-  name: awesomeness
-  description: my first awesome executor
-requests:
-  /random_work: foo
-"""
-
-exec = Executor.load_config(y_literal)
-exec.save_config('y.yml')
-Executor.load_config('y.yml')
-```
 
 ### Use Executor out of the Flow
 

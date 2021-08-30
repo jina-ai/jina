@@ -1,5 +1,5 @@
 (documentarray)=
-## DocumentArray API
+## DocumentArray
 
 A `DocumentArray` is a list of `Document` objects. You can construct, delete, insert, sort and traverse
 a `DocumentArray`
@@ -7,7 +7,7 @@ like a Python `list`.
 
 Methods supported by `DocumentArray`:
 
-| | |
+| Category | Attributes |
 |--- |--- |
 | Python `list`-like interface | `__getitem__`, `__setitem__`, `__delitem__`, `__len__`, `insert`, `append`, `reverse`, `extend`, `__iadd__`, `__add__`, `__iter__`, `clear`, `sort`, `shuffle`, `sample` |
 | Persistence | `save`, `load` |
