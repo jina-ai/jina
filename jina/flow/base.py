@@ -251,7 +251,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def __init__(
         self,
         env: Optional[dict] = None,
-        infrastructure: Optional[str] = 'JINA',
         inspect: Optional[str] = 'COLLECT',
         log_config: Optional[str] = None,
         name: Optional[str] = None,
@@ -265,7 +264,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina flow` CLI.
 
         :param env: The map of environment variables that are available inside runtime
-        :param infrastructure: Infrastructure where the Flow runs on. Currently, `local` and `k8s` are supported
         :param inspect: The strategy on those inspect pods in the flow.
 
               If `REMOVE` is given then all inspect pods are removed when building the flow.
