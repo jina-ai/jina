@@ -69,7 +69,7 @@ html_extra_path = ['html_extra']
 html_css_files = ['main.css']
 htmlhelp_basename = slug
 html_show_sourcelink = False
-html_title = 'Welcome to Jina'
+html_title = 'Jina Documentation'
 html_favicon = '_static/favicon.png'
 
 latex_documents = [(master_doc, f'{slug}.tex', project, author, 'manual')]
