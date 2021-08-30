@@ -202,7 +202,7 @@ class ContainerStore(BaseStore):
                     e.message += container_logs
             if id in Dockerizer.containers:
                 self._logger.info(f'removing container {id_cleaner(container.id)}')
-                Dockerizer.rm_container(container.id)
+                # Dockerizer.rm_container(container.id)
             raise
         else:
             self[id] = ContainerItem(
