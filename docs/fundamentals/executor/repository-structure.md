@@ -1,7 +1,88 @@
 (structure-of-the-repository)=
-## Structure of the Repository
+# Executor File Structure
 
-### Single python file
+Besides organizing your Executor code inline-ly (i.e. with `Flow.add()` in the same file), you can also write it as "extern" module and then use it via YAML. This is useful when your Executor's logic is too complicated to fit into a single file. 
+
+````{tab} Inline manner
+
+
+```python
+from jina import Executor, Flow, Document, requests
+
+
+class MyExecutor(Executor):
+
+    @requests
+    def foo(self, **kwargs):
+        print(kwargs)
+
+
+f = Flow().add(uses=MyExecutor)
+
+with f:
+    f.post(on='/random_work', inputs=Document(), on_done=print)
+```
+
+
+````
+
+`````{tab} Separate module
+
+````{dropdown} foo.py
+
+
+```python
+from jina import Executor, Flow, Document, requests
+
+
+class MyExecutor(Executor):
+
+    @requests
+    def foo(self, **kwargs):
+        print(kwargs)
+
+
+f = Flow().add(uses=MyExecutor)
+
+with f:
+    f.post(on='/random_work', inputs=Document(), on_done=print)
+```
+
+````
+
+
+````{dropdown} my.yml
+
+```yaml
+jtype: MyExecutor
+metas:
+  py_modules:
+    - foo.py
+  name: awesomeness
+  description: my first awesome executor
+requests:
+  /random_work: foo
+```
+
+````
+
+````{dropdown} flow.py
+
+```python
+from jina import Flow, Document
+
+f = Flow().add(uses='my.yml')
+
+with f:
+    f.post(on='/random_work', inputs=Document(), on_done=print)
+```
+
+````
+
+`````
+
+
+## Single python file
 
 When you are only working with a single python file (let's call it `my_executor.py`), you can simply put it at the root of the repository, and import it directly in `config.yml`
 
@@ -12,7 +93,7 @@ metas:
     - my_executor.py
 ```
 
-### Multiple python files
+## Multiple python files
 
 > This way of repository structure is currently not compatible with JinaD, when adding the executor to a Flow using `uses='config.yml'`, as JinaD only supports a flat file structure.  In this case, it is recommended that you containerize your executor, and use it with JinaD in your Flow either via `uses='jinahub+docker://...'` or `uses='docker://...'`.
 

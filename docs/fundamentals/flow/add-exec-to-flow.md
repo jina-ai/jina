@@ -309,7 +309,8 @@ bar
 foo
 ```
 
-```{tip} Summary: commonly used patterns for `.add`
+````{admonition} Summary: commonly used patterns for add
+:class: tip 
 
 
 
@@ -337,5 +338,5 @@ foo
 For a full list of arguments, please check `jina executor --help`.
 
 
-```
+````
 

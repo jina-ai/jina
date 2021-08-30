@@ -19,7 +19,7 @@ The next table show the speed and memory consumption when writing and reading 50
 ### Create `DocumentArrayMemmap`
 
 ```python
-from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import DocumentArrayMemmap
 
 dam = DocumentArrayMemmap('./my-memmap')
 ```
@@ -28,10 +28,9 @@ dam = DocumentArrayMemmap('./my-memmap')
 
 ```{code-block} python
 ---
-emphasize-lines: 8
+emphasize-lines: 7
 ---
-from jina.types.arrays.memmap import DocumentArrayMemmap
-from jina import Document
+from jina import DocumentArrayMemmap, Document
 
 d1 = Document(text='hello')
 d2 = Document(text='world')
@@ -52,8 +51,8 @@ parameter `buffer_pool_size` (1000 by default). Only the `buffer_pool_size` most
 documents exist in the pool. Replacement of documents uses the LRU strategy.
 
 ```python
-from jina.types.arrays.memmap import DocumentArrayMemmap
-from jina import Document
+from jina import DocumentArrayMemmap, Document
+
 dam = DocumentArrayMemmap('./my-memmap', buffer_pool_size=10)
 dam.extend([Document() for _ in range(100)])
 ```
@@ -72,8 +71,7 @@ Modifying elements of a `DocumentArrayMemmap` is possible due to the fact that a
 in the buffer pool:
 
 ```python
-from jina.types.arrays.memmap import DocumentArrayMemmap
-from jina import Document
+from jina import DocumentArrayMemmap, Document
 
 d1 = Document(text='hello')
 d2 = Document(text='world')
@@ -98,10 +96,9 @@ might not be in the buffer pool. Here are some practices to avoid:
 ````{tab} ❌ Don't
 ```{code-block} python
 ---
-emphasize-lines: 7, 8
+emphasize-lines: 6, 7
 ---
-from jina import Document
-from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import Document, DocumentArrayMemmap 
 
 docs = [Document(text='hello') for _ in range(100)]
 dam = DocumentArrayMemmap('./my-memmap', buffer_pool_size=10)
@@ -122,10 +119,9 @@ Use the dam object to modify instead:
 
 ```{code-block} python
 ---
-emphasize-lines: 7, 8
+emphasize-lines: 6, 7
 ---
-from jina import Document
-from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import Document, DocumentArrayMemmap
 
 docs = [Document(text='hello') for _ in range(100)]
 dam = DocumentArrayMemmap('./my-memmap', buffer_pool_size=10)
@@ -144,10 +140,9 @@ It's also okay if you reference docs less than the buffer pool size:
 
 ```{code-block} python
 ---
-emphasize-lines: 4, 5
+emphasize-lines: 3, 4
 ---
-from jina import Document
-from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import Document, DocumentArrayMemmap
 
 docs = [Document(text='hello') for _ in range(100)]
 dam = DocumentArrayMemmap('./my-memmap', buffer_pool_size=1000)
@@ -168,10 +163,9 @@ goodbye
 ````{tab} ❌ Don't
 ```{code-block} python
 ---
-emphasize-lines: 10
+emphasize-lines: 9
 ---
-from jina import Document
-from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import Document, DocumentArrayMemmap
 
 dam = DocumentArrayMemmap('./my-memmap', buffer_pool_size=10)
 my_doc = Document(text='hello')
@@ -195,8 +189,7 @@ Get the document from the dam object and then modify it:
 ---
 emphasize-lines: 10
 ---
-from jina import Document
-from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import Document, DocumentArrayMemmap
 
 dam = DocumentArrayMemmap('./my-memmap', buffer_pool_size=10)
 my_doc = Document(text='hello')
@@ -260,8 +253,7 @@ This table summarizes the interfaces of `DocumentArrayMemmap` and `DocumentArray
 ### Convert between `DocumentArray` and `DocumentArrayMemmap`
 
 ```python
-from jina import Document, DocumentArray
-from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import Document, DocumentArray, DocumentArrayMemmap
 
 da = DocumentArray([Document(text='hello'), Document(text='world')])
 
@@ -281,8 +273,7 @@ each `DocumentArrayMemmap` object has its own version of lookup table and buffer
 `.save()` are for solving this issue:
 
 ```python
-from jina.types.arrays.memmap import DocumentArrayMemmap
-from jina import Document
+from jina import Document, DocumentArrayMemmap
 
 d1 = Document(text='hello')
 d2 = Document(text='world')
@@ -308,8 +299,7 @@ You don't need to use `.save` if you add new documents. However, if you modified
 to use it:
 
 ```python
-from jina.types.arrays.memmap import DocumentArrayMemmap
-from jina import Document
+from jina import Document, DocumentArrayMemmap
 
 d1 = Document(text='hello')
 

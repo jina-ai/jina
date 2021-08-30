@@ -1,5 +1,5 @@
 (executor)=
-## Create an Executor
+# Create an Executor
 
 `Executor` process `DocumentArray` in-place via functions decorated with `@requests`.
 
@@ -8,13 +8,34 @@
   functions with arbitrary names.
 - Functions decorated by `@requests` will be invoked according to their `on=` endpoint.
 
-### Inheritance
+
+## Minimum working example
+
+```python
+from jina import Executor, Flow, Document, requests
+
+
+class MyExecutor(Executor):
+
+    @requests
+    def foo(self, **kwargs):
+        print(kwargs)
+
+
+f = Flow().add(uses=MyExecutor)
+
+with f:
+    f.post(on='/random_work', inputs=Document(), on_done=print)
+```
+
+
+## Inheritance
 
 Every new executor should be inherited directly from `jina.Executor`.
 
 You can name your executor class freely.
 
-### `__init__` Constructor
+## `__init__` Constructor
 
 If your executor defines `__init__`, it needs to carry `**kwargs` in the signature and call `super().__init__(**kwargs)`
 in the body:
@@ -45,11 +66,11 @@ or modifying their values before sending to `super().__init__()`.
 No need to implement `__init__` if your `Executor` does not contain initial states.
 ````
 
-### Method naming
+## Method naming
 
 `Executor`'s methods can be named freely. Methods that are not decorated with `@requests` are irrelevant to Jina.
 
-### `@requests` decorator
+## `@requests` decorator
 
 `@requests` defines when a function will be invoked. It has a keyword `on=` to define the endpoint.
 
@@ -84,7 +105,7 @@ Then:
 - `f.post(on='/random_work', ...)` will trigger `MyExecutor.bar`;
 - `f.post(on='/blah', ...)` will not trigger any function, as no function is bound to `/blah`;
 
-#### Default binding: `@requests` without `on=`
+### Default binding: `@requests` without `on=`
 
 A class method decorated with plain `@requests` (without `on=`) is the default handler for all endpoints. That means it
 is the fallback handler for endpoints that are not found. `f.post(on='/blah', ...)` will invoke `MyExecutor.foo`
@@ -104,17 +125,17 @@ class MyExecutor(Executor):
         print(kwargs)
 ```
 
-#### Multiple bindings: `@requests(on=[...])`
+### Multiple bindings: `@requests(on=[...])`
 
 To bind a method with multiple endpoints, you can use `@requests(on=['/foo', '/bar'])`. This allows
 either `f.post(on='/foo', ...)` or `f.post(on='/bar', ...)` to invoke that function.
 
-#### No binding
+### No binding
 
 A class with no `@requests` binding plays no part in the Flow. The request will simply pass through without any
 processing.
 
-### Method Signature
+## Method Signature
 
 Class method decorated by `@request` follows the signature below:
 
@@ -127,7 +148,7 @@ def foo(docs: Optional[DocumentArray],
     pass
 ```
 
-### Method Arguments
+## Method Arguments
 
 The Executor's method receive the following arguments in order:
 
@@ -175,7 +196,7 @@ class MyExecutor(Executor):
 ```
 ````
 
-### Method Returns
+## Method Returns
 
 Methods decorated with `@request` can return `Optional[DocumentArray]`.
 
@@ -188,7 +209,7 @@ The return is optional. **All changes happen in-place.**
 
 So do I need a return? No, unless you must create a new `DocumentArray`. Let's see some examples.
 
-#### Example 1: Embed Documents `blob`
+## Example 1: Embed Documents `blob`
 
 In this example, `encode()` uses some neural network to get the embedding for each `Document.blob`, then assign it
 to `Document.embedding`. The whole procedure is in-place and there is no need to return anything.
@@ -213,7 +234,7 @@ class PNEncoder(Executor):
             d.embedding = b
 ```
 
-#### Example 2: Add Chunks by Segmenting Document
+## Example 2: Add Chunks by Segmenting Document
 
 In this example, each `Document` is segmented by `get_mesh` and the results are added to `.chunks`. After
 that, `.buffer` and `.uri` are removed from each `Document`. In this case, all changes happen in-place and there is no
@@ -256,62 +277,3 @@ class MyIndexer(Executor):
         return DocumentArray([Document(id=d.id) for d in docs])
 ```
 
-
-### Use Executor out of the Flow
-
-`Executor` object can be used directly just like a regular Python object. For example,
-
-```python
-from jina import Executor, requests, DocumentArray, Document
-
-
-class MyExec(Executor):
-
-    @requests
-    def foo(self, docs, **kwargs):
-        for d in docs:
-            d.text = 'hello world'
-
-
-m = MyExec()
-da = DocumentArray([Document(text='test')])
-m.foo(da)
-print(da)
-```
-
-```text
-DocumentArray has 1 items:
-{'id': '20213a02-bdcd-11eb-abf1-1e008a366d48', 'mime_type': 'text/plain', 'text': 'hello world'}
-```
-
-This is useful in debugging an Executor.
-
-### Close Executor
-
-You might need to execute some logic when your executor's destructor is called. For example, let's suppose you want to
-persist data to the disk (e.g in-memory indexed data, fine-tuned model,...). To do so, you can overwrite the
-method `close` and add your logic.
-
-```python
-from jina import Executor, requests, Document, DocumentArray
-
-
-class MyExec(Executor):
-
-    @requests
-    def foo(self, docs, **kwargs):
-        for doc in docs:
-            print(doc.text)
-
-    def close(self):
-        print("closing...")
-
-
-with MyExec() as executor:
-    executor.foo(DocumentArray([Document(text='hello world')]))
-```
-
-```text
-hello world
-closing...
-```

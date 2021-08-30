@@ -9,7 +9,7 @@ search.
 
 *Learn them all, nothing more, you are good to go.*
 
-## 📄 Document
+## Document
 
 `Document` is the basic data type that Jina operates with. Text, picture, video, audio, image or 3D mesh: They are
 all `Document`s in Jina.
@@ -19,7 +19,9 @@ Executor's input and output.
 
 You could say `Document` is to Jina is what `np.float` is to Numpy, and `DocumentArray` is similar to `np.ndarray`.
 
-### Example code
+
+````{admonition} Example code
+:class: tip
 
 ```python
 from jina import Document, DocumentArray
@@ -30,16 +32,14 @@ doc2 = Document(uri="cute_kittens.png")
 docs = DocumentArray([doc1, doc2])
 ```
 
-````{admonition} See Also
-:class: seealso
-{ref}`Read more in Document Cookbook <document-cookbook>`
 ````
 
-## ⚙️ Executor
+## Executor
 
 An `Executor` performs a single task on a `Document` or `DocumentArray`.
 
-### Example code
+````{admonition} Example code
+:class: tip
 
 ```python
 from jina import Executor, requests
@@ -53,17 +53,16 @@ class MyExecutor(Executor):
 
 ```
 
-````{admonition} See Also
-:class: seealso
-{ref}`Read more in Executor Cookbook <executor-cookbook>`
 ````
 
-## 🔀 Flow
+
+## Flow
 
 The `Flow` ties Executors together into a processing pipeline to perform a bigger task, like indexing or querying a
 dataset
 
-### Example code
+````{admonition} Example code
+:class: tip
 
 ```python
 from jina import Flow, Document, Executor, requests
@@ -82,17 +81,15 @@ with f:
     f.post(on='/bar', inputs=Document(), on_done=print)
 ```
 
-````{admonition} See Also
-:class: seealso
-{ref}`Read more in the Flow Cookbook <flow-cookbook>`
 ````
 
-## 📦 Hub
+## Hub
 
 Jina Hub is a one-stop shop for sharing and reusing Executors. With Hub you can pull prebuilt Executors to dramatically reduce the
 effort and complexity needed in your search system, or push your own custom Executors to share privately or publicly.
 
-### Example code
+````{admonition} Example code
+:class: tip
 
 ```python
 from jina import Flow
@@ -103,18 +100,21 @@ f = (Flow()
         .add(uses="jinahub+docker://SimpleIndexer"))
 ```
 
-````{admonition} See Also
-:class: seealso
-{ref}`Read more in the Hub Cookbook <hub-cookbook>`
+
 ````
 
-## 👹 Daemon
+```{admonition} See Also
+:class: seealso
+{ref}`Read more in the Hub Cookbook <hub-cookbook>`
+```
+
+## Daemon
 
 `JinaD` is a daemon for deploying and managing Jina on remote via a RESTful interface. It allows users to
 create/update/delete Executors and Flows on remote hosts. It achieves isolation of deployments by defining a `workspace`
 for each Jina object, hence allowing a multi-tenant setup with parallel Flows on the same host.
 
-````{admonition} See Also
+```{admonition} See Also
 :class: seealso
 {ref}`Read more in the Daemon Cookbook <daemon-cookbook>`
-````
+```

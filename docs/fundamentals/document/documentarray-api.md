@@ -1,9 +1,17 @@
 (documentarray)=
-## DocumentArray
+# DocumentArray
 
 A `DocumentArray` is a list of `Document` objects. You can construct, delete, insert, sort and traverse
-a `DocumentArray`
-like a Python `list`.
+a `DocumentArray` like a Python `list`.
+
+## Minimum working example
+
+```python
+from jina import DocumentArray, Document
+
+da = DocumentArray([Document(), Document()]) 
+```
+
 
 Methods supported by `DocumentArray`:
 
@@ -14,7 +22,7 @@ Methods supported by `DocumentArray`:
 | Neural Search Operations | `match`, `visualize` |
 | Advanced getters | `get_attributes`, `get_attributes_with_docs`, `traverse_flat`, `traverse` |
 
-### Construct `DocumentArray`
+## Construct `DocumentArray`
 
 You can construct a `DocumentArray` from an iterable of `Document`s:
 
@@ -31,7 +39,7 @@ da2 = DocumentArray((Document() for _ in range(10)))
 da3 = DocumentArray(da2)
 ```
 
-### Persistence via `save()`/`load()`
+## Persistence via `save()`/`load()`
 
 To save all elements in a `DocumentArray` in a JSON line format:
 
@@ -55,7 +63,7 @@ da.save('data.bin', file_format='binary')
 da1 = DocumentArray.load('data.bin', file_format='binary')
 ```
 
-### Access element
+## Access element
 
 You can access a `Document` in the `DocumentArray` via integer index, string `id` or `slice` indices:
 
@@ -74,7 +82,7 @@ da[1:2]
 # <jina.types.arrays.document.DocumentArray length=1 at 5705863632>
 ```
 
-### Traverse elements
+## Traverse elements
 
 The following graphic illustrates the recursive `Document` structure. Every `Document` can have multiple `Chunks`
 and `Matches`.
@@ -153,7 +161,7 @@ DocumentArray([
 ])
 ```
 
-### Sort elements
+## Sort elements
 
 `DocumentArray` is a subclass of `MutableSequence`, therefore you can use built-in Python `sort` to sort elements in
 a `DocumentArray` object, e.g.
@@ -186,7 +194,7 @@ To sort elements in `da` in-place, using `tags[id]` value in a descending manner
 {'id': '6a799190-b6b0-11eb-8a66-1e008a366d49', 'tags': {'id': 1.0}}
 ```
 
-### Filter elements
+## Filter elements
 
 You can use Python's [built-in `filter()`](https://docs.python.org/3/library/functions.html#filter) to filter elements
 in a `DocumentArray` object:
@@ -230,7 +238,7 @@ DocumentArray has 3 items:
 {'id': '3bd0d392-b6da-11eb-b431-1e008a366d49', 'weight': 5.0}
 ```
 
-### Use `itertools` on `DocumentArray`
+## Use `itertools` on `DocumentArray`
 
 As `DocumentArray` is an `Iterable`, you can also
 use [Python's built-in `itertools` module](https://docs.python.org/3/library/itertools.html) on it. This enables
@@ -256,7 +264,7 @@ for key, group in groups:
 ('1', 3)
 ```
 
-### Get attributes in bulk
+## Get attributes in bulk
 
 `DocumentArray` implements powerful getters that lets you fetch multiple attributes from the Documents it contains in
 one-shot:
@@ -293,7 +301,7 @@ np.stack(da.get_attributes('embedding'))
  [7 8 9]]
 ```
 
-### Property `.embeddings`
+## Get `.embeddings`
 
 There is a faster version to extract embeddings from a `DocumentArray` or `DocumentArrayMemmap`, the property `.embeddings`. This property assumes all embeddings in the array have the same shape and dtype. Note that
 
@@ -315,7 +323,7 @@ Using `.embeddings` in a DocumenArray or DocumentArrayMemmap with different shap
 
 
 
-### Finding closest documents between `DocumentArray` objects
+## Finding closest documents between `DocumentArray` objects
 
 `DocumentArray` provides a`.match` function that finds the closest documents between two `DocumentArray` objects. This
 function requires all documents to be compared have an `embedding` and all embeddings to have the same length.
@@ -374,7 +382,7 @@ match emb = [1.  2.2 2.  1.  0. ] score = 1.5620499849319458
 match emb = [1.  0.1 0.  0.  0. ] score = 1.6763054132461548
 ```
 
-#### Using Sparse arrays as embeddings
+### Using Sparse arrays as embeddings
 
 We can use sparse embeddings and do the `.match` using `is_sparse=True`
 
@@ -473,7 +481,7 @@ dict(d.tags)={'city': 'Barcelona', 'phone': 'None'}
 dict(d.tags)={'phone': 'None', 'city': 'Brussels'}
 ```
 
-### Sample a subset of `DocumentArray` using `sample`
+## Sample a subset of `DocumentArray`
 
 `DocumentArray` provides function `.sample` that sample `k` elements without replacement. It accepts 2 parameters, `k`
 and `seed`. `k` is used to define the number of elements to sample, and `seed`
@@ -495,7 +503,7 @@ sampled_da = da.sample(k=10)  # sample 10 documents
 sampled_da_with_seed = da.sample(k=10, seed=1)  # sample 10 documents with seed.
 ```
 
-### Shuffle a `DocumentArray` using `shuffle`
+## Shuffle a `DocumentArray`
 
 `DocumentArray` provides function `.shuffle` that shuffle the entire `DocumentArray`. It accepts the parameter `seed`
 .  `seed` helps you generate pseudo random results. By default, `seed` is None.
@@ -515,7 +523,7 @@ shuffled_da = da.shuffle()  # shuffle the DocumentArray
 shuffled_da_with_seed = da.shuffle(seed=1)  # shuffle the DocumentArray with seed.
 ```
 
-### Split a `DocumentArray` by tag using `split`
+## Split a `DocumentArray` by tag
 
 `DocumentArray` provides function `.split` that split the `DocumentArray` into multiple :class:`DocumentArray` according to the tag value (stored in `tags`) of each :class:`Document`.
 It returns a python `dict` where `Documents` with the same value on `tag` are grouped together, their orders are preserved from the original :class:`DocumentArray`.
@@ -541,7 +549,7 @@ assert len(rv['c']) == 2  # category `c` is a DocumentArray has 2 Documents
 
 
 
-### Visualize the embeddings of a `DocumentArray`
+## Visualize the embeddings of a `DocumentArray`
 
 `DocumentArray` provides function `.visualize` to plot document embeddings in a 2D graph. `visualize` supports 2 methods
 to project in 2D space: `pca` and `tsne`.

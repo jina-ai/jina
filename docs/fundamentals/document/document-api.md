@@ -1,9 +1,9 @@
-## Document
+# Document
 
 `Document` is the basic data type that Jina operates with text, picture, video, audio, image or 3D mesh: They are
 all `Document`s in Jina.
 
-### Minimum working example
+## Minimum working example
 
 ```python
 from jina import Document
@@ -11,7 +11,7 @@ from jina import Document
 d = Document() 
 ```
 
-### `Document` attributes
+## `Document` attributes
 
 A `Document` object has the following attributes, which can be put into the following categories:
 
@@ -22,7 +22,7 @@ A `Document` object has the following attributes, which can be put into the foll
 | Recursive attributes | `.chunks`, `.matches`, `.granularity`, `.adjacency` |
 | Relevance attributes | `.score`, `.evaluations` |
 
-#### Set & Unset attributes
+### Set & Unset attributes
 
 Set a attribute:
 
@@ -102,9 +102,9 @@ da.get_attributes('tags__dimensions__height', 'tags__dimensions__weight')
 [[5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0], [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0]]
 ```
 
-### Construct `Document`
+## Construct `Document`
 
-##### Content attributes
+#### Content attributes
 
 | Attribute | Description |
 | --- | --- |
@@ -141,7 +141,7 @@ You can get a visualization of a `Document` object in Jupyter Notebook or by cal
 
 <img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDY5fkRvY3VtZW50fnsKK2lkIGU4MDY0MjdlLWEKK21pbWVfdHlwZSB0ZXh0L3BsYWluCit0ZXh0IGhlbGxvCn0="/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDczfkRvY3VtZW50fnsKK2lkIGZmZTQzMmFjLWEKK2J1ZmZlciBEREU9CittaW1lX3R5cGUgdGV4dC9wbGFpbgp9"/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDJmfkRvY3VtZW50fnsKK2lkIDAzOWVmMzE0LWEKK2Jsb2IoPGNsYXNzICdudW1weS5uZGFycmF5Jz4pCn0="/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgMjRmfkRvY3VtZW50fnsKK2lkIDA2YTE2OGY4LWEKK3VyaSBodHRwczovL3N0CittaW1lX3R5cGUgaW1hZ2UvcG5nCn0="/>
 
-#### Exclusivity of `doc.content`
+### Exclusivity of `doc.content`
 
 ```{image} ../../../.github/2.0/doc.content.svg
 :align: center
@@ -192,7 +192,7 @@ doc.convert_image_uri_to_blob()
 doc.convert_image_datauri_to_blob()
 ```
 
-#### Set embedding
+### Set embedding
 
 An embedding is a high-dimensional representation of a `Document`. You can assign any Numpy `ndarray` as a `Document`'s
 embedding.
@@ -205,7 +205,7 @@ d1 = Document(embedding=np.array([1, 2, 3]))
 d2 = Document(embedding=np.array([[1, 2, 3], [4, 5, 6]]))
 ```
 
-##### Support for sparse arrays
+#### Sparse embedding
 
 Scipy sparse array (`coo_matrix, bsr_matrix, csr_matrix, csc_matrix`)  are supported as both `embedding` or `blob` :
 
@@ -239,9 +239,9 @@ d3 = Document(blob=torch.sparse_coo_tensor(indices, values, dense_shape))
 d4 = Document(blob=tf.SparseTensor(indices, values, dense_shape))
 ```
 
-#### Construct with multiple attributes
+### Construct with multiple attributes
 
-##### Meta attributes
+#### Meta attributes
 
 | Attribute | Description |
 | --- | --- |
@@ -269,7 +269,7 @@ d = Document(uri='https://jina.ai',
 <jina.types.document.Document id=e01a53bc-aedb-11eb-88e6-1e008a366d48 uri=https://jina.ai mimeType=text/plain tags={'foo': 'bar'} granularity=1 adjacency=3 at 6317309200>
 ```
 
-#### Construct from dict or JSON string
+### Construct from dict or JSON string
 
 You can build a `Document` from a `dict` or JSON string:
 
@@ -284,7 +284,7 @@ d = json.dumps({'id': 'hello123', 'content': 'world'})
 d2 = Document(d)
 ```
 
-##### Parsing unrecognized fields
+#### Parsing unrecognized fields
 
 Unrecognized fields in a `dict`/JSON string are automatically put into the Document's `.tags` field:
 
@@ -310,7 +310,7 @@ d1 = Document({'id': 'hello123', 'foo': 'bar'}, field_resolver={'foo': 'content'
 <jina.types.document.Document id=hello123 mimeType=text/plain text=bar at 6246985488>
 ```
 
-#### Construct from another `Document`
+### Construct from another `Document`
 
 Assigning a `Document` object to another `Document` object will make a shallow copy:
 
@@ -359,7 +359,7 @@ d.update(s, fields=['id'])
 d.update(s)
 ```
 
-#### Construct from JSON, CSV, `ndarray` and files
+### Construct from JSON, CSV, `ndarray` and files
 
 The `jina.types.document.generators` module let you construct `Document` from common file types such as JSON,
 CSV, `ndarray` and text files. The following functions will give a generator of `Document`, where each `Document` object
@@ -541,9 +541,9 @@ graph.get_outgoing_nodes(d1)
 * `load_from_dgl_graph`: returns a `GraphDocument` from a `dgl.DGLGraph`.
 
 
-### Add relevancy to `Document`
+## Add relevancy to `Document`
 
-#### Relevance attributes
+### Relevance attributes
 
 |     |     |
 | --- | --- |
@@ -609,7 +609,7 @@ for evaluation_key, evaluation_score in d.evaluations.items():
 ```
 
 
-### Serialize `Document` to binary/`Dict`/JSON
+## Serialize `Document` to binary/`Dict`/JSON
 
 You can serialize a `Document` into JSON string or Python dict or binary string:
 ````{tab} JSON
@@ -685,7 +685,7 @@ This can be useful to understand the contents of the `Document` and to send to b
 as `lists` of values.
 
 
-### Visualize `Document`
+## Visualize `Document`
 
 To better see the Document's recursive structure, you can use `.plot()` function. If you are using JupyterLab/Notebook,
 all `Document` objects will be auto-rendered:

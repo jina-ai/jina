@@ -1,7 +1,66 @@
-## Executor Features
+# Executor Features
 
 
-### YAML Interface
+## Use Executor out of the Flow
+
+`Executor` object can be used directly just like a regular Python object. For example,
+
+```python
+from jina import Executor, requests, DocumentArray, Document
+
+
+class MyExec(Executor):
+
+    @requests
+    def foo(self, docs, **kwargs):
+        for d in docs:
+            d.text = 'hello world'
+
+
+m = MyExec()
+da = DocumentArray([Document(text='test')])
+m.foo(da)
+print(da)
+```
+
+```text
+DocumentArray has 1 items:
+{'id': '20213a02-bdcd-11eb-abf1-1e008a366d48', 'mime_type': 'text/plain', 'text': 'hello world'}
+```
+
+This is useful in debugging an Executor.
+
+## Gracefully close an Executor
+
+You might need to execute some logic when your executor's destructor is called. For example, you want to
+persist data to the disk (e.g. in-memory indexed data, fine-tuned model,...). To do so, you can overwrite the
+method `close` and add your logic.
+
+```python
+from jina import Executor, requests, Document, DocumentArray
+
+
+class MyExec(Executor):
+
+    @requests
+    def foo(self, docs, **kwargs):
+        for doc in docs:
+            print(doc.text)
+
+    def close(self):
+        print("closing...")
+
+
+with MyExec() as executor:
+    executor.foo(DocumentArray([Document(text='hello world')]))
+```
+
+```text
+hello world
+closing...
+```
+
+## YAML interface
 
 An Executor can be loaded from and stored to a YAML file. The YAML file has the following format:
 
@@ -58,22 +117,7 @@ exec.save_config('y.yml')
 Executor.load_config('y.yml')
 ```
 
-
-### Workspace
-
-Executor's workspace is inherited according to the following rule (`OR` is a python `or`, i.e. first thing first, if NA
-then second):
-
-```{figure} ../../../.github/2.0/workspace-inherit.svg
-:align: center
-```
-
-### Metas
-
-The meta attributes of an `Executor` object are now gathered in `self.metas`, instead of directly posting them to `self`
-, e.g. to access `name` use `self.metas.name`.
-
-#### `.metas` & `.runtime_args`
+## Meta attributes: `.metas` & `.runtime_args`
 
 By default, an `Executor` object contains two collections of attributes: `.metas` and `.runtime_args`. They are both
 in `SimpleNamespace` type and contain some key-value information. However, they are defined differently and serve
@@ -108,9 +152,19 @@ class `__init__`) and the request `parameters`
 `workspace` will be retrieved from either `metas` or `runtime_args`, in that order
 ````
 
-### Handle parameters
 
-Parameters are passed to executors via `request.parameters` with `Flow.post(..., parameters=)`. This way all
+## Workspace
+
+Executor's workspace is inherited according to the following rule (`OR` is a python `or`, i.e. first thing first, if NA
+then second):
+
+```{figure} ../../../.github/2.0/workspace-inherit.svg
+:align: center
+```
+
+## Handle request parameters
+
+Request parameters are passed to executors via `request.parameters` with `Flow.post(..., parameters=)`. This way all
 the `executors` will receive
 `parameters` as an argument to their `methods`. These `parameters` can be used to pass extra information or tune
 the `executor` behavior for a given request without updating the general configuration.
