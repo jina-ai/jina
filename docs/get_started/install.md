@@ -1,11 +1,18 @@
 Install Jina
 ============
 
-- via PyPI: `pip install -U jina`
-- via Docker: `docker run jinaai/jina:latest`
+````{tab} via PyPI
+```shell
+pip install -U jina
+```
+````
+````{tab} via Docker
+```shell
+docker run jinaai/jina:latest
+```
+````
 
-<details>
-<summary>More installation options</summary>
+## More installation options
 
 | On x86/64, arm64/v6/v7 | Linux/macOS with Python 3.7/3.8/3.9 | Docker Users |
 | --- | --- | --- |
@@ -20,4 +27,4 @@ Version identifiers [are explained here](https://github.com/jina-ai/jina/blob/ma
 on [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We welcome the community
 to help us with [native Windows support](https://github.com/jina-ai/jina/issues/1252).
 
-</details>
+

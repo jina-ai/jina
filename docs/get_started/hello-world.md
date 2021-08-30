@@ -4,9 +4,14 @@ Just starting out? Try Jina's "Hello, World" - `jina hello --help`
 
 ## 👗 Fashion Image Search
 
-<a href="https://docs.jina.ai/">
-<img align="right" width="25%" src="https://github.com/jina-ai/jina/blob/master/.github/images/hello-world.gif?raw=true" />
-</a>
+````{sidebar} Fashion Demo
+
+```{figure} ../../.github/images/hello-world.gif
+:align: center
+:scale: 30%
+:target: https://docs.jina.ai/
+```
+````
 
 A simple image neural search demo for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No
 extra dependencies needed, simply run:
@@ -23,7 +28,7 @@ docker run -v "$(pwd)/j:/j" jinaai/jina hello fashion --workdir /j && open j/hel
 ```
 
 <details>
-<summary>Click here to see console output</summary>
+<summary>Click to see console output</summary>
 
 <p align="center">
   <img src="https://github.com/jina-ai/jina/blob/master/.github/images/hello-world-demo.png?raw=true" alt="hello world console output">
@@ -72,11 +77,17 @@ You can run the `jina hello fashion` demo using a different embedding method. To
            .add(uses=MyEvaluator)
            )
        ```
-       Note two details:
-        - The line `uses='jinahub+docker://ImageTorchEncoder` allows downloading
-          `ImageTorchEncoder` from Jina Hub and use it in the `Flow`.
-        - The line `uses_with={'model_name': 'alexnet'}` allows a user to specify an attribute of the
-          class `ImageTorchEncoder`. In this case attribute `'model_name'` takes value `'alexnet'`.
+       ````{admonition} Note
+       :class: note
+       The line `uses='jinahub+docker://ImageTorchEncoder` allows downloading
+       `ImageTorchEncoder` from Jina Hub and use it in the `Flow`.
+       ````
+       
+       ````{admonition} Note
+       :class: note
+       The line `uses_with={'model_name': 'alexnet'}` allows a user to specify an attribute of the
+       class `ImageTorchEncoder`. In this case attribute `'model_name'` takes value `'alexnet'`.
+       ````
 
 -
     3) Run `python <your_project_folder>/app.py` to execute.
@@ -134,12 +145,17 @@ with the flow
   )
   .add(uses=MyIndexer, workspace=args.workdir)
   ```
-Note two details:
-    - The line `uses='jinahub+docker://TransformerTorchEncoder'` allows downloading
-      `TransformerTorchEncoder` from Jina Hub and use it in the `Flow`.
-    - The line `uses_with={'pretrained_model_name_or_path': 'sentence-transformers/paraphrase-mpnet-base-v2'}` allows a
-      user to specify an attribute of the class `ImageTorchEncoder`. In this case
-      attribute `'pretrained_model_name_or_path'` takes value `'sentence-transformers/paraphrase-mpnet-base-v2'`.
+  ````{admonition} Note
+  :class: note
+  The line `uses='jinahub+docker://TransformerTorchEncoder'` allows downloading
+  `TransformerTorchEncoder` from Jina Hub and use it in the `Flow`.
+  ````
+  ````{admonition} Note
+  :class: note
+  The line `uses_with={'pretrained_model_name_or_path': 'sentence-transformers/paraphrase-mpnet-base-v2'}` allows a
+  user to specify an attribute of the class `ImageTorchEncoder`. In this case
+  attribute `'pretrained_model_name_or_path'` takes value `'sentence-transformers/paraphrase-mpnet-base-v2'`.
+  ````
 
 -
     3) Run `python <your_project_folder>/app.py` to execute.
@@ -303,3 +319,10 @@ and `flow-search.yml` with
        needs: weightedRanker
    ```
 - 3) Run `python <your_project_folder>/app.py` to execute.
+    
+
+````{admonition} See Also
+:class: seealso
+
+{ref}`JinaHub <hub-cookbook>`
+````
