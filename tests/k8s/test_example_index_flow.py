@@ -1,8 +1,11 @@
 import time
 from http import HTTPStatus
+from pytest_kind import cluster
 
+cluster.KIND_VERSION = 'v0.11.1'
 import pytest
 import requests
+
 
 from jina import Flow
 
