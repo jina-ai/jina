@@ -821,7 +821,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             },
         )
 
-    # TODO needs to be refactored
+    # TODO needs to be refactored - deployment should not be a dictionary. Related Ticket: https://github.com/jina-ai/jina/issues/3280
     def _get_routing_table(self) -> RoutingTable:
         graph = RoutingTable()
         for pod_id, pod in self._pod_nodes.items():
@@ -882,9 +882,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 else:
                     graph.add_edge(start, end)
 
-        # ADD INTERNAL POD BETWEEN EDGES
+        # In case of sharding, the head and the tail pea have to be connected to the shards
         for end, pod in self._pod_nodes.items():
-            # set internal edges
             if len(pod.deployments) > 0:
                 deployments = pod.deployments
                 for deployment in deployments[1:-1]:
@@ -974,8 +973,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         op_flow._set_initial_dynamic_routing_table()
 
         for pod in op_flow._pod_nodes.values():
-            pass
-        pod.args.host = self._resolve_host(pod.args.host)
+            pod.args.host = self._resolve_host(pod.args.host)
 
         hanging_pods = _hanging_pods(op_flow)
         if hanging_pods:
