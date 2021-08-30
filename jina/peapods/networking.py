@@ -23,27 +23,27 @@ class ConnectionList:
     def __init__(self, port: int):
         self.port = port
         self._connections = []
-        self._ip_to_connection_idx = {}
+        self._address_to_connection_idx = {}
         self._rr_counter = 0
 
-    def add_connection(self, ip: str, connection):
+    def add_connection(self, address: str, connection):
         """
         Add connection with ip to the connection list
-        :param ip: Target IP of this connection
+        :param address: Target address of this connection
         :param connection: The connection to add
         """
-        if ip not in self._ip_to_connection_idx:
-            self._ip_to_connection_idx[ip] = len(self._connections)
+        if address not in self._address_to_connection_idx:
+            self._address_to_connection_idx[address] = len(self._connections)
             self._connections.append(connection)
 
-    def remove_connection(self, ip: str):
+    def remove_connection(self, address: str):
         """
         Remove connection with ip from the connection list
-        :param ip: Remove connection for this ip
+        :param address: Remove connection for this address
         :returns: The removed connection or None if there was not any for the given ip
         """
-        if ip in self._ip_to_connection_idx:
-            return self._connections.pop(self._ip_to_connection_idx.pop(ip))
+        if address in self._address_to_connection_idx:
+            return self._connections.pop(self._address_to_connection_idx.pop(address))
 
         return None
 
@@ -72,13 +72,13 @@ class ConnectionList:
         else:
             return None
 
-    def has_connection(self, ip: str) -> bool:
+    def has_connection(self, address: str) -> bool:
         """
         Checks if a connection for ip exists in the list
-        :param ip: The ip to check
+        :param address: The address to check
         :returns: True if a connection for the ip exists in the list
         """
-        return ip in self._ip_to_connection_idx
+        return address in self._address_to_connection_idx
 
 
 class ConnectionPool:
@@ -102,24 +102,23 @@ class ConnectionPool:
         :param target_address: address to send to, should include the port like 1.1.1.1:53
         :return: result of the actual send method
         """
-        host = target_address[: target_address.rfind(':')]
-        if host in self._connections:
-            pooled_connection = self._connections[host].get_connection()
+        if target_address in self._connections:
+            pooled_connection = self._connections[target_address].get_connection()
             return self._send_message(msg, pooled_connection)
         elif self._on_demand_connection:
             # If the pool is disabled and an unknown connection is requested: create it
-            connection_pool = self._create_connection_pool(target_address, host)
+            connection_pool = self._create_connection_pool(target_address)
             return self._send_message(msg, connection_pool.get_connection())
         else:
             raise ValueError(f'Unknown address {target_address}')
 
-    def _create_connection_pool(self, target_address, host):
+    def _create_connection_pool(self, target_address):
         port = target_address[target_address.rfind(':') + 1 :]
         connection_pool = ConnectionList(port=port)
         connection_pool.add_connection(
-            host, self._create_connection(target=target_address)
+            target_address, self._create_connection(target=target_address)
         )
-        self._connections[host] = connection_pool
+        self._connections[target_address] = connection_pool
         return connection_pool
 
     def close(self):
@@ -187,10 +186,12 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
 
         self.deployments = deployments
         for deployment in self.deployments:
-            self._deployment_hostaddresses[deployment['name']] = deployment['head_host']
-            self._connections[deployment['head_host']] = ConnectionList(
-                deployment['head_port_in']
-            )
+            self._deployment_hostaddresses[
+                deployment['name']
+            ] = f'{deployment["head_host"]}:{deployment["head_port_in"]}'
+            self._connections[
+                f'{deployment["head_host"]}:{deployment["head_port_in"]}'
+            ] = ConnectionList(deployment['head_port_in'])
 
         self._fetch_initial_state()
 
@@ -235,18 +236,18 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         if not is_deleted and self._pod_is_up(item):
             if deployment_name in self._deployment_hostaddresses:
                 target = item.status.pod_ip
-                if not self._connections[
+                connection_pool = self._connections[
                     self._deployment_hostaddresses[deployment_name]
-                ].has_connection(target):
+                ]
+                if not connection_pool.has_connection(
+                    f'{target}:{connection_pool.port}'
+                ):
                     self._logger.debug(
-                        f'Adding connection to {target} for deployment {deployment_name} at {self._deployment_hostaddresses[deployment_name]}'
+                        f'Adding connection to {target}:{connection_pool.port} for deployment {deployment_name} at {self._deployment_hostaddresses[deployment_name]}'
                     )
 
-                    connection_pool = self._connections[
-                        self._deployment_hostaddresses[deployment_name]
-                    ]
                     connection_pool.add_connection(
-                        target,
+                        f'{target}:{connection_pool.port}',
                         self._create_connection(
                             target=f'{target}:{connection_pool.port}'
                         ),
@@ -257,15 +258,16 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
                 )
         elif is_deleted and self._pod_is_up(item):
             target = item.status.pod_ip
-            if self._connections[
+            connection_pool = self._connections[
                 self._deployment_hostaddresses[deployment_name]
-            ].has_connection(target):
+            ]
+            if connection_pool.has_connection(f'{target}:{connection_pool.port}'):
                 self._logger.debug(
-                    f'Removing connection to {target} for deployment {deployment_name} at {self._deployment_hostaddresses[deployment_name]}'
+                    f'Removing connection to {target}:{connection_pool.port} for deployment {deployment_name} at {self._deployment_hostaddresses[deployment_name]}'
                 )
                 self._connections[
                     self._deployment_hostaddresses[deployment_name]
-                ].remove_connection(target)
+                ].remove_connection(f'{target}:{connection_pool.port}')
 
 
 def is_remote_local_connection(first: str, second: str):

@@ -61,6 +61,29 @@ def test_connection_pool(mocker):
     pool.close()
 
 
+def test_connection_pool_same_host(mocker):
+    create_mock = mocker.Mock()
+    send_mock = mocker.Mock()
+    pool = ConnectionPool()
+    pool._create_connection = create_mock
+    pool._send_message = send_mock
+
+    pool.send_message(msg=ControlMessage(command='IDLE'), target_address='1.1.1.1:53')
+    assert send_mock.call_count == 1
+    assert create_mock.call_count == 1
+
+    pool.send_message(msg=ControlMessage(command='IDLE'), target_address='1.1.1.1:53')
+    assert send_mock.call_count == 2
+    assert create_mock.call_count == 1
+
+    pool.send_message(msg=ControlMessage(command='IDLE'), target_address='1.1.1.1:54')
+    print(send_mock.call_count, flush=True)
+    assert send_mock.call_count == 3
+    assert create_mock.call_count == 2
+
+    pool.close()
+
+
 @pytest.mark.asyncio
 @pytest.mark.slow
 @pytest.mark.timeout(5)
