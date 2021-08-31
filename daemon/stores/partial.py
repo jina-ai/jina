@@ -149,20 +149,19 @@ class PartialFlowStore(PartialStore):
                                 # to publish ports and set them again here.
                                 for replica_arg in pod.replicas_args:
                                     # each replica is a Pod. Set its head/tail ports
-                                    for pea in ['head', 'tail']:
-                                        for port_name in Ports.__fields__:
-                                            if hasattr(replica_arg, port_name):
-                                                setattr(
-                                                    replica_arg[pea],
+                                    for port_name in Ports.__fields__:
+                                        if hasattr(replica_arg, port_name):
+                                            setattr(
+                                                replica_arg,
+                                                port_name,
+                                                getattr(
+                                                    port_mapping[
+                                                        replica_arg.name
+                                                    ].ports,
                                                     port_name,
-                                                    getattr(
-                                                        port_mapping[
-                                                            replica_arg[pea].name
-                                                        ].ports,
-                                                        port_name,
-                                                        random_port(),
-                                                    ),
-                                                )
+                                                    random_port(),
+                                                ),
+                                            )
 
             self.object = self.object.__enter__()
         except Exception as e:

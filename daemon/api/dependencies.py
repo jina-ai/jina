@@ -166,23 +166,20 @@ class FlowDepends:
                             # and set them inside the partial-daemon.
                             for replica_arg in pod.replicas_args:
                                 # each replica is a Pod. Get its head/tail ports
-                                for pea in ['head', 'tail']:
-                                    current_ports = Ports()
-                                    for port_name in Ports.__fields__:
-                                        setattr(
-                                            current_ports,
-                                            port_name,
-                                            getattr(
-                                                replica_arg[pea].args, port_name, None
-                                            ),
-                                        )
-                                    port_mapping.append(
-                                        PortMapping(
-                                            pod_name=replica_arg.name,
-                                            pea_name=replica_arg[pea].name,
-                                            ports=current_ports,
-                                        )
+                                current_ports = Ports()
+                                for port_name in Ports.__fields__:
+                                    setattr(
+                                        current_ports,
+                                        port_name,
+                                        getattr(replica_arg, port_name, None),
                                     )
+                                port_mapping.append(
+                                    PortMapping(
+                                        pod_name=replica_arg.name,
+                                        pea_name='',
+                                        ports=current_ports,
+                                    )
+                                )
 
                 else:
                     if runtime_cls in ['ZEDRuntime'] + list(
