@@ -6,6 +6,7 @@ To create your Hub Executor, you just need to run this command in your terminal:
 ```bash
 jina hub new
 ```
+
 ````{admonition} Note
 :class: note
 A `Hub Executor` is an executor that is published in JinaHub. Such an executor can be easily used in a flow like this:
@@ -20,9 +21,6 @@ When you run the command above, a wizard will ask you some questions about the E
 you will be asked two things: The Executor’s name and where it should be saved. The wizard will ask if you want to have 
 a more advanced configuration, but it is unnecessary for most of use cases.
 
-```{figure} ../../../.github/animations/jina-hub-new.svg
-:align: center
-```
 
 After running the command, a project with the following structure will be generated:
 

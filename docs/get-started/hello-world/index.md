@@ -3,7 +3,6 @@
 Just starting out? Try our three well-designed Jina's "Hello, World"
 
 
-
 :::::{grid} 3
 :gutter: 3
 

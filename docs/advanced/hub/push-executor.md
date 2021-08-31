@@ -12,9 +12,6 @@ $ jina hub push [--public/--private] <path_to_executor_folder>
 It will return an **UUID** as well as a **SECRET**. You would need these two items when using or update the Executor later. **Please keep them carefully.**
 
 
-```{figure} ../../../.github/animations/jina-hub-push.svg
-:align: center
-```
 
 ````{admonition} Note
 :class: note
@@ -35,9 +32,6 @@ Everything is iterating in Internet world. We also provide a way to update your 
 $ jina hub push [--public/--private] --force <UUID> --secret <SECRET> <path_to_executor_folder>
 ```
 
-```{figure} ../../../.github/animations/jina-hub-update.svg
-:align: center
-```
 
 ````{admonition} Note
 :class: note
@@ -55,9 +49,6 @@ With `--private` options, the resulted Executor will be **invisible to public**.
 $ jina hub push <path_to_executor_folder> -t TAG1 -t TAG2 -f <path_to_dockerfile>
 ```
 
-```{figure} ../../../.github/animations/jina-hub-update-tag.svg
-:align: center
-```
 
 You can specify `-t` or `--tags` parameters to tag one Executor. In additional, you can specify `-f` or `--docker-file` parameters to use a specific docker file to build your Executor.
 

@@ -14,6 +14,14 @@ docker run -v "$(pwd)/j:/j" jinaai/jina hello fashion --workdir /j && open j/hel
  replace "open" with "xdg-open" on Linux
 ```
 
+```{figure} ../../../.github/2.0/hello-fashion-1.png
+:align: center
+```
+
 This downloads the Fashion-MNIST training and test dataset and tells Jina to index 60,000 images from the training set.
 Then it randomly samples images from the test set as queries and asks Jina to retrieve relevant results.
 The whole process takes about 1 minute.
+
+```{figure} ../../../.github/2.0/hello-fashion-2.png
+:align: center
+```
