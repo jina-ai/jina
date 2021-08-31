@@ -18,7 +18,7 @@
 </p>
 
 
-Jina<sup><a href=".github/pronounce-jina.mp3">`🔊`</a></sup> is a framework for building neural search applications in just minutes.
+Jina<sup><a href=".github/pronounce-jina.mp3">`🔊`</a></sup> is a neural search framework that allows anyone to build SOTA & scalable deep learning search applications in minutes. 
 
 
 🌌 **All data types** - Large-scale indexing and querying of any kind of unstructured data: video, image, long/short text, music, source code, PDF, etc.
