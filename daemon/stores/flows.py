@@ -26,10 +26,11 @@ class FlowStore(ContainerStore):
         self._logger.debug(
             f'sending POST request to partial-daemon on {uri}/{self._kind}'
         )
+        ports = kwargs.get('ports', [])
         async with aiohttp.request(
             method='POST',
             url=f'{uri}/{self._kind}',
-            json=params,
+            json={'flow': params, 'ports': ports},
         ) as response:
             response_json = await response.json()
             if response.status != HTTPStatus.CREATED:
