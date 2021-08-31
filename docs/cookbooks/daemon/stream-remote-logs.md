@@ -1,4 +1,4 @@
-## Streaming Remote Logs
+## Streaming remote logs
 
 We can stream logs from a JinaD server for a running Flow/Pea/Pod/Workspace.
 

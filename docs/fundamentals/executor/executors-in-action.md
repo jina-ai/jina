@@ -1,4 +1,4 @@
-## Executors in Action
+## Executors in action
 
 ### Fastai
 

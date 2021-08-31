@@ -148,13 +148,13 @@ Here you can set whatever logic you need for your Executor. By now, your code sh
 ````python
 import os
 import time
-from typing import Dict
+from typing import Dict, Optional
 
 from jina import Executor, DocumentArray, requests
 from jina.logging.logger import JinaLogger
 
 
-class `RequestLogger`(Executor):                                                                      # needs to inherit from Executor
+class RequestLogger(Executor):                                                                      # needs to inherit from Executor
     def __init__(self,
                 default_log_docs: int = 1,                                                          # your arguments
                 *args, **kwargs):                                                                   # *args and **kwargs are required for Executor
@@ -167,7 +167,7 @@ class `RequestLogger`(Executor):                                                
 
     @requests                                                                                       # decorate, by default it will be called on every request
     def log(self,                                                                                   # arguments are automatically received
-            Optional[DocumentArray],
+            docs: Optional[DocumentArray],
             parameters: Dict,
             **kwargs):
         self.logger.info('Request being processed...')
@@ -196,7 +196,9 @@ jina hub push --public .
 
 This means you will push your Executor publicly to Jina Hub. The last dot means you will use your current path. Once you run that command, you should see something like this:
 
-![image](/assets/images/blog/tutorials/push-executor.png)
+```{figure} ../../.github/images/push-executor.png
+:align: center
+```
 
 Since we pushed our Executor using the `--public` flag, the only thing we will use is the ID, which is `zsor7fe6` in this case. 
 
@@ -322,7 +324,9 @@ if __name__ == '__main__':
 ```
 And if you run this, you will see a new `workspace` folder created with two other folders inside. One called `RequestLogger` or whatever name you used in your class. And another folder for the sharding, but we won't talk about that in this tutorial because it's out of scope. Inside the sharding folder called `0` in this case, you will see a `log.txt` file. And there you will have the 3 Documents with their information.
 
-![image](/assets/images/blog/tutorials/log.png)
+```{figure} ../../.github/images/log.png
+:align: center
+```
 
 And that's it! You created an Executor, pushed it to Hub, and used it in your app.
 

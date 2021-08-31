@@ -17,7 +17,7 @@ with f:
 `.post()` must be called *inside* the `with` context.
 ```
 
-## Input Data to Flow
+## Input data to Flow
 
 ```python
 def post(
@@ -103,7 +103,7 @@ This is useful to control `Executor` objects in the runtime.
 
 ### Fine-grained control on input
 
-#### Size of the Request
+#### Size of the request
 
 You can control how many `Documents` in each request by `request_size`. Say your `inputs` has length of 100, whereas
 you `request_size` is set to `10`. Then `f.post` will send ten requests and return 10 responses:
@@ -146,7 +146,7 @@ with f:
 ```
 
 
-### Input Data Types
+### Input data types
 
 `inputs` can take a single `Document` object, an iterator of `Document`, a generator of `Document`, a `DocumentArray`
 object, and None.
@@ -191,7 +191,7 @@ with f, open('my.csv') as fp:
     f.index(from_csv(fp, field_resolver={'question': 'text'}))
 ```
 
-## Fetch Flow Output
+## Fetch Flow output
 
 Once a request is returned, callback functions are fired. Jina Flow implements a Promise-like interface. You can add
 callback functions `on_done`, `on_error`, `on_always` to hook different events.
@@ -231,7 +231,7 @@ with Flow().add() as f, open('output.txt', 'w') as fp:
            on_always=lambda x: x.docs.save(fp))
 ```
 
-### Get All Responses
+### Get all responses
 
 In some scenarios (e.g. testing), you may want to get the all responses in bulk and then process them; instead of
 processing responses on the fly. To do that, you can turn on `return_results`:

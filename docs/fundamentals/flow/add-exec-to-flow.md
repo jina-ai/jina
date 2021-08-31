@@ -21,7 +21,7 @@ f = Flow().add().add().add().add()
 :align: center
 ```
 
-## Define What Executor to Use via `uses`
+## Define what executor to use via `uses`
 
 `uses` parameter to specify the [Executor](Executor.md).
 
@@ -118,7 +118,7 @@ f = Flow().add(
 ```
 ````
 
-## Add Remote Executors
+## Add remote executors
 
 ### Add an already spawned Executor
 
@@ -204,7 +204,7 @@ the `connect_to_predecessor` argument and `port_out` to the Executor in front.
 f.add(name='remote', host='123.45.67.89', port_out=23456).add(name='local', connect_to_predecessor=True)
 ```
 
-## Override Executor Configs
+## Override Executor configs
 
 You can override an executor's meta configs when creating a flow:
 

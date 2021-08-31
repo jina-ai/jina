@@ -7,7 +7,7 @@ deployments by defining a `workspace` for each Jina object, hence allowing a mul
 the same host.
 
 
-## Minimum Working Example
+## Minimum working example
 
 ````{tab} Remote (1.2.3.4) 
 ```bash

@@ -5,7 +5,7 @@ If you come to this page, most likely you have already built some cool stuff wit
 guide you from basic serving for demo purpose to advanced serving in production.
 
 
-## Minimum Working Example
+## Minimum working example
 
 ````{tab} Server
 
@@ -53,7 +53,7 @@ Many times we need to use `Flow` & `Client` in a more explicit way, often due to
 Before this cookbook, you are mostly using Flow as an implicit service. In the sequel, we will show you how to serve
 Flow in an explicit C/S style.
 
-## Supported Communication Protocols
+## Supported communication protocols
 
 Jina supports `grpc`, `websocket`, `http` three communication protocols between `Flow` and `Client`.
 
@@ -164,7 +164,7 @@ with f:
 	📚 Redoc:		http://localhost:12345/redoc
 ```
 
-### Switch Between Communication Protocols
+### Switch between communication protocols
 
 You can switch to other protocol also via `.protocol` property setter. This setter works even in Flow runtime.
 
@@ -181,7 +181,7 @@ with f:
 
 ## Flow with HTTP protocol
 
-### Enable Cross-origin-resources-sharing (CORS)
+### Enable cross-origin-resources-sharing (CORS)
 
 CORS is by default disabled for security. That means you can not access the service from a webpage with different domain. To override this, simply do:
 
@@ -192,7 +192,7 @@ f = Flow(cors=True, protocol='http')
 ```
 
 
-### Use Swagger UI to Send HTTP Request
+### Use swagger UI to send HTTP request
 
 You can navigate to the Swagger docs UI via `http://localhost:12345/docs`:
 
@@ -200,7 +200,7 @@ You can navigate to the Swagger docs UI via `http://localhost:12345/docs`:
 :align: center
 ```
 
-### Use `curl` to Send HTTP Request
+### Use `curl` to send HTTP request
 
 Now you can send data request via `curl`/Postman:
 
@@ -258,7 +258,7 @@ $ curl --request POST 'http://localhost:12345/post' --header 'Content-Type: appl
 }
 ```
 
-### Use Python to Send HTTP Request
+### Use Python to send HTTP request
 
 One can also use Python Client to send HTTP request, simply:
 
@@ -288,7 +288,7 @@ By default the following endpoints are exposed to the public:
 | `/update` | Corresponds to `f.post('/update')` method in Python |
 | `/delete` | Corresponds to `f.post('/delete')` method in Python |
 
-#### Hide CRUD and Debug Endpoints from HTTP Interface
+#### Hide CRUD and debug endpoints from HTTP interface
 
 User can decide to hide CRUD and debug endpoints in production, or when the context is not applicable. For example, in the code snippet below, we didn't implement any CRUD endpoints for the executor, hence it does not make sense to expose them to public.
 
@@ -304,7 +304,7 @@ f = Flow(protocol='http',
 ```
 
 
-#### Expose Customized Endpoints to HTTP Interface
+#### Expose customized endpoints to HTTP interface
 
 `Flow.expose_endpoint` can be used to expose executor's endpoint to HTTP interface, e.g.
 
@@ -348,7 +348,7 @@ f.expose_endpoint('/bar',
 ```
 
 
-#### Add non-Jina Related Routes
+#### Add non-Jina related routes
 
 If you want to add more customized routes, configs, options to HTTP interface, you can simply
 override `jina.helper.extend_rest_interface` function as follows:

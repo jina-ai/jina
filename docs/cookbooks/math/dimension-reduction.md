@@ -1,4 +1,4 @@
-## Dimension Reduction
+## Dimension reduction
 
 Dimension reduction is offered with class `PCA`. It performs Principal Component Analysis given a number of components.
 To reduce reduce the dimensions of a dataset, you can either call `PCA.fit` and then `PCA.transform` or directly call `PCA.fit_transform`.
