@@ -40,3 +40,11 @@ MyExecutor/
 - `requirements.txt` describes the Python dependencies of the Executor.
 - `executor.py` should contain the main logic of your Executor.
 - `README.md` should describe the usage of the Executor.
+
+## Best practices
+
+When developing Hub Executors, make sure to follow these tips:
+
+```{figure} ../../../.github/images/hub-best-practices.png
+:align: center
+```
