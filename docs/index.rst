@@ -26,17 +26,9 @@ Jina is a deep learning-powered search framework for building cross-/multi-modal
    :caption: Advanced
    :hidden:
 
-   cookbooks/hub/index
-   cookbooks/daemon/index
+   advanced/hub/index
+   advanced/daemon/index
 
-
-.. toctree::
-   :titlesonly:
-   :hidden:
-   :caption: Tutorials
-
-   tutorials/chatbot
-   tutorials/executors
 
 .. toctree::
    :titlesonly:
