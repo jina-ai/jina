@@ -72,7 +72,10 @@ delete = partialmethod(post, '/delete')
 
 To send parameters to the Executor, use
 
-```python
+```{code-block} python
+---
+emphasize-lines: 14
+---
 from jina import Document, Executor, Flow, requests
 
 
@@ -181,7 +184,10 @@ with Flow() as f:
 , `from_files`, `from_ndarray`, `from_ndjson`](Document.md#construct-from-json-csv-ndarray-and-files). They can be used
 in conjunction with `.post()`, e.g.
 
-```python
+```{code-block} python
+---
+emphasize-lines: 7
+---
 from jina import Flow
 from jina.types.document.generators import from_csv
 
