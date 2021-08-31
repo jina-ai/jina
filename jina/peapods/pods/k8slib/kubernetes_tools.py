@@ -1,6 +1,6 @@
 import os
 import tempfile
-from typing import Dict
+from typing import Dict, Optional
 
 cur_dir = os.path.dirname(__file__)
 
@@ -73,17 +73,17 @@ class K8SClients:
 __k8s_clients = K8SClients()
 
 
-def create(template: str, params: Dict):
+def create(template: str, params: Dict, template_path: Optional[str] = None):
     """Create a resource on Kubernetes based on the `template`. It fills the `template` using the `params`.
-
     :param template: path to the template file.
     :param params: dictionary for replacing the placeholders (keys) with the actual values.
+    :param template_path: Optional path to a custom template file
     """
 
     from kubernetes.utils import FailToCreateError
     from kubernetes import utils
 
-    yaml = _get_yaml(template, params)
+    yaml = _get_yaml(template, params, path=template_path)
     fd, path = tempfile.mkstemp()
     try:
         with os.fdopen(fd, 'w') as tmp:
@@ -101,10 +101,11 @@ def create(template: str, params: Dict):
         os.remove(path)
 
 
-def _get_yaml(template: str, params: Dict):
-    path = os.path.join(
-        cur_dir, '..', '..', '..', 'resources', 'k8s', 'template', f'{template}.yml'
-    )
+def _get_yaml(template: str, params: Dict, path: Optional[str] = None):
+    if path is None:
+        path = os.path.join(
+            cur_dir, '..', '..', '..', 'resources', 'k8s', 'template', f'{template}.yml'
+        )
     with open(path) as f:
         content = f.read()
         for k, v in params.items():

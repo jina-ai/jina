@@ -4,6 +4,7 @@ from typing import Optional, Dict, Union, Set, List
 
 import jina
 from .k8slib import kubernetes_deployment, kubernetes_tools
+from .k8slib.kubernetes_deployment import CustomDeploymentConfig
 from .. import BasePod
 from ... import __default_executor__
 from ...logging.logger import JinaLogger
@@ -46,6 +47,11 @@ class K8sPod(BasePod):
             parsed_args['deployments'] = [args] * parallel
         else:
             parsed_args['deployments'] = [args]
+
+        custom_deployment_args = getattr(args, 'k8s_custom_deployment_args', None)
+        if custom_deployment_args:
+            parsed_args['k8s_custom_deployment_args'] = CustomDeploymentConfig(**custom_deployment_args)
+
         return parsed_args
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -127,6 +133,7 @@ class K8sPod(BasePod):
             replicas=replicas,
             pull_policy='IfNotPresent',
             init_container=init_container_args,
+            custom_deployment_config=self.deployment_args.get('k8s_custom_deployment_args')
         )
 
     def start(self) -> 'K8sPod':

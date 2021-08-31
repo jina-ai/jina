@@ -1,4 +1,6 @@
 # Unit tests for custom deployment templates
+from typing import Tuple, List, Dict
+
 from jina import Flow
 from jina.peapods.pods.k8slib.kubernetes_deployment import kubernetes_tools
 
@@ -16,6 +18,12 @@ class KubernetesCreateMock:
         self.call_count += 1
         self.call_args.append(args)
         self.call_kwargs.append(kwargs)
+
+    def get_call_by_index(self, index: int) -> Tuple[List, Dict]:
+        return (
+            self.call_args[index],
+            self.call_kwargs[index]
+        )
 
 
 @pytest.fixture(scope='function')
@@ -43,7 +51,14 @@ def test_args_parse_correctly(custom_deployment_template_dir: str, patch_kuberne
 
     assert patch_kubernetes_deploy.call_count == 6
 
-    executor_call_kwargs = patch_kubernetes_deploy.call_kwargs[0]
-    k8s_yml_template_args = executor_call_kwargs.get('custom_deployment_config')
+    # the deployment is the second call to kubernetes_tools.create(...)
+    args, kwargs = patch_kubernetes_deploy.get_call_by_index(2)
 
-    assert k8s_yml_template_args.__dict__ == custom_args
+    assert args[0] == 'deployment'
+    for k, v in custom_args['k8s_yml_template_args'].items():
+        assert args[1][k] == v
+    assert kwargs['template_path'] == custom_args['k8s_yml_template_dir']
+
+
+# TODO: Add for init container
+# TODO: Custom templates for service namespace

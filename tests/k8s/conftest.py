@@ -14,6 +14,11 @@ cur_dir = os.path.dirname(__file__)
 
 
 @pytest.fixture()
+def custom_deployment_template_dir() -> str:
+    return os.path.join(cur_dir, 'custom-deployment', 'custom-deployment.yml')
+
+
+@pytest.fixture()
 def logger():
     logger = JinaLogger('kubernetes-testing')
     return logger
