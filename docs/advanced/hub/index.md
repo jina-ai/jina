@@ -24,4 +24,5 @@ push-executor
 use-hub-executor
 pull-executor
 practice-your-learning
+executor-best-practices
 ```
