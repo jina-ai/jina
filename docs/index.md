@@ -124,7 +124,6 @@ proto/index
 :caption: Support
 :hidden:
 
-support/changelog\
 Issue tracker <https://github.com/jina-ai/jina/issues>
 Slack community <https://slack.jina.ai>
 Company website <https://jina.ai>
