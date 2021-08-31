@@ -3,11 +3,11 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark">
-  <meta property="og:title" content="Jina Documentation" />
+  <meta property="og:title" content="Welcome to Jina!" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/index.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="Developer Reference: jina package, Jina Command-Line Interface, Jina Protobuf Specification. Links: Tutorials, GitHub repository, Slack community. Index, Module Index." />
+  <meta property="og:description" content="Jina is a framework for building neural search applications in just minutes. Make sure that you have Python 3.7+ installed on Linux/MacOS., Install Jina: pip install jina, Run hello-world demos: jina hello fashion, That’s it! In the next few seconds the demo will open in a new page in your browse..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -25,13 +25,15 @@
 
   gtag('config', 'G-48ZDWC8GT6');
 </script>
-    <link rel="index" title="Index" href="genindex/" /><link rel="search" title="Search" href="search/" /><link rel="next" title="jina package" href="api/jina/" />
+    <link rel="index" title="Index" href="genindex/" /><link rel="search" title="Search" href="search/" /><link rel="next" title="What is Neural Search?" href="get-started/neural-search/" />
 
-    <meta name="generator" content="sphinx-4.1.2, furo 2021.08.17.beta43"/>
-        <title>Welcome to Jina</title>
+    <link rel="shortcut icon" href="_static/favicon.ico"/><meta name="generator" content="sphinx-4.1.2, furo 2021.08.31"/>
+        <title>Jina Documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=910ac4ccc9d7c023151c34010d7b500fb9777a51" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.d53ab927f7bad3eaa42da95908504b10.min.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
     <link rel="stylesheet" type="text/css" href="_static/main.css" />
     
@@ -62,9 +64,11 @@
   
     }
   }
-</style>
-    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="_static/pygments_dark.css"></head>
+</style></head>
   <body>
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
     
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
@@ -151,7 +155,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="#"><div class="brand">Welcome to Jina</div></a>
+      <a href="#"><div class="brand">Jina Documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -162,7 +166,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -185,17 +189,79 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
+  <p class="caption" role="heading"><span class="caption-text">Get started</span></p>
 <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.clients.base/">jina.clients.base package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1"><a class="reference internal" href="get-started/neural-search/">What is Neural Search?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="get-started/install/">Install</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="get-started/hello-world/">Run Hello World Demos</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="get-started/hello-world/fashion/">Fashion image search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="get-started/hello-world/covid-19-chatbot/">Covid-19 chatbot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="get-started/hello-world/multimodal/">Multimodal search</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Fundamentals</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="fundamentals/concepts/">Basic Concepts</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="fundamentals/document/">Document</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="fundamentals/document/document-api/">Document</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fundamentals/document/documentarray-api/">DocumentArray</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fundamentals/document/documentarraymemmap-api/">DocumentArrayMemmap</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="fundamentals/executor/executor-api/">Create Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fundamentals/executor/executor-built-in-features/">Executor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fundamentals/executor/executors-in-action/">Executors in action</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fundamentals/executor/repository-structure/">Executor File Structure</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="fundamentals/flow/flow-api/">Create a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fundamentals/flow/send-recv/">Flow IO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fundamentals/flow/add-exec-to-flow/">Add Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fundamentals/flow/parallel/">Parallelization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fundamentals/flow/async-flow/">Asynchronous Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fundamentals/flow/flow-as-a-service/">Serving a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fundamentals/flow/remarks/">Remarks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="fundamentals/practice-your-learning/">Put into Practice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fundamentals/clean-code/">Clean &amp; Efficient Code</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Advanced</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="advanced/hub/">Share Executors via Hub</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="advanced/hub/create-hub-executor/">Create Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced/hub/push-executor/">Publish Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced/hub/use-hub-executor/">Reuse Hub Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced/hub/pull-executor/">Pull Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced/hub/practice-your-learning/">Put into Practice</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="advanced/daemon/">Remote Management via JinaD</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="advanced/daemon/setup-jinad-server/">Setup JinaD server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced/daemon/start-jinad-client/">Start JinaD client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced/daemon/workspace/">Workspace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced/daemon/create-remote-executors/">Create remote Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced/daemon/create-remote-flows/">Create remote Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced/daemon/stream-remote-logs/">Streaming remote logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced/daemon/development-using-jinad/">Development using JinaD</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="advanced/experimental/"><svg aria-hidden="true" class="sd-octicon sd-octicon-beaker" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M5 5.782V2.5h-.25a.75.75 0 010-1.5h6.5a.75.75 0 010 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458L5 5.782zM9.5 2.5h-3V6a.75.75 0 01-.117.403L4.73 9h6.54L9.617 6.403A.75.75 0 019.5 6V2.5zm-6.9 9.847L3.775 10.5h8.45l1.175 1.847a.75.75 0 01-.633 1.153H3.233a.75.75 0 01-.633-1.153z" fill-rule="evenodd"></path></svg> Experimental Features</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.clients.base/">jina.clients.base package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.clients.base.grpc/">jina.clients.base.grpc module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.clients.base.http/">jina.clients.base.http module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.clients.base.websocket/">jina.clients.base.websocket module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.clients.request/">jina.clients.request package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.clients.request/">jina.clients.request package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.clients.request.asyncio/">jina.clients.request.asyncio module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.clients.request.helper/">jina.clients.request.helper module</a></li>
 </ul>
@@ -207,30 +273,30 @@
 <li class="toctree-l3"><a class="reference internal" href="api/jina.clients.websocket/">jina.clients.websocket module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.executors/">jina.executors package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.executors/">jina.executors package</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/jina.executors.decorators/">jina.executors.decorators module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/jina.executors.metas/">jina.executors.metas module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.flow/">jina.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.flow/">jina.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/jina.flow.asyncio/">jina.flow.asyncio module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/jina.flow.base/">jina.flow.base module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/jina.flow.builder/">jina.flow.builder module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.helloworld/">jina.helloworld package</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.helloworld.chatbot/">jina.helloworld.chatbot package</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.helloworld/">jina.helloworld package</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.helloworld.chatbot/">jina.helloworld.chatbot package</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.helloworld.chatbot.app/">jina.helloworld.chatbot.app module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.helloworld.chatbot.my_executors/">jina.helloworld.chatbot.my_executors module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.helloworld.fashion/">jina.helloworld.fashion package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.helloworld.fashion/">jina.helloworld.fashion package</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.helloworld.fashion.app/">jina.helloworld.fashion.app module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.helloworld.fashion.helper/">jina.helloworld.fashion.helper module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.helloworld.fashion.my_executors/">jina.helloworld.fashion.my_executors module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.helloworld.multimodal/">jina.helloworld.multimodal package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.helloworld.multimodal/">jina.helloworld.multimodal package</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.helloworld.multimodal.app/">jina.helloworld.multimodal.app module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.helloworld.multimodal.my_executors/">jina.helloworld.multimodal.my_executors module</a></li>
 </ul>
@@ -238,23 +304,23 @@
 <li class="toctree-l3"><a class="reference internal" href="api/jina.helloworld.fork/">jina.helloworld.fork module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.hubble/">jina.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.hubble/">jina.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/jina.hubble.helper/">jina.hubble.helper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/jina.hubble.hubapi/">jina.hubble.hubapi module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/jina.hubble.hubio/">jina.hubble.hubio module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.jaml/">jina.jaml package</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.jaml.parsers/">jina.jaml.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="api/jina.jaml.parsers.default/">jina.jaml.parsers.default package</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.jaml/">jina.jaml package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.jaml.parsers/">jina.jaml.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="api/jina.jaml.parsers.default/">jina.jaml.parsers.default package</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="api/jina.jaml.parsers.default.v1/">jina.jaml.parsers.default.v1 module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="api/jina.jaml.parsers.executor/">jina.jaml.parsers.executor package</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="api/jina.jaml.parsers.executor/">jina.jaml.parsers.executor package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="api/jina.jaml.parsers.executor.legacy/">jina.jaml.parsers.executor.legacy module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="api/jina.jaml.parsers.flow/">jina.jaml.parsers.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="api/jina.jaml.parsers.flow/">jina.jaml.parsers.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="api/jina.jaml.parsers.flow.legacy/">jina.jaml.parsers.flow.legacy module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="api/jina.jaml.parsers.flow.v1/">jina.jaml.parsers.flow.v1 module</a></li>
 </ul>
@@ -265,33 +331,33 @@
 <li class="toctree-l3"><a class="reference internal" href="api/jina.jaml.helper/">jina.jaml.helper module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.logging/">jina.logging package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.logging/">jina.logging package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/jina.logging.formatter/">jina.logging.formatter module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/jina.logging.logger/">jina.logging.logger module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/jina.logging.predefined/">jina.logging.predefined module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/jina.logging.profile/">jina.logging.profile module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.math/">jina.math package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.math/">jina.math package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/jina.math.dimensionality_reduction/">jina.math.dimensionality_reduction module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/jina.math.distance/">jina.math.distance module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/jina.math.helper/">jina.math.helper module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.optimizers/">jina.optimizers package</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.optimizers/">jina.optimizers package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/jina.optimizers.discovery/">jina.optimizers.discovery module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/jina.optimizers.flow_runner/">jina.optimizers.flow_runner module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/jina.optimizers.parameters/">jina.optimizers.parameters module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.parsers.hubble/">jina.parsers.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.parsers.hubble/">jina.parsers.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.parsers.hubble.pull/">jina.parsers.hubble.pull module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.parsers.hubble.push/">jina.parsers.hubble.push module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.parsers.peapods/">jina.parsers.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="api/jina.parsers.peapods.runtimes/">jina.parsers.peapods.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.parsers.peapods/">jina.parsers.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="api/jina.parsers.peapods.runtimes/">jina.parsers.peapods.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="api/jina.parsers.peapods.runtimes.container/">jina.parsers.peapods.runtimes.container module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="api/jina.parsers.peapods.runtimes.distributed/">jina.parsers.peapods.runtimes.distributed module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="api/jina.parsers.peapods.runtimes.remote/">jina.parsers.peapods.runtimes.remote module</a></li>
@@ -315,14 +381,14 @@
 <li class="toctree-l3"><a class="reference internal" href="api/jina.parsers.ping/">jina.parsers.ping module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.peapods/">jina.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.peapods/">jina.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/jina.peapods.grpc/">jina.peapods.grpc package</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.peapods.peas/">jina.peapods.peas package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.peapods.peas/">jina.peapods.peas package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.peapods.peas.helper/">jina.peapods.peas.helper module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.peapods.pods/">jina.peapods.pods package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="api/jina.peapods.pods.k8slib/">jina.peapods.pods.k8slib package</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.peapods.pods/">jina.peapods.pods package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" role="switch" type="checkbox"/><label for="toctree-checkbox-32"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="api/jina.peapods.pods.k8slib/">jina.peapods.pods.k8slib package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" role="switch" type="checkbox"/><label for="toctree-checkbox-33"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="api/jina.peapods.pods.k8slib.kubernetes_deployment/">jina.peapods.pods.k8slib.kubernetes_deployment module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="api/jina.peapods.pods.k8slib.kubernetes_tools/">jina.peapods.pods.k8slib.kubernetes_tools module</a></li>
 </ul>
@@ -332,19 +398,19 @@
 <li class="toctree-l4"><a class="reference internal" href="api/jina.peapods.pods.k8s/">jina.peapods.pods.k8s module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.peapods.runtimes/">jina.peapods.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="api/jina.peapods.runtimes.container/">jina.peapods.runtimes.container package</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.peapods.runtimes/">jina.peapods.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" role="switch" type="checkbox"/><label for="toctree-checkbox-34"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="api/jina.peapods.runtimes.container/">jina.peapods.runtimes.container package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" role="switch" type="checkbox"/><label for="toctree-checkbox-35"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="api/jina.peapods.runtimes.container.helper/">jina.peapods.runtimes.container.helper module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="api/jina.peapods.runtimes.gateway/">jina.peapods.runtimes.gateway package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="api/jina.peapods.runtimes.gateway/">jina.peapods.runtimes.gateway package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" role="switch" type="checkbox"/><label for="toctree-checkbox-36"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="api/jina.peapods.runtimes.gateway.grpc/">jina.peapods.runtimes.gateway.grpc package</a></li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="api/jina.peapods.runtimes.gateway.http/">jina.peapods.runtimes.gateway.http package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="api/jina.peapods.runtimes.gateway.http/">jina.peapods.runtimes.gateway.http package</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" role="switch" type="checkbox"/><label for="toctree-checkbox-37"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="api/jina.peapods.runtimes.gateway.http.app/">jina.peapods.runtimes.gateway.http.app module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="api/jina.peapods.runtimes.gateway.http.models/">jina.peapods.runtimes.gateway.http.models module</a></li>
 </ul>
 </li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="api/jina.peapods.runtimes.gateway.websocket/">jina.peapods.runtimes.gateway.websocket package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" role="switch" type="checkbox"/><label for="toctree-checkbox-32"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="api/jina.peapods.runtimes.gateway.websocket/">jina.peapods.runtimes.gateway.websocket package</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" role="switch" type="checkbox"/><label for="toctree-checkbox-38"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="api/jina.peapods.runtimes.gateway.websocket.app/">jina.peapods.runtimes.gateway.websocket.app module</a></li>
 </ul>
 </li>
@@ -353,11 +419,11 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.peapods.runtimes.grpc/">jina.peapods.runtimes.grpc package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="api/jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" role="switch" type="checkbox"/><label for="toctree-checkbox-33"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="api/jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" role="switch" type="checkbox"/><label for="toctree-checkbox-39"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="api/jina.peapods.runtimes.request_handlers.data_request_handler/">jina.peapods.runtimes.request_handlers.data_request_handler module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" role="switch" type="checkbox"/><label for="toctree-checkbox-34"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="api/jina.peapods.runtimes.zmq.asyncio/">jina.peapods.runtimes.zmq.asyncio module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="api/jina.peapods.runtimes.zmq.base/">jina.peapods.runtimes.zmq.base module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="api/jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
@@ -370,13 +436,13 @@
 <li class="toctree-l3"><a class="reference internal" href="api/jina.peapods.networking/">jina.peapods.networking module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" role="switch" type="checkbox"/><label for="toctree-checkbox-35"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/jina.proto.jina_pb2/">jina.proto.jina_pb2 module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/jina.proto.jina_pb2_grpc/">jina.proto.jina_pb2_grpc module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/jina.proto.serializer/">jina.proto.serializer module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.schemas/">jina.schemas package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" role="switch" type="checkbox"/><label for="toctree-checkbox-36"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.schemas/">jina.schemas package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/jina.schemas.executor/">jina.schemas.executor module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/jina.schemas.flow/">jina.schemas.flow module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/jina.schemas.helper/">jina.schemas.helper module</a></li>
@@ -384,8 +450,8 @@
 <li class="toctree-l3"><a class="reference internal" href="api/jina.schemas.pod/">jina.schemas.pod module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" role="switch" type="checkbox"/><label for="toctree-checkbox-37"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.types.arrays/">jina.types.arrays package</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" role="switch" type="checkbox"/><label for="toctree-checkbox-38"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" role="switch" type="checkbox"/><label for="toctree-checkbox-43"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.types.arrays/">jina.types.arrays package</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" role="switch" type="checkbox"/><label for="toctree-checkbox-44"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.types.arrays.abstract/">jina.types.arrays.abstract module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.types.arrays.bpm/">jina.types.arrays.bpm module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.types.arrays.chunk/">jina.types.arrays.chunk module</a></li>
@@ -397,7 +463,7 @@
 <li class="toctree-l4"><a class="reference internal" href="api/jina.types.arrays.traversable/">jina.types.arrays.traversable module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.types.document/">jina.types.document package</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" role="switch" type="checkbox"/><label for="toctree-checkbox-39"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.types.document/">jina.types.document package</a><input class="toctree-checkbox" id="toctree-checkbox-45" name="toctree-checkbox-45" role="switch" type="checkbox"/><label for="toctree-checkbox-45"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.types.document.converters/">jina.types.document.converters module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.types.document.graph/">jina.types.document.graph module</a></li>
@@ -405,16 +471,16 @@
 <li class="toctree-l4"><a class="reference internal" href="api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-46" name="toctree-checkbox-46" role="switch" type="checkbox"/><label for="toctree-checkbox-46"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.types.message.common/">jina.types.message.common module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.types.ndarray/">jina.types.ndarray package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="api/jina.types.ndarray.dense/">jina.types.ndarray.dense package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.types.ndarray/">jina.types.ndarray package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="api/jina.types.ndarray.dense/">jina.types.ndarray.dense package</a><input class="toctree-checkbox" id="toctree-checkbox-48" name="toctree-checkbox-48" role="switch" type="checkbox"/><label for="toctree-checkbox-48"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="api/jina.types.ndarray.dense.numpy/">jina.types.ndarray.dense.numpy module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="api/jina.types.ndarray.sparse/">jina.types.ndarray.sparse package</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" role="switch" type="checkbox"/><label for="toctree-checkbox-43"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="api/jina.types.ndarray.sparse/">jina.types.ndarray.sparse package</a><input class="toctree-checkbox" id="toctree-checkbox-49" name="toctree-checkbox-49" role="switch" type="checkbox"/><label for="toctree-checkbox-49"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="api/jina.types.ndarray.sparse.numpy/">jina.types.ndarray.sparse.numpy module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="api/jina.types.ndarray.sparse.pytorch/">jina.types.ndarray.sparse.pytorch module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="api/jina.types.ndarray.sparse.scipy/">jina.types.ndarray.sparse.scipy module</a></li>
@@ -424,17 +490,17 @@
 <li class="toctree-l4"><a class="reference internal" href="api/jina.types.ndarray.generic/">jina.types.ndarray.generic module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" role="switch" type="checkbox"/><label for="toctree-checkbox-44"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-50" name="toctree-checkbox-50" role="switch" type="checkbox"/><label for="toctree-checkbox-50"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.types.request.control/">jina.types.request.control module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.types.request.data/">jina.types.request.data module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.types.request.mixin/">jina.types.request.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-45" name="toctree-checkbox-45" role="switch" type="checkbox"/><label for="toctree-checkbox-45"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-51" name="toctree-checkbox-51" role="switch" type="checkbox"/><label for="toctree-checkbox-51"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.types.routing.table/">jina.types.routing.table module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-46" name="toctree-checkbox-46" role="switch" type="checkbox"/><label for="toctree-checkbox-46"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-52" name="toctree-checkbox-52" role="switch" type="checkbox"/><label for="toctree-checkbox-52"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.types.score.map/">jina.types.score.map module</a></li>
 </ul>
 </li>
@@ -451,16 +517,19 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-53" name="toctree-checkbox-53" role="switch" type="checkbox"/><label for="toctree-checkbox-53"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="proto/docs/">Protocol Documentation</a></li>
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Links</span></p>
+<p class="caption" role="heading"><span class="caption-text">Support</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jina#read-tutorials">Tutorials</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jina">GitHub repository</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jina/issues">Issue tracker</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://slack.jina.ai">Slack community</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://youtube.com/c/jina-ai">Youtube</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://twitter.com/JinaAI_">Twitter @JinaAI_</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.linkedin.com/company/jinaai/">LinkedIn</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://jina.ai">Jina AI Company</a></li>
 </ul>
 
 </div>
@@ -481,45 +550,131 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <div class="section" id="jina-documentation">
-<h1>Jina Documentation<a class="headerlink" href="#jina-documentation" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="api/jina/">jina package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="proto/">Jina Protobuf Specification</a></li>
-</ul>
+        <div class="tex2jax_ignore mathjax_ignore section" id="welcome-to-jina">
+<h1>Welcome to Jina!<a class="headerlink" href="#welcome-to-jina" title="Permalink to this headline">¶</a></h1>
+<p>Jina is a framework for building neural search applications in just minutes.</p>
+<ol class="simple">
+<li><p>Make sure that you have Python 3.7+ installed on Linux/MacOS.</p></li>
+<li><p>Install Jina: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">jina</span></code></p></li>
+<li><p>Run hello-world demos: <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">hello</span> <span class="pre">fashion</span></code></p></li>
+<li><p>That’s it! In the next few seconds the demo will open in a new page in your browser.</p></li>
+</ol>
+<p>Now that you’re set up, let’s dive into more of how Jina works and how to build great apps.</p>
+<div class="section" id="next-steps">
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-smiley" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M9.503 14.639a.75.75 0 00-1.047-.145.767.767 0 00-.146 1.055l.075.092c.044.05.105.119.184.198.158.158.39.363.695.566A4.88 4.88 0 0012 17.22a4.88 4.88 0 002.736-.814 4.58 4.58 0 00.695-.566c.079-.08.14-.147.184-.198l.079-.097a.75.75 0 00-1.197-.905l-.001.002a1.807 1.807 0 01-.126.137c-.1.1-.255.239-.466.38a3.38 3.38 0 01-1.904.56 3.38 3.38 0 01-1.904-.56 3.078 3.078 0 01-.466-.38 1.668 1.668 0 01-.127-.139zM16 11.75a1.25 1.25 0 100-2.5 1.25 1.25 0 000 2.5zM9 10.5a1.25 1.25 0 11-2.5 0 1.25 1.25 0 012.5 0z"></path><path d="M12 1C5.925 1 1 5.925 1 12s4.925 11 11 11 11-4.925 11-11S18.075 1 12 1zm0 1.781a9.219 9.219 0 100 18.438A9.219 9.219 0 0012 2.78z" fill-rule="evenodd"></path></svg> Play 3 Hello World</div>
+<p class="sd-card-text">Try Jina on fashion image search, QA chatbot and multimodal search.</p>
 </div>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Links</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jina#read-tutorials">Tutorials</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jina">GitHub repository</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://slack.jina.ai">Slack community</a></li>
-</ul>
+<a class="sd-stretched-link reference internal" href="get-started/hello-world/"><span class="doc"></span></a></div>
 </div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M0 3.75A.75.75 0 01.75 3h7.497c1.566 0 2.945.8 3.751 2.014A4.496 4.496 0 0115.75 3h7.5a.75.75 0 01.75.75v15.063a.75.75 0 01-.755.75l-7.682-.052a3 3 0 00-2.142.878l-.89.891a.75.75 0 01-1.061 0l-.902-.901a3 3 0 00-2.121-.879H.75a.75.75 0 01-.75-.75v-15zm11.247 3.747a3 3 0 00-3-2.997H1.5V18h6.947a4.5 4.5 0 012.803.98l-.003-11.483zm1.503 11.485V7.5a3 3 0 013-3h6.75v13.558l-6.927-.047a4.5 4.5 0 00-2.823.971z" fill-rule="evenodd"></path></svg> Understand Basics</div>
+<p class="sd-card-text">Document, Executor, and Flow are the three fundamental concepts in Jina.</p>
+</div>
+<a class="sd-stretched-link reference internal" href="fundamentals/concepts/"><span class="doc"></span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-package-dependents" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M9.126.64a1.75 1.75 0 011.75 0l8.25 4.762c.103.06.199.128.286.206a.748.748 0 01.554.96c.023.113.035.23.035.35v3.332a.75.75 0 01-1.5 0V7.64l-7.75 4.474V22.36a.75.75 0 01-1.125.65l-8.75-5.052a1.75 1.75 0 01-.875-1.515V6.917c0-.119.012-.236.035-.35a.748.748 0 01.554-.96 1.75 1.75 0 01.286-.205L9.126.639zM1.501 7.638v8.803c0 .09.048.172.125.216l7.625 4.402v-8.947l-7.75-4.474zm8.5 3.175L2.251 6.34l7.625-4.402a.25.25 0 01.25 0l7.625 4.402-7.75 4.474z" fill-rule="evenodd"></path><path d="M21.347 17.5l-2.894-2.702a.75.75 0 111.023-1.096l4.286 4a.75.75 0 010 1.096l-4.286 4a.75.75 0 11-1.023-1.096L21.347 19h-6.633a.75.75 0 010-1.5h6.633z"></path></svg> Share Executors</div>
+<p class="sd-card-text">Learn how to share and reuse Executors from community.</p>
+</div>
+<a class="sd-stretched-link reference internal" href="advanced/hub/"><span class="doc"></span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-workflow" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M1 3a2 2 0 012-2h6.5a2 2 0 012 2v6.5a2 2 0 01-2 2H7v4.063C7 16.355 7.644 17 8.438 17H12.5v-2.5a2 2 0 012-2H21a2 2 0 012 2V21a2 2 0 01-2 2h-6.5a2 2 0 01-2-2v-2.5H8.437A2.938 2.938 0 015.5 15.562V11.5H3a2 2 0 01-2-2V3zm2-.5a.5.5 0 00-.5.5v6.5a.5.5 0 00.5.5h6.5a.5.5 0 00.5-.5V3a.5.5 0 00-.5-.5H3zM14.5 14a.5.5 0 00-.5.5V21a.5.5 0 00.5.5H21a.5.5 0 00.5-.5v-6.5a.5.5 0 00-.5-.5h-6.5z" fill-rule="evenodd"></path></svg>  Manage Remote Jina </div>
+<p class="sd-card-text">Learn how to deploy and manage Jina on remote via a RESTful interface.</p>
+</div>
+<a class="sd-stretched-link reference internal" href="advanced/daemon/"><span class="doc"></span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-thumbsup" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M12.596 2.043c-1.301-.092-2.303.986-2.303 2.206v1.053c0 2.666-1.813 3.785-2.774 4.2a1.866 1.866 0 01-.523.131A1.75 1.75 0 005.25 8h-1.5A1.75 1.75 0 002 9.75v10.5c0 .967.784 1.75 1.75 1.75h1.5a1.75 1.75 0 001.742-1.58c.838.06 1.667.296 2.69.586l.602.17c1.464.406 3.213.824 5.544.824 2.188 0 3.693-.204 4.583-1.372.422-.554.65-1.255.816-2.05.148-.708.262-1.57.396-2.58l.051-.39c.319-2.386.328-4.18-.223-5.394-.293-.644-.743-1.125-1.355-1.431-.59-.296-1.284-.404-2.036-.404h-2.05l.056-.429c.025-.18.05-.372.076-.572.06-.483.117-1.006.117-1.438 0-1.245-.222-2.253-.92-2.941-.684-.675-1.668-.88-2.743-.956zM7 18.918c1.059.064 2.079.355 3.118.652l.568.16c1.406.39 3.006.77 5.142.77 2.277 0 3.004-.274 3.39-.781.216-.283.388-.718.54-1.448.136-.65.242-1.45.379-2.477l.05-.384c.32-2.4.253-3.795-.102-4.575-.16-.352-.375-.568-.66-.711-.305-.153-.74-.245-1.365-.245h-2.37c-.681 0-1.293-.57-1.211-1.328.026-.243.065-.537.105-.834l.07-.527c.06-.482.105-.921.105-1.25 0-1.125-.213-1.617-.473-1.873-.275-.27-.774-.455-1.795-.528-.351-.024-.698.274-.698.71v1.053c0 3.55-2.488 5.063-3.68 5.577-.372.16-.754.232-1.113.26v7.78zM3.75 20.5a.25.25 0 01-.25-.25V9.75a.25.25 0 01.25-.25h1.5a.25.25 0 01.25.25v10.5a.25.25 0 01-.25.25h-1.5z" fill-rule="evenodd"></path></svg> Clean &amp; Efficient Code </div>
+<p class="sd-card-text">Write beautiful &amp; lean code with Jina.</p>
+</div>
+<a class="sd-stretched-link reference internal" href="fundamentals/clean-code/"><span class="doc"></span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-beaker" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M8 8.807V3.5h-.563a.75.75 0 010-1.5h9.125a.75.75 0 010 1.5H16v5.307l5.125 9.301c.964 1.75-.302 3.892-2.299 3.892H5.174c-1.998 0-3.263-2.142-2.3-3.892L8 8.807zM14.5 3.5h-5V9a.75.75 0 01-.093.362L7.127 13.5h9.746l-2.28-4.138A.75.75 0 0114.5 9V3.5zM4.189 18.832L6.3 15h11.4l2.111 3.832a1.125 1.125 0 01-.985 1.668H5.174a1.125 1.125 0 01-.985-1.668z" fill-rule="evenodd"></path></svg> Try Experimental Features</div>
+<p class="sd-card-text">Preview the next big thing we are building. Careful, zapping!</p>
+</div>
+<a class="sd-stretched-link reference internal" href="advanced/experimental/"><span class="doc"></span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-gift" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M3.75 3.75c0 .844.279 1.623.75 2.25H2.75A1.75 1.75 0 001 7.75v2.5c0 .698.409 1.3 1 1.582v8.418c0 .966.784 1.75 1.75 1.75h16.5A1.75 1.75 0 0022 20.25v-8.418c.591-.281 1-.884 1-1.582v-2.5A1.75 1.75 0 0021.25 6H19.5a3.75 3.75 0 00-3-6c-1.456 0-3.436.901-4.5 3.11C10.936.901 8.955 0 7.5 0a3.75 3.75 0 00-3.75 3.75zM11.22 6c-.287-3.493-2.57-4.5-3.72-4.5a2.25 2.25 0 000 4.5h3.72zm9.28 6v8.25a.25.25 0 01-.25.25h-7.5V12h7.75zm-9.25 8.5V12H3.5v8.25c0 .138.112.25.25.25h7.5zm10-10a.25.25 0 00.25-.25v-2.5a.25.25 0 00-.25-.25h-8.5v3h8.5zm-18.5 0h8.5v-3h-8.5a.25.25 0 00-.25.25v2.5c0 .138.112.25.25.25zm16-6.75A2.25 2.25 0 0116.5 6h-3.72c.287-3.493 2.57-4.5 3.72-4.5a2.25 2.25 0 012.25 2.25z" fill-rule="evenodd"></path></svg> Get yourself Jina swag</div>
+<p class="sd-card-text">Awesome swag to our awesome contributors (aka you)!</p>
+</div>
+<a class="sd-stretched-link reference external" href="https://jina.ai/blog/swag/"></a></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="join-the-community">
+<h2>Join the community<a class="headerlink" href="#join-the-community" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="genindex/"><span class="std std-ref">Index</span></a></p></li>
-<li><p><a class="reference internal" href="py-modindex/"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p>Join our 1.3K+ members <a class="reference external" href="https://slack.jina.ai">Slack community</a> to chat to our engineers about your use cases, questions, and
+support queries.</p></li>
+<li><p>Join our <a class="reference external" href="https://youtube.com/playlist?list=PL3UBBWOUVhFYRUa_gpYYKBqEAkO4sxmne">Engineering All Hands</a> meet-up to discuss your use case and learn Jina’s new features.</p>
+<ul>
+<li><p><strong>When?</strong> The second Tuesday of every month</p></li>
+<li><p><strong>Where?</strong>
+Zoom (<a class="reference external" href="https://calendar.google.com/calendar/embed?src=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&amp;ctz=Europe%2FBerlin">see our public events calendar</a>/<a class="reference external" href="https://calendar.google.com/calendar/ical/c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com/public/basic.ics">.ical</a>)
+and <a class="reference external" href="https://youtube.com/c/jina-ai">live stream on YouTube</a></p></li>
 </ul>
+</li>
+<li><p>Subscribe to the latest video tutorials on our <a class="reference external" href="https://youtube.com/c/jina-ai">YouTube channel</a></p></li>
+</ul>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<hr class="docutils"/>
+<p><a class="reference internal" href="genindex/"><span class="std std-ref">Index</span></a> <a class="reference internal" href="py-modindex/"><span class="std std-ref">Module Index</span></a></p>
+</div>
 </div>
 
       </article>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="api/jina/">
+          <a class="next-page" href="get-started/neural-search/">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">jina package</div>
+                <div class="title">What is Neural Search?</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -534,8 +689,30 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Welcome to Jina!</a><ul>
+<li><a class="reference internal" href="#next-steps">Next Steps</a></li>
+<li><a class="reference internal" href="#join-the-community">Join the community</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
@@ -547,5 +724,7 @@
     <script src="_static/scripts/main.js"></script>
     <script src="_static/clipboard.min.js"></script>
     <script src="_static/copybutton.js"></script>
+    <script src="_static/tabs.js"></script>
+    <script src="_static/design-tabs.js"></script>
     </body>
 </html>
