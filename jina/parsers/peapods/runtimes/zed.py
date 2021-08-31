@@ -70,7 +70,7 @@ The customized python modules need to be imported before loading the executor
 Note that the recommended way is to only import a single module - a simple python file, if your
 executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
 which should be structured as a python package. For more details, please see the
-`Executor cookbook <https://github.com/jina-ai/jina/blob/master/.github/2.0/cookbooks/Executor.md#structure-of-the-repository>`__
+`Executor cookbook <https://docs.jina.ai/fundamentals/executor/repository-structure/>`__
 ''',
     )
 
