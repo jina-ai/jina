@@ -42,9 +42,9 @@ fragmented, multi-vendor, generic legacy tools.
 
 ## Run Quick Demo
 
-- [👗 Fashion image search](./.github/pages/hello-world.md#-fashion-image-search): `jina hello fashion`
-- [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot): `pip install "jina[demo]" && jina hello chatbot`
-- [📰 Multimodal search](./.github/pages/hello-world.md#-multimodal-document-search): `pip install "jina[demo]" && jina hello multimodal`
+- [👗 Fashion image search](https://docs.jina.ai/get-started/hello-world/fashion/): `jina hello fashion`
+- [🤖 QA chatbot](https://docs.jina.ai/get-started/hello-world/covid-19-chatbot/): `pip install "jina[demo]" && jina hello chatbot`
+- [📰 Multimodal search](https://docs.jina.ai/get-started/hello-world/multimodal/): `pip install "jina[demo]" && jina hello multimodal`
 - 🍴 Fork the source of a demo to your folder: `jina hello fork fashion ../my-proj/`
 
 
@@ -52,9 +52,9 @@ fragmented, multi-vendor, generic legacy tools.
 
 Document, Executor, and Flow are the three fundamental concepts in Jina.
 
-- [📄 **Document**](.github/2.0/cookbooks/Document.md) is the basic data type in Jina;
-- [⚙️ **Executor**](.github/2.0/cookbooks/Executor.md) is how Jina processes Documents;
-- [🔀 **Flow**](.github/2.0/cookbooks/Flow.md) is how Jina streamlines and distributes Executors.
+- [📄 **Document**](https://docs.jina.ai/fundamentals/document/) is the basic data type in Jina;
+- [⚙️ **Executor**](https://docs.jina.ai/fundamentals/executor/) is how Jina processes Documents;
+- [🔀 **Flow**](https://docs.jina.ai/fundamentals/flow/) is how Jina streamlines and distributes Executors.
 
 Leveraging these three components, we want to build an app that **finds lines from a code snippet that are most similar to the query.**
 
