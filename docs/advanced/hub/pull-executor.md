@@ -8,6 +8,10 @@
 $ jina hub pull jinahub+docker://<UUID>[:<SECRET>][/<TAG>]
 ```
 
+```{figure} ../../../.github/animations/jina-hub-docker-pull.svg
+:align: center
+```
+
 You can find the Executor by running this command `docker images`. You can also indicate which version of the Executor you want to use by naming the `/<TAG>`.
 
 ```bash
@@ -18,6 +22,10 @@ $ jina hub pull jinahub+docker://DummyExecutor/v1.0.0
 
 ```bash
 $ jina hub pull jinahub://<UUID>[:<SECRET>][/<TAG>]
+```
+
+```{figure} ../../../.github/animations/jina-hub-pull.svg
+:align: center
 ```
 
 It will store Executor source code to `~/.jina/hub-packages`.

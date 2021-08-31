@@ -54,6 +54,10 @@ With `--private` options, the resulted Executor will be **invisible to public**.
 $ jina hub push <path_to_executor_folder> -t TAG1 -t TAG2 -f <path_to_dockerfile>
 ```
 
+```{figure} ../../../.github/animations/jina-hub-update-tag.svg
+:align: center
+```
+
 You can specify `-t` or `--tags` parameters to tag one Executor. In additional, you can specify `-f` or `--docker-file` parameters to use a specific docker file to build your Executor.
 
 If there is no `-t` parameter provided, the default tag is `latest`. And if you provide `-t` parameters, and you still want to have `latest` tag, you must write it as one `-t` parameter.
