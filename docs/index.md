@@ -14,7 +14,7 @@ Jina is a deep learning-powered search framework for building cross-/multi-modal
 
 
 ::::{grid-item-card} {octicon}`smiley;1.5em` Play 3 Hello Worlds
-:link: get_started/hello-world
+:link: get_started/hello-world/index
 :link-type: doc
 
 Try Jina on fashion image search, QA chatbot and multimodal search.
