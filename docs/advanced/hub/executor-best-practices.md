@@ -1,3 +1,4 @@
+(hub-executor-best-practices)=
 ## Hub Executor Best practices
 
 When developing Hub Executors, make sure to follow these tips:

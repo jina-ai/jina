@@ -44,3 +44,7 @@ MyExecutor/
 - `executor.py` should contain the main logic of your Executor.
 - `README.md` should describe the usage of the Executor.
 
+```{admonition} See Also
+:class: seealso
+{ref}`Hub Executor best practices <hub-executor-best-practices>`
+```
