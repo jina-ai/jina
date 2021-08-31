@@ -4,8 +4,6 @@ import os
 import pytest
 
 from jina.peapods.pods.k8slib.kubernetes_deployment import kubernetes_tools
-import kubernetes
-
 from jina import Flow
 
 
@@ -43,17 +41,8 @@ def test_no_resource_dir_specified():
 
 
 def test_template_file_read_correctly(custom_resource_dir: str):
-    mock_utils = Mock()
-    os.remove = Mock()
-    kubernetes.utils.create_from_yaml = mock_utils
-
-    kubernetes_tools.create(
+    content = kubernetes_tools._get_yaml(
         'namespace', params={}, custom_resource_dir=custom_resource_dir
     )
 
-    mock_utils.assert_called_once()
-    path = mock_utils.mock_calls[0][1][1]
-    with open(path, 'r') as file:
-        lines = file.readlines()
-    assert any(['Test' in line for line in lines])
-    os.unlink(path)
+    assert 'Test' in content
