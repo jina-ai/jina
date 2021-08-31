@@ -13,6 +13,12 @@ similar to the query.
 - [Euclidean distance](https://en.wikipedia.org/wiki/Euclidean_distance)
 ````
 
+## Client-Server architecture
+
+```{figure} ../../.github/2.0/simple-arch.svg
+:align: center
+```
+
 ## Server
 
 ### Character embedding
