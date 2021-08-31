@@ -332,6 +332,7 @@ ac_table = {
             '--k8s-mount-path',
             '--k8s-init-container-command',
             '--k8s-namespace',
+            '--k8s-custom-deployment-args',
         ],
         'client': ['--help', '--host', '--proxy', '--port', '--asyncio', '--protocol'],
         'export-api': ['--help', '--yaml-path', '--json-path', '--schema-path'],
