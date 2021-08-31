@@ -56,9 +56,12 @@ Document, Executor, and Flow are the three fundamental concepts in Jina.
 - [⚙️ **Executor**](.github/2.0/cookbooks/Executor.md) is how Jina processes Documents;
 - [🔀 **Flow**](.github/2.0/cookbooks/Flow.md) is how Jina streamlines and distributes Executors.
 
-1️⃣ Copy-paste the minimum example below and run it:
+Leveraging these three components, we want to build an app that **finds lines from a code snippet that are most similar to the query.**
 
 <sup>💡 Preliminaries: <a href="https://en.wikipedia.org/wiki/Word_embedding">character embedding</a>, <a href="https://computersciencewiki.org/index.php/Max-pooling_/_Pooling">pooling</a>, <a href="https://en.wikipedia.org/wiki/Euclidean_distance">Euclidean distance</a></sup>
+
+
+1️⃣ Copy-paste the minimum example below and run it:
 
 <img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/simple-arch.svg" alt="The architecture of a simple neural search system powered by Jina">
 
