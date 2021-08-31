@@ -43,11 +43,10 @@ h1, h2, h3 {
 }
 
 
-body[data-theme="dark"] table code {
-    background: #202020;
-    color: #d0d0d0;
-}
-
 table code {
-    background: #f5f5f5;
+    background: var(--color-inline-code-background);
+    border: 1px solid var(--color-background-border);
+    border-radius: .2em;
+    font-size: var(--font-size--small--2);
+    padding: .1em .2em;
 }
