@@ -1,4 +1,4 @@
-## Streaming remote logs
+# Streaming remote logs
 
 We can stream logs from a JinaD server for a running Flow/Pea/Pod/Workspace.
 
@@ -29,4 +29,3 @@ await client.logs(id=my_workspace_id)
 🌏 2358d9ab978a DaemonWorker8 Level SUCCESS workspace jworkspace-13305e16-aa7b-4f58-b0e9-1f420eb8be8b is updated
 ```
 
----

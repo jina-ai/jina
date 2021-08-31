@@ -1,11 +1,11 @@
-## Setup JinaD server
+# Setup JinaD server
 
 `JinaD` docker image is published
 on [Docker Hub](https://hub.docker.com/r/jinaai/jina/tags?page=1&ordering=last_updated&name=-daemon) and follows
 the [standard image versioning](https://github.com/jina-ai/jina/blob/master/RELEASE.md#docker-image-versioning) used in
 Jina.
 
-### Run
+## Run
 
 To deploy JinaD, SSH into a remote instance (e.g.- ec2 instance) and run the below command.
 
@@ -30,7 +30,7 @@ instance and `PORT` is as passed in the docker run cpmmand.
 work.
 ````
 
-#### API docs
+## API docs
 
 - [Static docs with redoc](https://api.jina.ai/daemon/)
 

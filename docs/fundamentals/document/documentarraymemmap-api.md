@@ -1,4 +1,4 @@
-## DocumentArrayMemmap
+# DocumentArrayMemmap
 
 When your `DocumentArray` object contains a large number of `Document`, holding it in memory can be very demanding. You
 may want to use `DocumentArrayMemmap` to alleviate this issue. A `DocumentArrayMemmap` stores all Documents directly on
@@ -16,7 +16,7 @@ The next table show the speed and memory consumption when writing and reading 50
 |Memory usage | 20MB | 342MB |
 |Disk storage | 14.3MB | 12.6MB |
 
-### Create `DocumentArrayMemmap`
+## Create `DocumentArrayMemmap`
 
 ```python
 from jina import DocumentArrayMemmap
@@ -24,7 +24,7 @@ from jina import DocumentArrayMemmap
 dam = DocumentArrayMemmap('./my-memmap')
 ```
 
-### Add Documents to `DocumentArrayMemmap`
+## Add Documents to `DocumentArrayMemmap`
 
 ```{code-block} python
 ---
@@ -45,7 +45,7 @@ applied first in the memory buffer and will be persisted to disk lazily (e.g whe
 the `dam` object's destructor is called). If you want to instantly persist the changed documents, you can call `save`.
 
 
-### Buffer pool
+## Buffer pool
 A fixed number of documents are kept in the memory buffer pool. The number can be configured with the constructor
 parameter `buffer_pool_size` (1000 by default). Only the `buffer_pool_size` most recently accessed, modified or added
 documents exist in the pool. Replacement of documents uses the LRU strategy.
@@ -65,7 +65,7 @@ explains the best practices when modifying documents.
 ````
 
 (modify-memmap)=
-### Modifying elements of `DocumentArrayMemmap`
+## Modifying elements of `DocumentArrayMemmap`
 
 Modifying elements of a `DocumentArrayMemmap` is possible due to the fact that accessed and modified documents are kept
 in the buffer pool:
@@ -209,16 +209,16 @@ goodbye
 
 To summarize, it's a best practice to **rely on the `dam` object to reference the docs that you modify**.
 
-### Clear a `DocumentArrayMemmap`
+## Clear a `DocumentArrayMemmap`
 
 To clear all contents in a `DocumentArrayMemmap` object, simply call `.clear()`. It will clean all content on disk.
 
-#### Pruning
+### Pruning
 
 One may notice another method `.prune()` that shares similar semantics. `.prune()` method is designed for "
 post-optimizing" the on-disk data structure of `DocumentArrayMemmap` object. It can reduce the on-disk usage.
 
-### Side-by-side vs. `DocumentArray`
+## Side-by-side vs. `DocumentArray`
 
 Accessing elements in `DocumentArrayMemmap` is _almost_ the same as `DocumentArray`, you can use integer/string index to
 access element; you can loop over a `DocumentArrayMemmap` to get all `Document`; you can use `get_attributes`
@@ -250,7 +250,7 @@ This table summarizes the interfaces of `DocumentArrayMemmap` and `DocumentArray
 | `match` (L/Rvalue) |✅|✅|
 | `visualize` |✅|✅|
 
-### Convert between `DocumentArray` and `DocumentArrayMemmap`
+## Convert between `DocumentArray` and `DocumentArrayMemmap`
 
 ```python
 from jina import Document, DocumentArray, DocumentArrayMemmap

@@ -2,7 +2,7 @@
 
 To create your Hub Executor, you just need to run this command in your terminal:
 
-```terminal
+```bash
 jina hub new
 ```
 ````{admonition} Note

@@ -1,6 +1,6 @@
 # Welcome to Jina!
 
-Jina is a framework for building cross-/multi-modal (e.g. text, images, video, audio) search systems on the cloud. It allows you to build neural search applications in just minutes.
+Jina is a framework for building neural search applications in just minutes.
 
 1. Make sure that you have Python 3.7+ installed on Linux/MacOS.
 2. Install Jina: ``pip install jina``
@@ -16,7 +16,7 @@ Now that you’re set up, let’s dive into more of how Jina works and how to bu
 
 
 ::::{grid-item-card} {octicon}`smiley;1.5em` Play 3 Hello Worlds
-:link: get_started/hello-world/index
+:link: get-started/hello-world/index
 :link-type: doc
 
 Try Jina on fashion image search, QA chatbot and multimodal search.
@@ -55,8 +55,9 @@ Learn how to deploy and manage Jina on remote via a RESTful interface.
 Write beautiful & lean code with Jina.
 ::::
 
-::::{grid-item-card} {octicon}`beaker;1.5em` Experimental features
-:link: 
+::::{grid-item-card} {octicon}`beaker;1.5em` Try Experimental Features
+:link: advanced/experimental/index
+:link-type: doc
 
 Preview the next big thing we are building. Careful, zapping!
 ::::
@@ -85,9 +86,9 @@ Awesome swag to our awesome contributors (aka you)!
 :caption: Get started
 :hidden:
 
-get_started/neural-search
-get_started/install
-get_started/hello-world/index
+get-started/neural-search
+get-started/install
+get-started/hello-world/index
 ```
 
 ```{toctree}
@@ -110,6 +111,7 @@ fundamentals/practice
 
 advanced/hub/index
 advanced/daemon/index
+advanced/experimental/index
 ```
 
 ```{toctree}
@@ -128,6 +130,9 @@ proto/index
 
 Issue tracker <https://github.com/jina-ai/jina/issues>
 Slack community <https://slack.jina.ai>
+Youtube <http://youtube.com/c/jina-ai>
+Twitter @JinaAI_ <https://twitter.com/JinaAI_>
+LinkedIn <https://www.linkedin.com/company/jinaai/>
 Company website <https://jina.ai>
 
 ```

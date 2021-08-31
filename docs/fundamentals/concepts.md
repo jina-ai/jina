@@ -3,9 +3,9 @@
 Document, Executor, and Flow are the three fundamental concepts in Jina. Understanding these will help build your
 search.
 
-- [**Document**](Document.md) is the basic data type in Jina;
-- [**Executor**](Executor.md) is how Jina processes Documents;
-- [**Flow**](Flow.md) is how Jina streamlines and scales Executors.
+- **Document** is the basic data type in Jina;
+- **Executor** is how Jina processes Documents;
+- **Flow** is how Jina streamlines and scales Executors.
 
 *Learn them all, nothing more, you are good to go.*
 

@@ -134,7 +134,7 @@ f.add(host='localhost', port_in=12345, external=True)
 f.add(host='123.45.67.89', port_in=12345, external=True)
 ```
 
-##### Add & spawn a remote `Executor` via `jinad`
+### Add & spawn a remote `Executor` via `jinad`
 
 In the example below, the Executor with
 the `host`

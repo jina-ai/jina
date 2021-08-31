@@ -1,4 +1,4 @@
-## Create remote Executors
+# Create remote Executors
 
 You can use the below code by passing `host`
 and `port_expose` to an executor with a Flow. Internally it uses `JinaD` for remote management.
@@ -16,7 +16,7 @@ with f:
     ...
 ```
 
-##### Get all accepted arguments
+## Get all accepted arguments
 
 ```python
 # Learn about payload
@@ -42,7 +42,7 @@ client.pods.arguments()
 }
 ```
 
-##### Create a Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_create_peas_post">redoc</a>)
+## Create a Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_create_peas_post">redoc</a>)
 
 ```python
 # To create a Pea
@@ -54,7 +54,7 @@ client.pods.create(workspace_id=workspace_id, payload=payload)
 # jpod-44f8aeac-726e-4381-b5ff-9ae01e217b6d
 ```
 
-##### Get details of a Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_status_peas__id__get">redoc</a>)
+## Get details of a Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_status_peas__id__get">redoc</a>)
 
 ```python
 # Pea
@@ -95,7 +95,7 @@ client.pods.get(pod_id)
 ```
 
 
-##### Terminate a Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_delete_peas__id__delete">redoc</a>)
+## Terminate a Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_delete_peas__id__delete">redoc</a>)
 
 ```python
 # Pea
