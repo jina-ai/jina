@@ -17,11 +17,9 @@
 <a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-1.2K%2B-blueviolet?logo=slack&amp;logoColor=white"></a>
 </p>
 
-<!-- start elevator-pitch -->
 
-Jina<sup><a href=".github/pronounce-jina.mp3">`🔊`</a></sup> allows you to build search-as-a-service powered by deep learning in just minutes.
+Jina<sup><a href=".github/pronounce-jina.mp3">`🔊`</a></sup> is a framework for building neural search applications in just minutes.
 
-<!-- end elevator-pitch -->
 
 🌌 **All data types** - Large-scale indexing and querying of any kind of unstructured data: video, image, long/short text, music, source code, PDF, etc.
 
@@ -34,6 +32,13 @@ containerizing, streaming, paralleling, sharding, async scheduling, HTTP/gRPC/We
 fragmented, multi-vendor, generic legacy tools.
 
 
+## Install
+
+- via PyPI: `pip install -U jina`
+- via Docker: `docker run jinaai/jina:latest`
+- [More install options](https://docs.jina.ai/get-started/install/)
+
+## [Documentation](https://docs.jina.ai)
 
 ## Run Quick Demo
 
@@ -42,30 +47,8 @@ fragmented, multi-vendor, generic legacy tools.
 - [📰 Multimodal search](./.github/pages/hello-world.md#-multimodal-document-search): `pip install "jina[demo]" && jina hello multimodal`
 - 🍴 Fork the source of a demo to your folder: `jina hello fork fashion ../my-proj/`
 
-## Install
 
-- via PyPI: `pip install -U jina`
-- via Docker: `docker run jinaai/jina:latest`
-
-<details>
-<summary>More installation options</summary>
-
-| On x86/64, arm64/v6/v7 | Linux/macOS with Python 3.7/3.8/3.9 | Docker Users |
-| --- | --- | --- |
-| Minimum <br>(no HTTP, WebSocket, Docker support) | `JINA_PIP_INSTALL_CORE=1 pip install jina` | `docker run jinaai/jina:latest` |
-| Minimum but more performant <br>(use `uvloop` & `lz4`) | `JINA_PIP_INSTALL_PERF=1 pip install jina` | `docker run jinaai/jina:latest-perf` |
-| With <a href="https://api.jina.ai/daemon/">Daemon</a> | `pip install "jina[daemon]"` | [Run JinaD](.github/2.0/cookbooks/Daemon.md#run) |
-| Full development dependencies | `pip install "jina[devel]"` | `docker run jinaai/jina:latest-devel` |
-| Pre-release<br>(all tags above can be added)| <sub>`pip install --pre jina` | `docker run jinaai/jina:master` |
-
-
-Version identifiers [are explained here](https://github.com/jina-ai/jina/blob/master/RELEASE.md). Jina can run
-on [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We welcome the community
-to help us with [native Windows support](https://github.com/jina-ai/jina/issues/1252).
-
-</details>
-
-## Get Started
+## Build Your First Jina App
 
 Document, Executor, and Flow are the three fundamental concepts in Jina.
 
@@ -73,9 +56,12 @@ Document, Executor, and Flow are the three fundamental concepts in Jina.
 - [⚙️ **Executor**](.github/2.0/cookbooks/Executor.md) is how Jina processes Documents;
 - [🔀 **Flow**](.github/2.0/cookbooks/Flow.md) is how Jina streamlines and distributes Executors.
 
-1️⃣ Copy-paste the minimum example below and run it:
+Leveraging these three components, we want to build an app that **finds lines from a code snippet that are most similar to the query.**
 
 <sup>💡 Preliminaries: <a href="https://en.wikipedia.org/wiki/Word_embedding">character embedding</a>, <a href="https://computersciencewiki.org/index.php/Max-pooling_/_Pooling">pooling</a>, <a href="https://en.wikipedia.org/wiki/Euclidean_distance">Euclidean distance</a></sup>
+
+
+1️⃣ Copy-paste the minimum example below and run it:
 
 <img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/simple-arch.svg" alt="The architecture of a simple neural search system powered by Jina">
 
@@ -155,39 +141,6 @@ c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
 ```
 <sup>😔 Doesn't work? Our bad! <a href="https://github.com/jina-ai/jina/issues/new?assignees=&labels=kind%2Fbug&template=---found-a-bug-and-i-solved-it.md&title=">Please report it here.</a></sup>
 
-
-## Read Tutorials
-
-- 🧠 [What is "Neural Search"?](.github/2.0/neural-search.md)
-- 📄 `Document` & `DocumentArray`: the basic data type in Jina.
-    - [Minimum Working Example](.github/2.0/cookbooks/Document.md#minimum-working-example)
-    - [`Document` API](.github/2.0/cookbooks/Document.md#document-api)
-    - [`DocumentArray` API](.github/2.0/cookbooks/Document.md#documentarray-api)
-    - [`DocumentArrayMemmap` API](.github/2.0/cookbooks/Document.md#documentarraymemmap-api)
-- ⚙️ `Executor`: how Jina processes Documents.
-    - [Minimum working example](.github/2.0/cookbooks/Executor.md#minimum-working-example)
-    - [`Executor` API](.github/2.0/cookbooks/Executor.md#executor-api)
-    - [`Executor` Built-in Features](.github/2.0/cookbooks/Executor.md#executor-built-in-features)
-    - [Use Tensorflow, Pytorch, Pytorch Lightning, Fastai, Mindspore, PaddlePaddle, Scikit-learn in `Executor`](.github/2.0/cookbooks/Executor.md#executors-in-action)
-- 🔀 `Flow`: how Jina streamlines and distributes Executors.
-    - [Minimum Working Example](.github/2.0/cookbooks/Flow.md#minimum-working-example)
-    - [`Flow` API](.github/2.0/cookbooks/Flow.md#flow-api)
-- 🤹 Serving Jina as a Service
-    - [Minimum Working Example](.github/2.0/cookbooks/Serving.md#minimum-working-example)
-    - [`Flow`-as-a-Service](.github/2.0/cookbooks/Serving.md#flow-as-a-service)
-    - [Deliver OAS3.0 Friendly API](.github/2.0/cookbooks/Serving.md#extend-http-interface)
-- 👹️ `JinaD`: create & manage remote Jina Executors & Flows.
-  - [Minimum Working Example](.github/2.0/cookbooks/Daemon.md#minimum-working-example)
-  - [JinaD Server & Client](.github/2.0/cookbooks/Daemon.md#setup-jinad-server)
-  - [Create Remote Executors](.github/2.0/cookbooks/Daemon.md#create-a-remote-executor)
-  - [Create Remote Flows](.github/2.0/cookbooks/Daemon.md#create-remote-flows)
-- 📓 [Developer Reference](https://docs.jina.ai)
-- 🧼 [Clean & Efficient Coding in Jina](.github/2.0/cookbooks/CleanCode.md)
-- 🚶‍ Walkthroughs
-  - [How to Build Hello World Chatbot](https://jina.ai/blog/tutorial)
-  - [Create Your Own Executor](https://jina.ai/blog/tutorial-executors)
-
-    
 ## Support
 
 - Join our [Slack community](https://slack.jina.ai) to chat to our engineers about your use cases, questions, and

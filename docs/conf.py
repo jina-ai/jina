@@ -61,7 +61,6 @@ html_theme_options = {
         "color-brand-primary": "#FBCB67",
         "color-brand-content": "#FBCB67",
     },
-    "show_sphinx": False
 }
 
 html_static_path = ['_static']
@@ -69,7 +68,8 @@ html_extra_path = ['html_extra']
 html_css_files = ['main.css']
 htmlhelp_basename = slug
 html_show_sourcelink = False
-html_title = 'Welcome to Jina'
+html_title = 'Jina Documentation'
+html_favicon = '_static/favicon.ico'
 
 latex_documents = [(master_doc, f'{slug}.tex', project, author, 'manual')]
 man_pages = [(master_doc, slug, project, [author], 1)]
@@ -88,14 +88,18 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinxcontrib.apidoc',
     'sphinxarg.ext',
-    'recommonmark',
     'sphinx_markdown_tables',
     'sphinx_copybutton',
     'sphinx_sitemap',
     'sphinx.ext.intersphinx',
     'sphinxext.opengraph',
     'notfound.extension',
+    'myst_parser',
+    'sphinx_design',
+    'sphinx_inline_tabs',
 ]
+
+myst_enable_extensions = ['colon_fence']
 
 # -- Custom 404 page
 
