@@ -74,6 +74,7 @@ fundamentals/document/index
 fundamentals/executor/index
 fundamentals/flow/index
 fundamentals/clean-code
+fundamentals/practice
 ```
 
 

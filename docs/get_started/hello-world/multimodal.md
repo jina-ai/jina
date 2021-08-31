@@ -8,7 +8,7 @@ A multimodal-document contains multiple data types, e.g. a PDF document often co
 build a multimodal search solution in just minutes. To run our minimum multimodal document search demo:
 
 ```bash
-pip install "jina[multimodal]"
+pip install "jina[demo]"
 
 jina hello multimodal
 ```

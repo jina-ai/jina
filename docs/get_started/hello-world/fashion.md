@@ -13,6 +13,7 @@ A simple image neural search demo for [Fashion-MNIST](https://hanxiao.io/2018/09
 extra dependencies needed, simply run:
 
 ```bash
+pip install "jina[demo]"
 jina hello fashion  # more options in --help
 ```
 

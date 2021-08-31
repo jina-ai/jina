@@ -7,7 +7,7 @@
 For NLP engineers, we provide a simple chatbot demo for answering Covid-19 questions. To run that:
 
 ```bash
-pip install "jina[chatbot]"
+pip install "jina[demo]"
 
 jina hello chatbot
 ```
