@@ -10,5 +10,6 @@ fi
 pip install pytest
 pip install numpy
 
-pytest -sv ./tests/k8s
+pytest -sv ./tests/k8s/test_k8s.py
+pytest -sv ./tests/k8s/test_custom_resource_dir.py
 
