@@ -3,7 +3,6 @@ import time
 
 import numpy as np
 import pytest
-import requests
 
 from jina import Document, Client, __default_host__
 from jina.logging.logger import JinaLogger
@@ -12,16 +11,14 @@ from daemon.clients import JinaDClient
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
 
-JINAD_PORT = '8000'
-JINAD_PORT_DBMS = '8001'
-JINAD_PORT_QUERY = '8001'
-REST_PORT_DBMS = '9000'
-REST_PORT_QUERY = '9001'
-
-DUMP_PATH_DOCKER = '/workspace/dump'
+HOST = __default_host__
+JINAD_PORT = 8000
+REST_PORT_DBMS = 9000
+REST_PORT_QUERY = 9001
+DUMP_PATH = '/jinad_workspace/dump'
 
 logger = JinaLogger('test-dump')
-client = JinaDClient(host='localhost', port=JINAD_PORT)
+client = JinaDClient(host=HOST, port=JINAD_PORT)
 
 SHARDS = 3
 EMB_SIZE = 10
@@ -41,22 +38,17 @@ def executor_images():
     os.system(f"docker rmi $(docker images | grep 'query-executor')")
 
 
-def _path_size_remote(this_dump_path, container_id):
-    os.system(
-        f'docker exec {container_id} /bin/bash -c "du -sh {this_dump_path}" > dump_size.txt'
-    )
-    contents = open('dump_size.txt').readline()
-    dir_size = float(contents.split('K')[0].split('M')[0])
-    return dir_size
-
-
 def _create_flows():
     workspace_id = client.workspaces.create(paths=[cur_dir])
     dbms_flow_id = client.flows.create(
-        workspace_id=workspace_id, filename='flow_dbms.yml'
+        workspace_id=workspace_id,
+        filename='flow_dbms.yml',
+        envs={'JINAD_WORKSPACE': f'/tmp/jinad/{workspace_id}'},
     )
     query_flow_id = client.flows.create(
-        workspace_id=workspace_id, filename='flow_query.yml'
+        workspace_id=workspace_id,
+        filename='flow_query.yml',
+        envs={'JINAD_WORKSPACE': f'/tmp/jinad/{workspace_id}'},
     )
     return dbms_flow_id, query_flow_id, workspace_id
 
@@ -69,91 +61,44 @@ def test_dump_dbms_remote(executor_images, docker_compose):
 
     dbms_flow_id, query_flow_id, workspace_id = _create_flows()
 
-    # r = Client(host=__default_host__, port=REST_PORT_QUERY).search(
-    #     inputs=[doc for doc in docs[:nr_search]], return_results=True
-    # )
-    # print(r)
-    r = _send_rest_request(
-        REST_PORT_QUERY,
-        'search',
-        'post',
-        [doc.dict() for doc in docs[:nr_search]],
+    # check that there are no matches in Query Flow
+    r = Client(host=HOST, port=REST_PORT_QUERY, protocol='http').search(
+        inputs=[doc for doc in docs[:nr_search]], return_results=True
     )
-    # TODO some times it was None
-    assert (
-        r['data']['docs'][0].get('matches') is None
-        or r['data']['docs'][0].get('matches') == []
+    assert r[0].data.docs[0].matches is None or len(r[0].data.docs[0].matches) == 0
+
+    # index on DBMS flow
+    Client(host=HOST, port=REST_PORT_DBMS, protocol='http').index(
+        inputs=docs, return_results=True
     )
 
-    _send_rest_request(REST_PORT_DBMS, 'index', 'post', [doc.dict() for doc in docs])
-
-    _send_rest_request(
-        REST_PORT_DBMS,
-        'post',
-        'post',
-        data=[],
-        exec_endpoint='/dump',
-        params={'shards': SHARDS, 'dump_path': DUMP_PATH_DOCKER},
+    # dump data for DBMS flow
+    Client(host=HOST, port=REST_PORT_DBMS, protocol='http').post(
+        on='/dump',
+        parameters={'shards': SHARDS, 'dump_path': DUMP_PATH},
         target_peapod='indexer_dbms',
     )
 
-    container_id = client.flows.get(dbms_flow_id)['metadata']['container_id']
-    dir_size = _path_size_remote(DUMP_PATH_DOCKER, container_id=container_id)
-    assert dir_size > 0
-    logger.info(f'dump path size size: {dir_size}')
-
-    # jinad is used for ctrl requests
+    # rolling_update on Query Flow
     client.flows.update(
         id=query_flow_id,
         kind='rolling_update',
         pod_name='indexer_query',
-        dump_path=DUMP_PATH_DOCKER,
+        dump_path=DUMP_PATH,
     )
 
-    # data request goes to client
-    r = _send_rest_request(
-        REST_PORT_QUERY,
-        'search',
-        'post',
-        [doc.dict() for doc in docs[:nr_search]],
-        params={'top_k': 100},
+    # validate that there are matches now
+    r = Client(host=HOST, port=REST_PORT_QUERY, protocol='http').search(
+        inputs=[doc for doc in docs[:nr_search]],
+        return_results=True,
+        parameters={'top_k': 10},
     )
-    for doc in r['data']['docs']:
-        assert len(doc.get('matches')) == nr_docs
+    for doc in r[0].data.docs:
+        assert len(doc.matches) == 10
 
-    assert client.flows.delete(dbms_flow_id)
-    assert client.flows.delete(query_flow_id)
-    assert client.workspaces.delete(workspace_id)
-
-
-def _send_rest_request(
-    port,
-    endpoint,
-    method,
-    data,
-    exec_endpoint=None,
-    params=None,
-    target_peapod=None,
-    timeout=13,
-    ip='0.0.0.0',
-):
-    json = {'data': data}
-    if params:
-        json['parameters'] = params
-    if target_peapod:
-        json['target_peapod'] = target_peapod
-    url = f'http://{ip}:{port}/{endpoint}'
-    if endpoint == 'post':
-        json['exec_endpoint'] = exec_endpoint
-    logger.info(f'sending {method} request to {url}')
-    r = getattr(requests, method)(url, json=json, timeout=timeout)
-
-    if r.status_code != 200:
-        # TODO status_code should be 201 for index
-        raise Exception(
-            f'api request failed, url: {url}, status: {r.status_code}, content: {r.content} data: {data}'
-        )
-    return r.json()
+    # assert client.flows.delete(dbms_flow_id)
+    # assert client.flows.delete(query_flow_id)
+    # assert client.workspaces.delete(workspace_id)
 
 
 def _get_documents(nr=10, index_start=0, emb_size=7):

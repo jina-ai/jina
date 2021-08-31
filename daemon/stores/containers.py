@@ -4,7 +4,7 @@ import asyncio
 from copy import deepcopy
 from platform import uname
 from http import HTTPStatus
-from typing import Dict, TYPE_CHECKING
+from typing import Dict, TYPE_CHECKING, Union
 
 import aiohttp
 
@@ -19,6 +19,7 @@ from ..excepts import (
 )
 from ..helper import if_alive, id_cleaner, error_msg_from
 from ..models import DaemonID
+from ..models.ports import PortMappings
 from ..models.enums import UpdateOperation, IDLiterals
 from ..models.containers import (
     ContainerArguments,
@@ -137,7 +138,7 @@ class ContainerStore(BaseStore):
         id: DaemonID,
         workspace_id: DaemonID,
         params: 'BaseModel',
-        ports: Dict,
+        ports: Union[Dict, PortMappings],
         envs: Dict[str, str] = {},
         **kwargs,
     ) -> DaemonID:
@@ -164,7 +165,10 @@ class ContainerStore(BaseStore):
                 )
 
             partiald_port = random_port()
-            ports.update({f'{partiald_port}/tcp': partiald_port})
+            dockerports = (
+                ports.docker_ports if isinstance(ports, PortMappings) else ports
+            )
+            dockerports.update({f'{partiald_port}/tcp': partiald_port})
             uri = self._uri(partiald_port)
             command = self._command(partiald_port, workspace_id)
             params = params.dict(exclude={'log_config'})
@@ -175,23 +179,26 @@ class ContainerStore(BaseStore):
                     [
                         '{:15s} -> {:15s}'.format('id', id),
                         '{:15s} -> {:15s}'.format('workspace', workspace_id),
-                        '{:15s} -> {:15s}'.format('ports', str(ports)),
+                        '{:15s} -> {:15s}'.format('dockerports', str(dockerports)),
                         '{:15s} -> {:15s}'.format('command', command),
                     ]
                 )
             )
 
-            container, network, ports = Dockerizer.run(
+            container, network, dockerports = Dockerizer.run(
                 workspace_id=workspace_id,
                 container_id=id,
                 command=command,
-                ports=ports,
+                ports=dockerports,
                 envs=envs,
             )
             if not await self.ready(uri):
                 raise PartialDaemonConnectionException(
                     f'{id.type.title()} creation failed, couldn\'t reach the container at {uri} after 10secs'
                 )
+            kwargs.update(
+                {'ports': ports.dict()} if isinstance(ports, PortMappings) else {}
+            )
             object = await self._add(uri=uri, params=params, **kwargs)
         except Exception as e:
             self._logger.error(f'{self._kind} creation failed as {e}')
@@ -217,7 +224,7 @@ class ContainerStore(BaseStore):
                     container_name=container.name,
                     image_id=id_cleaner(container.image.id),
                     network=network,
-                    ports=ports,
+                    ports=dockerports,
                     uri=uri,
                 ),
                 arguments=ContainerArguments(

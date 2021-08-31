@@ -7,6 +7,7 @@ pods:
   - name: indexer_query
     uses: docker://query-executor
     replicas: 2
-    parallel: 3
+    parallel: 2
     polling: all
     timeout_ready: '-1'
+    volumes: $JINAD_WORKSPACE:/jinad_workspace

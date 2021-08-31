@@ -173,7 +173,6 @@ class ContainerRuntime(ZMQRuntime):
                 'gpus',
             },
         )
-
         img_not_found = False
 
         try:
