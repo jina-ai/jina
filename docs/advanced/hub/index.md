@@ -1,16 +1,17 @@
 (hub-cookbook)=
 # Share Executors via Hub
-Jina Hub is a one-stop shop for Executors. By using Hub you can pull prebuilt Executors to dramatically reduce the 
-effort and complexity needed in your search system, or push your own custom Executors to share privately or publicly.
 
-Sharing an Executor consists of the following steps:
+Now you understand that `Executor` is a building block in Jina. The following questions arise naturally:
 
-1) {ref}`Create a hub Executor <create-hub-executor>`
-1) {ref}`Push Executor <push-executor>`
-1) Hubble builds and publish the executor
-1) {ref}`Pull <pull-executor>` and {ref}`use <use-hub-executor>` Executor
+- Can I reuse my Executor in another project?
+- Can I share my Executor to my colleague?
+- Can I simply use others' Executor without implementing it?
 
-```{figure} ../../../.github/hub-workflow.png
+Yes! This is exactly the purpose of Jina Hub - a one-stop shop for Executors. By using Hub you can pull prebuilt Executors to dramatically reduce the effort and complexity needed in your search system, or push your own custom Executors to share privately or publicly.
+
+The whole user journey looks like below:
+
+```{figure} ../../../.github/hub-system.svg
 :align: center
 ```
 
