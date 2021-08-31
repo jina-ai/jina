@@ -58,13 +58,13 @@ Write beautiful & lean code with Jina.
 ::::{grid-item-card} {octicon}`beaker;1.5em` Experimental features
 :link: 
 
-Preview the next big thing we are building.
+Preview the next big thing we are building. Careful, zapping!
 ::::
 
-::::{grid-item-card} {octicon}`gift;1.5em` Get yourself some swag
+::::{grid-item-card} {octicon}`gift;1.5em` Get yourself Jina swag
 :link: https://jina.ai/blog/swag/
 
-Awesome Jina swag to awesome our contributors (aka you)!
+Awesome swag to our awesome contributors (aka you)!
 ::::
 
 :::::
@@ -124,7 +124,7 @@ proto/index
 :caption: Support
 :hidden:
 
-support/changelog.md
+support/changelog\
 Issue tracker <https://github.com/jina-ai/jina/issues>
 Slack community <https://slack.jina.ai>
 Company website <https://jina.ai>
