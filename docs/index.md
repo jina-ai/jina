@@ -1,11 +1,13 @@
 # Welcome to Jina!
 
-Jina is a deep learning-powered search framework for building cross-/multi-modal (e.g. text, images, video, audio) search systems on the cloud. It allows you to build neural search-as-a-service in just minutes.
+Jina is a framework for building cross-/multi-modal (e.g. text, images, video, audio) search systems on the cloud. It allows you to build neural search applications in just minutes.
 
-1. Make sure that you have Python 3.7+ installed.
+1. Make sure that you have Python 3.7+ installed on Linux/MacOS.
 2. Install Jina: ``pip install jina``
 3. Run hello-world demos: ``jina hello fashion``
 4. That’s it! In the next few seconds the demo will open in a new page in your browser.
+
+Now that you’re set up, let’s dive into more of how Jina works and how to build great apps.
 
 ## Next Steps
 
@@ -52,8 +54,31 @@ Learn how to deploy and manage Jina on remote via a RESTful interface.
 
 Write beautiful & lean code with Jina.
 ::::
+
+::::{grid-item-card} {octicon}`beaker;1.5em` Experimental features
+:link: 
+
+Preview the next big thing we are building. Careful, zapping!
+::::
+
+::::{grid-item-card} {octicon}`gift;1.5em` Get yourself Jina swag
+:link: https://jina.ai/blog/swag/
+
+Awesome swag to our awesome contributors (aka you)!
+::::
+
 :::::
 
+## Join the community
+
+- Join our 1.3K+ members [Slack community](https://slack.jina.ai) to chat to our engineers about your use cases, questions, and
+  support queries.
+- Join our [Engineering All Hands](https://youtube.com/playlist?list=PL3UBBWOUVhFYRUa_gpYYKBqEAkO4sxmne) meet-up to discuss your use case and learn Jina's new features.
+    - **When?** The second Tuesday of every month
+    - **Where?**
+      Zoom ([see our public events calendar](https://calendar.google.com/calendar/embed?src=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&ctz=Europe%2FBerlin)/[.ical](https://calendar.google.com/calendar/ical/c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com/public/basic.ics))
+      and [live stream on YouTube](https://youtube.com/c/jina-ai)
+- Subscribe to the latest video tutorials on our [YouTube channel](https://youtube.com/c/jina-ai)
 
 
 ```{toctree}
@@ -73,6 +98,7 @@ fundamentals/concepts
 fundamentals/document/index
 fundamentals/executor/index
 fundamentals/flow/index
+fundamentals/practice-your-learning
 fundamentals/clean-code
 fundamentals/practice
 ```
@@ -97,17 +123,16 @@ proto/index
 ```
 
 ```{toctree}
-:caption: Links
+:caption: Support
 :hidden:
 
-Showcase <https://showcase.jina.ai>
-GitHub repository <https://github.com/jina-ai/jina>
+Issue tracker <https://github.com/jina-ai/jina/issues>
 Slack community <https://slack.jina.ai>
 Company website <https://jina.ai>
 
 ```
 
-{ref}`genindex` 
 
-{ref}`modindex`
+---
+{ref}`genindex` {ref}`modindex`
 

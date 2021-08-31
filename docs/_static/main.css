@@ -41,3 +41,12 @@ h1, h2, h3 {
 .tab-set > input:checked + label:hover {
     border-color: var(--tabs--label-text--active);
 }
+
+
+table code {
+    background: var(--color-inline-code-background);
+    border: 1px solid var(--color-background-border);
+    border-radius: .2em;
+    font-size: var(--font-size--small--2);
+    padding: .1em .2em;
+}
