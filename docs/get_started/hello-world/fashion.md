@@ -42,51 +42,47 @@ The whole process takes about 1 minute.
 
 You can run the `jina hello fashion` demo using a different embedding method. To do so:
 
--
-    1) Clone the repository with  `jina hello fork fashion <your_project_folder>`. In `your_project_folder` you will
-       have a file `app.py`  that you can change to leverage other embedding methods.
+1) Clone the repository with  `jina hello fork fashion <your_project_folder>`. In `your_project_folder` you will
+   have a file `app.py`  that you can change to leverage other embedding methods.
 
--
-    2) Change lines 74 to 79 from `app.py` to define a different `Flow`. For example, you can
-       use  [ImageTorchEncoder](https://github.com/jina-ai/executor-image-torch-encoder)
-       changing
+2) Change lines 74 to 79 from `app.py` to define a different `Flow`. For example, you can
+   use  [ImageTorchEncoder](https://github.com/jina-ai/executor-image-torch-encoder)
+   changing
 
-        ```python
-       f = (
-            Flow()
-            .add(uses=MyEncoder, parallel=2)
-            .add(uses=MyIndexer, workspace=args.workdir)
-            .add(uses=MyEvaluator)
-            )
-        ```
+   ```python
+   f = (Flow()
+      .add(uses=MyEncoder, parallel=2)
+      .add(uses=MyIndexer, workspace=args.workdir)
+      .add(uses=MyEvaluator)
+   )
+   ```
 
-       with the flow
+   with the flow
 
-       ```python
-       f = (
-           Flow()
-           .add(uses='jinahub+docker://ImageTorchEncoder',
-                uses_with={'model_name': 'alexnet'},
-                parallel=2)
-           .add(uses=MyConverter)
-           .add(uses=MyIndexer, workspace=args.workdir)
-           .add(uses=MyEvaluator)
-           )
-       ```
-       ````{admonition} Note
-       :class: note
-       The line `uses='jinahub+docker://ImageTorchEncoder` allows downloading
-       `ImageTorchEncoder` from Jina Hub and use it in the `Flow`.
-       ````
+   ```python
+   f = (
+      Flow()
+      .add(uses='jinahub+docker://ImageTorchEncoder',
+         uses_with={'model_name': 'alexnet'},
+         parallel=2)
+      .add(uses=MyConverter)
+      .add(uses=MyIndexer, workspace=args.workdir)
+      .add(uses=MyEvaluator)
+      )
+   ```
+   ````{admonition} Note
+   :class: note
+   The line `uses='jinahub+docker://ImageTorchEncoder` allows downloading
+   `ImageTorchEncoder` from Jina Hub and use it in the `Flow`.
+   ````
        
-       ````{admonition} Note
-       :class: note
-       The line `uses_with={'model_name': 'alexnet'}` allows a user to specify an attribute of the
-       class `ImageTorchEncoder`. In this case attribute `'model_name'` takes value `'alexnet'`.
-       ````
-
--
-    3) Run `python <your_project_folder>/app.py` to execute.
+   ````{admonition} Note
+   :class: note
+   The line `uses_with={'model_name': 'alexnet'}` allows a user to specify an attribute of the
+   class `ImageTorchEncoder`. In this case attribute `'model_name'` takes value `'alexnet'`.
+   ````
+   
+3) Run `python <your_project_folder>/app.py` to execute.
     
 
 ````{admonition} See Also

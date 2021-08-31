@@ -25,13 +25,11 @@ you through this demo.
 You can run the `jina hello multimodal` demo using a different embedding method. For example, you can
 use  [ImageTorchEncoder](https://github.com/jina-ai/executor-image-torch-encoder). To do so:
 
--
-    1) Clone the repository with  `jina hello fork multimodal <your_project_folder>`. In the repository you will
-       have `flow-index.yml` and `flow-search.yml`  which you can change to leverage other embedding methods.
-
--
-    2) Change `<your_project_folder>/flow-index.yml` with
-```yaml
+1) Clone the repository with  `jina hello fork multimodal <your_project_folder>`. In the repository you will
+   have `flow-index.yml` and `flow-search.yml`  which you can change to leverage other embedding methods.
+    
+2) Change `<your_project_folder>/flow-index.yml` with
+   ```yaml
    jtype: Flow
    version: '1'
    executors:
@@ -90,8 +88,8 @@ use  [ImageTorchEncoder](https://github.com/jina-ai/executor-image-torch-encoder
        needs: segment
      - name: joinAll
        needs: [ textIndexer, imageIndexer, keyValueIndexer ]
-```
-and `flow-search.yml` with
+   ```
+   and `flow-search.yml` with
    ```yaml
    jtype: Flow
    version: '1'
@@ -154,7 +152,7 @@ and `flow-search.yml` with
              - my_executors.py
        needs: weightedRanker
    ```
-- 3) Run `python <your_project_folder>/app.py` to execute.
+3) Run `python <your_project_folder>/app.py` to execute.
     
 
 ````{admonition} See Also
