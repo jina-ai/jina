@@ -14,23 +14,23 @@ from jina.types.message.common import ControlMessage
 
 def test_connection_list(mocker):
     connection_list = ConnectionList(port=1234)
-    assert not connection_list.has_connection(ip='1.1.1.1')
+    assert not connection_list.has_connection(address='1.1.1.1')
     first_connection = mocker.Mock()
-    connection_list.add_connection(ip='1.1.1.1', connection=first_connection)
-    assert connection_list.has_connection(ip='1.1.1.1')
-    assert not connection_list.has_connection(ip='1.1.1.2')
+    connection_list.add_connection(address='1.1.1.1', connection=first_connection)
+    assert connection_list.has_connection(address='1.1.1.1')
+    assert not connection_list.has_connection(address='1.1.1.2')
 
     second_connection = mocker.Mock()
-    connection_list.add_connection(ip='1.1.1.2', connection=second_connection)
-    assert connection_list.has_connection(ip='1.1.1.1')
-    assert connection_list.has_connection(ip='1.1.1.2')
+    connection_list.add_connection(address='1.1.1.2', connection=second_connection)
+    assert connection_list.has_connection(address='1.1.1.1')
+    assert connection_list.has_connection(address='1.1.1.2')
 
-    connection_list.remove_connection(ip='1.1.1.2')
-    assert not connection_list.has_connection(ip='1.1.1.2')
+    connection_list.remove_connection(address='1.1.1.2')
+    assert not connection_list.has_connection(address='1.1.1.2')
 
     third_connection = mocker.Mock()
-    connection_list.add_connection(ip='1.1.1.2', connection=second_connection)
-    connection_list.add_connection(ip='1.1.1.3', connection=third_connection)
+    connection_list.add_connection(address='1.1.1.2', connection=second_connection)
+    connection_list.add_connection(address='1.1.1.3', connection=third_connection)
 
     assert connection_list.get_connection() == first_connection
     assert connection_list.get_connection() == second_connection

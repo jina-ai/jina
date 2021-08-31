@@ -100,6 +100,13 @@ def set_gateway_parser(parser=None):
     )
 
     parser.add_argument(
+        '--deployments',
+        help='Used for passing K8s deployment information to Pods'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+
+    parser.add_argument(
         '--dynamic-routing',
         action='store_true',
         default=True,

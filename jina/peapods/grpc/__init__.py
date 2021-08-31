@@ -6,7 +6,7 @@ import grpc
 from google.protobuf import struct_pb2
 
 from jina.logging.logger import JinaLogger
-from jina.peapods.networking import GrpcConnectionPool
+
 from jina.proto import jina_pb2_grpc, jina_pb2
 from jina.types.message import Message
 from jina.types.message.common import ControlMessage
@@ -26,15 +26,15 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         args: argparse.Namespace,
         message_callback: Callable[['Message'], None],
         logger: Optional['JinaLogger'] = None,
-        connection_pool: Type['GrpcConnectionPool'] = None,
     ):
+        from jina.peapods.networking import create_connection_pool
+
         self.args = args
         self._logger = logger or JinaLogger(self.__class__.__name__)
         self.callback = message_callback
-        if connection_pool:
-            self._connection_pool = connection_pool
-        else:
-            self._connection_pool = GrpcConnectionPool()
+
+        self._connection_pool = create_connection_pool(args)
+
         self.msg_recv = 0
         self.msg_sent = 0
         self._pending_tasks = []

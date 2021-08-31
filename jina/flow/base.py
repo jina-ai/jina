@@ -982,6 +982,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         op_flow._set_initial_dynamic_routing_table()
 
+        self._set_deployments()
+
         hanging_pods = _hanging_pods(op_flow)
         if hanging_pods:
             op_flow.logger.warning(
@@ -990,6 +992,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             )
         op_flow._build_level = FlowBuildLevel.GRAPH
         return op_flow
+
+    # TODO: this function should not exist as it is static and cant be passed to external pods
+    def _set_deployments(self):
+        deployments = []
+        for pod_id, pod in self._pod_nodes.items():
+            deployments.extend(pod.deployments)
+        for pod_id, pod in self._pod_nodes.items():
+            self._pod_nodes[pod_id].args.deployments = deployments
 
     def __call__(self, *args, **kwargs):
         """Builds the Flow

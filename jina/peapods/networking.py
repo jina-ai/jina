@@ -358,3 +358,22 @@ def get_connect_host(
     else:
         # in this case we (at local) need to know about remote the BIND address
         return bind_host
+
+
+def create_connection_pool(args: 'Namespace') -> ConnectionPool:
+    """
+    Creates the approriate connection pool based on args
+    :param args: Arguments for this pod
+    :return: A connection pool object
+    """
+    if args.k8s_connection_pool:
+        from jina.peapods.pods.k8slib.kubernetes_tools import K8SClients
+
+        k8s_clients = K8SClients()
+        return K8sGrpcConnectionPool(
+            namespace=args.k8s_namespace,
+            deployments=args.deployments,
+            client=k8s_clients.v1,
+        )
+    else:
+        return GrpcConnectionPool()
