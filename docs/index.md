@@ -101,7 +101,6 @@ fundamentals/executor/index
 fundamentals/flow/index
 fundamentals/practice-your-learning
 fundamentals/clean-code
-fundamentals/practice
 ```
 
 
@@ -133,7 +132,7 @@ Slack community <https://slack.jina.ai>
 Youtube <http://youtube.com/c/jina-ai>
 Twitter @JinaAI_ <https://twitter.com/JinaAI_>
 LinkedIn <https://www.linkedin.com/company/jinaai/>
-Company website <https://jina.ai>
+Jina AI Company <https://jina.ai>
 
 ```
 

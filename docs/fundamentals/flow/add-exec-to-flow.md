@@ -23,7 +23,7 @@ f = Flow().add().add().add().add()
 
 ## Define what executor to use via `uses`
 
-`uses` parameter to specify the [Executor](Executor.md).
+`uses` parameter to specify the Executor.
 
 `uses` accepts multiple value types including class name, Docker image, (inline) YAML.
 Therefore, you can add an executor via:

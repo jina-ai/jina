@@ -4,7 +4,7 @@
 Executor represents a processing component in a Jina Flow. It performs a single task on a `Document` or 
 `DocumentArray`. 
 
-You can create an Executor by extending the {class}`Executor` class and adding logic to endpoint methods.
+You can create an Executor by extending the `Executor` class and adding logic to endpoint methods.
 
 
 ```{toctree}

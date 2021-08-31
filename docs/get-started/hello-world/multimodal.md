@@ -4,12 +4,19 @@
 We have a [Youtube video](https://youtu.be/B_nH8GCmBfc) for explaining this demo in details. 
 ```
 
+````{important}
+This demo requires extra dependencies. Please install them via:
+
+```bash
+pip install "jina[demo]"
+```
+
+````
+
 A multimodal-document contains multiple data types, e.g. a PDF document often contains figures and text. Jina lets you
 build a multimodal search solution in just minutes. To run our minimum multimodal document search demo:
 
 ```bash
-pip install "jina[demo]"
-
 jina hello multimodal
 ```
 

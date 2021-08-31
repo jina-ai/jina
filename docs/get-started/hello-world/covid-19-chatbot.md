@@ -1,10 +1,17 @@
 # Covid-19 chatbot
 
-For NLP engineers, we provide a simple chatbot demo for answering Covid-19 questions. To run that:
+````{important}
+This demo requires extra dependencies. Please install them via:
 
 ```bash
 pip install "jina[demo]"
+```
 
+````
+
+For NLP engineers, we provide a simple chatbot demo for answering Covid-19 questions. To run that:
+
+```bash
 jina hello chatbot
 ```
 

@@ -1,4 +1,4 @@
-## Fashion image search
+# Fashion image search
 
 A simple image neural search demo for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No
 extra dependencies needed, simply run:
@@ -7,12 +7,15 @@ extra dependencies needed, simply run:
 jina hello fashion
 ```
 
+````{tip}
 ...or even easier for Docker users, **no install required**:
 
 ```bash
 docker run -v "$(pwd)/j:/j" jinaai/jina hello fashion --workdir /j && open j/hello-world.html
  replace "open" with "xdg-open" on Linux
 ```
+
+````
 
 ```{figure} ../../../.github/2.0/hello-fashion-1.png
 :align: center
