@@ -66,7 +66,7 @@ Footer
 
 get_started/neural-search
 get_started/install
-get_started/hello-world
+get_started/hello-world/index
 ```
 
 ```{toctree}
