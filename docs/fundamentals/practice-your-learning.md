@@ -1,4 +1,4 @@
-# Practice Your Learning
+# {octicon}`mortar-board` Practice Your Learning
 
 Now that you understand all fundamental concepts, let's practice the learnings and build a simple end-to-end demo.
 
@@ -12,6 +12,12 @@ similar to the query.
 - [Pooling](https://computersciencewiki.org/index.php/Max-pooling_/_Pooling)
 - [Euclidean distance](https://en.wikipedia.org/wiki/Euclidean_distance)
 ````
+
+## Client-Server architecture
+
+```{figure} ../../.github/2.0/simple-arch.svg
+:align: center
+```
 
 ## Server
 
