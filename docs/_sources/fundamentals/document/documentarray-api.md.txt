@@ -576,7 +576,7 @@ da = DocumentArray(
 da.visualize()
 
 ```
-![]()
+
 ```{figure} ../../../.github/2.0/document-array-visualize.png
 :align: center
 ```
