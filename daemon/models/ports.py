@@ -24,6 +24,8 @@ class PortMapping(BaseModel):
 
 
 class PortMappings(BaseModel):
+    """Pydantic model for list of PortMappings"""
+
     __root__: List[PortMapping]
 
     def __iter__(self):
@@ -39,6 +41,10 @@ class PortMappings(BaseModel):
 
     @property
     def ports(self) -> List[int]:
+        """Get all ports in current model
+
+        :return: list of ports
+        """
         return [
             port
             for mapping in self.__root__
@@ -48,12 +54,24 @@ class PortMappings(BaseModel):
 
     @property
     def docker_ports(self) -> Dict[str, int]:
+        """Get all ports for docker client
+
+        :return: dict of ports for docker-py syntax
+        """
         return {f'{port}/tcp': port for port in self.ports}
 
     @property
     def pod_names(self) -> List[str]:
+        """Get all pod names
+
+        :return: unique list of pod names
+        """
         return list(set(mapping.pod_name for mapping in self.__root__))
 
     @property
     def pea_names(self) -> List[str]:
+        """Get all pea names
+
+        :return: list of pea names
+        """
         return [mapping.pea_name for mapping in self.__root__]

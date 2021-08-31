@@ -276,7 +276,6 @@ class ContainerStore(BaseStore):
             self._logger.error(f'update not supported for {id.type} {id}')
             return id
 
-        self._logger.warning(f'\n\nin main jinad update. params : {params}')
         uri = self[id].metadata.uri
         try:
             object = await self._update(uri, params)

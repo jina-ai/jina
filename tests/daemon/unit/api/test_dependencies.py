@@ -53,7 +53,7 @@ def test_flow_depends_load_and_dump(monkeypatch, tmpdir):
         assert f['local_shards'].args.port_in == 45678
         assert f['local_shards'].args.port_in is not None
         assert all(
-            port in list(fd.ports.values())
+            port in fd.ports.ports
             for port in [
                 f.port_expose,
                 f['gateway'].args.port_in,
