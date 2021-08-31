@@ -257,7 +257,7 @@ class PytorchMobilNetExecutor(Executor):
                 doc.embedding = embed
 ```
 
-### ONNX-Runtime
+### ONNX
 
 The code snippet bellow converts a `Pytorch` model to the `ONNX` and leverage `onnxruntime` to run inference tasks on
 models from `hugging-face transformers`.

@@ -1,7 +1,7 @@
 (executor)=
-# Create an Executor
+# Create Executor
 
-`Executor` process `DocumentArray` in-place via functions decorated with `@requests`.
+`Executor` process `DocumentArray` in-place via functions decorated with `@requests`. To create an Executor, you only need to follow three principles:
 
 - An `Executor` should subclass directly from `jina.Executor` class.
 - An `Executor` class is a bag of functions with shared state (via `self`); it can contain an arbitrary number of
@@ -12,7 +12,7 @@
 ## Minimum working example
 
 ```python
-from jina import Executor, Flow, Document, requests
+from jina import Executor
 
 
 class MyExecutor(Executor):
@@ -21,12 +21,29 @@ class MyExecutor(Executor):
     def foo(self, **kwargs):
         print(kwargs)
 
+```
+
+````{tab} Use it in a Flow 
+
+```python
+from jina import Executor
 
 f = Flow().add(uses=MyExecutor)
 
 with f:
     f.post(on='/random_work', inputs=Document(), on_done=print)
 ```
+
+````
+
+````{tab} Use it as-is 
+
+```python
+m = MyExecutor()
+m.foo()
+```
+
+````
 
 
 ## Inheritance
@@ -209,7 +226,9 @@ The return is optional. **All changes happen in-place.**
 
 So do I need a return? No, unless you must create a new `DocumentArray`. Let's see some examples.
 
-## Example 1: Embed Documents `blob`
+## Examples
+
+### Embed Documents `blob`
 
 In this example, `encode()` uses some neural network to get the embedding for each `Document.blob`, then assign it
 to `Document.embedding`. The whole procedure is in-place and there is no need to return anything.
@@ -234,7 +253,7 @@ class PNEncoder(Executor):
             d.embedding = b
 ```
 
-## Example 2: Add Chunks by Segmenting Document
+### Add Chunks by Segmenting Document
 
 In this example, each `Document` is segmented by `get_mesh` and the results are added to `.chunks`. After
 that, `.buffer` and `.uri` are removed from each `Document`. In this case, all changes happen in-place and there is no
@@ -254,7 +273,7 @@ class ConvertSegmenter(Executor):
             d.pop('buffer', 'uri')
 ```
 
-#### Example 3: Preserve Document `id` Only
+### Preserve Document `id` only
 
 In this example, a simple indexer stores incoming `docs` in a `DocumentArray`. Then it recreates a new `DocumentArray`
 by preserving only `id` in the original `docs` and dropping all others, as the developer does not want to carry all rich
