@@ -19,7 +19,7 @@ When you run the command above, a wizard will ask you some questions about the E
 you will be asked two things: The Executor’s name and where it should be saved. The wizard will ask if you want to have 
 a more advanced configuration, but it is unnecessary for most of use cases.
 
-```{figure} ../../../.github/2.0/jina-hub-new.gif
+```{figure} ../../../.github/animations/jina-hub-new.svg
 :align: center
 ```
 

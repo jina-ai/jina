@@ -11,6 +11,10 @@ $ jina hub push [--public/--private] <path_to_executor_folder>
 It will return an **UUID** as well as a **SECRET**. You would need these two items when using or update the Executor later. **Please keep them carefully.**
 
 
+```{figure} ../../../.github/animations/jina-hub-push.svg
+:align: center
+```
+
 ````{admonition} Note
 :class: note
 When no `--public` or `--private` visibility options are provided. **By default, it's public.**
@@ -28,6 +32,10 @@ Everything is iterating in Internet world. We also provide a way to update your 
 
 ```bash
 $ jina hub push [--public/--private] --force <UUID> --secret <SECRET> <path_to_executor_folder>
+```
+
+```{figure} ../../../.github/animations/jina-hub-update.svg
+:align: center
 ```
 
 ````{admonition} Note
