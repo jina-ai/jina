@@ -41,3 +41,13 @@ h1, h2, h3 {
 .tab-set > input:checked + label:hover {
     border-color: var(--tabs--label-text--active);
 }
+
+
+body[data-theme="dark"] table code {
+    background: #202020;
+    color: #d0d0d0;
+}
+
+table code {
+    background: #f5f5f5;
+}

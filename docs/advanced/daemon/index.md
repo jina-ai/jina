@@ -1,5 +1,5 @@
 (daemon-cookbook)=
-# Daemon (JinaD)
+# Remote Management via JinaD
 
 `JinaD` is a [daemon](https://en.wikipedia.org/wiki/Daemon_(computing)) for deploying and managing Jina on remote via a
 RESTful interface. It allows users to create/update/delete Executors and Flows on remote hosts. It achieves isolation of
