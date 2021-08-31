@@ -1,4 +1,4 @@
-## Create Remote Flows
+## Create remote Flows
 
 JinaD enables management of (remote + containerized) Flows with all your dependencies via REST APIs.
 

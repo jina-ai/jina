@@ -152,7 +152,7 @@ either `f.post(on='/foo', ...)` or `f.post(on='/bar', ...)` to invoke that funct
 A class with no `@requests` binding plays no part in the Flow. The request will simply pass through without any
 processing.
 
-## Method Signature
+## Method signature
 
 Class method decorated by `@request` follows the signature below:
 
@@ -165,7 +165,7 @@ def foo(docs: Optional[DocumentArray],
     pass
 ```
 
-## Method Arguments
+## Method arguments
 
 The Executor's method receive the following arguments in order:
 
@@ -213,7 +213,7 @@ class MyExecutor(Executor):
 ```
 ````
 
-## Method Returns
+## Method returns
 
 Methods decorated with `@request` can return `Optional[DocumentArray]`.
 
@@ -253,7 +253,7 @@ class PNEncoder(Executor):
             d.embedding = b
 ```
 
-### Add Chunks by Segmenting Document
+### Add Chunks by segmenting Document
 
 In this example, each `Document` is segmented by `get_mesh` and the results are added to `.chunks`. After
 that, `.buffer` and `.uri` are removed from each `Document`. In this case, all changes happen in-place and there is no

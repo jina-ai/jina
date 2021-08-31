@@ -2,7 +2,7 @@
 
 If you want to share your Executors to other persons or colleges, you can push your local Executor to JinaHub.
 
-## Basic Push
+## Basic push
 
 ```bash
 $ jina hub push [--public/--private] <path_to_executor_folder>

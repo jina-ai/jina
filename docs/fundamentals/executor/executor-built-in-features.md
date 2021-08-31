@@ -83,7 +83,7 @@ requests:
     - `py_modules` is a list of strings. Defines the Python dependencies of the executor;
 - `requests` is a map. Defines the mapping from endpoint to class method name;
 
-### Load and Save Executor's YAML config
+### Load and save Executor's YAML config
 
 You can use class method `Executor.load_config` and object method `exec.save_config` to load and save YAML config:
 

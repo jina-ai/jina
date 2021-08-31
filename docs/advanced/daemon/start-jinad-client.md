@@ -1,4 +1,4 @@
-## Start JinaD Client
+## Start JinaD client
 
 You can use `JinaDClient` or (for your async
 code) feel free to use `AsyncJinaDClient` which makes all following code awaitables.

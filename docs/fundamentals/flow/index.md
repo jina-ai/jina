@@ -19,7 +19,7 @@ A `Flow` object has the following common methods:
 
 ## Minimum working example
 
-### Pure Python: All-in-one Style
+### Pure Python: All-in-one style
 
 ```python
 from jina import Flow, Document, Executor, requests
@@ -38,7 +38,7 @@ with f:
     f.post(on='/bar', inputs=Document(), on_done=print)
 ```
 
-### Pure Python: Flow-as-a-Service Style
+### Pure Python: Flow-as-a-Service style
 
 Server:
 

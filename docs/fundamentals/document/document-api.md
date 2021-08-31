@@ -384,7 +384,7 @@ from jina.types.document.generators import from_files
 DocumentArray(from_files('/*.png'))
 ```
 
-### Construct Recursive `Document`
+### Construct recursive `Document`
 
 #### Recursive attributes
 
@@ -427,7 +427,7 @@ Both `doc.chunks` and `doc.matches` return `ChunkArray` and `MatchArray`, which 
 of {ref}`DocumentArray<documentarray>`. We will introduce `DocumentArray` later.
 ````
 
-#### Caveat: Add Chunks in correct order
+#### Caveat: add Chunks in correct order
 
 When adding `Chunks` to a `Document`, do not create them in one line to keep recursive document structure correct. This is because `chunks` use `ref_doc` to control its `granularity`, at `chunk` creation time, it didn't know anything about its parent, and will get a wrong `granularity` value.
 

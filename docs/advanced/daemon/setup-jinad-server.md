@@ -1,4 +1,4 @@
-## Setup JinaD Server
+## Setup JinaD server
 
 `JinaD` docker image is published
 on [Docker Hub](https://hub.docker.com/r/jinaai/jina/tags?page=1&ordering=last_updated&name=-daemon) and follows
@@ -30,7 +30,7 @@ instance and `PORT` is as passed in the docker run cpmmand.
 work.
 ````
 
-#### API Docs
+#### API docs
 
 - [Static docs with redoc](https://api.jina.ai/daemon/)
 

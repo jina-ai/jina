@@ -1,4 +1,4 @@
-## Create Remote Executors
+## Create remote Executors
 
 You can use the below code by passing `host`
 and `port_expose` to an executor with a Flow. Internally it uses `JinaD` for remote management.

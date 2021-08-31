@@ -1,6 +1,6 @@
 # Parallelization
 
-## Intra Parallelism via `needs`
+## Intra parallelism via `needs`
 
 For parallelism, use the `needs` parameter:
 
@@ -45,7 +45,7 @@ f = (Flow()
      .needs_all())
 ```
 
-## Inter Parallelism via `parallel`
+## Inter parallelism via `parallel`
 
 Parallelism can also be performed inside an Executor using `parallel`. The example below starts three `p1`:
 
