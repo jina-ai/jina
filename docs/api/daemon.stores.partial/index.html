@@ -571,12 +571,13 @@
 <p>A Flow store spawned inside partial-daemon container</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="daemon.stores.partial.PartialFlowStore.add">
-<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/partial/#PartialFlowStore.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.partial.PartialFlowStore.add" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/partial/#PartialFlowStore.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.partial.PartialFlowStore.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Starts a Flow in <cite>partial-daemon</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>) – namespace args for the flow</p></li>
+<li><p><strong>port_mapping</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="../daemon.models.ports/#daemon.models.ports.PortMappings" title="daemon.models.ports.PortMappings"><code class="xref py py-class docutils literal notranslate"><span class="pre">PortMappings</span></code></a>]) – ports to be set</p></li>
 <li><p><strong>kwargs</strong> – keyword args</p></li>
 </ul>
 </dd>
@@ -618,7 +619,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 30, 2021.
+            Last updated on Aug 31, 2021.
         </div>
         
       </footer>

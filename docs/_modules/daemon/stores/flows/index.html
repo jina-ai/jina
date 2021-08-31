@@ -492,10 +492,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">'sending POST request to partial-daemon on </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">'</span>
         <span class="p">)</span>
+        <span class="n">ports</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'ports'</span><span class="p">,</span> <span class="p">[])</span>
         <span class="k">async</span> <span class="k">with</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
             <span class="n">method</span><span class="o">=</span><span class="s1">'POST'</span><span class="p">,</span>
             <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
-            <span class="n">json</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+            <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s1">'flow'</span><span class="p">:</span> <span class="n">params</span><span class="p">,</span> <span class="s1">'ports'</span><span class="p">:</span> <span class="n">ports</span><span class="p">},</span>
         <span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
             <span class="n">response_json</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">CREATED</span><span class="p">:</span>
@@ -533,7 +534,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 30, 2021.
+            Last updated on Aug 31, 2021.
         </div>
         
       </footer>

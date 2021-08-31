@@ -464,10 +464,11 @@
           </label>
         </div>
         <h1>Source code for daemon.stores.partial</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">colored</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">colored</span><span class="p">,</span> <span class="n">random_port</span>
 <span class="kn">from</span> <span class="nn">jina.peapods</span> <span class="kn">import</span> <span class="n">Pea</span><span class="p">,</span> <span class="n">Pod</span><span class="p">,</span> <span class="n">CompoundPod</span>
 <span class="kn">from</span> <span class="nn">jina.peapods.peas.helper</span> <span class="kn">import</span> <span class="n">update_runtime_cls</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">__docker_host__</span>
@@ -476,6 +477,7 @@
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">jinad_args</span>
 <span class="kn">from</span> <span class="nn">..models</span> <span class="kn">import</span> <span class="n">GATEWAY_RUNTIME_DICT</span>
 <span class="kn">from</span> <span class="nn">..models.enums</span> <span class="kn">import</span> <span class="n">UpdateOperation</span>
+<span class="kn">from</span> <span class="nn">..models.ports</span> <span class="kn">import</span> <span class="n">Ports</span><span class="p">,</span> <span class="n">PortMappings</span>
 <span class="kn">from</span> <span class="nn">..models.partial</span> <span class="kn">import</span> <span class="n">PartialFlowItem</span><span class="p">,</span> <span class="n">PartialStoreItem</span>
 
 
@@ -551,16 +553,21 @@
 <div class="viewcode-block" id="PartialFlowStore"><a class="viewcode-back" href="../../../../api/daemon.stores.partial/#daemon.stores.partial.PartialFlowStore">[docs]</a><span class="k">class</span> <span class="nc">PartialFlowStore</span><span class="p">(</span><span class="n">PartialStore</span><span class="p">):</span>
     <span class="sd">"""A Flow store spawned inside partial-daemon container"""</span>
 
-<div class="viewcode-block" id="PartialFlowStore.add"><a class="viewcode-back" href="../../../../api/daemon.stores.partial/#daemon.stores.partial.PartialFlowStore.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PartialStoreItem</span><span class="p">:</span>
+<div class="viewcode-block" id="PartialFlowStore.add"><a class="viewcode-back" href="../../../../api/daemon.stores.partial/#daemon.stores.partial.PartialFlowStore.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">port_mapping</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PortMappings</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PartialStoreItem</span><span class="p">:</span>
         <span class="sd">"""Starts a Flow in `partial-daemon`.</span>
 
 <span class="sd">        :param args: namespace args for the flow</span>
+<span class="sd">        :param port_mapping: ports to be set</span>
 <span class="sd">        :param kwargs: keyword args</span>
 <span class="sd">        :return: Item describing the Flow object</span>
 <span class="sd">        """</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'uses yaml file was not specified in flow definition'</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'uses </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="si">}</span><span class="s1"> not found in workspace'</span><span class="p">)</span>
 
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">)</span> <span class="k">as</span> <span class="n">yaml_file</span><span class="p">:</span>
                 <span class="n">yaml_source</span> <span class="o">=</span> <span class="n">yaml_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
@@ -568,17 +575,41 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="p">:</span> <span class="n">Flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="n">yaml_source</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">workspace_id</span> <span class="o">=</span> <span class="n">jinad_args</span><span class="o">.</span><span class="n">workspace_id</span>
 
-            <span class="c1"># In dependencies, we set `runs_in_docker` for the `gateway` and for `CompoundPod` we need</span>
-            <span class="c1"># `runs_in_docker` to be False. Since `Flow` args are sent to all Pods, `runs_in_docker` gets set</span>
-            <span class="c1"># for the `CompoundPod`, which blocks the requests. Below we unset that (hacky &amp; ugly).</span>
-            <span class="c1"># We do it only for runtimes that starts on local (not container or remote)</span>
             <span class="k">for</span> <span class="n">pod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="n">runtime_cls</span> <span class="o">=</span> <span class="n">update_runtime_cls</span><span class="p">(</span><span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">runtime_cls</span>
-                <span class="k">if</span> <span class="n">runtime_cls</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'ZEDRuntime'</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">GATEWAY_RUNTIME_DICT</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pod</span><span class="p">,</span> <span class="n">CompoundPod</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pod</span><span class="p">,</span> <span class="n">CompoundPod</span><span class="p">):</span>
+                    <span class="c1"># In dependencies, we set `runs_in_docker` for the `gateway` and for `CompoundPod` we need</span>
+                    <span class="c1"># `runs_in_docker` to be False. Since `Flow` args are sent to all Pods, `runs_in_docker` gets set</span>
+                    <span class="c1"># for the `CompoundPod`, which blocks the requests. Below we unset that (hacky &amp; ugly).</span>
+                    <span class="c1"># We do it only for runtimes that starts on local (not container or remote)</span>
+                    <span class="k">if</span> <span class="n">runtime_cls</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'ZEDRuntime'</span><span class="p">,</span> <span class="s1">'ContainerRuntime'</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span>
+                        <span class="n">GATEWAY_RUNTIME_DICT</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                    <span class="p">):</span>
                         <span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runs_in_docker</span> <span class="o">=</span> <span class="kc">False</span>
                         <span class="k">for</span> <span class="n">replica_args</span> <span class="ow">in</span> <span class="n">pod</span><span class="o">.</span><span class="n">replicas_args</span><span class="p">:</span>
                             <span class="n">replica_args</span><span class="o">.</span><span class="n">runs_in_docker</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="k">if</span> <span class="n">port_mapping</span><span class="p">:</span>
+                            <span class="c1"># Ports for Head &amp; Tail Peas in a CompoundPod set here.</span>
+                            <span class="c1"># This is specifically needed as `save_config` doesn't save `port_out` for a HeadPea</span>
+                            <span class="c1"># and `port_in` for a TailPea, which might be useful if replicas and head/tail Peas</span>
+                            <span class="c1"># are in different containers.</span>
+                            <span class="k">for</span> <span class="n">pea_args</span> <span class="ow">in</span> <span class="p">[</span><span class="n">pod</span><span class="o">.</span><span class="n">head_args</span><span class="p">,</span> <span class="n">pod</span><span class="o">.</span><span class="n">tail_args</span><span class="p">]:</span>
+                                <span class="k">if</span> <span class="n">pea_args</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">port_mapping</span><span class="o">.</span><span class="n">pea_names</span><span class="p">:</span>
+                                    <span class="k">for</span> <span class="n">port_name</span> <span class="ow">in</span> <span class="n">Ports</span><span class="o">.</span><span class="n">__fields__</span><span class="p">:</span>
+                                        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pea_args</span><span class="p">,</span> <span class="n">port_name</span><span class="p">):</span>
+                                            <span class="nb">setattr</span><span class="p">(</span>
+                                                <span class="n">pea_args</span><span class="p">,</span>
+                                                <span class="n">port_name</span><span class="p">,</span>
+                                                <span class="nb">getattr</span><span class="p">(</span>
+                                                    <span class="n">port_mapping</span><span class="p">[</span><span class="n">pea_args</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">ports</span><span class="p">,</span>
+                                                    <span class="n">port_name</span><span class="p">,</span>
+                                                    <span class="n">random_port</span><span class="p">(),</span>
+                                                <span class="p">),</span>
+                                            <span class="p">)</span>
+                            <span class="c1"># Update replica_args according to updated head &amp; tail args</span>
+                            <span class="n">pod</span><span class="o">.</span><span class="n">replicas_args</span> <span class="o">=</span> <span class="n">CompoundPod</span><span class="o">.</span><span class="n">_set_replica_args</span><span class="p">(</span>
+                                <span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">pod</span><span class="o">.</span><span class="n">head_args</span><span class="p">,</span> <span class="n">pod</span><span class="o">.</span><span class="n">tail_args</span>
+                            <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'object'</span><span class="p">):</span>
@@ -637,7 +668,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 30, 2021.
+            Last updated on Aug 31, 2021.
         </div>
         
       </footer>

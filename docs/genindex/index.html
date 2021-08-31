@@ -1452,6 +1452,13 @@
 </li>
         </ul></li>
         <li>
+    daemon.models.ports
+
+        <ul>
+          <li><a href="../api/daemon.models.ports/#module-daemon.models.ports">module</a>
+</li>
+        </ul></li>
+        <li>
     daemon.models.workspaces
 
         <ul>
@@ -1643,6 +1650,8 @@
         <li><a href="../api/jina.hubble.helper/#jina.hubble.helper.disk_cache_offline">disk_cache_offline() (in module jina.hubble.helper)</a>
 </li>
         <li><a href="../api/jina.types.document.helper/#jina.types.document.helper.DocGroundtruthPair">DocGroundtruthPair (class in jina.types.document.helper)</a>
+</li>
+        <li><a href="../api/daemon.models.ports/#daemon.models.ports.PortMappings.docker_ports">docker_ports (daemon.models.ports.PortMappings property)</a>
 </li>
         <li><a href="../api/daemon.files/#daemon.files.DaemonFile.dockerargs">dockerargs (daemon.files.DaemonFile attribute)</a>
 </li>
@@ -4069,6 +4078,8 @@
 </li>
           <li><a href="../api/daemon.models.partial/#module-daemon.models.partial">daemon.models.partial</a>
 </li>
+          <li><a href="../api/daemon.models.ports/#module-daemon.models.ports">daemon.models.ports</a>
+</li>
           <li><a href="../api/daemon.models.workspaces/#module-daemon.models.workspaces">daemon.models.workspaces</a>
 </li>
           <li><a href="../api/daemon.parser/#module-daemon.parser">daemon.parser</a>
@@ -4684,6 +4695,10 @@
 </li>
         <li><a href="../api/cli.api/#cli.api.pea">pea() (in module cli.api)</a>
 </li>
+        <li><a href="../api/daemon.models.ports/#daemon.models.ports.PortMapping.pea_name">pea_name (daemon.models.ports.PortMapping attribute)</a>
+</li>
+        <li><a href="../api/daemon.models.ports/#daemon.models.ports.PortMappings.pea_names">pea_names (daemon.models.ports.PortMappings property)</a>
+</li>
         <li><a href="../api/daemon.clients.peas/#daemon.clients.peas.PeaClient">PeaClient (class in daemon.clients.peas)</a>
 </li>
         <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.PeaDepends">PeaDepends (class in daemon.api.dependencies)</a>
@@ -4740,16 +4755,20 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.BuildTestLevel.POD_DOCKER">POD_DOCKER (jina.enums.BuildTestLevel attribute)</a>
 </li>
+        <li><a href="../api/daemon.models.ports/#daemon.models.ports.PortMapping.pod_name">pod_name (daemon.models.ports.PortMapping attribute)</a>
+</li>
+        <li><a href="../api/daemon.models.ports/#daemon.models.ports.PortMappings.pod_names">pod_names (daemon.models.ports.PortMappings property)</a>
+</li>
         <li><a href="../api/jina.enums/#jina.enums.BuildTestLevel.POD_NONDOCKER">POD_NONDOCKER (jina.enums.BuildTestLevel attribute)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/daemon.clients.pods/#daemon.clients.pods.PodClient">PodClient (class in daemon.clients.pods)</a>
 </li>
         <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.PodDepends">PodDepends (class in daemon.api.dependencies)</a>
 </li>
         <li><a href="../api/jina.peapods.pods.factory/#jina.peapods.pods.factory.PodFactory">PodFactory (class in jina.peapods.pods.factory)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.enums/#jina.enums.PodRoleType">PodRoleType (class in jina.enums)</a>
 </li>
         <li><a href="../api/daemon.clients/#daemon.clients.JinaDClient.pods">pods (daemon.clients.JinaDClient property)</a>
@@ -4772,17 +4791,33 @@
         </ul></li>
         <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.port">port (jina.types.routing.table.TargetPod property)</a>
 </li>
-        <li><a href="../api/jina/#jina.Flow.port_expose">port_expose (jina.Flow property)</a>
+        <li><a href="../api/daemon.models.ports/#daemon.models.ports.Ports.port_ctrl">port_ctrl (daemon.models.ports.Ports attribute)</a>
+</li>
+        <li><a href="../api/daemon.models.ports/#daemon.models.ports.Ports.port_expose">port_expose (daemon.models.ports.Ports attribute)</a>
 
         <ul>
+          <li><a href="../api/jina/#jina.Flow.port_expose">(jina.Flow property)</a>
+</li>
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.port_expose">(jina.flow.base.Flow property)</a>
 </li>
           <li><a href="../api/jina.peapods.pods.k8s/#jina.peapods.pods.k8s.K8sPod.port_expose">(jina.peapods.pods.k8s.K8sPod property)</a>
 </li>
         </ul></li>
+        <li><a href="../api/daemon.models.ports/#daemon.models.ports.Ports.port_in">port_in (daemon.models.ports.Ports attribute)</a>
+</li>
         <li><a href="../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod.port_jinad">port_jinad (jina.peapods.pods.compound.CompoundPod property)</a>
 </li>
-        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.port_out">port_out (jina.types.routing.table.TargetPod property)</a>
+        <li><a href="../api/daemon.models.ports/#daemon.models.ports.Ports.port_out">port_out (daemon.models.ports.Ports attribute)</a>
+
+        <ul>
+          <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.port_out">(jina.types.routing.table.TargetPod property)</a>
+</li>
+        </ul></li>
+        <li><a href="../api/daemon.models.ports/#daemon.models.ports.PortMapping">PortMapping (class in daemon.models.ports)</a>
+</li>
+        <li><a href="../api/daemon.models.ports/#daemon.models.ports.PortMappings">PortMappings (class in daemon.models.ports)</a>
+</li>
+        <li><a href="../api/daemon.models.ports/#daemon.models.ports.Ports">Ports (class in daemon.models.ports)</a>
 </li>
         <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.FlowDepends.ports">ports (daemon.api.dependencies.FlowDepends property)</a>
 
@@ -4792,6 +4827,10 @@
           <li><a href="../api/daemon.files/#daemon.files.DaemonFile.ports">(daemon.files.DaemonFile property)</a>
 </li>
           <li><a href="../api/daemon.models.containers/#daemon.models.containers.ContainerMetadata.ports">(daemon.models.containers.ContainerMetadata attribute)</a>
+</li>
+          <li><a href="../api/daemon.models.ports/#daemon.models.ports.PortMapping.ports">(daemon.models.ports.PortMapping attribute)</a>
+</li>
+          <li><a href="../api/daemon.models.ports/#daemon.models.ports.PortMappings.ports">(daemon.models.ports.PortMappings property)</a>
 </li>
         </ul></li>
         <li><a href="../api/jina.clients.mixin/#jina.clients.mixin.AsyncPostMixin.post">post() (jina.clients.mixin.AsyncPostMixin method)</a>
@@ -5836,7 +5875,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 30, 2021.
+            Last updated on Aug 31, 2021.
         </div>
         
       </footer>
