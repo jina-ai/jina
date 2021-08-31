@@ -15,7 +15,7 @@ Now that you’re set up, let’s dive into more of how Jina works and how to bu
 :gutter: 3
 
 
-::::{grid-item-card} {octicon}`smiley;1.5em` Play 3 Hello Worlds
+::::{grid-item-card} {octicon}`smiley;1.5em` Play 3 Hello World
 :link: get-started/hello-world/index
 :link-type: doc
 

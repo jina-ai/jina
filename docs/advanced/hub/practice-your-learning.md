@@ -1,27 +1,14 @@
-# {octicon}`mortar-board` Practice Your Learning
+# Put into Practice
 
 Now that you understand how to use public Executor from Hub, let's practice our learning with three hello-world demos in Jina.
 
 ## Modify `jina hello fashion` to use Hub executor
 
-You can run the `jina hello fashion` demo using a different embedding method. To do so:
-
 1) Clone the repository with  `jina hello fork fashion <your_project_folder>`. In `your_project_folder` you will
    have a file `app.py`  that you can change to leverage other embedding methods.
 
 2) Change lines 74 to 79 from `app.py` to define a different `Flow`. For example, you can
-   use  [ImageTorchEncoder](https://github.com/jina-ai/executor-image-torch-encoder)
-   changing
-
-   ```python
-   f = (Flow()
-      .add(uses=MyEncoder, parallel=2)
-      .add(uses=MyIndexer, workspace=args.workdir)
-      .add(uses=MyEvaluator)
-   )
-   ```
-
-   with the flow
+   use  [ImageTorchEncoder](https://github.com/jina-ai/executor-image-torch-encoder):
 
    ```python
    f = (
@@ -51,27 +38,17 @@ You can run the `jina hello fashion` demo using a different embedding method. To
 ## Modify `jina hello chatbot` to use Hub Executor
 
 
-
-#### Use jina hub Executors
-
-You can run the `jina hello chatbot` demo using a different embedding method. As an example, you can
+As an example, you can
 use [TransformerTorchEncoder](https://github.com/jina-ai/executor-transformer-torch-encoder). To do so:
 
 1) Clone the repository with  `jina hello fork chatbot <your_project_folder>`. In the repository you will
    have `app.py`  which you can change to leverage other embedding methods.
 
-2) Change lines 21 to 25 from `app.py` to define a different `Flow`. Change
-   ```python
-   Flow(cors=True)
-   .add(uses=MyTransformer, parallel=args.parallel)
-   .add(uses=MyIndexer, workspace=args.workdir)
-   ```
-   with the flow
-
+2) Change lines 21 to 25 from `app.py` to define a different `Flow`. Change it to:
     ```python
     Flow(cors=True)
     .add(uses=MyTransformer, parallel=args.parallel)
-    .add(s
+    .add(
         uses='jinahub+docker://TransformerTorchEncoder',
         parallel=args.parallel,
         uses_with={
@@ -99,13 +76,11 @@ use [TransformerTorchEncoder](https://github.com/jina-ai/executor-transformer-to
 
 ## Modify `jina hello mutlimodal` to use Hub Executor
 
-You can run the `jina hello multimodal` demo using a different embedding method. For example, you can
-use  [ImageTorchEncoder](https://github.com/jina-ai/executor-image-torch-encoder). To do so:
-
 1) Clone the repository with  `jina hello fork multimodal <your_project_folder>`. In the repository you will
    have `flow-index.yml` and `flow-search.yml`  which you can change to leverage other embedding methods.
     
-2) Change `<your_project_folder>/flow-index.yml` with
+2) Change index flow and search flow accordingly
+   ````{tab} flow-index.yml
    ```yaml
    jtype: Flow
    version: '1'
@@ -166,7 +141,9 @@ use  [ImageTorchEncoder](https://github.com/jina-ai/executor-image-torch-encoder
      - name: joinAll
        needs: [ textIndexer, imageIndexer, keyValueIndexer ]
    ```
-   and `flow-search.yml` with
+   ````
+   
+   ````{tab} flow-search.yml
    ```yaml
    jtype: Flow
    version: '1'
@@ -229,4 +206,5 @@ use  [ImageTorchEncoder](https://github.com/jina-ai/executor-image-torch-encoder
              - my_executors.py
        needs: weightedRanker
    ```
+   ````
 3) Run `python <your_project_folder>/app.py` to execute.
