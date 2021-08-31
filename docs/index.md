@@ -16,7 +16,7 @@ Now that you’re set up, let’s dive into more of how Jina works and how to bu
 
 
 ::::{grid-item-card} {octicon}`smiley;1.5em` Play 3 Hello Worlds
-:link: get_started/hello-world/index
+:link: get-started/hello-world/index
 :link-type: doc
 
 Try Jina on fashion image search, QA chatbot and multimodal search.
@@ -86,9 +86,9 @@ Awesome swag to our awesome contributors (aka you)!
 :caption: Get started
 :hidden:
 
-get_started/neural-search
-get_started/install
-get_started/hello-world/index
+get-started/neural-search
+get-started/install
+get-started/hello-world/index
 ```
 
 ```{toctree}

@@ -36,7 +36,7 @@ fragmented, multi-vendor, generic legacy tools.
 
 - via PyPI: `pip install -U jina`
 - via Docker: `docker run jinaai/jina:latest`
-- [More install options](https://docs.jina.ai/get_started/install/)
+- [More install options](https://docs.jina.ai/get-started/install/)
 
 ## [Documentation](https://docs.jina.ai)
 
