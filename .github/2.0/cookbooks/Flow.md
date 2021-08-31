@@ -90,7 +90,7 @@ Client:
 ```python
 from jina import Client, Document
 
-c = Client(port_expose=12345)
+c = Client(port=12345)
 c.post(on='/bar', inputs=Document(), on_done=print)
 ```
 
@@ -192,7 +192,7 @@ Docker container.
 | Dockerized Executor from Jina Hub | `f.add(uses='jinahub+docker://MyExecutor')` |
 | Generalized dockerized Executor | `f.add(uses='docker://MyExecutor')` |
 | Existing remote Executor | `f.add(host='123.45.67.89', port_in=12345, external=True)` |
-| Spawn Remote Executor (via `jinad` on Remote) | `f.add(uses='mwu_encoder.yml', host='123.45.67.89', port_in=12345, port_expose=8080)` |
+| Spawn Remote Executor (via `jinad` on Remote) | `f.add(uses='mwu_encoder.yml', host='123.45.67.89', port_in=12345, port_jinad=8080)` |
 
 
 `.add()` accepts the following common arguments:
@@ -339,7 +339,7 @@ dependencies that need to be uploaded are specified via the `upload_files` keywo
 
 ```bash
 # have docker installed
-docker run --name=jinad --network=host -v /var/run/docker.sock:/var/run/docker.sock jinaai/jina:latest-daemon --port-expose 8000
+docker run --name=jinad --network=host -v /var/run/docker.sock:/var/run/docker.sock jinaai/jina:latest-daemon --port 8000
 # stop the docker container
 docker rm -f jinad
 ```
@@ -374,7 +374,7 @@ f = (Flow()
 | Name | default | Description |
 | --- | --- | --- |
 | `host` | `0.0.0.0` | The host of the machine. Can be an ip address or DNS name (e.g. `0.0.0.0`, `my_encoder.jina.ai`) |
-| `port_expose` | randomly initialized | Port of JinaD on the remote machine. |
+| `port_jinad` | randomly initialized | Port of JinaD on the remote machine. |
 | `port_in` | randomly initialized | Port for incoming traffic for the Executor. |
 | `port_out` | randomly initialized | Port for outgoing traffic for the Executor. This is only used in the remote-local use-case described below. |
 | `connect_to_predecessor` | `False` | Forces a Head to connect to the previous Tail. This is only used in the remote-local use-case described below. |
@@ -626,8 +626,8 @@ def post(
     :param on_done: the function to be called when the :class:`Request` object is resolved.
     :param on_error: the function to be called when the :class:`Request` object is rejected.
     :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
-    :param target_peapod: a regex string represent the certain peas/pods request targeted
-    :param parameters: the kwargs that will be sent to the executor
+    :param target_peapod: a regex string. Only matching Executors will process the request.
+    :param parameters: the kwargs that will be sent to the Executor
     :param request_size: the number of Documents per request. <=0 means all inputs in one request.
     :param show_progress: if set, client will show a progress bar on receiving every request.
     :param continue_on_error: if set, a Request that causes callback error will be logged only without blocking the further requests.

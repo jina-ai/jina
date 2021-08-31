@@ -1,7 +1,7 @@
 jtype: Flow
-version: '1.0'
+version: 1
 with:
-  restful: true
+  protocol: http
   port_expose: 28956
 executors:
   - name: executor_ex

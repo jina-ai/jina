@@ -14,7 +14,7 @@ def test_pea_api(partial_pea_client):
 
     response = partial_pea_client.get(api)
     assert response
-    assert response.json()['arguments']['port_expose'] == pea_model.port_expose
+    assert response.json()['arguments']['port_jinad'] == pea_model.port_jinad
 
     response = partial_pea_client.delete(api)
     assert response

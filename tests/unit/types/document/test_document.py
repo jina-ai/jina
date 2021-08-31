@@ -1111,3 +1111,10 @@ def test_tags_list_append():
     doc.tags['key'].append(1)
     assert len(doc.tags['key']) == 1
     assert doc.tags['key'][0] == 1
+
+
+def test_update_with_tags():
+    d1 = Document(id=1, tags={'lis': [1, 2, 3]})
+    d2 = Document(id=1)
+    d2.update(d1)
+    assert d2.tags['lis'] == [1, 2, 3]

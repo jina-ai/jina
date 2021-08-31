@@ -2,7 +2,6 @@ jtype: Flow
 with:
   return_results: True
   protocol: $RESTFUL
-  expose_crud_endpoint: true
 executors:
   - name: indexer
     uses:

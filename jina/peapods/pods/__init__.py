@@ -293,6 +293,22 @@ class BasePod:
         """
         ...
 
+    @property
+    def deployments(self) -> List[Dict]:
+        """Get deployments of the pod. The BasePod just gives one deployment.
+
+        :return: list of deployments
+        """
+        return [
+            {
+                'name': self.name,
+                'head_host': self.head_host,
+                'head_port_in': self.head_port_in,
+                'tail_port_out': self.tail_port_out,
+                'head_zmq_identity': self.head_zmq_identity,
+            }
+        ]
+
 
 class Pod(BasePod, ExitFIFO):
     """A BasePod is an immutable set of peas, which run in parallel. They share the same input and output socket.
@@ -351,15 +367,6 @@ class Pod(BasePod, ExitFIFO):
         """
         # note this will be never out of boundary
         return self.peas_args['peas'][0]
-
-    @property
-    def port_expose(self) -> int:
-        """Get the grpc port number
-
-
-        .. # noqa: DAR201
-        """
-        return self.first_pea_args.port_expose
 
     @property
     def host(self) -> str:

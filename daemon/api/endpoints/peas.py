@@ -1,7 +1,7 @@
 from fastapi import Depends, APIRouter, HTTPException
 
-from ..dependencies import PeaDepends
 from ... import Runtime400Exception
+from ..dependencies import PeaDepends
 from ...models import DaemonID, ContainerItem, ContainerStoreStatus, PeaModel
 from ...stores import pea_store as store
 
@@ -37,6 +37,7 @@ async def _create(pea: PeaDepends = Depends(PeaDepends)):
             workspace_id=pea.workspace_id,
             params=pea.params,
             ports=pea.ports,
+            envs=pea.envs,
         )
     except Exception as ex:
         raise Runtime400Exception from ex
