@@ -17,11 +17,6 @@
 <a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-900%2B-blueviolet?logo=slack&amp;logoColor=white"></a>
 </p>
 
---- 
-
-**Documentation:** [https://docs.jina.ai](https://docs.jina.ai)
-
----
 
 Jina<sup><a href=".github/pronounce-jina.mp3">`🔊`</a></sup> is a framework for building neural search applications in just minutes.
 
@@ -37,6 +32,14 @@ containerizing, streaming, paralleling, sharding, async scheduling, HTTP/gRPC/We
 fragmented, multi-vendor, generic legacy tools.
 
 
+## Install
+
+- via PyPI: `pip install -U jina`
+- via Docker: `docker run jinaai/jina:latest`
+- [More install options](https://docs.jina.ai/get_started/install/)
+
+## [Documentation](https://docs.jina.ai)
+
 ## Run Quick Demo
 
 - [👗 Fashion image search](./.github/pages/hello-world.md#-fashion-image-search): `jina hello fashion`
@@ -44,13 +47,8 @@ fragmented, multi-vendor, generic legacy tools.
 - [📰 Multimodal search](./.github/pages/hello-world.md#-multimodal-document-search): `pip install "jina[demo]" && jina hello multimodal`
 - 🍴 Fork the source of a demo to your folder: `jina hello fork fashion ../my-proj/`
 
-## Install
 
-- via PyPI: `pip install -U jina`
-- via Docker: `docker run jinaai/jina:latest`
-- [More instal options](https://docs.jina.ai/get_started/install/)
-
-## Get Started
+## Build Your First Jina App
 
 Document, Executor, and Flow are the three fundamental concepts in Jina.
 

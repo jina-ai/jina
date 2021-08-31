@@ -1,6 +1,6 @@
 # Welcome to Jina!
 
-Jina is a framework for building cross-/multi-modal (e.g. text, images, video, audio) search systems on the cloud. It allows you to build neural search applications in just minutes.
+Jina is a framework for building neural search applications in just minutes.
 
 1. Make sure that you have Python 3.7+ installed on Linux/MacOS.
 2. Install Jina: ``pip install jina``
