@@ -318,6 +318,7 @@ will produce the same output as `np.stack(da.get_attributes('embedding'))` but t
 ```
 
 ````{admonition} Note
+:class: note
 Using `.embeddings` in a DocumenArray or DocumentArrayMemmap with different shapes or dtypes might yield to unnexpected results.
 ````
 
@@ -414,7 +415,7 @@ for m in query.matches:
     print('match emb =', m.embedding.todense(), 'score =', m.scores['euclidean'].value)
 ```
 
-```
+```text
 query emb = [[1 1 1 1 0]]
 match emb = [[1.  1.2 1.  1.  0. ]] score = 0.20000000298023224
 match emb = [[1.  2.2 2.  1.  0. ]] score = 1.5620499849319458
@@ -455,7 +456,7 @@ for d in docarray_filtered:
 
 Will print
 
-```python
+```text
 len(docarray_filtered) = 3
 dict(d.tags) = {'phone': 'None', 'city': 'Barcelona'}
 dict(d.tags) = {'phone': '648907348', 'city': 'Berlin'}
@@ -475,7 +476,7 @@ for d in docarray_filtered:
 
 Will print
 
-```
+```text
 len(docarray_filtered)=2
 dict(d.tags)={'city': 'Barcelona', 'phone': 'None'}
 dict(d.tags)={'phone': 'None', 'city': 'Brussels'}

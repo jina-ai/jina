@@ -28,7 +28,9 @@ pip install torch==1.7.1
 
 Once you have Jina and the dependencies installed, let's get a broad overview of the process we'll follow:
 
-![image](/assets/images/blog/tutorials/flow.png)
+```{figure} ../../.github/images/flow.png
+:align: center
+```
 
 You see from this image that you have your data at the beginning of this Flow process, and this can be any data type:
 
@@ -154,7 +156,9 @@ flow = (
 
 Let's run the code we have so far. If you try it, not much will happen since we are not indexing anything yet, but you will see the new file `our_flow.svg` created on your working folder, and if you open it you would see this:
 
-![image](/assets/images/blog/tutorials/plot_flow1.png)
+```{figure} ../../.github/images/plot_flow1.png
+:align: center
+```
 
 You can see a Flow with two Executors, but what if you have many Executors? this can quickly become very messy, so it is better to name the Executors with `name='CoolName'`. So in our example, we use:
 
@@ -171,7 +175,9 @@ flow = (
 
 Now if you run this, you should have a Flow that is more explicit:
 
-![image](/assets/images/blog/tutorials/plot_flow2.png)
+```{figure} ../../.github/images/plot_flow2.png
+:align: center
+```
 
 ### Use a Flow
 
@@ -320,7 +326,9 @@ def tutorial(args):
 
 If you run this, it should finish without errors. You won't see much yet because we are not showing anything after we index. But you should see a new directory created with the downloaded dataset:
 
-![image](/assets/images/blog/tutorials/downloaded_dataset.png)
+```{figure} ../../.github/images/downloaded_dataset.png
+:align: center
+```
 
 To actually see something we need to specify how we will display it. For our tutorial we will do so in our browser. Add the following after indexing:
 
@@ -478,7 +486,9 @@ And your directory should be:
     
 And we are done! If you followed all the steps, now you should have something like this in your browser:
 
-![image](/assets/images/blog/tutorials/results.png)
+```{figure} ../../.github/images/results.png
+:align: center
+```
 
 There are still a lot of concepts to learn. So stay tuned for our next tutorials.
 
