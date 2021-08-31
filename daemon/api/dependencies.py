@@ -1,17 +1,25 @@
+import os
 from pathlib import Path
 from http import HTTPStatus
 from contextlib import ExitStack
+from collections import defaultdict
 from typing import Dict, List, Optional
 
 from pydantic import FilePath
 from pydantic.errors import PathNotAFileError
 from fastapi import HTTPException, UploadFile, File, Query, Depends
 
-from jina import __docker_host__, Flow
-from jina.enums import PeaRoleType, SocketType, RemoteWorkspaceState
-from jina.helper import cached_property, random_port
+from jina import Flow, __docker_host__
+from jina.helper import cached_property
+from jina.peapods import CompoundPod
+from jina.peapods.peas.helper import update_runtime_cls
+from jina.enums import (
+    PeaRoleType,
+    SocketType,
+    RemoteWorkspaceState,
+)
 from .. import daemon_logger
-from ..models import DaemonID, FlowModel, PodModel, PeaModel
+from ..models import DaemonID, FlowModel, PodModel, PeaModel, GATEWAY_RUNTIME_DICT
 from ..helper import get_workspace_path, change_cwd, change_env
 from ..stores import workspace_store as store
 
@@ -58,11 +66,11 @@ class FlowDepends:
             uses=self.filename, workspace_id=self.workspace_id.jid, identity=self.id
         )
         self.envs = envs.vars
-        self.validate()
+        self._ports = {}
+        self.load_and_dump()
 
     def localpath(self) -> Path:
-        """
-        Validates local filepath in workspace from filename.
+        """Validates local filepath in workspace from filename.
         Raise 404 if filepath doesn't exist in workspace.
 
         :return: filepath for flow yaml
@@ -77,27 +85,95 @@ class FlowDepends:
                 detail=f'File `{self.filename}` not found in workspace `{self.workspace_id}`',
             )
 
-    @cached_property
-    def port_expose(self) -> str:
-        """
-        Sets `port_expose` for the Flow started in `partial-daemon`.
-        This port needs to be exposed before starting `partial-daemon`, hence set here.
-        If env vars are passed, set them in current env, to make sure all values are replaced.
-        Before loading the flow yaml, change CWD to workspace dir.
+    @property
+    def newfile(self) -> str:
+        """return newfile path in format
+        `<root-workspace>/<workspace-id>/<flow-id>_<original-filename>`
 
-        :return: port_expose
+        :return: return filepath to save flow config in
+        """
+        return get_workspace_path(self.workspace_id, f'{self.id}_{self.filename}')
+
+    def load_and_dump(self) -> None:
+        """
+        every Flow created inside JinaD lives inside a container. It is important to know the
+        list of ports to be published with localhost before actually starting the container.
+
+        1. `load` the flow yaml here.
+            - yaml is stored in `workspace` directory, so we'll `cd` there
+            - yaml might include env vars. so we'll set them (passed via query params)
+        2. `build` the Flow so that `gateway` gets added.
+            - get the list of ports to be published (port_expose, port_in, port_out, port_ctrl)
+            - ports need to be published for gateway & executors that are not `ContainerRuntime` or `JinadRuntime` based
+            - note that, Pod level args for ports are enough, as we don't need to publish Pea ports
+            - all the above Pods also run in docker, hence we set `runs_in_docker`
+        3. `save` the Flow config.
+            - saves port configs of all `executors` into the new yaml.
+            - set `JINA_FULL_CLI` envvar, so that `gateway` args are also added.
+            - save the config into a new file.
+        4. pass this new file as filename to `partial-daemon` to start the Flow
         """
         with ExitStack() as stack:
+
+            port_args = ['port_in', 'port_out', 'port_ctrl']
+            port_mapping = defaultdict(dict)
+
+            # set env vars
+            stack.enter_context(change_env('JINA_FULL_CLI', 'true'))
             if self.envs:
                 for key, val in self.envs.items():
                     stack.enter_context(change_env(key, val))
-            stack.enter_context(change_cwd(get_workspace_path(self.workspace_id)))
-            f = Flow.load_config(str(self.localpath()))
-            return f.port_expose or random_port()
 
-    def validate(self) -> None:
-        """Validates and sets arguments to be used in store"""
-        self.ports = {f'{self.port_expose}/tcp': self.port_expose}
+            # change directory to `workspace`
+            stack.enter_context(change_cwd(get_workspace_path(self.workspace_id)))
+
+            # load and build
+            f: Flow = Flow.load_config(str(self.localpath())).build()
+
+            # get & set the ports mapping, set `runs_in_docker`
+            port_mapping['gateway']['port_expose'] = f.port_expose
+            for pod_name, pod in f._pod_nodes.items():
+                runtime_cls = update_runtime_cls(pod.args, copy=True).runtime_cls
+                if runtime_cls in ['ZEDRuntime'] + list(GATEWAY_RUNTIME_DICT.values()):
+                    if isinstance(pod, CompoundPod):
+                        # For a `CompoundPod`, publish ports only for head Pea & tail Pea
+                        # Check daemon.stores.partial.PartialFlowStore.add() for addtional logic
+                        # to handle `CompoundPod` inside partial-daemon.
+                        for pea_args in [pod.head_args, pod.tail_args]:
+                            pea_args.runs_in_docker = False
+                            for port_arg in port_args:
+                                port_mapping[pea_args.name][port_arg] = getattr(
+                                    pea_args, port_arg
+                                )
+                    else:
+                        pod.args.runs_in_docker = True
+                        for port_arg in port_args:
+                            port_mapping[pod_name][port_arg] = getattr(
+                                pod.args, port_arg
+                            )
+            self.ports = port_mapping
+
+            # save to a new file & set it for partial-daemon
+            f.save_config(filename=self.newfile)
+            self.params.uses = os.path.basename(self.newfile)
+
+    @property
+    def ports(self):
+        """getter for ports
+
+        :return: ports to be mapped
+        """
+        return self._ports
+
+    @ports.setter
+    def ports(self, port_mapping: Dict):
+        """setter for ports
+
+        :param port_mapping: port mapping
+        """
+        self._ports = {
+            f'{port}/tcp': port for v in port_mapping.values() for port in v.values()
+        }
 
 
 class PeaDepends:

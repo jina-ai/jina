@@ -12,7 +12,7 @@ def test_flow_api(monkeypatch, partial_flow_client):
     flow_model = FlowModel()
     flow_model.uses = f'{cur_dir}/good_flow_dummy.yml'
     response = partial_flow_client.post(
-        api, json=flow_model.dict(exclude={'log_config'}), params={'port_expose': 56789}
+        api, json=flow_model.dict(exclude={'log_config'})
     )
     assert response
 

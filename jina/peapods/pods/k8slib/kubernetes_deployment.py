@@ -1,33 +1,10 @@
 from argparse import Namespace
 from typing import Dict, Optional, Tuple
-from dataclasses import dataclass
 
 from jina.hubble.helper import parse_hub_uri
 from jina.hubble.hubio import HubIO
 from jina.logging.logger import JinaLogger
 from jina.peapods.pods.k8slib import kubernetes_tools
-
-IS_LOCAL = False
-
-if IS_LOCAL:
-    gateway_image = 'custom-jina'
-else:
-    gateway_image = 'gcr.io/jina-showcase/custom-jina:latest'
-
-
-@dataclass
-class CustomDeploymentConfig:
-    """
-    The purpose of this dataclass is to make the configuration of kubernetes deployments more flexible
-    to the user.
-
-    :param k8s_yml_template_dir: Valid file path to a YAML file containing a template for k8s Deployments.
-        An example can be found in jina.resources. Your template needs to contain AT LEAST those parameters.
-        We highly recommend using this as a base and adding parameters to it.
-    :param kwargs: Additional arguments that match your additions to the template.
-    """
-    k8s_yml_template_dir: str
-    k8s_yml_template_args: Dict
 
 
 def to_dns_name(name: str) -> str:
@@ -49,7 +26,6 @@ def deploy_service(
     replicas: int,
     pull_policy: str,
     init_container: Dict = None,
-    custom_deployment_config: Optional[CustomDeploymentConfig] = None
 ) -> str:
     """Deploy service on Kubernetes.
 
@@ -62,9 +38,9 @@ def deploy_service(
     :param replicas: number of replicas
     :param pull_policy: pull policy used for fetching the Docker images from the registry.
     :param init_container: additional arguments used for the init container
-    :param custom_deployment_config:
     :return: dns name of the created service
     """
+
     # small hack - we can always assume the ports are the same for all executors since they run on different k8s pods
     port_expose = 8080
     port_in = 8081
@@ -72,7 +48,7 @@ def deploy_service(
     port_ctrl = 8083
 
     logger.info(
-        f'🔋\tCreate Service for "{name}" with image "{name}" pulling from "{image_name}" \ncontainer_cmd: {container_cmd}\n{name} container_args: {container_args}'
+        f'🔋\tCreate Service for "{name}" with image "{name}" pulling from "{image_name}"'
     )
     kubernetes_tools.create(
         'service',
@@ -111,31 +87,22 @@ def deploy_service(
             },
         )
     else:
-        base_params = {
-            'name': name,
-            'namespace': namespace,
-            'image': image_name,
-            'replicas': replicas,
-            'command': container_cmd,
-            'args': container_args,
-            'port_expose': port_expose,
-            'port_in': port_in,
-            'port_out': port_out,
-            'port_ctrl': port_ctrl,
-            'pull_policy': pull_policy,
-        }
-        if custom_deployment_config:
-            base_params = {**base_params, **custom_deployment_config.k8s_yml_template_args}
-            kubernetes_tools.create(
-                'deployment',
-                base_params,
-                template_path=custom_deployment_config.k8s_yml_template_dir
-            )
-        else:
-            kubernetes_tools.create(
-                'deployment',
-                base_params,
-            )
+        kubernetes_tools.create(
+            'deployment',
+            {
+                'name': name,
+                'namespace': namespace,
+                'image': image_name,
+                'replicas': replicas,
+                'command': container_cmd,
+                'args': container_args,
+                'port_expose': port_expose,
+                'port_in': port_in,
+                'port_out': port_out,
+                'port_ctrl': port_ctrl,
+                'pull_policy': pull_policy,
+            },
+        )
     return f'{name}.{namespace}.svc.cluster.local'
 
 
@@ -171,7 +138,6 @@ def get_cli_params(arguments: Namespace, skip_list: Tuple[str] = ()) -> str:
         'k8s_init_container_command',
         'k8s_uses_init',
         'k8s_mount_path',
-        'k8s_custom_deployment_args'
     ] + list(skip_list)
     arg_list = [
         [attribute, attribute.replace('_', '-'), value]

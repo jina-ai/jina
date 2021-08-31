@@ -135,6 +135,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
+        runs_in_docker: Optional[bool] = False,
         runtime_backend: Optional[str] = 'PROCESS',
         runtime_cls: Optional[str] = 'GRPCRuntime',
         socket_in: Optional[str] = 'PULL_CONNECT',
@@ -214,6 +215,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           `Executor cookbook <https://github.com/jina-ai/jina/blob/master/.github/2.0/cookbooks/Executor.md#structure-of-the-repository>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param runs_in_docker: Informs a Pea that runs in a container. Important to properly set networking information
         :param runtime_backend: The parallel backend of the runtime inside the Pea
         :param runtime_cls: The runtime class to run inside the Pea
         :param socket_in: The socket type for input port
@@ -489,6 +491,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         quiet_error: Optional[bool] = False,
         quiet_remote_logs: Optional[bool] = False,
         replicas: Optional[int] = 1,
+        runs_in_docker: Optional[bool] = False,
         runtime_backend: Optional[str] = 'PROCESS',
         runtime_cls: Optional[str] = 'ZEDRuntime',
         scheduling: Optional[str] = 'LOAD_BALANCE',
@@ -578,6 +581,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param quiet_remote_logs: Do not display the streaming of remote logs on local console
         :param replicas: The number of replicas in the pod, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary
+        :param runs_in_docker: Informs a Pea that runs in a container. Important to properly set networking information
         :param runtime_backend: The parallel backend of the runtime inside the Pea
         :param runtime_cls: The runtime class to run inside the Pea
         :param scheduling: The strategy of scheduling workload among Peas
@@ -821,7 +825,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             },
         )
 
-    # TODO needs to be refactored
+    # TODO needs to be refactored - deployment should not be a dictionary. Related Ticket: https://github.com/jina-ai/jina/issues/3280
     def _get_routing_table(self) -> RoutingTable:
         graph = RoutingTable()
         for pod_id, pod in self._pod_nodes.items():
@@ -882,9 +886,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 else:
                     graph.add_edge(start, end)
 
-        # ADD INTERNAL POD BETWEEN EDGES
+        # In case of sharding, the head and the tail pea have to be connected to the shards
         for end, pod in self._pod_nodes.items():
-            # set internal edges
             if len(pod.deployments) > 0:
                 deployments = pod.deployments
                 for deployment in deployments[1:-1]:
@@ -973,10 +976,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         op_flow._set_initial_dynamic_routing_table()
 
-        for pod in op_flow._pod_nodes.values():
-            pass
-        pod.args.host = self._resolve_host(pod.args.host)
-
         hanging_pods = _hanging_pods(op_flow)
         if hanging_pods:
             op_flow.logger.warning(
@@ -985,18 +984,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             )
         op_flow._build_level = FlowBuildLevel.GRAPH
         return op_flow
-
-    def _resolve_host(self, host: str) -> str:
-        try:
-            ip_address = socket.gethostbyname(host)
-            if ip_address == get_internal_ip():
-                return __default_host__
-            else:
-                return host
-        except socket.gaierror:
-            self.logger.warning(f'{host} can not be resolved into a valid IP address.')
-            # return the original one, as it might be some special docker host literal
-            return host
 
     def __call__(self, *args, **kwargs):
         """Builds the Flow
@@ -1394,7 +1381,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def _show_success_message(self):
 
         if self.args.infrastructure == InfrastructureType.K8S:
-            self.logger.info('🎉 Kubernetes deployment done!\n')
+            self.logger.info('🎉 Kubernetes deployment done!')
         else:
             address_table = [
                 f'\t🔗 Protocol: \t\t{colored(self.protocol, attrs="bold")}',

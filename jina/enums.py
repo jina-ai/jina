@@ -335,6 +335,13 @@ class InfrastructureType(BetterEnum):
     K8S = 1  # flow is orchestrated by kubernetes
 
 
+class InfrastructureType(BetterEnum):
+    """Infrastructure where the Flow runs on."""
+
+    JINA = 0  # flow is orchestrated by Jina
+    K8S = 1  # flow is orchestrated by kubernetes
+
+
 class RemoteAccessType(BetterEnum):
     """Remote access type when connect to the host."""
 
