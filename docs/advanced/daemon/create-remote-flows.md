@@ -1,8 +1,8 @@
-## Create remote Flows
+# Create remote Flows
 
 JinaD enables management of (remote + containerized) Flows with all your dependencies via REST APIs.
 
-### Create a Flow (<a href="https://api.jina.ai/daemon/#operation/_create_flows_post">redoc</a>)
+## Create a Flow (<a href="https://api.jina.ai/daemon/#operation/_create_flows_post">redoc</a>)
 
 This creates a new container using the base image, connects it to the network defined by `workspace_id` and starts a
 Flow inside the container. Only the ports needed for external communication are mapped to local. Make sure you've added
@@ -16,7 +16,7 @@ client.flows.create(workspace_id=workspace_id, filename='my_awesome_flow.yml')
 # jflow-a71cc28f-a5db-4cc0-bb9e-bb7797172cc9
 ```
 
-### Get details of a Flow (<a href="https://api.jina.ai/daemon/#operation/_status_flows__id__get">redoc</a>)
+## Get details of a Flow (<a href="https://api.jina.ai/daemon/#operation/_status_flows__id__get">redoc</a>)
 
 ```python
 client.flows.get(flow_id)
@@ -59,7 +59,7 @@ client.flows.get(flow_id)
 }
 ```
 
-### Terminate a Flow (<a href="https://api.jina.ai/daemon/#operation/_delete_flows__id__delete">redoc</a>)
+## Terminate a Flow (<a href="https://api.jina.ai/daemon/#operation/_delete_flows__id__delete">redoc</a>)
 
 ```python
 assert client.flows.delete(flow_id)

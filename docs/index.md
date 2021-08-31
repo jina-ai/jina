@@ -55,8 +55,9 @@ Learn how to deploy and manage Jina on remote via a RESTful interface.
 Write beautiful & lean code with Jina.
 ::::
 
-::::{grid-item-card} {octicon}`beaker;1.5em` Experimental features
-:link: 
+::::{grid-item-card} {octicon}`beaker;1.5em` Try Experimental Features
+:link: advanced/experimental/index
+:link-type: doc
 
 Preview the next big thing we are building. Careful, zapping!
 ::::
@@ -109,6 +110,7 @@ fundamentals/clean-code
 
 advanced/hub/index
 advanced/daemon/index
+advanced/experimental/index
 ```
 
 ```{toctree}

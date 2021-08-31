@@ -2,13 +2,13 @@
 
 The core idea of neural search is to leverage state-of-the-art deep neural networks to build *every* component of a search system. In short, **neural search is deep neural network-powered information retrieval.** In academia, it's often called *neural IR*. 
 
-### What can it do?
+## What can it do?
 
 Thanks to recent advances in deep neural networks, a neural search system can go way beyond simple text search. It enables advanced intelligence on all kinds of unstructured data, such as images, audio, video, PDF, 3D mesh, you name it.
 
 For example, retrieving animation according to some beats; finding the best-fit memes according to some jokes; scanning a table with your iPhone's LiDAR camera and finding similar furniture at IKEA. Neural search systems enable what traditional search can't: multi/cross-modal data retrieval.
 
-### Think outside the (search) box
+## Think outside the (search) box
 
 Many neural search-powered applications do not have a search box: 
 
@@ -18,7 +18,7 @@ Many neural search-powered applications do not have a search box:
 
 Neural search creates a new way to comprehend the world. It is creating new doors that lead to new businesses. 
 
-### Seize tomorrow today
+## Seize tomorrow today
 
 Has neural search been solved and is it widely applicable? No. Compared to traditional symbolic search, a neural search system:
 - takes much more time to develop due to the complexity of AI and system engineering;

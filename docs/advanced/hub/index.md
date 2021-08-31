@@ -9,7 +9,6 @@ effort and complexity needed in your search system, or push your own custom Exec
 
 create-hub-executor
 push-executor
-update-executor
 use-hub-executor
 pull-executor
 ```

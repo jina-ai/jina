@@ -1,4 +1,4 @@
-## Workspace
+# Workspace
 
 Workspace is the entrypoint for all objects in JinaD. It primarily represents 4 pieces.
 
@@ -48,7 +48,7 @@ Workspace is the entrypoint for all objects in JinaD. It primarily represents 4 
       ```
 
 
-### Create a workspace ([redoc](https://api.jina.ai/daemon/#operation/_create_workspaces_post))
+## Create a workspace ([redoc](https://api.jina.ai/daemon/#operation/_create_workspaces_post))
 
 Create a directory (say `awesome_project`) on local which has all your files (`yaml`, `py_modules`, `requirements.txt`
 , `.jinad` etc.)
@@ -106,7 +106,7 @@ my_workspace_id = client.workspaces.create(paths=['path_to_awesome_project'])
 ```
 
 
-### Get details of a workspace ([redoc](https://api.jina.ai/daemon/#operation/_list_workspaces__id__get))
+## Get details of a workspace ([redoc](https://api.jina.ai/daemon/#operation/_list_workspaces__id__get))
 
 ```python
 from daemon.clients import JinaDClient
@@ -138,7 +138,7 @@ client.workspaces.get(my_workspace_id)
 }
 ```
 
-### List all workspaces ([redoc](https://api.jina.ai/daemon/#operation/_get_items_workspaces_get))
+## List all workspaces ([redoc](https://api.jina.ai/daemon/#operation/_get_items_workspaces_get))
 
 ```python
 client.workspaces.list()
@@ -168,7 +168,7 @@ client.workspaces.list()
 ```
 
 
-### Delete a workspace ([redoc](https://api.jina.ai/daemon/#operation/_delete_workspaces__id__delete))
+## Delete a workspace ([redoc](https://api.jina.ai/daemon/#operation/_delete_workspaces__id__delete))
 
 ```python
 success_deleted = client.workspaces.delete(id=workspace_id)

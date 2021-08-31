@@ -1,13 +1,13 @@
-## Development using JinaD
+# Development using JinaD
 
 
-#### Build
+## Build
 
 ```bash
 docker build -f Dockerfiles/debianx.Dockerfile --build-arg PIP_TAG=daemon -t jinaai/jina:test-daemon .
 ```
 
-#### Run
+## Run
 
 ```bash
 docker run --add-host host.docker.internal:host-gateway \
@@ -20,7 +20,7 @@ docker run --add-host host.docker.internal:host-gateway \
            -d jinaai/jina:test-daemon
 ```
 
-#### Why?
+## Why?
 
 - `jinaai/jina:test-daemon` ?
 

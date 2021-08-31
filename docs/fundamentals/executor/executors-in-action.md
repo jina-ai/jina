@@ -1,6 +1,6 @@
-## Executors in action
+# Executors in action
 
-### Fastai
+## Fastai
 
 This `Executor` uses the [ResNet18](https://docs.fast.ai) network for object classification on images provided
 by [fastai](https://github.com/fastai/fastai).
@@ -43,7 +43,7 @@ class ResnetImageEncoder(Executor):
 
 ```
 
-### Pytorch Lightning
+## Pytorch Lightning
 
 This code snippet uses an autoencoder pretrained from cifar10-resnet18 to build an executor that encodes Document blob(
 an ndarray that could for example be an image) into embedding . It demonstrates the use of prebuilt model
@@ -73,7 +73,7 @@ class PLMwuAutoEncoder(Executor):
                 doc.embedding = output_tensor.detach().numpy()
 ```
 
-### Paddle
+## Paddle
 
 The example below use PaddlePaddle [Ernie](https://github.com/PaddlePaddle/ERNIE) model as encoder. The Executor load
 pre-trained Ernie family of tokenizer and model. Convert Jina Document ``doc.text`` into Paddle Tensor and encode it as
@@ -104,7 +104,7 @@ class PaddleErineExecutor(Executor):
             doc.embedding = pooled.numpy()
 ```
 
-### Tensorflow
+## Tensorflow
 
 This `Executor` uses the [MobileNetV2](https://keras.io/api/applications/mobilenet/) network for object classification
 on images.
@@ -153,7 +153,7 @@ class TfMobileNetEncoder(Executor):
         return resized_tensors
 ```
 
-### MindSpore
+## MindSpore
 
 The code snippet below takes ``docs`` as input and perform matrix multiplication with ``self.encoding_matrix``. It
 leverages Mindspore ``Tensor`` conversion and operation. Finally, the ``embedding`` of each document will be set as the
@@ -183,7 +183,7 @@ class MindsporeMwuExecutor(Executor):
             doc.embedding = output_tensor.asnumpy()  # assign the encoding results to ``embedding``
 ```
 
-### Scikit-learn
+## Scikit-learn
 
 This `Executor` uses
 a [TF-IDF](https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html)
@@ -230,7 +230,7 @@ class TFIDFTextEncoder(Executor):
             doc.embedding = embedding_matrix[i]
 ```
 
-### PyTorch
+## PyTorch
 
 The code snippet below takes ``docs`` as input and perform feature extraction with ``modelnet v2``. It leverages
 Pytorch's ``Tensor`` conversion and operation. Finally, the ``embedding`` of each document will be set as the extracted
@@ -257,7 +257,7 @@ class PytorchMobilNetExecutor(Executor):
                 doc.embedding = embed
 ```
 
-### ONNX
+## ONNX
 
 The code snippet bellow converts a `Pytorch` model to the `ONNX` and leverage `onnxruntime` to run inference tasks on
 models from `hugging-face transformers`.

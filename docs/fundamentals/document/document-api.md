@@ -104,7 +104,7 @@ da.get_attributes('tags__dimensions__height', 'tags__dimensions__weight')
 
 ## Construct `Document`
 
-#### Content attributes
+### Content attributes
 
 | Attribute | Description |
 | --- | --- |

@@ -1,5 +1,5 @@
 (flow)=
-## Create a Flow
+# Create a Flow
 
 An empty Flow can be created via:
 
@@ -9,7 +9,7 @@ from jina import Flow
 f = Flow()
 ```
 
-### Use a Flow
+## Use a Flow
 
 To use `f`, always open it as a context manager, just like you open a file. This is considered the best practice in
 Jina:
@@ -40,7 +40,7 @@ with f:
     f.block()  # block the current process
 ```
 ````
-### Visualize a Flow
+## Visualize a Flow
 
 ```python
 from jina import Flow
