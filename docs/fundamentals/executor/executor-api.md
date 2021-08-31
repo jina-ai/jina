@@ -191,7 +191,10 @@ The arguments order is designed as common-usage-first. Not alphabetical order or
 :class: hint
 If you don't need some arguments, you can suppress them into `**kwargs`. For example:
 
-```python
+```{code-block} python
+---
+emphasize-lines: 7, 11, 16
+---
 from jina import Executor, requests
 
 
@@ -279,7 +282,10 @@ In this example, a simple indexer stores incoming `docs` in a `DocumentArray`. T
 by preserving only `id` in the original `docs` and dropping all others, as the developer does not want to carry all rich
 info over the network. This needs a return.
 
-```python
+```{code-block} python
+---
+emphasize-lines: 14
+---
 from jina import requests, Document, Executor, DocumentArray
 
 

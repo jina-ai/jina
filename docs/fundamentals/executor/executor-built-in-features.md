@@ -36,7 +36,10 @@ You might need to execute some logic when your executor's destructor is called. 
 persist data to the disk (e.g. in-memory indexed data, fine-tuned model,...). To do so, you can overwrite the
 method `close` and add your logic.
 
-```python
+```{code-block} python
+---
+emphasize-lines: 11, 12
+---
 from jina import Executor, requests, Document, DocumentArray
 
 
@@ -87,7 +90,10 @@ requests:
 
 You can use class method `Executor.load_config` and object method `exec.save_config` to load and save YAML config:
 
-```python
+```{code-block} python
+---
+emphasize-lines: 25, 26, 27
+---
 from jina import Executor
 
 
@@ -169,7 +175,10 @@ the `executors` will receive
 `parameters` as an argument to their `methods`. These `parameters` can be used to pass extra information or tune
 the `executor` behavior for a given request without updating the general configuration.
 
-```python
+```{code-block} python
+---
+emphasize-lines: 11, 18
+---
 from typing import Optional
 from jina import Executor, requests, DocumentArray, Flow
 
@@ -195,7 +204,10 @@ In that case one can specify specific parameters for the specific `executor` by 
 with the `executor` name as `key`. Jina will then take all these specific parameters and copy to the root of the
 parameters dictionary before calling the executor `method`.
 
-```python
+```{code-block} python
+---
+emphasize-lines: 24
+---
 from typing import Optional
 from jina import Executor, requests, DocumentArray, Flow
 
