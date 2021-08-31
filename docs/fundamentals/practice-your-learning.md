@@ -1,4 +1,4 @@
-# Practice Your Learning
+# {octicon}`mortar-board` Practice Your Learning
 
 Now that you understand all fundamental concepts, let's practice the learnings and build a simple end-to-end demo.
 
