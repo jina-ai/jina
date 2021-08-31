@@ -206,11 +206,10 @@ f.add(name='remote', host='123.45.67.89', port_out=23456).add(name='local', conn
 
 ## Override Executor configs
 
-You can override an executor's meta configs when creating a flow:
+You can override an executor's meta configs when creating a flow.
 
 ### Override `metas` configuration
-To override the `metas` configuration of an executor (described 
-[here](https://github.com/jina-ai/jina/blob/master/.github/2.0/cookbooks/Executor.md#metas)), use `uses_metas`:
+To override the `metas` configuration of an executor, use `uses_metas`:
 ```python
 from jina import Executor, requests, Flow
 class MyExecutor(Executor):
