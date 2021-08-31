@@ -78,29 +78,6 @@ def png_to_buffer(arr: 'np.ndarray', width: int, height: int, resize_method: str
     return png_bytes
 
 
-def _raw_img_to_numpy(raw_img):
-    """
-    Generate a numpy array from a PIL raw PIL image
-
-    :param raw_img: loaded image from PIL.Images
-    """
-    cache = 2 ** 16
-
-    raw_img.load()
-    e = Image._getencoder(raw_img.mode, 'raw', raw_img.mode)
-    e.setimage(raw_img.im)
-
-    shape, typestr = Image._conv_type_shape(raw_img)
-    data = np.empty(shape, dtype=np.dtype(typestr))
-    mem = data.data.cast('B', (data.data.nbytes,))
-
-    bufsize, stop_flag, offset = cache, 0, 0
-    while stop_flag == 0:
-        l, stop_flag, im_chunk = e.encode(bufsize)
-        mem[offset:offset + len(im_chunk)] = im_chunk
-        offset += len(im_chunk)
-
-    return data
 
 def to_image_blob(source, color_axis: int = -1) -> 'np.ndarray':
     """
@@ -111,6 +88,30 @@ def to_image_blob(source, color_axis: int = -1) -> 'np.ndarray':
     :return: image blob
     """
     from PIL import Image
+
+    def _raw_img_to_numpy(raw_img):
+        """
+        Generate a numpy array from a PIL raw PIL image
+
+        :param raw_img: loaded image from PIL.Images
+        """
+        cache = 2 ** 16
+
+        raw_img.load()
+        e = Image._getencoder(raw_img.mode, 'raw', raw_img.mode)
+        e.setimage(raw_img.im)
+
+        shape, typestr = Image._conv_type_shape(raw_img)
+        data = np.empty(shape, dtype=np.dtype(typestr))
+        mem = data.data.cast('B', (data.data.nbytes,))
+
+        bufsize, stop_flag, offset = cache, 0, 0
+        while stop_flag == 0:
+            l, stop_flag, im_chunk = e.encode(bufsize)
+            mem[offset:offset + len(im_chunk)] = im_chunk
+            offset += len(im_chunk)
+
+        return data
 
     raw_img = Image.open(source)
     img = _raw_img_to_numpy(raw_img)
