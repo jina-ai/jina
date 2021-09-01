@@ -594,8 +594,8 @@ dataset. Documents “flow” through the created pipeline and are processed by 
 </table></div>
 <div class="section" id="minimum-working-example">
 <h2>Minimum working example<a class="headerlink" href="#minimum-working-example" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="pure-python-all-in-one-style">
-<h3>Pure Python: All-in-one style<a class="headerlink" href="#pure-python-all-in-one-style" title="Permalink to this headline">¶</a></h3>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">All-in-one style</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 
 
@@ -613,8 +613,7 @@ dataset. Documents “flow” through the created pipeline and are processed by 
 </pre></div>
 </div>
 </div>
-<div class="section" id="pure-python-flow-as-a-service-style">
-<h3>Pure Python: Flow-as-a-Service style<a class="headerlink" href="#pure-python-flow-as-a-service-style" title="Permalink to this headline">¶</a></h3>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">Flow-as-a-Service style</label><div class="tab-content docutils">
 <p>Server:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 
@@ -640,8 +639,7 @@ dataset. Documents “flow” through the created pipeline and are processed by 
 </pre></div>
 </div>
 </div>
-<div class="section" id="with-yaml">
-<h3>With YAML<a class="headerlink" href="#with-yaml" title="Permalink to this headline">¶</a></h3>
+<input class="tab-input" id="tab-set--0-input--3" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--3">Load from YAML</label><div class="tab-content docutils">
 <p><code class="docutils literal notranslate"><span class="pre">my.yml</span></code>:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Flow</span>
 <span class="nt">executors</span><span class="p">:</span>
@@ -657,8 +655,18 @@ dataset. Documents “flow” through the created pipeline and are processed by 
     <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/bar'</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">(),</span> <span class="n">on_done</span><span class="o">=</span><span class="nb">print</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="toctree-wrapper compound">
 </div>
+</div>
+<div class="seealso admonition">
+<p class="admonition-title">See Also</p>
+<p>Document, Executor, and Flow are the three fundamental concepts in Jina.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../document/"><span class="doc">Document</span></a> is the basic data type in Jina;</p></li>
+<li><p><a class="reference internal" href="../executor/executor-api/#executor"><span class="std std-ref">Executor</span></a> is how Jina processes Documents;</p></li>
+<li><p><a class="reference internal" href="flow-api/#flow"><span class="std std-ref">Flow</span></a> is how Jina streamlines and scales Executors.</p></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
 </div>
 </div>
 </div>
@@ -710,12 +718,7 @@ dataset. Documents “flow” through the created pipeline and are processed by 
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Flow</a><ul>
-<li><a class="reference internal" href="#minimum-working-example">Minimum working example</a><ul>
-<li><a class="reference internal" href="#pure-python-all-in-one-style">Pure Python: All-in-one style</a></li>
-<li><a class="reference internal" href="#pure-python-flow-as-a-service-style">Pure Python: Flow-as-a-Service style</a></li>
-<li><a class="reference internal" href="#with-yaml">With YAML</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#minimum-working-example">Minimum working example</a></li>
 </ul>
 </li>
 </ul>

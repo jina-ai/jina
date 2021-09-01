@@ -16,8 +16,17 @@ executors-in-action
 repository-structure
 ```
 
-````{admonition} 2.0 Design Principle of Executor
-:class: note
+````{admonition} See Also
+:class: seealso
+
+Document, Executor, and Flow are the three fundamental concepts in Jina.
+
+- {doc}`Document <../document/index>` is the basic data type in Jina;
+- {ref}`Executor <executor>` is how Jina processes Documents;
+- {ref}`Flow <flow>` is how Jina streamlines and scales Executors.
+````
+
+````{dropdown} Design Principle of Executor
 
 In Jina 2.0 the Executor class is generic to all categories of executors (`encoders`, `indexers`, `segmenters`,...) to
 keep development simple. We do not provide subclasses of `Executor` that are specific to each category. The design

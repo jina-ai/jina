@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/fundamentals/executor/index.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="Executor represents a processing component in a Jina Flow. It performs a single task on a Document or DocumentArray. You can create an Executor by extending the Executor class and adding logic to endpoint methods." />
+  <meta property="og:description" content="Executor represents a processing component in a Jina Flow. It performs a single task on a Document or DocumentArray. You can create an Executor by extending the Executor class and adding logic to endpoint methods. Design Principle of Executor In Jina 2.0 the Executor class is generic to all categ..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -563,28 +563,42 @@
 <p>You can create an Executor by extending the <code class="docutils literal notranslate"><span class="pre">Executor</span></code> class and adding logic to endpoint methods.</p>
 <div class="toctree-wrapper compound">
 </div>
-<div class="note admonition">
-<p class="admonition-title">2.0 Design Principle of Executor</p>
-<p>In Jina 2.0 the Executor class is generic to all categories of executors (<code class="docutils literal notranslate"><span class="pre">encoders</span></code>, <code class="docutils literal notranslate"><span class="pre">indexers</span></code>, <code class="docutils literal notranslate"><span class="pre">segmenters</span></code>,…) to
+<div class="seealso admonition">
+<p class="admonition-title">See Also</p>
+<p>Document, Executor, and Flow are the three fundamental concepts in Jina.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../document/"><span class="doc">Document</span></a> is the basic data type in Jina;</p></li>
+<li><p><a class="reference internal" href="executor-api/#executor"><span class="std std-ref">Executor</span></a> is how Jina processes Documents;</p></li>
+<li><p><a class="reference internal" href="../flow/flow-api/#flow"><span class="std std-ref">Flow</span></a> is how Jina streamlines and scales Executors.</p></li>
+</ul>
+</div>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Design Principle of Executor<div class="sd-summary-down docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-down" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z" fill-rule="evenodd"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-up" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z" fill-rule="evenodd"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">In Jina 2.0 the Executor class is generic to all categories of executors (<code class="docutils literal notranslate"><span class="pre">encoders</span></code>, <code class="docutils literal notranslate"><span class="pre">indexers</span></code>, <code class="docutils literal notranslate"><span class="pre">segmenters</span></code>,…) to
 keep development simple. We do not provide subclasses of <code class="docutils literal notranslate"><span class="pre">Executor</span></code> that are specific to each category. The design
 principles are (<code class="docutils literal notranslate"><span class="pre">user</span></code> here means “Executor developer”):</p>
 <ul class="simple">
-<li><p><strong>Do not surprise the user</strong>: keep <code class="docutils literal notranslate"><span class="pre">Executor</span></code> class as Pythonic as possible. It should be as light and unintrusive as
+<li><p class="sd-card-text"><strong>Do not surprise the user</strong>: keep <code class="docutils literal notranslate"><span class="pre">Executor</span></code> class as Pythonic as possible. It should be as light and unintrusive as
 a <code class="docutils literal notranslate"><span class="pre">mixin</span></code> class:</p>
 <ul>
-<li><p>do not customize the class constructor logic;</p></li>
-<li><p>do not change its built-in interfaces <code class="docutils literal notranslate"><span class="pre">__getstate__</span></code>, <code class="docutils literal notranslate"><span class="pre">__setstate__</span></code>;</p></li>
-<li><p>do not add new members to the <code class="docutils literal notranslate"><span class="pre">Executor</span></code> object unless needed.</p></li>
+<li><p class="sd-card-text">do not customize the class constructor logic;</p></li>
+<li><p class="sd-card-text">do not change its built-in interfaces <code class="docutils literal notranslate"><span class="pre">__getstate__</span></code>, <code class="docutils literal notranslate"><span class="pre">__setstate__</span></code>;</p></li>
+<li><p class="sd-card-text">do not add new members to the <code class="docutils literal notranslate"><span class="pre">Executor</span></code> object unless needed.</p></li>
 </ul>
 </li>
-<li><p><strong>Do not overpromise to the user</strong>: do not promise features that we can hardly deliver. Trying to control the
+<li><p class="sd-card-text"><strong>Do not overpromise to the user</strong>: do not promise features that we can hardly deliver. Trying to control the
 interface while delivering just loosely-implemented features is bad for scaling the core framework. For
 example, <code class="docutils literal notranslate"><span class="pre">save</span></code>, <code class="docutils literal notranslate"><span class="pre">load</span></code>, <code class="docutils literal notranslate"><span class="pre">on_gpu</span></code>, etc.</p></li>
 </ul>
-<p>We want to give our users the freedom to customize their executors easily. If a user is a good Python programmer, they
+<p class="sd-card-text">We want to give our users the freedom to customize their executors easily. If a user is a good Python programmer, they
 should pick up <code class="docutils literal notranslate"><span class="pre">Executor</span></code> in no time. It is as simple as subclassing <code class="docutils literal notranslate"><span class="pre">Executor</span></code> and adding an endpoint.</p>
 </div>
-</div>
+</details></div>
 
       </article>
       <footer>

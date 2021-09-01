@@ -7,9 +7,15 @@ Now you understand that `Executor` is a building block in Jina. The following qu
 - Can I share my Executor to my colleague?
 - Can I simply use others' Executor without implementing it?
 
-Yes! This is exactly the purpose of Jina Hub - a one-stop shop for Executors. By using Hub you can pull prebuilt Executors to dramatically reduce the effort and complexity needed in your search system, or push your own custom Executors to share privately or publicly.
+Basically, something like the following:
 
-The whole user journey looks like below:
+```{figure} ../../../.github/hub-user-journey.svg
+:align: center
+```
+
+**Yes!** This is exactly the purpose of Jina Hub - a one-stop shop for Executors. By using Hub you can pull prebuilt Executors to dramatically reduce the effort and complexity needed in your search system, or push your own custom Executors to share privately or publicly.
+
+The whole architecture looks like the following:
 
 ```{figure} ../../../.github/hub-system.svg
 :align: center
