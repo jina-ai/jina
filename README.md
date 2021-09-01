@@ -14,11 +14,11 @@
 <a href="https://hub.docker.com/r/jinaai/jina/tags"><img src="https://img.shields.io/docker/v/jinaai/jina?color=%23099cec&amp;label=Docker&amp;logo=docker&amp;logoColor=white&amp;sort=semver" alt="Docker Image Version (latest semver)"></a>
 <a href="https://pepy.tech/project/jina"><img src="https://pepy.tech/badge/jina/month"></a>
 <a href="https://codecov.io/gh/jina-ai/jina"><img src="https://codecov.io/gh/jina-ai/jina/branch/master/graph/badge.svg" alt="codecov"></a>
-<a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-1.2%2B-blueviolet?logo=slack&amp;logoColor=white"></a>
+<a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-1.3k%2B-blueviolet?logo=slack&amp;logoColor=white"></a>
 </p>
 
 
-Jina<sup><a href=".github/pronounce-jina.mp3">`🔊`</a></sup> is a neural search framework that allows anyone to build SOTA & scalable deep learning search applications in minutes. 
+Jina<sup><a href=".github/pronounce-jina.mp3">`🔊`</a></sup> is a neural search framework that empowers anyone to build SOTA & scalable deep learning search applications in minutes. 
 
 
 🌌 **All data types** - Large-scale indexing and querying of any kind of unstructured data: video, image, long/short text, music, source code, PDF, etc.
@@ -34,7 +34,7 @@ fragmented, multi-vendor, generic legacy tools.
 
 ## Install
 
-- via PyPI: `pip install -U jina`
+- via PyPI: `pip install jina`
 - via Docker: `docker run jinaai/jina:latest`
 - [More install options](https://docs.jina.ai/get-started/install/)
 
