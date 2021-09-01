@@ -16,7 +16,13 @@ from .builder import allowed_levels, _hanging_pods
 from .. import __default_host__
 from ..clients import Client
 from ..clients.mixin import AsyncPostMixin, PostMixin
-from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType, GatewayProtocolType
+from ..enums import (
+    FlowBuildLevel,
+    PodRoleType,
+    FlowInspectType,
+    GatewayProtocolType,
+    InfrastructureType,
+)
 from ..excepts import FlowTopologyError, FlowMissingPodError, RoutingTableCyclicError
 from ..helper import (
     colored,
@@ -28,6 +34,7 @@ from ..helper import (
     CatchAllCleanupContextManager,
 )
 from ..jaml import JAMLCompatible
+
 from ..logging.logger import JinaLogger
 from ..parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
 from ..parsers.flow import set_flow_parser
@@ -128,6 +135,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
+        runs_in_docker: Optional[bool] = False,
         runtime_backend: Optional[str] = 'PROCESS',
         runtime_cls: Optional[str] = 'GRPCRuntime',
         socket_in: Optional[str] = 'PULL_CONNECT',
@@ -204,9 +212,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           Note that the recommended way is to only import a single module - a simple python file, if your
           executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
           which should be structured as a python package. For more details, please see the
-          `Executor cookbook <https://github.com/jina-ai/jina/blob/master/.github/2.0/cookbooks/Executor.md#structure-of-the-repository>`__
+          `Executor <https://docs.jina.ai/fundamentals/executor/repository-structure/>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param runs_in_docker: Informs a Pea that runs in a container. Important to properly set networking information
         :param runtime_backend: The parallel backend of the runtime inside the Pea
         :param runtime_cls: The runtime class to run inside the Pea
         :param socket_in: The socket type for input port
@@ -404,7 +413,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
 
-        self._pod_nodes[GATEWAY_NAME] = Pod(args, needs)
+        args.k8s_namespace = self.args.name
+        self._pod_nodes[GATEWAY_NAME] = PodFactory.build_pod(
+            args, needs, self.args.infrastructure
+        )
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def needs(
@@ -479,6 +491,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         quiet_error: Optional[bool] = False,
         quiet_remote_logs: Optional[bool] = False,
         replicas: Optional[int] = 1,
+        runs_in_docker: Optional[bool] = False,
         runtime_backend: Optional[str] = 'PROCESS',
         runtime_cls: Optional[str] = 'ZEDRuntime',
         scheduling: Optional[str] = 'LOAD_BALANCE',
@@ -568,6 +581,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param quiet_remote_logs: Do not display the streaming of remote logs on local console
         :param replicas: The number of replicas in the pod, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary
+        :param runs_in_docker: Informs a Pea that runs in a container. Important to properly set networking information
         :param runtime_backend: The parallel backend of the runtime inside the Pea
         :param runtime_cls: The runtime class to run inside the Pea
         :param scheduling: The strategy of scheduling workload among Peas
@@ -698,7 +712,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         # pod workspace if not set then derive from flow workspace
         args.workspace = os.path.abspath(args.workspace or self.workspace)
 
-        op_flow._pod_nodes[pod_name] = PodFactory.build_pod(args, needs)
+        args.k8s_namespace = self.args.name
+        op_flow._pod_nodes[pod_name] = PodFactory.build_pod(
+            args, needs, self.args.infrastructure
+        )
 
         op_flow.last_pod = pod_name
 
@@ -808,26 +825,53 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             },
         )
 
+    # TODO needs to be refactored - deployment should not be a dictionary. Related Ticket: https://github.com/jina-ai/jina/issues/3280
     def _get_routing_table(self) -> RoutingTable:
         graph = RoutingTable()
         for pod_id, pod in self._pod_nodes.items():
             if pod_id == GATEWAY_NAME:
-                graph.add_pod(f'start-{GATEWAY_NAME}', pod)
-                graph.add_pod(f'end-{GATEWAY_NAME}', pod)
+                deployment = pod.deployments[0]
+
+                graph.add_pod(
+                    f'start-{GATEWAY_NAME}',
+                    deployment['head_host'],
+                    deployment['head_port_in'],
+                    deployment['tail_port_out'],
+                    deployment['head_zmq_identity'],
+                )
+                graph.add_pod(
+                    f'end-{GATEWAY_NAME}',
+                    deployment['head_host'],
+                    deployment['head_port_in'],
+                    deployment['tail_port_out'],
+                    deployment['head_zmq_identity'],
+                )
             else:
-                graph.add_pod(pod_id, pod)
+                for deployment in pod.deployments:
+                    graph.add_pod(
+                        deployment['name'],
+                        deployment['head_host'],
+                        deployment['head_port_in'],
+                        deployment['tail_port_out'],
+                        deployment['head_zmq_identity'],
+                    )
 
         for end, pod in self._pod_nodes.items():
-
             if end == GATEWAY_NAME:
                 end = f'end-{GATEWAY_NAME}'
 
             if pod.head_args.hosts_in_connect is None:
                 pod.head_args.hosts_in_connect = []
 
+            if end not in graph.pods:
+                end = end + '_head'
+
             for start in pod.needs:
                 if start == GATEWAY_NAME:
                     start = f'start-{GATEWAY_NAME}'
+
+                if start not in graph.pods:
+                    start = start + '_tail'
 
                 start_pod = graph._get_target_pod(start)
 
@@ -841,6 +885,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     graph.add_edge(start, end, True)
                 else:
                     graph.add_edge(start, end)
+
+        # In case of sharding, the head and the tail pea have to be connected to the shards
+        for end, pod in self._pod_nodes.items():
+            if len(pod.deployments) > 0:
+                deployments = pod.deployments
+                for deployment in deployments[1:-1]:
+                    graph.add_edge(deployments[0]['name'], deployment['name'])
+                    graph.add_edge(deployment['name'], deployments[-1]['name'])
 
         graph.active_pod = f'start-{GATEWAY_NAME}'
         return graph
@@ -924,9 +976,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         op_flow._set_initial_dynamic_routing_table()
 
-        for pod in op_flow._pod_nodes.values():
-            pod.args.host = self._resolve_host(pod.args.host)
-
         hanging_pods = _hanging_pods(op_flow)
         if hanging_pods:
             op_flow.logger.warning(
@@ -935,18 +984,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             )
         op_flow._build_level = FlowBuildLevel.GRAPH
         return op_flow
-
-    def _resolve_host(self, host: str) -> str:
-        try:
-            ip_address = socket.gethostbyname(host)
-            if ip_address == get_internal_ip():
-                return __default_host__
-            else:
-                return host
-        except socket.gaierror:
-            self.logger.warning(f'{host} can not be resolved into a valid IP address.')
-            # return the original one, as it might be some special docker host literal
-            return host
 
     def __call__(self, *args, **kwargs):
         """Builds the Flow
@@ -986,7 +1023,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         :return: this instance
         """
-
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
             self.build(copy_flow=False)
 
@@ -1344,45 +1380,48 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def _show_success_message(self):
 
-        address_table = [
-            f'\t🔗 Protocol: \t\t{colored(self.protocol, attrs="bold")}',
-            f'\t🏠 Local access:\t'
-            + colored(f'{self.host}:{self.port_expose}', 'cyan', attrs='underline'),
-            f'\t🔒 Private network:\t'
-            + colored(
-                f'{self.address_private}:{self.port_expose}',
-                'cyan',
-                attrs='underline',
-            ),
-        ]
-        if self.address_public:
-            address_table.append(
-                f'\t🌐 Public address:\t'
+        if self.args.infrastructure == InfrastructureType.K8S:
+            self.logger.info('🎉 Kubernetes deployment done!')
+        else:
+            address_table = [
+                f'\t🔗 Protocol: \t\t{colored(self.protocol, attrs="bold")}',
+                f'\t🏠 Local access:\t'
+                + colored(f'{self.host}:{self.port_expose}', 'cyan', attrs='underline'),
+                f'\t🔒 Private network:\t'
                 + colored(
-                    f'{self.address_public}:{self.port_expose}',
+                    f'{self.address_private}:{self.port_expose}',
                     'cyan',
                     attrs='underline',
+                ),
+            ]
+            if self.address_public:
+                address_table.append(
+                    f'\t🌐 Public address:\t'
+                    + colored(
+                        f'{self.address_public}:{self.port_expose}',
+                        'cyan',
+                        attrs='underline',
+                    )
                 )
-            )
-        if self.protocol == GatewayProtocolType.HTTP:
-            address_table.append(
-                f'\t💬 Swagger UI:\t\t'
-                + colored(
-                    f'http://localhost:{self.port_expose}/docs',
-                    'cyan',
-                    attrs='underline',
+            if self.protocol == GatewayProtocolType.HTTP:
+                address_table.append(
+                    f'\t💬 Swagger UI:\t\t'
+                    + colored(
+                        f'http://localhost:{self.port_expose}/docs',
+                        'cyan',
+                        attrs='underline',
+                    )
                 )
-            )
-            address_table.append(
-                f'\t📚 Redoc:\t\t'
-                + colored(
-                    f'http://localhost:{self.port_expose}/redoc',
-                    'cyan',
-                    attrs='underline',
+                address_table.append(
+                    f'\t📚 Redoc:\t\t'
+                    + colored(
+                        f'http://localhost:{self.port_expose}/redoc',
+                        'cyan',
+                        attrs='underline',
+                    )
                 )
-            )
 
-        self.logger.info('🎉 Flow is ready to use!\n' + '\n'.join(address_table))
+            self.logger.info('🎉 Flow is ready to use!\n' + '\n'.join(address_table))
 
     def block(self):
         """Block the process until user hits KeyboardInterrupt"""

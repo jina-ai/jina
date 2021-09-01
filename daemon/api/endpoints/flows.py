@@ -36,7 +36,6 @@ async def _create(flow: FlowDepends = Depends(FlowDepends)):
             params=flow.params,
             ports=flow.ports,
             envs=flow.envs,
-            port_expose=flow.port_expose,
         )
     except Exception as ex:
         raise Runtime400Exception from ex

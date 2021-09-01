@@ -3,7 +3,9 @@ import os
 import numpy as np
 import pytest
 
-from jina import Flow, Document
+from daemon.clients import JinaDClient
+from jina import Flow, Client, Document, __default_host__
+
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -89,7 +91,7 @@ def test_r_l_r_docker(parallels, docker_image, mocker):
     response_mock.assert_called()
 
 
-@pytest.mark.parametrize('parallels', [1, 2])
+@pytest.mark.parametrize('parallels', [1])
 def test_r_r_r_docker(parallels, docker_image, mocker):
     response_mock = mocker.Mock()
 
@@ -122,3 +124,36 @@ def test_l_r_l_docker(parallels, docker_image, mocker):
             on_done=response_mock,
         )
     response_mock.assert_called()
+
+
+def test_remote_flow_containerized_executors(docker_image, mocker):
+    response_mock = mocker.Mock()
+    client = JinaDClient(host=__default_host__, port=8000)
+    workspace_id = client.workspaces.create(paths=[os.path.join(cur_dir, 'yamls')])
+
+    GATEWAY_CONTAINER_GATEWAY = 'flow_gcg.yml'
+    GATEWAY_CONTAINER_LOCAL_GATEWAY = 'flow_gclg.yml'
+    GATEWAY_LOCAL_CONTAINER_GATEWAY = 'flow_gclg.yml'
+    GATEWAY_CONTAINER_LOCAL_CONTAINER_GATEWAY = 'flow_gclcg.yml'
+
+    for flow_yaml in [
+        GATEWAY_CONTAINER_GATEWAY,
+        GATEWAY_CONTAINER_LOCAL_GATEWAY,
+        GATEWAY_LOCAL_CONTAINER_GATEWAY,
+        GATEWAY_CONTAINER_LOCAL_CONTAINER_GATEWAY,
+    ]:
+        flow_id = client.flows.create(workspace_id=workspace_id, filename=flow_yaml)
+        args = client.flows.get(flow_id)['arguments']['object']['arguments']
+        Client(
+            host=__default_host__,
+            port=args['port_expose'],
+            protocol=args['protocol'],
+        ).post(
+            on='/',
+            inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
+            on_done=response_mock,
+        )
+        response_mock.assert_called()
+        assert client.flows.delete(flow_id)
+
+    assert client.workspaces.delete(workspace_id)

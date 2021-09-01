@@ -293,6 +293,22 @@ class BasePod:
         """
         ...
 
+    @property
+    def deployments(self) -> List[Dict]:
+        """Get deployments of the pod. The BasePod just gives one deployment.
+
+        :return: list of deployments
+        """
+        return [
+            {
+                'name': self.name,
+                'head_host': self.head_host,
+                'head_port_in': self.head_port_in,
+                'tail_port_out': self.tail_port_out,
+                'head_zmq_identity': self.head_zmq_identity,
+            }
+        ]
+
 
 class Pod(BasePod, ExitFIFO):
     """A BasePod is an immutable set of peas, which run in parallel. They share the same input and output socket.

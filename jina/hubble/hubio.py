@@ -536,7 +536,7 @@ with f:
 
     @staticmethod
     @disk_cache_offline(cache_file=str(_cache_file))
-    def _fetch_meta(
+    def fetch_meta(
         name: str,
         tag: Optional[str] = None,
         secret: Optional[str] = None,
@@ -633,7 +633,7 @@ with f:
                 scheme, name, tag, secret = parse_hub_uri(self.args.uri)
 
                 st.update(f'Fetching meta data of {name}...')
-                executor = HubIO._fetch_meta(name, tag=tag, secret=secret)
+                executor = HubIO.fetch_meta(name, tag=tag, secret=secret)
                 usage = (
                     f'{executor.uuid}'
                     if executor.visibility == 'public'

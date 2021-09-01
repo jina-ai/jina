@@ -102,6 +102,58 @@ def test_load_modify_dump_load(tmpdir):
     assert f1._pod_nodes['custom2'].args.port_out == 34568
 
 
+def test_dump_load_build(monkeypatch):
+    f: Flow = Flow.load_config(
+        '''
+    jtype: Flow
+    with:
+        name: abc
+        port_expose: 12345
+        protocol: http
+    executors:
+        - name: executor1
+          port_in: 45678
+          parallel: 2
+        - name: executor2
+          uses: docker://exec
+          host: 1.2.3.4
+        - name: executor3
+          uses: docker://exec
+          parallel: 2
+    '''
+    ).build()
+    f['gateway'].args.runs_in_docker = True
+    f['executor1'].args.runs_in_docker = True
+
+    f1: Flow = Flow.load_config(JAML.dump(f)).build()
+    assert not f1[
+        'gateway'
+    ].args.runs_in_docker  # gateway doesn't have custom args set, as env was not set
+    assert f1['executor1'].args.runs_in_docker
+    # these were passed by the user
+    assert f.port_expose == f1.port_expose
+    assert f.protocol == f1.protocol
+    assert f['executor1'].args.port_in == f1['executor1'].args.port_in
+    assert f['executor2'].args.host == f1['executor2'].args.host
+    # this was set during `load_config`
+    assert f['executor2'].args.port_in == f1['executor2'].args.port_in
+    assert f['executor3'].args.port_out == f1['executor3'].args.port_out
+    # gateway args are not set, if `JINA_FULL_CLI` is not set
+    assert f['gateway'].args.port_in != f1['gateway'].args.port_in
+    assert f['gateway'].args.port_out != f1['gateway'].args.port_out
+
+    monkeypatch.setenv('JINA_FULL_CLI', 'true')
+    f2: Flow = Flow.load_config(JAML.dump(f)).build()
+    assert f2['gateway'].args.runs_in_docker
+    assert f2['executor1'].args.runs_in_docker
+    # these were passed by the user
+    assert f.port_expose == f2.port_expose
+    # validate gateway args (set during build)
+    assert f['gateway'].args.port_in == f2['gateway'].args.port_in
+    assert f['gateway'].args.port_out == f2['gateway'].args.port_out
+    assert f['gateway'].args.port_ctrl == f2['gateway'].args.port_ctrl
+
+
 def test_load_flow_with_port():
     f = Flow.load_config('yaml/test-flow-port.yml')
     with f:

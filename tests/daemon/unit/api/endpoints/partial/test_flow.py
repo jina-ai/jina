@@ -12,13 +12,12 @@ def test_flow_api(monkeypatch, partial_flow_client):
     flow_model = FlowModel()
     flow_model.uses = f'{cur_dir}/good_flow_dummy.yml'
     response = partial_flow_client.post(
-        api, json=flow_model.dict(exclude={'log_config'}), params={'port_expose': 56789}
+        api, json={'flow': flow_model.dict(exclude={'log_config'})}
     )
     assert response
 
     response = partial_flow_client.get(api)
     assert response
-    print(response.json())
     assert response.json()['arguments']['port_expose'] == 56789
 
     def response_checker(response):
