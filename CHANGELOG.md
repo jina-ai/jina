@@ -87,6 +87,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -10272,4 +10273,38 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```52cd3074```](https://github.com/jina-ai/jina/commit/52cd3074b65caec7a370386ec5a5f87ad7b0133d)] __-__ update slack counter (*Han Xiao*)
  - [[```dae5f656```](https://github.com/jina-ai/jina/commit/dae5f656419fba0c722724076eeb14c881a61e94)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```9cde0711```](https://github.com/jina-ai/jina/commit/9cde07115418d33b23c8dc882451ab1de63023ab)] __-__ __version__: the next version will be 2.0.22 (*Jina Dev Bot*)
+
+<a name=release-note-2-0-23></a>
+## Release Note (`2.0.23`)
+
+> Release time: 2021-09-01 12:10:20
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Sebastian Lettner,  Bastin,  Deepankar Mahapatro,  Han Xiao,  AlaeddineAbdessalem,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```033dc123```](https://github.com/jina-ai/jina/commit/033dc123333f76b7ff3c6770ec7c3d7f5d55f5de)] __-__ k8s template folder lean (#3309) (*Sebastian Lettner*)
+ - [[```c1ce3eb1```](https://github.com/jina-ai/jina/commit/c1ce3eb1c7991554fa5163eea234bb59ea6c4f14)] __-__ disable button and search animation (#3313) (*Bastin*)
+
+### 🐞 Bug fixes
+
+ - [[```20d5c138```](https://github.com/jina-ai/jina/commit/20d5c13854cbed498bc639528e46975e29d284d4)] __-__ rolling update with container runtime (#3312) (*Deepankar Mahapatro*)
+
+### 📗 Documentation
+
+ - [[```cf176ab7```](https://github.com/jina-ai/jina/commit/cf176ab717d9bd2653c9b73535d2d7e1e7bc342b)] __-__ __logo__: change to static logo (*Han Xiao*)
+ - [[```c9194319```](https://github.com/jina-ai/jina/commit/c919431920c8423fbb86d290308b97ca4d6bbcd3)] __-__ __hub__: fix figure in the hub docs (#3316) (*Han Xiao*)
+ - [[```12c2672f```](https://github.com/jina-ai/jina/commit/12c2672ff62015aadb3ba99a43c442fb04613a8a)] __-__ __hub__: add hub executor best practices (#3315) (*AlaeddineAbdessalem*)
+
+### 🍹 Other Improvements
+
+ - [[```e41f81ac```](https://github.com/jina-ai/jina/commit/e41f81ac4e4948954b82cbc0078854e529ea45cf)] __-__ fix typo in readme (*Han Xiao*)
+ - [[```ad5241b2```](https://github.com/jina-ai/jina/commit/ad5241b2a0d10eb1eae9b301cbfd8cde191fb437)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```a6f09eac```](https://github.com/jina-ai/jina/commit/a6f09eac7a8974060808d785b5d2dbd6dc0512b5)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```1eca0631```](https://github.com/jina-ai/jina/commit/1eca0631716881fe455ef9711ae1533eef039df4)] __-__ remove content from all cookbooks (*Han Xiao*)
+ - [[```b7f62413```](https://github.com/jina-ai/jina/commit/b7f62413b0ac3f43a660255433408e4508a2978a)] __-__ __version__: the next version will be 2.0.23 (*Jina Dev Bot*)
 
