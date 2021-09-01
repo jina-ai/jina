@@ -144,24 +144,6 @@ class PartialFlowStore(PartialStore):
                             pod.replicas_args = CompoundPod._set_replica_args(
                                 pod.args, pod.head_args, pod.tail_args
                             )
-                            if pod.args.parallel > 1:
-                                # If parallel > 1, replica-head / replica-tail would get set by main jinad
-                                # to publish ports and set them again here.
-                                for replica_arg in pod.replicas_args:
-                                    # each replica is a Pod. Set its head/tail ports
-                                    for port_name in Ports.__fields__:
-                                        if hasattr(replica_arg, port_name):
-                                            setattr(
-                                                replica_arg,
-                                                port_name,
-                                                getattr(
-                                                    port_mapping[
-                                                        replica_arg.name
-                                                    ].ports,
-                                                    port_name,
-                                                    random_port(),
-                                                ),
-                                            )
 
             self.object = self.object.__enter__()
         except Exception as e:

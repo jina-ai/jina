@@ -161,26 +161,6 @@ class FlowDepends:
                                     ports=current_ports,
                                 )
                             )
-                        if pod.args.parallel > 1:
-                            # If parallel > 1, publish ports for replica-head / replica-tail
-                            # and set them inside the partial-daemon.
-                            for replica_arg in pod.replicas_args:
-                                # each replica is a Pod. Get its head/tail ports
-                                current_ports = Ports()
-                                for port_name in Ports.__fields__:
-                                    setattr(
-                                        current_ports,
-                                        port_name,
-                                        getattr(replica_arg, port_name, None),
-                                    )
-                                port_mapping.append(
-                                    PortMapping(
-                                        pod_name=replica_arg.name,
-                                        pea_name='',
-                                        ports=current_ports,
-                                    )
-                                )
-
                 else:
                     if runtime_cls in ['ZEDRuntime'] + list(
                         GATEWAY_RUNTIME_DICT.values()
@@ -199,7 +179,6 @@ class FlowDepends:
                             )
                         )
 
-            print(f'\n\n\n{port_mapping}\n\n\n')
             self.ports = port_mapping
             # save to a new file & set it for partial-daemon
             f.save_config(filename=self.newfile)

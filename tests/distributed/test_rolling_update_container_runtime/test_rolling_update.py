@@ -96,9 +96,9 @@ def test_dump_dbms_remote(executor_images, docker_compose):
     for doc in r[0].data.docs:
         assert len(doc.matches) == 10
 
-    # assert client.flows.delete(dbms_flow_id)
-    # assert client.flows.delete(query_flow_id)
-    # assert client.workspaces.delete(workspace_id)
+    assert client.flows.delete(dbms_flow_id)
+    assert client.flows.delete(query_flow_id)
+    assert client.workspaces.delete(workspace_id)
 
 
 def _get_documents(nr=10, index_start=0, emb_size=7):
