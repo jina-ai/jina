@@ -69,40 +69,27 @@ def deploy_service(
     )
 
     if init_container:
-        kubernetes_tools.create(
-            'deployment-init',
-            {
-                'name': name,
-                'namespace': namespace,
-                'image': image_name,
-                'replicas': replicas,
-                'command': container_cmd,
-                'args': container_args,
-                'port_expose': port_expose,
-                'port_in': port_in,
-                'port_out': port_out,
-                'port_ctrl': port_ctrl,
-                'pull_policy': pull_policy,
-                **init_container,
-            },
-        )
+        template_name = 'deployment-init'
     else:
-        kubernetes_tools.create(
-            'deployment',
-            {
-                'name': name,
-                'namespace': namespace,
-                'image': image_name,
-                'replicas': replicas,
-                'command': container_cmd,
-                'args': container_args,
-                'port_expose': port_expose,
-                'port_in': port_in,
-                'port_out': port_out,
-                'port_ctrl': port_ctrl,
-                'pull_policy': pull_policy,
-            },
-        )
+        template_name = 'deployment'
+        init_container = {}
+    kubernetes_tools.create(
+        template_name,
+        {
+            'name': name,
+            'namespace': namespace,
+            'image': image_name,
+            'replicas': replicas,
+            'command': container_cmd,
+            'args': container_args,
+            'port_expose': port_expose,
+            'port_in': port_in,
+            'port_out': port_out,
+            'port_ctrl': port_ctrl,
+            'pull_policy': pull_policy,
+            **init_container,
+        },
+    )
     return f'{name}.{namespace}.svc.cluster.local'
 
 
