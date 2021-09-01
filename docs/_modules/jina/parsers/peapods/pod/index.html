@@ -677,6 +677,16 @@
         <span class="n">help</span><span class="o">=</span><span class="s1">'Name of the namespace where Kubernetes deployment should be deployed, to be filled by flow name'</span>
         <span class="k">if</span> <span class="n">_SHOW_ALL_ARGS</span>
         <span class="k">else</span> <span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--k8s-custom-resource-dir'</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'Path to a folder containing custom k8s template files which shall be used for this pod.'</span>
+        <span class="s1">'Please copy the standard Jina resource files and add parameters as you need'</span>
+        <span class="s1">' to make sure the minimum configuration Jina needs is present'</span>
+        <span class="k">if</span> <span class="n">_SHOW_ALL_ARGS</span>
+        <span class="k">else</span> <span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
     <span class="p">)</span></div>
 </pre></div>
       </article>
