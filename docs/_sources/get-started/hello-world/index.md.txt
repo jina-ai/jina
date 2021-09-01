@@ -37,7 +37,7 @@ Jointly searching for text and image in one query.
 
 :::::
 
-## Forking a demo and start building
+## Fork one and start building
 
 If you find any hello-world demo interesting, you can simply fork its source code to your own directory via
 
