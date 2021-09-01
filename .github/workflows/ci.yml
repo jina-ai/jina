@@ -210,6 +210,7 @@ jobs:
           python-version: 3.7
       - name: Prepare enviroment
         run: |
+          brew install docker-machine docker
           docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
           python -m pip install wheel
