@@ -50,8 +50,8 @@ sitemap_locales = [None]
 sitemap_filename = "sitemap.xml"
 
 html_theme_options = {
-    'light_logo': 'logo-new.gif',
-    'dark_logo': 'logo-new.gif',
+    'light_logo': 'logo-light.svg',
+    'dark_logo': 'logo-dark.svg',
     "sidebar_hide_name": True,
     "light_css_variables": {
         "color-brand-primary": "#009191",
