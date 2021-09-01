@@ -51,12 +51,14 @@ tornado>=5.1.0:             core
 pytest:                     test
 pytest-timeout:             test
 pytest-mock:                test
+
 pytest-cov:                 test
 pytest-repeat:              test
 pytest-asyncio:             test
 pytest-reraise:             test
 flaky:                      test
 mock:                       test
+requests-mock:              test
 prettytable:                devel
 optuna:                     devel
 websockets:                 standard, daemon, devel
