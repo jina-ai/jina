@@ -38,6 +38,8 @@ class PortMappings(BaseModel):
             for mapping in self.__root__:
                 if mapping.pea_name == item:
                     return mapping
+                elif mapping.pod_name == item:
+                    return mapping
 
     @property
     def ports(self) -> List[int]:

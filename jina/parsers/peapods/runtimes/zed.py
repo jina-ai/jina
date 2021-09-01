@@ -193,3 +193,12 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
         default=False,
         help='Informs a Pea that runs in a container. Important to properly set networking information',
     )
+
+    gp.add_argument(
+        '--dump-path',
+        type=str,
+        default='',
+        help='Dump path to be passed to the executor'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )

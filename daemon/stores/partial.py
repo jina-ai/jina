@@ -144,6 +144,7 @@ class PartialFlowStore(PartialStore):
                             pod.replicas_args = CompoundPod._set_replica_args(
                                 pod.args, pod.head_args, pod.tail_args
                             )
+
             self.object = self.object.__enter__()
         except Exception as e:
             if hasattr(self, 'object'):
