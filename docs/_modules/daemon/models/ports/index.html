@@ -574,6 +574,8 @@
             <span class="k">for</span> <span class="n">mapping</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__root__</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">mapping</span><span class="o">.</span><span class="n">pea_name</span> <span class="o">==</span> <span class="n">item</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">mapping</span>
+                <span class="k">elif</span> <span class="n">mapping</span><span class="o">.</span><span class="n">pod_name</span> <span class="o">==</span> <span class="n">item</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">mapping</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ports</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>

@@ -680,6 +680,7 @@
                             <span class="n">pod</span><span class="o">.</span><span class="n">replicas_args</span> <span class="o">=</span> <span class="n">CompoundPod</span><span class="o">.</span><span class="n">_set_replica_args</span><span class="p">(</span>
                                 <span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">pod</span><span class="o">.</span><span class="n">head_args</span><span class="p">,</span> <span class="n">pod</span><span class="o">.</span><span class="n">tail_args</span>
                             <span class="p">)</span>
+
             <span class="bp">self</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'object'</span><span class="p">):</span>
