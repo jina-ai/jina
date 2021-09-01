@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {name}
+  namespace: {namespace}
+spec:
+  replicas: {replicas}
+  selector:
+    matchLabels:
+      app: {name}
+
+
+  template:
+    metadata:
+      labels:
+        app: {name}
+        ns: {namespace}
+    spec:
+      volumes:
+        - name: shared
+          emptyDir: {}
+      initContainers:
+      - name: {init-name}
+        image: {init-image}
+        imagePullPolicy: {pull_policy}
+        command: {init-command}
+        volumeMounts:
+          - name: shared
+            mountPath: {mount-path}
+      containers:
+      - name: executor
+        image: {image}
+        command: {command}
+        args: {args}
+        ports:
+          - containerPort: {port_expose}
+          - containerPort: {port_in}
+          - containerPort: {port_out}
+          - containerPort: {port_ctrl}
+        env:
+        - name: JINA_LOG_LEVEL
+          value: debug
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        - name: WORKER_CLASS
+          value: "uvicorn.workers.UvicornH11Worker"
+        volumeMounts:
+          - name: shared
+            mountPath: {mount-path}
+
