@@ -237,6 +237,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../advanced/hub/use-hub-executor/">Reuse Hub Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../advanced/hub/pull-executor/">Pull Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../advanced/hub/practice-your-learning/">Put into Practice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../advanced/hub/executor-best-practices/">Hub Executor Best Practices</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../advanced/daemon/">Remote Management via JinaD</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -773,11 +774,10 @@ the <code class="docutils literal notranslate"><span class="pre">connect_to_pred
 </div>
 <div class="section" id="override-executor-configs">
 <h2>Override Executor configs<a class="headerlink" href="#override-executor-configs" title="Permalink to this headline">¶</a></h2>
-<p>You can override an executor’s meta configs when creating a flow:</p>
+<p>You can override an executor’s meta configs when creating a flow.</p>
 <div class="section" id="override-metas-configuration">
 <h3>Override <code class="docutils literal notranslate"><span class="pre">metas</span></code> configuration<a class="headerlink" href="#override-metas-configuration" title="Permalink to this headline">¶</a></h3>
-<p>To override the <code class="docutils literal notranslate"><span class="pre">metas</span></code> configuration of an executor (described
-<a class="reference external" href="https://github.com/jina-ai/jina/blob/master/.github/2.0/cookbooks/Executor.md#metas">here</a>), use <code class="docutils literal notranslate"><span class="pre">uses_metas</span></code>:</p>
+<p>To override the <code class="docutils literal notranslate"><span class="pre">metas</span></code> configuration of an executor, use <code class="docutils literal notranslate"><span class="pre">uses_metas</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span>
 <span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span>
@@ -971,7 +971,7 @@ foo
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 31, 2021.
+            Last updated on Sep 01, 2021.
         </div>
         
       </footer>

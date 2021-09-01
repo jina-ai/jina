@@ -237,6 +237,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../advanced/hub/use-hub-executor/">Reuse Hub Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced/hub/pull-executor/">Pull Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced/hub/practice-your-learning/">Put into Practice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced/hub/executor-best-practices/">Hub Executor Best Practices</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../advanced/daemon/">Remote Management via JinaD</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -616,7 +617,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “c17a003d-fee2-4153-928e-348faa7eb95e”</p>
+<p>Default: “fda06905-b4ae-4346-949d-d0a207cb4694”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -687,7 +688,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “6305c807-ef9a-433e-b34e-42e5a2ea309f”</p>
+<p>Default: “7970b3fc-994a-4d1b-becd-7c0e0b0341ba”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -720,7 +721,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “54b56788-0355-4139-8b49-ae723129b517”</p>
+<p>Default: “3ec64433-fdd5-4ef1-9acc-e52dd6046fc7”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -810,7 +811,7 @@
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 55093</p>
+<p>Default: 37581</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -868,15 +869,15 @@
 <p>Note that the recommended way is to only import a single module - a simple python file, if your
 executor can be defined in a single file, or an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file if you have multiple files,
 which should be structured as a python package. For more details, please see the
-<a class="reference external" href="https://github.com/jina-ai/jina/blob/master/.github/2.0/cookbooks/Executor.md#structure-of-the-repository">Executor cookbook</a></p>
+<a class="reference external" href="https://docs.jina.ai/fundamentals/executor/repository-structure/">Executor cookbook</a></p>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 35669</p>
+<p>Default: 60085</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 50561</p>
+<p>Default: 36199</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1199,7 +1200,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 53733</p>
+<p>Default: 34031</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1257,15 +1258,15 @@ Python files, data files.</p>
 <p>Note that the recommended way is to only import a single module - a simple python file, if your
 executor can be defined in a single file, or an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file if you have multiple files,
 which should be structured as a python package. For more details, please see the
-<a class="reference external" href="https://github.com/jina-ai/jina/blob/master/.github/2.0/cookbooks/Executor.md#structure-of-the-repository">Executor cookbook</a></p>
+<a class="reference external" href="https://docs.jina.ai/fundamentals/executor/repository-structure/">Executor cookbook</a></p>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 57963</p>
+<p>Default: 33997</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 48593</p>
+<p>Default: 59117</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1399,7 +1400,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port that the gateway exposes for clients for GRPC connections.</p>
-<p>Default: 37265</p>
+<p>Default: 58059</p>
 </dd>
 </dl>
 </div>
@@ -1613,7 +1614,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 37685</p>
+<p>Default: 36291</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1671,15 +1672,15 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 <p>Note that the recommended way is to only import a single module - a simple python file, if your
 executor can be defined in a single file, or an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file if you have multiple files,
 which should be structured as a python package. For more details, please see the
-<a class="reference external" href="https://github.com/jina-ai/jina/blob/master/.github/2.0/cookbooks/Executor.md#structure-of-the-repository">Executor cookbook</a></p>
+<a class="reference external" href="https://docs.jina.ai/fundamentals/executor/repository-structure/">Executor cookbook</a></p>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 39243</p>
+<p>Default: 34255</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 55697</p>
+<p>Default: 33807</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1903,7 +1904,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 37293</p>
+<p>Default: 36653</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1961,15 +1962,15 @@ Python files, data files.</p>
 <p>Note that the recommended way is to only import a single module - a simple python file, if your
 executor can be defined in a single file, or an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file if you have multiple files,
 which should be structured as a python package. For more details, please see the
-<a class="reference external" href="https://github.com/jina-ai/jina/blob/master/.github/2.0/cookbooks/Executor.md#structure-of-the-repository">Executor cookbook</a></p>
+<a class="reference external" href="https://docs.jina.ai/fundamentals/executor/repository-structure/">Executor cookbook</a></p>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 57545</p>
+<p>Default: 33291</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 59133</p>
+<p>Default: 47767</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -2191,7 +2192,7 @@ peas are running on host provided by the argument <code class="docutils literal 
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port of the Gateway, which the client should connect to.</p>
-<p>Default: 46167</p>
+<p>Default: 43095</p>
 </dd>
 </dl>
 </div>
@@ -2251,7 +2252,7 @@ peas are running on host provided by the argument <code class="docutils literal 
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 31, 2021.
+            Last updated on Sep 01, 2021.
         </div>
         
       </footer>

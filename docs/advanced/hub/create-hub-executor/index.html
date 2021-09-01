@@ -166,7 +166,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -237,6 +237,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../use-hub-executor/">Reuse Hub Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../pull-executor/">Pull Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../practice-your-learning/">Put into Practice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../executor-best-practices/">Hub Executor Best Practices</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../daemon/">Remote Management via JinaD</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -550,7 +551,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -594,12 +595,9 @@ a more advanced configuration, but it is unnecessary for most of use cases.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">executor.py</span></code> should contain the main logic of your Executor.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">README.md</span></code> should describe the usage of the Executor.</p></li>
 </ul>
-<div class="section" id="best-practices">
-<h2>Best practices<a class="headerlink" href="#best-practices" title="Permalink to this headline">¶</a></h2>
-<p>When developing Hub Executors, make sure to follow these tips:</p>
-<div class="figure align-center">
-<img alt="../../../_images/hub-best-practices.png" src="../../../_images/hub-best-practices.png"/>
-</div>
+<div class="seealso admonition">
+<p class="admonition-title">See Also</p>
+<p><a class="reference internal" href="../executor-best-practices/#hub-executor-best-practices"><span class="std std-ref">Hub Executor best practices</span></a></p>
 </div>
 </div>
 
@@ -632,32 +630,13 @@ a more advanced configuration, but it is unnecessary for most of use cases.</p>
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 31, 2021.
+            Last updated on Sep 01, 2021.
         </div>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">Create Executor</a><ul>
-<li><a class="reference internal" href="#best-practices">Best practices</a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>
