@@ -142,3 +142,13 @@ def mixin_k8s_pod_parser(parser):
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
+    parser.add_argument(
+        '--k8s-custom-resource-dir',
+        type=str,
+        default=None,
+        help='Path to a folder containing custom k8s template files which shall be used for this pod.'
+        'Please copy the standard Jina resource files and add parameters as you need'
+        ' to make sure the minimum configuration Jina needs is present'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )

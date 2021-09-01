@@ -26,6 +26,7 @@ def deploy_service(
     replicas: int,
     pull_policy: str,
     init_container: Dict = None,
+    custom_resource_dir: Optional[str] = None,
 ) -> str:
     """Deploy service on Kubernetes.
 
@@ -38,6 +39,8 @@ def deploy_service(
     :param replicas: number of replicas
     :param pull_policy: pull policy used for fetching the Docker images from the registry.
     :param init_container: additional arguments used for the init container
+    :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.
+        Defaults to the standard location jina.resources if not specified.
     :return: dns name of the created service
     """
 
@@ -62,6 +65,7 @@ def deploy_service(
             'port_ctrl': port_ctrl,
             'type': 'ClusterIP',
         },
+        custom_resource_dir=custom_resource_dir,
     )
 
     logger.info(
@@ -89,6 +93,7 @@ def deploy_service(
             'pull_policy': pull_policy,
             **init_container,
         },
+        custom_resource_dir=custom_resource_dir,
     )
     return f'{name}.{namespace}.svc.cluster.local'
 

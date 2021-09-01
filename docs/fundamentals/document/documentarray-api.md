@@ -337,16 +337,14 @@ default, the cosine similarity is used to evaluate the score between documents.
 ```
 
 More generally, given two `DocumentArray` objects `da_1` and `da_2` the
-function `da_1.match(da_2, metric=some_metric, normalization=(0, 1), limit=N)` finds for each document in `da_1`
-then `N` documents from `da_2` with the lowest metric values according to `some_metric`.
+function `da_1.match(da_2, metric=some_metric, normalization=(0, 1), limit=N)` finds for each document in `da_1` the `N` documents from `da_2` with the lowest metric values according to `some_metric`.
 
 - `metric` can be `'cosine'`, `'euclidean'`,  `'sqeuclidean'` or a callable that takes 2 `ndarray` parameters and
   returns an `ndarray`
 - `normalization` is a tuple [a, b] to be used with min-max normalization. The min distance will be rescaled to `a`, the
   max distance will be rescaled to `b`; all other values will be rescaled into range `[a, b]`.
 
-The following example find the 3 closest documents, according to the euclidean distance, for each element in `da_1` from
-the elements in `da_2`.
+The following example finds for each element in `da_1` the 3 closest documents from the elements in `da_2` )according to the euclidean distance).
 
 ```{code-block} python
 ---
