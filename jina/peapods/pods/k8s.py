@@ -127,6 +127,7 @@ class K8sPod(BasePod):
             replicas=replicas,
             pull_policy='IfNotPresent',
             init_container=init_container_args,
+            custom_resource_dir=getattr(self.args, 'k8s_custom_resource_dir', None),
         )
 
     def start(self) -> 'K8sPod':
@@ -134,7 +135,11 @@ class K8sPod(BasePod):
 
         :return: self
         """
-        kubernetes_tools.create('namespace', {'name': self.args.k8s_namespace})
+        kubernetes_tools.create(
+            'namespace',
+            {'name': self.args.k8s_namespace},
+            custom_resource_dir=getattr(self.args, 'k8s_custom_resource_dir', None),
+        )
 
         version = self._get_base_executor_version()
         if self.name == 'gateway':
