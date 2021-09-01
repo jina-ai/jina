@@ -1,15 +1,8 @@
 from unittest.mock import Mock
 import os
 
-import pytest
-
 from jina.peapods.pods.k8slib.kubernetes_deployment import kubernetes_tools
 from jina import Flow
-
-
-@pytest.fixture()
-def custom_resource_dir(test_dir: str) -> str:
-    return os.path.join(test_dir, 'custom-resource')
 
 
 def test_custom_resource_dir():
@@ -40,7 +33,8 @@ def test_no_resource_dir_specified():
         assert call[1]['custom_resource_dir'] is None
 
 
-def test_template_file_read_correctly(custom_resource_dir: str):
+def test_template_file_read_correctly(test_dir: str):
+    custom_resource_dir = os.path.join(test_dir, 'custom-resource')
     content = kubernetes_tools._get_yaml(
         'namespace', params={}, custom_resource_dir=custom_resource_dir
     )
