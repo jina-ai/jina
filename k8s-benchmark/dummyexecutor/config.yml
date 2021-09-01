@@ -1,0 +1,7 @@
+jtype: DummyExecutor
+with:
+  {}
+metas:
+  py_modules:
+    - dummy_executor.py
+  name: dummy_executor
