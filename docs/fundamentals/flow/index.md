@@ -5,6 +5,9 @@ The `Flow` ties Executors together into a processing pipeline to perform a bigge
 dataset. Documents "flow" through the created pipeline and are processed by Executors.
 `Flow` also provides synchronization mechanisms to manage dependencies between executors and their order.
 
+
+
+
 A `Flow` object has the following common methods:
 
 | Group | Description |
@@ -19,7 +22,8 @@ A `Flow` object has the following common methods:
 
 ## Minimum working example
 
-### Pure Python: All-in-one style
+````{tab} All-in-one style
+
 
 ```python
 from jina import Flow, Document, Executor, requests
@@ -38,7 +42,10 @@ with f:
     f.post(on='/bar', inputs=Document(), on_done=print)
 ```
 
-### Pure Python: Flow-as-a-Service style
+
+````
+
+````{tab} Flow-as-a-Service style
 
 Server:
 
@@ -68,7 +75,9 @@ c = Client(port_expose=12345)
 c.post(on='/bar', inputs=Document(), on_done=print)
 ```
 
-### With YAML
+````
+
+````{tab} Load from YAML
 
 `my.yml`:
 
@@ -87,6 +96,18 @@ f = Flow.load_config('my.yml')
 with f:
     f.post(on='/bar', inputs=Document(), on_done=print)
 ```
+
+````
+
+````{admonition} See Also
+:class: seealso
+
+Document, Executor, and Flow are the three fundamental concepts in Jina.
+
+- {doc}`Document <../document/index>` is the basic data type in Jina;
+- {ref}`Executor <executor>` is how Jina processes Documents;
+- {ref}`Flow <flow>` is how Jina streamlines and scales Executors.
+````
 
 
 ```{toctree}

@@ -62,10 +62,10 @@ Write beautiful & lean code with Jina.
 Preview the next big thing we are building. Careful, zapping!
 ::::
 
-::::{grid-item-card} {octicon}`gift;1.5em` Get yourself Jina swag
+::::{grid-item-card} {octicon}`gift;1.5em` Get Yourself Jina Swag
 :link: https://jina.ai/blog/swag/
 
-Awesome swag to our awesome contributors (aka you)!
+Awesome Jina swag to our awesome contributors (aka you)!
 ::::
 
 :::::
