@@ -20,7 +20,7 @@ You could say `Document` is to Jina is what `np.float` is to Numpy, and `Documen
 
 Document, Executor, and Flow are the three fundamental concepts in Jina.
 
-- Document is the basic data type in Jina;
+- {doc}`Document <../document/index>` is the basic data type in Jina;
 - {ref}`Executor <executor>` is how Jina processes Documents;
 - {ref}`Flow <flow>` is how Jina streamlines and scales Executors.
 ````
