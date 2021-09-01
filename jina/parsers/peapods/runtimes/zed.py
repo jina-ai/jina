@@ -198,5 +198,7 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
         '--dump-path',
         type=str,
         default='',
-        help='Dump path to be passed to the executor',
+        help='Dump path to be passed to the executor'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
     )
