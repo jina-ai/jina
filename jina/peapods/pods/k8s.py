@@ -226,7 +226,7 @@ class K8sPod(BasePod):
                 )
                 res.append(self._create_node(name_suffix))
             if self.deployment_args['tail_deployment'] is not None:
-                res.append(res.append(self._create_node('tail')))
+                res.append(self._create_node('tail'))
         return res
 
     def _get_base_executor_version(self):
