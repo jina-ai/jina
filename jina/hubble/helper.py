@@ -310,6 +310,9 @@ def install_requirements(
             if req.project_name not in excludes or len(req.extras) > 0
         ]
 
+    if len(install_reqs) == 0:
+        return
+
     subprocess.check_call(
         [
             sys.executable,
