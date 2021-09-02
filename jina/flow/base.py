@@ -503,6 +503,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         timeout_ctrl: Optional[int] = 5000,
         timeout_ready: Optional[int] = 600000,
         upload_files: Optional[List[str]] = None,
+        install_requirements: Optional[bool] = False,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
         uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
         uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
@@ -601,6 +602,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - currently only flatten structure is supported, which means if you upload `[./foo/a.py, ./foo/b.pp, ./bar/c.yml]`, then they will be put under the _same_ workspace on the remote, losing all hierarchies.
           - by default, `--uses` YAML file is always uploaded.
           - uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use `--workspace-id` to specify the workspace.
+        :param install_requirements: If set, then install `requirements.txt` in the Hub Executor bundle to the local system
         :param uses: The config of the executor, it could be one of the followings:
                   * an Executor YAML file (.yml, .yaml, .jaml)
                   * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)
