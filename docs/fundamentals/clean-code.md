@@ -269,6 +269,7 @@ Wrap heavy lifting jobs inside an `Executor` and part of the `Flow`.
 For instance, loading high resolution images from Client into `Document` and `DocumentArray`
 could be time consuming.
 Put it inside an Executor could leverage Jina's capability to scale it up.
+Meanwhile, this example reduce the data send over network.
 
 ````{tab} ✅ Do
 ```python
