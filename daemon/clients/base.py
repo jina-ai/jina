@@ -1,7 +1,6 @@
 import os
 import json
 import asyncio
-from numbers import Number
 from http import HTTPStatus
 from typing import Dict, Optional, Union
 
@@ -19,7 +18,6 @@ from ..helper import error_msg_from, if_alive
 class AsyncBaseClient:
     """
     JinaD baseclient (Async)
-
     :param uri: the uri of ``jinad`` instance
     :param logger: jinad logger
     :param timeout: stop waiting for a response after a given number of seconds with the timeout parameter.
@@ -35,9 +33,7 @@ class AsyncBaseClient:
         timeout: int = None,
     ):
         self._logger = logger
-        self.timeout = aiohttp.ClientTimeout(
-            timeout if isinstance(timeout, Number) else 10 * 60
-        )
+        self.timeout = timeout
         self.http_uri = f'http://{uri}'
         self.store_api = f'{self.http_uri}{self._endpoint}'
         self.logstream_api = f'ws://{uri}/logstream'
@@ -45,30 +41,29 @@ class AsyncBaseClient:
     @if_alive
     async def alive(self) -> bool:
         """Check if JinaD is alive
-
         :return: True if JinaD is alive at remote else false
         """
-        async with aiohttp.request(
-            method='GET', url=self.http_uri, timeout=self.timeout
-        ) as response:
+        async with aiohttp.request(method='GET', url=self.http_uri) as response:
             return response.status == HTTPStatus.OK
 
     @if_alive
     async def status(self) -> Optional[Dict]:
         """Get status of remote JinaD
-
         :return: dict status of remote JinaD
         """
         async with aiohttp.request(
-            method='GET', url=f'{self.http_uri}/status', timeout=self.timeout
+            method='GET', url=f'{self.http_uri}/status'
         ) as response:
             if response.status == HTTPStatus.OK:
                 return await response.json()
+            else:
+                self._logger.error(
+                    f'got response {response.status} while getting status {self._kind}s'
+                )
 
     @if_alive
     async def get(self, id: Union[str, DaemonID]) -> Optional[Union[str, Dict]]:
         """Get status of the remote object
-
         :param id: identity of the Pea/Pod
         :return: response if the remote Flow/Pea/Pod/Workspace exists
         """
@@ -76,7 +71,6 @@ class AsyncBaseClient:
         async with aiohttp.request(
             method='GET',
             url=f'{self.store_api}/{daemonize(id, self._kind)}',
-            timeout=self.timeout,
         ) as response:
             response_json = await response.json()
             if response.status == HTTPStatus.UNPROCESSABLE_ENTITY:
@@ -95,12 +89,9 @@ class AsyncBaseClient:
     @if_alive
     async def list(self) -> Dict:
         """List all objects in the store
-
         :return: json response of the remote Flow/Pea/Pod/Workspace status
         """
-        async with aiohttp.request(
-            method='GET', url=self.store_api, timeout=self.timeout
-        ) as response:
+        async with aiohttp.request(method='GET', url=self.store_api) as response:
             if response.status == HTTPStatus.OK:
                 response_json = await response.json()
                 self._logger.success(
@@ -116,10 +107,24 @@ class AsyncBaseClient:
                     f'got response {response.status} while listing all {self._kind}s'
                 )
 
+    @if_alive
+    async def clear(self):
+        """Send delete request to api
+        :return : json response of the remote Flow/Pea/Pod/Workspace status
+        """
+        async with aiohttp.request(
+            method='DELETE', url=f'{self.store_api}'
+        ) as response:
+            if response.status == HTTPStatus.OK:
+                return await response.json()
+            else:
+                self._logger.error(
+                    f'got response {response.status} while sending delete request {self._kind}s'
+                )
+
     async def create(self, *args, **kwargs) -> Dict:
         """Create a Workspace/Flow/Pea/Pod on remote.
         Must be implemented by the inherited class.
-
         # noqa: DAR101
         # noqa: DAR102
         """
@@ -128,7 +133,6 @@ class AsyncBaseClient:
     async def update(self, *args, **kwargs) -> Dict:
         """Update a Workspace/Flow/Pea/Pod on remote.
         Must be implemented by the inherited class.
-
         # noqa: DAR101
         # noqa: DAR102
         """
@@ -137,7 +141,6 @@ class AsyncBaseClient:
     async def delete(self, id: DaemonID, *args, **kwargs) -> str:
         """Delete a Workspace/Flow/Pea/Pod on remote.
         Must be implemented by the inherited class.
-
         # noqa: DAR101
         # noqa: DAR102
         """
@@ -145,7 +148,6 @@ class AsyncBaseClient:
 
     async def logstream(self, id: 'DaemonID', timeout: float = None):
         """Websocket log stream from remote Workspace/Flow/Pea/Pod
-
         :param id: identity of the Workspace/Flow/Pea/Pod
         :param timeout: timeout in seconds for the logstream
         """
