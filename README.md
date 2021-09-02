@@ -50,13 +50,13 @@ fragmented, multi-vendor, generic legacy tools.
 
 ## Build Your First Jina App
 
-Document, Executor, and Flow are the three fundamental concepts in Jina.
+Document, Executor, and Flow are three fundamental concepts in Jina.
 
 - [📄 **Document**](https://docs.jina.ai/fundamentals/document/) is the basic data type in Jina;
 - [⚙️ **Executor**](https://docs.jina.ai/fundamentals/executor/) is how Jina processes Documents;
 - [🔀 **Flow**](https://docs.jina.ai/fundamentals/flow/) is how Jina streamlines and distributes Executors.
 
-Leveraging these three components, we want to build an app that **finds lines from a code snippet that are most similar to the query.**
+Leveraging these three components, let's build an app that **find lines from a code snippet that are most similar to the query.**
 
 <sup>💡 Preliminaries: <a href="https://en.wikipedia.org/wiki/Word_embedding">character embedding</a>, <a href="https://computersciencewiki.org/index.php/Max-pooling_/_Pooling">pooling</a>, <a href="https://en.wikipedia.org/wiki/Euclidean_distance">Euclidean distance</a></sup>
 
@@ -90,7 +90,7 @@ class Indexer(Executor):
 
     @requests(on='/search')
     def bar(self, docs: DocumentArray, **kwargs):
-         docs.match(self._docs, metric='euclidean', limit=20)
+         docs.match(self._docs, metric='euclidean')
 
 f = Flow(port_expose=12345, protocol='http', cors=True).add(uses=CharEmbed, parallel=2).add(uses=Indexer)  # build a Flow, with 2 parallel CharEmbed, tho unnecessary
 with f:
@@ -111,7 +111,7 @@ That means, **we want to find lines from the above code snippet that are most si
 <img src="https://github.com/jina-ai/jina/blob/master/.github/swagger-ui-prettyprint1.gif?raw=true" alt="Jina Swagger UI extension on visualizing neural search results" width="85%">
 </p>
 
-3️⃣ Not a GUI person? Let's do it in Python then! Keep the above server running and start a simple client:
+3️⃣ Not a GUI fan? Let's do it in Python then! Keep the above server running and start a simple client:
 
 
 <!-- README-CLIENT-START -->
