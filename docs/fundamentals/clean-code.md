@@ -284,7 +284,7 @@ class MyExecutor(Executor):
     @requests
     def to_blob_conversion(self, docs: DocumentArray, **kwargs):
         for doc in docs:
-            doc.convert_image_uri_to_blob()
+            doc.convert_image_uri_to_blob()  # conversion happens inside Flow
 
 f = Flow().add(uses=MyExecutor)
 
