@@ -263,4 +263,57 @@ with f:
 ```
 ````
 
+## Power heavy-lifting job by the Flow, not Client
+   
+Wrap heavy lifting jobs inside an `Executor` and part of the `Flow`.
+For instance, loading high resolution images from Client into `Document` and `DocumentArray`
+could be time consuming.
+Put it inside an Executor could leverage Jina's capability to scale it up.
+Meanwhile, this example reduce the data send over network.
+
+````{tab} ✅ Do
+```python
+import glob
+
+from jina import Executor, Flow, requests, Document
+
+class MyExecutor(Executor):
+
+    @requests
+    def to_blob_conversion(self, docs: DocumentArray, **kwargs):
+        for doc in docs:
+            doc.convert_image_uri_to_blob()  # conversion happens inside Flow
+
+f = Flow().add(uses=MyExecutor)
+
+def my_input():
+    image_uris = glob.glob('/.workspace/*.png')  # load high resolution images.
+    for image_uri in image_uris:
+        yield Document(uri=image_uri)
+
+with f:
+    f.post('/foo', inputs=my_input)
+```
+````
+
+````{tab} 😔 Don't
+```python
+import glob
+
+from jina import Executor, Document
+
+def my_input():
+    image_uris = glob.glob('/.workspace/*.png')  # load high resolution images.
+    for image_uri in image_uris:
+        doc = Document(uri=image_uri)
+        doc.convert_image_uri_to_blob()  # time consuming job at client side
+        yield doc
+
+f = Flow().add()
+
+with f:
+    f.post('/foo', inputs=my_input)
+```
+````
+
 
