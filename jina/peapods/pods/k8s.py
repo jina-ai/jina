@@ -241,7 +241,7 @@ class K8sPod(BasePod):
             return 'master'
 
     def _create_node(self, suffix):
-        name = f'{self.name}_{suffix}' if suffix else self.name
+        name = f'{self.name}_{suffix}' if suffix != '' else self.name
         dns_name = kubernetes_deployment.to_dns_name(name)
         return {
             'name': name,
