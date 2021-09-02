@@ -212,8 +212,7 @@ class K8sPod(BasePod):
         """
         res = []
         if self.args.name == 'gateway':
-            name = kubernetes_deployment.to_dns_name(self.name)
-            res.append(self._create_node(name))
+            res.append(self._create_node(''))
         else:
             if self.deployment_args['head_deployment'] is not None:
                 res.append(self._create_node('head'))
