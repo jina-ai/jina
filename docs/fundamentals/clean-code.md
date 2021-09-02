@@ -263,7 +263,7 @@ with f:
 ```
 ````
 
-## Power heavy-lifting job to the Flow, not Client
+## Power heavy-lifting job by the Flow, not Client
    
 Wrap heavy lifting jobs inside an `Executor` and part of the `Flow`.
 For instance, loading a high resolution images from Client into `Document` and `DocumentArray`
@@ -275,7 +275,9 @@ Put it inside an Executor could leverage Jina's capability to scale it up.
 ---
 emphasize-lines: 12
 ---
-from jina import Executor, Flow, requests, Document
+import glob
+
+from jina import Executor, Flow, requests, Document, DocumentArray
 
 class MyExecutor(Executor):
 
@@ -291,6 +293,7 @@ def _load_data():
     image_uris = glob.glob('/.workspace/*.png')  # load high resolution images.
     for image_uri in image_uris:
         doc = Document(uri=image_uri)
+    return da
 
 with f:
     f.post('/foo', inputs=_load_data())
@@ -312,9 +315,9 @@ def _load_data():
     for image_uri in image_uris:
         doc = Document(uri=image_uri)
         doc.convert_image_uri_to_blob()  # time consuming job at client side
+    return da
 
-if __name__ == '__main__':
-    da = _load_data()
+da = _load_data()
 ```
 ````
 
