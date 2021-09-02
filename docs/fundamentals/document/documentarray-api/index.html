@@ -662,22 +662,27 @@ generates <code class="docutils literal notranslate"><span class="pre">DocumentA
 structure:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
 
-<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span>
-    <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'r1'</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'c1'</span><span class="p">,</span> <span class="n">matches</span><span class="o">=</span><span class="p">[</span>
-            <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'c1c1m1'</span><span class="p">),</span>
-        <span class="p">]),</span>
-        <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'c2'</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="p">[</span>
-            <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'c2c1'</span><span class="p">,</span> <span class="n">matches</span><span class="o">=</span><span class="p">[</span>
-                <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'c2c1m1'</span><span class="p">),</span>
-                <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'c2c1m2'</span><span class="p">)</span>
-            <span class="p">]),</span>
-            <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'c2c2'</span><span class="p">),</span>
-        <span class="p">]),</span>
-        <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'c3'</span><span class="p">)</span>
-    <span class="p">]),</span>
-    <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'r2'</span><span class="p">)</span>
-<span class="p">])</span>
+<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>
+
+<span class="n">root1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'r1'</span><span class="p">)</span>
+
+<span class="n">chunk1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'r1c1'</span><span class="p">)</span>
+<span class="n">root1</span><span class="o">.</span><span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chunk1</span><span class="p">)</span>
+<span class="n">root1</span><span class="o">.</span><span class="n">chunks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'r1c1m1'</span><span class="p">))</span>
+
+<span class="n">chunk2</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'r1c2'</span><span class="p">)</span>
+<span class="n">root1</span><span class="o">.</span><span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chunk2</span><span class="p">)</span>
+<span class="n">chunk2_chunk1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'r1c2c1'</span><span class="p">)</span>
+<span class="n">chunk2_chunk2</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'r1c2c2'</span><span class="p">)</span>
+<span class="n">root1</span><span class="o">.</span><span class="n">chunks</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">chunks</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">chunk2_chunk1</span><span class="p">,</span> <span class="n">chunk2_chunk2</span><span class="p">])</span>
+<span class="n">root1</span><span class="o">.</span><span class="n">chunks</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">chunks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'r1c2c1m1'</span><span class="p">),</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'r1c2c1m2'</span><span class="p">)])</span>
+
+<span class="n">chunk3</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'r1c3'</span><span class="p">)</span>
+<span class="n">root1</span><span class="o">.</span><span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chunk3</span><span class="p">)</span>
+
+<span class="n">root2</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'r2'</span><span class="p">)</span>
+
+<span class="n">da</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">root1</span><span class="p">,</span> <span class="n">root2</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>When calling <code class="docutils literal notranslate"><span class="pre">da.traverse(['cm',</span> <span class="pre">'ccm'])</span></code> you get a generator over two <code class="docutils literal notranslate"><span class="pre">DocumentArrays</span></code>. The first <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>
@@ -686,10 +691,10 @@ the <code class="docutils literal notranslate"><span class="pre">Chunks</span></
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 <span class="kn">from</span> <span class="nn">jina.types.arrays</span> <span class="kn">import</span> <span class="n">MatchArray</span>
 
-<span class="n">MatchArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'c1c1m1'</span><span class="p">,</span> <span class="n">adjacency</span><span class="o">=</span><span class="mi">1</span><span class="p">)],</span> <span class="n">reference_doc</span><span class="o">=</span><span class="n">da</span><span class="p">[</span><span class="s1">'r1'</span><span class="p">]</span><span class="o">.</span><span class="n">chunks</span><span class="p">[</span><span class="s1">'c1'</span><span class="p">])</span>
+<span class="n">MatchArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'r1c1m1'</span><span class="p">,</span> <span class="n">adjacency</span><span class="o">=</span><span class="mi">1</span><span class="p">)],</span> <span class="n">reference_doc</span><span class="o">=</span><span class="n">da</span><span class="p">[</span><span class="s1">'r1'</span><span class="p">]</span><span class="o">.</span><span class="n">chunks</span><span class="p">[</span><span class="s1">'c1'</span><span class="p">])</span>
 <span class="n">MatchArray</span><span class="p">([],</span> <span class="n">reference_doc</span><span class="o">=</span><span class="n">da</span><span class="p">[</span><span class="s1">'r1'</span><span class="p">]</span><span class="o">.</span><span class="n">chunks</span><span class="p">[</span><span class="s1">'c2'</span><span class="p">])</span>
 <span class="n">MatchArray</span><span class="p">([],</span> <span class="n">reference_doc</span><span class="o">=</span><span class="n">da</span><span class="p">[</span><span class="s1">'r1'</span><span class="p">]</span><span class="o">.</span><span class="n">chunks</span><span class="p">[</span><span class="s1">'c3'</span><span class="p">])</span>
-<span class="n">MatchArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'c2c1m1'</span><span class="p">,</span> <span class="n">adjacency</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'c2c1m2'</span><span class="p">,</span> <span class="n">adjacency</span><span class="o">=</span><span class="mi">1</span><span class="p">)],</span>
+<span class="n">MatchArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'r1c2c1m1'</span><span class="p">,</span> <span class="n">adjacency</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">granularity</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'r1c2c1m2'</span><span class="p">,</span> <span class="n">adjacency</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">granularity</span><span class="o">=</span><span class="mi">2</span><span class="p">)],</span>
            <span class="n">reference_doc</span><span class="o">=</span><span class="n">da</span><span class="p">[</span><span class="s1">'r1'</span><span class="p">]</span><span class="o">.</span><span class="n">chunks</span><span class="p">[</span><span class="s1">'c2'</span><span class="p">]</span><span class="o">.</span><span class="n">chunks</span><span class="p">[</span><span class="s1">'c2c1'</span><span class="p">])</span>
 <span class="n">MatchArray</span><span class="p">([],</span> <span class="n">reference_doc</span><span class="o">=</span><span class="n">da</span><span class="p">[</span><span class="s1">'r1'</span><span class="p">]</span><span class="o">.</span><span class="n">chunks</span><span class="p">[</span><span class="s1">'c2'</span><span class="p">]</span><span class="o">.</span><span class="n">chunks</span><span class="p">[</span><span class="s1">'c2c2'</span><span class="p">])</span>
 </pre></div>
@@ -699,9 +704,9 @@ calling <code class="docutils literal notranslate"><span class="pre">da.traverse
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 <span class="k">assert</span> <span class="n">da</span><span class="o">.</span><span class="n">traverse_flat</span><span class="p">([</span><span class="s1">'cm'</span><span class="p">,</span> <span class="s1">'ccm'</span><span class="p">])</span> <span class="o">==</span> <span class="n">DocumentArray</span><span class="p">([</span>
-    <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'c1c1m1'</span><span class="p">,</span> <span class="n">adjacency</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
-    <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'c2c1m1'</span><span class="p">,</span> <span class="n">adjacency</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
-    <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'c2c1m2'</span><span class="p">,</span> <span class="n">adjacency</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'r1c1m1'</span><span class="p">,</span> <span class="n">adjacency</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">granularity</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+    <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'r1c2c1m1'</span><span class="p">,</span> <span class="n">adjacency</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">granularity</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+    <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'r1c2c1m2'</span><span class="p">,</span> <span class="n">adjacency</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">granularity</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="p">])</span>
 </pre></div>
 </div>
@@ -711,11 +716,11 @@ calling <code class="docutils literal notranslate"><span class="pre">da.traverse
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 <span class="n">DocumentArray</span><span class="p">([</span>
-    <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'c1c1m1'</span><span class="p">,</span> <span class="n">adjacency</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+    <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'r1c1m1'</span><span class="p">,</span> <span class="n">adjacency</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">granularity</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
 <span class="p">])</span>
 <span class="n">DocumentArray</span><span class="p">([</span>
-    <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'c2c1m1'</span><span class="p">,</span> <span class="n">adjacency</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
-    <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'c2c1m2'</span><span class="p">,</span> <span class="n">adjacency</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'r1c2c1m1'</span><span class="p">,</span> <span class="n">adjacency</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">granularity</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+    <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'r1c2c1m2'</span><span class="p">,</span> <span class="n">adjacency</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">granularity</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="p">])</span>
 </pre></div>
 </div>
@@ -1085,7 +1090,7 @@ to project in 2D space: <code class="docutils literal notranslate"><span class="
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Sep 01, 2021.
+            Last updated on Sep 02, 2021.
         </div>
         
       </footer>
