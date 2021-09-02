@@ -98,22 +98,27 @@ structure:
 ```python
 from jina import DocumentArray, Document
 
-da = DocumentArray([
-    Document(id='r1', chunks=[
-        Document(id='c1', matches=[
-            Document(id='c1c1m1'),
-        ]),
-        Document(id='c2', chunks=[
-            Document(id='c2c1', matches=[
-                Document(id='c2c1m1'),
-                Document(id='c2c1m2')
-            ]),
-            Document(id='c2c2'),
-        ]),
-        Document(id='c3')
-    ]),
-    Document(id='r2')
-])
+da = DocumentArray()
+
+root1 = Document(id='r1')
+
+chunk1 = Document(id='r1c1')
+root1.chunks.append(chunk1)
+root1.chunks[0].matches.append(Document(id='r1c1m1'))
+
+chunk2 = Document(id='r1c2')
+root1.chunks.append(chunk2)
+chunk2_chunk1 = Document(id='r1c2c1')
+chunk2_chunk2 = Document(id='r1c2c2')
+root1.chunks[1].chunks.extend([chunk2_chunk1, chunk2_chunk2])
+root1.chunks[1].chunks[0].matches.extend([Document(id='r1c2c1m1'), Document(id='r1c2c1m2')])
+
+chunk3 = Document(id='r1c3')
+root1.chunks.append(chunk3)
+
+root2 = Document(id='r2')
+
+da.extend([root1, root2])
 ```
 
 When calling `da.traverse(['cm', 'ccm'])` you get a generator over two `DocumentArrays`. The first `DocumentArray`
@@ -124,10 +129,10 @@ the `Chunks`. The following `DocumentArrays` are emitted from the generator:
 from jina import Document
 from jina.types.arrays import MatchArray
 
-MatchArray([Document(id='c1c1m1', adjacency=1)], reference_doc=da['r1'].chunks['c1'])
+MatchArray([Document(id='r1c1m1', adjacency=1)], reference_doc=da['r1'].chunks['c1'])
 MatchArray([], reference_doc=da['r1'].chunks['c2'])
 MatchArray([], reference_doc=da['r1'].chunks['c3'])
-MatchArray([Document(id='c2c1m1', adjacency=1), Document(id='c2c1m2', adjacency=1)],
+MatchArray([Document(id='r1c2c1m1', adjacency=1, granularity=2), Document(id='r1c2c1m2', adjacency=1, granularity=2)],
            reference_doc=da['r1'].chunks['c2'].chunks['c2c1'])
 MatchArray([], reference_doc=da['r1'].chunks['c2'].chunks['c2c2'])
 ```
@@ -139,9 +144,9 @@ calling `da.traverse_flat(['cm', 'ccm'])` the result in our example will be the 
 from jina import Document, DocumentArray
 
 assert da.traverse_flat(['cm', 'ccm']) == DocumentArray([
-    Document(id='c1c1m1', adjacency=1),
-    Document(id='c2c1m1', adjacency=1),
-    Document(id='c2c1m2', adjacency=1)
+    Document(id='r1c1m1', adjacency=1, granularity=1),
+    Document(id='r1c2c1m1', adjacency=1, granularity=2),
+    Document(id='r1c2c1m2', adjacency=1, granularity=2)
 ])
 ```
 
@@ -153,11 +158,11 @@ calling `da.traverse_flat_per_path(['cm', 'ccm'])`, the resulting generator emit
 from jina import Document, DocumentArray
 
 DocumentArray([
-    Document(id='c1c1m1', adjacency=1),
+    Document(id='r1c1m1', adjacency=1, granularity=1),
 ])
 DocumentArray([
-    Document(id='c2c1m1', adjacency=1),
-    Document(id='c2c1m2', adjacency=1)
+    Document(id='r1c2c1m1', adjacency=1, granularity=2),
+    Document(id='r1c2c1m2', adjacency=1, granularity=2)
 ])
 ```
 
