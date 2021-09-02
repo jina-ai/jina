@@ -8,8 +8,8 @@ from jina import Flow, Executor, requests, Document, DocumentArray
 from jina.helper import random_port
 
 
-def validate_response(resp):
-    assert len(resp.data.docs) == 50
+def validate_response(resp, expected_docs=50):
+    assert len(resp.data.docs) == expected_docs
     for doc in resp.data.docs:
         assert 'external_real' in doc.tags['name']
 
@@ -44,6 +44,8 @@ def external_pod_args(num_replicas, num_parallel):
         str(num_parallel),
         '--replicas',
         str(num_replicas),
+        '--polling',
+        'all',
     ]
     return set_pod_parser().parse_args(args)
 
@@ -81,7 +83,7 @@ def test_flow_with_external_pod(
         )
         with flow:
             resp = flow.index(inputs=input_docs, return_results=True)
-        validate_response(resp[0])
+        validate_response(resp[0], 50 * num_parallel)
 
 
 @pytest.fixture(scope='function')
@@ -152,10 +154,10 @@ def test_two_flow_with_shared_external_pod(
         )
         with flow1, flow2:
             results = flow1.index(inputs=input_docs, return_results=True)
-            validate_response(results[0])
+            validate_response(results[0], 50 * num_parallel)
 
             results = flow2.index(inputs=input_docs, return_results=True)
-            validate_response(results[0])
+            validate_response(results[0], 50 * num_parallel * 2)
 
 
 def test_two_flow_with_shared_external_executor(
@@ -187,7 +189,7 @@ def test_two_flow_with_shared_external_executor(
             validate_response(results[0])
 
             results = flow2.index(inputs=input_docs, return_results=True)
-            validate_response(results[0])
+            validate_response(results[0], 50 * 2)
 
 
 @pytest.fixture(scope='function')
@@ -205,6 +207,8 @@ def external_pod_parallel_1_args(num_replicas, num_parallel):
         str(num_parallel),
         '--replicas',
         str(num_replicas),
+        '--polling',
+        'all',
     ]
     return set_pod_parser().parse_args(args)
 
@@ -229,6 +233,8 @@ def external_pod_parallel_2_args(num_replicas, num_parallel):
         str(num_parallel),
         '--replicas',
         str(num_replicas),
+        '--polling',
+        'all',
     ]
     return set_pod_parser().parse_args(args)
 
@@ -280,7 +286,7 @@ def test_flow_with_external_pod_parallel(
 
         with flow:
             resp = flow.index(inputs=input_docs, return_results=True)
-        validate_response(resp[0])
+        validate_response(resp[0], 50 * num_parallel * 2)
 
 
 @pytest.fixture(scope='function')
@@ -298,6 +304,8 @@ def external_pod_pre_parallel_args(num_replicas, num_parallel):
         str(num_parallel),
         '--replicas',
         str(num_replicas),
+        '--polling',
+        'all',
     ]
     return set_pod_parser().parse_args(args)
 
@@ -341,7 +349,7 @@ def test_flow_with_external_pod_pre_parallel(
         )
         with flow:
             resp = flow.index(inputs=input_docs, return_results=True)
-        validate_response(resp[0])
+        validate_response(resp[0], 50 * num_parallel * 2)
 
 
 @pytest.fixture(scope='function')
@@ -361,6 +369,8 @@ def external_pod_join_args(num_replicas, num_parallel):
         str(num_parallel),
         '--replicas',
         str(num_replicas),
+        '--polling',
+        'all',
     ]
     return set_pod_parser().parse_args(args)
 
@@ -407,4 +417,4 @@ def test_flow_with_external_pod_join(
         )
         with flow:
             resp = flow.index(inputs=input_docs, return_results=True)
-        validate_response(resp[0])
+        validate_response(resp[0], 50 * num_parallel * num_parallel * 2)

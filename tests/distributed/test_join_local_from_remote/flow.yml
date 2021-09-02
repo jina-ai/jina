@@ -7,19 +7,18 @@ with:
 pods:
   - name: pod1
     host: host.docker.internal
-    port_expose: 8001
+    port_jinad: 8001
   - name: pod2
     parallel: 2
     host: host.docker.internal
-    port_expose: 8002
+    port_jinad: 8002
   - name: pod3
     parallel: 2
     host: host.docker.internal
-    port_expose: 8003
+    port_jinad: 8003
     needs: [gateway]
   - name: join_all
     method: needs
     host: flow
     uses: merge.yml
     needs: [pod2, pod3]
-    read_only: true

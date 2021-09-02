@@ -1,7 +1,6 @@
 jtype: Flow
 version: '1'
 with:
-  read_only: false
   protocol: http
   port_expose: 9001
   cors: true

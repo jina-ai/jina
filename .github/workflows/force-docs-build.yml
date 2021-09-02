@@ -48,7 +48,7 @@ jobs:
           cp -r ./ ../../../gen-html
           cd -  # back to ./docs
           cd ..
-          git checkout gh-pages
+          git checkout -f gh-pages
           git rm -rf ./docs
           mkdir -p docs
           cd gen-html

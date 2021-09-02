@@ -34,13 +34,23 @@ def pea(args: 'Namespace'):
 
 def executor_native(args: 'Namespace'):
     """
-    Starts an Executor in ZEDRuntime
+    Starts an Executor in ZEDRuntime or GRPCDataRuntime depending on the `runtime_cls`
 
     :param args: arguments coming from the CLI.
     """
     from jina.peapods.runtimes.zmq.zed import ZEDRuntime
+    from jina.peapods.runtimes.grpc import GRPCDataRuntime
 
-    with ZEDRuntime(args) as rt:
+    if args.runtime_cls == 'ZEDRuntime':
+        runtime_cls = ZEDRuntime
+    elif args.runtime_cls == 'GRPCDataRuntime':
+        runtime_cls = GRPCDataRuntime
+    else:
+        raise RuntimeError(
+            f' runtime_cls {args.runtime_cls} is not supported with `--native` argument. `ZEDRuntime` and `GRPCDataRuntime` are supported'
+        )
+
+    with runtime_cls(args) as rt:
         rt.logger.success(
             f' Executor {rt._data_request_handler._executor.metas.name} started'
         )

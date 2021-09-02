@@ -1,0 +1,22 @@
+name: Benchmark
+
+on:
+  push:
+    tags: 
+      - "v*"
+
+jobs:
+  benchmark-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          TAG=$(echo $GITHUB_REF | cut -d '/' -f 3)
+          echo "TAG=$TAG" >> $GITHUB_ENV
+      - uses: benc-uk/workflow-dispatch@v1
+        with:
+          token: ${{ secrets.JINA_DEV_BOT }}
+          workflow: Benchmark Jina
+          repo: jina-ai/jina-terraform
+          ref: "main"
+          inputs: '{ "git_tags": "[\"${{ env.TAG }}\"]"}'

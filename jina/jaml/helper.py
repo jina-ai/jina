@@ -245,7 +245,7 @@ def load_py_modules(d: Dict, extra_search_paths: Optional[Tuple[str]] = None) ->
                 ' the recommended practice is to structure the files in a python'
                 ' package, and only import the `__init__.py` file of that package.'
                 ' For more details, please check out the cookbook: '
-                'https://github.com/jina-ai/jina/blob/master/.github/2.0/cookbooks/Executor.md#structure-of-the-repository'
+                'https://docs.jina.ai/fundamentals/executor/repository-structure/'
             )
 
         mod = [complete_path(m, extra_search_paths) for m in mod]

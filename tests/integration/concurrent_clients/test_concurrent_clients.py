@@ -26,7 +26,7 @@ def test_concurrent_clients(concurrent, protocal, parallel, polling, prefetch, r
                 assert d.text == peer_hash
 
     def peer_client(port, protocal, peer_hash):
-        c = Client(protocol=protocal, port_expose=port)
+        c = Client(protocol=protocal, port=port)
         for _ in range(5):
             c.post(
                 '/ping', Document(text=peer_hash), on_done=lambda r: pong(peer_hash, r)

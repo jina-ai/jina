@@ -89,7 +89,7 @@ class DaemonFile:
         )
         self._build = DaemonBuild.default
         self._python = PythonVersion.default
-        self._jina = 'latest'
+        self._jina = 'master'
         self._run = ''
         self._ports = []
         self.process_file()

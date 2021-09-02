@@ -18,7 +18,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 @pytest.fixture(scope='function')
 def client():
-    return Client(host='localhost', port_expose=123456)
+    return Client(host='localhost', port=123456)
 
 
 @pytest.fixture(scope='function')

@@ -8,6 +8,7 @@ from jina import Executor
 from jina.excepts import BadYAMLVersion
 from jina import Flow
 from jina.jaml import JAML
+from jina.enums import GatewayProtocolType
 from jina.jaml.parsers import get_supported_versions
 from jina.parsers.flow import set_flow_parser
 from jina.types.document.generators import from_ndarray
@@ -64,6 +65,93 @@ def test_load_dump_load(tmpdir):
     f1.save_config(str(Path(tmpdir) / 'a0.yml'))
     f2 = Flow.load_config('yaml/flow-v1.0-syntax.yml')
     f2.save_config(str(Path(tmpdir) / 'a1.yml'))
+
+
+def test_load_modify_dump_load(tmpdir):
+    f: Flow = Flow.load_config('yaml/flow-gateway.yml')
+    # assert vars inside `with`
+    assert f._kwargs['name'] == 'abc'
+    assert f.port_expose == 12345
+    assert f.protocol == GatewayProtocolType.HTTP
+    # assert executor args
+    assert f._pod_nodes['custom1'].args.uses == 'jinahub://CustomExecutor1'
+    assert f._pod_nodes['custom2'].args.uses == 'CustomExecutor2'
+    assert f._pod_nodes['custom2'].args.port_in == 23456
+    assert f._pod_nodes['custom2'].args.port_out == 34567
+
+    # change args inside `with`
+    f.port_expose = 12346
+    f.protocol = GatewayProtocolType.WEBSOCKET
+    # change executor args
+    f._pod_nodes['custom2'].args.port_in = 23457
+    f._pod_nodes['custom2'].args.port_out = 34568
+
+    f.save_config(str(Path(tmpdir) / 'a0.yml'))
+    f1: Flow = Flow.load_config(str(Path(tmpdir) / 'a0.yml'))
+
+    # assert args from original yaml
+    assert f1._kwargs['name'] == 'abc'
+    assert 'custom1' in f1._pod_nodes
+    assert 'custom2' in f1._pod_nodes
+    assert f1._pod_nodes['custom1'].args.uses == 'jinahub://CustomExecutor1'
+    assert f1._pod_nodes['custom2'].args.uses == 'CustomExecutor2'
+    # assert args modified in code
+    assert f1.port_expose == 12346
+    assert f1.protocol == GatewayProtocolType.WEBSOCKET
+    assert f1._pod_nodes['custom2'].args.port_in == 23457
+    assert f1._pod_nodes['custom2'].args.port_out == 34568
+
+
+def test_dump_load_build(monkeypatch):
+    f: Flow = Flow.load_config(
+        '''
+    jtype: Flow
+    with:
+        name: abc
+        port_expose: 12345
+        protocol: http
+    executors:
+        - name: executor1
+          port_in: 45678
+          parallel: 2
+        - name: executor2
+          uses: docker://exec
+          host: 1.2.3.4
+        - name: executor3
+          uses: docker://exec
+          parallel: 2
+    '''
+    ).build()
+    f['gateway'].args.runs_in_docker = True
+    f['executor1'].args.runs_in_docker = True
+
+    f1: Flow = Flow.load_config(JAML.dump(f)).build()
+    assert not f1[
+        'gateway'
+    ].args.runs_in_docker  # gateway doesn't have custom args set, as env was not set
+    assert f1['executor1'].args.runs_in_docker
+    # these were passed by the user
+    assert f.port_expose == f1.port_expose
+    assert f.protocol == f1.protocol
+    assert f['executor1'].args.port_in == f1['executor1'].args.port_in
+    assert f['executor2'].args.host == f1['executor2'].args.host
+    # this was set during `load_config`
+    assert f['executor2'].args.port_in == f1['executor2'].args.port_in
+    assert f['executor3'].args.port_out == f1['executor3'].args.port_out
+    # gateway args are not set, if `JINA_FULL_CLI` is not set
+    assert f['gateway'].args.port_in != f1['gateway'].args.port_in
+    assert f['gateway'].args.port_out != f1['gateway'].args.port_out
+
+    monkeypatch.setenv('JINA_FULL_CLI', 'true')
+    f2: Flow = Flow.load_config(JAML.dump(f)).build()
+    assert f2['gateway'].args.runs_in_docker
+    assert f2['executor1'].args.runs_in_docker
+    # these were passed by the user
+    assert f.port_expose == f2.port_expose
+    # validate gateway args (set during build)
+    assert f['gateway'].args.port_in == f2['gateway'].args.port_in
+    assert f['gateway'].args.port_out == f2['gateway'].args.port_out
+    assert f['gateway'].args.port_ctrl == f2['gateway'].args.port_ctrl
 
 
 def test_load_flow_with_port():

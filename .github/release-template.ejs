@@ -53,7 +53,7 @@ commits.forEach(function (commit) {
 
     if (!(title in all_titles)) {
         all_titles[title] = 1
-        if(title.indexOf('💥')>-1){
+        if( title != null && (title.indexOf('💥')>-1 || title.indexOf(':boom:')>-1) ){
             groupCommits.find(item => item.name === 'breaking').list.push({
                 type: type,
                 scope: scope,

@@ -547,7 +547,7 @@ def test_flow_host_expose_shortcut(input, expect_host, expect_port):
     f = Flow().add(host=input).build()
     assert f['pod0'].args.host == expect_host
     if expect_port is not None:
-        assert f['pod0'].args.port_expose == expect_port
+        assert f['pod0'].args.port_jinad == expect_port
 
 
 def test_flow_workspace_id():
