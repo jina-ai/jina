@@ -82,7 +82,7 @@ class K8sPod(BasePod):
     def _deploy_runtime(self, deployment_args, replicas, deployment_id):
         image_name = kubernetes_deployment.get_image_name(deployment_args.uses)
         name_suffix = self.name + (
-            '-' + str(deployment_id) if self.args.parallel > 1 else ''
+            ('-' + str(deployment_id)) if self.args.parallel > 1 else ''
         )
         dns_name = kubernetes_deployment.to_dns_name(name_suffix)
         init_container_args = kubernetes_deployment.get_init_container_args(self)
@@ -242,7 +242,7 @@ class K8sPod(BasePod):
             return 'master'
 
     def _create_node(self, suffix):
-        name = f'{self.name}_{suffix}'
+        name = f'{self.name}_{suffix}' if suffix else self.name
         dns_name = kubernetes_deployment.to_dns_name(name)
         return {
             'name': name,
