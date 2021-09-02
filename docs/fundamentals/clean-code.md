@@ -293,6 +293,7 @@ def _load_data():
     image_uris = glob.glob('/.workspace/*.png')  # load high resolution images.
     for image_uri in image_uris:
         doc = Document(uri=image_uri)
+        da.append(doc)
     return da
 
 with f:
@@ -315,6 +316,7 @@ def _load_data():
     for image_uri in image_uris:
         doc = Document(uri=image_uri)
         doc.convert_image_uri_to_blob()  # time consuming job at client side
+        da.append(doc)
     return da
 
 da = _load_data()
