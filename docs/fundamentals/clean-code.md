@@ -275,7 +275,7 @@ Meanwhile, this example reduce the data send over network.
 ```python
 import glob
 
-from jina import Executor, Flow, requests, Document, DocumentArray
+from jina import Executor, Flow, requests, Document
 
 class MyExecutor(Executor):
 
@@ -286,16 +286,14 @@ class MyExecutor(Executor):
 
 f = Flow().add(uses=MyExecutor)
 
-def _load_data():
-    da = DocumentArray()
+def my_input():
     image_uris = glob.glob('/.workspace/*.png')  # load high resolution images.
     for image_uri in image_uris:
         doc = Document(uri=image_uri)
-        da.append(doc)
-    return da
+        yield doc
 
 with f:
-    f.post('/foo', inputs=_load_data())
+    f.post('/foo', inputs=my_input())
 ```
 ````
 
@@ -303,18 +301,19 @@ with f:
 ```python
 import glob
 
-from jina import Executor, Document, DocumentArray
+from jina import Executor, Document
 
-def _load_data():
-    da = DocumentArray()
+def my_input():
     image_uris = glob.glob('/.workspace/*.png')  # load high resolution images.
     for image_uri in image_uris:
         doc = Document(uri=image_uri)
         doc.convert_image_uri_to_blob()  # time consuming job at client side
-        da.append(doc)
-    return da
+        yield doc
 
-da = _load_data()
+f = Flow().add()
+
+with f:
+    f.post('/foo', inputs=my_input())
 ```
 ````
 
