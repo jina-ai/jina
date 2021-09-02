@@ -271,10 +271,7 @@ could be time consuming.
 Put it inside an Executor could leverage Jina's capability to scale it up.
 
 ````{tab} ✅ Do
-```{code-block} python
----
-emphasize-lines: 12
----
+```python
 import glob
 
 from jina import Executor, Flow, requests, Document, DocumentArray
