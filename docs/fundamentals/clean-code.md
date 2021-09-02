@@ -302,10 +302,7 @@ with f:
 ````
 
 ````{tab} 😔 Don't
-```{code-block} python
----
-emphasize-lines: 12
----
+```python
 import glob
 
 from jina import Executor, Document, DocumentArray
