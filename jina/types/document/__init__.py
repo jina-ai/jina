@@ -531,7 +531,13 @@ class Document(ProtoTypeMixin, VersionedMixin):
 
         :return: the embedding of this Document
         """
-        return NdArray(self._pb_body.embedding).value
+        if self._pb_body.embedding.HasField('dense'):
+            dense_proto = self._pb_body.embedding.dense
+            return np.frombuffer(dense_proto.buffer, dtype=dense_proto.dtype).reshape(
+                dense_proto.shape
+            )
+        else:
+            return NdArray(self._pb_body.embedding).value
 
     def get_sparse_embedding(
         self, sparse_ndarray_cls_type: Type[BaseSparseNdArray], **kwargs
