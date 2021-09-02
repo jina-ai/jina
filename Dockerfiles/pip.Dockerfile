@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y gcc libc6-dev
 
 COPY . /jina/
 
-RUN cd /jina && pip install ."$PIP_TAG"
+RUN cd /jina && pip install ".[devel]"
 RUN cat $HOME/.bashrc
 RUN grep -Fxq "# JINA_CLI_BEGIN" $HOME/.bashrc
 
