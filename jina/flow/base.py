@@ -473,6 +473,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         host_in: Optional[str] = '0.0.0.0',
         host_out: Optional[str] = '0.0.0.0',
         hosts_in_connect: Optional[List[str]] = None,
+        install_requirements: Optional[bool] = False,
         log_config: Optional[str] = None,
         memory_hwm: Optional[int] = -1,
         name: Optional[str] = None,
@@ -503,7 +504,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         timeout_ctrl: Optional[int] = 5000,
         timeout_ready: Optional[int] = 600000,
         upload_files: Optional[List[str]] = None,
-        install_requirements: Optional[bool] = False,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
         uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
         uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
@@ -540,6 +540,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param host_in: The host address for input, by default it is 0.0.0.0
         :param host_out: The host address for output, by default it is 0.0.0.0
         :param hosts_in_connect: The host address for input, by default it is 0.0.0.0
+        :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to the local system
         :param log_config: The YAML config of the logger used in this object.
         :param memory_hwm: The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. -1 means no restriction
         :param name: The name of this object.
@@ -602,7 +603,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - currently only flatten structure is supported, which means if you upload `[./foo/a.py, ./foo/b.pp, ./bar/c.yml]`, then they will be put under the _same_ workspace on the remote, losing all hierarchies.
           - by default, `--uses` YAML file is always uploaded.
           - uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use `--workspace-id` to specify the workspace.
-        :param install_requirements: If set, then install `requirements.txt` in the Hub Executor bundle to the local system
         :param uses: The config of the executor, it could be one of the followings:
                   * an Executor YAML file (.yml, .yaml, .jaml)
                   * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)
