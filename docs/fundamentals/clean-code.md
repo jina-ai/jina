@@ -289,11 +289,10 @@ f = Flow().add(uses=MyExecutor)
 def my_input():
     image_uris = glob.glob('/.workspace/*.png')  # load high resolution images.
     for image_uri in image_uris:
-        doc = Document(uri=image_uri)
-        yield doc
+        yield Document(uri=image_uri)
 
 with f:
-    f.post('/foo', inputs=my_input())
+    f.post('/foo', inputs=my_input)
 ```
 ````
 
@@ -313,7 +312,7 @@ def my_input():
 f = Flow().add()
 
 with f:
-    f.post('/foo', inputs=my_input())
+    f.post('/foo', inputs=my_input)
 ```
 ````
 
