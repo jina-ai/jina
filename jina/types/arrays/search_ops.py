@@ -12,7 +12,7 @@ if False:
 class DocumentArraySearchOpsMixin:
     """ A mixin that provides search functionality to DocumentArrays"""
 
-    operators = {
+    _operators = {
         '<': operator.lt,
         '>': operator.gt,
         '==': operator.eq,
@@ -51,10 +51,10 @@ class DocumentArraySearchOpsMixin:
         from .document import DocumentArray
 
         assert (
-            operator in self.operators
-        ), f'operator={operator} is not a valid operator from {self.operators.keys()}'
+            operator in self._operators
+        ), f'operator={operator} is not a valid operator from {self._operators.keys()}'
 
-        operator_func = self.operators[operator]
+        operator_func = self._operators[operator]
         iterdocs = self.traverse_flat(traversal_paths)
         filtered = DocumentArray()
 
