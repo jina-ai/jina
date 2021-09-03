@@ -188,10 +188,11 @@ def test_all_sync_clients(protocol, mocker):
     m3 = mocker.Mock()
     m4 = mocker.Mock()
     with f:
-        f.post('/', on_done=m1)
-        f.post('/foo', docs, on_done=m2)
-        f.post('/foo', on_done=m3)
-        f.post('/foo', docs, parameters={'hello': 'world'}, on_done=m4)
+        c = Client(host='localhost', port=f.port_expose, protocol=protocol)
+        c.post('/', on_done=m1)
+        c.post('/foo', docs, on_done=m2)
+        c.post('/foo', on_done=m3)
+        c.post('/foo', docs, parameters={'hello': 'world'}, on_done=m4)
 
     m1.assert_called_once()
     m2.assert_called()
