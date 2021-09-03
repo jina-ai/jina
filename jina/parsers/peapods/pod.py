@@ -16,7 +16,7 @@ def mixin_base_pod_parser(parser):
         '--install-requirements',
         action='store_true',
         default=False,
-        help='If set, install `requirements.txt` in the Hub Executor bundle to the local system',
+        help='If set, install `requirements.txt` in the Hub Executor bundle',
     )
     gp.add_argument(
         '--uses-before',
