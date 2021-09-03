@@ -19,6 +19,7 @@ class K8sPod(BasePod):
         self.args = args
         self.needs = needs or set()
         self.deployment_args = self._parse_args(args)
+        self.version = self._get_base_executor_version()
 
     def _parse_args(
         self, args: Namespace
@@ -62,11 +63,11 @@ class K8sPod(BasePod):
         """Not implemented"""
         raise NotImplementedError
 
-    def _deploy_gateway(self, version):
+    def _deploy_gateway(self):
         kubernetes_deployment.deploy_service(
             self.name,
             namespace=self.args.k8s_namespace,
-            image_name=f'jinaai/jina:{version}-py38-standard',
+            image_name=f'jinaai/jina:{self.version}-py38-standard',
             container_cmd='["jina"]',
             container_args=f'["gateway", '
             f'"--grpc-data-requests", '
@@ -78,12 +79,10 @@ class K8sPod(BasePod):
             init_container=None,
         )
 
-    def _deploy_runtime(
-        self, deployment_args, replicas, k8s_namespace, deployment_id, version
-    ):
+    def _deploy_runtime(self, deployment_args, replicas, deployment_id):
         image_name = kubernetes_deployment.get_image_name(deployment_args.uses)
         name_suffix = self.name + (
-            '-' + str(deployment_id) if self.args.parallel > 1 else ''
+            ('-' + str(deployment_id)) if self.args.parallel > 1 else ''
         )
         dns_name = kubernetes_deployment.to_dns_name(name_suffix)
         init_container_args = kubernetes_deployment.get_init_container_args(self)
@@ -95,31 +94,23 @@ class K8sPod(BasePod):
         )
         uses_with_string = f'"--uses-with", "{uses_with}", ' if uses_with else ''
         if image_name == __default_executor__:
-            image_name = f'jinaai/jina:{version}-py38-standard'
-            container_args = (
-                f'["pea", '
-                f'"--uses", "BaseExecutor", '
-                f'"--grpc-data-requests", '
-                f'"--runtime-cls", "GRPCDataRuntime", '
-                f'"--uses-metas", "{uses_metas}", '
-                + uses_with_string
-                + f'{kubernetes_deployment.get_cli_params(deployment_args)}]'
-            )
-
+            image_name = f'jinaai/jina:{self.version}-py38-standard'
+            uses = 'BaseExecutor'
         else:
-            container_args = (
-                f'["pea", '
-                f'"--uses", "config.yml", '
-                f'"--grpc-data-requests", '
-                f'"--runtime-cls", "GRPCDataRuntime", '
-                f'"--uses-metas", "{uses_metas}", '
-                + uses_with_string
-                + f'{kubernetes_deployment.get_cli_params(deployment_args)}]'
-            )
+            uses = 'config.yml'
+        container_args = (
+            f'["pea", '
+            f'"--uses", "{uses}", '
+            f'"--grpc-data-requests", '
+            f'"--runtime-cls", "GRPCDataRuntime", '
+            f'"--uses-metas", "{uses_metas}", '
+            + uses_with_string
+            + f'{kubernetes_deployment.get_cli_params(deployment_args)}]'
+        )
 
         kubernetes_deployment.deploy_service(
             dns_name,
-            namespace=k8s_namespace,
+            namespace=self.args.k8s_namespace,
             image_name=image_name,
             container_cmd='["jina"]',
             container_args=container_args,
@@ -140,38 +131,18 @@ class K8sPod(BasePod):
             {'name': self.args.k8s_namespace},
             custom_resource_dir=getattr(self.args, 'k8s_custom_resource_dir', None),
         )
-
-        version = self._get_base_executor_version()
         if self.name == 'gateway':
-            self._deploy_gateway(version)
+            self._deploy_gateway()
         else:
             if self.deployment_args['head_deployment'] is not None:
-                self._deploy_runtime(
-                    self.deployment_args['head_deployment'],
-                    1,
-                    self.args.k8s_namespace,
-                    'head',
-                    version,
-                )
+                self._deploy_runtime(self.deployment_args['head_deployment'], 1, 'head')
 
             for i in range(self.args.parallel):
                 deployment_args = self.deployment_args['deployments'][i]
-                self._deploy_runtime(
-                    deployment_args,
-                    self.args.replicas,
-                    self.args.k8s_namespace,
-                    i,
-                    version,
-                )
+                self._deploy_runtime(deployment_args, self.args.replicas, i)
 
             if self.deployment_args['tail_deployment'] is not None:
-                self._deploy_runtime(
-                    self.deployment_args['tail_deployment'],
-                    1,
-                    self.args.k8s_namespace,
-                    'tail',
-                    version,
-                )
+                self._deploy_runtime(self.deployment_args['tail_deployment'], 1, 'tail')
         return self
 
     def wait_start_success(self):
@@ -241,62 +212,21 @@ class K8sPod(BasePod):
         """
         res = []
         if self.args.name == 'gateway':
-            name = kubernetes_deployment.to_dns_name(self.name)
-            res.append(
-                {
-                    'name': f'{self.name}',
-                    'head_host': f'{name}.{self.args.k8s_namespace}.svc.cluster.local',
-                    'head_port_in': 8081,
-                    'tail_port_out': 8082,
-                    'head_zmq_identity': self.head_zmq_identity,
-                }
-            )
+            res.append(self._create_node(''))
         else:
             if self.deployment_args['head_deployment'] is not None:
-                name = kubernetes_deployment.to_dns_name(self.name + '_head')
-                res.append(
-                    {
-                        'name': f'{self.name}_head',
-                        'head_host': f'{name}.{self.args.k8s_namespace}.svc.cluster.local',
-                        'head_port_in': 8081,
-                        'tail_port_out': 8082,
-                        'head_zmq_identity': self.head_zmq_identity,
-                    }
-                )
+                res.append(self._create_node('head'))
             for deployment_id, deployment_arg in enumerate(
                 self.deployment_args['deployments']
             ):
-                service_name = self.name + (
-                    '-' + str(deployment_id)
-                    if len(self.deployment_args['deployments']) > 1
-                    else ''
-                )
-                name = kubernetes_deployment.to_dns_name(service_name)
                 name_suffix = (
-                    f'_{deployment_id}'
+                    deployment_id
                     if len(self.deployment_args['deployments']) > 1
                     else ''
                 )
-                res.append(
-                    {
-                        'name': f'{self.name}{name_suffix}',
-                        'head_host': f'{name}.{self.args.k8s_namespace}.svc.cluster.local',
-                        'head_port_in': 8081,
-                        'tail_port_out': 8082,
-                        'head_zmq_identity': self.head_zmq_identity,
-                    }
-                )
+                res.append(self._create_node(name_suffix))
             if self.deployment_args['tail_deployment'] is not None:
-                name = kubernetes_deployment.to_dns_name(self.name + '_tail')
-                res.append(
-                    {
-                        'name': f'{self.name}_tail',
-                        'head_host': f'{name}.{self.args.k8s_namespace}.svc.cluster.local',
-                        'head_port_in': 8081,
-                        'tail_port_out': 8082,
-                        'head_zmq_identity': self.head_zmq_identity,
-                    }
-                )
+                res.append(self._create_node('tail'))
         return res
 
     def _get_base_executor_version(self):
@@ -309,3 +239,14 @@ class K8sPod(BasePod):
             return jina.__version__
         else:
             return 'master'
+
+    def _create_node(self, suffix):
+        name = f'{self.name}_{suffix}' if suffix != '' else self.name
+        dns_name = kubernetes_deployment.to_dns_name(name)
+        return {
+            'name': name,
+            'head_host': f'{dns_name}.{self.args.k8s_namespace}.svc.cluster.local',
+            'head_port_in': 8081,
+            'tail_port_out': 8082,
+            'head_zmq_identity': self.head_zmq_identity,
+        }

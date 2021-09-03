@@ -254,9 +254,11 @@ py_modules:
         field_table.add_column('Field', style='cyan', no_wrap=True)
         field_table.add_column('Description', no_wrap=True)
         field_table.add_row('name', 'Human-readable title of the Executor')
-        field_table.add_row('alias', 'The unique identifier in Jina Hub')
         field_table.add_row('description', 'Human-readable description of the Executor')
-        field_table.add_row('url', 'URL to find more information on the Executor')
+        field_table.add_row(
+            'url',
+            'URL to find more information on the Executor, mostly GitHub Repo URL',
+        )
         field_table.add_row('keywords', 'Keywords that help user find the Executor')
 
         table.add_row('', field_table)
@@ -441,8 +443,8 @@ py_modules:
         table.add_column('Key', no_wrap=True)
         table.add_column('Value', style='cyan', no_wrap=True)
         table.add_row(':key: ID', uuid8)
-        if 'alias' in image:
-            table.add_row(':name_badge: Alias', image['alias'])
+        if 'name' in image:
+            table.add_row(':name_badge: Name', image['name'])
         table.add_row(':lock: Secret', secret)
         table.add_row(
             '',
@@ -452,7 +454,7 @@ py_modules:
         table.add_row(':whale: DockerHub', f'https://hub.docker.com/r/jinahub/{uuid8}/')
         console.print(table)
 
-        presented_id = image.get('alias', uuid8)
+        presented_id = image.get('name', uuid8)
         usage = (
             f'{presented_id}' if visibility == 'public' else f'{presented_id}:{secret}'
         )
@@ -536,7 +538,7 @@ with f:
         secret: Optional[str] = None,
     ) -> HubExecutor:
         """Fetch the executor meta info from Jina Hub.
-        :param name: the UUID/Alias of the executor
+        :param name: the UUID/Name of the executor
         :param tag: the version tag of the executor
         :param secret: the access secret of the executor
         :return: meta of executor
@@ -564,7 +566,7 @@ with f:
 
         return HubExecutor(
             uuid=resp['id'],
-            alias=resp.get('alias', None),
+            name=resp.get('name', None),
             sn=resp.get('sn', None),
             tag=resp['tag'],
             visibility=resp['visibility'],
