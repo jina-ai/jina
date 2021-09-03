@@ -24,7 +24,7 @@ with f:
 ```python
 from jina import Client, Document
 
-c = Client(protocol='grpc', port_expose=12345)
+c = Client(protocol='grpc', port=12345)
 c.post('/', Document())
 ```
 
@@ -97,7 +97,7 @@ While keep this server open, let's create a client on a different machine:
 ```python
 from jina import Client
 
-c = Client(host='192.168.1.15', port_expose=12345)
+c = Client(host='192.168.1.15', port=12345)
 
 c.post('/')
 ```
@@ -132,7 +132,7 @@ This will serve the Flow with WebSocket, so any Client connects to it should fol
 ```python
 from jina import Client
 
-c = Client(protocol='websocket', host='192.168.1.15', port_expose=12345)
+c = Client(protocol='websocket', host='192.168.1.15', port=12345)
 c.post('/')
 ```
 
@@ -265,7 +265,7 @@ One can also use Python Client to send HTTP request, simply:
 ```python
 from jina import Client
 
-c = Client(protocol='http', port_expose=12345)
+c = Client(protocol='http', port=12345)
 c.post('/', ...)
 ```
 
