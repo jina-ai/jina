@@ -57,6 +57,7 @@ pytest-asyncio:             test
 pytest-reraise:             test
 flaky:                      test
 mock:                       test
+requests-mock:              test
 prettytable:                devel
 optuna:                     devel
 websockets:                 standard, daemon, devel

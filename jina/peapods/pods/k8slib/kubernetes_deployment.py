@@ -73,42 +73,28 @@ def deploy_service(
     )
 
     if init_container:
-        kubernetes_tools.create(
-            'deployment-init',
-            {
-                'name': name,
-                'namespace': namespace,
-                'image': image_name,
-                'replicas': replicas,
-                'command': container_cmd,
-                'args': container_args,
-                'port_expose': port_expose,
-                'port_in': port_in,
-                'port_out': port_out,
-                'port_ctrl': port_ctrl,
-                'pull_policy': pull_policy,
-                **init_container,
-            },
-            custom_resource_dir=custom_resource_dir,
-        )
+        template_name = 'deployment-init'
     else:
-        kubernetes_tools.create(
-            'deployment',
-            {
-                'name': name,
-                'namespace': namespace,
-                'image': image_name,
-                'replicas': replicas,
-                'command': container_cmd,
-                'args': container_args,
-                'port_expose': port_expose,
-                'port_in': port_in,
-                'port_out': port_out,
-                'port_ctrl': port_ctrl,
-                'pull_policy': pull_policy,
-            },
-            custom_resource_dir=custom_resource_dir,
-        )
+        template_name = 'deployment'
+        init_container = {}
+    kubernetes_tools.create(
+        template_name,
+        {
+            'name': name,
+            'namespace': namespace,
+            'image': image_name,
+            'replicas': replicas,
+            'command': container_cmd,
+            'args': container_args,
+            'port_expose': port_expose,
+            'port_in': port_in,
+            'port_out': port_out,
+            'port_ctrl': port_ctrl,
+            'pull_policy': pull_policy,
+            **init_container,
+        },
+        custom_resource_dir=custom_resource_dir,
+    )
     return f'{name}.{namespace}.svc.cluster.local'
 
 
