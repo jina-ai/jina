@@ -517,10 +517,11 @@ class DocumentArray(
 
         :return: embeddings stacked per row as `np.ndarray`.
         """
-        x_mat = b''.join(d.proto.embedding.dense.buffer for d in self)
+        x_mat = b''.join(d.embedding.dense.buffer for d in self._pb_body)
+        proto = self[0].proto.embedding.dense
 
-        return np.frombuffer(x_mat, dtype=self[0].proto.embedding.dense.dtype).reshape(
-            (len(self), self[0].proto.embedding.dense.shape[0])
+        return np.frombuffer(x_mat, dtype=proto.dtype).reshape(
+            (len(self), proto.shape[0])
         )
 
     @embeddings.setter
