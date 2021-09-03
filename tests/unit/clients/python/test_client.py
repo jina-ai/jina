@@ -167,7 +167,7 @@ def test_client_from_kwargs(protocol):
 def test_independent_client(protocol):
     with Flow(protocol=protocol) as f:
         c = Client(host='localhost', port=f.port_expose, protocol=protocol)
-        assert isinstance(c, f.client)
+        assert type(c) == type(f.client)
         c.post('/')
 
 
