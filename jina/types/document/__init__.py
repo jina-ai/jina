@@ -195,9 +195,9 @@ class Document(ProtoTypeMixin, VersionedMixin):
     def __init__(
         self,
         document: Optional[DocumentSourceType] = None,
-        pb_only: bool = False,
         field_resolver: Dict[str, str] = None,
         copy: bool = False,
+        pb_only: bool = False,
         **kwargs,
     ):
         """
