@@ -263,7 +263,7 @@ class DocumentArray(
 
     def __iter__(self) -> Iterator['Document']:
         for d in self._pb_body:
-            yield Document(d)
+            yield Document(d, pb_only=True)
 
     def __contains__(self, item: str):
         return item in self._id_to_index
