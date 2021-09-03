@@ -609,42 +609,28 @@
     <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">init_container</span><span class="p">:</span>
-        <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-            <span class="s1">'deployment-init'</span><span class="p">,</span>
-            <span class="p">{</span>
-                <span class="s1">'name'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
-                <span class="s1">'namespace'</span><span class="p">:</span> <span class="n">namespace</span><span class="p">,</span>
-                <span class="s1">'image'</span><span class="p">:</span> <span class="n">image_name</span><span class="p">,</span>
-                <span class="s1">'replicas'</span><span class="p">:</span> <span class="n">replicas</span><span class="p">,</span>
-                <span class="s1">'command'</span><span class="p">:</span> <span class="n">container_cmd</span><span class="p">,</span>
-                <span class="s1">'args'</span><span class="p">:</span> <span class="n">container_args</span><span class="p">,</span>
-                <span class="s1">'port_expose'</span><span class="p">:</span> <span class="n">port_expose</span><span class="p">,</span>
-                <span class="s1">'port_in'</span><span class="p">:</span> <span class="n">port_in</span><span class="p">,</span>
-                <span class="s1">'port_out'</span><span class="p">:</span> <span class="n">port_out</span><span class="p">,</span>
-                <span class="s1">'port_ctrl'</span><span class="p">:</span> <span class="n">port_ctrl</span><span class="p">,</span>
-                <span class="s1">'pull_policy'</span><span class="p">:</span> <span class="n">pull_policy</span><span class="p">,</span>
-                <span class="o">**</span><span class="n">init_container</span><span class="p">,</span>
-            <span class="p">},</span>
-            <span class="n">custom_resource_dir</span><span class="o">=</span><span class="n">custom_resource_dir</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="n">template_name</span> <span class="o">=</span> <span class="s1">'deployment-init'</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-            <span class="s1">'deployment'</span><span class="p">,</span>
-            <span class="p">{</span>
-                <span class="s1">'name'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
-                <span class="s1">'namespace'</span><span class="p">:</span> <span class="n">namespace</span><span class="p">,</span>
-                <span class="s1">'image'</span><span class="p">:</span> <span class="n">image_name</span><span class="p">,</span>
-                <span class="s1">'replicas'</span><span class="p">:</span> <span class="n">replicas</span><span class="p">,</span>
-                <span class="s1">'command'</span><span class="p">:</span> <span class="n">container_cmd</span><span class="p">,</span>
-                <span class="s1">'args'</span><span class="p">:</span> <span class="n">container_args</span><span class="p">,</span>
-                <span class="s1">'port_expose'</span><span class="p">:</span> <span class="n">port_expose</span><span class="p">,</span>
-                <span class="s1">'port_in'</span><span class="p">:</span> <span class="n">port_in</span><span class="p">,</span>
-                <span class="s1">'port_out'</span><span class="p">:</span> <span class="n">port_out</span><span class="p">,</span>
-                <span class="s1">'port_ctrl'</span><span class="p">:</span> <span class="n">port_ctrl</span><span class="p">,</span>
-                <span class="s1">'pull_policy'</span><span class="p">:</span> <span class="n">pull_policy</span><span class="p">,</span>
-            <span class="p">},</span>
-            <span class="n">custom_resource_dir</span><span class="o">=</span><span class="n">custom_resource_dir</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="n">template_name</span> <span class="o">=</span> <span class="s1">'deployment'</span>
+        <span class="n">init_container</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+        <span class="n">template_name</span><span class="p">,</span>
+        <span class="p">{</span>
+            <span class="s1">'name'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+            <span class="s1">'namespace'</span><span class="p">:</span> <span class="n">namespace</span><span class="p">,</span>
+            <span class="s1">'image'</span><span class="p">:</span> <span class="n">image_name</span><span class="p">,</span>
+            <span class="s1">'replicas'</span><span class="p">:</span> <span class="n">replicas</span><span class="p">,</span>
+            <span class="s1">'command'</span><span class="p">:</span> <span class="n">container_cmd</span><span class="p">,</span>
+            <span class="s1">'args'</span><span class="p">:</span> <span class="n">container_args</span><span class="p">,</span>
+            <span class="s1">'port_expose'</span><span class="p">:</span> <span class="n">port_expose</span><span class="p">,</span>
+            <span class="s1">'port_in'</span><span class="p">:</span> <span class="n">port_in</span><span class="p">,</span>
+            <span class="s1">'port_out'</span><span class="p">:</span> <span class="n">port_out</span><span class="p">,</span>
+            <span class="s1">'port_ctrl'</span><span class="p">:</span> <span class="n">port_ctrl</span><span class="p">,</span>
+            <span class="s1">'pull_policy'</span><span class="p">:</span> <span class="n">pull_policy</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">init_container</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">custom_resource_dir</span><span class="o">=</span><span class="n">custom_resource_dir</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">namespace</span><span class="si">}</span><span class="s1">.svc.cluster.local'</span></div>
 
 
