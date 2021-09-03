@@ -165,7 +165,10 @@ recipe_object = {
         'summary': 'Jina is the cloud-native neural search framework for any kind of data',
         'doc_url': 'https://docs.jina.ai',
     },
-    'extra': {'recipe-maintainers': ['tadejsv', 'maateen', 'nan-wang', 'hanxiao'], 'feedstock-name': 'jina'},
+    'extra': {
+        'recipe-maintainers': ['tadejsv', 'maateen', 'nan-wang', 'hanxiao'],
+        'feedstock-name': 'jina',
+    },
 }
 
 
