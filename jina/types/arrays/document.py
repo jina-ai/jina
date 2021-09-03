@@ -270,7 +270,7 @@ class DocumentArray(
 
     def __getitem__(self, item: Union[int, str, slice]):
         if isinstance(item, int):
-            return Document(self._pb_body[item])
+            return Document(self._pb_body[item], pb_only=True)
         elif isinstance(item, str):
             return self[self._id_to_index[item]]
         elif isinstance(item, slice):

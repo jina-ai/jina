@@ -144,6 +144,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
     """
 
     ON_GETATTR = ['matches', 'chunks']
+    CNT = 0
 
     # overload_inject_start_document
     @overload
@@ -228,12 +229,16 @@ class Document(ProtoTypeMixin, VersionedMixin):
                 assert d.tags['hello'] == 'world'  # true
                 assert d.tags['good'] == 'bye'  # true
         """
+        Document.CNT += 1
         if pb_only:
-            if not isinstance(document, jina_pb2.DocumentProto):
+            if not isinstance(document, jina_pb2.DocumentProto) or document is None:
                 raise ValueError(
                     'you cannot use pb_only with document not instance of DocumentProto'
                 )
             self._pb_body = document
+            if not self._pb_body.id:
+                self.id = random_identity(use_uuid1=True)
+            self._mermaid_id = str(Document.CNT) + self._pb_body.id
         else:
             self._pb_body = jina_pb2.DocumentProto()
             try:
@@ -326,7 +331,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
                 raise ValueError(
                     f'Document content fields are mutually exclusive, please provide only one of {_all_doc_content_keys}'
                 )
-            self._mermaid_id = random_identity()
+            self._mermaid_id = str(Document.CNT) + self._pb_body.id
             self.set_attributes(**kwargs)
 
     def pop(self, *fields) -> None:
