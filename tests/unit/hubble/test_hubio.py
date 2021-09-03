@@ -65,7 +65,7 @@ class GetMockResponse:
         return {
             'keywords': [],
             'id': 'dummy_mwu_encoder',
-            'alias': 'alias_dummy',
+            'name': 'alias_dummy',
             'tag': 'v0',
             'versions': [],
             'visibility': 'public',
@@ -170,7 +170,7 @@ def test_fetch(mocker, monkeypatch):
     executor = HubIO(args).fetch_meta('dummy_mwu_encoder')
 
     assert executor.uuid == 'dummy_mwu_encoder'
-    assert executor.alias == 'alias_dummy'
+    assert executor.name == 'alias_dummy'
     assert executor.tag == 'v0'
     assert executor.image_name == 'jinahub/pod.dummy_mwu_encoder'
     assert executor.md5sum == 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f'
@@ -197,7 +197,7 @@ def test_pull(test_envs, mocker, monkeypatch):
         mock(name=name)
         return HubExecutor(
             uuid='dummy_mwu_encoder',
-            alias='alias_dummy',
+            name='alias_dummy',
             tag='v0',
             image_name='jinahub/pod.dummy_mwu_encoder',
             md5sum=None,
@@ -251,7 +251,7 @@ def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
         else:
             return HubExecutor(
                 uuid='dummy_mwu_encoder',
-                alias='alias_dummy',
+                name='alias_dummy',
                 tag='v0',
                 image_name='jinahub/pod.dummy_mwu_encoder',
                 md5sum=None,
