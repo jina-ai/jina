@@ -7,7 +7,7 @@ Standard install enables the full features of Jina.
 pip install -U jina
 ```
 ````
-````{tab} via conda
+````{tab} via Conda
 ```shell
 conda install jina -c conda-forge
 ```
@@ -40,7 +40,7 @@ JINA_PIP_INSTALL_CORE=1 pip install jina
 
 ````
 
-````{tab} via conda
+````{tab} via Conda
 
 ```shell
 conda install jina-core -c conda-forge
@@ -70,7 +70,7 @@ JINA_PIP_INSTALL_PERF=1 pip install jina
 
 ````
 
-````{tab} via conda
+````{tab} via Conda
 
 ```shell
 conda install jina-perf -c conda-forge
