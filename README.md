@@ -35,6 +35,7 @@ fragmented, multi-vendor, generic legacy tools.
 ## Install
 
 - via PyPI: `pip install jina`
+- via Conda: `conda install jina -c conda-forge`
 - via Docker: `docker run jinaai/jina:latest`
 - [More install options](https://docs.jina.ai/get-started/install/)
 
