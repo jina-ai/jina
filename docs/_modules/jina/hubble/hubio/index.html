@@ -790,9 +790,11 @@
         <span class="n">field_table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s1">'Field'</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">'cyan'</span><span class="p">,</span> <span class="n">no_wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">field_table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s1">'Description'</span><span class="p">,</span> <span class="n">no_wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">field_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'Human-readable title of the Executor'</span><span class="p">)</span>
-        <span class="n">field_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">'alias'</span><span class="p">,</span> <span class="s1">'The unique identifier in Jina Hub'</span><span class="p">)</span>
         <span class="n">field_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">'description'</span><span class="p">,</span> <span class="s1">'Human-readable description of the Executor'</span><span class="p">)</span>
-        <span class="n">field_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">'url'</span><span class="p">,</span> <span class="s1">'URL to find more information on the Executor'</span><span class="p">)</span>
+        <span class="n">field_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+            <span class="s1">'url'</span><span class="p">,</span>
+            <span class="s1">'URL to find more information on the Executor, mostly GitHub Repo URL'</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">field_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">'keywords'</span><span class="p">,</span> <span class="s1">'Keywords that help user find the Executor'</span><span class="p">)</span>
 
         <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">''</span><span class="p">,</span> <span class="n">field_table</span><span class="p">)</span>
@@ -977,8 +979,8 @@
         <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s1">'Key'</span><span class="p">,</span> <span class="n">no_wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s1">'Value'</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">'cyan'</span><span class="p">,</span> <span class="n">no_wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">':key: ID'</span><span class="p">,</span> <span class="n">uuid8</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s1">'alias'</span> <span class="ow">in</span> <span class="n">image</span><span class="p">:</span>
-            <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">':name_badge: Alias'</span><span class="p">,</span> <span class="n">image</span><span class="p">[</span><span class="s1">'alias'</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s1">'name'</span> <span class="ow">in</span> <span class="n">image</span><span class="p">:</span>
+            <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">':name_badge: Name'</span><span class="p">,</span> <span class="n">image</span><span class="p">[</span><span class="s1">'name'</span><span class="p">])</span>
         <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">':lock: Secret'</span><span class="p">,</span> <span class="n">secret</span><span class="p">)</span>
         <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
             <span class="s1">''</span><span class="p">,</span>
@@ -988,7 +990,7 @@
         <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">':whale: DockerHub'</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'https://hub.docker.com/r/jinahub/</span><span class="si">{</span><span class="n">uuid8</span><span class="si">}</span><span class="s1">/'</span><span class="p">)</span>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
 
-        <span class="n">presented_id</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'alias'</span><span class="p">,</span> <span class="n">uuid8</span><span class="p">)</span>
+        <span class="n">presented_id</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="n">uuid8</span><span class="p">)</span>
         <span class="n">usage</span> <span class="o">=</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">presented_id</span><span class="si">}</span><span class="s1">'</span> <span class="k">if</span> <span class="n">visibility</span> <span class="o">==</span> <span class="s1">'public'</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">presented_id</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">secret</span><span class="si">}</span><span class="s1">'</span>
         <span class="p">)</span>
@@ -1072,7 +1074,7 @@
         <span class="n">secret</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HubExecutor</span><span class="p">:</span>
         <span class="sd">"""Fetch the executor meta info from Jina Hub.</span>
-<span class="sd">        :param name: the UUID/Alias of the executor</span>
+<span class="sd">        :param name: the UUID/Name of the executor</span>
 <span class="sd">        :param tag: the version tag of the executor</span>
 <span class="sd">        :param secret: the access secret of the executor</span>
 <span class="sd">        :return: meta of executor</span>
@@ -1100,7 +1102,7 @@
 
         <span class="k">return</span> <span class="n">HubExecutor</span><span class="p">(</span>
             <span class="n">uuid</span><span class="o">=</span><span class="n">resp</span><span class="p">[</span><span class="s1">'id'</span><span class="p">],</span>
-            <span class="n">alias</span><span class="o">=</span><span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'alias'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
             <span class="n">sn</span><span class="o">=</span><span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'sn'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
             <span class="n">tag</span><span class="o">=</span><span class="n">resp</span><span class="p">[</span><span class="s1">'tag'</span><span class="p">],</span>
             <span class="n">visibility</span><span class="o">=</span><span class="n">resp</span><span class="p">[</span><span class="s1">'visibility'</span><span class="p">],</span>
@@ -1249,7 +1251,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Sep 02, 2021.
+            Last updated on Sep 03, 2021.
         </div>
         
       </footer>
