@@ -76,7 +76,7 @@ def test_use_from_local_hub_pod_level(
         mock(name=name)
         return HubExecutor(
             uuid='hello',
-            alias='alias_dummy',
+            name='alias_dummy',
             tag='v0',
             image_name='jinahub/pod.dummy_mwu_encoder',
             md5sum=None,
@@ -101,7 +101,7 @@ def test_use_from_local_hub_flow_level(
         mock(name=name)
         return HubExecutor(
             uuid='hello',
-            alias='alias_dummy',
+            name='alias_dummy',
             tag='v0',
             image_name='jinahub/pod.dummy_mwu_encoder',
             md5sum=None,
