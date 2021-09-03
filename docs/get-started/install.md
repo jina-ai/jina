@@ -7,6 +7,11 @@ Standard install enables the full features of Jina.
 pip install -U jina
 ```
 ````
+````{tab} via Conda
+```shell
+conda install jina -c conda-forge
+```
+````
 ````{tab} via Docker
 ```shell
 docker run jinaai/jina:latest
@@ -35,6 +40,14 @@ JINA_PIP_INSTALL_CORE=1 pip install jina
 
 ````
 
+````{tab} via Conda
+
+```shell
+conda install jina-core -c conda-forge
+```
+
+````
+
 ````{tab} via Docker
 
 ```shell
@@ -54,6 +67,14 @@ Same as Minimum install, but also install `uvloop` & `lz4`.
 JINA_PIP_INSTALL_PERF=1 pip install jina
 ```
 
+
+````
+
+````{tab} via Conda
+
+```shell
+conda install jina-perf -c conda-forge
+```
 
 ````
 
