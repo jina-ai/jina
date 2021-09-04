@@ -1,13 +1,13 @@
 {% set name = "jina" %}
-{% set version = "2.0.19" %}
+{% set version = "2.0.23" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name|lower }}-split
   version: {{ version }}
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 0ff0f811c5c34c5b07efbb64cfc64ef37c9d9a77d4052a49b928014e44e93c3c
+  sha256: 1050065287985d07d433f1e4926244e31ba581429aee5a8d6f2b2516565ce359
 
 build:
   number: 0
@@ -15,6 +15,7 @@ build:
 outputs:
   - name: jina-core
     build:
+      noarch: python
       entry_points:
         - jina = cli:main
         - jinad = daemon:main
@@ -34,13 +35,14 @@ outputs:
         - python >=3.7
         - pip
       run:
+        - __unix
         - python >=3.7
-        - pyyaml >=5.3.1
         - grpcio >=1.33.1
-        - protobuf >=3.13.0
-        - tornado >=5.1.0
         - numpy
+        - protobuf >=3.13.0
+        - pyyaml >=5.3.1
         - pyzmq >=17.1.0
+        - tornado >=5.1.0
   - name: jina-perf
     test:
       requires:
@@ -51,6 +53,7 @@ outputs:
         - pip check
         - jina --version
     build:
+      noarch: python
       entry_points:
         - jina = cli:main
         - jinad = daemon:main
@@ -62,15 +65,16 @@ outputs:
         - python >=3.7
         - pip
       run:
+        - __unix
         - python >=3.7
-        - protobuf >=3.13.0
-        - tornado >=5.1.0
-        - pyyaml >=5.3.1
-        - numpy
-        - uvloop
         - grpcio >=1.33.1
         - lz4 <3.1.2
+        - numpy
+        - protobuf >=3.13.0
+        - pyyaml >=5.3.1
         - pyzmq >=17.1.0
+        - tornado >=5.1.0
+        - uvloop
   - name: jina
     test:
       requires:
@@ -81,6 +85,7 @@ outputs:
         - pip check
         - jina --version
     build:
+      noarch: python
       entry_points:
         - jina = cli:main
         - jinad = daemon:main
@@ -90,29 +95,30 @@ outputs:
         - python >=3.7
         - pip
       run:
+        - __unix
         - python >=3.7
+        - aiofiles
         - aiohttp
-        - pyyaml >=5.3.1
-        - requests
-        - lz4 <3.1.2
-        - websockets
+        - aiostream
+        - cryptography
+        - docker-py
         - fastapi
+        - filelock
+        - grpcio >=1.33.1
+        - lz4 <3.1.2
+        - numpy
+        - pathspec
+        - protobuf >=3.13.0
+        - pydantic
+        - python-multipart
+        - pyyaml >=5.3.1
+        - pyzmq >=17.1.0
+        - requests
+        - rich
         - tornado >=5.1.0
         - uvicorn >=0.14.0
-        - filelock
-        - numpy
-        - cryptography
         - uvloop
-        - pathspec
-        - docker-py
-        - pydantic
-        - grpcio >=1.33.1
-        - aiostream
-        - rich
-        - protobuf >=3.13.0
-        - aiofiles
-        - python-multipart
-        - pyzmq >=17.1.0
+        - websockets
 
 about:
   home: https://github.com/jina-ai/jina/
@@ -128,3 +134,4 @@ extra:
     - maateen
     - nan-wang
     - hanxiao
+  feedstock-name: jina
