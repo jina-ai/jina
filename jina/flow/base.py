@@ -1006,9 +1006,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 d.pop('head_zmq_identity')
             no_identity_deploments.append(d)
         for pod_id, pod in self._pod_nodes.items():
-            self._pod_nodes[pod_id].args.deployments = json.dumps(
-                no_identity_deploments
-            )
+            self._pod_nodes[pod_id].args.deployments = base64.b64encode(
+                json.dumps(no_identity_deploments).encode()
+            ).decode()
 
     def __call__(self, *args, **kwargs):
         """Builds the Flow

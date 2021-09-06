@@ -1,4 +1,5 @@
 import asyncio
+import base64
 import ipaddress
 import json
 from argparse import Namespace
@@ -373,7 +374,9 @@ def create_connection_pool(args: 'Namespace') -> ConnectionPool:
         k8s_clients = K8SClients()
         return K8sGrpcConnectionPool(
             namespace=args.k8s_namespace,
-            deployments=json.loads(args.deployments),
+            deployments=json.loads(
+                base64.b64decode(args.deployments.encode()).decode()
+            ),
             client=k8s_clients.v1,
         )
     else:
