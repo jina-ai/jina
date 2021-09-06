@@ -884,10 +884,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
         if isinstance(value, bytes):
             self.buffer = value
         elif isinstance(value, str):
-            if _is_uri(value):
-                self.uri = value
-            else:
-                self.text = value
+            self.text = value
         elif isinstance(value, np.ndarray):
             self.blob = value
         else:

@@ -114,11 +114,6 @@ def test_uri_get_set():
     a.uri = 'https://abc.com/a.jpg'
     assert a.uri == 'https://abc.com/a.jpg'
     assert a.mime_type == 'image/jpeg'
-    a.uri = 'abcdefg'
-    assert a.uri == 'abcdefg'
-    a.content = 'abcdefg'
-    assert a.text == 'abcdefg'
-    assert not a.uri
 
 
 def test_set_get_mime():

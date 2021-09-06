@@ -60,7 +60,7 @@ __version__ = '2.0.24'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
-__proto_version__ = '0.0.85'
+__proto_version__ = '0.0.86'
 
 __uptime__ = _datetime.datetime.now().isoformat()
 
