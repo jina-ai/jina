@@ -557,7 +557,14 @@
         <span class="c1"># this import reads the `KUBECONFIG` env var. Lazy load to postpone the reading</span>
         <span class="kn">from</span> <span class="nn">kubernetes</span> <span class="kn">import</span> <span class="n">config</span><span class="p">,</span> <span class="n">client</span>
 
-        <span class="n">config</span><span class="o">.</span><span class="n">load_kube_config</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># try loading kube config from disk first</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">load_kube_config</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">config</span><span class="o">.</span><span class="n">config_exception</span><span class="o">.</span><span class="n">ConfigException</span><span class="p">:</span>
+            <span class="c1"># if the config could not be read from disk, try loading in cluster config</span>
+            <span class="c1"># this works if we are running inside k8s</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">load_incluster_config</span><span class="p">()</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">__k8s_client</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">ApiClient</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__v1</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">CoreV1Api</span><span class="p">(</span><span class="n">api_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__k8s_client</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__beta</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">ExtensionsV1beta1Api</span><span class="p">(</span><span class="n">api_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__k8s_client</span><span class="p">)</span>
@@ -663,7 +670,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Sep 04, 2021.
+            Last updated on Sep 06, 2021.
         </div>
         
       </footer>
