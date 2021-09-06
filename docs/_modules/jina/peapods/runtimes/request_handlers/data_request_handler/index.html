@@ -545,6 +545,7 @@
 <span class="kn">from</span> <span class="nn">....executors</span> <span class="kn">import</span> <span class="n">BaseExecutor</span>
 <span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">typename</span>
 <span class="kn">from</span> <span class="nn">....types.arrays.document</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+<span class="kn">from</span> <span class="nn">....types.arrays.abstract</span> <span class="kn">import</span> <span class="n">AbstractDocumentArray</span>
 <span class="kn">from</span> <span class="nn">....types.message</span> <span class="kn">import</span> <span class="n">Message</span><span class="p">,</span> <span class="n">Request</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
@@ -705,7 +706,7 @@
         <span class="c1"># 3. Return DocArray, but the memory pointer says it is the same as self.docs: do nothing</span>
         <span class="c1"># 4. Return DocArray and its not a shallow copy of self.docs: assign self.request.docs</span>
         <span class="k">if</span> <span class="n">r_docs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">r_docs</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">r_docs</span><span class="p">,</span> <span class="n">AbstractDocumentArray</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'return type must be </span><span class="si">{</span><span class="n">DocumentArray</span><span class="si">!r}</span><span class="s1"> or None, but getting </span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">r_docs</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
