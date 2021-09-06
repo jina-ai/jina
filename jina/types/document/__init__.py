@@ -306,6 +306,9 @@ class Document(ProtoTypeMixin, VersionedMixin):
             elif document is not None:
                 # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(document)} is not recognizable')
+            else:
+                # create an empty document
+                self._pb_body = jina_pb2.DocumentProto()
         except Exception as ex:
             raise BadDocType(
                 f'fail to construct a document from {document}, '
