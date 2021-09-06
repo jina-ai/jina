@@ -998,8 +998,17 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         deployments = []
         for pod_id, pod in self._pod_nodes.items():
             deployments.extend(pod.deployments)
+
+        # head_zmq_identity is a byte array and not json serializable, we also dont need it later
+        no_identity_deploments = []
+        for d in deployments:
+            if 'head_zmq_identity' in d:
+                d.pop('head_zmq_identity')
+            no_identity_deploments.append(d)
         for pod_id, pod in self._pod_nodes.items():
-            self._pod_nodes[pod_id].args.deployments = deployments
+            self._pod_nodes[pod_id].args.deployments = json.dumps(
+                no_identity_deploments
+            )
 
     def __call__(self, *args, **kwargs):
         """Builds the Flow
