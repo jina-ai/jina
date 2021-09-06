@@ -111,5 +111,5 @@ def test_use_from_local_hub_flow_level(
 
     monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
 
-    with Flow().add(uses='jinahub://hello'):
+    with Flow().add(uses='jinahub://hello', install_requirements=True):
         pass

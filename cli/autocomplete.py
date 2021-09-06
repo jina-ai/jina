@@ -320,6 +320,7 @@ ac_table = {
             '--pea-id',
             '--pea-role',
             '--noblock-on-start',
+            '--install-requirements',
             '--uses-before',
             '--uses-after',
             '--parallel',

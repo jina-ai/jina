@@ -473,6 +473,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         host_in: Optional[str] = '0.0.0.0',
         host_out: Optional[str] = '0.0.0.0',
         hosts_in_connect: Optional[List[str]] = None,
+        install_requirements: Optional[bool] = False,
         log_config: Optional[str] = None,
         memory_hwm: Optional[int] = -1,
         name: Optional[str] = None,
@@ -539,6 +540,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param host_in: The host address for input, by default it is 0.0.0.0
         :param host_out: The host address for output, by default it is 0.0.0.0
         :param hosts_in_connect: The host address for input, by default it is 0.0.0.0
+        :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle
         :param log_config: The YAML config of the logger used in this object.
         :param memory_hwm: The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. -1 means no restriction
         :param name: The name of this object.
