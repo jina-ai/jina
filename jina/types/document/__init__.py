@@ -197,7 +197,6 @@ class Document(ProtoTypeMixin, VersionedMixin):
         document: Optional[DocumentSourceType] = None,
         field_resolver: Dict[str, str] = None,
         copy: bool = False,
-        pb_only: bool = False,
         **kwargs,
     ):
         """
@@ -212,7 +211,6 @@ class Document(ProtoTypeMixin, VersionedMixin):
         :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field
                 names defined in Protobuf. This is only used when the given ``document`` is
                 a JSON string or a Python dict.
-        :param pb_only: light weight Document construction using pb_body only
         :param kwargs: other parameters to be set _after_ the document is constructed
 
         .. note::
@@ -230,16 +228,6 @@ class Document(ProtoTypeMixin, VersionedMixin):
                 assert d.tags['good'] == 'bye'  # true
         """
         Document.CNT += 1
-        if pb_only:
-            if not isinstance(document, jina_pb2.DocumentProto) or document is None:
-                raise ValueError(
-                    'you cannot use pb_only with document not instance of DocumentProto'
-                )
-            self._pb_body = document
-            if not self._pb_body.id:
-                self.id = random_identity(use_uuid1=True)
-            self._mermaid_id = str(Document.CNT) + self._pb_body.id
-            return
 
         self._pb_body = jina_pb2.DocumentProto()
         try:
@@ -248,6 +236,8 @@ class Document(ProtoTypeMixin, VersionedMixin):
                     self._pb_body.CopyFrom(document)
                 else:
                     self._pb_body = document
+            elif isinstance(document, bytes):
+                self._pb_body.ParseFromString(document)
             elif isinstance(document, (dict, str)):
                 if isinstance(document, str):
                     document = json.loads(document)
@@ -305,8 +295,6 @@ class Document(ProtoTypeMixin, VersionedMixin):
                             self._pb_body.tags.update(
                                 {k: document[k] for k in _remainder}
                             )
-            elif isinstance(document, bytes):
-                self._pb_body.ParseFromString(document)
             elif isinstance(document, Document):
                 if copy:
                     self._pb_body.CopyFrom(document.proto)
@@ -325,13 +313,14 @@ class Document(ProtoTypeMixin, VersionedMixin):
         if self._pb_body.id is None or not self._pb_body.id:
             self.id = random_identity(use_uuid1=True)
 
-        # check if there are mutually exclusive content fields
-        if _contains_conflicting_content(**kwargs):
-            raise ValueError(
-                f'Document content fields are mutually exclusive, please provide only one of {_all_doc_content_keys}'
-            )
+        if kwargs:
+            # check if there are mutually exclusive content fields
+            if _contains_conflicting_content(**kwargs):
+                raise ValueError(
+                    f'Document content fields are mutually exclusive, please provide only one of {_all_doc_content_keys}'
+                )
+            self.set_attributes(**kwargs)
         self._mermaid_id = str(Document.CNT) + self._pb_body.id
-        self.set_attributes(**kwargs)
 
     def pop(self, *fields) -> None:
         """Remove the values from the given fields of this Document.

@@ -263,14 +263,14 @@ class DocumentArray(
 
     def __iter__(self) -> Iterator['Document']:
         for d in self._pb_body:
-            yield Document(d, pb_only=True)
+            yield Document(d)
 
     def __contains__(self, item: str):
         return item in self._id_to_index
 
     def __getitem__(self, item: Union[int, str, slice]):
         if isinstance(item, int):
-            return Document(self._pb_body[item], pb_only=True)
+            return Document(self._pb_body[item])
         elif isinstance(item, str):
             return self[self._id_to_index[item]]
         elif isinstance(item, slice):
