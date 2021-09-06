@@ -1,6 +1,6 @@
 import pytest
 
-from jina import DocumentArray, Executor, requests, Document
+from jina import DocumentArray, Executor, requests, Document, DocumentArrayMemmap
 from jina.logging.logger import JinaLogger
 from jina.parsers import set_pea_parser
 from jina.types.message import Message
@@ -76,6 +76,35 @@ def test_data_request_handler_change_docs(logger):
     assert len(msg.request.docs) == 10
     for doc in msg.request.docs:
         assert doc.text == 'changed document'
+
+
+def test_data_request_handler_change_docs_dam(logger, tmpdir):
+    class MemmapExecutor(Executor):
+        @requests
+        def foo(self, docs, **kwargs):
+            dam = DocumentArrayMemmap(tmpdir + '/dam')
+            dam.extend(docs)
+            return dam
+
+    args = set_pea_parser().parse_args(['--uses', 'MemmapExecutor'])
+    handler = DataRequestHandler(args, logger)
+
+    req = list(
+        request_generator(
+            '/', DocumentArray([Document(text='input document') for _ in range(10)])
+        )
+    )[0]
+    msg = Message(None, req, 'test', '123')
+    assert len(msg.request.docs) == 10
+    handler.handle(
+        msg=msg,
+        partial_requests=None,
+        peapod_name='name',
+    )
+
+    assert len(msg.request.docs) == 10
+    for doc in msg.request.docs:
+        assert doc.text == 'input document'
 
 
 def test_data_request_handler_change_docs_from_partial_requests(logger):
