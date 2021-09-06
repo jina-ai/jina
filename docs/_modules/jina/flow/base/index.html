@@ -1009,6 +1009,7 @@
         <span class="n">host_in</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span>
         <span class="n">host_out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span>
         <span class="n">hosts_in_connect</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">install_requirements</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">memory_hwm</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1075,6 +1076,7 @@
 <span class="sd">        :param host_in: The host address for input, by default it is 0.0.0.0</span>
 <span class="sd">        :param host_out: The host address for output, by default it is 0.0.0.0</span>
 <span class="sd">        :param hosts_in_connect: The host address for input, by default it is 0.0.0.0</span>
+<span class="sd">        :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle</span>
 <span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
 <span class="sd">        :param memory_hwm: The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. -1 means no restriction</span>
 <span class="sd">        :param name: The name of this object.</span>

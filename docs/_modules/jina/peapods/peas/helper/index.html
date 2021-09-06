@@ -637,11 +637,14 @@
     <span class="k">if</span> <span class="n">_args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="s1">'ZEDRuntime'</span> <span class="ow">and</span> <span class="n">_args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'docker://'</span><span class="p">):</span>
         <span class="n">_args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="s1">'ContainerRuntime'</span>
     <span class="k">if</span> <span class="n">_args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="s1">'ZEDRuntime'</span> <span class="ow">and</span> <span class="n">is_valid_huburi</span><span class="p">(</span><span class="n">_args</span><span class="o">.</span><span class="n">uses</span><span class="p">):</span>
-        <span class="n">_args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="n">HubIO</span><span class="p">(</span>
-            <span class="n">set_hub_pull_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse_args</span><span class="p">([</span><span class="n">_args</span><span class="o">.</span><span class="n">uses</span><span class="p">,</span> <span class="s1">'--no-usage'</span><span class="p">])</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">pull</span><span class="p">()</span>
+        <span class="n">_hub_args</span> <span class="o">=</span> <span class="p">[</span><span class="n">_args</span><span class="o">.</span><span class="n">uses</span><span class="p">,</span> <span class="s1">'--no-usage'</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">_args</span><span class="o">.</span><span class="n">install_requirements</span><span class="p">:</span>
+            <span class="n">_hub_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'--install-requirements'</span><span class="p">)</span>
+
+        <span class="n">_args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="n">HubIO</span><span class="p">(</span><span class="n">set_hub_pull_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">_hub_args</span><span class="p">))</span><span class="o">.</span><span class="n">pull</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">_args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'docker://'</span><span class="p">):</span>
             <span class="n">_args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="s1">'ContainerRuntime'</span>
+
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">_args</span><span class="p">,</span> <span class="s1">'protocol'</span><span class="p">):</span>
         <span class="n">_args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="n">gateway_runtime_dict</span><span class="p">[</span><span class="n">_args</span><span class="o">.</span><span class="n">protocol</span><span class="p">]</span>
 
