@@ -239,100 +239,99 @@ class Document(ProtoTypeMixin, VersionedMixin):
             if not self._pb_body.id:
                 self.id = random_identity(use_uuid1=True)
             self._mermaid_id = str(Document.CNT) + self._pb_body.id
-        else:
-            self._pb_body = jina_pb2.DocumentProto()
-            try:
-                if isinstance(document, jina_pb2.DocumentProto):
-                    if copy:
-                        self._pb_body.CopyFrom(document)
-                    else:
-                        self._pb_body = document
-                elif isinstance(document, (dict, str)):
-                    if isinstance(document, str):
-                        document = json.loads(document)
+            return
 
-                    def _update_doc(d: Dict):
-                        for key in _all_doc_array_keys:
-                            if key in d:
-                                value = d[key]
-                                if isinstance(value, list):
-                                    d[key] = NdArray(np.array(d[key])).dict()
-                            if 'chunks' in d:
-                                for chunk in d['chunks']:
-                                    _update_doc(chunk)
-                            if 'matches' in d:
-                                for match in d['matches']:
-                                    _update_doc(match)
+        self._pb_body = jina_pb2.DocumentProto()
+        try:
+            if isinstance(document, jina_pb2.DocumentProto):
+                if copy:
+                    self._pb_body.CopyFrom(document)
+                else:
+                    self._pb_body = document
+            elif isinstance(document, (dict, str)):
+                if isinstance(document, str):
+                    document = json.loads(document)
 
-                    _update_doc(document)
+                def _update_doc(d: Dict):
+                    for key in _all_doc_array_keys:
+                        if key in d:
+                            value = d[key]
+                            if isinstance(value, list):
+                                d[key] = NdArray(np.array(d[key])).dict()
+                        if 'chunks' in d:
+                            for chunk in d['chunks']:
+                                _update_doc(chunk)
+                        if 'matches' in d:
+                            for match in d['matches']:
+                                _update_doc(match)
 
-                    if field_resolver:
-                        document = {
-                            field_resolver.get(k, k): v for k, v in document.items()
-                        }
+                _update_doc(document)
 
-                    user_fields = set(document)
-                    support_fields = set(
-                        self.attributes(
-                            include_proto_fields_camelcase=True,
-                            include_properties=False,
-                        )
+                if field_resolver:
+                    document = {
+                        field_resolver.get(k, k): v for k, v in document.items()
+                    }
+
+                user_fields = set(document)
+                support_fields = set(
+                    self.attributes(
+                        include_proto_fields_camelcase=True,
+                        include_properties=False,
                     )
-
-                    if support_fields.issuperset(user_fields):
-                        json_format.ParseDict(document, self._pb_body)
-                    else:
-                        _intersect = support_fields.intersection(user_fields)
-                        _remainder = user_fields.difference(_intersect)
-                        if _intersect:
-                            json_format.ParseDict(
-                                {k: document[k] for k in _intersect}, self._pb_body
-                            )
-                        if _remainder:
-                            support_prop = set(
-                                self.attributes(
-                                    include_proto_fields=False, include_properties=True
-                                )
-                            )
-                            _intersect2 = support_prop.intersection(_remainder)
-                            _remainder2 = _remainder.difference(_intersect2)
-
-                            if _intersect2:
-                                self.set_attributes(
-                                    **{p: document[p] for p in _intersect2}
-                                )
-
-                            if _remainder2:
-                                self._pb_body.tags.update(
-                                    {k: document[k] for k in _remainder}
-                                )
-                elif isinstance(document, bytes):
-                    self._pb_body.ParseFromString(document)
-                elif isinstance(document, Document):
-                    if copy:
-                        self._pb_body.CopyFrom(document.proto)
-                    else:
-                        self._pb_body = document.proto
-                elif document is not None:
-                    # note ``None`` is not considered as a bad type
-                    raise ValueError(f'{typename(document)} is not recognizable')
-            except Exception as ex:
-                raise BadDocType(
-                    f'fail to construct a document from {document}, '
-                    f'if you are trying to set the content '
-                    f'you may use "Document(content=your_content)"'
-                ) from ex
-
-            if self._pb_body.id is None or not self._pb_body.id:
-                self.id = random_identity(use_uuid1=True)
-
-            # check if there are mutually exclusive content fields
-            if _contains_conflicting_content(**kwargs):
-                raise ValueError(
-                    f'Document content fields are mutually exclusive, please provide only one of {_all_doc_content_keys}'
                 )
-            self._mermaid_id = str(Document.CNT) + self._pb_body.id
-            self.set_attributes(**kwargs)
+
+                if support_fields.issuperset(user_fields):
+                    json_format.ParseDict(document, self._pb_body)
+                else:
+                    _intersect = support_fields.intersection(user_fields)
+                    _remainder = user_fields.difference(_intersect)
+                    if _intersect:
+                        json_format.ParseDict(
+                            {k: document[k] for k in _intersect}, self._pb_body
+                        )
+                    if _remainder:
+                        support_prop = set(
+                            self.attributes(
+                                include_proto_fields=False, include_properties=True
+                            )
+                        )
+                        _intersect2 = support_prop.intersection(_remainder)
+                        _remainder2 = _remainder.difference(_intersect2)
+
+                        if _intersect2:
+                            self.set_attributes(**{p: document[p] for p in _intersect2})
+
+                        if _remainder2:
+                            self._pb_body.tags.update(
+                                {k: document[k] for k in _remainder}
+                            )
+            elif isinstance(document, bytes):
+                self._pb_body.ParseFromString(document)
+            elif isinstance(document, Document):
+                if copy:
+                    self._pb_body.CopyFrom(document.proto)
+                else:
+                    self._pb_body = document.proto
+            elif document is not None:
+                # note ``None`` is not considered as a bad type
+                raise ValueError(f'{typename(document)} is not recognizable')
+        except Exception as ex:
+            raise BadDocType(
+                f'fail to construct a document from {document}, '
+                f'if you are trying to set the content '
+                f'you may use "Document(content=your_content)"'
+            ) from ex
+
+        if self._pb_body.id is None or not self._pb_body.id:
+            self.id = random_identity(use_uuid1=True)
+
+        # check if there are mutually exclusive content fields
+        if _contains_conflicting_content(**kwargs):
+            raise ValueError(
+                f'Document content fields are mutually exclusive, please provide only one of {_all_doc_content_keys}'
+            )
+        self._mermaid_id = str(Document.CNT) + self._pb_body.id
+        self.set_attributes(**kwargs)
 
     def pop(self, *fields) -> None:
         """Remove the values from the given fields of this Document.
