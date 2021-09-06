@@ -229,14 +229,15 @@ class Document(ProtoTypeMixin, VersionedMixin):
         """
         Document.CNT += 1
 
-        self._pb_body = jina_pb2.DocumentProto()
         try:
             if isinstance(document, jina_pb2.DocumentProto):
                 if copy:
+                    self._pb_body = jina_pb2.DocumentProto()
                     self._pb_body.CopyFrom(document)
                 else:
                     self._pb_body = document
             elif isinstance(document, bytes):
+                self._pb_body = jina_pb2.DocumentProto()
                 self._pb_body.ParseFromString(document)
             elif isinstance(document, (dict, str)):
                 if isinstance(document, str):
@@ -270,6 +271,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
                     )
                 )
 
+                self._pb_body = jina_pb2.DocumentProto()
                 if support_fields.issuperset(user_fields):
                     json_format.ParseDict(document, self._pb_body)
                 else:
@@ -297,6 +299,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
                             )
             elif isinstance(document, Document):
                 if copy:
+                    self._pb_body = jina_pb2.DocumentProto()
                     self._pb_body.CopyFrom(document.proto)
                 else:
                     self._pb_body = document.proto
