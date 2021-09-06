@@ -120,8 +120,6 @@ def get_cli_params(arguments: Namespace, skip_list: Tuple[str] = ()) -> str:
         'uses_after',
         'uses_before',
         'replicas',
-        'shards',
-        'parallel',
         'polling',
         'port_in',
         'port_out',
