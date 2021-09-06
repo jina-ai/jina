@@ -233,3 +233,32 @@ with (Flow().
         add(uses={'jtype': 'MyExecutor', 'metas': {'name': 'my-executor-2'}})) as f:
     f.post(on='/endpoint', inputs=DocumentArray([]), parameters={'param': 5, 'my-executor-1': {'param': 10}})
 ```
+
+
+````{admonition}  Note
+:class: caution
+
+As `parameters` does not have a fixed schema, it is declared with type `google.protobuf.Struct` in the `RequestProto`
+protobuf declaration. However, `google.protobuf.Struct` follows the JSON specification and does not 
+differentiate `int` from `float`. **So, data of type `int` in `parameters` will be casted to `float` when request is
+sent to executor.**
+
+As a result, users need be explicit and cast the data to the expected type as follows.
+
+```{code-block} python
+---
+emphasize-lines: 6
+---
+
+class MyExecutor(Executor):
+    animals = ['cat', 'dog', 'turtle']
+    @request
+    def foo(self, docs, parameters: dict, **kwargs):
+        # need to cast to int since list indices must be integers not float
+        index = int(parameters.get('index', 0))
+        assert self.animals[index] == 'dog'
+
+with Flow().add(uses=Selector) as f:
+    f.post(on='/endpoint', inputs=DocumentArray([]), parameters={'index': 1})
+```
+````

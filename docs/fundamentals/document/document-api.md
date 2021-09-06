@@ -102,6 +102,37 @@ da.get_attributes('tags__dimensions__height', 'tags__dimensions__weight')
 [[5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0], [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0]]
 ```
 
+
+````{admonition} Note
+:class: caution
+
+As `tags` does not have a fixed schema, it is declared with type `google.protobuf.Struct` in the `DocumentProto`
+protobuf declaration. However, `google.protobuf.Struct` follows the JSON specification and does not 
+differentiate `int` from `float`. **So, data of type `int` in `tags` will be casted to `float` when request is
+sent to executor.**
+
+As a result, users need be explicit and cast the data to the expected type as follows.
+
+```{code-block} python
+---
+emphasize-lines: 7
+---
+
+class MyIndexer(Executor):
+    animals = ['cat', 'dog', 'turtle']
+    @request
+    def foo(self, docs, parameters: dict, **kwargs):
+        for doc in docs:
+            # need to cast to int since list indices must be integers not float
+            index = int(doc.tags['index'])
+            assert self.animals[index] == 'dog'
+
+with Flow().add(uses=Selector) as f:
+    f.post(on='/endpoint',
+    inputs=DocumentArray([]), parameters={'index': 1})
+```
+````
+
 ## Construct `Document`
 
 ### Content attributes
