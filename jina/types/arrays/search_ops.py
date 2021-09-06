@@ -85,12 +85,6 @@ class DocumentArraySearchOpsMixin:
         :return: A sampled list of :class:`Document` represented as :class:`DocumentArray`.
         """
 
-        if k > len(self):
-            from ...helper import typename
-
-            raise ValueError(
-                f'Sample size can not be greater than the length of {typename(self)}, but {k} > {len(self)}'
-            )
         if seed is not None:
             random.seed(seed)
         # NOTE, this could simplified to random.sample(self, k)
