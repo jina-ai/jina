@@ -561,6 +561,7 @@
         <span class="n">use_scipy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">metric_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">exclude_self</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Compute embedding based nearest neighbour in `another` for each Document in `self`,</span>
 <span class="sd">        and store results in `matches`.</span>
@@ -585,6 +586,7 @@
 <span class="sd">        :param batch_size: if provided, then `darray` is loaded in chunks of, at most, batch_size elements. This option</span>
 <span class="sd">                           will be slower but more memory efficient. Specialy indicated if `darray` is a big</span>
 <span class="sd">                           DocumentArrayMemmap.</span>
+<span class="sd">        :param exclude_self: if provided, Documents in ``darray`` with same ``id`` as the left-hand values will not be considered as matches.</span>
 <span class="sd">        """</span>
 
         <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">metric</span><span class="p">):</span>
@@ -619,7 +621,8 @@
                 <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
                     <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                     <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'matches'</span><span class="p">)</span>
-                <span class="n">_q</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">scores</span><span class="o">=</span><span class="p">{</span><span class="n">metric_name</span><span class="p">:</span> <span class="n">_dist</span><span class="p">})</span></div>
+                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">_q</span><span class="o">.</span><span class="n">id</span> <span class="ow">and</span> <span class="n">exclude_self</span><span class="p">):</span>
+                    <span class="n">_q</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">scores</span><span class="o">=</span><span class="p">{</span><span class="n">metric_name</span><span class="p">:</span> <span class="n">_dist</span><span class="p">})</span></div>
 
     <span class="k">def</span> <span class="nf">_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">darray</span><span class="p">,</span> <span class="n">cdist</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">normalization</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">):</span>
         <span class="sd">"""</span>
