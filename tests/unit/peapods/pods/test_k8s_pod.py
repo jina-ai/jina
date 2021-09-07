@@ -18,6 +18,8 @@ def namespace_equal(
     Checks that two `Namespace` object have equal public attributes.
     It skips attributes that start with a underscore and additional `skip_attr`.
     """
+    if n1 is None and n2 is None:
+        return True
     for attr in filter(lambda x: x not in skip_attr and not x.startswith('_'), dir(n1)):
         if not getattr(n1, attr) == getattr(n2, attr):
             return False
@@ -57,37 +59,32 @@ def test_dictionary_to_cli_param():
     )
 
 
-def test_parse_args_no_parallel():
-    args = set_pod_parser().parse_args(['--parallel', '1'])
-    pod = K8sPod(args)
-
-    assert pod.deployment_args['head_deployment'] is None
-    assert pod.deployment_args['tail_deployment'] is None
-    assert pod.deployment_args['deployments'] == [args]
-
-
-@pytest.mark.parametrize('parallel', [2, 3, 4, 5])
+@pytest.mark.parametrize('parallel', [1, 2, 3, 4, 5])
 def test_parse_args_parallel(parallel: int):
     args = set_pod_parser().parse_args(['--parallel', str(parallel)])
     pod = K8sPod(args)
 
-    assert pod.deployment_args['head_deployment'] == args
-    assert pod.deployment_args['head_deployment'].uses == jina.__default_executor__
-    assert pod.deployment_args['tail_deployment'] == args
-    assert pod.deployment_args['tail_deployment'].uses == jina.__default_executor__
+    assert namespace_equal(
+        pod.deployment_args['head_deployment'], None if parallel == 1 else args
+    )
+    assert namespace_equal(
+        pod.deployment_args['tail_deployment'], None if parallel == 1 else args
+    )
     assert pod.deployment_args['deployments'] == [args] * parallel
 
 
 @pytest.mark.parametrize('parallel', [2, 3, 4, 5])
 def test_parse_args_parallel_custom_executor(parallel: int):
+    uses_before = 'custom-executor-before'
+    uses_after = 'custom-executor-after'
     args = set_pod_parser().parse_args(
         [
             '--parallel',
             str(parallel),
             '--uses-before',
-            'custom-executor',
+            uses_before,
             '--uses-after',
-            'custom-executor',
+            uses_after,
         ]
     )
     pod = K8sPod(args)
@@ -95,11 +92,11 @@ def test_parse_args_parallel_custom_executor(parallel: int):
     assert namespace_equal(
         args, pod.deployment_args['head_deployment'], skip_attr=('uses',)
     )
-    assert pod.deployment_args['head_deployment'].uses == 'custom-executor'
+    assert pod.deployment_args['head_deployment'].uses == uses_before
     assert namespace_equal(
         args, pod.deployment_args['tail_deployment'], skip_attr=('uses',)
     )
-    assert pod.deployment_args['tail_deployment'].uses == 'custom-executor'
+    assert pod.deployment_args['tail_deployment'].uses == uses_after
     assert pod.deployment_args['deployments'] == [args] * parallel
 
 
