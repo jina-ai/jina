@@ -1,4 +1,4 @@
-from typing import Union, Dict, Tuple
+from typing import Union, Dict, Tuple, List
 from unittest.mock import Mock
 
 import pytest
@@ -7,8 +7,21 @@ from jinja2.utils import Namespace
 import jina
 from jina.parsers import set_pod_parser
 from jina.peapods.pods.k8s import K8sPod
-from jina.peapods.pods.k8slib import kubernetes_tools
+from jina.peapods.pods.k8slib import kubernetes_tools, kubernetes_deployment
 from jina.peapods.pods.k8slib.kubernetes_deployment import dictionary_to_cli_param
+
+
+def namespace_equal(
+    n1: Union[Namespace, Dict], n2: Union[Namespace, Dict], skip_attr: Tuple = ()
+) -> bool:
+    """
+    Checks that two `Namespace` object have equal public attributes.
+    It skips attributes that start with a underscore and additional `skip_attr`.
+    """
+    for attr in filter(lambda x: x not in skip_attr and not x.startswith('_'), dir(n1)):
+        if not getattr(n1, attr) == getattr(n2, attr):
+            return False
+    return True
 
 
 @pytest.mark.parametrize('is_master', (True, False))
@@ -54,7 +67,7 @@ def test_parse_args_no_parallel():
 
 
 @pytest.mark.parametrize('parallel', [2, 3, 4, 5])
-def test_parse_args_parallel(parallel):
+def test_parse_args_parallel(parallel: int):
     args = set_pod_parser().parse_args(['--parallel', str(parallel)])
     pod = K8sPod(args)
 
@@ -66,7 +79,7 @@ def test_parse_args_parallel(parallel):
 
 
 @pytest.mark.parametrize('parallel', [2, 3, 4, 5])
-def test_parse_args_parallel_custom_exectuor(parallel):
+def test_parse_args_parallel_custom_executor(parallel: int):
     args = set_pod_parser().parse_args(
         [
             '--parallel',
@@ -90,14 +103,154 @@ def test_parse_args_parallel_custom_exectuor(parallel):
     assert pod.deployment_args['deployments'] == [args] * parallel
 
 
-def namespace_equal(
-    n1: Union[Namespace, Dict], n2: Union[Namespace, Dict], skip_attr: Tuple = ()
-) -> bool:
-    """
-    Checks that two `Namespace` object have equal public attributes.
-    It skips attributes that start with a underscore and additional `skip_attr`.
-    """
-    for attr in filter(lambda x: x not in skip_attr and not x.startswith('_'), dir(n1)):
-        if not getattr(n1, attr) == getattr(n2, attr):
-            return False
-    return True
+@pytest.mark.parametrize(
+    ['name', 'parallel', 'expected_deployments'],
+    [
+        (
+            'gateway',
+            '1',
+            [{'name': 'gateway', 'head_host': 'gateway.ns.svc.cluster.local'}],
+        ),
+        (
+            'test-pod',
+            '1',
+            [{'name': 'test-pod', 'head_host': 'test-pod.ns.svc.cluster.local'}],
+        ),
+        (
+            'test-pod',
+            '2',
+            [
+                {
+                    'name': 'test-pod_head',
+                    'head_host': 'test-pod-head.ns.svc.cluster.local',
+                },
+                {'name': 'test-pod_0', 'head_host': 'test-pod-0.ns.svc.cluster.local'},
+                {'name': 'test-pod_1', 'head_host': 'test-pod-1.ns.svc.cluster.local'},
+                {
+                    'name': 'test-pod_tail',
+                    'head_host': 'test-pod-tail.ns.svc.cluster.local',
+                },
+            ],
+        ),
+    ],
+)
+def test_deployments(name: str, parallel: str, expected_deployments: List[Dict]):
+    args = set_pod_parser().parse_args(
+        ['--name', name, '--parallel', parallel, '--k8s-namespace', 'ns']
+    )
+    pod = K8sPod(args)
+
+    actual_deployments = pod.deployments
+
+    assert len(actual_deployments) == len(expected_deployments)
+
+    for actual, expected in zip(actual_deployments, expected_deployments):
+        assert actual['name'] == expected['name']
+        assert actual['head_host'] == expected['head_host']
+        assert actual['head_port_in'] == pod.fixed_head_port_in
+        assert actual['tail_port_out'] == pod.fixed_tail_port_out
+        assert actual['head_zmq_identity'] == pod.head_zmq_identity
+
+
+def get_k8s_pod(pod_name: str, namespace: str, parallel: str = None):
+    if parallel is None:
+        parallel = '1'
+    args = set_pod_parser().parse_args(
+        ['--name', pod_name, '--k8s-namespace', namespace, '--parallel', parallel]
+    )
+    pod = K8sPod(args)
+    return pod
+
+
+def test_start_creates_namespace():
+    ns = 'test'
+    pod = get_k8s_pod('gateway', ns)
+    pod._deploy_gateway = Mock()
+    kubernetes_tools.create = Mock()
+
+    pod.start()
+
+    kubernetes_tools.create.assert_called_once()
+    assert kubernetes_tools.create.call_args[0][0] == 'namespace'
+    assert kubernetes_tools.create.call_args[0][1] == {'name': ns}
+
+
+def test_start_deploys_gateway():
+    pod_name = 'gateway'
+    ns = 'test-flow'
+
+    kubernetes_deployment.deploy_service = Mock()
+    kubernetes_deployment.get_cli_params = Mock()
+    kubernetes_tools.create = Mock()
+
+    pod = get_k8s_pod(pod_name, ns)
+    pod.start()
+
+    kubernetes_deployment.deploy_service.assert_called_once()
+
+    assert kubernetes_deployment.deploy_service.call_args[0][0] == pod_name
+    call_kwargs = kubernetes_deployment.deploy_service.call_args[1]
+    assert call_kwargs['namespace'] == ns
+    assert pod.version in call_kwargs['image_name']
+
+    kubernetes_deployment.get_cli_params.assert_called_once()
+    assert kubernetes_deployment.get_cli_params.call_args[0][0] == pod.args
+    assert kubernetes_deployment.get_cli_params.call_args[0][1] == ('pod_role',)
+
+
+def test_start_deploys_runtime():
+    pod_name = 'executor'
+    namespace = 'ns'
+    pod = get_k8s_pod(pod_name, namespace)
+
+    pod._construct_runtime_container_args = Mock()
+    kubernetes_deployment.deploy_service = Mock()
+    kubernetes_tools.create = Mock()
+
+    pod.start()
+
+    kubernetes_deployment.deploy_service.assert_called_once()
+    dns_name = kubernetes_deployment.deploy_service.call_args[0][0]
+    kwargs = kubernetes_deployment.deploy_service.call_args[1]
+
+    assert dns_name == pod_name
+    assert kwargs['namespace'] == namespace
+    assert kwargs['image_name'] == f'jinaai/jina:{pod.version}-py38-standard'
+    assert kwargs['replicas'] == 1
+    assert kwargs['init_container'] is None
+    assert kwargs['custom_resource_dir'] is None
+
+    pod._construct_runtime_container_args.assert_called_once()
+    call_args = pod._construct_runtime_container_args.call_args[0]
+    assert call_args[0] == pod.deployment_args['deployments'][0]
+    assert call_args[1] == pod.args.uses
+    assert call_args[2] == kubernetes_deployment.dictionary_to_cli_param({'pea_id': 0})
+    assert call_args[3] == ''
+
+
+@pytest.mark.parametrize('parallel', [2, 3, 4])
+def test_start_deploys_runtime_with_parallel(parallel: int):
+    namespace = 'ns'
+    pod = get_k8s_pod('executor', namespace, str(parallel))
+
+    deploy_mock = Mock()
+    kubernetes_deployment.deploy_service = deploy_mock
+    kubernetes_tools.create = Mock()
+
+    pod.start()
+
+    expected_calls = parallel + 2  # for head and tail
+
+    assert expected_calls == kubernetes_deployment.deploy_service.call_count
+
+    head_call_args = deploy_mock.call_args_list[0][0]
+    assert head_call_args[0] == pod.name + '-head'
+
+    executor_call_args_list = [
+        deploy_mock.call_args_list[i][0] for i in range(1, parallel + 1)
+    ]
+    for i, call_args in enumerate(executor_call_args_list):
+        assert call_args[0] == pod.name + f'-{i}'
+
+    tail_call_args = deploy_mock.call_args_list[-1][0]
+    assert tail_call_args[0] == pod.name + '-tail'
