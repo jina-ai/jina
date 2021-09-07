@@ -17,7 +17,7 @@ A `Document` object has the following attributes, which can be put into the foll
 
 | Category | Attributes |
 |---|---|
-| Content attributes | `.buffer`, `.blob`, `.text`, `.uri`, `.content`, `.embedding` |
+| Content attributes | `.buffer`, `.blob`, `.text`, `.content`, `.uri`, `.embedding` |
 | Meta attributes | `.id`, `.parent_id`, `.weight`, `.mime_type`, `.content_type`, `.tags`, `.modality` |
 | Recursive attributes | `.chunks`, `.matches`, `.granularity`, `.adjacency` |
 | Relevance attributes | `.score`, `.evaluations` |
@@ -111,11 +111,11 @@ da.get_attributes('tags__dimensions__height', 'tags__dimensions__weight')
 | `doc.buffer` | The raw binary content of this Document |
 | `doc.blob` | The `ndarray` of the image/audio/video Document |
 | `doc.text` | The text info of the Document |
-| `doc.uri` | A uri of the Document could be: a local file path, a remote url starts with http or https or data URI scheme |
 | `doc.content` | One of the above non-empty field |
+| `doc.uri` | A uri of the Document could be: a local file path, a remote url starts with http or https or data URI scheme |
 | `doc.embedding` | The embedding `ndarray` of this Document |
 
-You can assign `str`, `ndarray`, `buffer` or `uri` to a `Document`.
+You can assign `str`, `ndarray`, or `buffer` to a `Document`.
 
 ```python
 from jina import Document
@@ -124,22 +124,20 @@ import numpy as np
 d1 = Document(content='hello')
 d2 = Document(content=b'\f1')
 d3 = Document(content=np.array([1, 2, 3]))
-d4 = Document(content='https://static.jina.ai/logo/core/notext/light/logo.png')
 ```
 
 ```text
 <jina.types.document.Document id=2ca74b98-aed9-11eb-b791-1e008a366d48 mimeType=text/plain text=hello at 6247702096>
 <jina.types.document.Document id=2ca74f1c-aed9-11eb-b791-1e008a366d48 buffer=DDE= at 6247702160>
 <jina.types.document.Document id=2caab594-aed9-11eb-b791-1e008a366d48 blob={'dense': {'buffer': 'AQAAAAAAAAACAAAAAAAAAAMAAAAAAAAA', 'shape': [3], 'dtype': '<i8'}} at 6247702416>
-<jina.types.document.Document id=4c008c40-af9f-11eb-bb84-1e008a366d49 uri=https://static.jina.ai/logo/core/notext/light/logo.png mimeType=image/png at 6252395600>
 ```
 
-The content will be automatically assigned to either the `text`, `buffer`, `blob`, or `uri` fields. `id` and `mime_type`
+The content will be automatically assigned to either the `text`, `buffer`, or `blob` fields. `id` and `mime_type`
 are auto-generated when not given.
 
 You can get a visualization of a `Document` object in Jupyter Notebook or by calling `.plot()`.
 
-<img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDY5fkRvY3VtZW50fnsKK2lkIGU4MDY0MjdlLWEKK21pbWVfdHlwZSB0ZXh0L3BsYWluCit0ZXh0IGhlbGxvCn0="/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDczfkRvY3VtZW50fnsKK2lkIGZmZTQzMmFjLWEKK2J1ZmZlciBEREU9CittaW1lX3R5cGUgdGV4dC9wbGFpbgp9"/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDJmfkRvY3VtZW50fnsKK2lkIDAzOWVmMzE0LWEKK2Jsb2IoPGNsYXNzICdudW1weS5uZGFycmF5Jz4pCn0="/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgMjRmfkRvY3VtZW50fnsKK2lkIDA2YTE2OGY4LWEKK3VyaSBodHRwczovL3N0CittaW1lX3R5cGUgaW1hZ2UvcG5nCn0="/>
+<img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDY5fkRvY3VtZW50fnsKK2lkIGU4MDY0MjdlLWEKK21pbWVfdHlwZSB0ZXh0L3BsYWluCit0ZXh0IGhlbGxvCn0="/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDczfkRvY3VtZW50fnsKK2lkIGZmZTQzMmFjLWEKK2J1ZmZlciBEREU9CittaW1lX3R5cGUgdGV4dC9wbGFpbgp9"/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDJmfkRvY3VtZW50fnsKK2lkIDAzOWVmMzE0LWEKK2Jsb2IoPGNsYXNzICdudW1weS5uZGFycmF5Jz4pCn0="/>
 
 ### Exclusivity of `doc.content`
 
@@ -147,24 +145,10 @@ You can get a visualization of a `Document` object in Jupyter Notebook or by cal
 :align: center
 ```
 
-Note that one `Document` can only contain one type of `content`: it is either `text`, `buffer`, `blob` or `uri`.
-Setting `text` first and then setting `uri` will clear the `text` field.
+Note that one `Document` can only contain one type of `content`: it is either `text`, `buffer`, or `blob`.
 
-```python
-d = Document(text='hello world')
-d.uri = 'https://jina.ai/'
-assert not d.text  # True
 
-d = Document(content='https://jina.ai')
-assert d.uri == 'https://jina.ai'  # True
-assert not d.text  # True
-d.text = 'hello world'
-
-assert d.content == 'hello world'  # True
-assert not d.uri  # True
-```
-
-#### Conversion between `doc.content`
+#### Conversion between `doc.content` and `doc.uri`
 
 You can use the following methods to convert between `.uri`, `.text`, `.buffer` and `.blob`:
 
