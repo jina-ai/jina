@@ -538,7 +538,10 @@ DocumentArray(from_files('/*.png'))
 
 ## Recursive & nested Document
 
-`Document` can be recursive both horizontally and vertically:
+`Document` can be recursive both horizontally and vertically. The following graphic illustrates the recursive `Document` structure. Each `Document` can have multiple "Chunks"
+and "matches". Chunks and matches are `Document` object as well.
+
+<img src="https://hanxiao.io/2020/08/28/What-s-New-in-Jina-v0-5/blog-post-v050-protobuf-documents.jpg">
 
 |  Attribute   |   Description  |
 | --- | --- |
