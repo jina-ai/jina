@@ -23,12 +23,17 @@ d = Document(content='hello, world!')
 
 ## Document content
 
+
+```{image} ../../../.github/2.0/doc.content.svg
+:align: center
+```
+
 | Attribute | Description |
 | --- | --- |
 | `doc.buffer` | The raw binary content of this Document |
 | `doc.blob` | The `ndarray` of the image/audio/video Document |
 | `doc.text` | The text info of the Document |
-| `doc.content` | One of the above non-empty field |
+| `doc.content` | A sugar syntax to access one of the above non-empty field |
 | `doc.uri` | A uri of the Document could be: a local file path, a remote url starts with http or https or data URI scheme |
 | `doc.tags` | A structured data value, consisting of fields which map to dynamically typed values |
 
@@ -52,30 +57,30 @@ d3 = Document(content=np.array([1, 2, 3]))
 The content will be automatically assigned to either the `text`, `buffer`, or `blob` fields. `id` and `mime_type`
 are auto-generated when not given.
 
+```{admonitions} Exclusivity of the content
+:class: important
+
+Note that one `Document` can only contain one type of `content`: it is either `text`, `buffer`, or `blob`.
+```
+
 You can get a visualization of a `Document` object in Jupyter Notebook or by calling `.plot()`.
 
 <img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDY5fkRvY3VtZW50fnsKK2lkIGU4MDY0MjdlLWEKK21pbWVfdHlwZSB0ZXh0L3BsYWluCit0ZXh0IGhlbGxvCn0="/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDczfkRvY3VtZW50fnsKK2lkIGZmZTQzMmFjLWEKK2J1ZmZlciBEREU9CittaW1lX3R5cGUgdGV4dC9wbGFpbgp9"/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDJmfkRvY3VtZW50fnsKK2lkIDAzOWVmMzE0LWEKK2Jsb2IoPGNsYXNzICdudW1weS5uZGFycmF5Jz4pCn0="/>
 
-### Exclusivity of `doc.content`
 
-```{image} ../../../.github/2.0/doc.content.svg
-:align: center
-```
+### Conversion between from URI to content
 
-Note that one `Document` can only contain one type of `content`: it is either `text`, `buffer`, or `blob`.
-
-
-### Conversion between `doc.content` and `doc.uri`
-
-You can use the following methods to convert between `.uri`, `.text`, `.buffer` and `.blob`:
+After set `.uri`, you can use the following methods to convert it to `.text`, `.buffer` and `.blob`:
 
 ```python
-doc.convert_buffer_to_blob()
-doc.convert_blob_to_buffer()
 doc.convert_uri_to_buffer()
+doc.convert_uri_to_text()
+
 doc.convert_buffer_to_uri()
 doc.convert_text_to_uri()
-doc.convert_uri_to_text()
+
+doc.convert_buffer_to_blob()
+doc.convert_blob_to_buffer()
 ```
 
 You can use `convert_content_to_uri` to convert the content to URI. This will determine the used `content_type` and use
@@ -143,7 +148,7 @@ d4 = Document(blob=tf.SparseTensor(indices, values, dense_shape))
 ## Document tags
 
 `Document` contains the `tags` field that can hold a map-like structure that can map arbitrary values. 
-One can store meta information of a Document in `tags`.
+In practice, one can store meta information in `tags`.
 
 ```python
 from jina import Document
