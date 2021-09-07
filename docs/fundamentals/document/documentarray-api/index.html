@@ -598,16 +598,26 @@ a <code class="docutils literal notranslate"><span class="pre">DocumentArray</sp
 <div class="section" id="construct-documentarray">
 <h2>Construct <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code><a class="headerlink" href="#construct-documentarray" title="Permalink to this headline">¶</a></h2>
 <p>You can construct a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> from an iterable of <code class="docutils literal notranslate"><span class="pre">Document</span></code>s:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
+<div class="highlight-{tab}From notranslate"><div class="highlight"><pre><span></span>```python
+from jina import DocumentArray, Document
 
-<span class="c1"># from list</span>
-<span class="n">da1</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(),</span> <span class="n">Document</span><span class="p">()])</span>
+da = DocumentArray([Document(), Document()])
+```
+</pre></div>
+</div>
+<div class="highlight-{tab}From notranslate"><div class="highlight"><pre><span></span>```python
+from jina import DocumentArray, Document
 
-<span class="c1"># from generator</span>
-<span class="n">da2</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">((</span><span class="n">Document</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)))</span>
+da = DocumentArray((Document() for _ in range(10)))
+```
+</pre></div>
+</div>
+<div class="highlight-{tab}From notranslate"><div class="highlight"><pre><span></span>```python
+from jina import DocumentArray, Document
 
-<span class="c1"># from another `DocumentArray`</span>
-<span class="n">da3</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">da2</span><span class="p">)</span>
+da = DocumentArray((Document() for _ in range(10)))
+da1 = DocumentArray(da)
+```
 </pre></div>
 </div>
 </div>

@@ -3,74 +3,163 @@
 `Document` is the basic data type that Jina operates with text, picture, video, audio, image or 3D mesh: They are
 all `Document`s in Jina.
 
+A `Document` object has the following attributes, which can be put into the following categories:
+
+| Category | Attributes |
+|---|---|
+| Content attributes | `.buffer`, `.blob`, `.text`, `.content`, `.uri`, `.embedding`, `.tags` |
+| Recursive attributes | `.chunks`, `.matches`|
+| Meta attributes | `.id`, `.parent_id`, `.weight`, `.mime_type`, `.content_type`, `.modality`,`.granularity`, `.adjacency`  |
+| Relevance attributes | `.scores`, `.evaluations` |
+
 ## Minimum working example
 
 ```python
 from jina import Document
 
-d = Document() 
+d = Document(content='hello, world!') 
 ```
 
-## `Document` attributes
 
-A `Document` object has the following attributes, which can be put into the following categories:
+## Document content
 
-| Category | Attributes |
-|---|---|
-| Content attributes | `.buffer`, `.blob`, `.text`, `.content`, `.uri`, `.embedding` |
-| Meta attributes | `.id`, `.parent_id`, `.weight`, `.mime_type`, `.content_type`, `.tags`, `.modality` |
-| Recursive attributes | `.chunks`, `.matches`, `.granularity`, `.adjacency` |
-| Relevance attributes | `.score`, `.evaluations` |
 
-### Set & Unset attributes
+```{image} ../../../.github/2.0/doc.content.svg
+:align: center
+```
 
-Set a attribute:
+| Attribute | Description |
+| --- | --- |
+| `doc.buffer` | The raw binary content of this Document |
+| `doc.blob` | The `ndarray` of the image/audio/video Document |
+| `doc.text` | The text info of the Document |
+| `doc.content` | A sugar syntax to access one of the above non-empty field |
+| `doc.uri` | A uri of the Document could be: a local file path, a remote url starts with http or https or data URI scheme |
+| `doc.tags` | A structured data value, consisting of fields which map to dynamically typed values |
+
+You can assign `str`, `ndarray`, or `buffer` to a `Document`.
+
+```python
+from jina import Document
+import numpy as np
+
+d1 = Document(content='hello')
+d2 = Document(content=b'\f1')
+d3 = Document(content=np.array([1, 2, 3]))
+```
+
+```text
+<jina.types.document.Document id=2ca74b98-aed9-11eb-b791-1e008a366d48 mimeType=text/plain text=hello at 6247702096>
+<jina.types.document.Document id=2ca74f1c-aed9-11eb-b791-1e008a366d48 buffer=DDE= at 6247702160>
+<jina.types.document.Document id=2caab594-aed9-11eb-b791-1e008a366d48 blob={'dense': {'buffer': 'AQAAAAAAAAACAAAAAAAAAAMAAAAAAAAA', 'shape': [3], 'dtype': '<i8'}} at 6247702416>
+```
+
+The content will be automatically assigned to either the `text`, `buffer`, or `blob` fields. `id` and `mime_type`
+are auto-generated when not given.
+
+```{admonitions} Exclusivity of the content
+:class: important
+
+Note that one `Document` can only contain one type of `content`: it is either `text`, `buffer`, or `blob`.
+```
+
+You can get a visualization of a `Document` object in Jupyter Notebook or by calling `.plot()`.
+
+<img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDY5fkRvY3VtZW50fnsKK2lkIGU4MDY0MjdlLWEKK21pbWVfdHlwZSB0ZXh0L3BsYWluCit0ZXh0IGhlbGxvCn0="/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDczfkRvY3VtZW50fnsKK2lkIGZmZTQzMmFjLWEKK2J1ZmZlciBEREU9CittaW1lX3R5cGUgdGV4dC9wbGFpbgp9"/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDJmfkRvY3VtZW50fnsKK2lkIDAzOWVmMzE0LWEKK2Jsb2IoPGNsYXNzICdudW1weS5uZGFycmF5Jz4pCn0="/>
+
+
+### Conversion between from URI to content
+
+After set `.uri`, you can use the following methods to convert it to `.text`, `.buffer` and `.blob`:
+
+```python
+doc.convert_uri_to_buffer()
+doc.convert_uri_to_text()
+
+doc.convert_buffer_to_uri()
+doc.convert_text_to_uri()
+
+doc.convert_buffer_to_blob()
+doc.convert_blob_to_buffer()
+```
+
+You can use `convert_content_to_uri` to convert the content to URI. This will determine the used `content_type` and use
+the appropriate conversion method.
+
+You can convert a URI to a data URI (a data in-line URI scheme) using `doc.convert_uri_to_datauri()`. This will fetch
+the resource and make it inline.
+
+In particular, when you work with an image `Document`, there are some extra helpers that enable more conversion:
+
+```python
+doc.convert_image_buffer_to_blob()
+doc.convert_image_blob_to_uri()
+doc.convert_image_uri_to_blob()
+doc.convert_image_datauri_to_blob()
+```
+
+## Document embedding
+
+An embedding is a high-dimensional representation of a `Document`. You can assign any Numpy `ndarray` as a `Document`'s
+embedding.
+
+```python
+import numpy as np
+from jina import Document
+
+d1 = Document(embedding=np.array([1, 2, 3]))
+d2 = Document(embedding=np.array([[1, 2, 3], [4, 5, 6]]))
+```
+
+### Sparse embedding
+
+Scipy sparse array (`coo_matrix, bsr_matrix, csr_matrix, csc_matrix`)  are supported as both `embedding` or `blob` :
+
+```python
+import scipy.sparse as sp
+
+d1 = Document(embedding=sp.coo_matrix([0, 0, 0, 1, 0]))
+d2 = Document(embedding=sp.csr_matrix([0, 0, 0, 1, 0]))
+d3 = Document(embedding=sp.bsr_matrix([0, 0, 0, 1, 0]))
+d4 = Document(embedding=sp.csc_matrix([0, 0, 0, 1, 0]))
+
+d5 = Document(blob=sp.coo_matrix([0, 0, 0, 1, 0]))
+d6 = Document(blob=sp.csr_matrix([0, 0, 0, 1, 0]))
+d7 = Document(blob=sp.bsr_matrix([0, 0, 0, 1, 0]))
+d8 = Document(blob=sp.csc_matrix([0, 0, 0, 1, 0]))
+```
+
+Tensorflow and Pytorch sparse arrays are also supported
+
+```python
+import torch
+import tensorflow as tf
+
+indices = [[0, 0], [1, 2]]
+values = [1, 2]
+dense_shape = [3, 4]
+
+d1 = Document(embedding=torch.sparse_coo_tensor(indices, values, dense_shape))
+d2 = Document(embedding=tf.SparseTensor(indices, values, dense_shape))
+d3 = Document(blob=torch.sparse_coo_tensor(indices, values, dense_shape))
+d4 = Document(blob=tf.SparseTensor(indices, values, dense_shape))
+```
+
+## Document tags
+
+`Document` contains the `tags` field that can hold a map-like structure that can map arbitrary values. 
+In practice, one can store meta information in `tags`.
 
 ```python
 from jina import Document
 
-d = Document()
-d.text = 'hello world'
-```
-
-```text
-<jina.types.document.Document id=9badabb6-b9e9-11eb-993c-1e008a366d49 mime_type=text/plain text=hello world at 4444621648>
-```
-
-Unset a attribute:
-
-```python
-d.pop('text')
-```
-
-```text
-<jina.types.document.Document id=cdf1dea8-b9e9-11eb-8fd8-1e008a366d49 mime_type=text/plain at 4490447504>
-```
-
-Unset multiple attributes:
-
-```python
-d.pop('text', 'id', 'mime_type')
-```
-
-```text
-<jina.types.document.Document at 5668344144>
-```
-
-#### Access nested attributes from tags
-
-`Document` contains the `tags` field that can hold a map-like structure that can map arbitrary values.
-
-```python
-from jina import Document
-
-doc = Document(tags={'dimensions': {'height': 5.0, 'weight': 10.0}})
+doc = Document(tags={'dimensions': {'height': 5.0, 'weight': 10.0, 'last_modified': 'Monday'}})
 
 doc.tags['dimensions']
 ```
 
 ```text
-{'weight': 10.0, 'height': 5.0}
+{'weight': 10.0, 'height': 5.0, 'last_modified': 'Monday'}
 ```
 
 In order to provide easy access to nested fields, the `Document` allows to access attributes by composing the attribute
@@ -88,7 +177,7 @@ doc.tags__dimensions__weight
 10.0
 ```
 
-This also allows to access nested metadata attributes in `bulk` from a `DocumentArray`.
+This also allows the access of nested metadata attributes in `bulk` from a `DocumentArray`.
 
 ```python
 from jina import Document, DocumentArray
@@ -108,8 +197,8 @@ da.get_attributes('tags__dimensions__height', 'tags__dimensions__weight')
 
 As `tags` does not have a fixed schema, it is declared with type `google.protobuf.Struct` in the `DocumentProto`
 protobuf declaration. However, `google.protobuf.Struct` follows the JSON specification and does not 
-differentiate `int` from `float`. **So, data of type `int` in `tags` will be casted to `float` when request is
-sent to executor.**
+differentiate `int` from `float`. So, data of type `int` in `tags` will be **always** casted to `float` when request is
+sent to executor.
 
 As a result, users need be explicit and cast the data to the expected type as follows.
 
@@ -157,134 +246,47 @@ with Flow().add(uses=MyExecutor) as f:
 
 `````
 
-## Construct `Document`
 
-### Content attributes
+## Set & unset Document attributes
 
-| Attribute | Description |
-| --- | --- |
-| `doc.buffer` | The raw binary content of this Document |
-| `doc.blob` | The `ndarray` of the image/audio/video Document |
-| `doc.text` | The text info of the Document |
-| `doc.content` | One of the above non-empty field |
-| `doc.uri` | A uri of the Document could be: a local file path, a remote url starts with http or https or data URI scheme |
-| `doc.embedding` | The embedding `ndarray` of this Document |
-
-You can assign `str`, `ndarray`, or `buffer` to a `Document`.
+Set a attribute:
 
 ```python
 from jina import Document
-import numpy as np
 
-d1 = Document(content='hello')
-d2 = Document(content=b'\f1')
-d3 = Document(content=np.array([1, 2, 3]))
+d = Document()
+d.text = 'hello world'
 ```
 
 ```text
-<jina.types.document.Document id=2ca74b98-aed9-11eb-b791-1e008a366d48 mimeType=text/plain text=hello at 6247702096>
-<jina.types.document.Document id=2ca74f1c-aed9-11eb-b791-1e008a366d48 buffer=DDE= at 6247702160>
-<jina.types.document.Document id=2caab594-aed9-11eb-b791-1e008a366d48 blob={'dense': {'buffer': 'AQAAAAAAAAACAAAAAAAAAAMAAAAAAAAA', 'shape': [3], 'dtype': '<i8'}} at 6247702416>
+<jina.types.document.Document id=9badabb6-b9e9-11eb-993c-1e008a366d49 mime_type=text/plain text=hello world at 4444621648>
 ```
 
-The content will be automatically assigned to either the `text`, `buffer`, or `blob` fields. `id` and `mime_type`
-are auto-generated when not given.
-
-You can get a visualization of a `Document` object in Jupyter Notebook or by calling `.plot()`.
-
-<img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDY5fkRvY3VtZW50fnsKK2lkIGU4MDY0MjdlLWEKK21pbWVfdHlwZSB0ZXh0L3BsYWluCit0ZXh0IGhlbGxvCn0="/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDczfkRvY3VtZW50fnsKK2lkIGZmZTQzMmFjLWEKK2J1ZmZlciBEREU9CittaW1lX3R5cGUgdGV4dC9wbGFpbgp9"/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDJmfkRvY3VtZW50fnsKK2lkIDAzOWVmMzE0LWEKK2Jsb2IoPGNsYXNzICdudW1weS5uZGFycmF5Jz4pCn0="/>
-
-### Exclusivity of `doc.content`
-
-```{image} ../../../.github/2.0/doc.content.svg
-:align: center
-```
-
-Note that one `Document` can only contain one type of `content`: it is either `text`, `buffer`, or `blob`.
-
-
-#### Conversion between `doc.content` and `doc.uri`
-
-You can use the following methods to convert between `.uri`, `.text`, `.buffer` and `.blob`:
+Unset a attribute:
 
 ```python
-doc.convert_buffer_to_blob()
-doc.convert_blob_to_buffer()
-doc.convert_uri_to_buffer()
-doc.convert_buffer_to_uri()
-doc.convert_text_to_uri()
-doc.convert_uri_to_text()
+d.pop('text')
 ```
 
-You can use `convert_content_to_uri` to convert the content to URI. This will determine the used `content_type` and use
-the appropriate conversion method.
+```text
+<jina.types.document.Document id=cdf1dea8-b9e9-11eb-8fd8-1e008a366d49 mime_type=text/plain at 4490447504>
+```
 
-You can convert a URI to a data URI (a data in-line URI scheme) using `doc.convert_uri_to_datauri()`. This will fetch
-the resource and make it inline.
-
-In particular, when you work with an image `Document`, there are some extra helpers that enable more conversion:
+Unset multiple attributes:
 
 ```python
-doc.convert_image_buffer_to_blob()
-doc.convert_image_blob_to_uri()
-doc.convert_image_uri_to_blob()
-doc.convert_image_datauri_to_blob()
+d.pop('text', 'id', 'mime_type')
 ```
 
-### Set embedding
-
-An embedding is a high-dimensional representation of a `Document`. You can assign any Numpy `ndarray` as a `Document`'s
-embedding.
-
-```python
-import numpy as np
-from jina import Document
-
-d1 = Document(embedding=np.array([1, 2, 3]))
-d2 = Document(embedding=np.array([[1, 2, 3], [4, 5, 6]]))
+```text
+<jina.types.document.Document at 5668344144>
 ```
 
-#### Sparse embedding
 
-Scipy sparse array (`coo_matrix, bsr_matrix, csr_matrix, csc_matrix`)  are supported as both `embedding` or `blob` :
-
-```python
-import scipy.sparse as sp
-
-d1 = Document(embedding=sp.coo_matrix([0, 0, 0, 1, 0]))
-d2 = Document(embedding=sp.csr_matrix([0, 0, 0, 1, 0]))
-d3 = Document(embedding=sp.bsr_matrix([0, 0, 0, 1, 0]))
-d4 = Document(embedding=sp.csc_matrix([0, 0, 0, 1, 0]))
-
-d5 = Document(blob=sp.coo_matrix([0, 0, 0, 1, 0]))
-d6 = Document(blob=sp.csr_matrix([0, 0, 0, 1, 0]))
-d7 = Document(blob=sp.bsr_matrix([0, 0, 0, 1, 0]))
-d8 = Document(blob=sp.csc_matrix([0, 0, 0, 1, 0]))
-```
-
-Tensorflow and Pytorch sparse arrays are also supported
-
-```python
-import torch
-import tensorflow as tf
-
-indices = [[0, 0], [1, 2]]
-values = [1, 2]
-dense_shape = [3, 4]
-
-d1 = Document(embedding=torch.sparse_coo_tensor(indices, values, dense_shape))
-d2 = Document(embedding=tf.SparseTensor(indices, values, dense_shape))
-d3 = Document(blob=torch.sparse_coo_tensor(indices, values, dense_shape))
-d4 = Document(blob=tf.SparseTensor(indices, values, dense_shape))
-```
-
-### Construct with multiple attributes
-
-#### Meta attributes
+### Construct Document with multiple attributes
 
 | Attribute | Description |
 | --- | --- |
-| `doc.tags` | A structured data value, consisting of fields which map to dynamically typed values |
 | `doc.id` | A hexdigest that represents a unique Document ID |
 | `doc.parent_id` | A hexdigest that represents the document's parent id |
 | `doc.weight` | The weight of the Document |
@@ -323,7 +325,7 @@ d = json.dumps({'id': 'hello123', 'content': 'world'})
 d2 = Document(d)
 ```
 
-#### Parsing unrecognized fields
+### Parsing unrecognized fields
 
 Unrecognized fields in a `dict`/JSON string are automatically put into the Document's `.tags` field:
 
@@ -423,13 +425,11 @@ from jina.types.document.generators import from_files
 DocumentArray(from_files('/*.png'))
 ```
 
-### Construct recursive `Document`
+## Recursive & nested Document
 
-#### Recursive attributes
+`Document` can be recursive both horizontally and vertically:
 
-`Document` can be recursed both horizontally and vertically:
-
-|     |     |
+|  Attribute   |   Description  |
 | --- | --- |
 | `doc.chunks` | The list of sub-Documents of this Document. They have `granularity + 1` but same `adjacency` |
 | `doc.matches` | The list of matched Documents of this Document. They have `adjacency + 1` but same `granularity` |
@@ -466,7 +466,7 @@ Both `doc.chunks` and `doc.matches` return `ChunkArray` and `MatchArray`, which 
 of {ref}`DocumentArray<documentarray>`. We will introduce `DocumentArray` later.
 ````
 
-#### Caveat: add Chunks in correct order
+### Caveat: add Chunks in correct order
 
 When adding `Chunks` to a `Document`, do not create them in one line to keep recursive document structure correct. This is because `chunks` use `ref_doc` to control its `granularity`, at `chunk` creation time, it didn't know anything about its parent, and will get a wrong `granularity` value.
 
@@ -498,20 +498,193 @@ root_document = Document(
 ```
 ````
 
+## Visualize Document
 
-### Construct `GraphDocument`
+To better see the Document's recursive structure, you can use `.plot()` function. If you are using JupyterLab/Notebook,
+all `Document` objects will be auto-rendered:
+
+
+```{code-block} python
+---
+emphasize-lines: 13
+---
+import numpy as np
+from jina import Document
+
+d0 = Document(id='🐲', embedding=np.array([0, 0]))
+d1 = Document(id='🐦', embedding=np.array([1, 0]))
+d2 = Document(id='🐢', embedding=np.array([0, 1]))
+d3 = Document(id='🐯', embedding=np.array([1, 1]))
+
+d0.chunks.append(d1)
+d0.chunks[0].chunks.append(d2)
+d0.matches.append(d3)
+
+d0.plot()  # simply `d0` on JupyterLab
+```
+
+
+```{figure} ../../../.github/images/four-symbol-docs.svg
+:align: center
+```
+
+## Add relevancy to Document
+
+### Relevance attributes
+
+|  Attributes   |  Description   |
+| --- | --- |
+| `doc.scores` | The relevance information of this Document. A dict-like structure supporting storing different metrics |
+| `doc.evaluations` | The evaluation information of this Document. A dict-like structure supporting storing different metrics |
+
+You can add a relevance score to a `Document` object via:
+
+```python
+from jina import Document
+
+d = Document()
+d.scores['cosine similarity'] = 0.96
+d.scores['cosine similarity'].description = 'cosine similarity'
+d.scores['cosine similarity'].op_name = 'cosine()'
+d.evaluations['recall'] = 0.56
+d.evaluations['recall'].description = 'recall at 10'
+d.evaluations['recall'].op_name = 'recall()'
+d
+```
+
+```text
+<jina.types.document.Document id=6c4db2c8-cdf1-11eb-be5d-e86a64801cb1 scores={'values': {'cosine similarity': {'value': 0.96, 'op_name': 'cosine()', 'description': 'cosine similarity'}}} evaluations={'recall': {'value': 0.56, 'op_name': 'recall()', 'description': 'recall at 10'}} at 140003211429776>```
+```
+
+Score information is often used jointly with `matches`. For example, you often see the indexer adding `matches` as
+follows:
+
+```python
+from jina import Document
+
+# some query Document
+q = Document()
+# get match Document `m`
+m = Document()
+m.scores['metric'] = 0.96
+q.matches.append(m)
+```
+
+```text
+<jina.types.document.Document id=1aaba345-cdf1-11eb-be5d-e86a64801cb1 adjacency=1 scores={'values': {'metric': {'value': 0.96}}} at 140001502011856>
+```
+
+These attributes (`scores` and `evaluations`) provide a dict-like interface that lets access all its elements:
+
+```python
+from jina import Document
+
+d = Document()
+d.evaluations['precision'] = 1.0
+d.evaluations['precision'].description = 'precision at 10'
+d.evaluations['precision'].op_name = 'precision()'
+d.evaluations['recall'] = 0.5
+d.evaluations['recall'].description = 'recall at 10'
+d.evaluations['recall'].op_name = 'recall()'
+for evaluation_key, evaluation_score in d.evaluations.items():
+    print(f' {evaluation_key} => {evaluation_score.description}: {evaluation_score.value}') 
+```
+
+```text
+ precision => precision at 10: 1.0
+ recall => recall at 10: 0.5
+```
+
+
+## Serialize Document to binary/dict/JSON
+
+You can serialize a `Document` into JSON string or Python dict or binary string:
+````{tab} JSON
+```python
+from jina import Document
+
+d = Document(content='hello, world')
+d.json()
+```
+
+```json
+{
+  "id": "6a1c7f34-aef7-11eb-b075-1e008a366d48",
+  "mimeType": "text/plain",
+  "text": "hello world"
+}
+```
+````
+
+````{tab} Binary
+```python
+from jina import Document
+
+d = Document(content='hello, world')
+d.binary_str()
+```
+
+```
+b'\n$6a1c7f34-aef7-11eb-b075-1e008a366d48R\ntext/plainj\x0bhello world'
+```
+````
+
+````{tab} Dict
+```python
+from jina import Document
+
+d = Document(content='hello, world')
+d.dict()
+```
+
+```
+{'id': '6a1c7f34-aef7-11eb-b075-1e008a366d48', 'mimeType': 'text/plain', 'text': 'hello world'}
+```
+````
+
+
+In order to have a nicer representation of
+the `embeddings` and any `ndarray` field, you can call `dict` and `json` with the option `prettify_ndarrays=True`.
+
+```python
+import pprint
+import numpy as np
+
+from jina import Document
+
+d0 = Document(id='🐲identifier', text='I am a Jina Document', tags={'cool': True}, embedding=np.array([0, 0]))
+pprint.pprint(d0.dict(prettify_ndarrays=True))
+pprint.pprint(d0.json(prettify_ndarrays=True))
+```
+
+```text
+{'embedding': [0, 0],
+ 'id': '🐲identifier',
+ 'mime_type': 'text/plain',
+ 'tags': {'cool': True},
+ 'text': 'I am a Jina Document'}
+
+('{"embedding": [0, 0], "id": "identifier", "mime_type": '
+ '"text/plain", "tags": {"cool": true}, "text": "I am a Jina Document"}')
+```
+
+This can be useful to understand the contents of the `Document` and to send to backends that can process vectors
+as `lists` of values.
+
+
+## Document as a graph
 
 `GraphDocument` is a subclass of `Document`. It's a special type of `Document` that adds functionality to let you work
 with a `Document` as a `directed graph`. Chunks of the document represent the nodes of the graph. `GraphDocument` adds
 graph-specific attributes (`nodes`, `adjacency` list, `edge_features`,...) and operations (`add_node`, `remove_node`
 , `add_edge`, `remove_edge`,...)
 
-#### `GraphDocument` constructor
+### `GraphDocument` constructor
 
 `GraphDocument`'s constructor supports the same parameters as `Document`. It mainly adds one
 parameter `force_undirected`. It's a boolean flag that, when set to `True`, forces the graph document to be undirected.
 
-#### `GraphDocument` additional attributes
+### `GraphDocument` additional attributes
 
 `GraphDocument` adds the following attributes to `Document`:
 
@@ -524,7 +697,7 @@ parameter `force_undirected`. It's a boolean flag that, when set to `True`, forc
 | `num_edges` | Number of edges in the graph |
 | `nodes` | The list of nodes. Equivalent to `chunks` |
 
-#### `GraphDocument` methods
+### `GraphDocument` methods
 
 `GraphDocument` adds the following methods to `Document`:
 
@@ -611,177 +784,3 @@ graph.get_outgoing_nodes(d1)
 * `to_dgl_graph`: returns a `dgl.DGLGraph` from the graph document.
 * `load_from_dgl_graph`: returns a `GraphDocument` from a `dgl.DGLGraph`.
 
-
-## Add relevancy to `Document`
-
-### Relevance attributes
-
-|     |     |
-| --- | --- |
-| `doc.scores` | The relevance information of this Document. A dict-like structure supporting storing different metrics |
-| `doc.evaluations` | The evaluation information of this Document. A dict-like structure supporting storing different metrics |
-
-You can add a relevance score to a `Document` object via:
-
-```python
-from jina import Document
-
-d = Document()
-d.scores['cosine similarity'] = 0.96
-d.scores['cosine similarity'].description = 'cosine similarity'
-d.scores['cosine similarity'].op_name = 'cosine()'
-d.evaluations['recall'] = 0.56
-d.evaluations['recall'].description = 'recall at 10'
-d.evaluations['recall'].op_name = 'recall()'
-d
-```
-
-```text
-<jina.types.document.Document id=6c4db2c8-cdf1-11eb-be5d-e86a64801cb1 scores={'values': {'cosine similarity': {'value': 0.96, 'op_name': 'cosine()', 'description': 'cosine similarity'}}} evaluations={'recall': {'value': 0.56, 'op_name': 'recall()', 'description': 'recall at 10'}} at 140003211429776>```
-```
-
-Score information is often used jointly with `matches`. For example, you often see the indexer adding `matches` as
-follows:
-
-```python
-from jina import Document
-
-# some query Document
-q = Document()
-# get match Document `m`
-m = Document()
-m.scores['metric'] = 0.96
-q.matches.append(m)
-```
-
-```text
-<jina.types.document.Document id=1aaba345-cdf1-11eb-be5d-e86a64801cb1 adjacency=1 scores={'values': {'metric': {'value': 0.96}}} at 140001502011856>
-```
-
-These attributes (`scores` and `evaluations`) provide a dict-like interface that lets access all its elements:
-
-```python
-from jina import Document
-
-d = Document()
-d.evaluations['precision'] = 1.0
-d.evaluations['precision'].description = 'precision at 10'
-d.evaluations['precision'].op_name = 'precision()'
-d.evaluations['recall'] = 0.5
-d.evaluations['recall'].description = 'recall at 10'
-d.evaluations['recall'].op_name = 'recall()'
-for evaluation_key, evaluation_score in d.evaluations.items():
-    print(f' {evaluation_key} => {evaluation_score.description}: {evaluation_score.value}') 
-```
-
-```text
- precision => precision at 10: 1.0
- recall => recall at 10: 0.5
-```
-
-
-## Serialize `Document` to binary/`Dict`/JSON
-
-You can serialize a `Document` into JSON string or Python dict or binary string:
-````{tab} JSON
-```python
-from jina import Document
-
-d = Document(content='hello, world')
-d.json()
-```
-
-```json
-{
-  "id": "6a1c7f34-aef7-11eb-b075-1e008a366d48",
-  "mimeType": "text/plain",
-  "text": "hello world"
-}
-```
-````
-
-````{tab} Binary
-```python
-from jina import Document
-
-d = Document(content='hello, world')
-d.binary_str()
-```
-
-```
-b'\n$6a1c7f34-aef7-11eb-b075-1e008a366d48R\ntext/plainj\x0bhello world'
-```
-````
-
-````{tab} Dict
-```python
-from jina import Document
-
-d = Document(content='hello, world')
-d.dict()
-```
-
-```
-{'id': '6a1c7f34-aef7-11eb-b075-1e008a366d48', 'mimeType': 'text/plain', 'text': 'hello world'}
-```
-````
-
-
-In order to have a nicer representation of
-the `embeddings` and any `ndarray` field, you can call `dict` and `json` with the option `prettify_ndarrays=True`.
-
-```python
-import pprint
-import numpy as np
-
-from jina import Document
-
-d0 = Document(id='🐲identifier', text='I am a Jina Document', tags={'cool': True}, embedding=np.array([0, 0]))
-pprint.pprint(d0.dict(prettify_ndarrays=True))
-pprint.pprint(d0.json(prettify_ndarrays=True))
-```
-
-```text
-{'embedding': [0, 0],
- 'id': '🐲identifier',
- 'mime_type': 'text/plain',
- 'tags': {'cool': True},
- 'text': 'I am a Jina Document'}
-
-('{"embedding": [0, 0], "id": "identifier", "mime_type": '
- '"text/plain", "tags": {"cool": true}, "text": "I am a Jina Document"}')
-```
-
-This can be useful to understand the contents of the `Document` and to send to backends that can process vectors
-as `lists` of values.
-
-
-## Visualize `Document`
-
-To better see the Document's recursive structure, you can use `.plot()` function. If you are using JupyterLab/Notebook,
-all `Document` objects will be auto-rendered:
-
-
-```{code-block} python
----
-emphasize-lines: 13
----
-import numpy as np
-from jina import Document
-
-d0 = Document(id='🐲', embedding=np.array([0, 0]))
-d1 = Document(id='🐦', embedding=np.array([1, 0]))
-d2 = Document(id='🐢', embedding=np.array([0, 1]))
-d3 = Document(id='🐯', embedding=np.array([1, 1]))
-
-d0.chunks.append(d1)
-d0.chunks[0].chunks.append(d2)
-d0.matches.append(d3)
-
-d0.plot()  # simply `d0` on JupyterLab
-```
-
-
-```{figure} ../../../.github/images/four-symbol-docs.svg
-:align: center
-```
