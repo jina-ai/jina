@@ -1,4 +1,4 @@
-# Cookbook on `Kubernetes` Deployment
+# Jina on Kubernetes
 
 Deploy your `Flow` on `Kubernetes`.
 ## Requirements
