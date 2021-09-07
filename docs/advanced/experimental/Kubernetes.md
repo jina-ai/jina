@@ -2,12 +2,13 @@
 
 Deploy your `Flow` on `Kubernetes`.
 ## Requirements
-- please setup a `Kubernetes` cluster and pull the credentials. e.g.:
-  [minikube](https://minikube.sigs.k8s.io/docs/start/) (testing),
-  [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine),
-  [Amazon EKS](https://aws.amazon.com/eks),
-  [Azure Kubernetes Service](https://azure.microsoft.com/en-us/services/kubernetes-service),
-  [Digital Ocean](https://www.digitalocean.com/products/kubernetes/)
+Please setup a `Kubernetes` cluster and pull the credentials. e.g.:
+
+-  [minikube](https://minikube.sigs.k8s.io/docs/start/) (testing),
+- [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine),
+- [Amazon EKS](https://aws.amazon.com/eks),
+- [Azure Kubernetes Service](https://azure.microsoft.com/en-us/services/kubernetes-service),
+- [Digital Ocean](https://www.digitalocean.com/products/kubernetes/)
   
 ## Deploy your `Flow`
 To deploy a `Flow` on `Kubernetes`, you have to set the `infrastructure='K8S'` when creating the `Flow`.
