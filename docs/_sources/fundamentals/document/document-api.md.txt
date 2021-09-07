@@ -58,7 +58,6 @@ The content will be automatically assigned to either the `text`, `buffer`, or `b
 are auto-generated when not given.
 
 ```{admonition} Exclusivity of the content
-
 :class: important
 
 Note that one `Document` can only contain one type of `content`: it is either `text`, `buffer`, or `blob`.
@@ -326,8 +325,9 @@ d.dict()
 ```
 ````
 
+````{tip}
 
-In order to have a nicer representation of
+To have a nicer representation of
 the `embeddings` and any `ndarray` field, you can call `dict` and `json` with the option `prettify_ndarrays=True`.
 
 ```python
@@ -355,11 +355,11 @@ pprint.pprint(d0.json(prettify_ndarrays=True))
 This can be useful to understand the contents of the `Document` and to send to backends that can process vectors
 as `lists` of values.
 
-
+````
 
 ## Set/unset attributes
 
-Set a attribute:
+Set an attribute as how you would set an attribute to any Python object: 
 
 ```python
 from jina import Document
@@ -372,7 +372,7 @@ d.text = 'hello world'
 <jina.types.document.Document id=9badabb6-b9e9-11eb-993c-1e008a366d49 mime_type=text/plain text=hello world at 4444621648>
 ```
 
-Unset a attribute:
+Unset an attribute:
 
 ```python
 d.pop('text')
@@ -577,9 +577,9 @@ Both `doc.chunks` and `doc.matches` return `ChunkArray` and `MatchArray`, which 
 of {ref}`DocumentArray<documentarray>`. We will introduce `DocumentArray` later.
 ````
 
-### Caveat: add Chunks in correct order
+### Caveat: order matters
 
-When adding `Chunks` to a `Document`, do not create them in one line to keep recursive document structure correct. This is because `chunks` use `ref_doc` to control its `granularity`, at `chunk` creation time, it didn't know anything about its parent, and will get a wrong `granularity` value.
+When adding sub-Documents to `Document.chunks`, do not create them in one line to keep recursive document structure correct. This is because `chunks` use `ref_doc` to control its `granularity`, at `chunk` creation time, it didn't know anything about its parent, and will get a wrong `granularity` value.
 
 ````{tab} ✅ Do
 ```python
@@ -716,9 +716,9 @@ emphasize-lines: 5
 from jina.types.document.graph import GraphDocument
 from jina import Document
 
-graph = GraphDocument()
-graph.add_node(Document(text='hello world'))
-graph.nodes[0]
+gd = GraphDocument()
+gd.add_node(Document(text='hello world'))
+gd.nodes[0]
 ```
 
 ```text
@@ -738,8 +738,8 @@ from jina.types.document.graph import GraphDocument
 graph = GraphDocument()
 d1 = Document(id='1', text='hello world')
 d2 = Document(id='2', text='goodbye world')
-graph.add_edge(d1, d2, features={"text": "both documents are linked"})
-graph.nodes
+gd.add_edge(d1, d2, features={"text": "both documents are linked"})
+gd.nodes
 ```
 
 ```text
@@ -749,7 +749,7 @@ graph.nodes
 You access the edge features using id1-id2 as key:
 
 ```python
-graph.edge_features['1-2']
+gd.edge_features['1-2']
 ```
 
 ```text
@@ -771,16 +771,16 @@ graph.edge_features['1-2']
 from jina import Document
 from jina.types.document.graph import GraphDocument
 
-graph = GraphDocument()
+gd = GraphDocument()
 d1 = Document(id='1', text='hello world')
 d2 = Document(id='2', text='goodbye world')
 d3 = Document(id='3')
-graph.add_edge(d1, d2)
-graph.add_edge(d1, d3)
+gd.add_edge(d1, d2)
+gd.add_edge(d1, d3)
 
-assert graph.get_out_degree(d1) == 2
+assert gd.get_out_degree(d1) == 2
 
-graph.get_outgoing_nodes(d1)
+gd.get_outgoing_nodes(d1)
 ```
 
 ```text

@@ -647,9 +647,8 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 </div>
 <p>The content will be automatically assigned to either the <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">buffer</span></code>, or <code class="docutils literal notranslate"><span class="pre">blob</span></code> fields. <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">mime_type</span></code>
 are auto-generated when not given.</p>
-<div class="admonition-exclusivity-of-the-content admonition">
+<div class="important admonition">
 <p class="admonition-title">Exclusivity of the content</p>
-<p>:class: important</p>
 <p>Note that one <code class="docutils literal notranslate"><span class="pre">Document</span></code> can only contain one type of <code class="docutils literal notranslate"><span class="pre">content</span></code>: it is either <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">buffer</span></code>, or <code class="docutils literal notranslate"><span class="pre">blob</span></code>.</p>
 </div>
 <p>You can get a visualization of a <code class="docutils literal notranslate"><span class="pre">Document</span></code> object in Jupyter Notebook or by calling <code class="docutils literal notranslate"><span class="pre">.plot()</span></code>.</p>
@@ -870,7 +869,9 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 </div>
 </div>
 </div>
-<p>In order to have a nicer representation of
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>To have a nicer representation of
 the <code class="docutils literal notranslate"><span class="pre">embeddings</span></code> and any <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> field, you can call <code class="docutils literal notranslate"><span class="pre">dict</span></code> and <code class="docutils literal notranslate"><span class="pre">json</span></code> with the option <code class="docutils literal notranslate"><span class="pre">prettify_ndarrays=True</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pprint</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -895,9 +896,10 @@ the <code class="docutils literal notranslate"><span class="pre">embeddings</spa
 <p>This can be useful to understand the contents of the <code class="docutils literal notranslate"><span class="pre">Document</span></code> and to send to backends that can process vectors
 as <code class="docutils literal notranslate"><span class="pre">lists</span></code> of values.</p>
 </div>
+</div>
 <div class="section" id="set-unset-attributes">
 <h2>Set/unset attributes<a class="headerlink" href="#set-unset-attributes" title="Permalink to this headline">¶</a></h2>
-<p>Set a attribute:</p>
+<p>Set an attribute as how you would set an attribute to any Python object:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
 <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
@@ -907,7 +909,7 @@ as <code class="docutils literal notranslate"><span class="pre">lists</span></co
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.document.Document id=9badabb6-b9e9-11eb-993c-1e008a366d49 mime_type=text/plain text=hello world at 4444621648&gt;
 </pre></div>
 </div>
-<p>Unset a attribute:</p>
+<p>Unset an attribute:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'text'</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1151,9 +1153,9 @@ corresponds to a line/row in the original format:</p>
 <p>Both <code class="docutils literal notranslate"><span class="pre">doc.chunks</span></code> and <code class="docutils literal notranslate"><span class="pre">doc.matches</span></code> return <code class="docutils literal notranslate"><span class="pre">ChunkArray</span></code> and <code class="docutils literal notranslate"><span class="pre">MatchArray</span></code>, which are sub-classes
 of <a class="reference internal" href="../documentarray-api/#documentarray"><span class="std std-ref">DocumentArray</span></a>. We will introduce <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> later.</p>
 </div>
-<div class="section" id="caveat-add-chunks-in-correct-order">
-<h3>Caveat: add Chunks in correct order<a class="headerlink" href="#caveat-add-chunks-in-correct-order" title="Permalink to this headline">¶</a></h3>
-<p>When adding <code class="docutils literal notranslate"><span class="pre">Chunks</span></code> to a <code class="docutils literal notranslate"><span class="pre">Document</span></code>, do not create them in one line to keep recursive document structure correct. This is because <code class="docutils literal notranslate"><span class="pre">chunks</span></code> use <code class="docutils literal notranslate"><span class="pre">ref_doc</span></code> to control its <code class="docutils literal notranslate"><span class="pre">granularity</span></code>, at <code class="docutils literal notranslate"><span class="pre">chunk</span></code> creation time, it didn’t know anything about its parent, and will get a wrong <code class="docutils literal notranslate"><span class="pre">granularity</span></code> value.</p>
+<div class="section" id="caveat-order-matters">
+<h3>Caveat: order matters<a class="headerlink" href="#caveat-order-matters" title="Permalink to this headline">¶</a></h3>
+<p>When adding sub-Documents to <code class="docutils literal notranslate"><span class="pre">Document.chunks</span></code>, do not create them in one line to keep recursive document structure correct. This is because <code class="docutils literal notranslate"><span class="pre">chunks</span></code> use <code class="docutils literal notranslate"><span class="pre">ref_doc</span></code> to control its <code class="docutils literal notranslate"><span class="pre">granularity</span></code>, at <code class="docutils literal notranslate"><span class="pre">chunk</span></code> creation time, it didn’t know anything about its parent, and will get a wrong <code class="docutils literal notranslate"><span class="pre">granularity</span></code> value.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--1">✅ Do</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
@@ -1315,9 +1317,9 @@ parameter <code class="docutils literal notranslate"><span class="pre">force_und
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina.types.document.graph</span> <span class="kn">import</span> <span class="n">GraphDocument</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
-<span class="n">graph</span> <span class="o">=</span> <span class="n">GraphDocument</span><span class="p">()</span>
-<span class="hll"><span class="n">graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'hello world'</span><span class="p">))</span>
-</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">gd</span> <span class="o">=</span> <span class="n">GraphDocument</span><span class="p">()</span>
+<span class="hll"><span class="n">gd</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'hello world'</span><span class="p">))</span>
+</span><span class="n">gd</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.document.Document id=8f9a60ce-f5d7-11eb-8383-c7034ef3edd4 mime_type=text/plain text=hello world granularity=1 parent_id=7ec9087c-f5d7-11eb-8383-c7034ef3edd4 at 140287929173088&gt;
@@ -1333,15 +1335,15 @@ dict features to the edge with parameter <code class="docutils literal notransla
 <span class="n">graph</span> <span class="o">=</span> <span class="n">GraphDocument</span><span class="p">()</span>
 <span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'1'</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">'hello world'</span><span class="p">)</span>
 <span class="n">d2</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'2'</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">'goodbye world'</span><span class="p">)</span>
-<span class="hll"><span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="p">{</span><span class="s2">"text"</span><span class="p">:</span> <span class="s2">"both documents are linked"</span><span class="p">})</span>
-</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span>
+<span class="hll"><span class="n">gd</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="p">{</span><span class="s2">"text"</span><span class="p">:</span> <span class="s2">"both documents are linked"</span><span class="p">})</span>
+</span><span class="n">gd</span><span class="o">.</span><span class="n">nodes</span>
 </pre></div>
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.arrays.chunk.ChunkArray length=2 at 140039698424448&gt;
 </pre></div>
 </div>
 <p>You access the edge features using id1-id2 as key:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">graph</span><span class="o">.</span><span class="n">edge_features</span><span class="p">[</span><span class="s1">'1-2'</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">gd</span><span class="o">.</span><span class="n">edge_features</span><span class="p">[</span><span class="s1">'1-2'</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.struct.StructView text=both documents are linked at 140132368471280&gt;
@@ -1380,16 +1382,16 @@ dict features to the edge with parameter <code class="docutils literal notransla
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 <span class="kn">from</span> <span class="nn">jina.types.document.graph</span> <span class="kn">import</span> <span class="n">GraphDocument</span>
 
-<span class="n">graph</span> <span class="o">=</span> <span class="n">GraphDocument</span><span class="p">()</span>
+<span class="n">gd</span> <span class="o">=</span> <span class="n">GraphDocument</span><span class="p">()</span>
 <span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'1'</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">'hello world'</span><span class="p">)</span>
 <span class="n">d2</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'2'</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">'goodbye world'</span><span class="p">)</span>
 <span class="n">d3</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'3'</span><span class="p">)</span>
-<span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">)</span>
-<span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d3</span><span class="p">)</span>
+<span class="n">gd</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">)</span>
+<span class="n">gd</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d3</span><span class="p">)</span>
 
-<span class="k">assert</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_out_degree</span><span class="p">(</span><span class="n">d1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+<span class="k">assert</span> <span class="n">gd</span><span class="o">.</span><span class="n">get_out_degree</span><span class="p">(</span><span class="n">d1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
 
-<span class="n">graph</span><span class="o">.</span><span class="n">get_outgoing_nodes</span><span class="p">(</span><span class="n">d1</span><span class="p">)</span>
+<span class="n">gd</span><span class="o">.</span><span class="n">get_outgoing_nodes</span><span class="p">(</span><span class="n">d1</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.arrays.chunk.ChunkArray length=2 at 140689776342112&gt;
@@ -1474,7 +1476,7 @@ dict features to the edge with parameter <code class="docutils literal notransla
 </ul>
 </li>
 <li><a class="reference internal" href="#recursive-nested-document">Recursive &amp; nested Document</a><ul>
-<li><a class="reference internal" href="#caveat-add-chunks-in-correct-order">Caveat: add Chunks in correct order</a></li>
+<li><a class="reference internal" href="#caveat-order-matters">Caveat: order matters</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#add-relevancy-to-document">Add relevancy to Document</a><ul>
