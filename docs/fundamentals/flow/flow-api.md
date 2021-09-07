@@ -1,5 +1,5 @@
 (flow)=
-# Create a Flow
+# Create Flow
 
 An empty Flow can be created via:
 

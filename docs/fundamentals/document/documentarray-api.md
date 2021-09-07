@@ -328,7 +328,7 @@ for key, group in groups:
 ```
 
 
-#### Advanced iterating over nested Documents
+#### Advanced iterator on nested Documents
 
 `DocumentArray.traverse` can be used for iterating over nested & recursive Documents. As return value you get a generator which
 generates `DocumentArrays` matching the provided traversal paths. Let's assume you have the following `Document`
@@ -496,7 +496,6 @@ da.visualize()
 ```
 
 
-
 ## Matching DocumentArray to another
 
 `DocumentArray` provides a`.match` function that finds the closest documents between two `DocumentArray` objects. This
@@ -554,7 +553,7 @@ match emb = [1.  2.2 2.  1.  0. ] score = 1.5620499849319458
 match emb = [1.  0.1 0.  0.  0. ] score = 1.6763054132461548
 ```
 
-### Using sparse embeddings
+### Matching sparse embeddings
 
 We can use sparse embeddings and do the `.match` using `is_sparse=True`
 
