@@ -614,7 +614,8 @@
         <span class="n">arguments_from_cls</span> <span class="o">=</span> <span class="n">LegacyParser</span><span class="o">.</span><span class="n">_get_all_arguments</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
         <span class="n">arguments_from_yaml</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'with'</span><span class="p">,</span> <span class="p">{}))</span>
         <span class="n">difference_set</span> <span class="o">=</span> <span class="n">arguments_from_yaml</span> <span class="o">-</span> <span class="n">arguments_from_cls</span>
-        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">difference_set</span><span class="p">):</span>
+        <span class="c1"># only log warnings about unknown args for main Pea</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">difference_set</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">LegacyParser</span><span class="o">.</span><span class="n">is_tail_or_head</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
             <span class="n">default_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'The arguments </span><span class="si">{</span><span class="n">difference_set</span><span class="si">}</span><span class="s1"> defined in the YAML are not expected in the '</span>
                 <span class="sa">f</span><span class="s1">'class </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">'</span>
@@ -633,6 +634,16 @@
 
         <span class="n">obj</span><span class="o">.</span><span class="n">is_updated</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="LegacyParser.is_tail_or_head"><a class="viewcode-back" href="../../../../../../api/jina.jaml.parsers.executor.legacy/#jina.jaml.parsers.executor.legacy.LegacyParser.is_tail_or_head">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_tail_or_head</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">"""Based on name, compute if this is a tail/head Pea or a main Pea</span>
+
+<span class="sd">        :param data: the data for the parser</span>
+<span class="sd">        :return: True if it is tail/head, False otherwise</span>
+<span class="sd">        """</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'runtime_args'</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">'head'</span> <span class="ow">in</span> <span class="n">name</span> <span class="ow">or</span> <span class="s1">'tail'</span> <span class="ow">in</span> <span class="n">name</span></div>
 
 <div class="viewcode-block" id="LegacyParser.dump"><a class="viewcode-back" href="../../../../../../api/jina.jaml.parsers.executor.legacy/#jina.jaml.parsers.executor.legacy.LegacyParser.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="s1">'BaseExecutor'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
         <span class="sd">"""</span>
