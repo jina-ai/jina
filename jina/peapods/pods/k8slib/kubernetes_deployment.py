@@ -19,7 +19,7 @@ def to_dns_name(name: str) -> str:
 
 def deploy_service(
     name: str,
-    namespace: Namespace,
+    namespace: str,
     image_name: str,
     container_cmd: str,
     container_args: str,
