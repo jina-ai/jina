@@ -177,9 +177,17 @@ print(f"Len response matches: {len(resp.json()['data']['docs'][0]['matches'])}")
 ## Limitations
 - each `Executor` has to be containerized
 - only stateless executors are supported when using replicas > 1
-- `Kubernetes` is doing `L4` (Network Layer) loadbalancing.
-  Since the `Executors` are using long-living `gRPC` connections,
-  loadbalancing has to be done on `L7` level (Application Layer).
-  We recommend using proxy based loadbalancing via `envoy`.
+- `Kubernetes` is doing `L4` (Network Layer) loadbalancing. 
+  Means, each new connection is loadbalanced to one of the replicas.
+  However, `Executors` are using long-living TCP connections set up by `gRPC` 
+  and send multiple requests over the same connection. 
+  Since `Kubernetes` can only loadbalance requests when new connections are established, 
+  all requests are sent to the same replica.
+  This problem can be fixed by injecting a proxy into all `Kubernetes` pods.
+  We recommend using `envoy`. It captures all in-going and out-going network traffic and
+  maintains long-living TCP connections to all replicas. 
+  It loadbalances out-going requests to make sure the workload is evenly distributed among all replicas.
+  Therefore, it allows loadbalancing on `L7` (Application Layer).
   Please inject the `envoy` proxy yourself for now.
   You can use the service mesh `Istio` to automatically inject `envoy` proxies into the `Executor` `Pods` as sidecar.
+  
