@@ -21,6 +21,9 @@ class K8sPod(BasePod):
         self.deployment_args = self._parse_args(args)
         self.version = self._get_base_executor_version()
 
+        self.fixed_head_port_in = 8081
+        self.fixed_tail_port_out = 8082
+
     def _parse_args(
         self, args: Namespace
     ) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:
@@ -98,14 +101,8 @@ class K8sPod(BasePod):
             uses = 'BaseExecutor'
         else:
             uses = 'config.yml'
-        container_args = (
-            f'["pea", '
-            f'"--uses", "{uses}", '
-            f'"--grpc-data-requests", '
-            f'"--runtime-cls", "GRPCDataRuntime", '
-            f'"--uses-metas", "{uses_metas}", '
-            + uses_with_string
-            + f'{kubernetes_deployment.get_cli_params(deployment_args)}]'
+        container_args = self._construct_runtime_container_args(
+            deployment_args, uses, uses_metas, uses_with_string
         )
 
         kubernetes_deployment.deploy_service(
@@ -120,6 +117,21 @@ class K8sPod(BasePod):
             init_container=init_container_args,
             custom_resource_dir=getattr(self.args, 'k8s_custom_resource_dir', None),
         )
+
+    @staticmethod
+    def _construct_runtime_container_args(
+        deployment_args, uses, uses_metas, uses_with_string
+    ):
+        container_args = (
+            f'["pea", '
+            f'"--uses", "{uses}", '
+            f'"--grpc-data-requests", '
+            f'"--runtime-cls", "GRPCDataRuntime", '
+            f'"--uses-metas", "{uses_metas}", '
+            + uses_with_string
+            + f'{kubernetes_deployment.get_cli_params(deployment_args)}]'
+        )
+        return container_args
 
     def start(self) -> 'K8sPod':
         """Deploy the kubernetes pods via k8s Deployment and k8s Service.
@@ -246,7 +258,7 @@ class K8sPod(BasePod):
         return {
             'name': name,
             'head_host': f'{dns_name}.{self.args.k8s_namespace}.svc.cluster.local',
-            'head_port_in': 8081,
-            'tail_port_out': 8082,
+            'head_port_in': self.fixed_head_port_in,
+            'tail_port_out': self.fixed_tail_port_out,
             'head_zmq_identity': self.head_zmq_identity,
         }
