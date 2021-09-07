@@ -557,6 +557,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_base_executor_version</span><span class="p">()</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">fixed_head_port_in</span> <span class="o">=</span> <span class="mi">8081</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fixed_tail_port_out</span> <span class="o">=</span> <span class="mi">8082</span>
+
     <span class="k">def</span> <span class="nf">_parse_args</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Namespace</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Namespace</span><span class="p">],</span> <span class="n">Namespace</span><span class="p">]]]:</span>
@@ -634,14 +637,8 @@
             <span class="n">uses</span> <span class="o">=</span> <span class="s1">'BaseExecutor'</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">uses</span> <span class="o">=</span> <span class="s1">'config.yml'</span>
-        <span class="n">container_args</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'["pea", '</span>
-            <span class="sa">f</span><span class="s1">'"--uses", "</span><span class="si">{</span><span class="n">uses</span><span class="si">}</span><span class="s1">", '</span>
-            <span class="sa">f</span><span class="s1">'"--grpc-data-requests", '</span>
-            <span class="sa">f</span><span class="s1">'"--runtime-cls", "GRPCDataRuntime", '</span>
-            <span class="sa">f</span><span class="s1">'"--uses-metas", "</span><span class="si">{</span><span class="n">uses_metas</span><span class="si">}</span><span class="s1">", '</span>
-            <span class="o">+</span> <span class="n">uses_with_string</span>
-            <span class="o">+</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">get_cli_params</span><span class="p">(</span><span class="n">deployment_args</span><span class="p">)</span><span class="si">}</span><span class="s1">]'</span>
+        <span class="n">container_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_construct_runtime_container_args</span><span class="p">(</span>
+            <span class="n">deployment_args</span><span class="p">,</span> <span class="n">uses</span><span class="p">,</span> <span class="n">uses_metas</span><span class="p">,</span> <span class="n">uses_with_string</span>
         <span class="p">)</span>
 
         <span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">deploy_service</span><span class="p">(</span>
@@ -656,6 +653,21 @@
             <span class="n">init_container</span><span class="o">=</span><span class="n">init_container_args</span><span class="p">,</span>
             <span class="n">custom_resource_dir</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'k8s_custom_resource_dir'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
         <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_construct_runtime_container_args</span><span class="p">(</span>
+        <span class="n">deployment_args</span><span class="p">,</span> <span class="n">uses</span><span class="p">,</span> <span class="n">uses_metas</span><span class="p">,</span> <span class="n">uses_with_string</span>
+    <span class="p">):</span>
+        <span class="n">container_args</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s1">'["pea", '</span>
+            <span class="sa">f</span><span class="s1">'"--uses", "</span><span class="si">{</span><span class="n">uses</span><span class="si">}</span><span class="s1">", '</span>
+            <span class="sa">f</span><span class="s1">'"--grpc-data-requests", '</span>
+            <span class="sa">f</span><span class="s1">'"--runtime-cls", "GRPCDataRuntime", '</span>
+            <span class="sa">f</span><span class="s1">'"--uses-metas", "</span><span class="si">{</span><span class="n">uses_metas</span><span class="si">}</span><span class="s1">", '</span>
+            <span class="o">+</span> <span class="n">uses_with_string</span>
+            <span class="o">+</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">get_cli_params</span><span class="p">(</span><span class="n">deployment_args</span><span class="p">)</span><span class="si">}</span><span class="s1">]'</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">container_args</span>
 
 <div class="viewcode-block" id="K8sPod.start"><a class="viewcode-back" href="../../../../../api/jina.peapods.pods.k8s/#jina.peapods.pods.k8s.K8sPod.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'K8sPod'</span><span class="p">:</span>
         <span class="sd">"""Deploy the kubernetes pods via k8s Deployment and k8s Service.</span>
@@ -782,8 +794,8 @@
         <span class="k">return</span> <span class="p">{</span>
             <span class="s1">'name'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
             <span class="s1">'head_host'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">dns_name</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">k8s_namespace</span><span class="si">}</span><span class="s1">.svc.cluster.local'</span><span class="p">,</span>
-            <span class="s1">'head_port_in'</span><span class="p">:</span> <span class="mi">8081</span><span class="p">,</span>
-            <span class="s1">'tail_port_out'</span><span class="p">:</span> <span class="mi">8082</span><span class="p">,</span>
+            <span class="s1">'head_port_in'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fixed_head_port_in</span><span class="p">,</span>
+            <span class="s1">'tail_port_out'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fixed_tail_port_out</span><span class="p">,</span>
             <span class="s1">'head_zmq_identity'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_zmq_identity</span><span class="p">,</span>
         <span class="p">}</span></div>
 </pre></div>
