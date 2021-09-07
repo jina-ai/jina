@@ -67,7 +67,7 @@ class K8sPod(BasePod):
         kubernetes_deployment.deploy_service(
             self.name,
             namespace=self.args.k8s_namespace,
-            image_name=f'jinaai/jina:{self.version}-py38-standard',
+            image_name=f'gcr.io/jina-showcase/florian-base',
             container_cmd='["jina"]',
             container_args=f'["gateway", '
             f'"--grpc-data-requests", '
@@ -116,7 +116,7 @@ class K8sPod(BasePod):
             container_args=container_args,
             logger=JinaLogger(f'deploy_{self.name}'),
             replicas=replicas,
-            pull_policy='IfNotPresent',
+            pull_policy='Always',
             init_container=init_container_args,
             custom_resource_dir=getattr(self.args, 'k8s_custom_resource_dir', None),
         )
