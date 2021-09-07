@@ -106,8 +106,11 @@ class LegacyParser(VersionedYAMLParser):
         :param data: the data for the parser
         :return: True if it is tail/head, False otherwise
         """
-        name = data.get('runtime_args', {}).get('name', '')
-        return 'head' in name or 'tail' in name
+        try:
+            name = data.get('runtime_args', {}).get('name', '')
+            return 'head' in name or 'tail' in name
+        except Exception as _:
+            pass  # name can be None in tests since it's not passed
 
     def dump(self, data: 'BaseExecutor') -> Dict:
         """
