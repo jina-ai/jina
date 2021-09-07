@@ -123,6 +123,12 @@ class ConnectionPool:
         self._connections[target_address] = connection_pool
         return connection_pool
 
+    def start(self):
+        """
+        Starts the connection pool
+        """
+        pass
+
     def close(self):
         """
         Closes the connection pool
@@ -197,24 +203,32 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
 
         self._fetch_initial_state()
 
-        self.update_thread = Thread(target=self.run)
-        self.update_thread.start()
+        from kubernetes import watch
+
+        self._api_watch = watch.Watch()
+
+        self.update_thread = Thread(target=self.run, daemon=True)
 
     def _fetch_initial_state(self):
         namespaced_pods = self._k8s_client.list_namespaced_pod(self._namespace)
         for item in namespaced_pods.items:
             self._process_item(item)
 
+    def start(self):
+        """
+        Subscribe to the K8s API and watch for changes in Pods
+        """
+        self.update_thread.start()
+
     def run(self):
         """
         Subscribes on MODIFIED events from list_namespaced_pod AK8s PI
         """
-        from kubernetes import watch
 
         self.enabled = True
         while self.enabled:
-            w = watch.Watch()
-            for event in w.stream(
+
+            for event in self._api_watch.stream(
                 self._k8s_client.list_namespaced_pod, self._namespace
             ):
                 if event['type'] == 'MODIFIED':
@@ -227,6 +241,7 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         Closes the connection pool
         """
         self.enabled = False
+        self._api_watch.stop()
         super().close()
 
     @staticmethod

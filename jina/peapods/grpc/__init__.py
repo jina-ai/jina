@@ -160,6 +160,7 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         bind_addr = f'{self.args.host}:{self.args.port_in}'
         self._grpc_server.add_insecure_port(bind_addr)
         self._logger.debug(f'Binding gRPC server for data requests to {bind_addr}')
+        self._connection_pool.start()
         await self._grpc_server.start()
         await self._grpc_server.wait_for_termination()
 
