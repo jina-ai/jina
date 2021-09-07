@@ -157,6 +157,13 @@ class K8sPod(BasePod):
         """Not implemented. It should wait to make sure deployments are properly killed."""
         pass
 
+    def update_pea_args(self):
+        """
+        Regenerate deployment args
+        """
+        self.deployment_args = self._parse_args(self.args)
+        pass
+
     @property
     def is_ready(self) -> bool:
         """Not implemented. It assumes it is ready.

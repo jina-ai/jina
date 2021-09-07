@@ -33,8 +33,8 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         self.msg_recv = 0
         self.msg_sent = 0
         self._pending_tasks = []
-        self._send_routing_table = args.send_routing_table
-        if not args.send_routing_table:
+        self._static_routing_table = args.static_routing_table
+        if args.static_routing_table:
             self._routing_table = RoutingTable(args.routing_table)
             self._next_targets = self._routing_table.get_next_target_addresses()
         else:
@@ -116,7 +116,7 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         return stub
 
     def _add_envelope(self, msg, routing_table):
-        if self._send_routing_table:
+        if not self._static_routing_table:
             new_envelope = jina_pb2.EnvelopeProto()
             new_envelope.CopyFrom(msg.envelope)
             new_envelope.routing_table.CopyFrom(routing_table.proto)
