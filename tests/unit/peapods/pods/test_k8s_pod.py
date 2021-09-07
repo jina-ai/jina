@@ -60,7 +60,7 @@ def test_dictionary_to_cli_param():
 
 
 @pytest.mark.parametrize('parallel', [1, 2, 3, 4, 5])
-def test_parse_args_parallel(parallel: int):
+def test_parse_args(parallel: int):
     args = set_pod_parser().parse_args(['--parallel', str(parallel)])
     pod = K8sPod(args)
 
@@ -74,7 +74,7 @@ def test_parse_args_parallel(parallel: int):
 
 
 @pytest.mark.parametrize('parallel', [2, 3, 4, 5])
-def test_parse_args_parallel_custom_executor(parallel: int):
+def test_parse_args_custom_executor(parallel: int):
     uses_before = 'custom-executor-before'
     uses_after = 'custom-executor-after'
     args = set_pod_parser().parse_args(
