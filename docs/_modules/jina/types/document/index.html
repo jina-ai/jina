@@ -680,6 +680,7 @@
 <span class="sd">    """</span>
 
     <span class="n">ON_GETATTR</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'matches'</span><span class="p">,</span> <span class="s1">'chunks'</span><span class="p">]</span>
+    <span class="n">CNT</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="c1"># overload_inject_start_document</span>
     <span class="nd">@overload</span>
@@ -762,13 +763,18 @@
 <span class="sd">                assert d.tags['hello'] == 'world'  # true</span>
 <span class="sd">                assert d.tags['good'] == 'bye'  # true</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DocumentProto</span><span class="p">()</span>
+        <span class="n">Document</span><span class="o">.</span><span class="n">CNT</span> <span class="o">+=</span> <span class="mi">1</span>
+
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DocumentProto</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DocumentProto</span><span class="p">()</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">document</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DocumentProto</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">ParseFromString</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
                     <span class="n">document</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
@@ -796,10 +802,12 @@
                 <span class="n">user_fields</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
                 <span class="n">support_fields</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span>
-                        <span class="n">include_proto_fields_camelcase</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">include_properties</span><span class="o">=</span><span class="kc">False</span>
+                        <span class="n">include_proto_fields_camelcase</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">include_properties</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
 
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DocumentProto</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">support_fields</span><span class="o">.</span><span class="n">issuperset</span><span class="p">(</span><span class="n">user_fields</span><span class="p">):</span>
                     <span class="n">json_format</span><span class="o">.</span><span class="n">ParseDict</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -825,16 +833,18 @@
                             <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                                 <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">document</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">_remainder</span><span class="p">}</span>
                             <span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">ParseFromString</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="n">Document</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DocumentProto</span><span class="p">()</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">document</span><span class="o">.</span><span class="n">proto</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">proto</span>
             <span class="k">elif</span> <span class="n">document</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># note ``None`` is not considered as a bad type</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">document</span><span class="p">)</span><span class="si">}</span><span class="s1"> is not recognizable'</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># create an empty document</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DocumentProto</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">BadDocType</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'fail to construct a document from </span><span class="si">{</span><span class="n">document</span><span class="si">}</span><span class="s1">, '</span>
@@ -845,13 +855,14 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">random_identity</span><span class="p">(</span><span class="n">use_uuid1</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="c1"># check if there are mutually exclusive content fields</span>
-        <span class="k">if</span> <span class="n">_contains_conflicting_content</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'Document content fields are mutually exclusive, please provide only one of </span><span class="si">{</span><span class="n">_all_doc_content_keys</span><span class="si">}</span><span class="s1">'</span>
-            <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_mermaid_id</span> <span class="o">=</span> <span class="n">random_identity</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="c1"># check if there are mutually exclusive content fields</span>
+            <span class="k">if</span> <span class="n">_contains_conflicting_content</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'Document content fields are mutually exclusive, please provide only one of </span><span class="si">{</span><span class="n">_all_doc_content_keys</span><span class="si">}</span><span class="s1">'</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mermaid_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Document</span><span class="o">.</span><span class="n">CNT</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">id</span>
 
 <div class="viewcode-block" id="Document.pop"><a class="viewcode-back" href="../../../../api/jina.types.document/#jina.Document.pop">[docs]</a>    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">fields</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Remove the values from the given fields of this Document.</span>
@@ -1899,7 +1910,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Sep 06, 2021.
+            Last updated on Sep 07, 2021.
         </div>
         
       </footer>
