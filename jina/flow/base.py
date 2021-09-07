@@ -711,6 +711,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if args.grpc_data_requests and args.runtime_cls == 'ZEDRuntime':
             args.runtime_cls = 'GRPCDataRuntime'
 
+            # grpc data runtime does not support sharding at the moment
+            if kwargs.get('shards') is not None:
+                raise NotImplementedError("GRPC data runtime does not support sharding")
+
         # pod workspace if not set then derive from flow workspace
         args.workspace = os.path.abspath(args.workspace or self.workspace)
 
