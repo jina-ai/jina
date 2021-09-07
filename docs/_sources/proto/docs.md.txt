@@ -99,11 +99,11 @@ Represents a Document
 | buffer | [bytes](#bytes) |  | the raw binary content of this document, which often represents the original document when comes into jina |
 | blob | [NdArrayProto](#jina.NdArrayProto) |  | the ndarray of the image/audio/video document |
 | text | [string](#string) |  | a text document |
-| uri | [string](#string) |  | a uri of the document could be: a local file path, a remote url starts with http or https or data URI scheme |
 | graph | [GraphProto](#jina.GraphProto) |  | Related information to be used when a Document represents a graph with its chunks as nodes |
 | chunks | [DocumentProto](#jina.DocumentProto) | repeated | list of the sub-documents of this document (recursive structure) |
 | weight | [float](#float) |  | The weight of this document |
 | matches | [DocumentProto](#jina.DocumentProto) | repeated | the matched documents on the same level (recursive structure) |
+| uri | [string](#string) |  | a uri of the document could be: a local file path, a remote url starts with http or https or data URI scheme |
 | mime_type | [string](#string) |  | mime type of this document, for buffer content, this is required; for other contents, this can be guessed |
 | tags | [google.protobuf.Struct](#google.protobuf.Struct) |  | a structured data value, consisting of field which map to dynamically typed values. |
 | location | [uint32](#uint32) | repeated | the position of the doc, could be start and end index of a string; could be x,y (top, left) coordinate of an image crop; could be timestamp of an audio clip |

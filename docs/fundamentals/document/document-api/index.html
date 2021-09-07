@@ -581,7 +581,7 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 <tbody>
 <tr>
 <td>Content attributes</td>
-<td><code>.buffer</code>, <code>.blob</code>, <code>.text</code>, <code>.uri</code>, <code>.content</code>, <code>.embedding</code></td>
+<td><code>.buffer</code>, <code>.blob</code>, <code>.text</code>, <code>.content</code>, <code>.uri</code>, <code>.embedding</code></td>
 </tr>
 <tr>
 <td>Meta attributes</td>
@@ -687,12 +687,12 @@ qualified name with interlaced <code class="docutils literal notranslate"><span 
 <td>The text info of the Document</td>
 </tr>
 <tr>
-<td><code>doc.uri</code></td>
-<td>A uri of the Document could be: a local file path, a remote url starts with http or https or data URI scheme</td>
-</tr>
-<tr>
 <td><code>doc.content</code></td>
 <td>One of the above non-empty field</td>
+</tr>
+<tr>
+<td><code>doc.uri</code></td>
+<td>A uri of the Document could be: a local file path, a remote url starts with http or https or data URI scheme</td>
 </tr>
 <tr>
 <td><code>doc.embedding</code></td>
@@ -700,46 +700,30 @@ qualified name with interlaced <code class="docutils literal notranslate"><span 
 </tr>
 </tbody>
 </table></div>
-<p>You can assign <code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>, <code class="docutils literal notranslate"><span class="pre">buffer</span></code> or <code class="docutils literal notranslate"><span class="pre">uri</span></code> to a <code class="docutils literal notranslate"><span class="pre">Document</span></code>.</p>
+<p>You can assign <code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>, or <code class="docutils literal notranslate"><span class="pre">buffer</span></code> to a <code class="docutils literal notranslate"><span class="pre">Document</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'hello'</span><span class="p">)</span>
 <span class="n">d2</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="sa">b</span><span class="s1">'</span><span class="se">\f</span><span class="s1">1'</span><span class="p">)</span>
 <span class="n">d3</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
-<span class="n">d4</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'https://static.jina.ai/logo/core/notext/light/logo.png'</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.document.Document id=2ca74b98-aed9-11eb-b791-1e008a366d48 mimeType=text/plain text=hello at 6247702096&gt;
 &lt;jina.types.document.Document id=2ca74f1c-aed9-11eb-b791-1e008a366d48 buffer=DDE= at 6247702160&gt;
 &lt;jina.types.document.Document id=2caab594-aed9-11eb-b791-1e008a366d48 blob={'dense': {'buffer': 'AQAAAAAAAAACAAAAAAAAAAMAAAAAAAAA', 'shape': [3], 'dtype': '&lt;i8'}} at 6247702416&gt;
-&lt;jina.types.document.Document id=4c008c40-af9f-11eb-bb84-1e008a366d49 uri=https://static.jina.ai/logo/core/notext/light/logo.png mimeType=image/png at 6252395600&gt;
 </pre></div>
 </div>
-<p>The content will be automatically assigned to either the <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">buffer</span></code>, <code class="docutils literal notranslate"><span class="pre">blob</span></code>, or <code class="docutils literal notranslate"><span class="pre">uri</span></code> fields. <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">mime_type</span></code>
+<p>The content will be automatically assigned to either the <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">buffer</span></code>, or <code class="docutils literal notranslate"><span class="pre">blob</span></code> fields. <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">mime_type</span></code>
 are auto-generated when not given.</p>
 <p>You can get a visualization of a <code class="docutils literal notranslate"><span class="pre">Document</span></code> object in Jupyter Notebook or by calling <code class="docutils literal notranslate"><span class="pre">.plot()</span></code>.</p>
-<p><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDY5fkRvY3VtZW50fnsKK2lkIGU4MDY0MjdlLWEKK21pbWVfdHlwZSB0ZXh0L3BsYWluCit0ZXh0IGhlbGxvCn0="/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDczfkRvY3VtZW50fnsKK2lkIGZmZTQzMmFjLWEKK2J1ZmZlciBEREU9CittaW1lX3R5cGUgdGV4dC9wbGFpbgp9"/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDJmfkRvY3VtZW50fnsKK2lkIDAzOWVmMzE0LWEKK2Jsb2IoPGNsYXNzICdudW1weS5uZGFycmF5Jz4pCn0="/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgMjRmfkRvY3VtZW50fnsKK2lkIDA2YTE2OGY4LWEKK3VyaSBodHRwczovL3N0CittaW1lX3R5cGUgaW1hZ2UvcG5nCn0="/></p>
+<p><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDY5fkRvY3VtZW50fnsKK2lkIGU4MDY0MjdlLWEKK21pbWVfdHlwZSB0ZXh0L3BsYWluCit0ZXh0IGhlbGxvCn0="/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDczfkRvY3VtZW50fnsKK2lkIGZmZTQzMmFjLWEKK2J1ZmZlciBEREU9CittaW1lX3R5cGUgdGV4dC9wbGFpbgp9"/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDJmfkRvY3VtZW50fnsKK2lkIDAzOWVmMzE0LWEKK2Jsb2IoPGNsYXNzICdudW1weS5uZGFycmF5Jz4pCn0="/></p>
 </div>
 <div class="section" id="exclusivity-of-doc-content">
 <h3>Exclusivity of <code class="docutils literal notranslate"><span class="pre">doc.content</span></code><a class="headerlink" href="#exclusivity-of-doc-content" title="Permalink to this headline">¶</a></h3>
-<img alt="../../../_images/doc.content.svg" class="align-center" src="../../../_images/doc.content.svg"/><p>Note that one <code class="docutils literal notranslate"><span class="pre">Document</span></code> can only contain one type of <code class="docutils literal notranslate"><span class="pre">content</span></code>: it is either <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">buffer</span></code>, <code class="docutils literal notranslate"><span class="pre">blob</span></code> or <code class="docutils literal notranslate"><span class="pre">uri</span></code>.
-Setting <code class="docutils literal notranslate"><span class="pre">text</span></code> first and then setting <code class="docutils literal notranslate"><span class="pre">uri</span></code> will clear the <code class="docutils literal notranslate"><span class="pre">text</span></code> field.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'hello world'</span><span class="p">)</span>
-<span class="n">d</span><span class="o">.</span><span class="n">uri</span> <span class="o">=</span> <span class="s1">'https://jina.ai/'</span>
-<span class="k">assert</span> <span class="ow">not</span> <span class="n">d</span><span class="o">.</span><span class="n">text</span>  <span class="c1"># True</span>
-
-<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'https://jina.ai'</span><span class="p">)</span>
-<span class="k">assert</span> <span class="n">d</span><span class="o">.</span><span class="n">uri</span> <span class="o">==</span> <span class="s1">'https://jina.ai'</span>  <span class="c1"># True</span>
-<span class="k">assert</span> <span class="ow">not</span> <span class="n">d</span><span class="o">.</span><span class="n">text</span>  <span class="c1"># True</span>
-<span class="n">d</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">'hello world'</span>
-
-<span class="k">assert</span> <span class="n">d</span><span class="o">.</span><span class="n">content</span> <span class="o">==</span> <span class="s1">'hello world'</span>  <span class="c1"># True</span>
-<span class="k">assert</span> <span class="ow">not</span> <span class="n">d</span><span class="o">.</span><span class="n">uri</span>  <span class="c1"># True</span>
-</pre></div>
-</div>
-<div class="section" id="conversion-between-doc-content">
-<h4>Conversion between <code class="docutils literal notranslate"><span class="pre">doc.content</span></code><a class="headerlink" href="#conversion-between-doc-content" title="Permalink to this headline">¶</a></h4>
+<img alt="../../../_images/doc.content.svg" class="align-center" src="../../../_images/doc.content.svg"/><p>Note that one <code class="docutils literal notranslate"><span class="pre">Document</span></code> can only contain one type of <code class="docutils literal notranslate"><span class="pre">content</span></code>: it is either <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">buffer</span></code>, or <code class="docutils literal notranslate"><span class="pre">blob</span></code>.</p>
+<div class="section" id="conversion-between-doc-content-and-doc-uri">
+<h4>Conversion between <code class="docutils literal notranslate"><span class="pre">doc.content</span></code> and <code class="docutils literal notranslate"><span class="pre">doc.uri</span></code><a class="headerlink" href="#conversion-between-doc-content-and-doc-uri" title="Permalink to this headline">¶</a></h4>
 <p>You can use the following methods to convert between <code class="docutils literal notranslate"><span class="pre">.uri</span></code>, <code class="docutils literal notranslate"><span class="pre">.text</span></code>, <code class="docutils literal notranslate"><span class="pre">.buffer</span></code> and <code class="docutils literal notranslate"><span class="pre">.blob</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">doc</span><span class="o">.</span><span class="n">convert_buffer_to_blob</span><span class="p">()</span>
 <span class="n">doc</span><span class="o">.</span><span class="n">convert_blob_to_buffer</span><span class="p">()</span>
@@ -1441,7 +1425,7 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 <li><a class="reference internal" href="#construct-document">Construct <code class="docutils literal notranslate"><span class="pre">Document</span></code></a><ul>
 <li><a class="reference internal" href="#content-attributes">Content attributes</a></li>
 <li><a class="reference internal" href="#exclusivity-of-doc-content">Exclusivity of <code class="docutils literal notranslate"><span class="pre">doc.content</span></code></a><ul>
-<li><a class="reference internal" href="#conversion-between-doc-content">Conversion between <code class="docutils literal notranslate"><span class="pre">doc.content</span></code></a></li>
+<li><a class="reference internal" href="#conversion-between-doc-content-and-doc-uri">Conversion between <code class="docutils literal notranslate"><span class="pre">doc.content</span></code> and <code class="docutils literal notranslate"><span class="pre">doc.uri</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#set-embedding">Set embedding</a><ul>
