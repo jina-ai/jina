@@ -647,10 +647,15 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 </div>
 <p>The content will be automatically assigned to either the <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">buffer</span></code>, or <code class="docutils literal notranslate"><span class="pre">blob</span></code> fields. <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">mime_type</span></code>
 are auto-generated when not given.</p>
+<div class="admonition-exclusivity-of-the-content admonition">
+<p class="admonition-title">Exclusivity of the content</p>
+<p>:class: important</p>
+<p>Note that one <code class="docutils literal notranslate"><span class="pre">Document</span></code> can only contain one type of <code class="docutils literal notranslate"><span class="pre">content</span></code>: it is either <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">buffer</span></code>, or <code class="docutils literal notranslate"><span class="pre">blob</span></code>.</p>
+</div>
 <p>You can get a visualization of a <code class="docutils literal notranslate"><span class="pre">Document</span></code> object in Jupyter Notebook or by calling <code class="docutils literal notranslate"><span class="pre">.plot()</span></code>.</p>
 <p><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDY5fkRvY3VtZW50fnsKK2lkIGU4MDY0MjdlLWEKK21pbWVfdHlwZSB0ZXh0L3BsYWluCit0ZXh0IGhlbGxvCn0="/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDczfkRvY3VtZW50fnsKK2lkIGZmZTQzMmFjLWEKK2J1ZmZlciBEREU9CittaW1lX3R5cGUgdGV4dC9wbGFpbgp9"/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDJmfkRvY3VtZW50fnsKK2lkIDAzOWVmMzE0LWEKK2Jsb2IoPGNsYXNzICdudW1weS5uZGFycmF5Jz4pCn0="/></p>
-<div class="section" id="conversion-between-from-uri-to-content">
-<h3>Conversion between from URI to content<a class="headerlink" href="#conversion-between-from-uri-to-content" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="conversion-from-uri-to-content">
+<h3>Conversion from URI to content<a class="headerlink" href="#conversion-from-uri-to-content" title="Permalink to this headline">¶</a></h3>
 <p>After set <code class="docutils literal notranslate"><span class="pre">.uri</span></code>, you can use the following methods to convert it to <code class="docutils literal notranslate"><span class="pre">.text</span></code>, <code class="docutils literal notranslate"><span class="pre">.buffer</span></code> and <code class="docutils literal notranslate"><span class="pre">.blob</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">doc</span><span class="o">.</span><span class="n">convert_uri_to_buffer</span><span class="p">()</span>
 <span class="n">doc</span><span class="o">.</span><span class="n">convert_uri_to_text</span><span class="p">()</span>
@@ -666,6 +671,8 @@ are auto-generated when not given.</p>
 the appropriate conversion method.</p>
 <p>You can convert a URI to a data URI (a data in-line URI scheme) using <code class="docutils literal notranslate"><span class="pre">doc.convert_uri_to_datauri()</span></code>. This will fetch
 the resource and make it inline.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
 <p>In particular, when you work with an image <code class="docutils literal notranslate"><span class="pre">Document</span></code>, there are some extra helpers that enable more conversion:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">doc</span><span class="o">.</span><span class="n">convert_image_buffer_to_blob</span><span class="p">()</span>
 <span class="n">doc</span><span class="o">.</span><span class="n">convert_image_blob_to_uri</span><span class="p">()</span>
@@ -675,9 +682,10 @@ the resource and make it inline.</p>
 </div>
 </div>
 </div>
+</div>
 <div class="section" id="document-embedding">
 <h2>Document embedding<a class="headerlink" href="#document-embedding" title="Permalink to this headline">¶</a></h2>
-<p>An embedding is a high-dimensional representation of a <code class="docutils literal notranslate"><span class="pre">Document</span></code>. You can assign any Numpy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> as a <code class="docutils literal notranslate"><span class="pre">Document</span></code>’s
+<p>An embedding is a multi-dimensional representation of a <code class="docutils literal notranslate"><span class="pre">Document</span></code>. You can assign any Numpy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> as a <code class="docutils literal notranslate"><span class="pre">Document</span></code>’s
 embedding.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
@@ -798,8 +806,97 @@ sent to executor.</p>
 </div>
 </div>
 </div>
-<div class="section" id="set-unset-document-attributes">
-<h2>Set &amp; unset Document attributes<a class="headerlink" href="#set-unset-document-attributes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="visualize-document">
+<h2>Visualize Document<a class="headerlink" href="#visualize-document" title="Permalink to this headline">¶</a></h2>
+<p>To better see the Document’s recursive structure, you can use <code class="docutils literal notranslate"><span class="pre">.plot()</span></code> function. If you are using JupyterLab/Notebook,
+all <code class="docutils literal notranslate"><span class="pre">Document</span></code> objects will be auto-rendered:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+
+<span class="n">d0</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'🐲'</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span>
+<span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'🐦'</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span>
+<span class="n">d2</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'🐢'</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
+<span class="n">d3</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'🐯'</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
+
+<span class="n">d0</span><span class="o">.</span><span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d1</span><span class="p">)</span>
+<span class="n">d0</span><span class="o">.</span><span class="n">chunks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span>
+<span class="n">d0</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d3</span><span class="p">)</span>
+
+<span class="hll"><span class="n">d0</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>  <span class="c1"># simply `d0` on JupyterLab</span>
+</span></pre></div>
+</div>
+<div class="figure align-center">
+<img alt="../../../_images/four-symbol-docs.svg" src="../../../_images/four-symbol-docs.svg"/></div>
+</div>
+<div class="section" id="serialize-document">
+<h2>Serialize Document<a class="headerlink" href="#serialize-document" title="Permalink to this headline">¶</a></h2>
+<p>You can serialize a <code class="docutils literal notranslate"><span class="pre">Document</span></code> into JSON string or Python dict or binary string:</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">JSON</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'hello, world'</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"6a1c7f34-aef7-11eb-b075-1e008a366d48"</span><span class="p">,</span>
+  <span class="nt">"mimeType"</span><span class="p">:</span> <span class="s2">"text/plain"</span><span class="p">,</span>
+  <span class="nt">"text"</span><span class="p">:</span> <span class="s2">"hello world"</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--2">Binary</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'hello, world'</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">binary_str</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sa">b</span><span class="s1">'</span><span class="se">\n</span><span class="s1">$6a1c7f34-aef7-11eb-b075-1e008a366d48R</span><span class="se">\n</span><span class="s1">text/plainj</span><span class="se">\x0b</span><span class="s1">hello world'</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--1-input--3" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--3">Dict</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'hello, world'</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="s1">'6a1c7f34-aef7-11eb-b075-1e008a366d48'</span><span class="p">,</span> <span class="s1">'mimeType'</span><span class="p">:</span> <span class="s1">'text/plain'</span><span class="p">,</span> <span class="s1">'text'</span><span class="p">:</span> <span class="s1">'hello world'</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>In order to have a nicer representation of
+the <code class="docutils literal notranslate"><span class="pre">embeddings</span></code> and any <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> field, you can call <code class="docutils literal notranslate"><span class="pre">dict</span></code> and <code class="docutils literal notranslate"><span class="pre">json</span></code> with the option <code class="docutils literal notranslate"><span class="pre">prettify_ndarrays=True</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pprint</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+
+<span class="n">d0</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'🐲identifier'</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">'I am a Jina Document'</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'cool'</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span> <span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span>
+<span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">d0</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="n">prettify_ndarrays</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">d0</span><span class="o">.</span><span class="n">json</span><span class="p">(</span><span class="n">prettify_ndarrays</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{'embedding': [0, 0],
+ 'id': '🐲identifier',
+ 'mime_type': 'text/plain',
+ 'tags': {'cool': True},
+ 'text': 'I am a Jina Document'}
+
+('{"embedding": [0, 0], "id": "identifier", "mime_type": '
+ '"text/plain", "tags": {"cool": true}, "text": "I am a Jina Document"}')
+</pre></div>
+</div>
+<p>This can be useful to understand the contents of the <code class="docutils literal notranslate"><span class="pre">Document</span></code> and to send to backends that can process vectors
+as <code class="docutils literal notranslate"><span class="pre">lists</span></code> of values.</p>
+</div>
+<div class="section" id="set-unset-attributes">
+<h2>Set/unset attributes<a class="headerlink" href="#set-unset-attributes" title="Permalink to this headline">¶</a></h2>
 <p>Set a attribute:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
@@ -824,6 +921,9 @@ sent to executor.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.document.Document at 5668344144&gt;
 </pre></div>
 </div>
+</div>
+<div class="section" id="construct-document">
+<h2>Construct Document<a class="headerlink" href="#construct-document" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="construct-document-with-multiple-attributes">
 <h3>Construct Document with multiple attributes<a class="headerlink" href="#construct-document-with-multiple-attributes" title="Permalink to this headline">¶</a></h3>
 <div class="table-wrapper"><table border="1" class="docutils">
@@ -887,9 +987,8 @@ sent to executor.</p>
 <span class="n">d2</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
 <div class="section" id="parsing-unrecognized-fields">
-<h3>Parsing unrecognized fields<a class="headerlink" href="#parsing-unrecognized-fields" title="Permalink to this headline">¶</a></h3>
+<h4>Parsing unrecognized fields<a class="headerlink" href="#parsing-unrecognized-fields" title="Permalink to this headline">¶</a></h4>
 <p>Unrecognized fields in a <code class="docutils literal notranslate"><span class="pre">dict</span></code>/JSON string are automatically put into the Document’s <code class="docutils literal notranslate"><span class="pre">.tags</span></code> field:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
@@ -907,6 +1006,7 @@ sent to executor.</p>
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.document.Document id=hello123 mimeType=text/plain text=bar at 6246985488&gt;
 </pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="construct-from-another-document">
@@ -1055,7 +1155,7 @@ of <a class="reference internal" href="../documentarray-api/#documentarray"><spa
 <h3>Caveat: add Chunks in correct order<a class="headerlink" href="#caveat-add-chunks-in-correct-order" title="Permalink to this headline">¶</a></h3>
 <p>When adding <code class="docutils literal notranslate"><span class="pre">Chunks</span></code> to a <code class="docutils literal notranslate"><span class="pre">Document</span></code>, do not create them in one line to keep recursive document structure correct. This is because <code class="docutils literal notranslate"><span class="pre">chunks</span></code> use <code class="docutils literal notranslate"><span class="pre">ref_doc</span></code> to control its <code class="docutils literal notranslate"><span class="pre">granularity</span></code>, at <code class="docutils literal notranslate"><span class="pre">chunk</span></code> creation time, it didn’t know anything about its parent, and will get a wrong <code class="docutils literal notranslate"><span class="pre">granularity</span></code> value.</p>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">✅ Do</label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--1">✅ Do</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
 <span class="n">root_document</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'i am root'</span><span class="p">)</span>
@@ -1068,7 +1168,7 @@ of <a class="reference internal" href="../documentarray-api/#documentarray"><spa
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--2">😔 Don’t</label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--2">😔 Don’t</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
 <span class="n">root_document</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span>
@@ -1083,28 +1183,6 @@ of <a class="reference internal" href="../documentarray-api/#documentarray"><spa
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="visualize-document">
-<h2>Visualize Document<a class="headerlink" href="#visualize-document" title="Permalink to this headline">¶</a></h2>
-<p>To better see the Document’s recursive structure, you can use <code class="docutils literal notranslate"><span class="pre">.plot()</span></code> function. If you are using JupyterLab/Notebook,
-all <code class="docutils literal notranslate"><span class="pre">Document</span></code> objects will be auto-rendered:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-
-<span class="n">d0</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'🐲'</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span>
-<span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'🐦'</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span>
-<span class="n">d2</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'🐢'</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
-<span class="n">d3</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'🐯'</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
-
-<span class="n">d0</span><span class="o">.</span><span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d1</span><span class="p">)</span>
-<span class="n">d0</span><span class="o">.</span><span class="n">chunks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span>
-<span class="n">d0</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d3</span><span class="p">)</span>
-
-<span class="hll"><span class="n">d0</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>  <span class="c1"># simply `d0` on JupyterLab</span>
-</span></pre></div>
-</div>
-<div class="figure align-center">
-<img alt="../../../_images/four-symbol-docs.svg" src="../../../_images/four-symbol-docs.svg"/></div>
 </div>
 <div class="section" id="add-relevancy-to-document">
 <h2>Add relevancy to Document<a class="headerlink" href="#add-relevancy-to-document" title="Permalink to this headline">¶</a></h2>
@@ -1178,73 +1256,6 @@ follows:</p>
 </pre></div>
 </div>
 </div>
-</div>
-<div class="section" id="serialize-document-to-binary-dict-json">
-<h2>Serialize Document to binary/dict/JSON<a class="headerlink" href="#serialize-document-to-binary-dict-json" title="Permalink to this headline">¶</a></h2>
-<p>You can serialize a <code class="docutils literal notranslate"><span class="pre">Document</span></code> into JSON string or Python dict or binary string:</p>
-<div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--1">JSON</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-
-<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'hello, world'</span><span class="p">)</span>
-<span class="n">d</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-</pre></div>
-</div>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"6a1c7f34-aef7-11eb-b075-1e008a366d48"</span><span class="p">,</span>
-  <span class="nt">"mimeType"</span><span class="p">:</span> <span class="s2">"text/plain"</span><span class="p">,</span>
-  <span class="nt">"text"</span><span class="p">:</span> <span class="s2">"hello world"</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div>
-<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--2">Binary</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-
-<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'hello, world'</span><span class="p">)</span>
-<span class="n">d</span><span class="o">.</span><span class="n">binary_str</span><span class="p">()</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sa">b</span><span class="s1">'</span><span class="se">\n</span><span class="s1">$6a1c7f34-aef7-11eb-b075-1e008a366d48R</span><span class="se">\n</span><span class="s1">text/plainj</span><span class="se">\x0b</span><span class="s1">hello world'</span>
-</pre></div>
-</div>
-</div>
-<input class="tab-input" id="tab-set--2-input--3" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--3">Dict</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-
-<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'hello, world'</span><span class="p">)</span>
-<span class="n">d</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="s1">'6a1c7f34-aef7-11eb-b075-1e008a366d48'</span><span class="p">,</span> <span class="s1">'mimeType'</span><span class="p">:</span> <span class="s1">'text/plain'</span><span class="p">,</span> <span class="s1">'text'</span><span class="p">:</span> <span class="s1">'hello world'</span><span class="p">}</span>
-</pre></div>
-</div>
-</div>
-</div>
-<p>In order to have a nicer representation of
-the <code class="docutils literal notranslate"><span class="pre">embeddings</span></code> and any <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> field, you can call <code class="docutils literal notranslate"><span class="pre">dict</span></code> and <code class="docutils literal notranslate"><span class="pre">json</span></code> with the option <code class="docutils literal notranslate"><span class="pre">prettify_ndarrays=True</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pprint</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-
-<span class="n">d0</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'🐲identifier'</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">'I am a Jina Document'</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'cool'</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span> <span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span>
-<span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">d0</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="n">prettify_ndarrays</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-<span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">d0</span><span class="o">.</span><span class="n">json</span><span class="p">(</span><span class="n">prettify_ndarrays</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-</pre></div>
-</div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{'embedding': [0, 0],
- 'id': '🐲identifier',
- 'mime_type': 'text/plain',
- 'tags': {'cool': True},
- 'text': 'I am a Jina Document'}
-
-('{"embedding": [0, 0], "id": "identifier", "mime_type": '
- '"text/plain", "tags": {"cool": true}, "text": "I am a Jina Document"}')
-</pre></div>
-</div>
-<p>This can be useful to understand the contents of the <code class="docutils literal notranslate"><span class="pre">Document</span></code> and to send to backends that can process vectors
-as <code class="docutils literal notranslate"><span class="pre">lists</span></code> of values.</p>
 </div>
 <div class="section" id="document-as-a-graph">
 <h2>Document as a graph<a class="headerlink" href="#document-as-a-graph" title="Permalink to this headline">¶</a></h2>
@@ -1441,7 +1452,7 @@ dict features to the edge with parameter <code class="docutils literal notransla
 <li><a class="reference internal" href="#">Document</a><ul>
 <li><a class="reference internal" href="#minimum-working-example">Minimum working example</a></li>
 <li><a class="reference internal" href="#document-content">Document content</a><ul>
-<li><a class="reference internal" href="#conversion-between-from-uri-to-content">Conversion between from URI to content</a></li>
+<li><a class="reference internal" href="#conversion-from-uri-to-content">Conversion from URI to content</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#document-embedding">Document embedding</a><ul>
@@ -1449,10 +1460,15 @@ dict features to the edge with parameter <code class="docutils literal notransla
 </ul>
 </li>
 <li><a class="reference internal" href="#document-tags">Document tags</a></li>
-<li><a class="reference internal" href="#set-unset-document-attributes">Set &amp; unset Document attributes</a><ul>
+<li><a class="reference internal" href="#visualize-document">Visualize Document</a></li>
+<li><a class="reference internal" href="#serialize-document">Serialize Document</a></li>
+<li><a class="reference internal" href="#set-unset-attributes">Set/unset attributes</a></li>
+<li><a class="reference internal" href="#construct-document">Construct Document</a><ul>
 <li><a class="reference internal" href="#construct-document-with-multiple-attributes">Construct Document with multiple attributes</a></li>
-<li><a class="reference internal" href="#construct-from-dict-or-json-string">Construct from dict or JSON string</a></li>
+<li><a class="reference internal" href="#construct-from-dict-or-json-string">Construct from dict or JSON string</a><ul>
 <li><a class="reference internal" href="#parsing-unrecognized-fields">Parsing unrecognized fields</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#construct-from-another-document">Construct from another <code class="docutils literal notranslate"><span class="pre">Document</span></code></a></li>
 <li><a class="reference internal" href="#construct-from-json-csv-ndarray-and-files">Construct from JSON, CSV, <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> and files</a></li>
 </ul>
@@ -1461,12 +1477,10 @@ dict features to the edge with parameter <code class="docutils literal notransla
 <li><a class="reference internal" href="#caveat-add-chunks-in-correct-order">Caveat: add Chunks in correct order</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#visualize-document">Visualize Document</a></li>
 <li><a class="reference internal" href="#add-relevancy-to-document">Add relevancy to Document</a><ul>
 <li><a class="reference internal" href="#relevance-attributes">Relevance attributes</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#serialize-document-to-binary-dict-json">Serialize Document to binary/dict/JSON</a></li>
 <li><a class="reference internal" href="#document-as-a-graph">Document as a graph</a><ul>
 <li><a class="reference internal" href="#graphdocument-constructor"><code class="docutils literal notranslate"><span class="pre">GraphDocument</span></code> constructor</a></li>
 <li><a class="reference internal" href="#graphdocument-additional-attributes"><code class="docutils literal notranslate"><span class="pre">GraphDocument</span></code> additional attributes</a></li>

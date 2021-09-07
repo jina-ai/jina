@@ -57,7 +57,8 @@ d3 = Document(content=np.array([1, 2, 3]))
 The content will be automatically assigned to either the `text`, `buffer`, or `blob` fields. `id` and `mime_type`
 are auto-generated when not given.
 
-```{admonitions} Exclusivity of the content
+```{admonition} Exclusivity of the content
+
 :class: important
 
 Note that one `Document` can only contain one type of `content`: it is either `text`, `buffer`, or `blob`.
@@ -68,7 +69,7 @@ You can get a visualization of a `Document` object in Jupyter Notebook or by cal
 <img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDY5fkRvY3VtZW50fnsKK2lkIGU4MDY0MjdlLWEKK21pbWVfdHlwZSB0ZXh0L3BsYWluCit0ZXh0IGhlbGxvCn0="/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDczfkRvY3VtZW50fnsKK2lkIGZmZTQzMmFjLWEKK2J1ZmZlciBEREU9CittaW1lX3R5cGUgdGV4dC9wbGFpbgp9"/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDJmfkRvY3VtZW50fnsKK2lkIDAzOWVmMzE0LWEKK2Jsb2IoPGNsYXNzICdudW1weS5uZGFycmF5Jz4pCn0="/>
 
 
-### Conversion between from URI to content
+### Conversion from URI to content
 
 After set `.uri`, you can use the following methods to convert it to `.text`, `.buffer` and `.blob`:
 
@@ -89,6 +90,8 @@ the appropriate conversion method.
 You can convert a URI to a data URI (a data in-line URI scheme) using `doc.convert_uri_to_datauri()`. This will fetch
 the resource and make it inline.
 
+````{tip}
+
 In particular, when you work with an image `Document`, there are some extra helpers that enable more conversion:
 
 ```python
@@ -97,10 +100,11 @@ doc.convert_image_blob_to_uri()
 doc.convert_image_uri_to_blob()
 doc.convert_image_datauri_to_blob()
 ```
+````
 
 ## Document embedding
 
-An embedding is a high-dimensional representation of a `Document`. You can assign any Numpy `ndarray` as a `Document`'s
+An embedding is a multi-dimensional representation of a `Document`. You can assign any Numpy `ndarray` as a `Document`'s
 embedding.
 
 ```python
@@ -246,8 +250,114 @@ with Flow().add(uses=MyExecutor) as f:
 
 `````
 
+## Visualize Document
 
-## Set & unset Document attributes
+To better see the Document's recursive structure, you can use `.plot()` function. If you are using JupyterLab/Notebook,
+all `Document` objects will be auto-rendered:
+
+
+```{code-block} python
+---
+emphasize-lines: 13
+---
+import numpy as np
+from jina import Document
+
+d0 = Document(id='🐲', embedding=np.array([0, 0]))
+d1 = Document(id='🐦', embedding=np.array([1, 0]))
+d2 = Document(id='🐢', embedding=np.array([0, 1]))
+d3 = Document(id='🐯', embedding=np.array([1, 1]))
+
+d0.chunks.append(d1)
+d0.chunks[0].chunks.append(d2)
+d0.matches.append(d3)
+
+d0.plot()  # simply `d0` on JupyterLab
+```
+
+
+```{figure} ../../../.github/images/four-symbol-docs.svg
+:align: center
+```
+
+## Serialize Document
+
+You can serialize a `Document` into JSON string or Python dict or binary string:
+````{tab} JSON
+```python
+from jina import Document
+
+d = Document(content='hello, world')
+d.json()
+```
+
+```json
+{
+  "id": "6a1c7f34-aef7-11eb-b075-1e008a366d48",
+  "mimeType": "text/plain",
+  "text": "hello world"
+}
+```
+````
+
+````{tab} Binary
+```python
+from jina import Document
+
+d = Document(content='hello, world')
+d.binary_str()
+```
+
+```
+b'\n$6a1c7f34-aef7-11eb-b075-1e008a366d48R\ntext/plainj\x0bhello world'
+```
+````
+
+````{tab} Dict
+```python
+from jina import Document
+
+d = Document(content='hello, world')
+d.dict()
+```
+
+```
+{'id': '6a1c7f34-aef7-11eb-b075-1e008a366d48', 'mimeType': 'text/plain', 'text': 'hello world'}
+```
+````
+
+
+In order to have a nicer representation of
+the `embeddings` and any `ndarray` field, you can call `dict` and `json` with the option `prettify_ndarrays=True`.
+
+```python
+import pprint
+import numpy as np
+
+from jina import Document
+
+d0 = Document(id='🐲identifier', text='I am a Jina Document', tags={'cool': True}, embedding=np.array([0, 0]))
+pprint.pprint(d0.dict(prettify_ndarrays=True))
+pprint.pprint(d0.json(prettify_ndarrays=True))
+```
+
+```text
+{'embedding': [0, 0],
+ 'id': '🐲identifier',
+ 'mime_type': 'text/plain',
+ 'tags': {'cool': True},
+ 'text': 'I am a Jina Document'}
+
+('{"embedding": [0, 0], "id": "identifier", "mime_type": '
+ '"text/plain", "tags": {"cool": true}, "text": "I am a Jina Document"}')
+```
+
+This can be useful to understand the contents of the `Document` and to send to backends that can process vectors
+as `lists` of values.
+
+
+
+## Set/unset attributes
 
 Set a attribute:
 
@@ -282,6 +392,7 @@ d.pop('text', 'id', 'mime_type')
 <jina.types.document.Document at 5668344144>
 ```
 
+## Construct Document
 
 ### Construct Document with multiple attributes
 
@@ -325,7 +436,7 @@ d = json.dumps({'id': 'hello123', 'content': 'world'})
 d2 = Document(d)
 ```
 
-### Parsing unrecognized fields
+#### Parsing unrecognized fields
 
 Unrecognized fields in a `dict`/JSON string are automatically put into the Document's `.tags` field:
 
@@ -498,36 +609,6 @@ root_document = Document(
 ```
 ````
 
-## Visualize Document
-
-To better see the Document's recursive structure, you can use `.plot()` function. If you are using JupyterLab/Notebook,
-all `Document` objects will be auto-rendered:
-
-
-```{code-block} python
----
-emphasize-lines: 13
----
-import numpy as np
-from jina import Document
-
-d0 = Document(id='🐲', embedding=np.array([0, 0]))
-d1 = Document(id='🐦', embedding=np.array([1, 0]))
-d2 = Document(id='🐢', embedding=np.array([0, 1]))
-d3 = Document(id='🐯', embedding=np.array([1, 1]))
-
-d0.chunks.append(d1)
-d0.chunks[0].chunks.append(d2)
-d0.matches.append(d3)
-
-d0.plot()  # simply `d0` on JupyterLab
-```
-
-
-```{figure} ../../../.github/images/four-symbol-docs.svg
-:align: center
-```
-
 ## Add relevancy to Document
 
 ### Relevance attributes
@@ -595,81 +676,6 @@ for evaluation_key, evaluation_score in d.evaluations.items():
  recall => recall at 10: 0.5
 ```
 
-
-## Serialize Document to binary/dict/JSON
-
-You can serialize a `Document` into JSON string or Python dict or binary string:
-````{tab} JSON
-```python
-from jina import Document
-
-d = Document(content='hello, world')
-d.json()
-```
-
-```json
-{
-  "id": "6a1c7f34-aef7-11eb-b075-1e008a366d48",
-  "mimeType": "text/plain",
-  "text": "hello world"
-}
-```
-````
-
-````{tab} Binary
-```python
-from jina import Document
-
-d = Document(content='hello, world')
-d.binary_str()
-```
-
-```
-b'\n$6a1c7f34-aef7-11eb-b075-1e008a366d48R\ntext/plainj\x0bhello world'
-```
-````
-
-````{tab} Dict
-```python
-from jina import Document
-
-d = Document(content='hello, world')
-d.dict()
-```
-
-```
-{'id': '6a1c7f34-aef7-11eb-b075-1e008a366d48', 'mimeType': 'text/plain', 'text': 'hello world'}
-```
-````
-
-
-In order to have a nicer representation of
-the `embeddings` and any `ndarray` field, you can call `dict` and `json` with the option `prettify_ndarrays=True`.
-
-```python
-import pprint
-import numpy as np
-
-from jina import Document
-
-d0 = Document(id='🐲identifier', text='I am a Jina Document', tags={'cool': True}, embedding=np.array([0, 0]))
-pprint.pprint(d0.dict(prettify_ndarrays=True))
-pprint.pprint(d0.json(prettify_ndarrays=True))
-```
-
-```text
-{'embedding': [0, 0],
- 'id': '🐲identifier',
- 'mime_type': 'text/plain',
- 'tags': {'cool': True},
- 'text': 'I am a Jina Document'}
-
-('{"embedding": [0, 0], "id": "identifier", "mime_type": '
- '"text/plain", "tags": {"cool": true}, "text": "I am a Jina Document"}')
-```
-
-This can be useful to understand the contents of the `Document` and to send to backends that can process vectors
-as `lists` of values.
 
 
 ## Document as a graph
