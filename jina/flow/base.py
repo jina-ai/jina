@@ -910,7 +910,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             routing_table_copy.proto.CopyFrom(routing_table.proto)
             self._pod_nodes[
                 pod
-            ].args.send_routing_table = not self.args.static_routing_table
+            ].args.static_routing_table = self.args.static_routing_table
             # The gateway always needs the routing table to be set
             if pod == GATEWAY_NAME:
                 self._pod_nodes[pod].args.routing_table = routing_table_copy.json()

@@ -82,10 +82,9 @@ When not given, then the default naming strategy will apply.
     )
 
     gp.add_argument(
-        '--send-routing-table',
+        '--static-routing-table',
         action='store_true',
-        default=True,
-        help='If set the routing table will be included in every request.'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
+        default=False,
+        help='Defines if the routing table should be pre computed by the Flow. In this case it is statically defined for each Pod and not send on every data request.'
+        ' Can not be used in combination with external pods',
     )
