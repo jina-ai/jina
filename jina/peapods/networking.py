@@ -12,7 +12,7 @@ from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2_grpc
 from jina.types.message import Message
 from .. import __default_host__, __docker_host__
-from ..helper import get_public_ip, get_internal_ip
+from ..helper import get_public_ip, get_internal_ip, get_or_reuse_loop
 
 
 class ConnectionList:
@@ -190,6 +190,7 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         self._namespace = namespace
         self._deployment_hostaddresses = {}
         self._k8s_client = client
+        self._k8s_event_queue = asyncio.Queue()
         self.enabled = False
 
         self.deployments = deployments
@@ -218,7 +219,14 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         """
         Subscribe to the K8s API and watch for changes in Pods
         """
+        self._loop = get_or_reuse_loop()
+        self._process_events_task = asyncio.create_task(self._process_events())
         self.update_thread.start()
+
+    async def _process_events(self):
+        while self.enabled:
+            event = await self._k8s_event_queue.get()
+            self._process_item(event)
 
     def run(self):
         """
@@ -227,12 +235,13 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
 
         self.enabled = True
         while self.enabled:
-
             for event in self._api_watch.stream(
                 self._k8s_client.list_namespaced_pod, self._namespace
             ):
                 if event['type'] == 'MODIFIED':
-                    self._process_item(event['object'])
+                    asyncio.run_coroutine_threadsafe(
+                        self._k8s_event_queue.put(event['object']), self._loop
+                    )
                 if not self.enabled:
                     break
 
@@ -241,6 +250,7 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         Closes the connection pool
         """
         self.enabled = False
+        self._process_events_task.cancel('Close connection pool')
         self._api_watch.stop()
         super().close()
 
