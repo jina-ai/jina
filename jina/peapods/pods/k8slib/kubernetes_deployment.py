@@ -1,3 +1,4 @@
+import json
 from argparse import Namespace
 from typing import Dict, Optional, Tuple
 
@@ -177,7 +178,7 @@ def dictionary_to_cli_param(dictionary) -> str:
 
     :return: string representation of the dictionary
     """
-    return dictionary.__str__().replace("'", "\\\"") if dictionary else ""
+    return json.dumps(dictionary).replace('"', '\\"') if dictionary else ""
 
 
 def get_init_container_args(pod) -> Optional[Dict]:
