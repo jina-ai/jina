@@ -642,8 +642,11 @@
 <span class="sd">        :param data: the data for the parser</span>
 <span class="sd">        :return: True if it is tail/head, False otherwise</span>
 <span class="sd">        """</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'runtime_args'</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s1">'head'</span> <span class="ow">in</span> <span class="n">name</span> <span class="ow">or</span> <span class="s1">'tail'</span> <span class="ow">in</span> <span class="n">name</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'runtime_args'</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">'head'</span> <span class="ow">in</span> <span class="n">name</span> <span class="ow">or</span> <span class="s1">'tail'</span> <span class="ow">in</span> <span class="n">name</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">_</span><span class="p">:</span>
+            <span class="k">pass</span>  <span class="c1"># name can be None in tests since it's not passed</span></div>
 
 <div class="viewcode-block" id="LegacyParser.dump"><a class="viewcode-back" href="../../../../../../api/jina.jaml.parsers.executor.legacy/#jina.jaml.parsers.executor.legacy.LegacyParser.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="s1">'BaseExecutor'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
         <span class="sd">"""</span>
