@@ -217,12 +217,12 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../flow/flow-api/">Create a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/flow-api/">Create Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../flow/send-recv/">Flow IO</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../flow/add-exec-to-flow/">Add Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../flow/parallel/">Parallelization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../flow/async-flow/">Asynchronous Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../flow/flow-as-a-service/">Serving a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/flow-as-a-service/">Serving Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../flow/remarks/">Remarks</a></li>
 </ul>
 </li>
@@ -843,8 +843,8 @@ advanced “iterator algebra” on the <code class="docutils literal notranslate
 ('1', 3)
 </pre></div>
 </div>
-<div class="section" id="advanced-iterating-over-nested-documents">
-<h4>Advanced iterating over nested Documents<a class="headerlink" href="#advanced-iterating-over-nested-documents" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="advanced-iterator-on-nested-documents">
+<h4>Advanced iterator on nested Documents<a class="headerlink" href="#advanced-iterator-on-nested-documents" title="Permalink to this headline">¶</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">DocumentArray.traverse</span></code> can be used for iterating over nested &amp; recursive Documents. As return value you get a generator which
 generates <code class="docutils literal notranslate"><span class="pre">DocumentArrays</span></code> matching the provided traversal paths. Let’s assume you have the following <code class="docutils literal notranslate"><span class="pre">Document</span></code>
 structure:</p>
@@ -1032,8 +1032,8 @@ match emb = [1.  2.2 2.  1.  0. ] score = 1.5620499849319458
 match emb = [1.  0.1 0.  0.  0. ] score = 1.6763054132461548
 </pre></div>
 </div>
-<div class="section" id="using-sparse-embeddings">
-<h3>Using sparse embeddings<a class="headerlink" href="#using-sparse-embeddings" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="matching-sparse-embeddings">
+<h3>Matching sparse embeddings<a class="headerlink" href="#matching-sparse-embeddings" title="Permalink to this headline">¶</a></h3>
 <p>We can use sparse embeddings and do the <code class="docutils literal notranslate"><span class="pre">.match</span></code> using <code class="docutils literal notranslate"><span class="pre">is_sparse=True</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 <span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
@@ -1130,7 +1130,7 @@ match emb = [[1.  0.1 0.  0.  0. ]] score = 1.6763054132461548
 <li><a class="reference internal" href="#shuffle-elements">Shuffle elements</a></li>
 <li><a class="reference internal" href="#split-elements-by-tags">Split elements by tags</a></li>
 <li><a class="reference internal" href="#iterate-elements-via-itertools">Iterate elements via <code class="docutils literal notranslate"><span class="pre">itertools</span></code></a><ul>
-<li><a class="reference internal" href="#advanced-iterating-over-nested-documents">Advanced iterating over nested Documents</a></li>
+<li><a class="reference internal" href="#advanced-iterator-on-nested-documents">Advanced iterator on nested Documents</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#get-attributes-of-elements">Get attributes of elements</a></li>
@@ -1141,7 +1141,7 @@ match emb = [[1.  0.1 0.  0.  0. ]] score = 1.6763054132461548
 </ul>
 </li>
 <li><a class="reference internal" href="#matching-documentarray-to-another">Matching DocumentArray to another</a><ul>
-<li><a class="reference internal" href="#using-sparse-embeddings">Using sparse embeddings</a></li>
+<li><a class="reference internal" href="#matching-sparse-embeddings">Matching sparse embeddings</a></li>
 </ul>
 </li>
 </ul>

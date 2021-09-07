@@ -217,12 +217,12 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../flow/flow-api/">Create a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/flow-api/">Create Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../flow/send-recv/">Flow IO</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../flow/add-exec-to-flow/">Add Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../flow/parallel/">Parallelization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../flow/async-flow/">Asynchronous Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../flow/flow-as-a-service/">Serving a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/flow-as-a-service/">Serving Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../flow/remarks/">Remarks</a></li>
 </ul>
 </li>
@@ -931,7 +931,7 @@ each <code class="docutils literal notranslate"><span class="pre">DocumentArrayM
 <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">dam2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
 </pre></div>
 </div>
-<p>You don’t need to use <code class="docutils literal notranslate"><span class="pre">.save</span></code> if you add new documents. However, if you modified an attribute of a document, you need
+<p>You don’t need to call <code class="docutils literal notranslate"><span class="pre">.save</span></code> if you add new documents. However, if you modified an attribute of a document, you need
 to use it:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArrayMemmap</span>
 

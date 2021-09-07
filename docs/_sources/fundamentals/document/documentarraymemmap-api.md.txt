@@ -300,7 +300,7 @@ assert len(dam2) == 2
 dam2.reload()
 assert len(dam2) == 0
 ```
-You don't need to use `.save` if you add new documents. However, if you modified an attribute of a document, you need
+You don't need to call `.save` if you add new documents. However, if you modified an attribute of a document, you need
 to use it:
 
 ```python
