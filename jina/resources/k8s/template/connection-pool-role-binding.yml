@@ -1,0 +1,13 @@
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: connection-pool-binding
+  namespace: {namespace}
+subjects:
+- kind: ServiceAccount
+  name: default
+  apiGroup: ""
+roleRef:
+  kind: Role
+  name: connection-pool
+  apiGroup: ""

@@ -219,6 +219,8 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
             ):
                 if event['type'] == 'MODIFIED':
                     self._process_item(event['object'])
+                if not self.enabled:
+                    break
 
     def close(self):
         """

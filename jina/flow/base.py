@@ -409,6 +409,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 port_expose=self.port_expose,
                 pod_role=PodRoleType.GATEWAY,
                 expose_endpoints=json.dumps(self._endpoints_mapping),
+                k8s_namespace=self.args.name,
             )
         )
 
