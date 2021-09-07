@@ -6,6 +6,7 @@ f = Flow(
     port_expose=8080,
     infrastructure=InfrastructureType.K8S,
     k8s_connection_pool=True,
+    static_routing_table=True,
 ).add(
     name='executor1',
     replicas=2,
