@@ -827,3 +827,9 @@ def test_connect_to_predecessor():
     assert len(f._pod_nodes['gateway'].head_args.hosts_in_connect) == 0
     assert len(f._pod_nodes['pod1'].head_args.hosts_in_connect) == 0
     assert len(f._pod_nodes['pod2'].head_args.hosts_in_connect) == 1
+
+
+def test_flow_grpc_with_shard():
+    with pytest.raises(NotImplementedError):
+        Flow(grpc_data_requests=True).add(shards=2)
+        Flow(grpc_data_requests=True).add(shards=None)
