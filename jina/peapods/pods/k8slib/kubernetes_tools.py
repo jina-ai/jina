@@ -3,6 +3,9 @@ import tempfile
 from typing import Dict, Optional
 
 cur_dir = os.path.dirname(__file__)
+DEFAULT_RESOURCE_DIR = os.path.join(
+    cur_dir, '..', '..', '..', 'resources', 'k8s', 'template'
+)
 
 
 class K8SClients:
@@ -114,9 +117,7 @@ def _get_yaml(template: str, params: Dict, custom_resource_dir: Optional[str] = 
     if custom_resource_dir:
         path = os.path.join(custom_resource_dir, f'{template}.yml')
     else:
-        path = os.path.join(
-            cur_dir, '..', '..', '..', 'resources', 'k8s', 'template', f'{template}.yml'
-        )
+        path = os.path.join(DEFAULT_RESOURCE_DIR, f'{template}.yml')
     with open(path) as f:
         content = f.read()
         for k, v in params.items():
