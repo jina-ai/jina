@@ -80,7 +80,6 @@ def test_text_crafter(encoder_doc_array, tmpdir):
         doc = resp.data.docs[0]
         assert doc.mime_type == 'text/plain'
         assert doc.text
-        assert doc.uri == ''
 
     create_test_img(path=str(tmpdir), file_name='1.png')
     with Flow().add(uses=TextCrafter) as f:
@@ -121,7 +120,6 @@ def test_image_crafter_index(encoder_doc_array, tmpdir):
         doc = resp.data.docs[0]
         assert doc.mime_type == 'image/jpeg'
         assert doc.blob
-        assert doc.uri == ''
 
     create_test_img(path=str(tmpdir), file_name='1.png')
     with Flow().add(uses=ImageCrafter) as f:
@@ -134,7 +132,7 @@ def test_image_crafter_search(encoder_doc_array_for_search, tmpdir):
         chunk = resp.data.docs[0]
         assert chunk.mime_type == 'image/jpeg'
         assert chunk.blob
-        assert chunk.uri == ''
+        assert chunk.uri.startswith('data')
 
     with Flow().add(uses=ImageCrafter) as f:
         f.search(inputs=encoder_doc_array_for_search, on_done=validate)
