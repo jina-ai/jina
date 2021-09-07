@@ -562,11 +562,11 @@
 all <code class="docutils literal notranslate"><span class="pre">Document</span></code>s in Jina.</p>
 <p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> is a sequence container of <code class="docutils literal notranslate"><span class="pre">Document</span></code>s. It is the first-class citizen of <code class="docutils literal notranslate"><span class="pre">Executor</span></code>, serving as the
 Executor’s input and output.</p>
+<p><code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> is an on-disk sequence container of <code class="docutils literal notranslate"><span class="pre">Document</span></code>s. It shares almost the same interface as <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> but with much smaller memory footprint.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>You could say <code class="docutils literal notranslate"><span class="pre">Document</span></code> is to Jina is what <code class="docutils literal notranslate"><span class="pre">np.float</span></code> is to Numpy, and <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> is similar to <code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code>.</p>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> is an on-disk sequence container of <code class="docutils literal notranslate"><span class="pre">Document</span></code>s. It shares almost the same interface as <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> but with much smaller memory footprint.</p>
 <div class="seealso admonition">
 <p class="admonition-title">See Also</p>
 <p>Document, Executor, and Flow are the three fundamental concepts in Jina.</p>

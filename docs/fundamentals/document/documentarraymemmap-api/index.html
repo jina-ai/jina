@@ -559,7 +559,8 @@
         <div class="tex2jax_ignore mathjax_ignore section" id="documentarraymemmap">
 <h1>DocumentArrayMemmap<a class="headerlink" href="#documentarraymemmap" title="Permalink to this headline">¶</a></h1>
 <p>When your <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> object contains a large number of <code class="docutils literal notranslate"><span class="pre">Document</span></code>, holding it in memory can be very demanding. You
-may want to use <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> to alleviate this issue. A <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> stores all Documents directly on
+may want to use <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> to alleviate this issue.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> stores all Documents directly on
 the disk, while keeping a small lookup table in memory and a buffer pool of documents with a fixed size. The lookup
 table contains the offset and length of each <code class="docutils literal notranslate"><span class="pre">Document</span></code>, hence it is much smaller than the full <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>.
 Elements are loaded on-demand to memory during the access. Memory-loaded documents are kept in the buffer pool to allow
@@ -596,16 +597,16 @@ modifying documents.</p>
 </tr>
 </tbody>
 </table></div>
-<div class="section" id="create-documentarraymemmap">
-<h2>Create <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code><a class="headerlink" href="#create-documentarraymemmap" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="create">
+<h2>Create<a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArrayMemmap</span>
 
 <span class="n">dam</span> <span class="o">=</span> <span class="n">DocumentArrayMemmap</span><span class="p">(</span><span class="s1">'./my-memmap'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="add-documents-to-documentarraymemmap">
-<h2>Add Documents to <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code><a class="headerlink" href="#add-documents-to-documentarraymemmap" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="add-elements">
+<h2>Add elements<a class="headerlink" href="#add-elements" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArrayMemmap</span><span class="p">,</span> <span class="n">Document</span>
 
 <span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'hello'</span><span class="p">)</span>
@@ -615,20 +616,18 @@ modifying documents.</p>
 <span class="hll"><span class="n">dam</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">])</span>
 </span></pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">dam</span></code> object stores all future Documents into <code class="docutils literal notranslate"><span class="pre">./my-memmap</span></code>, there is no need to manually call <code class="docutils literal notranslate"><span class="pre">save</span></code>/<code class="docutils literal notranslate"><span class="pre">reload</span></code>.
-Recently added, modified or accessed documents are also kept in the memory buffer so all changes to documents are
-applied first in the memory buffer and will be persisted to disk lazily (e.g when they quit the buffer pool or when
-the <code class="docutils literal notranslate"><span class="pre">dam</span></code> object’s destructor is called). If you want to instantly persist the changed documents, you can call <code class="docutils literal notranslate"><span class="pre">save</span></code>.</p>
-</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">dam</span></code> object stores all Documents into <code class="docutils literal notranslate"><span class="pre">./my-memmap</span></code> folder on the disk, there is no need to manually call save or load.</p>
 <div class="section" id="buffer-pool">
-<h2>Buffer pool<a class="headerlink" href="#buffer-pool" title="Permalink to this headline">¶</a></h2>
-<p>A fixed number of documents are kept in the memory buffer pool. The number can be configured with the constructor
-parameter <code class="docutils literal notranslate"><span class="pre">buffer_pool_size</span></code> (1000 by default). Only the <code class="docutils literal notranslate"><span class="pre">buffer_pool_size</span></code> most recently accessed, modified or added
-documents exist in the pool. Replacement of documents uses the LRU strategy.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArrayMemmap</span><span class="p">,</span> <span class="n">Document</span>
+<h3>Buffer pool<a class="headerlink" href="#buffer-pool" title="Permalink to this headline">¶</a></h3>
+<p>Recently added, modified or accessed documents are kept in an in-memory buffer pool. This allows all changes to Documents
+applied first in the memory and then be persisted to disk in a lazy way (i.e. when they quit the buffer pool or when
+the <code class="docutils literal notranslate"><span class="pre">dam</span></code> object’s destructor is called). If you want to instantly persist the changed documents, you can call <code class="docutils literal notranslate"><span class="pre">.save()</span></code>.</p>
+<p>The number can be configured with the constructor
+argument <code class="docutils literal notranslate"><span class="pre">buffer_pool_size</span></code> (1000 by default). Only the <code class="docutils literal notranslate"><span class="pre">buffer_pool_size</span></code> most recently accessed, modified or added
+documents exist in the pool. Replacement of documents follows the LRU strategy.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArrayMemmap</span>
 
 <span class="n">dam</span> <span class="o">=</span> <span class="n">DocumentArrayMemmap</span><span class="p">(</span><span class="s1">'./my-memmap'</span><span class="p">,</span> <span class="n">buffer_pool_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">dam</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">Document</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)])</span>
 </pre></div>
 </div>
 <div class="warning admonition">
@@ -638,8 +637,9 @@ documents manually and modify them if they might be outside of the buffer pool. 
 explains the best practices when modifying documents.</p>
 </div>
 </div>
-<div class="section" id="modifying-elements-of-documentarraymemmap">
-<span id="modify-memmap"></span><h2>Modifying elements of <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code><a class="headerlink" href="#modifying-elements-of-documentarraymemmap" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="modifying-elements">
+<span id="modify-memmap"></span><h2>Modifying elements<a class="headerlink" href="#modifying-elements" title="Permalink to this headline">¶</a></h2>
 <p>Modifying elements of a <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> is possible due to the fact that accessed and modified documents are kept
 in the buffer pool:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArrayMemmap</span><span class="p">,</span> <span class="n">Document</span>
@@ -755,18 +755,18 @@ might not be in the buffer pool. Here are some practices to avoid:</p>
 </div>
 <p>To summarize, it’s a best practice to <strong>rely on the <code class="docutils literal notranslate"><span class="pre">dam</span></code> object to reference the docs that you modify</strong>.</p>
 </div>
-<div class="section" id="clear-a-documentarraymemmap">
-<h2>Clear a <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code><a class="headerlink" href="#clear-a-documentarraymemmap" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="clear-elements">
+<h2>Clear elements<a class="headerlink" href="#clear-elements" title="Permalink to this headline">¶</a></h2>
 <p>To clear all contents in a <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> object, simply call <code class="docutils literal notranslate"><span class="pre">.clear()</span></code>. It will clean all content on disk.</p>
-<div class="section" id="pruning">
-<h3>Pruning<a class="headerlink" href="#pruning" title="Permalink to this headline">¶</a></h3>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
 <p>One may notice another method <code class="docutils literal notranslate"><span class="pre">.prune()</span></code> that shares similar semantics. <code class="docutils literal notranslate"><span class="pre">.prune()</span></code> method is designed for “
 post-optimizing” the on-disk data structure of <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> object. It can reduce the on-disk usage.</p>
 </div>
 </div>
-<div class="section" id="side-by-side-vs-documentarray">
-<h2>Side-by-side vs. <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code><a class="headerlink" href="#side-by-side-vs-documentarray" title="Permalink to this headline">¶</a></h2>
-<p>Accessing elements in <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> is <em>almost</em> the same as <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>, you can use integer/string index to
+<div class="section" id="api-side-by-side-vs-documentarray">
+<h2>API side-by-side vs. DocumentArray<a class="headerlink" href="#api-side-by-side-vs-documentarray" title="Permalink to this headline">¶</a></h2>
+<p>The API of <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> is <em>almost</em> the same as <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>, you can use integer/string index to
 access element; you can loop over a <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> to get all <code class="docutils literal notranslate"><span class="pre">Document</span></code>; you can use <code class="docutils literal notranslate"><span class="pre">get_attributes</span></code>
 or <code class="docutils literal notranslate"><span class="pre">traverse_flat</span></code> to achieve advanced traversal or getter.</p>
 <p>This table summarizes the interfaces of <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> and <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>:</p>
@@ -887,8 +887,8 @@ or <code class="docutils literal notranslate"><span class="pre">traverse_flat</s
 </tbody>
 </table></div>
 </div>
-<div class="section" id="convert-between-documentarray-and-documentarraymemmap">
-<h2>Convert between <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> and <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code><a class="headerlink" href="#convert-between-documentarray-and-documentarraymemmap" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="convert-to-from-documentarray">
+<h2>Convert to/from DocumentArray<a class="headerlink" href="#convert-to-from-documentarray" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">DocumentArrayMemmap</span>
 
 <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'hello'</span><span class="p">),</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'world'</span><span class="p">)])</span>
@@ -901,8 +901,9 @@ or <code class="docutils literal notranslate"><span class="pre">traverse_flat</s
 <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">dam</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
 <div class="section" id="maintaining-consistency-via-reload-and-save">
-<h3>Maintaining consistency via <code class="docutils literal notranslate"><span class="pre">.reload()</span></code> and <code class="docutils literal notranslate"><span class="pre">.save()</span></code><a class="headerlink" href="#maintaining-consistency-via-reload-and-save" title="Permalink to this headline">¶</a></h3>
+<h2>Maintaining consistency via <code class="docutils literal notranslate"><span class="pre">.reload()</span></code> and <code class="docutils literal notranslate"><span class="pre">.save()</span></code><a class="headerlink" href="#maintaining-consistency-via-reload-and-save" title="Permalink to this headline">¶</a></h2>
 <p>Considering two <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> objects that share the same on-disk storage <code class="docutils literal notranslate"><span class="pre">./memmap</span></code> but sit in different
 processes/threads. After some writing ops, the consistency of the lookup table and the buffer pool may be corrupted, as
 each <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> object has its own version of lookup table and buffer pool in memory. <code class="docutils literal notranslate"><span class="pre">.reload()</span></code> and
@@ -955,7 +956,6 @@ to use it:</p>
 </div>
 </div>
 </div>
-</div>
 
       </article>
       <footer>
@@ -1004,19 +1004,16 @@ to use it:</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">DocumentArrayMemmap</a><ul>
-<li><a class="reference internal" href="#create-documentarraymemmap">Create <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code></a></li>
-<li><a class="reference internal" href="#add-documents-to-documentarraymemmap">Add Documents to <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code></a></li>
+<li><a class="reference internal" href="#create">Create</a></li>
+<li><a class="reference internal" href="#add-elements">Add elements</a><ul>
 <li><a class="reference internal" href="#buffer-pool">Buffer pool</a></li>
-<li><a class="reference internal" href="#modifying-elements-of-documentarraymemmap">Modifying elements of <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code></a></li>
-<li><a class="reference internal" href="#clear-a-documentarraymemmap">Clear a <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code></a><ul>
-<li><a class="reference internal" href="#pruning">Pruning</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#side-by-side-vs-documentarray">Side-by-side vs. <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code></a></li>
-<li><a class="reference internal" href="#convert-between-documentarray-and-documentarraymemmap">Convert between <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> and <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code></a><ul>
+<li><a class="reference internal" href="#modifying-elements">Modifying elements</a></li>
+<li><a class="reference internal" href="#clear-elements">Clear elements</a></li>
+<li><a class="reference internal" href="#api-side-by-side-vs-documentarray">API side-by-side vs. DocumentArray</a></li>
+<li><a class="reference internal" href="#convert-to-from-documentarray">Convert to/from DocumentArray</a></li>
 <li><a class="reference internal" href="#maintaining-consistency-via-reload-and-save">Maintaining consistency via <code class="docutils literal notranslate"><span class="pre">.reload()</span></code> and <code class="docutils literal notranslate"><span class="pre">.save()</span></code></a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
