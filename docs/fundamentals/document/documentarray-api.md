@@ -26,18 +26,28 @@ Methods supported by `DocumentArray`:
 
 You can construct a `DocumentArray` from an iterable of `Document`s:
 
+````{tab}From List
 ```python
 from jina import DocumentArray, Document
 
-# from list
-da1 = DocumentArray([Document(), Document()])
-
-# from generator
-da2 = DocumentArray((Document() for _ in range(10)))
-
-# from another `DocumentArray`
-da3 = DocumentArray(da2)
+da = DocumentArray([Document(), Document()])
 ```
+````
+````{tab}From generator
+```python
+from jina import DocumentArray, Document
+
+da = DocumentArray((Document() for _ in range(10)))
+```
+````
+````{tab}From another DocumentArray
+```python
+from jina import DocumentArray, Document
+
+da = DocumentArray((Document() for _ in range(10)))
+da1 = DocumentArray(da)
+```
+````
 
 ## Persistence via `save()`/`load()`
 
