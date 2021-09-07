@@ -128,6 +128,6 @@ print(f"Len response matches: {len(resp.json()['data']['docs'][0]['matches'])}")
 - `Kubernetes` is doing `L4` (Network Layer) loadbalancing.
   Since the `Executors` are using long-living `gRPC` connections,
   loadbalancing has to be done on `L7` level (Application Layer).
-  We recommend using a proxy based loadbalancing via `envoy`.
+  We recommend using proxy based loadbalancing via `envoy`.
   Please inject the `envoy` proxy yourself for now.
   You can use the service mesh `Istio` to automatically inject `envoy` proxies into the `Executor` `Pods` as sidecar.
