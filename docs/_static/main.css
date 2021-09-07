@@ -34,6 +34,16 @@ h1, h2, h3 {
     color: whitesmoke;
 }
 
+.highlight-shell .highlight {
+    background: #00232b !important;
+    color: whitesmoke;
+}
+
+.highlight-bash .highlight {
+    background: #00232b !important;
+    color: whitesmoke;
+}
+
 .tab-set > input:checked + label {
     border-color: var(--tabs--label-text--active);
 }
