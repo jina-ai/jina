@@ -2,9 +2,9 @@ from typing import Union, Dict, Tuple, List
 from unittest.mock import Mock
 
 import pytest
-from jinja2.utils import Namespace
 
 import jina
+from jina.helper import Namespace
 from jina.parsers import set_pod_parser
 from jina.peapods.pods.k8s import K8sPod
 from jina.peapods.pods.k8slib import kubernetes_tools, kubernetes_deployment
