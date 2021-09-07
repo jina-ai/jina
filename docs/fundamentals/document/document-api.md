@@ -103,7 +103,7 @@ da.get_attributes('tags__dimensions__height', 'tags__dimensions__weight')
 ```
 
 
-````{admonition} Note
+`````{admonition} Note
 :class: caution
 
 As `tags` does not have a fixed schema, it is declared with type `google.protobuf.Struct` in the `DocumentProto`
@@ -113,9 +113,10 @@ sent to executor.**
 
 As a result, users need be explicit and cast the data to the expected type as follows.
 
+````{tab} ✅ Do
 ```{code-block} python
 ---
-emphasize-lines: 7
+emphasize-lines: 7, 8
 ---
 
 class MyIndexer(Executor):
@@ -127,11 +128,34 @@ class MyIndexer(Executor):
             index = int(doc.tags['index'])
             assert self.animals[index] == 'dog'
 
-with Flow().add(uses=Selector) as f:
+with Flow().add(uses=MyExecutor) as f:
     f.post(on='/endpoint',
     inputs=DocumentArray([]), parameters={'index': 1})
 ```
 ````
+
+````{tab} 😔 Don't
+```{code-block} python
+---
+emphasize-lines: 7, 8
+---
+
+class MyIndexer(Executor):
+    animals = ['cat', 'dog', 'turtle']
+    @request
+    def foo(self, docs, parameters: dict, **kwargs):
+        for doc in docs:
+            # ERROR: list indices must be integer not float
+            index = doc.tags['index']
+            assert self.animals[index] == 'dog'
+
+with Flow().add(uses=MyExecutor) as f:
+    f.post(on='/endpoint',
+    inputs=DocumentArray([]), parameters={'index': 1})
+```
+````
+
+`````
 
 ## Construct `Document`
 

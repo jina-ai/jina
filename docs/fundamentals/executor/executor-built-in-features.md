@@ -235,7 +235,7 @@ with (Flow().
 ```
 
 
-````{admonition}  Note
+`````{admonition}  Note
 :class: caution
 
 As `parameters` does not have a fixed schema, it is declared with type `google.protobuf.Struct` in the `RequestProto`
@@ -245,9 +245,10 @@ sent to executor.**
 
 As a result, users need be explicit and cast the data to the expected type as follows.
 
+````{tab} ✅ Do
 ```{code-block} python
 ---
-emphasize-lines: 6
+emphasize-lines: 6, 7
 ---
 
 class MyExecutor(Executor):
@@ -258,7 +259,29 @@ class MyExecutor(Executor):
         index = int(parameters.get('index', 0))
         assert self.animals[index] == 'dog'
 
-with Flow().add(uses=Selector) as f:
+with Flow().add(uses=MyExecutor) as f:
     f.post(on='/endpoint', inputs=DocumentArray([]), parameters={'index': 1})
 ```
 ````
+
+````{tab} 😔 Don't
+```{code-block} python
+---
+emphasize-lines: 6, 7
+---
+
+class MyIndexer(Executor):
+    animals = ['cat', 'dog', 'turtle']
+    @request
+    def foo(self, docs, parameters: dict, **kwargs):
+          # ERROR: list indices must be integer not float
+          index = parameters.get('index', 0)
+          assert self.animals[index] == 'dog'
+
+with Flow().add(uses=MyExecutor) as f:
+    f.post(on='/endpoint',
+    inputs=DocumentArray([]), parameters={'index': 1})
+```
+````
+
+`````
