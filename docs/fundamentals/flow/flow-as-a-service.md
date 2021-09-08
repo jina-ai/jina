@@ -1,4 +1,4 @@
-# Serving a Flow
+# Serving Flow
 
 
 If you come to this page, most likely you have already built some cool stuff with Jina and now want to share it to the world. This cookbook will
