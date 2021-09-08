@@ -90,7 +90,7 @@ class Zmqlet:
         self.out_sockets = {}
         self._active = True
         self._static_routing_table = args.static_routing_table
-        if hasattr(args, 'routing_table'):
+        if args.static_routing_table:
             self._routing_table = RoutingTable(args.routing_table)
         else:
             self._routing_table = None
