@@ -36,14 +36,14 @@ class K8sPod(BasePod):
             'deployments': [],
         }
         parallel = getattr(args, 'parallel', 1)
-        if parallel > 1 or len(self.needs) > 1 or args.uses_before:
+        if parallel > 1 or len(self.needs) > 1 or getattr(args, 'uses_before', None):
             # reasons to separate head and tail from peas is that they
             # can be deducted based on the previous and next pods
             parsed_args['head_deployment'] = copy.copy(args)
             parsed_args['head_deployment'].uses = (
                 args.uses_before or __default_executor__
             )
-        if parallel > 1 or args.uses_after:
+        if parallel > 1 or getattr(args, 'uses_after', None):
             parsed_args['tail_deployment'] = copy.copy(args)
             parsed_args['tail_deployment'].uses = (
                 args.uses_after or __default_executor__
