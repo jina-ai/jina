@@ -36,20 +36,20 @@ class K8sPod(BasePod):
             'deployments': [],
         }
         parallel = getattr(args, 'parallel', 1)
-        if parallel > 1:
+        if parallel > 1 or len(self.needs) > 1 or args.uses_before:
             # reasons to separate head and tail from peas is that they
             # can be deducted based on the previous and next pods
             parsed_args['head_deployment'] = copy.copy(args)
             parsed_args['head_deployment'].uses = (
                 args.uses_before or __default_executor__
             )
+        if parallel > 1 or args.uses_after:
             parsed_args['tail_deployment'] = copy.copy(args)
             parsed_args['tail_deployment'].uses = (
                 args.uses_after or __default_executor__
             )
-            parsed_args['deployments'] = [args] * parallel
-        else:
-            parsed_args['deployments'] = [args]
+
+        parsed_args['deployments'] = [args] * parallel
         return parsed_args
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -85,7 +85,9 @@ class K8sPod(BasePod):
     def _deploy_runtime(self, deployment_args, replicas, deployment_id):
         image_name = kubernetes_deployment.get_image_name(deployment_args.uses)
         name_suffix = self.name + (
-            ('-' + str(deployment_id)) if self.args.parallel > 1 else ''
+            ''
+            if self.args.parallel == 1 and type(deployment_id) == int
+            else ('-' + str(deployment_id))
         )
         dns_name = kubernetes_deployment.to_dns_name(name_suffix)
         init_container_args = kubernetes_deployment.get_init_container_args(self)
