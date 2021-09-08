@@ -622,7 +622,7 @@
 
 <span class="n">_all_mime_types</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">mimetypes</span><span class="o">.</span><span class="n">types_map</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 
-<span class="n">_all_doc_content_keys</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'content'</span><span class="p">,</span> <span class="s1">'uri'</span><span class="p">,</span> <span class="s1">'blob'</span><span class="p">,</span> <span class="s1">'text'</span><span class="p">,</span> <span class="s1">'buffer'</span><span class="p">}</span>
+<span class="n">_all_doc_content_keys</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'content'</span><span class="p">,</span> <span class="s1">'blob'</span><span class="p">,</span> <span class="s1">'text'</span><span class="p">,</span> <span class="s1">'buffer'</span><span class="p">,</span> <span class="s1">'graph'</span><span class="p">}</span>
 <span class="n">_all_doc_array_keys</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'blob'</span><span class="p">,</span> <span class="s1">'embedding'</span><span class="p">)</span>
 <span class="n">_special_mapped_keys</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'scores'</span><span class="p">,</span> <span class="s1">'evaluations'</span><span class="p">)</span>
 
@@ -857,7 +857,7 @@
 
         <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="c1"># check if there are mutually exclusive content fields</span>
-            <span class="k">if</span> <span class="n">_contains_conflicting_content</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_all_doc_content_keys</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'Document content fields are mutually exclusive, please provide only one of </span><span class="si">{</span><span class="n">_all_doc_content_keys</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
@@ -1884,17 +1884,6 @@
 <span class="k">def</span> <span class="nf">_is_datauri</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="n">scheme</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlparse</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">scheme</span>
     <span class="k">return</span> <span class="n">scheme</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'data'</span><span class="p">}</span>
-
-
-<span class="k">def</span> <span class="nf">_contains_conflicting_content</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="n">content_keys</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">_all_doc_content_keys</span><span class="p">:</span>
-            <span class="n">content_keys</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="k">if</span> <span class="n">content_keys</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">True</span>
-
-    <span class="k">return</span> <span class="kc">False</span>
 </pre></div>
       </article>
       <footer>
@@ -1907,7 +1896,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Sep 07, 2021.
+            Last updated on Sep 08, 2021.
         </div>
         
       </footer>
