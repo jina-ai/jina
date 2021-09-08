@@ -35,8 +35,9 @@ def test_to_dns_name(name: str, dns_name: str):
     ['init_container', 'custom_resource'],
     [(None, None), ({'test-init-arg': 'test-value'}, None), (None, '/test')],
 )
-def test_deploy_service(init_container: Dict, custom_resource: str):
-    kubernetes_tools.create = Mock()
+def test_deploy_service(init_container: Dict, custom_resource: str, monkeypatch):
+    mock_create = Mock()
+    monkeypatch.setattr(kubernetes_tools, 'create', mock_create)
 
     service_name = deploy_service(
         name='test-executor',
@@ -51,16 +52,16 @@ def test_deploy_service(init_container: Dict, custom_resource: str):
         custom_resource_dir=custom_resource,
     )
 
-    assert kubernetes_tools.create.call_count == 2
+    assert mock_create.call_count == 2
 
-    service_call_args = kubernetes_tools.create.call_args_list[0][0]
-    service_call_kwargs = kubernetes_tools.create.call_args_list[0][1]
+    service_call_args = mock_create.call_args_list[0][0]
+    service_call_kwargs = mock_create.call_args_list[0][1]
 
     assert service_call_args[0] == 'service'
     assert service_call_kwargs['custom_resource_dir'] == custom_resource
 
-    deployment_call_args = kubernetes_tools.create.call_args_list[1][0]
-    deployment_call_kwargs = kubernetes_tools.create.call_args_list[1][1]
+    deployment_call_args = mock_create.call_args_list[1][0]
+    deployment_call_kwargs = mock_create.call_args_list[1][1]
     assert deployment_call_kwargs['custom_resource_dir'] == custom_resource
 
     if init_container:

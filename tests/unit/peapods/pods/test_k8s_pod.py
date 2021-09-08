@@ -10,10 +10,10 @@ from jina.peapods.pods.k8slib.kubernetes_deployment import dictionary_to_cli_par
 
 
 @pytest.mark.parametrize('is_master', (True, False))
-def test_version(is_master, requests_mock):
+def test_version(is_master, requests_mock, monkeypatch):
     args = set_pod_parser().parse_args(['--name', 'test-pod'])
     mock_create = Mock()
-    kubernetes_tools.create = mock_create
+    monkeypatch.setattr(kubernetes_tools, 'create', mock_create)
     if is_master:
         version = 'v2'
     else:
