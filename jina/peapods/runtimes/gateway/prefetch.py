@@ -8,6 +8,8 @@ from ....helper import typename, get_or_reuse_loop
 from ....logging.logger import JinaLogger
 from ....types.message import Message
 
+import numpy as np
+
 __all__ = ['PrefetchCaller']
 
 if False:
@@ -29,6 +31,7 @@ class PrefetchCaller:
         self.logger = JinaLogger(self.name, **vars(args))
         self._message_buffer: Dict[str, Future[Message]] = dict()
         self.iolet = iolet
+        self.req_times = []
 
         if isinstance(iolet, Grpclet):
             self.iolet.callback = self._unwrap_request
@@ -37,6 +40,14 @@ class PrefetchCaller:
             self._receive_task = get_or_reuse_loop().create_task(self._receive())
 
     async def _unwrap_request(self, msg):
+        self.req_times.append(
+            (
+                msg.response.routes[0].end_time.ToDatetime()
+                - msg.response.routes[0].start_time.ToDatetime()
+            ).microseconds
+        )
+        if self.iolet.msg_recv % 1000 == 0:
+            self.logger.error(f'request avg is { np.mean(self.req_times) / 1000.0} ms')
         return self._process_message(msg.request)
 
     async def _receive(self):
@@ -58,6 +69,7 @@ class PrefetchCaller:
             self._message_buffer.clear()
 
     def _process_message(self, message):
+
         if message.request_id in self._message_buffer:
             future = self._message_buffer.pop(message.request_id)
             future.set_result(message)
