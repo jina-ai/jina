@@ -643,7 +643,7 @@ def does_not_raise():
 @pytest.mark.parametrize(
     'doccontent, expectation',
     [
-        ({'content': 'hello', 'uri': 'https://jina.ai'}, pytest.raises(ValueError)),
+        ({'content': 'hello', 'uri': 'https://jina.ai'}, does_not_raise()),
         ({'content': 'hello', 'text': 'world'}, pytest.raises(ValueError)),
         ({'content': 'hello', 'blob': np.array([1, 2, 3])}, pytest.raises(ValueError)),
         ({'content': 'hello', 'buffer': b'hello'}, pytest.raises(ValueError)),
