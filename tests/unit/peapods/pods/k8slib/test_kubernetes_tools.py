@@ -8,8 +8,9 @@ from jina.peapods.pods.k8slib import kubernetes_tools
 from jina.peapods.pods.k8slib.kubernetes_tools import os
 
 
-def test_lazy_load_k8s_client():
-    kubernetes.config.load_kube_config = Mock()
+def test_lazy_load_k8s_client(monkeypatch):
+    load_kube_config_mock = Mock()
+    monkeypatch.setattr(kubernetes.config, 'load_kube_config', load_kube_config_mock)
     attributes = ['k8s_client', 'v1', 'beta', 'networking_v1_beta1_api']
     for attribute in attributes:
         assert (
@@ -29,14 +30,14 @@ def test_lazy_load_k8s_client():
         ('deployment-init', {'name': 'test-dep-init'}),
     ],
 )
-def test_create(template: str, values: Dict):
-    kubernetes.utils.create_from_yaml = Mock()
+def test_create(template: str, values: Dict, monkeypatch):
+    create_from_yaml_mock = Mock()
+    monkeypatch.setattr(kubernetes.utils, 'create_from_yaml', create_from_yaml_mock)
 
     # avoid deleting the config file so that we can check it
     os.remove = Mock()
 
     kubernetes_tools.create(template, values)
-    print(kubernetes_tools.create)
 
     # get the path to the config file
     assert os.remove.call_count == 1
