@@ -33,10 +33,3 @@ def test_version(is_master, requests_mock, monkeypatch):
             assert pod.version == 'master'
         else:
             assert pod.version == jina.__version__
-
-
-def test_dictionary_to_cli_param():
-    assert (
-        dictionary_to_cli_param({'k1': 'v1', 'k2': {'k3': 'v3'}})
-        == '{\\"k1\\": \\"v1\\", \\"k2\\": {\\"k3\\": \\"v3\\"}}'
-    )
