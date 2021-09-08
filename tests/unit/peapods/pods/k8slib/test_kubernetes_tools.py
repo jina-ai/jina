@@ -35,14 +35,14 @@ def test_create(template: str, values: Dict, monkeypatch):
     monkeypatch.setattr(kubernetes.utils, 'create_from_yaml', create_from_yaml_mock)
 
     # avoid deleting the config file so that we can check it
-    os.remove = Mock()
+    remove_mock = Mock()
+    monkeypatch.setattr(os, 'remove', remove_mock)
 
     kubernetes_tools.create(template, values)
-    print(kubernetes_tools.create)
 
     # get the path to the config file
-    assert os.remove.call_count == 1
-    path_to_config_file = os.remove.call_args[0][0]
+    assert remove_mock.call_count == 1
+    path_to_config_file = remove_mock.call_args[0][0]
 
     # get the content and check that the values are present
     with open(path_to_config_file, 'r') as fh:
@@ -50,4 +50,5 @@ def test_create(template: str, values: Dict, monkeypatch):
     for v in values.values():
         assert v in content
 
-    os.unlink(path_to_config_file)
+    monkeypatch.undo()
+    os.remove(path_to_config_file)
