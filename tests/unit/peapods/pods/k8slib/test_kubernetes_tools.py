@@ -7,6 +7,7 @@ from jina.peapods.pods.k8slib import kubernetes_tools
 
 
 def test_lazy_load_k8s_client():
+    kubernetes.config.load_kube_config = Mock()
     attributes = ['k8s_client', 'v1', 'beta', 'networking_v1_beta1_api']
     for attribute in attributes:
         assert (
@@ -17,12 +18,13 @@ def test_lazy_load_k8s_client():
         assert getattr(kubernetes_tools.__k8s_clients, attribute) is not None
 
 
-def test_create(monkeypatch):
+def test_create():
     kubernetes.utils.create_from_yaml = Mock()
     os.remove = Mock()
-
     ns = 'test_namespace_name'
+
     kubernetes_tools.create('namespace', {'name': ns})
+
     path = kubernetes.utils.create_from_yaml.call_args[0][1]
     assert (
         kubernetes.utils.create_from_yaml.call_args[0][0]
