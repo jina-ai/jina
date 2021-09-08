@@ -1,0 +1,7 @@
+jtype: NoopExecutor
+with:
+  {}
+metas:
+  py_modules:
+    - noop_executor.py
+  name: noop_executor

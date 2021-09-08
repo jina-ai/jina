@@ -28,6 +28,7 @@ def deploy_service(
     pull_policy: str,
     init_container: Dict = None,
     custom_resource_dir: Optional[str] = None,
+    service_type: str = 'ClusterIP',
 ) -> str:
     """Deploy service on Kubernetes.
 
@@ -42,6 +43,7 @@ def deploy_service(
     :param init_container: additional arguments used for the init container
     :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.
         Defaults to the standard location jina.resources if not specified.
+    :param service_type: k8s service type, defaults to ClusterIp
     :return: dns name of the created service
     """
 
@@ -64,7 +66,7 @@ def deploy_service(
             'port_in': port_in,
             'port_out': port_out,
             'port_ctrl': port_ctrl,
-            'type': 'ClusterIP',
+            'type': service_type,
         },
         custom_resource_dir=custom_resource_dir,
     )

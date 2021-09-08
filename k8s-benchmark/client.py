@@ -20,7 +20,7 @@ REQUEST_CONTENT_LENGTH = 10000
 content = 's' * REQUEST_CONTENT_LENGTH
 da = DocumentArray([Document(content=content)])
 
-client = GRPCClient(port=8080)
+client = GRPCClient(port=8080, host='34.107.50.7')
 
 request_count = 100
 index_count = 10

@@ -77,6 +77,7 @@ class K8sPod(BasePod):
             replicas=1,
             pull_policy='Always',
             init_container=None,
+            service_type='LoadBalancer',
         )
 
     def _deploy_runtime(self, deployment_args, replicas, deployment_id):
