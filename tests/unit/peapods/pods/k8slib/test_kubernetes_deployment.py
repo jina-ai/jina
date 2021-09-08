@@ -7,12 +7,13 @@ from argparse import Namespace
 from jina.logging.logger import JinaLogger
 from jina.parsers import set_pod_parser
 from jina.peapods.pods.k8s import K8sPod
-from jina.peapods.pods.k8slib import kubernetes_deployment, kubernetes_tools
 from jina.peapods.pods.k8slib.kubernetes_deployment import (
     get_cli_params,
-    get_image_name,
     dictionary_to_cli_param,
     get_init_container_args,
+    kubernetes_tools,
+    to_dns_name,
+    deploy_service,
 )
 
 
@@ -27,7 +28,7 @@ from jina.peapods.pods.k8slib.kubernetes_deployment import (
     ],
 )
 def test_to_dns_name(name: str, dns_name: str):
-    assert kubernetes_deployment.to_dns_name(name) == dns_name
+    assert to_dns_name(name) == dns_name
 
 
 @pytest.mark.parametrize(
@@ -37,7 +38,7 @@ def test_to_dns_name(name: str, dns_name: str):
 def test_deploy_service(init_container: Dict, custom_resource: str):
     kubernetes_tools.create = Mock()
 
-    service_name = kubernetes_deployment.deploy_service(
+    service_name = deploy_service(
         name='test-executor',
         namespace='test-ns',
         image_name='test-image',
@@ -105,19 +106,6 @@ def test_get_cli_params(namespace: Dict, skip_attr: Tuple, expected_string: str)
     params = get_cli_params(namespace, skip_attr)
 
     assert params == expected_string + base_string
-
-
-@pytest.mark.parametrize(
-    ['uses', 'expected_image'],
-    [
-        ('BaseExecutor', 'BaseExecutor'),
-        ('jinahub://MongoDBStorage', 'jinahub/3e1sp6fp:v4-2.0.23'),
-    ],
-)
-def test_get_image_name(uses: str, expected_image: str):
-    actual_image = get_image_name(uses)
-
-    assert actual_image == expected_image
 
 
 @pytest.mark.parametrize(
