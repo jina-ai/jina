@@ -5,7 +5,8 @@ import os
 import pytest
 import kubernetes
 
-from jina.peapods.pods.k8slib import kubernetes_tools
+from jina.peapods.pods.k8slib.kubernetes_tools import create
+from jina.peapods.pods.k8slib.kubernetes_tools import __k8s_clients
 
 
 def test_lazy_load_k8s_client(monkeypatch):
@@ -13,12 +14,10 @@ def test_lazy_load_k8s_client(monkeypatch):
     monkeypatch.setattr(kubernetes.config, 'load_kube_config', load_kube_config_mock)
     attributes = ['k8s_client', 'v1', 'beta', 'networking_v1_beta1_api']
     for attribute in attributes:
-        assert (
-            getattr(kubernetes_tools.__k8s_clients, f'_K8SClients__{attribute}') is None
-        )
+        assert getattr(__k8s_clients, f'_K8SClients__{attribute}') is None
 
     for attribute in attributes:
-        assert getattr(kubernetes_tools.__k8s_clients, attribute) is not None
+        assert getattr(__k8s_clients, attribute) is not None
 
 
 @pytest.mark.parametrize(
@@ -38,7 +37,7 @@ def test_create(template: str, values: Dict, monkeypatch):
     remove_mock = Mock()
     monkeypatch.setattr(os, 'remove', remove_mock)
 
-    kubernetes_tools.create(template, values)
+    create(template, values)
 
     # get the path to the config file
     assert remove_mock.call_count == 1
