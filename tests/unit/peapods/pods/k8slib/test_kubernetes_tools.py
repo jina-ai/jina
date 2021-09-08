@@ -38,6 +38,7 @@ def test_create(template: str, values: Dict, monkeypatch):
     os.remove = Mock()
 
     kubernetes_tools.create(template, values)
+    print(kubernetes_tools.create)
 
     # get the path to the config file
     assert os.remove.call_count == 1
