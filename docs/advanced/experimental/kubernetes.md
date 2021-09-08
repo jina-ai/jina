@@ -2,7 +2,7 @@
 
 Deploy your `Flow` on `Kubernetes`.
 ## Requirements
-Please setup a `Kubernetes` cluster and pull the credentials.
+Please setup a `Kubernetes` cluster and configure k8s cluster access locally.
 
 For local testing `minikube` is recommended.
 - [minikube](https://minikube.sigs.k8s.io/docs/start/), 
@@ -32,12 +32,12 @@ flow = Flow(
 flow.start()
 
 ```
-After the deployment finished, run a port forward to run client requests.
+After the deployment finished, set up port forwarding to enable the client to send requests to the `Flow`.
 ```bash
 kubectl port-forward svc/gateway -n index-flow 8080:8080 &
 ```
 
-Once the port forward setup, you can request embeddings for images.
+Once the port forward is set up, you can request embeddings for images.
 ```python
 import base64
 
@@ -45,6 +45,7 @@ import numpy as np
 import requests
 from jina import Document
 
+# since port forwarding is running, you can run requests to localhost on 8080
 host = '127.0.0.1'
 port = 8080
 
