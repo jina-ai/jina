@@ -126,8 +126,9 @@ class K8sPod(BasePod):
 
         :return: self
         """
+
         kubernetes_tools.create(
-            'namespace',
+            'namespace' if self.args.k8s_connection_pool else 'namespace_istio',
             {'name': self.args.k8s_namespace},
             custom_resource_dir=getattr(self.args, 'k8s_custom_resource_dir', None),
         )

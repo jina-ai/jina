@@ -27,7 +27,7 @@ spec:
           - containerPort: {port_ctrl}
         env:
         - name: JINA_LOG_LEVEL
-          value: debug
+          value: error
         - name: PYTHONUNBUFFERED
           value: "1"
         - name: WORKER_CLASS
