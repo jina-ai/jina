@@ -558,7 +558,7 @@
 
 <div class="viewcode-block" id="deploy_service"><a class="viewcode-back" href="../../../../../../api/jina.peapods.pods.k8slib.kubernetes_deployment/#jina.peapods.pods.k8slib.kubernetes_deployment.deploy_service">[docs]</a><span class="k">def</span> <span class="nf">deploy_service</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">namespace</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">,</span>
+    <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">image_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">container_cmd</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">container_args</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -644,7 +644,7 @@
 <span class="sd">    :param arguments: arguments where the cli parameters are generated from</span>
 <span class="sd">    :param skip_list: list of arguments which should be ignored</span>
 
-<span class="sd">    :return: string wich contains all cli parameters</span>
+<span class="sd">    :return: string which contains all cli parameters</span>
 <span class="sd">    """</span>
     <span class="n">arguments</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span>
     <span class="n">skip_attributes</span> <span class="o">=</span> <span class="p">[</span>
