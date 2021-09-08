@@ -86,7 +86,7 @@ DocumentSourceType = TypeVar(
 
 _all_mime_types = set(mimetypes.types_map.values())
 
-_all_doc_content_keys = {'content', 'uri', 'blob', 'text', 'buffer'}
+_all_doc_content_keys = {'content', 'blob', 'text', 'buffer', 'graph'}
 _all_doc_array_keys = ('blob', 'embedding')
 _special_mapped_keys = ('scores', 'evaluations')
 
@@ -321,7 +321,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
 
         if kwargs:
             # check if there are mutually exclusive content fields
-            if _contains_conflicting_content(**kwargs):
+            if len(_all_doc_content_keys.intersection(kwargs.keys())) > 1:
                 raise ValueError(
                     f'Document content fields are mutually exclusive, please provide only one of {_all_doc_content_keys}'
                 )
@@ -1348,14 +1348,3 @@ def _is_uri(value: str) -> bool:
 def _is_datauri(value: str) -> bool:
     scheme = urllib.parse.urlparse(value).scheme
     return scheme in {'data'}
-
-
-def _contains_conflicting_content(**kwargs):
-    content_keys = 0
-    for k in kwargs:
-        if k in _all_doc_content_keys:
-            content_keys += 1
-            if content_keys > 1:
-                return True
-
-    return False
