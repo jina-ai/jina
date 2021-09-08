@@ -88,3 +88,9 @@ When not given, then the default naming strategy will apply.
         help='Defines if the routing table should be pre computed by the Flow. In this case it is statically defined for each Pod and not send on every data request.'
         ' Can not be used in combination with external pods',
     )
+
+    parser.add_argument(
+        '--routing-table',
+        type=str,
+        help='Routing graph for the gateway' if _SHOW_ALL_ARGS else argparse.SUPPRESS,
+    )
