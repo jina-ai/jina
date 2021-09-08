@@ -1,6 +1,8 @@
+from typing import Dict
 from unittest.mock import Mock
 import os
 
+import pytest
 import kubernetes
 
 from jina.peapods.pods.k8slib import kubernetes_tools
@@ -18,21 +20,30 @@ def test_lazy_load_k8s_client():
         assert getattr(kubernetes_tools.__k8s_clients, attribute) is not None
 
 
-def test_create():
+@pytest.mark.parametrize(
+    ['template', 'values'],
+    [
+        ('namespace', {'name': 'test-ns'}),
+        ('service', {'name': 'test-svc'}),
+        ('deployment', {'name': 'test-dep'}),
+        ('deployment-init', {'name': 'test-dep-init'}),
+    ],
+)
+def test_create(template: str, values: Dict):
     kubernetes.utils.create_from_yaml = Mock()
+
+    # avoid deleting the config file so that we can check it
     os.remove = Mock()
-    ns = 'test_namespace_name'
 
-    kubernetes_tools.create('namespace', {'name': ns})
+    kubernetes_tools.create(template, values)
 
-    path = kubernetes.utils.create_from_yaml.call_args[0][1]
-    assert (
-        kubernetes.utils.create_from_yaml.call_args[0][0]
-        == kubernetes_tools.__k8s_clients.k8s_client
-    )
+    # get the path to the config file
+    path_to_config_file = os.remove.call_args[0][0]
 
-    with open(path, 'r') as fh:
+    # get the content and check that the values are present
+    with open(path_to_config_file, 'r') as fh:
         content = fh.read()
-    assert ns in content
+    for v in values.values():
+        assert v in content
 
-    os.unlink(path)
+    os.unlink(path_to_config_file)
