@@ -36,8 +36,10 @@ def test_create(template: str, values: Dict):
     os.remove = Mock()
 
     kubernetes_tools.create(template, values)
+    print(kubernetes_tools.create)
 
     # get the path to the config file
+    assert os.remove.call_count == 1
     path_to_config_file = os.remove.call_args[0][0]
 
     # get the content and check that the values are present
