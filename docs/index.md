@@ -99,7 +99,7 @@ fundamentals/concepts
 fundamentals/document/index
 fundamentals/executor/index
 fundamentals/flow/index
-fundamentals/practice-your-learning
+fundamentals/tutorials/index
 fundamentals/clean-code
 ```
 
