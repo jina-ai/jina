@@ -1,11 +1,11 @@
 from typing import Dict
 from unittest.mock import Mock
 
+import os
 import pytest
 import kubernetes
 
 from jina.peapods.pods.k8slib import kubernetes_tools
-from jina.peapods.pods.k8slib.kubernetes_tools import os
 
 
 def test_lazy_load_k8s_client(monkeypatch):
