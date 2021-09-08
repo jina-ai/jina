@@ -830,6 +830,9 @@ def test_connect_to_predecessor():
 
 
 def test_flow_grpc_with_shard():
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(
+        NotImplementedError, match='GRPC data runtime does not support sharding'
+    ):
         Flow(grpc_data_requests=True).add(shards=2)
         Flow(grpc_data_requests=True).add(shards=None)
+        Flow(grpc_data_requests=False).add(shards=1)
