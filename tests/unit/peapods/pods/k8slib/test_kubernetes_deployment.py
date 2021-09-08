@@ -1,10 +1,12 @@
-from typing import Union, Dict, Tuple, List
+from typing import Dict, Tuple
 from unittest.mock import Mock
 
 import pytest
+from argparse import Namespace
 
 from jina.logging.logger import JinaLogger
 from jina.peapods.pods.k8slib import kubernetes_deployment, kubernetes_tools
+from jina.peapods.pods.k8slib.kubernetes_deployment import get_cli_params
 
 
 @pytest.mark.parametrize(
@@ -61,3 +63,38 @@ def test_deploy_service(init_container: Dict, custom_resource: str):
         assert deployment_call_args[0] == 'deployment'
 
     assert service_name == 'test-executor.test-ns.svc.cluster.local'
+
+
+@pytest.mark.parametrize(
+    ['namespace', 'skip_attr', 'expected_string'],
+    [
+        (
+            {
+                'some_attribute': 'some_value',
+            },
+            (),
+            '"--some-attribute", "some_value"',
+        ),
+        (
+            {'some_attribute': 'some_value', 'skip_this': 'some_value'},
+            ('skip_this',),
+            '"--some-attribute", "some_value"',
+        ),
+        (
+            {'uses': 'some_value', 'some_attribute': 'some_value'},
+            (),
+            '"--some-attribute", "some_value"',
+        ),
+        ({'some_flag': True}, (), '"--some-flag"'),
+    ],
+)
+def test_get_cli_params(namespace: Dict, skip_attr: Tuple, expected_string: str):
+    base_string = (
+        ', "--host", "0.0.0.0", "--port-expose", "8080", "--port-in",'
+        ' "8081", "--port-out", "8082", "--port-ctrl", "8083"'
+    )
+    namespace = Namespace(**namespace)
+
+    params = get_cli_params(namespace, skip_attr)
+
+    assert params == expected_string + base_string

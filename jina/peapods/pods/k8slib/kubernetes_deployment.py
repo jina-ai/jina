@@ -105,7 +105,7 @@ def get_cli_params(arguments: Namespace, skip_list: Tuple[str] = ()) -> str:
     :param arguments: arguments where the cli parameters are generated from
     :param skip_list: list of arguments which should be ignored
 
-    :return: string wich contains all cli parameters
+    :return: string which contains all cli parameters
     """
     arguments.host = '0.0.0.0'
     skip_attributes = [
