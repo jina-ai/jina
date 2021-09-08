@@ -14,13 +14,13 @@ Here are some managed `Kubernetes` cluster solutions you could use:
 - [Digital Ocean](https://www.digitalocean.com/products/kubernetes/)
   
 ## Deploy Your `Flow`
-To deploy a `Flow` on `Kubernetes`, you have to set the `infrastructure='K8S'` when creating the `Flow`.
+To deploy a `Flow` on `Kubernetes`, you have to set `infrastructure='K8S'` when creating the `Flow`.
 ```{caution}
 All Executors in the Flow should be used with `jinahub+docker://`.
 ```
 
 ## Example 1 - CLIP Image Encoder
-The following code deploys a simple `Flow` with just one `Executor`.
+The following code deploys a simple `Flow` with just a single `Executor`.
 ```python
 from jina import Flow
 
@@ -64,9 +64,12 @@ print(embedding)
 
 
 ## Example 2 - Postgres Indexer
-In this example, we assume that, there is a postgres database deployed on `Kubernetes` already. 
+This example deploys the index `Flow` on `Kubernetes`
+```{caution}
+In this example, we assume that there is a postgres database deployed on `Kubernetes` already. 
 You can also modify the database configuration to use a postgres database outside the `Kubernetes` cluster.
-Deploy the index `Flow` on `Kubernetes`:
+```
+
 ```python
 from jina import Flow
 
@@ -87,12 +90,12 @@ flow = Flow(
 )
 flow.start()
 ```
-Use `port-forward` to send requests to the gateway of the index `Flow`.
+Use `port-forward` to send requests to the gateway of the index `Flow`:
 ```bash
 kubectl port-forward svc/gateway -n index-flow 8080:8080 &
 ```
 
-Index 100 `Documents`.
+Index 100 `Documents`:
 ```python
 import numpy as np
 import requests
@@ -114,9 +117,9 @@ for d in docs:
 ```
 
 The following code deploys a search `Flow` on `Kubernetes`.
-In total, there are 9 `Kubernetes` deployments and services created 
+In total, there are 9 `Kubernetes` deployments and services created.
 - one gateway
-- 3 x 2 shards, since the deployed `Executor` has 3 shards which have 2 replicas each
+- 2 x 3 shards, since the deployed `Executor` has 3 shards which have 2 replicas each
 - a head which is used to fan-out the request to the shards
 - a tail to fan-in and merge the search results from all shards
 
@@ -154,12 +157,12 @@ flow = Flow(
 )
 flow.start()
 ```
-Use `port-forward` to send requests to the gateway of the search `Flow`.
+Use `port-forward` to send requests to the gateway of the search `Flow`:
 ```bash
 kubectl port-forward svc/gateway -n search-flow 8081:8080 &
 ```
 
-Find `top-k` results for a single `Document`:
+Get search results for a single `Document`:
 ```python
 import numpy as np
 import requests
@@ -175,7 +178,8 @@ resp = requests.post(f'{host}/search', json={'data': data})
 print(f"Len response matches: {len(resp.json()['data']['docs'][0]['matches'])}")
 ```
 
-## Limitations
+```{caution}
+Limitations
 - each `Executor` has to be containerized
 - only stateless executors are supported when using replicas > 1
 - `Kubernetes` is doing `L4` (Network Layer) loadbalancing. 
@@ -191,4 +195,4 @@ print(f"Len response matches: {len(resp.json()['data']['docs'][0]['matches'])}")
   Therefore, it allows loadbalancing on `L7` (Application Layer).
   Please inject the `envoy` proxy yourself for now.
   You can use the service mesh `Istio` to automatically inject `envoy` proxies into the `Executor` `Pods` as sidecar.
-  
+```
