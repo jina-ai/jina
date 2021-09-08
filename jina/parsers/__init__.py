@@ -100,12 +100,6 @@ def set_gateway_parser(parser=None):
     )
 
     parser.add_argument(
-        '--routing-table',
-        type=str,
-        help='Routing graph for the gateway' if _SHOW_ALL_ARGS else argparse.SUPPRESS,
-    )
-
-    parser.add_argument(
         '--dynamic-routing',
         action='store_true',
         default=True,
