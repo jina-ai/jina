@@ -5,8 +5,15 @@ import pytest
 from argparse import Namespace
 
 from jina.logging.logger import JinaLogger
+from jina.parsers import set_pod_parser
+from jina.peapods.pods.k8s import K8sPod
 from jina.peapods.pods.k8slib import kubernetes_deployment, kubernetes_tools
-from jina.peapods.pods.k8slib.kubernetes_deployment import get_cli_params
+from jina.peapods.pods.k8slib.kubernetes_deployment import (
+    get_cli_params,
+    get_image_name,
+    dictionary_to_cli_param,
+    get_init_container_args,
+)
 
 
 @pytest.mark.parametrize(
@@ -98,3 +105,65 @@ def test_get_cli_params(namespace: Dict, skip_attr: Tuple, expected_string: str)
     params = get_cli_params(namespace, skip_attr)
 
     assert params == expected_string + base_string
+
+
+@pytest.mark.parametrize(
+    ['uses', 'expected_image'],
+    [('BaseExecutor', 'BaseExecutor'), ('jinahub://MongoDBStorage', 'x')],
+)
+def test_get_image_name(uses: str, expected_image: str):
+    from jina.peapods.pods.k8slib.kubernetes_deployment import HubIO
+
+    actual_image = get_image_name(uses)
+
+    assert actual_image == expected_image
+
+
+@pytest.mark.parametrize(
+    ['dictionary', 'expected_string'],
+    [
+        ({'k1': 'v2', 'k2': 'v2'}, '{\\"k1\\": \\"v2\\", \\"k2\\": \\"v2\\"}'),
+        ({'k1': 'v2', 'k2': ''}, '{\\"k1\\": \\"v2\\", \\"k2\\": \\"\\"}'),
+        ({'k1': 'v2', 'k2': 3}, '{\\"k1\\": \\"v2\\", \\"k2\\": 3}'),
+        (None, ''),
+    ],
+)
+def test_dictionary_to_cli_param(dictionary: Dict, expected_string: str):
+    assert dictionary_to_cli_param(dictionary) == expected_string
+
+
+@pytest.mark.parametrize(
+    'pod_args',
+    [
+        [
+            '--k8s-uses-init',
+            'test-image',
+            '--k8s-init-container-command',
+            'test-command',
+            '--k8s-mount-path',
+            'test/path',
+        ],
+        [
+            '--k8s-init-container-command',
+            'test-command',
+            '--k8s-mount-path',
+            'test/path',
+        ],
+        [],
+    ],
+)
+def test_init_container_args(pod_args):
+    args = set_pod_parser().parse_args(pod_args)
+    pod = K8sPod(args)
+
+    init_container = get_init_container_args(pod)
+
+    if any(['--k8s-uses-init' in arg for arg in pod_args]):
+        assert init_container == {
+            'init-name': 'init',
+            'init-image': args.k8s_uses_init,
+            'init-command': f'{args.k8s_init_container_command}',
+            'mount-path': args.k8s_mount_path,
+        }
+    else:
+        assert init_container is None
