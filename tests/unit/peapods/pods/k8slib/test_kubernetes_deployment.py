@@ -109,11 +109,12 @@ def test_get_cli_params(namespace: Dict, skip_attr: Tuple, expected_string: str)
 
 @pytest.mark.parametrize(
     ['uses', 'expected_image'],
-    [('BaseExecutor', 'BaseExecutor'), ('jinahub://MongoDBStorage', 'x')],
+    [
+        ('BaseExecutor', 'BaseExecutor'),
+        ('jinahub://MongoDBStorage', 'jinahub/3e1sp6fp:v4-2.0.23'),
+    ],
 )
 def test_get_image_name(uses: str, expected_image: str):
-    from jina.peapods.pods.k8slib.kubernetes_deployment import HubIO
-
     actual_image = get_image_name(uses)
 
     assert actual_image == expected_image
