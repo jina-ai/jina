@@ -1,4 +1,4 @@
-from typing import Union, Dict, Tuple, List
+from typing import Union, Dict, Tuple, List, Optional, Set
 from unittest.mock import Mock
 
 import pytest
@@ -149,13 +149,40 @@ def test_deployments(name: str, parallel: str, expected_deployments: List[Dict])
         assert actual['head_zmq_identity'] == pod.head_zmq_identity
 
 
-def get_k8s_pod(pod_name: str, namespace: str, parallel: str = None):
+def get_k8s_pod(
+    pod_name: str,
+    namespace: str,
+    parallel: str = None,
+    replicas: str = None,
+    needs: Optional[Set[str]] = None,
+    uses_before=None,
+    uses_after=None,
+):
     if parallel is None:
         parallel = '1'
-    args = set_pod_parser().parse_args(
-        ['--name', pod_name, '--k8s-namespace', namespace, '--parallel', parallel]
-    )
-    pod = K8sPod(args)
+    if replicas is None:
+        replicas = '1'
+    parameter_list = [
+        '--name',
+        pod_name,
+        '--k8s-namespace',
+        namespace,
+        '--parallel',
+        parallel,
+        '--replicas',
+        replicas,
+    ]
+    if uses_before:
+        parameter_list.extend(
+            [
+                '--uses-before',
+                uses_before,
+            ]
+        )
+    if uses_after:
+        parameter_list.extend(['--uses-after', uses_after])
+    args = set_pod_parser().parse_args(parameter_list)
+    pod = K8sPod(args, needs)
     return pod
 
 
@@ -251,3 +278,61 @@ def test_start_deploys_runtime_with_parallel(parallel: int):
 
     tail_call_args = deploy_mock.call_args_list[-1][0]
     assert tail_call_args[0] == pod.name + '-tail'
+
+
+@pytest.mark.parametrize(
+    'needs, replicas, expected_calls, expected_executors',
+    [
+        (None, 1, 1, ['executor']),
+        (None, 2, 1, ['executor']),
+        (['first_pod'], 1, 1, ['executor']),
+        (['first_pod'], 2, 1, ['executor']),
+        (['first_pod', 'second_pod'], 1, 1, ['executor']),
+        (['first_pod', 'second_pod'], 2, 2, ['executor-head', 'executor']),
+        (['first_pod', 'second_pod', 'third_pod'], 1, 1, ['executor']),
+        (['first_pod', 'second_pod', 'third_pod'], 2, 2, ['executor-head', 'executor']),
+    ],
+)
+def test_needs(needs, replicas, expected_calls, expected_executors):
+    namespace = 'ns'
+    pod = get_k8s_pod('executor', namespace, str(1), str(replicas), needs)
+
+    deploy_mock = Mock()
+    kubernetes_deployment.deploy_service = deploy_mock
+    kubernetes_tools.create = Mock()
+    pod.start()
+    assert expected_calls == kubernetes_deployment.deploy_service.call_count
+
+    actual_executors = [executor[0][0] for executor in deploy_mock.call_args_list]
+    assert actual_executors == expected_executors
+
+
+@pytest.mark.parametrize(
+    'uses_before, uses_after, expected_calls, expected_executors',
+    [
+        (None, None, 1, ['executor']),
+        ('custom_head', None, 2, ['executor-head', 'executor']),
+        (None, 'custom_tail', 2, ['executor', 'executor-tail']),
+        (
+            'custom_head',
+            'custom_tail',
+            3,
+            ['executor-head', 'executor', 'executor-tail'],
+        ),
+    ],
+)
+def test_uses_before_and_uses_after(
+    uses_before, uses_after, expected_calls, expected_executors
+):
+    namespace = 'ns'
+    pod = get_k8s_pod(
+        'executor', namespace, str(1), uses_before=uses_before, uses_after=uses_after
+    )
+    deploy_mock = Mock()
+    kubernetes_deployment.deploy_service = deploy_mock
+    kubernetes_tools.create = Mock()
+    pod.start()
+    assert expected_calls == kubernetes_deployment.deploy_service.call_count
+
+    actual_executors = [executor[0][0] for executor in deploy_mock.call_args_list]
+    assert actual_executors == expected_executors
