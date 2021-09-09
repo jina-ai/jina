@@ -153,6 +153,7 @@ def get_k8s_pod(
     pod_name: str,
     namespace: str,
     parallel: str = None,
+    replicas: str = None,
     needs: Optional[Set[str]] = None,
     uses_before=None,
     uses_after=None,
@@ -166,6 +167,8 @@ def get_k8s_pod(
         namespace,
         '--parallel',
         parallel,
+        '--replicas',
+        replicas,
     ]
     if uses_before:
         parameter_list.extend(
@@ -276,17 +279,21 @@ def test_start_deploys_runtime_with_parallel(parallel: int):
 
 
 @pytest.mark.parametrize(
-    'needs, expected_calls, expected_executors',
+    'needs, replicas, expected_calls, expected_executors',
     [
-        (None, 1, ['executor']),
-        (['first_pod'], 1, ['executor']),
-        (['first_pod', 'second_pod'], 2, ['executor-head', 'executor']),
-        (['first_pod', 'second_pod', 'third_pod'], 2, ['executor-head', 'executor']),
+        (None, 1, 1, ['executor']),
+        (None, 2, 1, ['executor']),
+        (['first_pod'], 1, 1, ['executor']),
+        (['first_pod'], 2, 1, ['executor']),
+        (['first_pod', 'second_pod'], 1, 1, ['executor']),
+        (['first_pod', 'second_pod'], 2, 2, ['executor-head', 'executor']),
+        (['first_pod', 'second_pod', 'third_pod'], 1, 1, ['executor']),
+        (['first_pod', 'second_pod', 'third_pod'], 2, 2, ['executor-head', 'executor']),
     ],
 )
-def test_needs(needs, expected_calls, expected_executors):
+def test_needs(needs, replicas, expected_calls, expected_executors):
     namespace = 'ns'
-    pod = get_k8s_pod('executor', namespace, str(1), needs)
+    pod = get_k8s_pod('executor', namespace, str(1), str(replicas), needs)
 
     deploy_mock = Mock()
     kubernetes_deployment.deploy_service = deploy_mock
