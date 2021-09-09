@@ -50,7 +50,7 @@ See below figure for how this would look like:
 :align: center
 ```
 
-In the above case, the Storage could be the [PostgreSQL](https://github.com/jina-ai/executors/tree/main/jinahub/indexers/storage/PostgreSQLStorage)-based Storage, while the Query Flow could be based on [FaissPostgresSearcher](https://hub.jina.ai/executor/nflcyqe2).
+In the above case, the Storage could be the [PostgreSQL](https://hub.jina.ai/executor/d45rawx6)-based Storage, while the Query Flow could be based on [FaissPostgresSearcher](https://hub.jina.ai/executor/nflcyqe2).
 
 ```{tip}
 For a showcase code, check our [integration tests](https://github.com/jina-ai/executors/tree/main/tests/integration/psql_dump_reload).
