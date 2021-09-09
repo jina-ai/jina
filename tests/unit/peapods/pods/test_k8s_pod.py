@@ -160,6 +160,8 @@ def get_k8s_pod(
 ):
     if parallel is None:
         parallel = '1'
+    if replicas is None:
+        replicas = '1'
     parameter_list = [
         '--name',
         pod_name,
