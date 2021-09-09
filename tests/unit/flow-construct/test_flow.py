@@ -483,7 +483,7 @@ def test_flow_needs_all(protocol):
 
 
 def test_flow_with_pod_envs():
-    f = Flow.load_config('yaml/flow-with-envs.yml')
+    f = Flow.load_config(os.path.join(cur_dir, 'yaml/flow-with-envs.yml'))
 
     class EnvChecker1(BaseExecutor):
         """Class used in Flow YAML"""

@@ -101,11 +101,14 @@ def update_runtime_cls(args, copy=False) -> 'Namespace':
     if _args.runtime_cls == 'ZEDRuntime' and _args.uses.startswith('docker://'):
         _args.runtime_cls = 'ContainerRuntime'
     if _args.runtime_cls == 'ZEDRuntime' and is_valid_huburi(_args.uses):
-        _args.uses = HubIO(
-            set_hub_pull_parser().parse_args([_args.uses, '--no-usage'])
-        ).pull()
+        _hub_args = [_args.uses, '--no-usage']
+        if _args.install_requirements:
+            _hub_args.append('--install-requirements')
+
+        _args.uses = HubIO(set_hub_pull_parser().parse_args(_hub_args)).pull()
         if _args.uses.startswith('docker://'):
             _args.runtime_cls = 'ContainerRuntime'
+
     if hasattr(_args, 'protocol'):
         _args.runtime_cls = gateway_runtime_dict[_args.protocol]
 

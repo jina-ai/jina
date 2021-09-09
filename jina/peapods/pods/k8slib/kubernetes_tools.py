@@ -3,6 +3,9 @@ import tempfile
 from typing import Dict, Optional
 
 cur_dir = os.path.dirname(__file__)
+DEFAULT_RESOURCE_DIR = os.path.join(
+    cur_dir, '..', '..', '..', 'resources', 'k8s', 'template'
+)
 
 
 class K8SClients:
@@ -21,7 +24,14 @@ class K8SClients:
         # this import reads the `KUBECONFIG` env var. Lazy load to postpone the reading
         from kubernetes import config, client
 
-        config.load_kube_config()
+        try:
+            # try loading kube config from disk first
+            config.load_kube_config()
+        except config.config_exception.ConfigException:
+            # if the config could not be read from disk, try loading in cluster config
+            # this works if we are running inside k8s
+            config.load_incluster_config()
+
         self.__k8s_client = client.ApiClient()
         self.__v1 = client.CoreV1Api(api_client=self.__k8s_client)
         self.__beta = client.ExtensionsV1beta1Api(api_client=self.__k8s_client)
@@ -107,9 +117,7 @@ def _get_yaml(template: str, params: Dict, custom_resource_dir: Optional[str] = 
     if custom_resource_dir:
         path = os.path.join(custom_resource_dir, f'{template}.yml')
     else:
-        path = os.path.join(
-            cur_dir, '..', '..', '..', 'resources', 'k8s', 'template', f'{template}.yml'
-        )
+        path = os.path.join(DEFAULT_RESOURCE_DIR, f'{template}.yml')
     with open(path) as f:
         content = f.read()
         for k, v in params.items():

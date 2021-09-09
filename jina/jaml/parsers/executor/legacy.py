@@ -78,7 +78,8 @@ class LegacyParser(VersionedYAMLParser):
         arguments_from_cls = LegacyParser._get_all_arguments(cls)
         arguments_from_yaml = set(data.get('with', {}))
         difference_set = arguments_from_yaml - arguments_from_cls
-        if any(difference_set):
+        # only log warnings about unknown args for main Pea
+        if any(difference_set) and not LegacyParser.is_tail_or_head(data):
             default_logger.warning(
                 f'The arguments {difference_set} defined in the YAML are not expected in the '
                 f'class {cls.__name__}'
@@ -97,6 +98,19 @@ class LegacyParser(VersionedYAMLParser):
 
         obj.is_updated = False
         return obj
+
+    @staticmethod
+    def is_tail_or_head(data: Dict) -> bool:
+        """Based on name, compute if this is a tail/head Pea or a main Pea
+
+        :param data: the data for the parser
+        :return: True if it is tail/head, False otherwise
+        """
+        try:
+            name = data.get('runtime_args', {}).get('name', '')
+            return 'head' in name or 'tail' in name
+        except Exception as _:
+            pass  # name can be None in tests since it's not passed
 
     def dump(self, data: 'BaseExecutor') -> Dict:
         """

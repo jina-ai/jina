@@ -143,6 +143,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         ssh_keyfile: Optional[str] = None,
         ssh_password: Optional[str] = None,
         ssh_server: Optional[str] = None,
+        static_routing_table: Optional[bool] = False,
         timeout_ctrl: Optional[int] = 5000,
         timeout_ready: Optional[int] = 600000,
         title: Optional[str] = None,
@@ -223,6 +224,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param ssh_keyfile: This specifies a key to be used in ssh login, default None. regular default ssh keys will be used without specifying this argument.
         :param ssh_password: The ssh password to the ssh server.
         :param ssh_server: The SSH server through which the tunnel will be created, can actually be a fully specified `user@server:port` ssh url.
+        :param static_routing_table: Defines if the routing table should be pre computed by the Flow. In this case it is statically defined for each Pod and not send on every data request. Can not be used in combination with external pods
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
@@ -473,6 +475,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         host_in: Optional[str] = '0.0.0.0',
         host_out: Optional[str] = '0.0.0.0',
         hosts_in_connect: Optional[List[str]] = None,
+        install_requirements: Optional[bool] = False,
         log_config: Optional[str] = None,
         memory_hwm: Optional[int] = -1,
         name: Optional[str] = None,
@@ -500,6 +503,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         ssh_keyfile: Optional[str] = None,
         ssh_password: Optional[str] = None,
         ssh_server: Optional[str] = None,
+        static_routing_table: Optional[bool] = False,
         timeout_ctrl: Optional[int] = 5000,
         timeout_ready: Optional[int] = 600000,
         upload_files: Optional[List[str]] = None,
@@ -539,6 +543,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param host_in: The host address for input, by default it is 0.0.0.0
         :param host_out: The host address for output, by default it is 0.0.0.0
         :param hosts_in_connect: The host address for input, by default it is 0.0.0.0
+        :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle
         :param log_config: The YAML config of the logger used in this object.
         :param memory_hwm: The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. -1 means no restriction
         :param name: The name of this object.
@@ -590,6 +595,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param ssh_keyfile: This specifies a key to be used in ssh login, default None. regular default ssh keys will be used without specifying this argument.
         :param ssh_password: The ssh password to the ssh server.
         :param ssh_server: The SSH server through which the tunnel will be created, can actually be a fully specified `user@server:port` ssh url.
+        :param static_routing_table: Defines if the routing table should be pre computed by the Flow. In this case it is statically defined for each Pod and not send on every data request. Can not be used in combination with external pods
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever
         :param upload_files: The files on the host to be uploaded to the remote
@@ -908,7 +914,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             routing_table_copy.proto.CopyFrom(routing_table.proto)
             self._pod_nodes[
                 pod
-            ].args.send_routing_table = not self.args.static_routing_table
+            ].args.static_routing_table = self.args.static_routing_table
             # The gateway always needs the routing table to be set
             if pod == GATEWAY_NAME:
                 self._pod_nodes[pod].args.routing_table = routing_table_copy.json()

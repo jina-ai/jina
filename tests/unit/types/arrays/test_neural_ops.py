@@ -2,13 +2,13 @@ import copy
 import os
 
 import numpy as np
+import pytest
 import scipy.sparse as sp
 from scipy.spatial.distance import cdist as scipy_cdist
-import pytest
 
 from jina import Document, DocumentArray
-from jina.types.arrays.memmap import DocumentArrayMemmap
 from jina.math.dimensionality_reduction import PCA
+from jina.types.arrays.memmap import DocumentArrayMemmap
 
 
 @pytest.fixture()
@@ -110,7 +110,6 @@ def test_matching_same_results_with_sparse(
     docarrays_for_embedding_distance_computation_sparse,
     metric,
 ):
-
     D1, D2 = docarrays_for_embedding_distance_computation
     D1_sp, D2_sp = docarrays_for_embedding_distance_computation_sparse
 
@@ -136,7 +135,6 @@ def test_matching_same_results_with_batch(
     docarrays_for_embedding_distance_computation,
     metric,
 ):
-
     D1, D2 = docarrays_for_embedding_distance_computation
     D1_batch = copy.deepcopy(D1)
     D2_batch = copy.deepcopy(D2)
@@ -398,3 +396,22 @@ def test_match_inclusive_dam(tmpdir):
     assert len(da2) == 3
     traversed = dam.traverse_flat(traversal_paths=['m', 'mm', 'mmm'])
     assert len(list(traversed)) == 9
+
+
+@pytest.mark.parametrize('exclude_self, num_matches', [(True, 1), (False, 2)])
+def test_match_exclude_self(exclude_self, num_matches):
+    da1 = DocumentArray(
+        [
+            Document(id='1', embedding=np.array([1, 2])),
+            Document(id='2', embedding=np.array([3, 4])),
+        ]
+    )
+    da2 = DocumentArray(
+        [
+            Document(id='1', embedding=np.array([1, 2])),
+            Document(id='2', embedding=np.array([3, 4])),
+        ]
+    )
+    da1.match(da2, exclude_self=exclude_self)
+    for d in da1:
+        assert len(d.matches) == num_matches

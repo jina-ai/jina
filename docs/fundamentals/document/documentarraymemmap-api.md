@@ -1,11 +1,15 @@
 # DocumentArrayMemmap
 
 When your `DocumentArray` object contains a large number of `Document`, holding it in memory can be very demanding. You
-may want to use `DocumentArrayMemmap` to alleviate this issue. A `DocumentArrayMemmap` stores all Documents directly on
+may want to use `DocumentArrayMemmap` to alleviate this issue. 
+
+
+A `DocumentArrayMemmap` stores all Documents directly on
 the disk, while keeping a small lookup table in memory and a buffer pool of documents with a fixed size. The lookup 
 table contains the offset and length of each `Document`, hence it is much smaller than the full `DocumentArray`.
 Elements are loaded on-demand to memory during the access. Memory-loaded documents are kept in the buffer pool to allow 
 modifying documents.
+
 
 The next table show the speed and memory consumption when writing and reading 50,000 `Documents`.
 
@@ -16,7 +20,8 @@ The next table show the speed and memory consumption when writing and reading 50
 |Memory usage | 20MB | 342MB |
 |Disk storage | 14.3MB | 12.6MB |
 
-## Create `DocumentArrayMemmap`
+
+## Create
 
 ```python
 from jina import DocumentArrayMemmap
@@ -24,7 +29,7 @@ from jina import DocumentArrayMemmap
 dam = DocumentArrayMemmap('./my-memmap')
 ```
 
-## Add Documents to `DocumentArrayMemmap`
+## Add elements
 
 ```{code-block} python
 ---
@@ -39,22 +44,22 @@ dam = DocumentArrayMemmap('./my-memmap')
 dam.extend([d1, d2])
 ```
 
-The `dam` object stores all future Documents into `./my-memmap`, there is no need to manually call `save`/`reload`.
-Recently added, modified or accessed documents are also kept in the memory buffer so all changes to documents are 
-applied first in the memory buffer and will be persisted to disk lazily (e.g when they quit the buffer pool or when
-the `dam` object's destructor is called). If you want to instantly persist the changed documents, you can call `save`.
+The `dam` object stores all Documents into `./my-memmap` folder on the disk, there is no need to manually call save or load.
 
+### Buffer pool
 
-## Buffer pool
-A fixed number of documents are kept in the memory buffer pool. The number can be configured with the constructor
-parameter `buffer_pool_size` (1000 by default). Only the `buffer_pool_size` most recently accessed, modified or added
-documents exist in the pool. Replacement of documents uses the LRU strategy.
+Recently added, modified or accessed documents are kept in an in-memory buffer pool. This allows all changes to Documents 
+applied first in the memory and then be persisted to disk in a lazy way (i.e. when they quit the buffer pool or when
+the `dam` object's destructor is called). If you want to instantly persist the changed documents, you can call `.save()`.
+
+The number can be configured with the constructor
+argument `buffer_pool_size` (1000 by default). Only the `buffer_pool_size` most recently accessed, modified or added
+documents exist in the pool. Replacement of documents follows the LRU strategy.
 
 ```python
-from jina import DocumentArrayMemmap, Document
+from jina import DocumentArrayMemmap
 
 dam = DocumentArrayMemmap('./my-memmap', buffer_pool_size=10)
-dam.extend([Document() for _ in range(100)])
 ```
 
 ````{admonition} Warning
@@ -65,7 +70,7 @@ explains the best practices when modifying documents.
 ````
 
 (modify-memmap)=
-## Modifying elements of `DocumentArrayMemmap`
+## Modifying elements
 
 Modifying elements of a `DocumentArrayMemmap` is possible due to the fact that accessed and modified documents are kept
 in the buffer pool:
@@ -209,18 +214,18 @@ goodbye
 
 To summarize, it's a best practice to **rely on the `dam` object to reference the docs that you modify**.
 
-## Clear a `DocumentArrayMemmap`
+## Clear elements
 
 To clear all contents in a `DocumentArrayMemmap` object, simply call `.clear()`. It will clean all content on disk.
 
-### Pruning
-
+```{tip}
 One may notice another method `.prune()` that shares similar semantics. `.prune()` method is designed for "
 post-optimizing" the on-disk data structure of `DocumentArrayMemmap` object. It can reduce the on-disk usage.
+```
 
-## Side-by-side vs. `DocumentArray`
+## API side-by-side vs. DocumentArray
 
-Accessing elements in `DocumentArrayMemmap` is _almost_ the same as `DocumentArray`, you can use integer/string index to
+The API of `DocumentArrayMemmap` is _almost_ the same as `DocumentArray`, you can use integer/string index to
 access element; you can loop over a `DocumentArrayMemmap` to get all `Document`; you can use `get_attributes`
 or `traverse_flat` to achieve advanced traversal or getter.
 
@@ -250,7 +255,7 @@ This table summarizes the interfaces of `DocumentArrayMemmap` and `DocumentArray
 | `match` (L/Rvalue) |✅|✅|
 | `visualize` |✅|✅|
 
-## Convert between `DocumentArray` and `DocumentArrayMemmap`
+## Convert to/from DocumentArray
 
 ```python
 from jina import Document, DocumentArray, DocumentArrayMemmap
@@ -265,7 +270,7 @@ dam.extend(da)
 da = DocumentArray(dam)
 ```
 
-### Maintaining consistency via `.reload()` and `.save()`
+## Maintaining consistency via `.reload()` and `.save()`
 
 Considering two `DocumentArrayMemmap` objects that share the same on-disk storage `./memmap` but sit in different
 processes/threads. After some writing ops, the consistency of the lookup table and the buffer pool may be corrupted, as
@@ -295,7 +300,7 @@ assert len(dam2) == 2
 dam2.reload()
 assert len(dam2) == 0
 ```
-You don't need to use `.save` if you add new documents. However, if you modified an attribute of a document, you need
+You don't need to call `.save` if you add new documents. However, if you modified an attribute of a document, you need
 to use it:
 
 ```python
