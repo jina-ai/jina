@@ -3,11 +3,11 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark">
-  <meta property="og:title" content="Hub Executor Best Practices" />
+  <meta property="og:title" content="Best Practices" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/advanced/hub/executor-best-practices.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="When developing Hub Executors, make sure to follow these tips: Use jina hub new CLI to create an Executor. No need to write Dockerfile manually: Hubble will generate a well-optimized Dockerfile according to your Executor package. No need to bump Jina version. Fill in manifest.yml correctly.." />
+  <meta property="og:description" content="When developing Hub Executors, make sure to follow these tips: Use jina hub new CLI to create an Executor To get started, always use the command and follow the instructions. This will ensure you follow the right file structure., No need to write Dockerfile manually Hubble will generate a well-opt..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -28,7 +28,7 @@
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Remote Management via JinaD" href="../../daemon/" /><link rel="prev" title="Put into Practice" href="../practice-your-learning/" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.1.2, furo 2021.09.08"/>
-        <title>Hub Executor Best Practices - Jina Documentation</title>
+        <title>Best Practices - Jina Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -214,7 +214,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/executor/executor-built-in-features/">Executor Features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/executor/executors-in-action/">Executors in Action</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/executor/repository-structure/">Executor File Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/executor/indexers/">Indexers</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -238,7 +237,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../use-hub-executor/">Reuse Hub Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../pull-executor/">Pull Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../practice-your-learning/">Put into Practice</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Hub Executor Best Practices</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Best Practices</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../daemon/">Remote Management via JinaD</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -253,6 +252,7 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../experimental/"><svg aria-hidden="true" class="sd-octicon sd-octicon-beaker" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M5 5.782V2.5h-.25a.75.75 0 010-1.5h6.5a.75.75 0 010 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458L5 5.782zM9.5 2.5h-3V6a.75.75 0 01-.117.403L4.73 9h6.54L9.617 6.403A.75.75 0 019.5 6V2.5zm-6.9 9.847L3.775 10.5h8.45l1.175 1.847a.75.75 0 01-.633 1.153H3.233a.75.75 0 01-.633-1.153z" fill-rule="evenodd"></path></svg> Experimental Features</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../experimental/kubernetes/">Jina On Kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../experimental/indexers/">Indexers on Jina Hub</a></li>
 </ul>
 </li>
 </ul>
@@ -560,41 +560,27 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <div class="tex2jax_ignore mathjax_ignore section" id="hub-executor-best-practices">
-<span id="id1"></span><h1>Hub Executor Best Practices<a class="headerlink" href="#hub-executor-best-practices" title="Permalink to this headline">¶</a></h1>
+        <div class="tex2jax_ignore mathjax_ignore section" id="best-practices">
+<span id="hub-executor-best-practices"></span><h1>Best Practices<a class="headerlink" href="#best-practices" title="Permalink to this headline">¶</a></h1>
 <p>When developing Hub Executors, make sure to follow these tips:</p>
-<ul class="simple">
-<li><p>Use <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">hub</span> <span class="pre">new</span></code> CLI to create an Executor</p></li>
-</ul>
-<div class="hint admonition">
-<p class="admonition-title">Hint</p>
+<ul>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">hub</span> <span class="pre">new</span></code> CLI to create an Executor</p>
 <p>To get started, always use the command and follow the instructions. This will ensure you follow the right file
 structure.</p>
-</div>
-<ul class="simple">
-<li><p>No need to write Dockerfile manually: Hubble will generate a well-optimized Dockerfile according to your Executor
-package</p></li>
-</ul>
-<div class="note admonition">
-<p class="admonition-title">Note</p>
-<p>Hubble is the Jina Hub building system</p>
-</div>
-<ul class="simple">
-<li><p>No need to bump Jina version</p></li>
-</ul>
-<div class="important admonition">
-<p class="admonition-title">Important</p>
+</li>
+<li><p>No need to write Dockerfile manually</p>
+<p><abbr title="Hubble is the Jina Hub building system">Hubble</abbr> will generate a well-optimized Dockerfile according to your Executor
+package</p>
+</li>
+<li><p>No need to bump Jina version</p>
 <p>Hub executors are version-agnostic. When you pull an Executor from Hub, Hubble will always select the right Jina
 version for you. No worries about Jina version upgrade!</p>
-</div>
-<ul class="simple">
-<li><p>Fill in <code class="docutils literal notranslate"><span class="pre">manifest.yml</span></code> correctly.</p></li>
-</ul>
-<div class="hint admonition">
-<p class="admonition-title">Hint</p>
+</li>
+<li><p>Fill in <code class="docutils literal notranslate"><span class="pre">manifest.yml</span></code> correctly.</p>
 <p>Information you include in <code class="docutils literal notranslate"><span class="pre">manifest.yml</span></code> will be displayed on our website.
-Want to make your Executor eye-catching on our website ? Fill all fields in <code class="docutils literal notranslate"><span class="pre">manifest.yml</span></code> with heart &amp; love!</p>
-</div>
+Want to make your Executor eye-catching on our website? Fill all fields in <code class="docutils literal notranslate"><span class="pre">manifest.yml</span></code> with heart &amp; love!</p>
+</li>
+</ul>
 </div>
 
       </article>

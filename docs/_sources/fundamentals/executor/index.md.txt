@@ -14,7 +14,6 @@ executor-api
 executor-built-in-features
 executors-in-action
 repository-structure
-indexers
 ```
 
 ````{admonition} See Also
