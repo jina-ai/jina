@@ -38,7 +38,7 @@ class GRPCDataRuntime(BaseRuntime, ABC):
         self._pending_msgs = defaultdict(list)  # type: Dict[str, List[Message]]
         self._partial_requests = None
         self._pending_tasks = []
-        self._static_routing_table = hasattr(args, 'routing_table')
+        self._static_routing_table = args.static_routing_table
 
         self._data_request_handler = DataRequestHandler(args, self.logger)
         self._grpclet = Grpclet(
