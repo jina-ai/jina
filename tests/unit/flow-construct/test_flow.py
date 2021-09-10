@@ -835,4 +835,5 @@ def test_flow_grpc_with_shard():
     ):
         Flow(grpc_data_requests=True).add(shards=2)
         Flow(grpc_data_requests=True).add(shards=None)
-        Flow(grpc_data_requests=False).add(shards=1)
+
+    Flow(grpc_data_requests=False).add(shards=-1)
