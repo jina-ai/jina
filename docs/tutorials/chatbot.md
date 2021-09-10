@@ -190,14 +190,23 @@ with flow:
 
 Before we use it in our example, let's recap a bit of what we have seen:
 
-``` python
-from jina import Flow
-flow = Flow()          # Create Flow
-flow.add().add()       # Add elements to Flow
-flow.plot()            # Visualize a Flow
-with flow:             # Use Flow as a context manager
-    flow.index()
-```
+````{list-table}
+:header-rows: 1
+
+* - Operation
+  - Description
+* - `flow = Flow()`
+  - Create Flow
+* - `flow.add().add()`
+  - Add elements to Flow
+* - `flow.plot()`
+  - Visualize a Flow
+* - ```python
+    with flow:
+        flow.index()
+    ```
+  - Use Flow as a context manager
+````
 
 In our example, we have a Flow with two Executors (`MyTransformer` and `MyIndexer`) and we want to use our Flow to index our data. But in this case, our data is a csv file. We need to open it first.
 
@@ -215,7 +224,7 @@ Now we have our Flow ready, we can start to index. But we can't just pass the da
 ```
 
 
-### To create documents from a csv file:
+### Create documents from a csv file
 
 To create a Document in Jina, we do it like this:
 
