@@ -713,8 +713,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         )
 
         # Temporary workaround to re-import executor module when using mp spawn start
-        # method, so thta the executor is re-registered with pyyaml. A better solution
-        # probably involves deeper refactoring
+        # method, so that the executor is re-registered with pyyaml. The re-import
+        # occurs because the class will be in the arguments passed to mp.Process.start
+        # method. A better solution probably involves deeper refactoring
         if isinstance(kwargs.get('uses'), type(JAMLCompatible)):
             args._exec_cls = kwargs['uses']
 
