@@ -1252,6 +1252,13 @@
             <span class="n">kwargs</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">fallback_parsers</span><span class="o">=</span><span class="n">FALLBACK_PARSERS</span>
         <span class="p">)</span>
 
+        <span class="c1"># Temporary workaround to re-import executor module when using mp spawn start</span>
+        <span class="c1"># method, so that the executor is re-registered with pyyaml. The re-import</span>
+        <span class="c1"># occurs because the class will be in the arguments passed to mp.Process.start</span>
+        <span class="c1"># method. A better solution probably involves deeper refactoring</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'uses'</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">JAMLCompatible</span><span class="p">)):</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">_exec_cls</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">'uses'</span><span class="p">]</span>
+
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">grpc_data_requests</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="s1">'ZEDRuntime'</span><span class="p">:</span>
             <span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="s1">'GRPCDataRuntime'</span>
 

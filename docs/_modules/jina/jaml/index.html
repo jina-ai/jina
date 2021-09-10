@@ -1047,6 +1047,7 @@
 <span class="sd">        :param kwargs: kwargs for parse_config_source</span>
 <span class="sd">        :return: :class:`JAMLCompatible` object</span>
 <span class="sd">        """</span>
+
         <span class="n">stream</span><span class="p">,</span> <span class="n">s_path</span> <span class="o">=</span> <span class="n">parse_config_source</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">stream</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
             <span class="c1"># first load yml with no tag</span>

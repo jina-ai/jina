@@ -592,6 +592,10 @@
 <span class="sd">    """</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
 
+    <span class="c1"># Remove workaround used to re-import executor in spawn</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'_exec_cls'</span><span class="p">):</span>
+        <span class="k">del</span> <span class="n">args</span><span class="o">.</span><span class="n">_exec_cls</span>
+
     <span class="k">def</span> <span class="nf">_unset_envs</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">envs</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">runtime_backend</span> <span class="o">!=</span> <span class="n">RuntimeBackendType</span><span class="o">.</span><span class="n">THREAD</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">envs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
