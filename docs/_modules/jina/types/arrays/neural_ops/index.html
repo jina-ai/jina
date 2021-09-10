@@ -597,6 +597,9 @@
 <span class="sd">        :param exclude_self: if provided, Documents in ``darray`` with same ``id`` as the left-hand values will not be considered as matches.</span>
 <span class="sd">        """</span>
 
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span> <span class="ow">and</span> <span class="n">darray</span><span class="p">):</span>
+            <span class="k">return</span>
+
         <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">metric</span><span class="p">):</span>
             <span class="n">cdist</span> <span class="o">=</span> <span class="n">metric</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metric</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
