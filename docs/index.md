@@ -92,6 +92,14 @@ get-started/hello-world/index
 ```
 
 ```{toctree}
+:titlesonly:
+:caption: Build with Jina
+:hidden:
+
+/tutorials/index
+```
+
+```{toctree}
 :caption: Fundamentals
 :hidden:
 
