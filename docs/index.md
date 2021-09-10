@@ -99,7 +99,6 @@ fundamentals/concepts
 fundamentals/document/index
 fundamentals/executor/index
 fundamentals/flow/index
-fundamentals/tutorials/index
 fundamentals/clean-code
 ```
 
@@ -111,6 +110,14 @@ fundamentals/clean-code
 advanced/hub/index
 advanced/daemon/index
 advanced/experimental/index
+```
+
+```{toctree}
+:caption: Tutorials
+:hidden:
+
+tutorials/new_executor
+tutorials/practice-your-learning
 ```
 
 ```{toctree}

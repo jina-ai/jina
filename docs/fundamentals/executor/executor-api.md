@@ -152,6 +152,7 @@ either `f.post(on='/foo', ...)` or `f.post(on='/bar', ...)` to invoke that funct
 A class with no `@requests` binding plays no part in the Flow. The request will simply pass through without any
 processing.
 
+(executor-method-signature)=
 ## Method signature
 
 Class method decorated by `@request` follows the signature below:

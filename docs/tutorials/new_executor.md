@@ -18,7 +18,7 @@ We can start by installing Jina:
 pip install jina
  ```
 
-For more information on installing Jina, refer to this [page](https://github.com/jina-ai/jina#install).
+For more information on installing Jina, refer to {ref}`this page <install>`.
 
 ## Create your Executor
 
@@ -84,7 +84,7 @@ de __init__(self,
 ```{admonition} Important
 :class: important
 
-First thing you need to do before any custom logic is this. This registers the parent class, which instantiates special fields and methods.
+You need to do this before writing any custom logic. It's required in order to register the parent class, which instantiates special fields and methods.
 ```
 
 ```python
@@ -147,12 +147,15 @@ It's important to note the arguments here.
 ```{admonition} Important
 :class: important
 
-It's not possible to redefine the interface of the public methods decorated by `@requests`. You can't change the name of these arguments. To see exactly which parameters you can use, check the [Executors docs](https://docs.jina.ai/fundamentals/executor/).
+It's not possible to redefine the interface of the public methods decorated by `@requests`. You can't change the name of these arguments. To see exactly which parameters you can use, check {ref}`here <executor-method-signature>`.
 ```
 
 If you would like to call your `log` function only on `/index` time, you specify the endpoint with `on=`, like this:
 
-```python
+```{code-block} python
+---
+emphasize-lines: 1
+---
 @requests(on='/index')
 def log(self,
         docs: Optional[DocumentArray],
@@ -160,7 +163,7 @@ def log(self,
         **kwargs):
 ```
 
-If you want more information on how to use this decorator, refer to [the docs](https://docs.jina.ai/fundamentals/executor/executor-built-in-features/#handle-request-parameters). In this example, we want to call our `log` function on every request, so we don't specify any endpoint. 
+If you want more information on how to use this decorator, refer to {ref}`the documentation <executor-request-parameters>`. In this example, we want to call our `log` function on every request, so we don't specify any endpoint. 
 
 Now we can add the logic for our function. First, we will print a line that displays some information. And then, we will save the details from our Documents:
 
@@ -231,12 +234,15 @@ jina hub push --public .
 
 This means you will push your Executor publicly to Jina Hub. The last dot means you will use your current path. Once you run that command, you should see something like this:
 
-```{figure} ../../../.github/images/push-executor.png
+```{figure} ../../.github/images/push-executor.png
 :align: center
 ```
 
-Since we pushed our Executor using the `--public` flag, the only thing we will use is the ID, which, in this case, is `zsor7fe6`. 
-Let's see how to do that.
+```{admonition} Note
+:class: note
+
+Since we pushed our Executor using the `--public` flag, the only thing we will use is the ID. In this case, it's `zsor7fe6`. Refer to {ref}`Jina Hub usage <jina-hub-usage>`.
+```
 
 ### Use your Executor
 
@@ -359,7 +365,7 @@ if __name__ == '__main__':
 
 When you run this, you will see a new `workspace` folder created with two other folders inside. One called `RequestLogger` or whatever name you used in your class. And another folder for the sharding, but we won't talk about that in this tutorial because it's out of scope. Inside the sharding folder called `0`, you will see a `log.txt` file. And there you will have the 3 Documents with their information.
 
-```{figure} ../../../.github/images/log.png
+```{figure} ../../.github/images/log.png
 :align: center
 ```
 
