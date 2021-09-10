@@ -1,6 +1,6 @@
-"""Tests that flow can launch when using the swapn multiprocessing method
+"""Tests that flow can launch when using the spawn multiprocessing method
 
-T
+Currently when using class name this still breaks (see xfail)
 """
 
 import os
