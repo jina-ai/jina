@@ -4,11 +4,10 @@ import os
 import numpy as np
 import pytest
 import scipy.sparse as sp
-from scipy.spatial.distance import cdist as scipy_cdist
-
 from jina import Document, DocumentArray
 from jina.math.dimensionality_reduction import PCA
 from jina.types.arrays.memmap import DocumentArrayMemmap
+from scipy.spatial.distance import cdist as scipy_cdist
 
 
 @pytest.fixture()
@@ -415,3 +414,52 @@ def test_match_exclude_self(exclude_self, num_matches):
     da1.match(da2, exclude_self=exclude_self)
     for d in da1:
         assert len(d.matches) == num_matches
+
+
+@pytest.mark.parametrize(
+    'lhs, rhs',
+    [
+        (DocumentArray(), DocumentArray()),
+        (
+            DocumentArray(
+                [
+                    Document(embedding=np.array([3, 4])),
+                    Document(embedding=np.array([4, 5])),
+                ]
+            ),
+            DocumentArray(
+                [
+                    Document(embedding=np.array([3, 4])),
+                    Document(embedding=np.array([4, 5])),
+                ]
+            ),
+        ),
+        (
+            DocumentArray(),
+            DocumentArray(
+                [
+                    Document(embedding=np.array([3, 4])),
+                    Document(embedding=np.array([4, 5])),
+                ]
+            ),
+        ),
+        (
+            (
+                DocumentArray(
+                    [
+                        Document(embedding=np.array([3, 4])),
+                        Document(embedding=np.array([4, 5])),
+                    ]
+                )
+            ),
+            DocumentArray(),
+        ),
+        (None, DocumentArray()),
+        (DocumentArray(), None),
+    ],
+)
+def test_match_none(lhs, rhs):
+    if lhs is not None:
+        lhs.match(rhs)
+    if rhs is not None:
+        rhs.match(lhs)
