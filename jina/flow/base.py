@@ -709,7 +709,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         )
 
         # grpc data runtime does not support sharding at the moment
-        if args.grpc_data_requests and kwargs.get('shards') > 1:
+        if (
+            args.grpc_data_requests
+            and kwargs.get('shards') is not None
+            and kwargs.get('shards', 1) > 1
+        ):
             raise NotImplementedError("GRPC data runtime does not support sharding")
 
         if args.grpc_data_requests and args.runtime_cls == 'ZEDRuntime':
