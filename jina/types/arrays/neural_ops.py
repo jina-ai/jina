@@ -53,6 +53,9 @@ class DocumentArrayNeuralOpsMixin:
         :param exclude_self: if provided, Documents in ``darray`` with same ``id`` as the left-hand values will not be considered as matches.
         """
 
+        if not (self and darray):
+            return
+
         if callable(metric):
             cdist = metric
         elif isinstance(metric, str):
