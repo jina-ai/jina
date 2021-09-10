@@ -208,8 +208,8 @@ with flow, open('our_dataset.csv') as fp:
 
 Now we have our Flow ready, we can start to index. But we can't just pass the dataset in the original format to our Flow. We need to create Documents with the data we want to use.
 
-```{admonition} Note
-:class: note
+```{admonition} See Also
+:class: seealso
 `Document` is the basic data type in Jina. It can hold different types of information. You can learn more about 
 `Document` {ref}`in this section <document-cookbook>`
 ```
@@ -437,11 +437,163 @@ Since we want to call our Flow from the browser, it's important to enable
 
 
 
-Ok, so it seems that we have plenty of work done already. If you run this you will see a new tab open in your browser, and there you will have a text box ready for you to input some text. However, if you try to enter anything you won't get any results. This is because we are using dummy Executors. Our `MyTransformer` and `MyIndexer` aren't actually doing anything. So far they only print a line when they are called. So we need real Executors.
+Ok, so it seems that we have plenty of work done already. If you run this you will see a new tab open in your browser, 
+and there you will have a text box ready for you to input some text. However, if you try to enter anything you won't 
+get any results. This is because we are using dummy Executors. Our `MyTransformer` and `MyIndexer` aren't actually 
+doing anything. So far they only print a line when they are called. So we need real Executors.
 
-This has been plenty of new information you've learned so far, so we won't go deep into Executors today. Instead you can copy-paste the ones we are using for [this example](https://github.com/jina-ai/jina/blob/master/jina/helloworld/chatbot/my_executors.py), save that `my_executors.py` file in the same directory where the rest of your code is. The important part to understand is that all Executors' behavior is defined in `my_executors.py`
+## Creating Executors
+We will be creating our Executors in a separate file: `my_executors.py`.
 
-To try the Executors from the Github repo, just add this before the `download_data` function:
+First, let's import the following:
+```python
+from typing import Optional, Dict
+
+import numpy as np
+import torch
+from jina import Executor, DocumentArray, requests
+from jina.types.arrays.memmap import DocumentArrayMemmap
+from transformers import AutoModel, AutoTokenizer
+```
+
+Now, let's implement `MyTransformer`:
+```python
+class MyTransformer(Executor):
+    """Transformer executor class """
+
+    def __init__(
+        self,
+        pretrained_model_name_or_path: str = 'sentence-transformers/paraphrase-mpnet-base-v2',
+        base_tokenizer_model: Optional[str] = None,
+        pooling_strategy: str = 'mean',
+        layer_index: int = -1,
+        max_length: Optional[int] = None,
+        acceleration: Optional[str] = None,
+        embedding_fn_name: str = '__call__',
+        *args,
+        **kwargs,
+    ):
+        super().__init__(*args, **kwargs)
+        self.pretrained_model_name_or_path = pretrained_model_name_or_path
+        self.base_tokenizer_model = (
+            base_tokenizer_model or pretrained_model_name_or_path
+        )
+        self.pooling_strategy = pooling_strategy
+        self.layer_index = layer_index
+        self.max_length = max_length
+        self.acceleration = acceleration
+        self.embedding_fn_name = embedding_fn_name
+        self.tokenizer = AutoTokenizer.from_pretrained(self.base_tokenizer_model)
+        self.model = AutoModel.from_pretrained(
+            self.pretrained_model_name_or_path, output_hidden_states=True
+        )
+        self.model.to(torch.device('cpu'))
+
+    def _compute_embedding(self, hidden_states: 'torch.Tensor', input_tokens: Dict):
+        import torch
+
+        fill_vals = {'cls': 0.0, 'mean': 0.0, 'max': -np.inf, 'min': np.inf}
+        fill_val = torch.tensor(
+            fill_vals[self.pooling_strategy], device=torch.device('cpu')
+        )
+
+        layer = hidden_states[self.layer_index]
+        attn_mask = input_tokens['attention_mask'].unsqueeze(-1).expand_as(layer)
+        layer = torch.where(attn_mask.bool(), layer, fill_val)
+
+        embeddings = layer.sum(dim=1) / attn_mask.sum(dim=1)
+        return embeddings.cpu().numpy()
+
+    @requests
+    def encode(self, docs: 'DocumentArray', *args, **kwargs):
+        import torch
+
+        with torch.no_grad():
+
+            if not self.tokenizer.pad_token:
+                self.tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+                self.model.resize_token_embeddings(len(self.tokenizer.vocab))
+
+            input_tokens = self.tokenizer(
+                docs.get_attributes('content'),
+                max_length=self.max_length,
+                padding='longest',
+                truncation=True,
+                return_tensors='pt',
+            )
+            input_tokens = {
+                k: v.to(torch.device('cpu')) for k, v in input_tokens.items()
+            }
+
+            outputs = getattr(self.model, self.embedding_fn_name)(**input_tokens)
+            if isinstance(outputs, torch.Tensor):
+                return outputs.cpu().numpy()
+            hidden_states = outputs.hidden_states
+
+            embeds = self._compute_embedding(hidden_states, input_tokens)
+            for doc, embed in zip(docs, embeds):
+                doc.embedding = embed
+```
+
+`MyTransformer` exposes only one endpoint: `encode`. This will be called whenever we make a request to the flow, either 
+on query or index. The endpoint will create embeddings for the indexed or query documents so that they can be used 
+to get the closed matches.
+```{admonition} Note
+:class: note
+Encoding is a fundamental concept in neural search. It means representing the data in a vectorial form (embeddings).
+```
+
+Encoding is performed through a transformers model (`sentence-transformers/paraphrase-mpnet-base-v2` by default).
+
+Then, we can implement our indexer (`MyIndexer`):
+```python
+class MyIndexer(Executor):
+    """Simple indexer class """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._docs = DocumentArrayMemmap(self.workspace + '/indexer')
+
+    @requests(on='/index')
+    def index(self, docs: 'DocumentArray', **kwargs):
+        self._docs.extend(docs)
+
+    @requests(on='/search')
+    def search(self, docs: 'DocumentArray', **kwargs):
+        """Append best matches to each document in docs
+
+        :param docs: documents that are searched
+        :param parameters: dictionary of pairs (parameter,value)
+        :param kwargs: other keyword arguments
+        """
+        docs.match(
+            self._docs,
+            metric='cosine',
+            normalization=(1, 0),
+            limit=1,
+        )
+```
+
+`MyIndexer` exposes 2 endpoints: `index` and `search`. To perform indexing, we use 
+[DocumentArrayMemmap](https://docs.jina.ai/api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap)` 
+which is a Jina data type. Indexing is a simple as adding the documents to the `DocumentArrayMemmap`.
+
+```{admonition} See Also
+:class: seealso
+Learn more about {ref}`DocumentArrayMemmap<documentarraymemmap-api>`.
+```
+To perform the search operation, we use the method `match` which will return the top match for the query documents 
+using the cosine similarity.
+
+```{admonition} See Also
+:class: seealso
+`.match` is a method of both `DocumentArray` and `DocumentArrayMemmap`. Learn more about it {ref}`in this section<match-documentarray>`.
+```
+
+Now, `my_executors.py` should look like 
+[this file](https://github.com/jina-ai/jina/blob/master/jina/helloworld/chatbot/my_executors.py).
+
+To import the executors, just add this before the `download_data` function:
 
 ``` python
 if __name__ == '__main__':
@@ -494,6 +646,7 @@ def tutorial(args):
     class MyTransformer(Executor):
         def foo(self, **kwargs):
             print(f'foo is doing cool stuff: {kwargs}')
+    
     class MyIndexer(Executor):
         def bar(self, **kwargs):
             print(f'bar is doing cool stuff: {kwargs}')
