@@ -52,6 +52,10 @@ def run(
     """
     logger = JinaLogger(name, **vars(args))
 
+    # Remove workaround used to re-import executor in spawn
+    if hasattr(args, '_exec_cls'):
+        del args._exec_cls
+
     def _unset_envs():
         if envs and args.runtime_backend != RuntimeBackendType.THREAD:
             for k in envs.keys():

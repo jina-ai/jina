@@ -712,6 +712,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             kwargs, parser, True, fallback_parsers=FALLBACK_PARSERS
         )
 
+        # Temporary workaround to re-import executor module when using mp spawn start
+        # method, so that the executor is re-registered with pyyaml. The re-import
+        # occurs because the class will be in the arguments passed to mp.Process.start
+        # method. A better solution probably involves deeper refactoring
+        if isinstance(kwargs.get('uses'), type(JAMLCompatible)):
+            args._exec_cls = kwargs['uses']
+
         if args.grpc_data_requests and args.runtime_cls == 'ZEDRuntime':
             args.runtime_cls = 'GRPCDataRuntime'
 
