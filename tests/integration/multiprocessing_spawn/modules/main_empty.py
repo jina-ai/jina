@@ -6,7 +6,7 @@ import jina
 def run():
     from exec import Exec
 
-    with jina.Flow().add(uses=Exec) as f:
+    with jina.Flow().add() as f:
         pass
 
 
