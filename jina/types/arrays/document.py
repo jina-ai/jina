@@ -306,6 +306,9 @@ class DocumentArray(
 
         :param iterable: the iterable of Documents to extend this array with
         """
+        if not iterable:
+            return
+
         for doc in iterable:
             self.append(doc)
 

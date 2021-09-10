@@ -11,3 +11,10 @@ move it out of this section. A graduated feature may look and feel differently i
 
 
 That said, have fun!
+
+```{toctree}
+:hidden:
+
+kubernetes
+indexers
+```

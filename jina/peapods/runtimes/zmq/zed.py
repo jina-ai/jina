@@ -50,7 +50,7 @@ class ZEDRuntime(ZMQRuntime):
         self._idle_dealer_ids = set()
 
         self._data_request_handler = DataRequestHandler(self.args, self.logger)
-        self._static_routing_table = hasattr(args, 'routing_table')
+        self._static_routing_table = args.static_routing_table
 
         self._load_zmqstreamlet()
 

@@ -89,8 +89,8 @@ class Zmqlet:
 
         self.out_sockets = {}
         self._active = True
-        self._send_routing_table = args.send_routing_table
-        if hasattr(args, 'routing_table'):
+        self._static_routing_table = args.static_routing_table
+        if args.static_routing_table:
             self._routing_table = RoutingTable(args.routing_table)
         else:
             self._routing_table = None
@@ -338,7 +338,7 @@ class Zmqlet:
         for routing_table, out_sock in next_routes:
             new_envelope = jina_pb2.EnvelopeProto()
             new_envelope.CopyFrom(msg.envelope)
-            if self._send_routing_table:
+            if not self._static_routing_table:
                 new_envelope.routing_table.CopyFrom(routing_table.proto)
             new_message = Message(request=msg.request, envelope=new_envelope)
 
@@ -436,7 +436,7 @@ class AsyncZmqlet(Zmqlet):
         for routing_table, out_sock in self._get_dynamic_next_routes(msg):
             new_envelope = jina_pb2.EnvelopeProto()
             new_envelope.CopyFrom(msg.envelope)
-            if self._send_routing_table:
+            if not self._static_routing_table:
                 new_envelope.routing_table.CopyFrom(routing_table.proto)
             new_message = Message(request=msg.request, envelope=new_envelope)
             asyncio.create_task(self._send_message_via(out_sock, new_message))
