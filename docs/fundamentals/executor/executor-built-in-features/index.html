@@ -256,6 +256,10 @@
 </ul>
 </li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/new_executor/">Executor: From Zero To Hub</a></li>
+</ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -727,7 +731,7 @@ then second):</p>
 <img alt="../../../_images/workspace-inherit.svg" src="../../../_images/workspace-inherit.svg"/></div>
 </div>
 <div class="section" id="handle-request-parameters">
-<h2>Handle request parameters<a class="headerlink" href="#handle-request-parameters" title="Permalink to this headline">¶</a></h2>
+<span id="executor-request-parameters"></span><h2>Handle request parameters<a class="headerlink" href="#handle-request-parameters" title="Permalink to this headline">¶</a></h2>
 <p>Request parameters are passed to executors via <code class="docutils literal notranslate"><span class="pre">request.parameters</span></code> with <code class="docutils literal notranslate"><span class="pre">Flow.post(...,</span> <span class="pre">parameters=)</span></code>. This way all
 the <code class="docutils literal notranslate"><span class="pre">executors</span></code> will receive
 <code class="docutils literal notranslate"><span class="pre">parameters</span></code> as an argument to their <code class="docutils literal notranslate"><span class="pre">methods</span></code>. These <code class="docutils literal notranslate"><span class="pre">parameters</span></code> can be used to pass extra information or tune
