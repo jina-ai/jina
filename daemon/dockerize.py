@@ -311,7 +311,7 @@ class Dockerizer:
         """
         Local volumes to be mounted inside the container during `run`.
         .. note::
-            Local workspace should always be mounted to fefault WORKDIR for the container (/workspace).
+            Local workspace should always be mounted to default WORKDIR for the container (/workspace).
             docker sock on dockerhost should also be mounted to make sure DIND works
         :param workspace_id: workspace id
         :return: dict of volume mappings
