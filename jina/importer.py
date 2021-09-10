@@ -105,7 +105,7 @@ def _path_import(absolute_path: str):
         if user_module_name == '__init__':
             # __init__ can not be used as a module name
             spec_name = default_spec_name
-        elif user_module_name not in sys.modules:
+        elif user_module_name not in sys.builtin_module_names:
             spec_name = user_module_name
         else:
             warnings.warn(
