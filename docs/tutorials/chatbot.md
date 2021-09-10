@@ -11,19 +11,20 @@ We recommend creating a [new python virtual environment](https://docs.python.org
 
 We can start by installing Jina:
 
- ``` shell
+``` shell
 pip install jina
- ```
+```
 
+```{admonition} See Also
+:class: seealso
 For more information on installing Jina, refer to {ref}`installation page <installation>`.
+```
 
 And we need the following dependencies:
 
 
 ``` shell
-pip install click==7.1.2
-pip install transformers==4.1.1
-pip install torch==1.7.1
+pip install click==7.1.2 transformers==4.1.1 torch==1.7.1
 ```
 
 Once you have Jina and the dependencies installed, let's get a broad overview of the process we'll follow:
@@ -44,21 +45,24 @@ In this case, we are using text, but it can be whatever data type you want.
 
 Because our use case is very simple we don't need to process this data any further, and we can move straight on and encode our data into vectors then finally store those vectors, so they are ready for indexing and querying.
 
-Note: If you have a different use case or dataset you may need to process your data somehow (this is a very common task in machine learning)
-
+```{admonition} Note
+:class: note
+If you have a different use case or dataset you may need to process your data somehow (this is a very common task in machine learning)
+```
 ## Tutorial
 
 ### Define data and work directories
 
-We can start creating an empty folder, I'll call mine `tutorial` and that's the name you'll see through the tutorial but feel free to use whatever you wish.
+We can start by creating an empty folder, I'll call mine `tutorial` and that's the name you'll see through the tutorial but feel free to use whatever you wish.
 
-We will display our results in our browser, so download the static folder from [here](https://github.com/jina-ai/jina/tree/master/jina/helloworld/chatbot/static), and paste it into your tutorial folder. This is only the CSS and HTML files to render our results. We will use a dataset in a `.csv` format. I'll use the [COVID](https://www.kaggle.com/xhlulu/covidqa) dataset from Kaggle. You don't need to download this by hand, we'll do it later in our app.
+We will display our results in our browser, so download the static folder from [here](https://github.com/jina-ai/jina/tree/master/jina/helloworld/chatbot/static), and paste it into your tutorial folder. This is only the CSS and HTML files to render our results. We will use a dataset in a `.csv` format. I'll use the [COVID](https://www.kaggle.com/xhlulu/covidqa) dataset from Kaggle. 
+You don't need to download this by hand, we'll do it later in our app.
 
 ### Create a Flow
 
 The very first concept you'll see in Jina is a Flow. You can see {ref}`here <flow-cookbook>` a more formal introduction of what it is, but for now, think of the Flow as a manager in Jina, it takes care of the all the tasks that will run on your application and each Flow object will take care of one real-world task.
 
-To create a Flow you only need to import it from Jina. So open your favorite IDE, create a `app.py` file and let's start writing our code:
+To create a Flow you only need to import it from Jina. So open your favorite IDE, create an `app.py` file and let's start writing our code:
 
 ``` python
 from jina import Flow
@@ -149,7 +153,7 @@ flow = (
 
 Let's run the code we have so far. If you try it, not much will happen since we are not indexing anything yet, but you will see the new file `our_flow.svg` created on your working folder, and if you open it you would see this:
 
-```{figure} ../../.github/images/plot_flow1.png
+```{figure} ../../.github/images/plot_flow1.svg
 :align: center
 ```
 
@@ -167,7 +171,7 @@ flow = (
 
 Now if you run this, you should have a Flow that is more explicit:
 
-```{figure} ../../.github/images/plot_flow2.png
+```{figure} ../../.github/images/plot_flow2.svg
 :align: center
 ```
 
@@ -201,6 +205,13 @@ with flow, open('our_dataset.csv') as fp:
 
 Now we have our Flow ready, we can start to index. But we can't just pass the dataset in the original format to our Flow. We need to create Documents with the data we want to use.
 
+```{admonition} Note
+:class: note
+`Document` is the basic data type in Jina. It can hold different types of information. You can learn more about 
+`Document` {ref}`in this section <document-cookbook>`
+```
+
+
 ### To create documents from a csv file:
 
 To create a Document in Jina, we do it like this:
@@ -218,7 +229,7 @@ with open('our_dataset.csv') as fp:
     docs = from_csv(fp, field_resolver={'question': 'text'})
 ```
 
-So what happened there? We created a generator of Documents `docs`, and we used `from_csv` to load our dataset. We use `field_resolver` to map the text from our dataset to the Document attributes.
+So what happened there? We created a generator of Documents `docs`, and we used [from_csv](https://docs.jina.ai/api/jina.types.document.generators/#jina.types.document.generators.from_csv) to load our dataset. We use `field_resolver` to map the text from our dataset to the Document attributes.
 
 Finally, we can combine the 2 previous steps (loading the dataset into Documents and indexing in the flow) like this:
 ``` python
@@ -226,6 +237,35 @@ from jina.types.document.generators import from_csv
 with flow, open('our_dataset.csv') as fp:
     flow.index(from_csv(fp, field_resolver={'question': 'text'}))
 ```
+
+```{admonition} See Also
+:class: seealso
+[from_csv](https://docs.jina.ai/api/jina.types.document.generators/#jina.types.document.generators.from_csv) is a 
+function that belongs to the 
+[jina.types.document.generators module](https://docs.jina.ai/api/jina.types.document.generators/).
+Feel free to check it to find more generators.
+```
+
+````{admonition} Important
+:class: important
+`flow.index` will send the data to the `/index` endpoint. However, both of the added executors do not have an `/index` 
+endpoint. In fact, `MyTransformer` and `MyIndexer` only expose endpoints `/foo` and `/bar` respectively:
+```{code-block} python
+---
+emphasize-lines: 2, 6
+---
+class MyTransformer(Executor):
+    @requests(on='/foo')
+    def foo(self, **kwargs):
+        print(f'foo is doing cool stuff: {kwargs}')
+class MyIndexer(Executor):
+    @requests(on='/bar')
+    def bar(self, **kwargs):
+        print(f'bar is doing cool stuff: {kwargs}')
+```
+This simply means that no endpoint will be triggered by `flow.index`. Besides, our executors are dummy and still do not 
+have logic to index data. Later, we will modify executors so that calling `flow.index` does indeed store the dataset.
+````
 
 ### Get our data
 
@@ -318,36 +358,84 @@ If you run this, it should finish without errors. You won't see much yet because
 :align: center
 ```
 
-To actually see something we need to specify how we will display it. For our tutorial we will do so in our browser. Add the following after indexing:
+````{admonition} Note
+:class: note
+Don't worry about `args = set_hw_chatbot_parser().parse_args()`. It will just create an object with the needed 
+configurations.
+````
 
-``` python
-# switches the serving protocol to HTTP at runtime
-f.protocol = 'http'
-f.port_expose = args.port_expose
-url_html_path = 'file://' + os.path.abspath(
-    os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), 'static/index.html'
+To actually see something we need to specify how we will display it. For our tutorial we will do so in our browser. 
+Modify the function `tutorial` like so:
+
+```{code-block} python
+---
+emphasize-lines: 20, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46
+---
+def tutorial(args):
+    Path(args.workdir).mkdir(parents=True, exist_ok=True)
+    class MyTransformer(Executor):
+        @requests(on='/foo')
+        def foo(self, **kwargs):
+            print(f'foo is doing cool stuff: {kwargs}')
+    class MyIndexer(Executor):
+        @requests(on='/bar')
+        def bar(self, **kwargs):
+            print(f'bar is doing cool stuff: {kwargs}')
+    targets = {
+        'covid-csv': {
+            'url': args.index_data_url,
+            'filename': os.path.join(args.workdir, 'dataset.csv'),
+        }
+    }
+    # download the data
+    download_data(targets, args.download_proxy, task_name='download covid-dataset')
+    flow = (
+        Flow(cors=True)
+            .add(name='MyTransformer', uses=MyTransformer)
+            .add(name='MyIndexer', uses=MyIndexer)
+            .plot('test.svg')
     )
-)
-try:
-    webbrowser.open(url_html_path, new=2)
-except:
-    pass  # intentional pass, browser support isn't cross-platform
-finally:
-    default_logger.success(
-        f'You should see a demo page opened in your browser, '
-        f'if not, you may open {url_html_path} manually'
-    )
-if not args.unblock_query_flow:
-    flow.block()
+    with flow, open(targets['covid-csv']['filename']) as fp:
+        flow.index(from_csv(fp, field_resolver={'question': 'text'}))
+    
+        # switches the serving protocol to HTTP at runtime
+        flow.protocol = 'http'
+        flow.port_expose = args.port_expose
+        url_html_path = 'file://' + os.path.abspath(
+            os.path.join(
+                os.path.dirname(os.path.realpath(__file__)), 'static/index.html'
+            )
+        )
+        try:
+            webbrowser.open(url_html_path, new=2)
+        except:
+            pass  # intentional pass, browser support isn't cross-platform
+        finally:
+            default_logger.success(
+                f'You should see a demo page opened in your browser, '
+                f'if not, you may open {url_html_path} manually'
+            )
+        if not args.unblock_query_flow:
+            flow.block()
 ```
 
+```{admonition} See Also
+:class: seealso
 For more information on what the Flow is doing, and how to serve the flow with `f.block()` and configure the protocol, 
-check our {ref}`cookbook <flow-cookbook>`.
+check {ref}`the Flow fundamentals section <flow-cookbook>`.
+```
+
+```{admonition} Important
+:class: important
+Since we want to call our Flow from the browser, it's important to enable 
+[Cross-Origin Resource Sharing](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) with `Flow(cors=True)`
+```
+
+
 
 Ok, so it seems that we have plenty of work done already. If you run this you will see a new tab open in your browser, and there you will have a text box ready for you to input some text. However, if you try to enter anything you won't get any results. This is because we are using dummy Executors. Our `MyTransformer` and `MyIndexer` aren't actually doing anything. So far they only print a line when they are called. So we need real Executors.
 
-This has been plenty of new information you've learned so far, so we won't go deep into Executors today. Instead you can copy-paste the ones we are using for [this example](https://github.com/jina-ai/jina/blob/master/jina/helloworld/chatbot/executors.py), save that `executors.py` file in the same directory where the rest of your code is. The important part to understand is that all Executors' behavior is defined in `executors.py`
+This has been plenty of new information you've learned so far, so we won't go deep into Executors today. Instead you can copy-paste the ones we are using for [this example](https://github.com/jina-ai/jina/blob/master/jina/helloworld/chatbot/my_executors.py), save that `my_executors.py` file in the same directory where the rest of your code is. The important part to understand is that all Executors' behavior is defined in `my_executors.py`
 
 To try the Executors from the Github repo, just add this before the `download_data` function:
 
@@ -390,10 +478,10 @@ def download_data(targets, download_proxy=None, task_name='download covid-datase
         opener.add_handler(proxy)
     urllib.request.install_opener(opener)
     with ProgressBar(description=task_name) as t:
-        for k, v in targets.items():
-            if not os.path.exists(v['filename']):
+        for key, value in targets.items():
+            if not os.path.exists(value['filename']):
                 urllib.request.urlretrieve(
-                    v['url'], v['filename'], reporthook=lambda *x: t.update(0.01)
+                    value['url'], value['filename'], reporthook=lambda *x: t.update(0.01)
                 )
 def tutorial(args):
     Path(args.workdir).mkdir(parents=True, exist_ok=True)
@@ -414,17 +502,18 @@ def tutorial(args):
     }
     # download the data
     download_data(targets, args.download_proxy, task_name='download covid-dataset')
-    f = (
+    flow = (
         Flow(cors=True)
             .add(name='MyTransformer', uses=MyTransformer)
             .add(name='MyIndexer', uses=MyIndexer)
             .plot('test.svg')
     )
-    with f, open(targets['covid-csv']['filename']) as fp:
-        f.index(from_csv(fp, field_resolver={'question': 'text'}))
+    with flow, open(targets['covid-csv']['filename']) as fp:
+        flow.index(from_csv(fp, field_resolver={'question': 'text'}))
+        
         # switch to REST gateway at runtime
-        f.protocol = 'http'
-        f.port_expose = args.port_expose
+        flow.protocol = 'http'
+        flow.port_expose = args.port_expose
         url_html_path = 'file://' + os.path.abspath(
             os.path.join(
                 os.path.dirname(os.path.realpath(__file__)), 'static/index.html'
@@ -440,7 +529,7 @@ def tutorial(args):
                 f'if not, you may open {url_html_path} manually'
             )
         if not args.unblock_query_flow:
-            f.block()
+            flow.block()
 if __name__ == '__main__':
     args = set_hw_chatbot_parser().parse_args()
     tutorial(args)
