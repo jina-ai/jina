@@ -1,4 +1,4 @@
-# Putting It All Together
+# Put into Practice
 
 Now that you understand all fundamental concepts, let's practice the learnings and build a simple end-to-end demo.
 
