@@ -1,4 +1,4 @@
-(installation)=
+(install)=
 # Install
 
 Standard install enables the full features of Jina. 
@@ -93,7 +93,7 @@ docker run jinaai/jina:latest-perf
 Same as Minimum install, but also install `uvloop` & `lz4`.
 
 ```shell
-pip install "jina[daemon]
+pip install "jina[daemon]"
 ```
 
 
@@ -103,7 +103,7 @@ pip install "jina[daemon]
 ````{tab} via PyPI
 
 ```shell
-pip install "jina[devel]
+pip install "jina[devel]"
 ```
 
 
@@ -148,7 +148,7 @@ After installing Jina via `pip`, you should be able to use your shell's autocomp
 
 ```bash
 
-➜  _jina git:(master) ✗ jina 
+jina 
 
 --help          --version       --version-full  check           client          flow            gateway         hello-world     log             pea             ping            pod
 ```
@@ -157,7 +157,7 @@ The autocomplete is context-aware. It also works when you type a second-level ar
 
 ```bash
 
-➜  _jina git:(master) ✗ jina pod --name --lo
+jina pod --name --lo
 
 --log-profile  --log-remote   --log-sse
 ```

@@ -92,14 +92,6 @@ get-started/hello-world/index
 ```
 
 ```{toctree}
-:titlesonly:
-:caption: Build with Jina
-:hidden:
-
-/tutorials/index
-```
-
-```{toctree}
 :caption: Fundamentals
 :hidden:
 
@@ -107,7 +99,6 @@ fundamentals/concepts
 fundamentals/document/index
 fundamentals/executor/index
 fundamentals/flow/index
-fundamentals/practice-your-learning
 fundamentals/clean-code
 ```
 
@@ -119,6 +110,15 @@ fundamentals/clean-code
 advanced/hub/index
 advanced/daemon/index
 advanced/experimental/index
+```
+
+```{toctree}
+:caption: Tutorials
+:hidden:
+
+tutorials/new_executor
+tutorials/practice-your-learning
+tutorials/chatbot
 ```
 
 ```{toctree}

@@ -17,7 +17,7 @@ pip install jina
 
 ```{admonition} See Also
 :class: seealso
-For more information on installing Jina, refer to {ref}`installation page <installation>`.
+For more information on installing Jina, refer to {ref}`installation page <install>`.
 ```
 
 And we need the following dependencies:
