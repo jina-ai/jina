@@ -104,10 +104,12 @@ Now we have a Flow with two Executors. Write the following in your code:
 
 ``` python
 from jina import Executor, requests
+
 class MyTransformer(Executor):
     @requests(on='/foo')
     def foo(self, **kwargs):
         print(f'foo is doing cool stuff: {kwargs}')
+    
 class MyIndexer(Executor):
     @requests(on='/bar')
     def bar(self, **kwargs):
@@ -147,8 +149,9 @@ flow = (
         Flow()
         .add(uses=MyTransformer)
         .add(uses=MyIndexer)
-        .plot('our_flow.svg')
     )
+
+flow.plot('our_flow.svg')
 ```
 
 Let's run the code we have so far. If you try it, not much will happen since we are not indexing anything yet, but you will see the new file `our_flow.svg` created on your working folder, and if you open it you would see this:
@@ -200,7 +203,7 @@ In our example, we have a Flow with two Executors (`MyTransformer` and `MyIndexe
 
 ``` python
 with flow, open('our_dataset.csv') as fp:
-        flow.index()
+        pass            # You can here use the flow, e.g, index data
 ```
 
 Now we have our Flow ready, we can start to index. But we can't just pass the dataset in the original format to our Flow. We need to create Documents with the data we want to use.
@@ -231,7 +234,8 @@ with open('our_dataset.csv') as fp:
 
 So what happened there? We created a generator of Documents `docs`, and we used [from_csv](https://docs.jina.ai/api/jina.types.document.generators/#jina.types.document.generators.from_csv) to load our dataset. We use `field_resolver` to map the text from our dataset to the Document attributes.
 
-Finally, we can combine the 2 previous steps (loading the dataset into Documents and indexing in the flow) like this:
+Finally, we can combine the 2 previous steps (loading the dataset into Documents and starting the context) and index 
+like this:
 ``` python
 from jina.types.document.generators import from_csv
 with flow, open('our_dataset.csv') as fp:
