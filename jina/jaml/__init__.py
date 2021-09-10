@@ -507,6 +507,10 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :param kwargs: kwargs for parse_config_source
         :return: :class:`JAMLCompatible` object
         """
+        # Remove workaround used to re-import executor in spawn
+        if 'runtime_args' in kwargs and '_exec_cls' in kwargs['runtime_args']:
+            del kwargs['runtime_args']['_exec_cls']
+
         stream, s_path = parse_config_source(source, **kwargs)
         with stream as fp:
             # first load yml with no tag

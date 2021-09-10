@@ -708,6 +708,12 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             kwargs, parser, True, fallback_parsers=FALLBACK_PARSERS
         )
 
+        # Temporary workaround to re-import executor module when using mp span start
+        # method, so thta the executor is re-registered with pyyaml. A better solution
+        # probably involves deeper refactoring
+        if isinstance(kwargs.get('uses'), type(JAMLCompatible)):
+            args._exec_cls = kwargs['uses']
+
         if args.grpc_data_requests and args.runtime_cls == 'ZEDRuntime':
             args.runtime_cls = 'GRPCDataRuntime'
 
