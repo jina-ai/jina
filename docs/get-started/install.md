@@ -1,3 +1,4 @@
+(install)=
 # Install
 
 Standard install enables the full features of Jina. 
