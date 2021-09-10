@@ -846,6 +846,9 @@
 
 <span class="sd">        :param iterable: the iterable of Documents to extend this array with</span>
 <span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">iterable</span><span class="p">:</span>
+            <span class="k">return</span>
+
         <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span></div>
 
@@ -1089,7 +1092,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Sep 09, 2021.
+            Last updated on Sep 10, 2021.
         </div>
         
       </footer>
