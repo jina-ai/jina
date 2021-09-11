@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-<b>Cloud-Native <ins>Neural Search</ins><sup><a href=".github/2.0/neural-search.md">[?]</a></sup> Framework for <i>Any</i> Kind of Data</b>
+<b>Cloud-Native <ins>Neural Search</ins><sup><a href="https://docs.jina.ai/get-started/neural-search/">[?]</a></sup> Framework for <i>Any</i> Kind of Data</b>
 </p>
 
 
