@@ -14,6 +14,7 @@ import warnings
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
 from itertools import islice
+from pathlib import Path
 from types import SimpleNamespace
 from typing import (
     Tuple,
@@ -1223,8 +1224,12 @@ def is_yaml_filepath(val) -> bool:
     :param val: Path of target file.
     :return: True if the file is YAML else False.
     """
-    r = r'^[/\w\-\_\.]+.ya?ml$'
-    return re.match(r, val.strip()) is not None
+    try:
+        val_path = Path(val.strip())
+        return val_path.suffix in ['.yaml', '.yml']
+    except (OSError, RuntimeError, TypeError):
+        r = r'^[/\w\-\_\.]+.ya?ml$'
+        return re.match(r, val.strip()) is not None
 
 
 def download_mermaid_url(mermaid_url, output) -> None:
