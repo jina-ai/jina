@@ -89,6 +89,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -10394,4 +10395,24 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```3da47f52```](https://github.com/jina-ai/jina/commit/3da47f52a05f16a58adda03dd9f80a892c1ecacb)] __-__ add eah title (#3329) (*Nishil*)
  - [[```3c263658```](https://github.com/jina-ai/jina/commit/3c26365877ec8ae1f612151b43b0d4424a5b472b)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```22456093```](https://github.com/jina-ai/jina/commit/224560938238f51226e45bc696fe7679f740fff9)] __-__ __version__: the next version will be 2.0.24 (*Jina Dev Bot*)
+
+<a name=release-note-2-1-0></a>
+## Release Note (`2.1.0`)
+
+> Release time: 2021-09-12 12:07:58
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```59b67fa8```](https://github.com/jina-ai/jina/commit/59b67fa8c434dc1baff16b5ae4bee4824339e4b8)] __-__ __executor__: improve checking for executor init and @requests func (#3391) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```55954e69```](https://github.com/jina-ai/jina/commit/55954e691cded1d3269d2cde0209bb277b1e6672)] __-__ bump version to 2.1 (*Han Xiao*)
+ - [[```33f0ded3```](https://github.com/jina-ai/jina/commit/33f0ded31fa3894043c100f56a2bca3a87f0a5ec)] __-__ __version__: the next version will be 2.0.25 (*Jina Dev Bot*)
 
