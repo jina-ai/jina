@@ -27,7 +27,7 @@
 </script>
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Executor Features" href="../executor-built-in-features/" /><link rel="prev" title="Executor" href="../" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.1.2, furo 2021.09.08"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
         <title>Create Executor - Jina Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
@@ -212,7 +212,7 @@
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../">Executor</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Create Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../executor-built-in-features/">Executor Features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../executors-in-action/">Executors in Action</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../executors-in-action/">Executor in Action</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../repository-structure/">Executor File Structure</a></li>
 </ul>
 </li>
@@ -575,7 +575,7 @@ functions with arbitrary names.</p></li>
 </ul>
 <div class="section" id="minimum-working-example">
 <h2>Minimum working example<a class="headerlink" href="#minimum-working-example" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 
 
 <span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
@@ -605,14 +605,17 @@ functions with arbitrary names.</p></li>
 </div>
 </div>
 </div>
-<div class="section" id="inheritance">
-<h2>Inheritance<a class="headerlink" href="#inheritance" title="Permalink to this headline">¶</a></h2>
-<p>Every new executor should be inherited directly from <code class="docutils literal notranslate"><span class="pre">jina.Executor</span></code>.</p>
+<div class="section" id="constructor">
+<h2>Constructor<a class="headerlink" href="#constructor" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="subclass">
+<h3>Subclass<a class="headerlink" href="#subclass" title="Permalink to this headline">¶</a></h3>
+<p>Every new executor should be subclass from <code class="docutils literal notranslate"><span class="pre">jina.Executor</span></code>.</p>
 <p>You can name your executor class freely.</p>
 </div>
-<div class="section" id="init-constructor">
-<h2><code class="docutils literal notranslate"><span class="pre">__init__</span></code> Constructor<a class="headerlink" href="#init-constructor" title="Permalink to this headline">¶</a></h2>
-<p>If your executor defines <code class="docutils literal notranslate"><span class="pre">__init__</span></code>, it needs to carry <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> in the signature and call <code class="docutils literal notranslate"><span class="pre">super().__init__(**kwargs)</span></code>
+<div class="section" id="init">
+<h3><code class="docutils literal notranslate"><span class="pre">__init__</span></code><a class="headerlink" href="#init" title="Permalink to this headline">¶</a></h3>
+<p>No need to implement <code class="docutils literal notranslate"><span class="pre">__init__</span></code> if your <code class="docutils literal notranslate"><span class="pre">Executor</span></code> does not contain initial states.</p>
+<p>If your executor has <code class="docutils literal notranslate"><span class="pre">__init__</span></code>, it needs to carry <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> in the signature and call <code class="docutils literal notranslate"><span class="pre">super().__init__(**kwargs)</span></code>
 in the body:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
 
@@ -625,25 +628,78 @@ in the body:</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">foo</span> <span class="o">=</span> <span class="n">foo</span>
 </pre></div>
 </div>
+<div class="tip admonition">
+<p class="admonition-title">What is inside kwargs? </p>
 <p>Here, <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> contains <code class="docutils literal notranslate"><span class="pre">metas</span></code> and <code class="docutils literal notranslate"><span class="pre">requests</span></code> (representing the request-to-function mapping) values from the YAML
 config and <code class="docutils literal notranslate"><span class="pre">runtime_args</span></code> injected on startup.</p>
-<div class="note admonition">
-<p class="admonition-title">Note</p>
 <p>You can access the values of these arguments in <code class="docutils literal notranslate"><span class="pre">__init__</span></code> body via <code class="docutils literal notranslate"><span class="pre">self.metas</span></code>/<code class="docutils literal notranslate"><span class="pre">self.requests</span></code>/<code class="docutils literal notranslate"><span class="pre">self.runtime_args</span></code>,
 or modifying their values before sending to <code class="docutils literal notranslate"><span class="pre">super().__init__()</span></code>.</p>
 </div>
-<div class="hint admonition">
+</div>
+<div class="section" id="passing-arguments">
+<h3>Passing arguments<a class="headerlink" href="#passing-arguments" title="Permalink to this headline">¶</a></h3>
+<p>When using an Executor in a Flow, there are two ways of passing arguments to its <code class="docutils literal notranslate"><span class="pre">__init__</span></code>.</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">via uses_with</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span> <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">'foo'</span><span class="p">:</span> <span class="s1">'hello'</span><span class="p">,</span> <span class="s1">'bar'</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+  <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--2">via predefined YAML</label><div class="tab-content docutils">
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3" open="open">
+<summary class="sd-summary-title sd-card-header">
+my-exec.yml<div class="sd-summary-down docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-down" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z" fill-rule="evenodd"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-up" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z" fill-rule="evenodd"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MyExecutor</span>
+<span class="nt">with</span><span class="p">:</span>
+  <span class="nt">foo</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello</span>
+  <span class="nt">bar</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+</pre></div>
+</div>
+</div>
+</details><details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3" open="open">
+<summary class="sd-summary-title sd-card-header">
+my-flow.py<div class="sd-summary-down docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-down" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z" fill-rule="evenodd"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-up" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z" fill-rule="evenodd"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">'my-exec.yml'</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+  <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+</details></div>
+</div>
+<div class="admonition hint">
 <p class="admonition-title">Hint</p>
-<p>No need to implement <code class="docutils literal notranslate"><span class="pre">__init__</span></code> if your <code class="docutils literal notranslate"><span class="pre">Executor</span></code> does not contain initial states.</p>
+<p><code class="docutils literal notranslate"><span class="pre">uses_with</span></code> has higher priority than predefined <code class="docutils literal notranslate"><span class="pre">with</span></code> config in YAML. When both presented, <code class="docutils literal notranslate"><span class="pre">uses_with</span></code> is picked up first.</p>
 </div>
 </div>
-<div class="section" id="method-naming">
-<h2>Method naming<a class="headerlink" href="#method-naming" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">Executor</span></code>’s methods can be named freely. Methods that are not decorated with <code class="docutils literal notranslate"><span class="pre">@requests</span></code> are irrelevant to Jina.</p>
 </div>
-<div class="section" id="requests-decorator">
-<h2><code class="docutils literal notranslate"><span class="pre">@requests</span></code> decorator<a class="headerlink" href="#requests-decorator" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">@requests</span></code> defines when a function will be invoked. It has a keyword <code class="docutils literal notranslate"><span class="pre">on=</span></code> to define the endpoint.</p>
+<div class="section" id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
+<p>Methods of <code class="docutils literal notranslate"><span class="pre">Executor</span></code> can be named and wrote freely.</p>
+<p>Only methods that are decorated with <code class="docutils literal notranslate"><span class="pre">@requests</span></code> can be used in a <code class="docutils literal notranslate"><span class="pre">Flow</span></code>.</p>
+<div class="section" id="method-decorator">
+<h3>Method decorator<a class="headerlink" href="#method-decorator" title="Permalink to this headline">¶</a></h3>
+<p>You can import <code class="docutils literal notranslate"><span class="pre">requests</span></code> decorator via</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">requests</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">@requests</span></code> defines when a function will be invoked in the Flow. It has a keyword <code class="docutils literal notranslate"><span class="pre">on=</span></code> to define the endpoint.</p>
 <p>To call an Executor’s function, uses <code class="docutils literal notranslate"><span class="pre">Flow.post(on=...,</span> <span class="pre">...)</span></code>. For example, given:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">requests</span>
 
@@ -673,8 +729,8 @@ or modifying their values before sending to <code class="docutils literal notran
 <li><p><code class="docutils literal notranslate"><span class="pre">f.post(on='/random_work',</span> <span class="pre">...)</span></code> will trigger <code class="docutils literal notranslate"><span class="pre">MyExecutor.bar</span></code>;</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">f.post(on='/blah',</span> <span class="pre">...)</span></code> will not trigger any function, as no function is bound to <code class="docutils literal notranslate"><span class="pre">/blah</span></code>;</p></li>
 </ul>
-<div class="section" id="default-binding-requests-without-on">
-<h3>Default binding: <code class="docutils literal notranslate"><span class="pre">@requests</span></code> without <code class="docutils literal notranslate"><span class="pre">on=</span></code><a class="headerlink" href="#default-binding-requests-without-on" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="default-binding">
+<h4>Default binding<a class="headerlink" href="#default-binding" title="Permalink to this headline">¶</a></h4>
 <p>A class method decorated with plain <code class="docutils literal notranslate"><span class="pre">@requests</span></code> (without <code class="docutils literal notranslate"><span class="pre">on=</span></code>) is the default handler for all endpoints. That means it
 is the fallback handler for endpoints that are not found. <code class="docutils literal notranslate"><span class="pre">f.post(on='/blah',</span> <span class="pre">...)</span></code> will invoke <code class="docutils literal notranslate"><span class="pre">MyExecutor.foo</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
@@ -692,19 +748,19 @@ is the fallback handler for endpoints that are not found. <code class="docutils 
 </pre></div>
 </div>
 </div>
-<div class="section" id="multiple-bindings-requests-on">
-<h3>Multiple bindings: <code class="docutils literal notranslate"><span class="pre">@requests(on=[...])</span></code><a class="headerlink" href="#multiple-bindings-requests-on" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="multiple-bindings">
+<h4>Multiple bindings<a class="headerlink" href="#multiple-bindings" title="Permalink to this headline">¶</a></h4>
 <p>To bind a method with multiple endpoints, you can use <code class="docutils literal notranslate"><span class="pre">@requests(on=['/foo',</span> <span class="pre">'/bar'])</span></code>. This allows
 either <code class="docutils literal notranslate"><span class="pre">f.post(on='/foo',</span> <span class="pre">...)</span></code> or <code class="docutils literal notranslate"><span class="pre">f.post(on='/bar',</span> <span class="pre">...)</span></code> to invoke that function.</p>
 </div>
 <div class="section" id="no-binding">
-<h3>No binding<a class="headerlink" href="#no-binding" title="Permalink to this headline">¶</a></h3>
+<h4>No binding<a class="headerlink" href="#no-binding" title="Permalink to this headline">¶</a></h4>
 <p>A class with no <code class="docutils literal notranslate"><span class="pre">@requests</span></code> binding plays no part in the Flow. The request will simply pass through without any
 processing.</p>
 </div>
 </div>
 <div class="section" id="method-signature">
-<span id="executor-method-signature"></span><h2>Method signature<a class="headerlink" href="#method-signature" title="Permalink to this headline">¶</a></h2>
+<span id="executor-method-signature"></span><h3>Method signature<a class="headerlink" href="#method-signature" title="Permalink to this headline">¶</a></h3>
 <p>Class method decorated by <code class="docutils literal notranslate"><span class="pre">@request</span></code> follows the signature below:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DocumentArray</span><span class="p">],</span>
         <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
@@ -714,9 +770,6 @@ processing.</p>
     <span class="k">pass</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="method-arguments">
-<h2>Method arguments<a class="headerlink" href="#method-arguments" title="Permalink to this headline">¶</a></h2>
 <p>The Executor’s method receive the following arguments in order:</p>
 <div class="table-wrapper"><table border="1" class="docutils">
 <thead>
@@ -788,7 +841,7 @@ processing.</p>
 </div>
 </div>
 <div class="section" id="method-returns">
-<h2>Method returns<a class="headerlink" href="#method-returns" title="Permalink to this headline">¶</a></h2>
+<h3>Method returns<a class="headerlink" href="#method-returns" title="Permalink to this headline">¶</a></h3>
 <p>Methods decorated with <code class="docutils literal notranslate"><span class="pre">@request</span></code> can return <code class="docutils literal notranslate"><span class="pre">Optional[DocumentArray]</span></code>.</p>
 <p>The return is optional. <strong>All changes happen in-place.</strong></p>
 <ul class="simple">
@@ -798,11 +851,8 @@ returned <code class="docutils literal notranslate"><span class="pre">DocumentAr
 made in-place, there is no point to assign the value.</p></li>
 </ul>
 <p>So do I need a return? No, unless you must create a new <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>. Let’s see some examples.</p>
-</div>
-<div class="section" id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="embed-documents-blob">
-<h3>Embed Documents <code class="docutils literal notranslate"><span class="pre">blob</span></code><a class="headerlink" href="#embed-documents-blob" title="Permalink to this headline">¶</a></h3>
+<h4>Embed Documents <code class="docutils literal notranslate"><span class="pre">blob</span></code><a class="headerlink" href="#embed-documents-blob" title="Permalink to this headline">¶</a></h4>
 <p>In this example, <code class="docutils literal notranslate"><span class="pre">encode()</span></code> uses some neural network to get the embedding for each <code class="docutils literal notranslate"><span class="pre">Document.blob</span></code>, then assign it
 to <code class="docutils literal notranslate"><span class="pre">Document.embedding</span></code>. The whole procedure is in-place and there is no need to return anything.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -826,7 +876,7 @@ to <code class="docutils literal notranslate"><span class="pre">Document.embeddi
 </div>
 </div>
 <div class="section" id="add-chunks-by-segmenting-document">
-<h3>Add Chunks by segmenting Document<a class="headerlink" href="#add-chunks-by-segmenting-document" title="Permalink to this headline">¶</a></h3>
+<h4>Add Chunks by segmenting Document<a class="headerlink" href="#add-chunks-by-segmenting-document" title="Permalink to this headline">¶</a></h4>
 <p>In this example, each <code class="docutils literal notranslate"><span class="pre">Document</span></code> is segmented by <code class="docutils literal notranslate"><span class="pre">get_mesh</span></code> and the results are added to <code class="docutils literal notranslate"><span class="pre">.chunks</span></code>. After
 that, <code class="docutils literal notranslate"><span class="pre">.buffer</span></code> and <code class="docutils literal notranslate"><span class="pre">.uri</span></code> are removed from each <code class="docutils literal notranslate"><span class="pre">Document</span></code>. In this case, all changes happen in-place and there is no
 need to return anything.</p>
@@ -845,7 +895,7 @@ need to return anything.</p>
 </div>
 </div>
 <div class="section" id="preserve-document-id-only">
-<h3>Preserve Document <code class="docutils literal notranslate"><span class="pre">id</span></code> only<a class="headerlink" href="#preserve-document-id-only" title="Permalink to this headline">¶</a></h3>
+<h4>Preserve Document <code class="docutils literal notranslate"><span class="pre">id</span></code> only<a class="headerlink" href="#preserve-document-id-only" title="Permalink to this headline">¶</a></h4>
 <p>In this example, a simple indexer stores incoming <code class="docutils literal notranslate"><span class="pre">docs</span></code> in a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>. Then it recreates a new <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>
 by preserving only <code class="docutils literal notranslate"><span class="pre">id</span></code> in the original <code class="docutils literal notranslate"><span class="pre">docs</span></code> and dropping all others, as the developer does not want to carry all rich
 info over the network. This needs a return.</p>
@@ -864,6 +914,7 @@ info over the network. This needs a return.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
 <span class="hll">        <span class="k">return</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">])</span>
 </span></pre></div>
+</div>
 </div>
 </div>
 </div>
@@ -917,22 +968,26 @@ info over the network. This needs a return.</p>
             <ul>
 <li><a class="reference internal" href="#">Create Executor</a><ul>
 <li><a class="reference internal" href="#minimum-working-example">Minimum working example</a></li>
-<li><a class="reference internal" href="#inheritance">Inheritance</a></li>
-<li><a class="reference internal" href="#init-constructor"><code class="docutils literal notranslate"><span class="pre">__init__</span></code> Constructor</a></li>
-<li><a class="reference internal" href="#method-naming">Method naming</a></li>
-<li><a class="reference internal" href="#requests-decorator"><code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> decorator</a><ul>
-<li><a class="reference internal" href="#default-binding-requests-without-on">Default binding: <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> without <code class="docutils literal notranslate"><span class="pre">on=</span></code></a></li>
-<li><a class="reference internal" href="#multiple-bindings-requests-on">Multiple bindings: <code class="docutils literal notranslate"><span class="pre">&#64;requests(on=[...])</span></code></a></li>
+<li><a class="reference internal" href="#constructor">Constructor</a><ul>
+<li><a class="reference internal" href="#subclass">Subclass</a></li>
+<li><a class="reference internal" href="#init"><code class="docutils literal notranslate"><span class="pre">__init__</span></code></a></li>
+<li><a class="reference internal" href="#passing-arguments">Passing arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#methods">Methods</a><ul>
+<li><a class="reference internal" href="#method-decorator">Method decorator</a><ul>
+<li><a class="reference internal" href="#default-binding">Default binding</a></li>
+<li><a class="reference internal" href="#multiple-bindings">Multiple bindings</a></li>
 <li><a class="reference internal" href="#no-binding">No binding</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#method-signature">Method signature</a></li>
-<li><a class="reference internal" href="#method-arguments">Method arguments</a></li>
-<li><a class="reference internal" href="#method-returns">Method returns</a></li>
-<li><a class="reference internal" href="#examples">Examples</a><ul>
+<li><a class="reference internal" href="#method-returns">Method returns</a><ul>
 <li><a class="reference internal" href="#embed-documents-blob">Embed Documents <code class="docutils literal notranslate"><span class="pre">blob</span></code></a></li>
 <li><a class="reference internal" href="#add-chunks-by-segmenting-document">Add Chunks by segmenting Document</a></li>
 <li><a class="reference internal" href="#preserve-document-id-only">Preserve Document <code class="docutils literal notranslate"><span class="pre">id</span></code> only</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

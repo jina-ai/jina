@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/send-recv.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content=".post() is the core method for sending data to a Flow object, it provides multiple callbacks for fetching results from the Flow. from jina import Flow f = Flow().add(...) with f: f.post(...) Input data to Flow: def post( self, on: str, inputs: Optional[InputType] = None, on_done: CallbackFnType =..." />
+  <meta property="og:description" content=".post() is the core method for sending data to a Flow object, it provides multiple callbacks for fetching results from the Flow. from jina import Flow f = Flow().add(...) with f: f.post(...) Request data: Request data can be a single Document object, an iterator of Document, a generator of Docume..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -27,7 +27,7 @@
 </script>
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Add Executor" href="../add-exec-to-flow/" /><link rel="prev" title="Create Flow" href="../flow-api/" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.1.2, furo 2021.09.08"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
         <title>Flow IO - Jina Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
@@ -212,7 +212,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/executor-api/">Create Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/executor-built-in-features/">Executor Features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../executor/executors-in-action/">Executors in Action</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/executors-in-action/">Executor in Action</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/repository-structure/">Executor File Structure</a></li>
 </ul>
 </li>
@@ -579,41 +579,6 @@
 <p class="admonition-title">Caution</p>
 <p><code class="docutils literal notranslate"><span class="pre">.post()</span></code> must be called <em>inside</em> the <code class="docutils literal notranslate"><span class="pre">with</span></code> context.</p>
 </div>
-<div class="section" id="input-data-to-flow">
-<h2>Input data to Flow<a class="headerlink" href="#input-data-to-flow" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">post</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">on</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">inputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">InputType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">on_done</span><span class="p">:</span> <span class="n">CallbackFnType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">on_error</span><span class="p">:</span> <span class="n">CallbackFnType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">on_always</span><span class="p">:</span> <span class="n">CallbackFnType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">target_peapod</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">request_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
-        <span class="n">show_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">continue_on_error</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">return_results</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">"""Post a general data request to the Flow.</span>
-<span class="sd">  </span>
-<span class="sd">    :param on: the endpoint is used for identifying the user-defined ``request_type``, labeled by ``@requests(on='/abc')``</span>
-<span class="sd">    :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id.</span>
-<span class="sd">    :param on_done: the function to be called when the :class:`Request` object is resolved.</span>
-<span class="sd">    :param on_error: the function to be called when the :class:`Request` object is rejected.</span>
-<span class="sd">    :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.</span>
-<span class="sd">    :param target_peapod: a regex string represent the certain peas/pods request targeted</span>
-<span class="sd">    :param parameters: the kwargs that will be sent to the executor</span>
-<span class="sd">    :param request_size: the number of Documents per request. &lt;=0 means all inputs in one request.</span>
-<span class="sd">    :param show_progress: if set, client will show a progress bar on receiving every request.</span>
-<span class="sd">    :param continue_on_error: if set, a Request that causes callback error will be logged only without blocking the further requests.</span>
-<span class="sd">    :param return_results: if set, the results of all Requests will be returned as a list. This is useful when one wants process Responses in bulk instead of using callback.</span>
-<span class="sd">    :param kwargs: additional parameters</span>
-<span class="sd">    :return: None</span>
-<span class="sd">    """</span>
-</pre></div>
-</div>
 <div class="hint admonition">
 <p class="admonition-title">Hint</p>
 <p>You can also use CRUD methods (<code class="docutils literal notranslate"><span class="pre">index</span></code>, <code class="docutils literal notranslate"><span class="pre">search</span></code>, <code class="docutils literal notranslate"><span class="pre">update</span></code>, <code class="docutils literal notranslate"><span class="pre">delete</span></code>) which are just sugary syntax of <code class="docutils literal notranslate"><span class="pre">post</span></code>
@@ -626,8 +591,51 @@ with <code class="docutils literal notranslate"><span class="pre">on='/index'</s
 </pre></div>
 </div>
 </div>
-<div class="section" id="send-request-parameters">
-<h3>Send request parameters<a class="headerlink" href="#send-request-parameters" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="request-data">
+<h2>Request data<a class="headerlink" href="#request-data" title="Permalink to this headline">¶</a></h2>
+<p>Request data can be a single <code class="docutils literal notranslate"><span class="pre">Document</span></code> object, an iterator of <code class="docutils literal notranslate"><span class="pre">Document</span></code>, a generator of <code class="docutils literal notranslate"><span class="pre">Document</span></code>, a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>
+object, and None.</p>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArrayMemmap</span>
+
+<span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'hello'</span><span class="p">)</span>
+<span class="n">d2</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'world'</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">doc_gen</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="sa">f</span><span class="s1">'hello </span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+
+
+<span class="k">with</span> <span class="n">Flow</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="n">d1</span><span class="p">)</span>  <span class="c1"># Single document</span>
+
+    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="p">[</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">])</span>  <span class="c1"># a list of Document</span>
+
+    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="n">doc_gen</span><span class="p">)</span>  <span class="c1"># Document generator</span>
+
+    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">]))</span>  <span class="c1"># DocumentArray</span>
+    
+    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="n">DocumentArrayMemmap</span><span class="p">(</span><span class="s1">'./my-mmap'</span><span class="p">))</span>  <span class="c1"># DocumentArray</span>
+
+    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/'</span><span class="p">)</span>  <span class="c1"># empty</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Document</span></code> module provides some methods that lets you build <code class="docutils literal notranslate"><span class="pre">Document</span></code> generator, e.g. <a class="reference external" href="Document.md#construct-from-json-csv-ndarray-and-files"><code class="docutils literal notranslate"><span class="pre">from_csv</span></code>
+, <code class="docutils literal notranslate"><span class="pre">from_files</span></code>, <code class="docutils literal notranslate"><span class="pre">from_ndarray</span></code>, <code class="docutils literal notranslate"><span class="pre">from_ndjson</span></code></a>. They can be used
+in conjunction with <code class="docutils literal notranslate"><span class="pre">.post()</span></code>, e.g.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+<span class="kn">from</span> <span class="nn">jina.types.document.generators</span> <span class="kn">import</span> <span class="n">from_csv</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">f</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'my.csv'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+<span class="hll">    <span class="n">f</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">from_csv</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">field_resolver</span><span class="o">=</span><span class="p">{</span><span class="s1">'question'</span><span class="p">:</span> <span class="s1">'text'</span><span class="p">}))</span>
+</span></pre></div>
+</div>
+</div>
+<div class="section" id="request-parameters">
+<h2>Request parameters<a class="headerlink" href="#request-parameters" title="Permalink to this headline">¶</a></h2>
 <p>To send parameters to the Executor, use</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span>
 
@@ -654,11 +662,74 @@ with <code class="docutils literal notranslate"><span class="pre">on='/index'</s
 </div>
 <p>This is useful to control <code class="docutils literal notranslate"><span class="pre">Executor</span></code> objects in the runtime.</p>
 </div>
+<p>If user wants different executors to have different values of the same parameters, one can specify specific parameters for the specific <code class="docutils literal notranslate"><span class="pre">executor</span></code> by adding a dictionary inside parameters
+with the <code class="docutils literal notranslate"><span class="pre">executor</span></code> name as <code class="docutils literal notranslate"><span class="pre">key</span></code>. Jina will then take all these specific parameters and copy to the root of the
+parameters dictionary before calling the executor <code class="docutils literal notranslate"><span class="pre">method</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Flow</span>
+
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_param</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_param</span> <span class="o">=</span> <span class="n">default_param</span>
+
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DocumentArray</span><span class="p">],</span> <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">param</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'param'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_param</span><span class="p">)</span>
+        <span class="c1"># param may be overriden for this specific request. </span>
+        <span class="c1"># The first instance will receive 10, and the second one will receive 5</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'my-executor-1'</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">param</span> <span class="o">==</span> <span class="mi">10</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'my-executor-2'</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">param</span> <span class="o">==</span> <span class="mi">5</span>
+
+
+<span class="k">with</span> <span class="p">(</span><span class="n">Flow</span><span class="p">()</span><span class="o">.</span>
+        <span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="p">{</span><span class="s1">'jtype'</span><span class="p">:</span> <span class="s1">'MyExecutor'</span><span class="p">,</span> <span class="s1">'metas'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'name'</span><span class="p">:</span> <span class="s1">'my-executor-1'</span><span class="p">}})</span><span class="o">.</span>
+        <span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="p">{</span><span class="s1">'jtype'</span><span class="p">:</span> <span class="s1">'MyExecutor'</span><span class="p">,</span> <span class="s1">'metas'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'name'</span><span class="p">:</span> <span class="s1">'my-executor-2'</span><span class="p">}}))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="hll">    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/endpoint'</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">([]),</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">'param'</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">'my-executor-1'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'param'</span><span class="p">:</span> <span class="mi">10</span><span class="p">}})</span>
+</span></pre></div>
 </div>
-<div class="section" id="fine-grained-control-on-input">
-<h3>Fine-grained control on input<a class="headerlink" href="#fine-grained-control-on-input" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="size-of-the-request">
-<h4>Size of the request<a class="headerlink" href="#size-of-the-request" title="Permalink to this headline">¶</a></h4>
+<p>Note, as <code class="docutils literal notranslate"><span class="pre">parameters</span></code> does not have a fixed schema, it is declared with type <code class="docutils literal notranslate"><span class="pre">google.protobuf.Struct</span></code> in the <code class="docutils literal notranslate"><span class="pre">RequestProto</span></code>
+protobuf declaration. However, <code class="docutils literal notranslate"><span class="pre">google.protobuf.Struct</span></code> follows the JSON specification and does not
+differentiate <code class="docutils literal notranslate"><span class="pre">int</span></code> from <code class="docutils literal notranslate"><span class="pre">float</span></code>. <strong>So, data of type <code class="docutils literal notranslate"><span class="pre">int</span></code> in <code class="docutils literal notranslate"><span class="pre">parameters</span></code> will be casted to <code class="docutils literal notranslate"><span class="pre">float</span></code> when request is
+sent to executor.</strong></p>
+<p>As a result, users need be explicit and cast the data to the expected type as follows.</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">✅ Do</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="n">animals</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'cat'</span><span class="p">,</span> <span class="s1">'dog'</span><span class="p">,</span> <span class="s1">'turtle'</span><span class="p">]</span>
+    <span class="nd">@request</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># need to cast to int since list indices must be integers not float</span>
+<span class="hll">        <span class="n">index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'index'</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+</span><span class="hll">        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">animals</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'dog'</span>
+</span>
+<span class="k">with</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/endpoint'</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">([]),</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">'index'</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">😔 Don’t</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyIndexer</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="n">animals</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'cat'</span><span class="p">,</span> <span class="s1">'dog'</span><span class="p">,</span> <span class="s1">'turtle'</span><span class="p">]</span>
+    <span class="nd">@request</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+          <span class="c1"># ERROR: list indices must be integer not float</span>
+<span class="hll">          <span class="n">index</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'index'</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class="hll">          <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">animals</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'dog'</span>
+</span>
+<span class="k">with</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/endpoint'</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">([]),</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">'index'</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="size-of-request">
+<h2>Size of request<a class="headerlink" href="#size-of-request" title="Permalink to this headline">¶</a></h2>
 <p>You can control how many <code class="docutils literal notranslate"><span class="pre">Documents</span></code> in each request by <code class="docutils literal notranslate"><span class="pre">request_size</span></code>. Say your <code class="docutils literal notranslate"><span class="pre">inputs</span></code> has length of 100, whereas
 you <code class="docutils literal notranslate"><span class="pre">request_size</span></code> is set to <code class="docutils literal notranslate"><span class="pre">10</span></code>. Then <code class="docutils literal notranslate"><span class="pre">f.post</span></code> will send ten requests and return 10 responses:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Document</span>
@@ -692,51 +763,8 @@ you <code class="docutils literal notranslate"><span class="pre">request_size</s
 </pre></div>
 </div>
 </div>
-</div>
-<div class="section" id="input-data-types">
-<h3>Input data types<a class="headerlink" href="#input-data-types" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">inputs</span></code> can take a single <code class="docutils literal notranslate"><span class="pre">Document</span></code> object, an iterator of <code class="docutils literal notranslate"><span class="pre">Document</span></code>, a generator of <code class="docutils literal notranslate"><span class="pre">Document</span></code>, a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>
-object, and None.</p>
-<p>For example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
-
-<span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'hello'</span><span class="p">)</span>
-<span class="n">d2</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'world'</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">doc_gen</span><span class="p">():</span>
-    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
-        <span class="k">yield</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="sa">f</span><span class="s1">'hello </span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-
-
-<span class="k">with</span> <span class="n">Flow</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="n">d1</span><span class="p">)</span>  <span class="c1"># Single document</span>
-
-    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="p">[</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">])</span>  <span class="c1"># a list of Document</span>
-
-    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="n">doc_gen</span><span class="p">)</span>  <span class="c1"># Document generator</span>
-
-    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">]))</span>  <span class="c1"># DocumentArray</span>
-
-    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/'</span><span class="p">)</span>  <span class="c1"># empty</span>
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">Document</span></code> module provides some methods that lets you build <code class="docutils literal notranslate"><span class="pre">Document</span></code> generator, e.g. <a class="reference external" href="Document.md#construct-from-json-csv-ndarray-and-files"><code class="docutils literal notranslate"><span class="pre">from_csv</span></code>
-, <code class="docutils literal notranslate"><span class="pre">from_files</span></code>, <code class="docutils literal notranslate"><span class="pre">from_ndarray</span></code>, <code class="docutils literal notranslate"><span class="pre">from_ndjson</span></code></a>. They can be used
-in conjunction with <code class="docutils literal notranslate"><span class="pre">.post()</span></code>, e.g.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
-<span class="kn">from</span> <span class="nn">jina.types.document.generators</span> <span class="kn">import</span> <span class="n">from_csv</span>
-
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span>
-
-<span class="k">with</span> <span class="n">f</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'my.csv'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
-<span class="hll">    <span class="n">f</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">from_csv</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">field_resolver</span><span class="o">=</span><span class="p">{</span><span class="s1">'question'</span><span class="p">:</span> <span class="s1">'text'</span><span class="p">}))</span>
-</span></pre></div>
-</div>
-</div>
-</div>
-<div class="section" id="fetch-flow-output">
-<h2>Fetch Flow output<a class="headerlink" href="#fetch-flow-output" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="response-result">
+<h2>Response result<a class="headerlink" href="#response-result" title="Permalink to this headline">¶</a></h2>
 <p>Once a request is returned, callback functions are fired. Jina Flow implements a Promise-like interface. You can add
 callback functions <code class="docutils literal notranslate"><span class="pre">on_done</span></code>, <code class="docutils literal notranslate"><span class="pre">on_error</span></code>, <code class="docutils literal notranslate"><span class="pre">on_always</span></code> to hook different events.</p>
 <p>In Jina, callback function’s first argument is a <code class="docutils literal notranslate"><span class="pre">jina.types.request.Response</span></code> object. Hence, you can annotate the
@@ -858,16 +886,10 @@ your memory usage will stay constant at 10MB.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Flow IO</a><ul>
-<li><a class="reference internal" href="#input-data-to-flow">Input data to Flow</a><ul>
-<li><a class="reference internal" href="#send-request-parameters">Send request parameters</a></li>
-<li><a class="reference internal" href="#fine-grained-control-on-input">Fine-grained control on input</a><ul>
-<li><a class="reference internal" href="#size-of-the-request">Size of the request</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#input-data-types">Input data types</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#fetch-flow-output">Fetch Flow output</a><ul>
+<li><a class="reference internal" href="#request-data">Request data</a></li>
+<li><a class="reference internal" href="#request-parameters">Request parameters</a></li>
+<li><a class="reference internal" href="#size-of-request">Size of request</a></li>
+<li><a class="reference internal" href="#response-result">Response result</a><ul>
 <li><a class="reference internal" href="#get-all-responses">Get all responses</a></li>
 </ul>
 </li>

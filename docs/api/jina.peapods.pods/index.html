@@ -27,7 +27,7 @@
 </script>
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.peapods.pods.k8slib package" href="../jina.peapods.pods.k8slib/" /><link rel="prev" title="jina.peapods.peas.helper module" href="../jina.peapods.peas.helper/" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.1.2, furo 2021.09.08"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
         <title>jina.peapods.pods package - Jina Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
@@ -212,7 +212,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Create Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-built-in-features/">Executor Features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executors-in-action/">Executors in Action</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executors-in-action/">Executor in Action</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/repository-structure/">Executor File Structure</a></li>
 </ul>
 </li>
@@ -626,7 +626,7 @@ are properly closed.</p>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.peapods.pods.BasePod.role">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">role</span></span><em class="property"><span class="pre">:</span> <span class="pre">jina.enums.PodRoleType</span></em><a class="headerlink" href="#jina.peapods.pods.BasePod.role" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">role</span></span><em class="property"><span class="pre">:</span> <a class="reference internal" href="../jina.enums/#jina.enums.PodRoleType" title="jina.enums.PodRoleType"><span class="pre">jina.enums.PodRoleType</span></a></em><a class="headerlink" href="#jina.peapods.pods.BasePod.role" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the role of this <a class="reference internal" href="#jina.peapods.pods.BasePod" title="jina.peapods.pods.BasePod"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePod</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -721,7 +721,7 @@ are properly closed.</p>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.peapods.pods.BasePod.deployments">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">deployments</span></span><em class="property"><span class="pre">:</span> <span class="pre">List[Dict]</span></em><a class="headerlink" href="#jina.peapods.pods.BasePod.deployments" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">deployments</span></span><em class="property"><span class="pre">:</span> <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.peapods.pods.BasePod.deployments" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get deployments of the pod. The BasePod just gives one deployment.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -805,7 +805,7 @@ Internally, the peas can run with the process/thread backend. They can be also r
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.peapods.pods.Pod.all_args">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">all_args</span></span><em class="property"><span class="pre">:</span> <span class="pre">List[argparse.Namespace]</span></em><a class="headerlink" href="#jina.peapods.pods.Pod.all_args" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">all_args</span></span><em class="property"><span class="pre">:</span> <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">argparse.Namespace</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.peapods.pods.Pod.all_args" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all arguments of all Peas in this BasePod.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>

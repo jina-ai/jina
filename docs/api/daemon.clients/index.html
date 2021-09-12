@@ -27,7 +27,7 @@
 </script>
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.1.2, furo 2021.09.08"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
         <title>daemon.clients package - Jina Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
@@ -212,7 +212,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Create Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-built-in-features/">Executor Features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executors-in-action/">Executors in Action</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executors-in-action/">Executor in Action</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/repository-structure/">Executor File Structure</a></li>
 </ul>
 </li>
@@ -607,7 +607,7 @@
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="daemon.clients.JinaDClient.pods">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">pods</span></span><em class="property"><span class="pre">:</span> <span class="pre">Union[daemon.clients.pods.PodClient,</span> <span class="pre">daemon.clients.pods.AsyncPodClient]</span></em><a class="headerlink" href="#daemon.clients.JinaDClient.pods" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">pods</span></span><em class="property"><span class="pre">:</span> <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../daemon.clients.pods/#daemon.clients.pods.PodClient" title="daemon.clients.pods.PodClient"><span class="pre">daemon.clients.pods.PodClient</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../daemon.clients.pods/#daemon.clients.pods.AsyncPodClient" title="daemon.clients.pods.AsyncPodClient"><span class="pre">daemon.clients.pods.AsyncPodClient</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.clients.JinaDClient.pods" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pod Client</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -620,7 +620,7 @@
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="daemon.clients.JinaDClient.flows">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">flows</span></span><em class="property"><span class="pre">:</span> <span class="pre">Union[daemon.clients.flows.FlowClient,</span> <span class="pre">daemon.clients.flows.AsyncFlowClient]</span></em><a class="headerlink" href="#daemon.clients.JinaDClient.flows" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">flows</span></span><em class="property"><span class="pre">:</span> <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../daemon.clients.flows/#daemon.clients.flows.FlowClient" title="daemon.clients.flows.FlowClient"><span class="pre">daemon.clients.flows.FlowClient</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../daemon.clients.flows/#daemon.clients.flows.AsyncFlowClient" title="daemon.clients.flows.AsyncFlowClient"><span class="pre">daemon.clients.flows.AsyncFlowClient</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.clients.JinaDClient.flows" title="Permalink to this definition">¶</a></dt>
 <dd><p>Flow Client</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -633,7 +633,7 @@
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="daemon.clients.JinaDClient.workspaces">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">workspaces</span></span><em class="property"><span class="pre">:</span> <span class="pre">Union[daemon.clients.workspaces.WorkspaceClient,</span> <span class="pre">daemon.clients.workspaces.AsyncWorkspaceClient]</span></em><a class="headerlink" href="#daemon.clients.JinaDClient.workspaces" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">workspaces</span></span><em class="property"><span class="pre">:</span> <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../daemon.clients.workspaces/#daemon.clients.workspaces.WorkspaceClient" title="daemon.clients.workspaces.WorkspaceClient"><span class="pre">daemon.clients.workspaces.WorkspaceClient</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../daemon.clients.workspaces/#daemon.clients.workspaces.AsyncWorkspaceClient" title="daemon.clients.workspaces.AsyncWorkspaceClient"><span class="pre">daemon.clients.workspaces.AsyncWorkspaceClient</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.clients.JinaDClient.workspaces" title="Permalink to this definition">¶</a></dt>
 <dd><p>Workspace Client</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -659,7 +659,7 @@
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="daemon.clients.JinaDClient.status">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">status</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional[Dict]</span></em><a class="headerlink" href="#daemon.clients.JinaDClient.status" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">status</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.clients.JinaDClient.status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the status of remote JinaD</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>

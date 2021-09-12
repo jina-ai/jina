@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../search/" />
 
-    <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.1.2, furo 2021.09.08"/>
+    <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
         <title>jina.jaml.parsers.executor.legacy - Jina Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
@@ -189,7 +189,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/executor/executor-api/">Create Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/executor/executor-built-in-features/">Executor Features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/executor/executors-in-action/">Executors in Action</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/executor/executors-in-action/">Executor in Action</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/executor/repository-structure/">Executor File Structure</a></li>
 </ul>
 </li>
@@ -625,8 +625,7 @@
         <span class="c1"># only log warnings about unknown args for main Pea</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">difference_set</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">LegacyParser</span><span class="o">.</span><span class="n">is_tail_or_head</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
             <span class="n">default_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'The arguments </span><span class="si">{</span><span class="n">difference_set</span><span class="si">}</span><span class="s1"> defined in the YAML are not expected in the '</span>
-                <span class="sa">f</span><span class="s1">'class </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'The given arguments </span><span class="si">{</span><span class="n">difference_set</span><span class="si">}</span><span class="s1"> are not defined in `</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">.__init__`'</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_meta_config</span><span class="p">:</span>

@@ -27,7 +27,7 @@
 </script>
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Parallelization" href="../parallel/" /><link rel="prev" title="Flow IO" href="../send-recv/" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.1.2, furo 2021.09.08"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
         <title>Add Executor - Jina Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
@@ -212,7 +212,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/executor-api/">Create Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/executor-built-in-features/">Executor Features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../executor/executors-in-action/">Executors in Action</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/executors-in-action/">Executor in Action</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/repository-structure/">Executor File Structure</a></li>
 </ul>
 </li>
@@ -580,8 +580,8 @@ Docker container.</p>
 <div class="figure align-center">
 <img alt="../../../_images/chain-flow.svg" src="../../../_images/chain-flow.svg"/></div>
 </div>
-<div class="section" id="define-what-executor-to-use-via-uses">
-<h2>Define what executor to use via <code class="docutils literal notranslate"><span class="pre">uses</span></code><a class="headerlink" href="#define-what-executor-to-use-via-uses" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="define-executor-via-uses">
+<h2>Define Executor via <code class="docutils literal notranslate"><span class="pre">uses</span></code><a class="headerlink" href="#define-executor-via-uses" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">uses</span></code> parameter to specify the Executor.</p>
 <p><code class="docutils literal notranslate"><span class="pre">uses</span></code> accepts multiple value types including class name, Docker image, (inline) YAML.
 Therefore, you can add an executor via:</p>
@@ -668,8 +668,8 @@ Therefore, you can add an executor via:</p>
 </div>
 </div>
 </div>
-<div class="section" id="add-remote-executors">
-<h2>Add remote executors<a class="headerlink" href="#add-remote-executors" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="add-remote-executor">
+<h2>Add remote Executor<a class="headerlink" href="#add-remote-executor" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="add-an-already-spawned-executor">
 <h3>Add an already spawned Executor<a class="headerlink" href="#add-an-already-spawned-executor" title="Permalink to this headline">¶</a></h3>
 <p>A Flow does not have to be local-only. You can use any Executor on remote(s).</p>
@@ -684,7 +684,7 @@ Therefore, you can add an executor via:</p>
 </div>
 </div>
 <div class="section" id="add-spawn-a-remote-executor-via-jinad">
-<h3>Add &amp; spawn a remote <code class="docutils literal notranslate"><span class="pre">Executor</span></code> via <code class="docutils literal notranslate"><span class="pre">jinad</span></code><a class="headerlink" href="#add-spawn-a-remote-executor-via-jinad" title="Permalink to this headline">¶</a></h3>
+<h3>Add &amp; spawn a remote Executor via <code class="docutils literal notranslate"><span class="pre">jinad</span></code><a class="headerlink" href="#add-spawn-a-remote-executor-via-jinad" title="Permalink to this headline">¶</a></h3>
 <p>In the example below, the Executor with
 the <code class="docutils literal notranslate"><span class="pre">host</span></code>
 keyword <code class="docutils literal notranslate"><span class="pre">gpu-exec</span></code>, is put to a remote machine for parallelization, whereas other Executors stay local. Extra file
@@ -768,8 +768,8 @@ docker rm -f jinad
 <p><a class="reference internal" href="../../../advanced/hub/#hub-cookbook"><span class="std std-ref">JinaHub</span></a></p>
 </div>
 </div>
-<div class="section" id="forcing-an-executor-in-the-remote-local-configuration">
-<h3>Forcing an Executor in the remote-local configuration<a class="headerlink" href="#forcing-an-executor-in-the-remote-local-configuration" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="forcing-an-executor-in-the-remote-local-config">
+<h3>Forcing an Executor in the remote-local config<a class="headerlink" href="#forcing-an-executor-in-the-remote-local-config" title="Permalink to this headline">¶</a></h3>
 <p>Sometimes you want to use a remote Executor in your local Flow (e.g. using an expensive encoder on a remote GPU). Then
 the remote cannot talk back to the next local Executor directly. This is similar to a server that cannot talk to a
 client before the client has opened a connection. The Flow inside Jina has an auto-detection mechanism for such cases.
@@ -780,8 +780,8 @@ the <code class="docutils literal notranslate"><span class="pre">connect_to_pred
 </div>
 </div>
 </div>
-<div class="section" id="override-executor-configs">
-<h2>Override Executor configs<a class="headerlink" href="#override-executor-configs" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="override-executor-config">
+<h2>Override Executor config<a class="headerlink" href="#override-executor-config" title="Permalink to this headline">¶</a></h2>
 <p>You can override an executor’s meta configs when creating a flow.</p>
 <div class="section" id="override-metas-configuration">
 <h3>Override <code class="docutils literal notranslate"><span class="pre">metas</span></code> configuration<a class="headerlink" href="#override-metas-configuration" title="Permalink to this headline">¶</a></h3>
@@ -877,8 +877,10 @@ bar
 foo
 </pre></div>
 </div>
-<div class="tip admonition">
-<p class="admonition-title">Summary: commonly used patterns for add</p>
+</div>
+</div>
+<div class="section" id="summary-common-patterns">
+<h2>Summary: common patterns<a class="headerlink" href="#summary-common-patterns" title="Permalink to this headline">¶</a></h2>
 <div class="table-wrapper"><table border="1" class="docutils">
 <thead>
 <tr>
@@ -917,36 +919,7 @@ foo
 </tr>
 </tbody>
 </table></div>
-<p><code class="docutils literal notranslate"><span class="pre">.add()</span></code> accepts the following common arguments:</p>
-<div class="table-wrapper"><table border="1" class="docutils">
-<thead>
-<tr>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Define Executor</td>
-<td><code>uses</code></td>
-</tr>
-<tr>
-<td>Define Executor's parameters</td>
-<td><code>uses_with</code>, <code>uses_metas</code>, <code>uses_requests</code></td>
-</tr>
-<tr>
-<td>Define Dependencies</td>
-<td><code>needs</code></td>
-</tr>
-<tr>
-<td>Parallelization</td>
-<td><code>parallel</code>, <code>polling</code></td>
-</tr>
-</tbody>
-</table></div>
 <p>For a full list of arguments, please check <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">executor</span> <span class="pre">--help</span></code>.</p>
-</div>
-</div>
 </div>
 </div>
 
@@ -998,19 +971,20 @@ foo
             <ul>
 <li><a class="reference internal" href="#">Add Executor</a><ul>
 <li><a class="reference internal" href="#chain-add">Chain <code class="docutils literal notranslate"><span class="pre">.add()</span></code></a></li>
-<li><a class="reference internal" href="#define-what-executor-to-use-via-uses">Define what executor to use via <code class="docutils literal notranslate"><span class="pre">uses</span></code></a></li>
-<li><a class="reference internal" href="#add-remote-executors">Add remote executors</a><ul>
+<li><a class="reference internal" href="#define-executor-via-uses">Define Executor via <code class="docutils literal notranslate"><span class="pre">uses</span></code></a></li>
+<li><a class="reference internal" href="#add-remote-executor">Add remote Executor</a><ul>
 <li><a class="reference internal" href="#add-an-already-spawned-executor">Add an already spawned Executor</a></li>
-<li><a class="reference internal" href="#add-spawn-a-remote-executor-via-jinad">Add &amp; spawn a remote <code class="docutils literal notranslate"><span class="pre">Executor</span></code> via <code class="docutils literal notranslate"><span class="pre">jinad</span></code></a></li>
-<li><a class="reference internal" href="#forcing-an-executor-in-the-remote-local-configuration">Forcing an Executor in the remote-local configuration</a></li>
+<li><a class="reference internal" href="#add-spawn-a-remote-executor-via-jinad">Add &amp; spawn a remote Executor via <code class="docutils literal notranslate"><span class="pre">jinad</span></code></a></li>
+<li><a class="reference internal" href="#forcing-an-executor-in-the-remote-local-config">Forcing an Executor in the remote-local config</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#override-executor-configs">Override Executor configs</a><ul>
+<li><a class="reference internal" href="#override-executor-config">Override Executor config</a><ul>
 <li><a class="reference internal" href="#override-metas-configuration">Override <code class="docutils literal notranslate"><span class="pre">metas</span></code> configuration</a></li>
 <li><a class="reference internal" href="#override-with-configuration">Override <code class="docutils literal notranslate"><span class="pre">with</span></code> configuration</a></li>
 <li><a class="reference internal" href="#override-requests-configuration">Override <code class="docutils literal notranslate"><span class="pre">requests</span></code> configuration</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#summary-common-patterns">Summary: common patterns</a></li>
 </ul>
 </li>
 </ul>

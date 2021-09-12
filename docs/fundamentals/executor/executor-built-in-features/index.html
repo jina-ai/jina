@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/fundamentals/executor/executor-built-in-features.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="Use Executor out of the Flow: Executor object can be used directly just like a regular Python object. For example, from jina import Executor, requests, DocumentArray, Document class MyExec(Executor): @requests def foo(self, docs, **kwargs): for d in docs: d.text = 'hello world' m = MyExec() da = ..." />
+  <meta property="og:description" content="Exception handling: Exception inside@requests decorated functions can be simply raised. The Flow will handle it. from jina import Executor, requests, Flow from jina.types.request import Response class MyExecutor(Executor): @requests def foo(self, **kwargs): raise NotImplementedError('no time for ..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -25,9 +25,9 @@
 
   gtag('config', 'G-48ZDWC8GT6');
 </script>
-    <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Executors in Action" href="../executors-in-action/" /><link rel="prev" title="Create Executor" href="../executor-api/" />
+    <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Executor in Action" href="../executors-in-action/" /><link rel="prev" title="Create Executor" href="../executor-api/" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.1.2, furo 2021.09.08"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
         <title>Executor Features - Jina Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
@@ -212,7 +212,7 @@
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../">Executor</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../executor-api/">Create Executor</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Executor Features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../executors-in-action/">Executors in Action</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../executors-in-action/">Executor in Action</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../repository-structure/">Executor File Structure</a></li>
 </ul>
 </li>
@@ -566,8 +566,62 @@
         </div>
         <div class="tex2jax_ignore mathjax_ignore section" id="executor-features">
 <h1>Executor Features<a class="headerlink" href="#executor-features" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="use-executor-out-of-the-flow">
-<h2>Use Executor out of the Flow<a class="headerlink" href="#use-executor-out-of-the-flow" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="exception-handling">
+<h2>Exception handling<a class="headerlink" href="#exception-handling" title="Permalink to this headline">¶</a></h2>
+<p>Exception inside <code class="docutils literal notranslate"><span class="pre">@requests</span></code> decorated functions can be simply raised. The Flow will handle it.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span>
+<span class="kn">from</span> <span class="nn">jina.types.request</span> <span class="kn">import</span> <span class="n">Response</span>
+
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">'no time for it'</span><span class="p">)</span>
+
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">print_why</span><span class="p">(</span><span class="n">resp</span><span class="p">:</span> <span class="n">Response</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+
+
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">''</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="n">print_why</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">           pod0@47887[L]:ready and listening</span>
+<span class="go">        gateway@47887[L]:ready and listening</span>
+<span class="go">           Flow@47887[I]:🎉 Flow is ready to use!</span>
+<span class="go">	🔗 Protocol: 		GRPC</span>
+<span class="go">	🏠 Local access:	0.0.0.0:49242</span>
+<span class="go">	🔒 Private network:	192.168.178.31:49242</span>
+<span class="go">	🌐 Public address:	217.70.138.123:49242</span>
+<span class="go">           pod0@47893[E]:NotImplementedError('no time for it')</span>
+<span class="go"> add "--quiet-error" to suppress the exception details</span>
+<span class="go">Traceback (most recent call last):</span>
+<span class="go">  File "/Users/hanxiao/Documents/jina/jina/peapods/runtimes/zmq/zed.py", line 250, in _msg_callback</span>
+<span class="go">    processed_msg = self._callback(msg)</span>
+<span class="go">  File "/Users/hanxiao/Documents/jina/jina/peapods/runtimes/zmq/zed.py", line 236, in _callback</span>
+<span class="go">    msg = self._post_hook(self._handle(self._pre_hook(msg)))</span>
+<span class="go">  File "/Users/hanxiao/Documents/jina/jina/peapods/runtimes/zmq/zed.py", line 203, in _handle</span>
+<span class="go">    peapod_name=self.name,</span>
+<span class="go">  File "/Users/hanxiao/Documents/jina/jina/peapods/runtimes/request_handlers/data_request_handler.py", line 163, in handle</span>
+<span class="go">    field='groundtruths',</span>
+<span class="go">  File "/Users/hanxiao/Documents/jina/jina/executors/__init__.py", line 200, in __call__</span>
+<span class="go">    self, **kwargs</span>
+<span class="go">  File "/Users/hanxiao/Documents/jina/jina/executors/decorators.py", line 105, in arg_wrapper</span>
+<span class="go">    return fn(*args, **kwargs)</span>
+<span class="go">  File "/Users/hanxiao/Documents/jina/toy43.py", line 9, in foo</span>
+<span class="go">    raise NotImplementedError('no time for it')</span>
+<span class="go">NotImplementedError: no time for it</span>
+<span class="go">NotImplementedError('no time for it')</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="use-executor-out-of-flow">
+<h2>Use Executor out of Flow<a class="headerlink" href="#use-executor-out-of-flow" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">Executor</span></code> object can be used directly just like a regular Python object. For example,</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
 
@@ -592,8 +646,8 @@
 </div>
 <p>This is useful in debugging an Executor.</p>
 </div>
-<div class="section" id="gracefully-close-an-executor">
-<h2>Gracefully close an Executor<a class="headerlink" href="#gracefully-close-an-executor" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="gracefully-close-executor">
+<h2>Gracefully close Executor<a class="headerlink" href="#gracefully-close-executor" title="Permalink to this headline">¶</a></h2>
 <p>You might need to execute some logic when your executor’s destructor is called. For example, you want to
 persist data to the disk (e.g. in-memory indexed data, fine-tuned model,…). To do so, you can overwrite the
 method <code class="docutils literal notranslate"><span class="pre">close</span></code> and add your logic.</p>
@@ -645,8 +699,8 @@ closing...
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">requests</span></code> is a map. Defines the mapping from endpoint to class method name;</p></li>
 </ul>
-<div class="section" id="load-and-save-executor-s-yaml-config">
-<h3>Load and save Executor’s YAML config<a class="headerlink" href="#load-and-save-executor-s-yaml-config" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="load-and-save-executor-config">
+<h3>Load and save Executor config<a class="headerlink" href="#load-and-save-executor-config" title="Permalink to this headline">¶</a></h3>
 <p>You can use class method <code class="docutils literal notranslate"><span class="pre">Executor.load_config</span></code> and object method <code class="docutils literal notranslate"><span class="pre">exec.save_config</span></code> to load and save YAML config:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
 
@@ -679,8 +733,8 @@ closing...
 </div>
 </div>
 </div>
-<div class="section" id="meta-attributes-metas-runtime-args">
-<h2>Meta attributes: <code class="docutils literal notranslate"><span class="pre">.metas</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">.runtime_args</span></code><a class="headerlink" href="#meta-attributes-metas-runtime-args" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="meta-attributes">
+<h2>Meta attributes<a class="headerlink" href="#meta-attributes" title="Permalink to this headline">¶</a></h2>
 <p>By default, an <code class="docutils literal notranslate"><span class="pre">Executor</span></code> object contains two collections of attributes: <code class="docutils literal notranslate"><span class="pre">.metas</span></code> and <code class="docutils literal notranslate"><span class="pre">.runtime_args</span></code>. They are both
 in <code class="docutils literal notranslate"><span class="pre">SimpleNamespace</span></code> type and contain some key-value information. However, they are defined differently and serve
 different purposes.</p>
@@ -690,7 +744,7 @@ different purposes.</p>
 the <code class="docutils literal notranslate"><span class="pre">Executor</span></code>, e.g. <code class="docutils literal notranslate"><span class="pre">pea_id</span></code>, <code class="docutils literal notranslate"><span class="pre">replicas</span></code>, <code class="docutils literal notranslate"><span class="pre">replica_id</span></code>. Those values are often related to the system/network
 environment around the <code class="docutils literal notranslate"><span class="pre">Executor</span></code>, and less about the <code class="docutils literal notranslate"><span class="pre">Executor</span></code> itself.</p></li>
 </ul>
-<p>In 2.0rc1, the following fields are valid for <code class="docutils literal notranslate"><span class="pre">metas</span></code> and <code class="docutils literal notranslate"><span class="pre">runtime_args</span></code>:</p>
+<p>The following fields are valid for <code class="docutils literal notranslate"><span class="pre">metas</span></code> and <code class="docutils literal notranslate"><span class="pre">runtime_args</span></code>:</p>
 <div class="table-wrapper"><table border="1" class="docutils">
 <thead>
 <tr>
@@ -729,103 +783,7 @@ class <code class="docutils literal notranslate"><span class="pre">__init__</spa
 then second):</p>
 <div class="figure align-center">
 <img alt="../../../_images/workspace-inherit.svg" src="../../../_images/workspace-inherit.svg"/></div>
-</div>
-<div class="section" id="handle-request-parameters">
-<span id="executor-request-parameters"></span><h2>Handle request parameters<a class="headerlink" href="#handle-request-parameters" title="Permalink to this headline">¶</a></h2>
-<p>Request parameters are passed to executors via <code class="docutils literal notranslate"><span class="pre">request.parameters</span></code> with <code class="docutils literal notranslate"><span class="pre">Flow.post(...,</span> <span class="pre">parameters=)</span></code>. This way all
-the <code class="docutils literal notranslate"><span class="pre">executors</span></code> will receive
-<code class="docutils literal notranslate"><span class="pre">parameters</span></code> as an argument to their <code class="docutils literal notranslate"><span class="pre">methods</span></code>. These <code class="docutils literal notranslate"><span class="pre">parameters</span></code> can be used to pass extra information or tune
-the <code class="docutils literal notranslate"><span class="pre">executor</span></code> behavior for a given request without updating the general configuration.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Flow</span>
-
-
-<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_param</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">default_param</span> <span class="o">=</span> <span class="n">default_param</span>
-
-    <span class="nd">@requests</span>
-<span class="hll">    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DocumentArray</span><span class="p">],</span> <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-</span>        <span class="n">param</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'param'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_param</span><span class="p">)</span>
-        <span class="c1"># param may be overriden for this specific request</span>
-        <span class="k">assert</span> <span class="n">param</span> <span class="o">==</span> <span class="mi">5</span>
-
-
-<span class="k">with</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-<span class="hll">    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/endpoint'</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">([]),</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">'param'</span><span class="p">:</span> <span class="mi">5</span><span class="p">})</span>
-</span></pre></div>
-</div>
-<p>However, this can be a problem when the user wants different executors to have different values of the same parameters.
-In that case one can specify specific parameters for the specific <code class="docutils literal notranslate"><span class="pre">executor</span></code> by adding a <code class="docutils literal notranslate"><span class="pre">dictionary</span></code> inside parameters
-with the <code class="docutils literal notranslate"><span class="pre">executor</span></code> name as <code class="docutils literal notranslate"><span class="pre">key</span></code>. Jina will then take all these specific parameters and copy to the root of the
-parameters dictionary before calling the executor <code class="docutils literal notranslate"><span class="pre">method</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Flow</span>
-
-
-<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_param</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">default_param</span> <span class="o">=</span> <span class="n">default_param</span>
-
-    <span class="nd">@requests</span>
-    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DocumentArray</span><span class="p">],</span> <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">param</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'param'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_param</span><span class="p">)</span>
-        <span class="c1"># param may be overriden for this specific request. </span>
-        <span class="c1"># The first instance will receive 10, and the second one will receive 5</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'my-executor-1'</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="n">param</span> <span class="o">==</span> <span class="mi">10</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'my-executor-2'</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="n">param</span> <span class="o">==</span> <span class="mi">5</span>
-
-
-<span class="k">with</span> <span class="p">(</span><span class="n">Flow</span><span class="p">()</span><span class="o">.</span>
-        <span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="p">{</span><span class="s1">'jtype'</span><span class="p">:</span> <span class="s1">'MyExecutor'</span><span class="p">,</span> <span class="s1">'metas'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'name'</span><span class="p">:</span> <span class="s1">'my-executor-1'</span><span class="p">}})</span><span class="o">.</span>
-        <span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="p">{</span><span class="s1">'jtype'</span><span class="p">:</span> <span class="s1">'MyExecutor'</span><span class="p">,</span> <span class="s1">'metas'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'name'</span><span class="p">:</span> <span class="s1">'my-executor-2'</span><span class="p">}}))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-<span class="hll">    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/endpoint'</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">([]),</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">'param'</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">'my-executor-1'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'param'</span><span class="p">:</span> <span class="mi">10</span><span class="p">}})</span>
-</span></pre></div>
-</div>
-<div class="caution admonition">
-<p class="admonition-title">Note</p>
-<p>As <code class="docutils literal notranslate"><span class="pre">parameters</span></code> does not have a fixed schema, it is declared with type <code class="docutils literal notranslate"><span class="pre">google.protobuf.Struct</span></code> in the <code class="docutils literal notranslate"><span class="pre">RequestProto</span></code>
-protobuf declaration. However, <code class="docutils literal notranslate"><span class="pre">google.protobuf.Struct</span></code> follows the JSON specification and does not
-differentiate <code class="docutils literal notranslate"><span class="pre">int</span></code> from <code class="docutils literal notranslate"><span class="pre">float</span></code>. <strong>So, data of type <code class="docutils literal notranslate"><span class="pre">int</span></code> in <code class="docutils literal notranslate"><span class="pre">parameters</span></code> will be casted to <code class="docutils literal notranslate"><span class="pre">float</span></code> when request is
-sent to executor.</strong></p>
-<p>As a result, users need be explicit and cast the data to the expected type as follows.</p>
-<div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">✅ Do</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="n">animals</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'cat'</span><span class="p">,</span> <span class="s1">'dog'</span><span class="p">,</span> <span class="s1">'turtle'</span><span class="p">]</span>
-    <span class="nd">@request</span>
-    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="c1"># need to cast to int since list indices must be integers not float</span>
-<span class="hll">        <span class="n">index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'index'</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-</span><span class="hll">        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">animals</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'dog'</span>
-</span>
-<span class="k">with</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/endpoint'</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">([]),</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">'index'</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
-</pre></div>
-</div>
-</div>
-<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">😔 Don’t</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyIndexer</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="n">animals</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'cat'</span><span class="p">,</span> <span class="s1">'dog'</span><span class="p">,</span> <span class="s1">'turtle'</span><span class="p">]</span>
-    <span class="nd">@request</span>
-    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-          <span class="c1"># ERROR: list indices must be integer not float</span>
-<span class="hll">          <span class="n">index</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'index'</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</span><span class="hll">          <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">animals</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'dog'</span>
-</span>
-<span class="k">with</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/endpoint'</span><span class="p">,</span>
-    <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">([]),</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">'index'</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-</div>
+<span class="target" id="executor-request-parameters"></span></div>
 </div>
 
       </article>
@@ -837,7 +795,7 @@ sent to executor.</strong></p>
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Executors in Action</div>
+                <div class="title">Executor in Action</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -875,15 +833,15 @@ sent to executor.</strong></p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Executor Features</a><ul>
-<li><a class="reference internal" href="#use-executor-out-of-the-flow">Use Executor out of the Flow</a></li>
-<li><a class="reference internal" href="#gracefully-close-an-executor">Gracefully close an Executor</a></li>
+<li><a class="reference internal" href="#exception-handling">Exception handling</a></li>
+<li><a class="reference internal" href="#use-executor-out-of-flow">Use Executor out of Flow</a></li>
+<li><a class="reference internal" href="#gracefully-close-executor">Gracefully close Executor</a></li>
 <li><a class="reference internal" href="#yaml-interface">YAML interface</a><ul>
-<li><a class="reference internal" href="#load-and-save-executor-s-yaml-config">Load and save Executor’s YAML config</a></li>
+<li><a class="reference internal" href="#load-and-save-executor-config">Load and save Executor config</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#meta-attributes-metas-runtime-args">Meta attributes: <code class="docutils literal notranslate"><span class="pre">.metas</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">.runtime_args</span></code></a></li>
+<li><a class="reference internal" href="#meta-attributes">Meta attributes</a></li>
 <li><a class="reference internal" href="#workspace">Workspace</a></li>
-<li><a class="reference internal" href="#handle-request-parameters">Handle request parameters</a></li>
 </ul>
 </li>
 </ul>
