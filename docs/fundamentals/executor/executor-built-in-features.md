@@ -1,5 +1,62 @@
 # Executor Features
 
+## Exception handling
+
+Exception inside `@requests` decorated functions can be simply raised. The Flow will handle it.
+
+```python
+from jina import Executor, requests, Flow
+from jina.types.request import Response
+
+
+class MyExecutor(Executor):
+
+    @requests
+    def foo(self, **kwargs):
+        raise NotImplementedError('no time for it')
+
+
+f = Flow().add(uses=MyExecutor)
+
+
+def print_why(resp: Response):
+    print(resp.status.description)
+
+
+with f:
+    f.post('', on_error=print_why)
+```
+
+```console
+
+           pod0@47887[L]:ready and listening
+        gateway@47887[L]:ready and listening
+           Flow@47887[I]:🎉 Flow is ready to use!
+	🔗 Protocol: 		GRPC
+	🏠 Local access:	0.0.0.0:49242
+	🔒 Private network:	192.168.178.31:49242
+	🌐 Public address:	217.70.138.123:49242
+           pod0@47893[E]:NotImplementedError('no time for it')
+ add "--quiet-error" to suppress the exception details
+Traceback (most recent call last):
+  File "/Users/hanxiao/Documents/jina/jina/peapods/runtimes/zmq/zed.py", line 250, in _msg_callback
+    processed_msg = self._callback(msg)
+  File "/Users/hanxiao/Documents/jina/jina/peapods/runtimes/zmq/zed.py", line 236, in _callback
+    msg = self._post_hook(self._handle(self._pre_hook(msg)))
+  File "/Users/hanxiao/Documents/jina/jina/peapods/runtimes/zmq/zed.py", line 203, in _handle
+    peapod_name=self.name,
+  File "/Users/hanxiao/Documents/jina/jina/peapods/runtimes/request_handlers/data_request_handler.py", line 163, in handle
+    field='groundtruths',
+  File "/Users/hanxiao/Documents/jina/jina/executors/__init__.py", line 200, in __call__
+    self, **kwargs
+  File "/Users/hanxiao/Documents/jina/jina/executors/decorators.py", line 105, in arg_wrapper
+    return fn(*args, **kwargs)
+  File "/Users/hanxiao/Documents/jina/toy43.py", line 9, in foo
+    raise NotImplementedError('no time for it')
+NotImplementedError: no time for it
+NotImplementedError('no time for it')
+```
+
 
 ## Use Executor out of Flow
 
@@ -123,7 +180,7 @@ exec.save_config('y.yml')
 Executor.load_config('y.yml')
 ```
 
-## Meta attributes: `.metas` & `.runtime_args`
+## Meta attributes
 
 By default, an `Executor` object contains two collections of attributes: `.metas` and `.runtime_args`. They are both
 in `SimpleNamespace` type and contain some key-value information. However, they are defined differently and serve
@@ -134,7 +191,7 @@ different purposes.
   the `Executor`, e.g. `pea_id`, `replicas`, `replica_id`. Those values are often related to the system/network
   environment around the `Executor`, and less about the `Executor` itself.
 
-In 2.0rc1, the following fields are valid for `metas` and `runtime_args`:
+The following fields are valid for `metas` and `runtime_args`:
 
 | Attribute | Fields |
 | --- | --- |
