@@ -97,7 +97,14 @@ __default_endpoint__ = '/default'
 __ready_msg__ = 'ready and listening'
 __stop_msg__ = 'terminated'
 __unset_msg__ = '(unset)'
-__num_args_executor_func__ = 5
+__args_executor_func__ = {
+    'docs',
+    'parameters',
+    'docs_matrix',
+    'groundtruths',
+    'groundtruths_matrix',
+}
+__args_executor_init__ = {'metas', 'requests', 'runtime_args'}
 __root_dir__ = _os.path.dirname(_os.path.abspath(__file__))
 __resources_path__ = _os.path.join(
     _os.path.dirname(_sys.modules['jina'].__file__), 'resources'
