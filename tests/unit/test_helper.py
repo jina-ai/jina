@@ -96,8 +96,8 @@ def test_wrap_func():
     from jina import Executor
 
     class DummyEncoder(Executor):
-        def __init__(self):
-            pass
+        def __init__(self, **kwargs):
+            super().__init__(**kwargs)
 
     class MockEnc(DummyEncoder):
         pass
@@ -106,8 +106,8 @@ def test_wrap_func():
         pass
 
     class MockMockMockEnc(MockEnc):
-        def __init__(self):
-            pass
+        def __init__(self, **kwargs):
+            super().__init__(**kwargs)
 
     def check_override(cls, method):
         is_inherit = any(

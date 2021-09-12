@@ -1,7 +1,7 @@
 # Executor Features
 
 
-## Use Executor out of the Flow
+## Use Executor out of Flow
 
 `Executor` object can be used directly just like a regular Python object. For example,
 
@@ -30,7 +30,7 @@ DocumentArray has 1 items:
 
 This is useful in debugging an Executor.
 
-## Gracefully close an Executor
+## Gracefully close Executor
 
 You might need to execute some logic when your executor's destructor is called. For example, you want to
 persist data to the disk (e.g. in-memory indexed data, fine-tuned model,...). To do so, you can overwrite the
@@ -86,7 +86,7 @@ requests:
     - `py_modules` is a list of strings. Defines the Python dependencies of the executor;
 - `requests` is a map. Defines the mapping from endpoint to class method name;
 
-### Load and save Executor's YAML config
+### Load and save Executor config
 
 You can use class method `Executor.load_config` and object method `exec.save_config` to load and save YAML config:
 
@@ -169,120 +169,4 @@ then second):
 ```
 
 (executor-request-parameters)=
-## Handle request parameters
 
-Request parameters are passed to executors via `request.parameters` with `Flow.post(..., parameters=)`. This way all
-the `executors` will receive
-`parameters` as an argument to their `methods`. These `parameters` can be used to pass extra information or tune
-the `executor` behavior for a given request without updating the general configuration.
-
-```{code-block} python
----
-emphasize-lines: 11, 18
----
-from typing import Optional
-from jina import Executor, requests, DocumentArray, Flow
-
-
-class MyExecutor(Executor):
-    def __init__(self, default_param: int = 1, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.default_param = default_param
-
-    @requests
-    def foo(self, docs: Optional[DocumentArray], parameters: dict, **kwargs):
-        param = parameters.get('param', self.default_param)
-        # param may be overriden for this specific request
-        assert param == 5
-
-
-with Flow().add(uses=MyExecutor) as f:
-    f.post(on='/endpoint', inputs=DocumentArray([]), parameters={'param': 5})
-```
-
-However, this can be a problem when the user wants different executors to have different values of the same parameters.
-In that case one can specify specific parameters for the specific `executor` by adding a `dictionary` inside parameters
-with the `executor` name as `key`. Jina will then take all these specific parameters and copy to the root of the
-parameters dictionary before calling the executor `method`.
-
-```{code-block} python
----
-emphasize-lines: 24
----
-from typing import Optional
-from jina import Executor, requests, DocumentArray, Flow
-
-
-class MyExecutor(Executor):
-    def __init__(self, default_param: int = 1, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.default_param = default_param
-
-    @requests
-    def foo(self, docs: Optional[DocumentArray], parameters: dict, **kwargs):
-        param = parameters.get('param', self.default_param)
-        # param may be overriden for this specific request. 
-        # The first instance will receive 10, and the second one will receive 5
-        if self.metas.name == 'my-executor-1':
-            assert param == 10
-        elif self.metas.name == 'my-executor-2':
-            assert param == 5
-
-
-with (Flow().
-        add(uses={'jtype': 'MyExecutor', 'metas': {'name': 'my-executor-1'}}).
-        add(uses={'jtype': 'MyExecutor', 'metas': {'name': 'my-executor-2'}})) as f:
-    f.post(on='/endpoint', inputs=DocumentArray([]), parameters={'param': 5, 'my-executor-1': {'param': 10}})
-```
-
-
-`````{admonition}  Note
-:class: caution
-
-As `parameters` does not have a fixed schema, it is declared with type `google.protobuf.Struct` in the `RequestProto`
-protobuf declaration. However, `google.protobuf.Struct` follows the JSON specification and does not 
-differentiate `int` from `float`. **So, data of type `int` in `parameters` will be casted to `float` when request is
-sent to executor.**
-
-As a result, users need be explicit and cast the data to the expected type as follows.
-
-````{tab} ✅ Do
-```{code-block} python
----
-emphasize-lines: 6, 7
----
-
-class MyExecutor(Executor):
-    animals = ['cat', 'dog', 'turtle']
-    @request
-    def foo(self, docs, parameters: dict, **kwargs):
-        # need to cast to int since list indices must be integers not float
-        index = int(parameters.get('index', 0))
-        assert self.animals[index] == 'dog'
-
-with Flow().add(uses=MyExecutor) as f:
-    f.post(on='/endpoint', inputs=DocumentArray([]), parameters={'index': 1})
-```
-````
-
-````{tab} 😔 Don't
-```{code-block} python
----
-emphasize-lines: 6, 7
----
-
-class MyIndexer(Executor):
-    animals = ['cat', 'dog', 'turtle']
-    @request
-    def foo(self, docs, parameters: dict, **kwargs):
-          # ERROR: list indices must be integer not float
-          index = parameters.get('index', 0)
-          assert self.animals[index] == 'dog'
-
-with Flow().add(uses=MyExecutor) as f:
-    f.post(on='/endpoint',
-    inputs=DocumentArray([]), parameters={'index': 1})
-```
-````
-
-`````
