@@ -75,6 +75,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     @overload
     def __init__(
         self,
+        *,
         asyncio: Optional[bool] = False,
         host: Optional[str] = '0.0.0.0',
         port: Optional[int] = None,
@@ -101,6 +102,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     @overload
     def __init__(
         self,
+        *,
         compress: Optional[str] = 'NONE',
         compress_min_bytes: Optional[int] = 1024,
         compress_min_ratio: Optional[float] = 1.1,
@@ -254,6 +256,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     @overload
     def __init__(
         self,
+        *,
         env: Optional[dict] = None,
         inspect: Optional[str] = 'COLLECT',
         log_config: Optional[str] = None,
@@ -462,6 +465,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     @overload
     def add(
         self,
+        *,
         connect_to_predecessor: Optional[bool] = False,
         ctrl_with_ipc: Optional[bool] = False,
         daemon: Optional[bool] = False,

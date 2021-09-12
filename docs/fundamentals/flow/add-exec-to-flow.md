@@ -21,7 +21,7 @@ f = Flow().add().add().add().add()
 :align: center
 ```
 
-## Define what executor to use via `uses`
+## Define Executor via `uses`
 
 `uses` parameter to specify the Executor.
 
@@ -118,7 +118,10 @@ f = Flow().add(
 ```
 ````
 
-## Add remote executors
+
+
+
+## Add remote Executor
 
 ### Add an already spawned Executor
 
@@ -134,7 +137,7 @@ f.add(host='localhost', port_in=12345, external=True)
 f.add(host='123.45.67.89', port_in=12345, external=True)
 ```
 
-### Add & spawn a remote `Executor` via `jinad`
+### Add & spawn a remote Executor via `jinad`
 
 In the example below, the Executor with
 the `host`
@@ -192,7 +195,7 @@ f = (Flow()
 ````
 
 
-### Forcing an Executor in the remote-local configuration
+### Forcing an Executor in the remote-local config
 
 Sometimes you want to use a remote Executor in your local Flow (e.g. using an expensive encoder on a remote GPU). Then
 the remote cannot talk back to the next local Executor directly. This is similar to a server that cannot talk to a
@@ -204,7 +207,7 @@ the `connect_to_predecessor` argument and `port_out` to the Executor in front.
 f.add(name='remote', host='123.45.67.89', port_out=23456).add(name='local', connect_to_predecessor=True)
 ```
 
-## Override Executor configs
+## Override Executor config
 
 You can override an executor's meta configs when creating a flow.
 
@@ -306,9 +309,7 @@ bar
 foo
 ```
 
-````{admonition} Summary: commonly used patterns for add
-:class: tip 
-
+## Summary: common patterns
 
 
 | Description | Usage (`f = Flow(...)`) |
@@ -322,18 +323,5 @@ foo
 | Spawn Remote Executor (via `jinad` on Remote) | `f.add(uses='mwu_encoder.yml', host='123.45.67.89', port_in=12345, port_expose=8080)` |
 
 
-`.add()` accepts the following common arguments:
-
-| |  |
-|---|---|
-|Define Executor| `uses`|
-|Define Executor's parameters | `uses_with`, `uses_metas`, `uses_requests`|
-|Define Dependencies | `needs` |
-|Parallelization | `parallel`, `polling` |
-
-
 For a full list of arguments, please check `jina executor --help`.
-
-
-````
 

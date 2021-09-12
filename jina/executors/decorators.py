@@ -86,13 +86,15 @@ def requests(
     :param on: the endpoint string, by convention starts with `/`
     :return: decorated function
     """
-    from .. import __default_endpoint__, __num_args_executor_func__
+    from .. import __default_endpoint__, __args_executor_func__
 
     class FunctionMapper:
         def __init__(self, fn):
 
             arg_spec = inspect.getfullargspec(fn)
-            if not arg_spec.varkw and len(arg_spec.args) < __num_args_executor_func__:
+            if not arg_spec.varkw and not __args_executor_func__.issubset(
+                arg_spec.args
+            ):
                 raise TypeError(
                     f'{fn} accepts only {arg_spec.args} which is fewer than expected, '
                     f'please add `**kwargs` to the function signature.'

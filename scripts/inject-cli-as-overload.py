@@ -68,7 +68,7 @@ def fill_overload(
             for k in a
         ]
         args_str = ', \n'.join(cli_args + [f'{indent}{indent}**kwargs'])
-        signature_str = f'def {overload_fn}(\n{indent}{indent}self,\n{args_str})'
+        signature_str = f'def {overload_fn}(\n{indent}{indent}self,*,\n{args_str})'
         if return_type:
             signature_str += f' -> {return_type}:'
             return_str = f'\n{indent}{indent}:return: {doc_str_return}'
@@ -81,7 +81,7 @@ def fill_overload(
             for k in a
         ]
         args_str = ', \n'.join(cli_args + [f'{indent}**kwargs'])
-        signature_str = f'def {overload_fn}(\n{args_str})'
+        signature_str = f'def {overload_fn}(*, \n{args_str})'
         if return_type:
             signature_str += f' -> {return_type}:'
             return_str = f'\n{indent}:return: {doc_str_return}'
