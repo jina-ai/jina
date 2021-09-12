@@ -1,7 +1,6 @@
 import os
 import time
 from types import SimpleNamespace
-from typing import Iterable
 
 import numpy as np
 import pytest
