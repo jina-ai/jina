@@ -1,5 +1,5 @@
 (use-hub-executor)=
-# Reuse Hub Executor
+# Use Hub Executor
 
 ## via Docker
 

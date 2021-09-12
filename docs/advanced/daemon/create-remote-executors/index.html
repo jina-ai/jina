@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark">
-  <meta property="og:title" content="Create remote Executors" />
+  <meta property="og:title" content="Remote Executor" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/advanced/daemon/create-remote-executors.html" />
   <meta property="og:site_name" content="Jina Documentation" />
@@ -25,10 +25,10 @@
 
   gtag('config', 'G-48ZDWC8GT6');
 </script>
-    <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Create remote Flows" href="../create-remote-flows/" /><link rel="prev" title="Workspace" href="../workspace/" />
+    <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Remote Flow" href="../create-remote-flows/" /><link rel="prev" title="Workspace" href="../workspace/" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>Create remote Executors - Jina Documentation</title>
+        <title>Remote Executor - Jina Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -234,20 +234,20 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../hub/">Share Executors via Hub</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../hub/create-hub-executor/">Create Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../hub/push-executor/">Publish Executor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../hub/use-hub-executor/">Reuse Hub Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../hub/use-hub-executor/">Use Hub Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../hub/pull-executor/">Pull Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../hub/practice-your-learning/">Put into Practice</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../hub/executor-best-practices/">Best Practices</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../">Remote Management via JinaD</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../setup-jinad-server/">Setup JinaD server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../start-jinad-client/">Start JinaD client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../setup-jinad-server/">Setup JinaD Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../start-jinad-client/">Start JinaD Client</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../workspace/">Workspace</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Create remote Executors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../create-remote-flows/">Create remote Flows</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../stream-remote-logs/">Streaming remote logs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../development-using-jinad/">Development using JinaD</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Remote Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../create-remote-flows/">Remote Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../stream-remote-logs/">Streaming Remote Logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../development-using-jinad/">JinaD Development Guides</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../experimental/"><svg aria-hidden="true" class="sd-octicon sd-octicon-beaker" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M5 5.782V2.5h-.25a.75.75 0 010-1.5h6.5a.75.75 0 010 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458L5 5.782zM9.5 2.5h-3V6a.75.75 0 01-.117.403L4.73 9h6.54L9.617 6.403A.75.75 0 019.5 6V2.5zm-6.9 9.847L3.775 10.5h8.45l1.175 1.847a.75.75 0 01-.633 1.153H3.233a.75.75 0 01-.633-1.153z" fill-rule="evenodd"></path></svg> Experimental Features</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -564,8 +564,8 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <div class="tex2jax_ignore mathjax_ignore section" id="create-remote-executors">
-<h1>Create remote Executors<a class="headerlink" href="#create-remote-executors" title="Permalink to this headline">¶</a></h1>
+        <div class="tex2jax_ignore mathjax_ignore section" id="remote-executor">
+<h1>Remote Executor<a class="headerlink" href="#remote-executor" title="Permalink to this headline">¶</a></h1>
 <p>You can use the below code by passing <code class="docutils literal notranslate"><span class="pre">host</span></code>
 and <code class="docutils literal notranslate"><span class="pre">port_expose</span></code> to an executor with a Flow. Internally it uses <code class="docutils literal notranslate"><span class="pre">JinaD</span></code> for remote management.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -605,8 +605,8 @@ and <code class="docutils literal notranslate"><span class="pre">port_expose</sp
 </pre></div>
 </div>
 </div>
-<div class="section" id="create-a-pea-pod-a-href-https-api-jina-ai-daemon-operation-create-peas-post-redoc-a">
-<h2>Create a Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_create_peas_post">redoc</a>)<a class="headerlink" href="#create-a-pea-pod-a-href-https-api-jina-ai-daemon-operation-create-peas-post-redoc-a" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="create-pea-pod-a-href-https-api-jina-ai-daemon-operation-create-peas-post-redoc-a">
+<h2>Create Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_create_peas_post">redoc</a>)<a class="headerlink" href="#create-pea-pod-a-href-https-api-jina-ai-daemon-operation-create-peas-post-redoc-a" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># To create a Pea</span>
 <span class="n">client</span><span class="o">.</span><span class="n">peas</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">workspace_id</span><span class="o">=</span><span class="n">workspace_id</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
 <span class="c1"># 'jpea-5493e6b1-a5c6-45e9-95e2-54b00e4e77b4'</span>
@@ -617,8 +617,8 @@ and <code class="docutils literal notranslate"><span class="pre">port_expose</sp
 </pre></div>
 </div>
 </div>
-<div class="section" id="get-details-of-a-pea-pod-a-href-https-api-jina-ai-daemon-operation-status-peas-id-get-redoc-a">
-<h2>Get details of a Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_status_peas__id__get">redoc</a>)<a class="headerlink" href="#get-details-of-a-pea-pod-a-href-https-api-jina-ai-daemon-operation-status-peas-id-get-redoc-a" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="get-details-of-pea-pod-a-href-https-api-jina-ai-daemon-operation-status-peas-id-get-redoc-a">
+<h2>Get details of Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_status_peas__id__get">redoc</a>)<a class="headerlink" href="#get-details-of-pea-pod-a-href-https-api-jina-ai-daemon-operation-status-peas-id-get-redoc-a" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pea</span>
 <span class="n">client</span><span class="o">.</span><span class="n">peas</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pea_id</span><span class="p">)</span>
 
@@ -656,8 +656,8 @@ and <code class="docutils literal notranslate"><span class="pre">port_expose</sp
 </pre></div>
 </div>
 </div>
-<div class="section" id="terminate-a-pea-pod-a-href-https-api-jina-ai-daemon-operation-delete-peas-id-delete-redoc-a">
-<h2>Terminate a Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_delete_peas__id__delete">redoc</a>)<a class="headerlink" href="#terminate-a-pea-pod-a-href-https-api-jina-ai-daemon-operation-delete-peas-id-delete-redoc-a" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="terminate-pea-pod-a-href-https-api-jina-ai-daemon-operation-delete-peas-id-delete-redoc-a">
+<h2>Terminate Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_delete_peas__id__delete">redoc</a>)<a class="headerlink" href="#terminate-pea-pod-a-href-https-api-jina-ai-daemon-operation-delete-peas-id-delete-redoc-a" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pea</span>
 <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">peas</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">pea_id</span><span class="p">)</span>
 
@@ -677,7 +677,7 @@ and <code class="docutils literal notranslate"><span class="pre">port_expose</sp
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Create remote Flows</div>
+                <div class="title">Remote Flow</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -714,11 +714,11 @@ and <code class="docutils literal notranslate"><span class="pre">port_expose</sp
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Create remote Executors</a><ul>
+<li><a class="reference internal" href="#">Remote Executor</a><ul>
 <li><a class="reference internal" href="#get-all-accepted-arguments">Get all accepted arguments</a></li>
-<li><a class="reference internal" href="#create-a-pea-pod-a-href-https-api-jina-ai-daemon-operation-create-peas-post-redoc-a">Create a Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_create_peas_post">redoc</a>)</a></li>
-<li><a class="reference internal" href="#get-details-of-a-pea-pod-a-href-https-api-jina-ai-daemon-operation-status-peas-id-get-redoc-a">Get details of a Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_status_peas__id__get">redoc</a>)</a></li>
-<li><a class="reference internal" href="#terminate-a-pea-pod-a-href-https-api-jina-ai-daemon-operation-delete-peas-id-delete-redoc-a">Terminate a Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_delete_peas__id__delete">redoc</a>)</a></li>
+<li><a class="reference internal" href="#create-pea-pod-a-href-https-api-jina-ai-daemon-operation-create-peas-post-redoc-a">Create Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_create_peas_post">redoc</a>)</a></li>
+<li><a class="reference internal" href="#get-details-of-pea-pod-a-href-https-api-jina-ai-daemon-operation-status-peas-id-get-redoc-a">Get details of Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_status_peas__id__get">redoc</a>)</a></li>
+<li><a class="reference internal" href="#terminate-pea-pod-a-href-https-api-jina-ai-daemon-operation-delete-peas-id-delete-redoc-a">Terminate Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_delete_peas__id__delete">redoc</a>)</a></li>
 </ul>
 </li>
 </ul>

@@ -234,20 +234,20 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../advanced/hub/">Share Executors via Hub</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../advanced/hub/create-hub-executor/">Create Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../advanced/hub/push-executor/">Publish Executor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../advanced/hub/use-hub-executor/">Reuse Hub Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../advanced/hub/use-hub-executor/">Use Hub Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../advanced/hub/pull-executor/">Pull Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../advanced/hub/practice-your-learning/">Put into Practice</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../advanced/hub/executor-best-practices/">Best Practices</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../advanced/daemon/">Remote Management via JinaD</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/setup-jinad-server/">Setup JinaD server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/start-jinad-client/">Start JinaD client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/setup-jinad-server/">Setup JinaD Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/start-jinad-client/">Start JinaD Client</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/workspace/">Workspace</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/create-remote-executors/">Create remote Executors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/create-remote-flows/">Create remote Flows</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/stream-remote-logs/">Streaming remote logs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/development-using-jinad/">Development using JinaD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/create-remote-executors/">Remote Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/create-remote-flows/">Remote Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/stream-remote-logs/">Streaming Remote Logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/development-using-jinad/">JinaD Development Guides</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../advanced/experimental/"><svg aria-hidden="true" class="sd-octicon sd-octicon-beaker" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M5 5.782V2.5h-.25a.75.75 0 010-1.5h6.5a.75.75 0 010 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458L5 5.782zM9.5 2.5h-3V6a.75.75 0 01-.117.403L4.73 9h6.54L9.617 6.403A.75.75 0 019.5 6V2.5zm-6.9 9.847L3.775 10.5h8.45l1.175 1.847a.75.75 0 01-.633 1.153H3.233a.75.75 0 01-.633-1.153z" fill-rule="evenodd"></path></svg> Experimental Features</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -648,7 +648,7 @@ flow.py<div class="sd-summary-down docutils">
 </details></div>
 </div>
 <div class="section" id="single-python-file">
-<h2>Single python file<a class="headerlink" href="#single-python-file" title="Permalink to this headline">¶</a></h2>
+<h2>Single Python file<a class="headerlink" href="#single-python-file" title="Permalink to this headline">¶</a></h2>
 <p>When you are only working with a single python file (let’s call it <code class="docutils literal notranslate"><span class="pre">my_executor.py</span></code>), you can simply put it at the root of the repository, and import it directly in <code class="docutils literal notranslate"><span class="pre">config.yml</span></code></p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MyExecutor</span>
 <span class="nt">metas</span><span class="p">:</span>
@@ -658,14 +658,15 @@ flow.py<div class="sd-summary-down docutils">
 </div>
 </div>
 <div class="section" id="multiple-python-files">
-<h2>Multiple python files<a class="headerlink" href="#multiple-python-files" title="Permalink to this headline">¶</a></h2>
-<blockquote>
-<div><p>This way of repository structure is currently not compatible with JinaD, when adding the executor to a Flow using <code class="docutils literal notranslate"><span class="pre">uses='config.yml'</span></code>, as JinaD only supports a flat file structure.  In this case, it is recommended that you containerize your executor, and use it with JinaD in your Flow either via <code class="docutils literal notranslate"><span class="pre">uses='jinahub+docker://...'</span></code> or <code class="docutils literal notranslate"><span class="pre">uses='docker://...'</span></code>.</p>
-</div></blockquote>
-<p>When you are working with multiple python files, you should organize them as a <strong>python package</strong> and put them in a special folder inside
-your repository (as you would normally do with python packages). Specifically, you should do the following:</p>
+<h2>Multiple Python files<a class="headerlink" href="#multiple-python-files" title="Permalink to this headline">¶</a></h2>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>This way of repository structure is currently not compatible with JinaD, when adding the executor to a Flow using <code class="docutils literal notranslate"><span class="pre">uses='config.yml'</span></code>, as JinaD only supports a flat file structure.  In this case, it is recommended that you containerize your executor, and use it with JinaD in your Flow either via <code class="docutils literal notranslate"><span class="pre">uses='jinahub+docker://...'</span></code> or <code class="docutils literal notranslate"><span class="pre">uses='docker://...'</span></code>.</p>
+</div>
+<p>When you are working with multiple python files, you should organize them as a <strong>Python package</strong> and put them in a special folder inside
+your repository (as you would normally do with Python packages). Specifically, you should do the following:</p>
 <ul class="simple">
-<li><p>put all your python files inside a special folder (call it <code class="docutils literal notranslate"><span class="pre">executor</span></code>, as a convention), and put an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file inside it</p>
+<li><p>put all your Python files inside a special folder (call it <code class="docutils literal notranslate"><span class="pre">executor</span></code>, as a convention), and put an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file inside it</p>
 <ul>
 <li><p>because of how Jina registers executors, make sure to import your executor in this file (see the contents of <code class="docutils literal notranslate"><span class="pre">executor/__init__.py</span></code> in the example below).</p></li>
 </ul>
@@ -673,7 +674,7 @@ your repository (as you would normally do with python packages). Specifically, y
 <li><p>use relative imports (<code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">.bar</span> <span class="pre">import</span> <span class="pre">foo</span></code>, and not <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">bar</span> <span class="pre">import</span> <span class="pre">foo</span></code>) inside the python modules in this folder</p></li>
 <li><p>Only list <code class="docutils literal notranslate"><span class="pre">executor/__init__.py</span></code> under <code class="docutils literal notranslate"><span class="pre">py_modules</span></code> in <code class="docutils literal notranslate"><span class="pre">config.yml</span></code> - this way Python knows that you are importing a package, and makes sure that all the relative imports within your package work properly</p></li>
 </ul>
-<p>To make things more specific, take this repository structure as an example</p>
+<p>To make things more specific, take this repository structure as an example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
 ├── config.yml
 └── executor
@@ -774,8 +775,8 @@ your repository (as you would normally do with python packages). Specifically, y
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Executor File Structure</a><ul>
-<li><a class="reference internal" href="#single-python-file">Single python file</a></li>
-<li><a class="reference internal" href="#multiple-python-files">Multiple python files</a></li>
+<li><a class="reference internal" href="#single-python-file">Single Python file</a></li>
+<li><a class="reference internal" href="#multiple-python-files">Multiple Python files</a></li>
 </ul>
 </li>
 </ul>
