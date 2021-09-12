@@ -150,6 +150,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
     @overload
     def __init__(
         self,
+        *,
         adjacency: Optional[int] = None,
         blob: Optional[Union['ArrayType', 'jina_pb2.NdArrayProto', 'NdArray']] = None,
         buffer: Optional[bytes] = None,
