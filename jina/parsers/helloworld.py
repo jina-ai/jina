@@ -3,7 +3,7 @@ import argparse
 
 from .base import set_base_parser
 from .helper import add_arg_group, _SHOW_ALL_ARGS, _chf
-from ..helper import random_identity
+from ..helper import random_identity, random_port
 
 
 def mixin_hw_base_parser(parser):
@@ -166,7 +166,7 @@ def set_hw_chatbot_parser(parser=None):
     parser.add_argument(
         '--port-expose',
         type=int,
-        default=8080,
+        default=random_port(),
         help='The port of the host exposed to the public',
     )
     parser.add_argument(
@@ -229,7 +229,7 @@ def set_hw_multimodal_parser(parser=None):
     parser.add_argument(
         '--port-expose',
         type=int,
-        default=8080,
+        default=random_port(),
         help='The port of the host exposed to the public',
     )
     parser.add_argument(
