@@ -118,6 +118,7 @@ advanced/experimental/index
 :hidden:
 
 tutorials/new_executor
+tutorials/gpu_executor
 ```
 
 ```{toctree}

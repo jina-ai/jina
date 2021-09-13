@@ -49,6 +49,7 @@ With `--public` option, the resulted Executor will be **visible to public**.
 With `--private` options, the resulted Executor will be **invisible to public**.
 ````
 
+(hub_tags)=
 ## Advanced: tagging your published Executor
 
 ```bash
