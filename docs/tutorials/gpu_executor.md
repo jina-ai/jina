@@ -84,7 +84,7 @@ you to install CUDA yourself.
 In this example we are installing the GPU-enabled version of PyTorch, which is the default
 version when installing from PyPI. However, if you know that you only need to use your
 executor on CPU, you can save a lot of space (100s of MBs, or even GBs) by installing
-CPU-only versions of your requirements. This can also translate into faster start-up times
+CPU-only versions of your requirements. This translates into faster start-up times
 when using Docker containers.
 
 In our case, we could change the `requirements.txt` file to install a CPU-only version
