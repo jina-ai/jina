@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 
 from jina import Flow, Document
-from jina.enums import SocketType, FlowBuildLevel
+from jina.enums import InfrastructureType, SocketType, FlowBuildLevel
 from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
 from jina.helper import random_identity
@@ -838,3 +838,4 @@ def test_flow_grpc_with_shard():
 
     Flow(grpc_data_requests=False).add(shards=1)
     Flow(grpc_data_requests=False).add()
+    Flow(grpc_data_requests=False, infrastructure=InfrastructureType.K8S).add(shards=2)

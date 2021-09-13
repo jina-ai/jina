@@ -713,6 +713,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             args.grpc_data_requests
             and kwargs.get('shards') is not None
             and kwargs.get('shards', 1) > 1
+            and self.args.infrastructure != InfrastructureType.K8S
         ):
             raise NotImplementedError("GRPC data runtime does not support sharding")
 
