@@ -130,10 +130,12 @@ class MyTransformer(Executor):
     @requests(on='/foo')
     def foo(self, **kwargs):
         print(f'foo is doing cool stuff: {kwargs}')
+
 class MyIndexer(Executor):
     @requests(on='/bar')
     def bar(self, **kwargs):
         print(f'bar is doing cool stuff: {kwargs}')
+
 flow = (
         Flow()
         .add(uses=MyTransformer)
@@ -265,12 +267,13 @@ Feel free to check it to find more generators.
 endpoint. In fact, `MyTransformer` and `MyIndexer` only expose endpoints `/foo` and `/bar` respectively:
 ```{code-block} python
 ---
-emphasize-lines: 2, 6
+emphasize-lines: 2, 7
 ---
 class MyTransformer(Executor):
     @requests(on='/foo')
     def foo(self, **kwargs):
         print(f'foo is doing cool stuff: {kwargs}')
+
 class MyIndexer(Executor):
     @requests(on='/bar')
     def bar(self, **kwargs):
@@ -285,22 +288,18 @@ have logic to index data. Later, we will modify executors so that calling `flow.
 We have everything ready to use our Flow, but so far we have been using dummy data. Let's download our dataset now. Copy and paste this snippet, we don't need to go into the details for this. What it does is to download the [covid dataset](https://www.kaggle.com/xhlulu/covidqa).
 
 ``` python
-def download_data(targets, task_name='download covid-dataset'):
+def download_data(url, filename):
     """
     Download data.
-    :param targets: target path for data.
-    :param task_name: name of the task
+    :param url: dataset url.
+    :param filename: destination file name.
     """
     opener = urllib.request.build_opener()
     opener.addheaders = [('User-agent', 'Mozilla/5.0')]
     
     urllib.request.install_opener(opener)
-    with ProgressBar(description=task_name) as t:
-        for key, value in targets.items():
-            if not os.path.exists(value['filename']):
-                urllib.request.urlretrieve(
-                    value['url'], value['filename'], reporthook=lambda *x: t.update(0.01)
-                )
+    if not os.path.exists(value['filename']):
+        urllib.request.urlretrieve(url, filename)
 ```
 
 Let's re-organize our code a little bit. First, we should import everything we need:
@@ -319,7 +318,7 @@ from jina.types.document.generators import from_csv
 Then we should have our `main`, a `download_data` function and a `tutorial` function
 
 ``` python
-def download_data(targets, task_name='download covid-dataset'):
+def download_data(url, filename):
     # This is exactly as the previous snippet we just saw
 def tutorial(workdir, index_data_url, port_expose, unblock_query_flow):
     # Here we will have everything for our tutorial
@@ -336,18 +335,14 @@ def tutorial(workdir, index_data_url, port_expose, unblock_query_flow):
         @requests(on='/foo')
         def foo(self, **kwargs):
             print(f'foo is doing cool stuff: {kwargs}')
+
     class MyIndexer(Executor):
         @requests(on='/bar')
         def bar(self, **kwargs):
             print(f'bar is doing cool stuff: {kwargs}')
-    targets = {
-        'covid-csv': {
-            'url': index_data_url,
-            'filename': os.path.join(workdir, 'dataset.csv'),
-        }
-    }
+    
     # download the data
-    download_data(targets, task_name='download covid-dataset')
+    download_data(index_data_url, os.path.join(workdir, 'dataset.csv'))
     flow = (
         Flow()
             .add(name='MyTransformer', uses=MyTransformer)
@@ -369,7 +364,7 @@ Modify the function `tutorial` like so:
 
 ```{code-block} python
 ---
-emphasize-lines: 20, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46
+emphasize-lines: 22, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48
 ---
 def tutorial(workdir, index_data_url, port_expose, unblock_query_flow):
     Path(workdir).mkdir(parents=True, exist_ok=True)
@@ -377,18 +372,14 @@ def tutorial(workdir, index_data_url, port_expose, unblock_query_flow):
         @requests(on='/foo')
         def foo(self, **kwargs):
             print(f'foo is doing cool stuff: {kwargs}')
+    
     class MyIndexer(Executor):
         @requests(on='/bar')
         def bar(self, **kwargs):
             print(f'bar is doing cool stuff: {kwargs}')
-    targets = {
-        'covid-csv': {
-            'url': index_data_url,
-            'filename': os.path.join(workdir, 'dataset.csv'),
-        }
-    }
+    
     # download the data
-    download_data(targets, task_name='download covid-dataset')
+    download_data(index_data_url, os.path.join(workdir, 'dataset.csv'))
     flow = (
         Flow(cors=True)
             .add(name='MyTransformer', uses=MyTransformer)
@@ -580,9 +571,6 @@ using the cosine similarity.
 `.match` is a method of both `DocumentArray` and `DocumentArrayMemmap`. Learn more about it {ref}`in this section<match-documentarray>`.
 ```
 
-Now, `my_executors.py` should look like 
-[this file](https://github.com/jina-ai/jina/blob/master/jina/helloworld/chatbot/my_executors.py).
-
 To import the executors, just add this before the `download_data` function:
 
 ``` python
@@ -603,32 +591,24 @@ from jina.types.document.generators import from_csv
 from jina.helper import random_identity
 from my_executors import MyTransformer, MyIndexer
 
-def download_data(targets, task_name='download covid-dataset'):
+def download_data(url, filename):
     """
     Download data.
-    :param targets: target path for data.
-    :param task_name: name of the task
+    :param url: dataset url.
+    :param filename: destination file name.
     """
     opener = urllib.request.build_opener()
     opener.addheaders = [('User-agent', 'Mozilla/5.0')]
     
     urllib.request.install_opener(opener)
-    with ProgressBar(description=task_name) as t:
-        for key, value in targets.items():
-            if not os.path.exists(value['filename']):
-                urllib.request.urlretrieve(
-                    value['url'], value['filename'], reporthook=lambda *x: t.update(0.01)
-                )
+    if not os.path.exists(value['filename']):
+        urllib.request.urlretrieve(url, filename)
+
 def tutorial(workdir, index_data_url, port_expose, unblock_query_flow):
     Path(workdir).mkdir(parents=True, exist_ok=True)
-    targets = {
-        'covid-csv': {
-            'url': index_data_url,
-            'filename': os.path.join(workdir, 'dataset.csv'),
-        }
-    }
+    
     # download the data
-    download_data(targets, task_name='download covid-dataset')
+    download_data(index_data_url, os.path.join(workdir, 'dataset.csv'))
     flow = (
         Flow(cors=True)
             .add(name='MyTransformer', uses=MyTransformer)
