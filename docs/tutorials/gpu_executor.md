@@ -93,7 +93,10 @@ torch==1.9.0+cpu
 
 Now let's fill the `executor.py` file with the actual code of our executor
 
-```python
+```{code-block} python
+---
+emphasize-lines: 17, 18
+---
 from typing import Optional
 
 import torch
