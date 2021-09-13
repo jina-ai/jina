@@ -82,7 +82,7 @@ with f:
 `````
 
 
-## Single python file
+## Single Python file
 
 When you are only working with a single python file (let's call it `my_executor.py`), you can simply put it at the root of the repository, and import it directly in `config.yml`
 
@@ -93,18 +93,22 @@ metas:
     - my_executor.py
 ```
 
-## Multiple python files
+## Multiple Python files
 
-> This way of repository structure is currently not compatible with JinaD, when adding the executor to a Flow using `uses='config.yml'`, as JinaD only supports a flat file structure.  In this case, it is recommended that you containerize your executor, and use it with JinaD in your Flow either via `uses='jinahub+docker://...'` or `uses='docker://...'`.
+```{caution}
 
-When you are working with multiple python files, you should organize them as a **python package** and put them in a special folder inside
-your repository (as you would normally do with python packages). Specifically, you should do the following:
-- put all your python files inside a special folder (call it `executor`, as a convention), and put an `__init__.py` file inside it
+This way of repository structure is currently not compatible with JinaD, when adding the executor to a Flow using `uses='config.yml'`, as JinaD only supports a flat file structure.  In this case, it is recommended that you containerize your executor, and use it with JinaD in your Flow either via `uses='jinahub+docker://...'` or `uses='docker://...'`.
+
+```
+
+When you are working with multiple python files, you should organize them as a **Python package** and put them in a special folder inside
+your repository (as you would normally do with Python packages). Specifically, you should do the following:
+- put all your Python files inside a special folder (call it `executor`, as a convention), and put an `__init__.py` file inside it
     - because of how Jina registers executors, make sure to import your executor in this file (see the contents of `executor/__init__.py` in the example below).
 - use relative imports (`from .bar import foo`, and not `from bar import foo`) inside the python modules in this folder
 - Only list `executor/__init__.py` under `py_modules` in `config.yml` - this way Python knows that you are importing a package, and makes sure that all the relative imports within your package work properly
 
-To make things more specific, take this repository structure as an example
+To make things more specific, take this repository structure as an example:
 
 ```
 .

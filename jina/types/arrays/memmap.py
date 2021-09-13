@@ -86,6 +86,7 @@ class DocumentArrayMemmap(
 
     def __init__(self, path: str, key_length: int = 36, buffer_pool_size: int = 1000):
         Path(path).mkdir(parents=True, exist_ok=True)
+        self._path = path
         self._header_path = os.path.join(path, 'header.bin')
         self._body_path = os.path.join(path, 'body.bin')
         self._embeddings_path = os.path.join(path, 'embeddings.bin')

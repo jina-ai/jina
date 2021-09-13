@@ -119,6 +119,7 @@ advanced/experimental/index
 tutorials/new_executor
 tutorials/practice-your-learning
 tutorials/chatbot
+tutorials/gpu_executor
 ```
 
 ```{toctree}

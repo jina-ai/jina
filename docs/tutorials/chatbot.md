@@ -29,7 +29,7 @@ pip install click==7.1.2 sentence-transformers==2.0.0 torch==1.7.1
 
 Once you have Jina and the dependencies installed, let's get a broad overview of the process we'll follow:
 
-```{figure} ../../.github/images/flow.png
+```{figure} ../_static/flow.png
 :align: center
 ```
 
@@ -165,7 +165,7 @@ flow.plot('our_flow.svg')
 
 Let's run the code we have so far. If you try it, not much will happen since we are not indexing anything yet, but you will see the new file `our_flow.svg` created on your working folder, and if you open it you would see this:
 
-```{figure} ../../.github/images/plot_flow1.svg
+```{figure} ../_static/plot_flow1.svg
 :align: center
 ```
 
@@ -184,7 +184,7 @@ flow.plot('our_flow.svg')
 
 Now if you run this, you should have a Flow that is more explicit:
 
-```{figure} ../../.github/images/plot_flow2.svg
+```{figure} ../_static/plot_flow2.svg
 :align: center
 ```
 
@@ -553,7 +553,7 @@ And your directory should be:
 
 And we are done! If you followed all the steps, now you should have something like this in your browser:
 
-```{figure} ../../.github/images/results.png
+```{figure} ../_static/results.png
 :align: center
 ```
 

@@ -1,7 +1,64 @@
 # Executor Features
 
+## Exception handling
 
-## Use Executor out of the Flow
+Exception inside `@requests` decorated functions can be simply raised. The Flow will handle it.
+
+```python
+from jina import Executor, requests, Flow
+from jina.types.request import Response
+
+
+class MyExecutor(Executor):
+
+    @requests
+    def foo(self, **kwargs):
+        raise NotImplementedError('no time for it')
+
+
+f = Flow().add(uses=MyExecutor)
+
+
+def print_why(resp: Response):
+    print(resp.status.description)
+
+
+with f:
+    f.post('', on_error=print_why)
+```
+
+```console
+
+           pod0@47887[L]:ready and listening
+        gateway@47887[L]:ready and listening
+           Flow@47887[I]:🎉 Flow is ready to use!
+	🔗 Protocol: 		GRPC
+	🏠 Local access:	0.0.0.0:49242
+	🔒 Private network:	192.168.178.31:49242
+	🌐 Public address:	217.70.138.123:49242
+           pod0@47893[E]:NotImplementedError('no time for it')
+ add "--quiet-error" to suppress the exception details
+Traceback (most recent call last):
+  File "/Users/hanxiao/Documents/jina/jina/peapods/runtimes/zmq/zed.py", line 250, in _msg_callback
+    processed_msg = self._callback(msg)
+  File "/Users/hanxiao/Documents/jina/jina/peapods/runtimes/zmq/zed.py", line 236, in _callback
+    msg = self._post_hook(self._handle(self._pre_hook(msg)))
+  File "/Users/hanxiao/Documents/jina/jina/peapods/runtimes/zmq/zed.py", line 203, in _handle
+    peapod_name=self.name,
+  File "/Users/hanxiao/Documents/jina/jina/peapods/runtimes/request_handlers/data_request_handler.py", line 163, in handle
+    field='groundtruths',
+  File "/Users/hanxiao/Documents/jina/jina/executors/__init__.py", line 200, in __call__
+    self, **kwargs
+  File "/Users/hanxiao/Documents/jina/jina/executors/decorators.py", line 105, in arg_wrapper
+    return fn(*args, **kwargs)
+  File "/Users/hanxiao/Documents/jina/toy43.py", line 9, in foo
+    raise NotImplementedError('no time for it')
+NotImplementedError: no time for it
+NotImplementedError('no time for it')
+```
+
+
+## Use Executor out of Flow
 
 `Executor` object can be used directly just like a regular Python object. For example,
 
@@ -30,7 +87,7 @@ DocumentArray has 1 items:
 
 This is useful in debugging an Executor.
 
-## Gracefully close an Executor
+## Gracefully close Executor
 
 You might need to execute some logic when your executor's destructor is called. For example, you want to
 persist data to the disk (e.g. in-memory indexed data, fine-tuned model,...). To do so, you can overwrite the
@@ -86,7 +143,7 @@ requests:
     - `py_modules` is a list of strings. Defines the Python dependencies of the executor;
 - `requests` is a map. Defines the mapping from endpoint to class method name;
 
-### Load and save Executor's YAML config
+### Load and save Executor config
 
 You can use class method `Executor.load_config` and object method `exec.save_config` to load and save YAML config:
 
@@ -123,7 +180,7 @@ exec.save_config('y.yml')
 Executor.load_config('y.yml')
 ```
 
-## Meta attributes: `.metas` & `.runtime_args`
+## Meta attributes
 
 By default, an `Executor` object contains two collections of attributes: `.metas` and `.runtime_args`. They are both
 in `SimpleNamespace` type and contain some key-value information. However, they are defined differently and serve
@@ -134,7 +191,7 @@ different purposes.
   the `Executor`, e.g. `pea_id`, `replicas`, `replica_id`. Those values are often related to the system/network
   environment around the `Executor`, and less about the `Executor` itself.
 
-In 2.0rc1, the following fields are valid for `metas` and `runtime_args`:
+The following fields are valid for `metas` and `runtime_args`:
 
 | Attribute | Fields |
 | --- | --- |
@@ -169,120 +226,4 @@ then second):
 ```
 
 (executor-request-parameters)=
-## Handle request parameters
 
-Request parameters are passed to executors via `request.parameters` with `Flow.post(..., parameters=)`. This way all
-the `executors` will receive
-`parameters` as an argument to their `methods`. These `parameters` can be used to pass extra information or tune
-the `executor` behavior for a given request without updating the general configuration.
-
-```{code-block} python
----
-emphasize-lines: 11, 18
----
-from typing import Optional
-from jina import Executor, requests, DocumentArray, Flow
-
-
-class MyExecutor(Executor):
-    def __init__(self, default_param: int = 1, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.default_param = default_param
-
-    @requests
-    def foo(self, docs: Optional[DocumentArray], parameters: dict, **kwargs):
-        param = parameters.get('param', self.default_param)
-        # param may be overriden for this specific request
-        assert param == 5
-
-
-with Flow().add(uses=MyExecutor) as f:
-    f.post(on='/endpoint', inputs=DocumentArray([]), parameters={'param': 5})
-```
-
-However, this can be a problem when the user wants different executors to have different values of the same parameters.
-In that case one can specify specific parameters for the specific `executor` by adding a `dictionary` inside parameters
-with the `executor` name as `key`. Jina will then take all these specific parameters and copy to the root of the
-parameters dictionary before calling the executor `method`.
-
-```{code-block} python
----
-emphasize-lines: 24
----
-from typing import Optional
-from jina import Executor, requests, DocumentArray, Flow
-
-
-class MyExecutor(Executor):
-    def __init__(self, default_param: int = 1, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.default_param = default_param
-
-    @requests
-    def foo(self, docs: Optional[DocumentArray], parameters: dict, **kwargs):
-        param = parameters.get('param', self.default_param)
-        # param may be overriden for this specific request. 
-        # The first instance will receive 10, and the second one will receive 5
-        if self.metas.name == 'my-executor-1':
-            assert param == 10
-        elif self.metas.name == 'my-executor-2':
-            assert param == 5
-
-
-with (Flow().
-        add(uses={'jtype': 'MyExecutor', 'metas': {'name': 'my-executor-1'}}).
-        add(uses={'jtype': 'MyExecutor', 'metas': {'name': 'my-executor-2'}})) as f:
-    f.post(on='/endpoint', inputs=DocumentArray([]), parameters={'param': 5, 'my-executor-1': {'param': 10}})
-```
-
-
-`````{admonition}  Note
-:class: caution
-
-As `parameters` does not have a fixed schema, it is declared with type `google.protobuf.Struct` in the `RequestProto`
-protobuf declaration. However, `google.protobuf.Struct` follows the JSON specification and does not 
-differentiate `int` from `float`. **So, data of type `int` in `parameters` will be casted to `float` when request is
-sent to executor.**
-
-As a result, users need be explicit and cast the data to the expected type as follows.
-
-````{tab} ✅ Do
-```{code-block} python
----
-emphasize-lines: 6, 7
----
-
-class MyExecutor(Executor):
-    animals = ['cat', 'dog', 'turtle']
-    @request
-    def foo(self, docs, parameters: dict, **kwargs):
-        # need to cast to int since list indices must be integers not float
-        index = int(parameters.get('index', 0))
-        assert self.animals[index] == 'dog'
-
-with Flow().add(uses=MyExecutor) as f:
-    f.post(on='/endpoint', inputs=DocumentArray([]), parameters={'index': 1})
-```
-````
-
-````{tab} 😔 Don't
-```{code-block} python
----
-emphasize-lines: 6, 7
----
-
-class MyIndexer(Executor):
-    animals = ['cat', 'dog', 'turtle']
-    @request
-    def foo(self, docs, parameters: dict, **kwargs):
-          # ERROR: list indices must be integer not float
-          index = parameters.get('index', 0)
-          assert self.animals[index] == 'dog'
-
-with Flow().add(uses=MyExecutor) as f:
-    f.post(on='/endpoint',
-    inputs=DocumentArray([]), parameters={'index': 1})
-```
-````
-
-`````
