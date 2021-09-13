@@ -283,7 +283,7 @@ Now, if we run `python main.py` again you can see that no downloading happens in
 
 We now saw how to use GPU with our Executor locally, and when using it in a Docker container. What about when we use Executors from Jina Hub, is there any difference?
 
-Nope! Not only that, many of the Executors on Jina Hub already come with a GPU-enabled version pre-built, usually under the `gpu` tag. Let's modify our example to use the pre-built `TransformerTorchEncoder` from Jina Hub
+Nope! Not only that, many of the Executors on Jina Hub already come with a GPU-enabled version pre-built, usually under the `gpu` tag (see [Jina Hub tags](hub_tags)). Let's modify our example to use the pre-built `TransformerTorchEncoder` from Jina Hub
 
 ```diff
 f = Flow().add(
