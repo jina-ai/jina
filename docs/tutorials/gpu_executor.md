@@ -193,7 +193,7 @@ By now you can already see how easy it is to use the encoder on a GPU - simply s
 Let's see how much faster the GPU is, compared to CPU. The following
 comparison was made on `g4dn.xlarge` AWS instance, which has a single NVIDIA T4 GPU attached.
 
-We've already seen how fast the models runs on CPU, so let's benchmark it on GPU. To do that, we need to make sure that the encoder is using the GPU - change the `'device'` parameter in `main.py`, as shown in the snippet above. With that done, let's run the benchmark again
+First, we need to make sure that the encoder is using the GPU - change the `'device'` parameter in `main.py`, as shown in the snippet above. With that done, let's run the benchmark again
 ```python
 python main.py
 ```
