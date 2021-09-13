@@ -2,6 +2,8 @@ import itertools
 from abc import abstractmethod
 from typing import Iterable
 
+from ...util import get_docs_batch_generator
+
 
 def _check_traversal_path_type(traversal_paths):
     if isinstance(traversal_paths, str):
@@ -95,3 +97,22 @@ class TraversableSequence:
     @abstractmethod
     def _flatten(sequence):
         ...
+
+    @staticmethod
+    def batch(docs, traversal_path, batch_size, needs_attr):
+        """
+        Calls `get_docs_batch_generator` and returns the `Generator` created.
+
+        Example Usage:
+
+        >>> for batch in batch(docs, ['r'], 10, needs_attr='blob'):
+        >>>     ...
+
+        :param docs: A document array.
+        :param traversal_path: Specifies along which "axis" the document shall be traversed. (defaults to ['r'])
+        :param batch_size: Size of each generated batch (except the last one, which might be smaller, default: 32)
+        :param needs_attr: Optionally, you can filter out docs which don't have this attribute
+
+        :return: Generator
+        """
+        return get_docs_batch_generator(docs, traversal_path, batch_size, needs_attr)
