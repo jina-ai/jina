@@ -1,12 +1,14 @@
 # Executor on GPU
 
 This tutorial will show you how to use an Executor on a GPU, both locally and in a
-Docker container. You will also see how to use GPU with pre-built Hub executors.
+Docker container. You will also learn how to use GPU with pre-built Hub executors.
 
 Using a GPU allows you to significantly speed up encoding for most deep learning models,
-reducing response latency from 100s to merely 10s of miliseconds. Jina enables you to use
-GPUs like you normally would in a python script, or in a Docker container - it does not
-impose any additional requirements or configuration.
+reducing response latency by anything from 5 to 100 times, depending on the model used and 
+inputs. 
+
+Jina enables you to use GPUs like you normally would in a Python script, or in a Docker 
+container - it does not impose any additional requirements or configuration.
 
 ## Prerequisites
 
