@@ -55,8 +55,15 @@ If you have a different use case or dataset you may need to process your data so
 
 We can start by creating an empty folder, I'll call mine `tutorial` and that's the name you'll see through the tutorial but feel free to use whatever you wish.
 
-We will display our results in our browser, so download the static folder from [here](https://github.com/jina-ai/jina/tree/master/jina/helloworld/chatbot/static), and paste it into your tutorial folder. This is only the CSS and HTML files to render our results. We will use a dataset in a `.csv` format. I'll use the [COVID](https://www.kaggle.com/xhlulu/covidqa) dataset from Kaggle. 
-You don't need to download this by hand, we'll do it later in our app.
+We will display our results in our browser, so download the static folder from 
+[here](https://github.com/jina-ai/jina/tree/master/jina/helloworld/chatbot/static), and paste it into your tutorial 
+folder. This is only the CSS and HTML files to render our results. We will use a dataset in a `.csv` format. 
+We'll use the [COVID](https://www.kaggle.com/xhlulu/covidqa) dataset from Kaggle. 
+
+Download it under your project directory:
+```shell
+wget https://static.jina.ai/chatbot/dataset.csv
+```
 
 ### Create a Flow
 
@@ -170,8 +177,9 @@ flow = (
         Flow()
         .add(name='MyTransformer', uses=MyTransformer)
         .add(name='MyIndexer', uses=MyIndexer)
-        .plot('our_flow.svg')
     )
+
+flow.plot('our_flow.svg')
 ```
 
 Now if you run this, you should have a Flow that is more explicit:
@@ -213,7 +221,7 @@ Before we use it in our example, let's recap a bit of what we have seen:
 In our example, we have a Flow with two Executors (`MyTransformer` and `MyIndexer`) and we want to use our Flow to index our data. But in this case, our data is a csv file. We need to open it first.
 
 ``` python
-with flow, open('our_dataset.csv') as fp:
+with flow, open('dataset.csv') as fp:
         pass            # You can here use the flow, e.g, index data
 ```
 
@@ -231,7 +239,6 @@ Now we have our Flow ready, we can start to index. But we can't just pass the da
 To create a Document in Jina, we do it like this:
 
 ``` python
-
 doc = Document(content='hello, world!')
 ```
 
@@ -239,7 +246,7 @@ In our case, the content of our Document needs to be the dataset we want to use:
 
 ``` python
 from jina.types.document.generators import from_csv
-with open('our_dataset.csv') as fp:
+with open('dataset.csv') as fp:
     docs = from_csv(fp, field_resolver={'question': 'text'})
 ```
 
@@ -249,7 +256,7 @@ Finally, we can combine the 2 previous steps (loading the dataset into Documents
 like this:
 ``` python
 from jina.types.document.generators import from_csv
-with flow, open('our_dataset.csv') as fp:
+with flow, open('dataset.csv') as fp:
     flow.index(from_csv(fp, field_resolver={'question': 'text'}))
 ```
 
@@ -283,54 +290,24 @@ This simply means that no endpoint will be triggered by `flow.index`. Besides, o
 have logic to index data. Later, we will modify executors so that calling `flow.index` does indeed store the dataset.
 ````
 
-### Get our data
-
-We have everything ready to use our Flow, but so far we have been using dummy data. Let's download our dataset now. Copy and paste this snippet, we don't need to go into the details for this. What it does is to download the [covid dataset](https://www.kaggle.com/xhlulu/covidqa).
-
-``` python
-def download_data(url, filename):
-    """
-    Download data.
-    :param url: dataset url.
-    :param filename: destination file name.
-    """
-    opener = urllib.request.build_opener()
-    opener.addheaders = [('User-agent', 'Mozilla/5.0')]
-    
-    urllib.request.install_opener(opener)
-    if not os.path.exists(value['filename']):
-        urllib.request.urlretrieve(url, filename)
-```
-
-Let's re-organize our code a little bit. First, we should import everything we need:
+Let's put the executors and the flow together and re-organize our code a little bit. First, we should import everything 
+we need:
 
 ``` python
 import os
-import urllib.request
 import webbrowser
 from pathlib import Path
 from jina import Flow, Executor, requests
 from jina.logging.predefined import default_logger
-from jina.logging.profile import ProgressBar
 from jina.types.document.generators import from_csv
 ```
 
-Then we should have our `main`, a `download_data` function and a `tutorial` function
+Then we should have our `main` and a `tutorial` function that contains all the code that we've done so far.
+`tutorial` accepts 1 parameters that we'll need later: 
+`port_expose` (the port used to expose our flow)
 
 ``` python
-def download_data(url, filename):
-    # This is exactly as the previous snippet we just saw
-def tutorial(workdir, index_data_url, port_expose, unblock_query_flow):
-    # Here we will have everything for our tutorial
-if __name__ == '__main__':
-    tutorial(random_identity(), 'https://static.jina.ai/chatbot/dataset.csv', 8080, False)
-```
-
-Now let's see our tutorial function with all the code we've done so far:
-
-``` python
-def tutorial(workdir, index_data_url, port_expose, unblock_query_flow):
-    Path(workdir).mkdir(parents=True, exist_ok=True)
+def tutorial(port_expose):
     class MyTransformer(Executor):
         @requests(on='/foo')
         def foo(self, **kwargs):
@@ -341,33 +318,33 @@ def tutorial(workdir, index_data_url, port_expose, unblock_query_flow):
         def bar(self, **kwargs):
             print(f'bar is doing cool stuff: {kwargs}')
     
-    # download the data
-    download_data(index_data_url, os.path.join(workdir, 'dataset.csv'))
     flow = (
         Flow()
             .add(name='MyTransformer', uses=MyTransformer)
             .add(name='MyIndexer', uses=MyIndexer)
-            .plot('test.svg')
     )
-    with flow, open(targets['covid-csv']['filename']) as fp:
+    with flow, open('dataset.csv') as fp:
         flow.index(from_csv(fp, field_resolver={'question': 'text'}))
+
+
+if __name__ == '__main__':
+    tutorial(8080)
 ```
 
-If you run this, it should finish without errors. You won't see much yet because we are not showing anything after we index. But you should see a new directory created with the downloaded dataset:
+If you run this, it should finish without errors. You won't see much yet because we are not showing anything after we 
+index.
 
-```{figure} ../../.github/images/downloaded_dataset.png
-:align: center
-```
-
-To actually see something we need to specify how we will display it. For our tutorial we will do so in our browser. 
+To actually see something we need to specify how we will display it. For our tutorial we will do so in our browser.
+After indexing, we will open a web browser to serve the static html files. We also need to configure and serve our flow 
+on a specific port with the HTTP protocol so that the web browser can make requests to the flow. So, we'll use the 
+parameter `port_expose` to configure the flow and set the protocol to HTTP.
 Modify the function `tutorial` like so:
 
 ```{code-block} python
 ---
-emphasize-lines: 22, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48
+emphasize-lines: 13, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37
 ---
-def tutorial(workdir, index_data_url, port_expose, unblock_query_flow):
-    Path(workdir).mkdir(parents=True, exist_ok=True)
+def tutorial(port_expose):
     class MyTransformer(Executor):
         @requests(on='/foo')
         def foo(self, **kwargs):
@@ -378,15 +355,12 @@ def tutorial(workdir, index_data_url, port_expose, unblock_query_flow):
         def bar(self, **kwargs):
             print(f'bar is doing cool stuff: {kwargs}')
     
-    # download the data
-    download_data(index_data_url, os.path.join(workdir, 'dataset.csv'))
     flow = (
         Flow(cors=True)
             .add(name='MyTransformer', uses=MyTransformer)
             .add(name='MyIndexer', uses=MyIndexer)
-            .plot('test.svg')
     )
-    with flow, open(targets['covid-csv']['filename']) as fp:
+    with flow, open('dataset.csv') as fp:
         flow.index(from_csv(fp, field_resolver={'question': 'text'}))
     
         # switches the serving protocol to HTTP at runtime
@@ -406,8 +380,7 @@ def tutorial(workdir, index_data_url, port_expose, unblock_query_flow):
                 f'You should see a demo page opened in your browser, '
                 f'if not, you may open {url_html_path} manually'
             )
-        if not unblock_query_flow:
-            flow.block()
+        flow.block()
 ```
 
 ```{admonition} See Also
@@ -571,7 +544,7 @@ using the cosine similarity.
 `.match` is a method of both `DocumentArray` and `DocumentArrayMemmap`. Learn more about it {ref}`in this section<match-documentarray>`.
 ```
 
-To import the executors, just add this before the `download_data` function:
+To import the executors, just add this to the imports:
 
 ``` python
 from my_executors import MyTransformer, MyIndexer
@@ -581,41 +554,21 @@ And remove the dummy executors we made. Your `app.py` should now look like this:
 
 ``` python
 import os
-import urllib.request
 import webbrowser
 from pathlib import Path
 from jina import Flow, Executor
 from jina.logging.predefined import default_logger
-from jina.logging.profile import ProgressBar
 from jina.types.document.generators import from_csv
-from jina.helper import random_identity
 from my_executors import MyTransformer, MyIndexer
 
-def download_data(url, filename):
-    """
-    Download data.
-    :param url: dataset url.
-    :param filename: destination file name.
-    """
-    opener = urllib.request.build_opener()
-    opener.addheaders = [('User-agent', 'Mozilla/5.0')]
-    
-    urllib.request.install_opener(opener)
-    if not os.path.exists(value['filename']):
-        urllib.request.urlretrieve(url, filename)
 
-def tutorial(workdir, index_data_url, port_expose, unblock_query_flow):
-    Path(workdir).mkdir(parents=True, exist_ok=True)
-    
-    # download the data
-    download_data(index_data_url, os.path.join(workdir, 'dataset.csv'))
+def tutorial(port_expose):
     flow = (
         Flow(cors=True)
             .add(name='MyTransformer', uses=MyTransformer)
             .add(name='MyIndexer', uses=MyIndexer)
-            .plot('test.svg')
     )
-    with flow, open(targets['covid-csv']['filename']) as fp:
+    with flow, open('dataset.csv') as fp:
         flow.index(from_csv(fp, field_resolver={'question': 'text'}))
         
         # switch to REST gateway at runtime
@@ -635,21 +588,20 @@ def tutorial(workdir, index_data_url, port_expose, unblock_query_flow):
                 f'You should see a demo page opened in your browser, '
                 f'if not, you may open {url_html_path} manually'
             )
-        if not unblock_query_flow:
-            flow.block()
+        flow.block()
 if __name__ == '__main__':
-    tutorial(random_identity(), 'https://static.jina.ai/chatbot/dataset.csv', 8080, False)
+    tutorial(8080)
 ```
 
 And your directory should be:
 
     .
-    ├── project                    
-    │   ├── app.py          
-    │   ├── my_executors.py         
-    │   └── static/         
-    │   └── our_flow.svg #This will be here if you used the .plot() function       
-    └── ...
+    └── project                    
+        ├── app.py          
+        ├── my_executors.py         
+        ├── static/         
+        ├── our_flow.svg #This will be here if you used the .plot() function       
+        └── dataset.csv
 
 And we are done! If you followed all the steps, now you should have something like this in your browser:
 
