@@ -1,11 +1,11 @@
 # Executor on GPU
 
-This tutorial will show you how to use an executor on a GPU, both locally and in a
+This tutorial will show you how to use an Executor on a GPU, both locally and in a
 Docker container. You will also see how to use GPU with pre-built Hub executors.
 
 Using a GPU allows you to significantly speed up encoding for most deep learning models,
 reducing response latency from 100s to merely 10s of miliseconds. Jina enables you to use
-GPUs like you normally would in a python script, or in a docker container - it does not
+GPUs like you normally would in a python script, or in a Docker container - it does not
 impose any additional requirements or configuration.
 
 ## Prerequisites
@@ -21,7 +21,7 @@ the deep learning framework that you use, that might be required (for local exec
 For the Docker part of the tutorial you will also need to have [Docker](https://docs.docker.com/get-docker/) and 
 [nvidia-docker](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html) installed.
 
-To run python scripts you will need a virtual environment (for example [venv](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment) or [conda](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments)), and to install jina inside it using
+To run python scripts you will need a virtual environment (for example [venv](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment) or [conda](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments)), and to install Jina inside it using
 
 ```bash
 pip install jina
@@ -29,8 +29,8 @@ pip install jina
 
 ## Setting up the executor
 
-We will create a simple sentence encoder, and we'll start by creating the executor 
-"skeleton" using jina's command line utility:
+We will create a simple sentence encoder, and we'll start by creating the Executor 
+"skeleton" using Jina's command line utility:
 
 ```bash
 jina hub new
@@ -42,9 +42,13 @@ directory, this will be our working directory for this tutorial.
 
 Next, select `y` when prompted for advanced configuration, and leave all other questions
 empty, except when you are asked if you want to create a `Dockerfile` - answer `y` to 
-this one (we will need it in the next section).
+this one (we will need it in the next section). Here's how this prompt dialogue should
+look like in the end
 
-Once this is done, let's move to the newly created executor directory:
+![jina hub new](../_static/hub_new_gpu.png)
+
+
+Once this is done, let's move to the newly created Executor directory:
 ```bash
 cd SentenceEncoder
 ```
@@ -52,7 +56,7 @@ cd SentenceEncoder
 Let's continue by specifying our requirements in `requirements.txt` file
 
 ```text
-sentence-transformers
+sentence-transformers==2.0.0
 ```
 
 and installing them using
@@ -62,24 +66,24 @@ pip install -r requirements.txt
 ```
 
 ```{admonition} Do I need to install CUDA?
-:class: Info
+:class: info
 
 All machine learning frameworks rely on CUDA for running on GPU. However, whether you
 need CUDA installed on your system or not depends on the framework that you are using.
 
-In this tutorial, we are using PyTorch framework, which already includes the needed
+In this tutorial, we are using PyTorch framework, which already includes the necessary
 CUDA binaries in its distribution. However, other frameworks, such as Tensorflow, require
 you to install CUDA yourself.
 ```
 
 ```{admonition} Install only what you need
-:class: Tip
+:class: tip
 
 In this example we are installing the GPU-enabled version of PyTorch, which is the default
 version when installing from PyPI. However, if you know that you only need to use your
 executor on CPU, you can save a lot of space (100s of MBs, or even GBs) by installing
 CPU-only versions of your requirements. This can also translate into faster start-up times
-when using docker containers.
+when using Docker containers.
 
 In our case, we could change the `requirements.txt` file to install a CPU-only version
 of PyTorch like this
@@ -91,11 +95,11 @@ torch==1.9.0+cpu
 :::
 ```
 
-Now let's fill the `executor.py` file with the actual code of our executor
+Now let's fill the `executor.py` file with the actual code of our Executor
 
 ```{code-block} python
 ---
-emphasize-lines: 17, 18
+emphasize-lines: 16, 17
 ---
 from typing import Optional
 
@@ -107,8 +111,7 @@ from sentence_transformers import SentenceTransformer
 class SentenceEncoder(Executor):
     """A simple sentence encoder that can be run on a CPU or a GPU
 
-    Args:
-        device: The pytorch device that the model is on, e.g. 'cpu', 'cuda', 'cuda:1'
+    :param device: The pytorch device that the model is on, e.g. 'cpu', 'cuda', 'cuda:1'
     """
 
     def __init__(self, device: str = 'cpu', *args, **kwargs):
@@ -132,9 +135,9 @@ Here all the device-specific magic happens on the two highlighted lines - when w
 model to our device. These are the exact same steps that you would use in a standalone python
 script as well.
 
-To see how we would pass the device we want the executor to use,
+To see how we would pass the device we want the Executor to use,
 let's create another file - `main.py`, which will demonstrate the usage of this
-executor by encoding 10 thousand text documents.
+encoder by encoding 10 thousand text documents.
 
 ```python
 from jina import Document, Flow
@@ -170,7 +173,7 @@ Working... ━━━━━━━━━━━━━━━━━━━━━━━
 
 ## Using GPU locally
 
-By now you can already see how easy it is to use the encoder with a GPU - simply set the device on initialization to `'cuda'`
+By now you can already see how easy it is to use the encoder on a GPU - simply set the device on initialization to `'cuda'`
 
 ```diff
 + f = Flow().add(uses=SentenceEncoder, uses_with={'device': 'cuda'})
@@ -197,16 +200,20 @@ Working... ━━━━━━━━━━━━━━━━━━━━━━━
 
 We can see that we got over 7x speedup! And that's not even the best we can do - if we increase the batch size to max out the GPU's memory we would get even larger speedups. But such optimizations are beyond the scope of this tutorial.
 
-You have probably also noticed that there was a delay (about 3 seconds) when creating the flow.
+```{admonition} Note
+:class: note
+
+You have probably noticed that there was a delay (about 3 seconds) when creating the Flow.
 This occured because the weights of our model needed to be transfered from CPU to GPU when we
-initialized the executor. However, this action only occurs once in the lifetime of the executor,
+initialized the Executor. However, this action only occurs once in the lifetime of the Executor,
 so for most use cases this is not something we would worry about.
+```
 
 ## Using GPU in a container
 
-When you'll be using your executor in production you will most likely want to put it in a Docker container, to provide proper environment isolation and to be able to use it easily on any device.
+When you'll be using your Executor in production you will most likely want to put it in a Docker container, to provide proper environment isolation and to be able to use it easily on any device.
 
-Using GPU-enabled executors in this case is no harder than using them locally. In this case we don't even need to modify the default `Dockerfile`.
+Using GPU-enabled Executors in this case is no harder than using them locally. In this case we don't even need to modify the default `Dockerfile`.
 
 ```{admonition} Choosing the right base image
 
@@ -215,7 +222,7 @@ In our case we are using the default `jinaai/jina:latest` base image. However, p
 If you need to have CUDA installed in the image, you usually have two options: either you take the `nvidia/cuda` for the base image, or you take the official GPU-enabled image of the framework you are using, for example, `tensorflow/tensorflow:2.6.0-gpu`.
 ```
 
-The other file we care about in this case is `config.yml`, and here the default version works as well. So let's build the docker image
+The other file we care about in this case is `config.yml`, and here the default version works as well. So let's build the Docker image
 
 ```bash
 docker build -t sentence-encoder .
@@ -227,11 +234,14 @@ You can run the container to quickly check that everything is working well
 docker run sentence-encoder
 ```
 
-Now, let's use the docker version of our encoder with the GPU. If you've dealt with GPUs in containers before, you probably remember that to use a GPU insite the container you need to pass `--gpus all` command to `docker run`. And jina enables you to do just that.
+Now, let's use the Docker version of our encoder with the GPU. If you've dealt with GPUs in containers before, you probably remember that to use a GPU insite the container you need to pass `--gpus all` command to `docker run`. And Jina enables you to do just that.
 
-Here's how we need to modify our `main.py` script to use a GPU-base docker executor
+Here's how we need to modify our `main.py` script to use a GPU-base containerized Executor
 
-```python
+```{code-block} python
+---
+emphasize-lines: 12
+---
 from jina import Document, DocumentArray, Flow
 
 from executor import SentenceEncoder
@@ -251,9 +261,9 @@ with f:
 
 If we run this with `python main.py`, we'll get the same output as before, except that now we'll also get the output from the Docker container.
 
-You may notice that every time we start the executor, the transformer model gets downloaded again. To speed this up, we would want the encoder to load the model from a file which we have pre-downloaded to our disk.
+You may notice that every time we start the Executor, the transformer model gets downloaded again. To speed this up, we would want the encoder to load the model from a file which we have pre-downloaded to our disk.
 
-We can do this with docker volumes - jina will simply pass the argument to the Docker container. Here's how we modify the `main.py` to allow that
+We can do this with Docker volumes - Jina will simply pass the argument to the Docker container. Here's how we modify the `main.py` to allow that
 
 ```python
 f = Flow().add(
@@ -265,15 +275,15 @@ f = Flow().add(
 )
 ```
 
-Here we mounted the `~/.cache` directory, because this is where pre-built transformer models are saved in our case. But this could also be any custom directory - depends on the python package you are using, and how you specify the model loading path.
+Here we mounted the `~/.cache` directory, because this is where pre-built transformer models are saved in our case. But this could also be any custom directory - depends on the Python package you are using, and how you specify the model loading path.
 
 Now, if we run `python main.py` again you can see that no downloading happens inside the container, and that the encoding starts faster.
 
-## Using GPU with Hub executors
+## Using GPU with Hub Executors
 
-We now saw how to use GPU with our executor locally, and when using it in a Docker container. What about when we use executors from the Hub, is there any difference?
+We now saw how to use GPU with our Executor locally, and when using it in a Docker container. What about when we use Executors from Jina Hub, is there any difference?
 
-Nope! Not only that, many of the executors on the hub already come with a GPU-enabled version pre-built, usually under the `gpu` tag. Let's modify our example to use the pre-built `TransformerTorchEncoder` from the Hub
+Nope! Not only that, many of the Executors on Jina Hub already come with a GPU-enabled version pre-built, usually under the `gpu` tag. Let's modify our example to use the pre-built `TransformerTorchEncoder` from Jina Hub
 
 ```diff
 f = Flow().add(
@@ -286,17 +296,22 @@ f = Flow().add(
 )
 ```
 
-You'll see that the first time you run the script, downloading the docker image will take some time - GPU images are large! But after that, everything will work just as it did with your local docker image, out of the box.
+You'll see that the first time you run the script, downloading the Docker image will take some time - GPU images are large! But after that, everything will work just as it did with your local Docker image, out of the box.
 
-When using GPU encoders from the Hub, always use `jinahub+docker://`, and not `jinahub://`. As discussed above, these encoders might need CUDA installed (or other system dependencies), and installing that properly can be tricky. For that reason, you should prefer using Docker images, which already come with all these dependencies pre-installed.
+```{admonition} Important
+:class: important
+
+When using GPU encoders from Jina Hub, always use `jinahub+docker://`, and not `jinahub://`. As discussed above, these encoders might need CUDA installed (or other system dependencies), and installing that properly can be tricky. For that reason, you should prefer using Docker images, which already come with all these dependencies pre-installed.
+```
+
 
 ## Conclusion
 
 Let's recap what we saw in this tutorial:
 
-1. Using GPU in executors locally is no different than using GPU in a standalone script. You can pass the device you want your executor to use in the initialization.
-2. To use the executor with a GPU inside the docker container, make sure to pass `gpus='all'`
-3. Use volumes (bind mounts), so you don't have to download large files each time you start the executor
-4. You can use GPU with executors from the Hub, just make sure to use the executor with the `gpu` tag
+1. Using Executors on a GPU locally is no different than using GPU in a standalone script. You can pass the device you want your Executor to use in the initialization.
+2. To use an Executor on a GPU inside a Docker container, make sure to pass `gpus='all'`
+3. Use volumes (bind mounts), so you don't have to download large files each time you start the Executor
+4. You can use GPU with Executors from Jina Hub, just make sure to use the Executor with the `gpu` tag
 
-And when you start building your own executor, always remember to check what system requirements (CUDA and similar) are needed, and install them locally (and in the `Dockerfile`) accordingly
+And when you start building your own Executor, always remember to check what system requirements (CUDA and similar) are needed, and install them locally (and in the `Dockerfile`) accordingly
