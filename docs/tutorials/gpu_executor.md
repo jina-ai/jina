@@ -244,7 +244,7 @@ You can run the container to quickly check that everything is working well
 docker run sentence-encoder
 ```
 
-Now, let's use the Docker version of our encoder with the GPU. If you've dealt with GPUs in containers before, you probably remember that to use a GPU insite the container you need to pass `--gpus all` command to `docker run`. And Jina enables you to do just that.
+Now, let's use the Docker version of our encoder with the GPU. If you've dealt with GPUs in containers before, you probably remember that to use a GPU insite the container you need to pass `--gpus all` option to the `docker run` command. And Jina enables you to do just that.
 
 Here's how we need to modify our `main.py` script to use a GPU-base containerized Executor
 
