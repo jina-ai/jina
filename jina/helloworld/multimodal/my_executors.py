@@ -1,5 +1,5 @@
 import os
-from typing import Dict, Optional, List, Iterable, Union, Tuple
+from typing import Dict, List, Iterable, Union, Tuple
 
 import numpy as np
 import torch
@@ -29,26 +29,18 @@ class TextEncoder(Executor):
     def __init__(
         self,
         pretrained_model_name_or_path: str = 'sentence-transformers/paraphrase-mpnet-base-v2',
-        base_tokenizer_model: Optional[str] = None,
         pooling_strategy: str = 'mean',
         layer_index: int = -1,
-        max_length: Optional[int] = None,
-        acceleration: Optional[str] = None,
-        embedding_fn_name: str = '__call__',
         *args,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
         self.pretrained_model_name_or_path = pretrained_model_name_or_path
-        self.base_tokenizer_model = (
-            base_tokenizer_model or pretrained_model_name_or_path
-        )
         self.pooling_strategy = pooling_strategy
         self.layer_index = layer_index
-        self.max_length = max_length
-        self.acceleration = acceleration
-        self.embedding_fn_name = embedding_fn_name
-        self.tokenizer = AutoTokenizer.from_pretrained(self.base_tokenizer_model)
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            self.pretrained_model_name_or_path
+        )
         self.model = AutoModel.from_pretrained(
             self.pretrained_model_name_or_path, output_hidden_states=True
         )
@@ -68,18 +60,14 @@ class TextEncoder(Executor):
         return embeddings.cpu().numpy()
 
     @requests
-    def encode(self, docs: 'DocumentArray', *args, **kwargs):
-        texts = docs.get_attributes('text')
-
+    def encode(self, docs: 'DocumentArray', **kwargs):
         with torch.no_grad():
-
             if not self.tokenizer.pad_token:
                 self.tokenizer.add_special_tokens({'pad_token': '[PAD]'})
                 self.model.resize_token_embeddings(len(self.tokenizer.vocab))
 
             input_tokens = self.tokenizer(
-                texts,
-                max_length=self.max_length,
+                docs.get_attributes('content'),
                 padding='longest',
                 truncation=True,
                 return_tensors='pt',
@@ -88,14 +76,11 @@ class TextEncoder(Executor):
                 k: v.to(torch.device('cpu')) for k, v in input_tokens.items()
             }
 
-            outputs = getattr(self.model, self.embedding_fn_name)(**input_tokens)
-            if isinstance(outputs, torch.Tensor):
-                return outputs.cpu().numpy()
+            outputs = self.model(**input_tokens)
             hidden_states = outputs.hidden_states
 
             embeds = self._compute_embedding(hidden_states, input_tokens)
-            for doc, embed in zip(docs, embeds):
-                doc.embedding = embed
+            docs.embeddings = embeds
 
 
 class TextCrafter(Executor):
@@ -198,8 +183,7 @@ class ImageEncoder(Executor):
         _features = self._get_features(_input).detach()
         _features = _features.numpy()
         _features = self._get_pooling(_features)
-        for doc, feature in zip(docs, _features):
-            doc.embedding = feature
+        docs.embeddings = _features
 
 
 class DocVectorIndexer(Executor):

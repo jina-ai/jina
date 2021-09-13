@@ -83,7 +83,7 @@ def from_files(
                 with open(g, read_mode) as fp:
                     yield Document(content=fp.read())
             d += 1
-        if size is not None and d > size:
+        if size is not None and d >= size:
             break
 
 
