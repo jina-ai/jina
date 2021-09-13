@@ -24,7 +24,7 @@ And we need the following dependencies:
 
 
 ``` shell
-pip install click==7.1.2 transformers==4.1.1 torch==1.7.1
+pip install click==7.1.2 sentence-transformers==2.0.0 torch==1.7.1
 ```
 
 Once you have Jina and the dependencies installed, let's get a broad overview of the process we'll follow:
@@ -407,13 +407,11 @@ We will be creating our Executors in a separate file: `my_executors.py`.
 
 First, let's import the following:
 ```python
-from typing import Optional, Dict
+from typing import Dict
 
-import numpy as np
-import torch
 from jina import Executor, DocumentArray, requests
 from jina.types.arrays.memmap import DocumentArrayMemmap
-from transformers import AutoModel, AutoTokenizer
+from sentence_transformers import SentenceTransformer
 ```
 
 Now, let's implement `MyTransformer`:
@@ -423,76 +421,25 @@ class MyTransformer(Executor):
 
     def __init__(
         self,
-        pretrained_model_name_or_path: str = 'sentence-transformers/paraphrase-mpnet-base-v2',
-        base_tokenizer_model: Optional[str] = None,
-        pooling_strategy: str = 'mean',
-        layer_index: int = -1,
-        max_length: Optional[int] = None,
-        acceleration: Optional[str] = None,
-        embedding_fn_name: str = '__call__',
+        pretrained_model_name_or_path: str = 'paraphrase-mpnet-base-v2',
+        device: str = 'cpu',
         *args,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
         self.pretrained_model_name_or_path = pretrained_model_name_or_path
-        self.base_tokenizer_model = (
-            base_tokenizer_model or pretrained_model_name_or_path
-        )
-        self.pooling_strategy = pooling_strategy
-        self.layer_index = layer_index
-        self.max_length = max_length
-        self.acceleration = acceleration
-        self.embedding_fn_name = embedding_fn_name
-        self.tokenizer = AutoTokenizer.from_pretrained(self.base_tokenizer_model)
-        self.model = AutoModel.from_pretrained(
-            self.pretrained_model_name_or_path, output_hidden_states=True
-        )
-        self.model.to(torch.device('cpu'))
-
-    def _compute_embedding(self, hidden_states: 'torch.Tensor', input_tokens: Dict):
-        import torch
-
-        fill_vals = {'cls': 0.0, 'mean': 0.0, 'max': -np.inf, 'min': np.inf}
-        fill_val = torch.tensor(
-            fill_vals[self.pooling_strategy], device=torch.device('cpu')
-        )
-
-        layer = hidden_states[self.layer_index]
-        attn_mask = input_tokens['attention_mask'].unsqueeze(-1).expand_as(layer)
-        layer = torch.where(attn_mask.bool(), layer, fill_val)
-
-        embeddings = layer.sum(dim=1) / attn_mask.sum(dim=1)
-        return embeddings.cpu().numpy()
+        self.model = SentenceTransformer(self.pretrained_model_name_or_path, device=device)
+        self.model.to(device)
 
     @requests
     def encode(self, docs: 'DocumentArray', *args, **kwargs):
         import torch
 
         with torch.no_grad():
-
-            if not self.tokenizer.pad_token:
-                self.tokenizer.add_special_tokens({'pad_token': '[PAD]'})
-                self.model.resize_token_embeddings(len(self.tokenizer.vocab))
-
-            input_tokens = self.tokenizer(
-                docs.get_attributes('content'),
-                max_length=self.max_length,
-                padding='longest',
-                truncation=True,
-                return_tensors='pt',
-            )
-            input_tokens = {
-                k: v.to(torch.device('cpu')) for k, v in input_tokens.items()
-            }
-
-            outputs = getattr(self.model, self.embedding_fn_name)(**input_tokens)
-            if isinstance(outputs, torch.Tensor):
-                return outputs.cpu().numpy()
-            hidden_states = outputs.hidden_states
-
-            embeds = self._compute_embedding(hidden_states, input_tokens)
-            for doc, embed in zip(docs, embeds):
-                doc.embedding = embed
+            texts = docs.get_attributes("text")
+            embeddings = self.model.encode(texts, batch_size=32)
+            for doc, embedding in zip(docs, embeddings):
+                doc.embedding = embedding
 ```
 
 `MyTransformer` exposes only one endpoint: `encode`. This will be called whenever we make a request to the flow, either 
@@ -503,9 +450,10 @@ to get the closed matches.
 Encoding is a fundamental concept in neural search. It means representing the data in a vectorial form (embeddings).
 ```
 
-Encoding is performed through a transformers model (`sentence-transformers/paraphrase-mpnet-base-v2` by default).
+Encoding is performed through a sentence-transformers model (`paraphrase-mpnet-base-v2` by default). We get the text 
+attributes of docs in batch and then compute embeddings. Later, we set the embedding attribute of each document.
 
-Then, we can implement our indexer (`MyIndexer`):
+Now, let's implement our indexer (`MyIndexer`):
 ```python
 class MyIndexer(Executor):
     """Simple indexer class """
