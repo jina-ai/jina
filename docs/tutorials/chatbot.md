@@ -285,20 +285,15 @@ have logic to index data. Later, we will modify executors so that calling `flow.
 We have everything ready to use our Flow, but so far we have been using dummy data. Let's download our dataset now. Copy and paste this snippet, we don't need to go into the details for this. What it does is to download the [covid dataset](https://www.kaggle.com/xhlulu/covidqa).
 
 ``` python
-def download_data(targets, download_proxy=None, task_name='download covid-dataset'):
+def download_data(targets, task_name='download covid-dataset'):
     """
     Download data.
     :param targets: target path for data.
-    :param download_proxy: download proxy (e.g. 'http', 'https')
     :param task_name: name of the task
     """
     opener = urllib.request.build_opener()
     opener.addheaders = [('User-agent', 'Mozilla/5.0')]
-    if download_proxy:
-        proxy = urllib.request.ProxyHandler(
-            {'http': download_proxy, 'https': download_proxy}
-        )
-        opener.add_handler(proxy)
+    
     urllib.request.install_opener(opener)
     with ProgressBar(description=task_name) as t:
         for key, value in targets.items():
@@ -318,27 +313,25 @@ from pathlib import Path
 from jina import Flow, Executor, requests
 from jina.logging.predefined import default_logger
 from jina.logging.profile import ProgressBar
-from jina.parsers.helloworld import set_hw_chatbot_parser
 from jina.types.document.generators import from_csv
 ```
 
 Then we should have our `main`, a `download_data` function and a `tutorial` function
 
 ``` python
-def download_data(targets, download_proxy=None, task_name='download covid-dataset'):
+def download_data(targets, task_name='download covid-dataset'):
     # This is exactly as the previous snippet we just saw
-def tutorial(args):
+def tutorial(workdir, index_data_url, port_expose, unblock_query_flow):
     # Here we will have everything for our tutorial
 if __name__ == '__main__':
-    args = set_hw_chatbot_parser().parse_args()
-    tutorial(args)
+    tutorial(random_identity(), 'https://static.jina.ai/chatbot/dataset.csv', 8080, False)
 ```
 
 Now let's see our tutorial function with all the code we've done so far:
 
 ``` python
-def tutorial(args):
-    Path(args.workdir).mkdir(parents=True, exist_ok=True)
+def tutorial(workdir, index_data_url, port_expose, unblock_query_flow):
+    Path(workdir).mkdir(parents=True, exist_ok=True)
     class MyTransformer(Executor):
         @requests(on='/foo')
         def foo(self, **kwargs):
@@ -349,12 +342,12 @@ def tutorial(args):
             print(f'bar is doing cool stuff: {kwargs}')
     targets = {
         'covid-csv': {
-            'url': args.index_data_url,
-            'filename': os.path.join(args.workdir, 'dataset.csv'),
+            'url': index_data_url,
+            'filename': os.path.join(workdir, 'dataset.csv'),
         }
     }
     # download the data
-    download_data(targets, args.download_proxy, task_name='download covid-dataset')
+    download_data(targets, task_name='download covid-dataset')
     flow = (
         Flow()
             .add(name='MyTransformer', uses=MyTransformer)
@@ -371,12 +364,6 @@ If you run this, it should finish without errors. You won't see much yet because
 :align: center
 ```
 
-````{admonition} Note
-:class: note
-Don't worry about `args = set_hw_chatbot_parser().parse_args()`. It will just create an object with the needed 
-configurations.
-````
-
 To actually see something we need to specify how we will display it. For our tutorial we will do so in our browser. 
 Modify the function `tutorial` like so:
 
@@ -384,8 +371,8 @@ Modify the function `tutorial` like so:
 ---
 emphasize-lines: 20, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46
 ---
-def tutorial(args):
-    Path(args.workdir).mkdir(parents=True, exist_ok=True)
+def tutorial(workdir, index_data_url, port_expose, unblock_query_flow):
+    Path(workdir).mkdir(parents=True, exist_ok=True)
     class MyTransformer(Executor):
         @requests(on='/foo')
         def foo(self, **kwargs):
@@ -396,12 +383,12 @@ def tutorial(args):
             print(f'bar is doing cool stuff: {kwargs}')
     targets = {
         'covid-csv': {
-            'url': args.index_data_url,
-            'filename': os.path.join(args.workdir, 'dataset.csv'),
+            'url': index_data_url,
+            'filename': os.path.join(workdir, 'dataset.csv'),
         }
     }
     # download the data
-    download_data(targets, args.download_proxy, task_name='download covid-dataset')
+    download_data(targets, task_name='download covid-dataset')
     flow = (
         Flow(cors=True)
             .add(name='MyTransformer', uses=MyTransformer)
@@ -413,7 +400,7 @@ def tutorial(args):
     
         # switches the serving protocol to HTTP at runtime
         flow.protocol = 'http'
-        flow.port_expose = args.port_expose
+        flow.port_expose = port_expose
         url_html_path = 'file://' + os.path.abspath(
             os.path.join(
                 os.path.dirname(os.path.realpath(__file__)), 'static/index.html'
@@ -428,7 +415,7 @@ def tutorial(args):
                 f'You should see a demo page opened in your browser, '
                 f'if not, you may open {url_html_path} manually'
             )
-        if not args.unblock_query_flow:
+        if not unblock_query_flow:
             flow.block()
 ```
 
@@ -572,15 +559,9 @@ class MyIndexer(Executor):
         """Append best matches to each document in docs
 
         :param docs: documents that are searched
-        :param parameters: dictionary of pairs (parameter,value)
         :param kwargs: other keyword arguments
         """
-        docs.match(
-            self._docs,
-            metric='cosine',
-            normalization=(1, 0),
-            limit=1,
-        )
+        docs.match(self._docs, metric='cosine', normalization=(1, 0), limit=1)
 ```
 
 `MyIndexer` exposes 2 endpoints: `index` and `search`. To perform indexing, we use 
@@ -605,10 +586,7 @@ Now, `my_executors.py` should look like
 To import the executors, just add this before the `download_data` function:
 
 ``` python
-if __name__ == '__main__':
-    from my_executors import MyTransformer, MyIndexer
-else:
-    from .my_executors import MyTransformer, MyIndexer
+from my_executors import MyTransformer, MyIndexer
 ```
 
 And remove the dummy executors we made. Your `app.py` should now look like this:
@@ -621,26 +599,19 @@ from pathlib import Path
 from jina import Flow, Executor
 from jina.logging.predefined import default_logger
 from jina.logging.profile import ProgressBar
-from jina.parsers.helloworld import set_hw_chatbot_parser
 from jina.types.document.generators import from_csv
-if __name__ == '__main__':
-    from my_executors import MyTransformer, MyIndexer
-else:
-    from .my_executors import MyTransformer, MyIndexer
-def download_data(targets, download_proxy=None, task_name='download covid-dataset'):
+from jina.helper import random_identity
+from my_executors import MyTransformer, MyIndexer
+
+def download_data(targets, task_name='download covid-dataset'):
     """
     Download data.
     :param targets: target path for data.
-    :param download_proxy: download proxy (e.g. 'http', 'https')
     :param task_name: name of the task
     """
     opener = urllib.request.build_opener()
     opener.addheaders = [('User-agent', 'Mozilla/5.0')]
-    if download_proxy:
-        proxy = urllib.request.ProxyHandler(
-            {'http': download_proxy, 'https': download_proxy}
-        )
-        opener.add_handler(proxy)
+    
     urllib.request.install_opener(opener)
     with ProgressBar(description=task_name) as t:
         for key, value in targets.items():
@@ -648,26 +619,16 @@ def download_data(targets, download_proxy=None, task_name='download covid-datase
                 urllib.request.urlretrieve(
                     value['url'], value['filename'], reporthook=lambda *x: t.update(0.01)
                 )
-def tutorial(args):
-    Path(args.workdir).mkdir(parents=True, exist_ok=True)
-    '''
-    Comment this to use the exectors you have in `executors.py`
-    class MyTransformer(Executor):
-        def foo(self, **kwargs):
-            print(f'foo is doing cool stuff: {kwargs}')
-    
-    class MyIndexer(Executor):
-        def bar(self, **kwargs):
-            print(f'bar is doing cool stuff: {kwargs}')
-    '''
+def tutorial(workdir, index_data_url, port_expose, unblock_query_flow):
+    Path(workdir).mkdir(parents=True, exist_ok=True)
     targets = {
         'covid-csv': {
-            'url': args.index_data_url,
-            'filename': os.path.join(args.workdir, 'dataset.csv'),
+            'url': index_data_url,
+            'filename': os.path.join(workdir, 'dataset.csv'),
         }
     }
     # download the data
-    download_data(targets, args.download_proxy, task_name='download covid-dataset')
+    download_data(targets, task_name='download covid-dataset')
     flow = (
         Flow(cors=True)
             .add(name='MyTransformer', uses=MyTransformer)
@@ -679,7 +640,7 @@ def tutorial(args):
         
         # switch to REST gateway at runtime
         flow.protocol = 'http'
-        flow.port_expose = args.port_expose
+        flow.port_expose = port_expose
         url_html_path = 'file://' + os.path.abspath(
             os.path.join(
                 os.path.dirname(os.path.realpath(__file__)), 'static/index.html'
@@ -694,11 +655,10 @@ def tutorial(args):
                 f'You should see a demo page opened in your browser, '
                 f'if not, you may open {url_html_path} manually'
             )
-        if not args.unblock_query_flow:
+        if not unblock_query_flow:
             flow.block()
 if __name__ == '__main__':
-    args = set_hw_chatbot_parser().parse_args()
-    tutorial(args)
+    tutorial(random_identity(), 'https://static.jina.ai/chatbot/dataset.csv', 8080, False)
 ```
 
 And your directory should be:
