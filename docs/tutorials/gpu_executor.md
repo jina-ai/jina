@@ -31,7 +31,7 @@ the deep learning framework that you use, that might be required (for local exec
 For the Docker part of the tutorial you will also need to have [Docker](https://docs.docker.com/get-docker/) and 
 [nvidia-docker](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html) installed.
 
-To run python scripts you will need a virtual environment (for example [venv](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment) or [conda](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments)), and to install Jina inside it using
+To run Python scripts you will need a virtual environment (for example [venv](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment) or [conda](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments)), and to install Jina inside it using
 
 ```bash
 pip install jina
@@ -142,7 +142,7 @@ class SentenceEncoder(Executor):
 
 Here all the device-specific magic happens on the two highlighted lines - when we create the
 `SentenceEncoder` class instance we pass it the device, and then we move the PyTorch
-model to our device. These are the exact same steps that you would use in a standalone python
+model to our device. These are the exact same steps that you would use in a standalone Python
 script as well.
 
 To see how we would pass the device we want the Executor to use,
