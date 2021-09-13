@@ -18,12 +18,10 @@ You will also need to make sure to have a recent version of [NVIDIA drivers](htt
 installed. You don't need to install CUDA for this tutorial, but note that depending on
 the deep learning framework that you use, that might be required (for local execution).
 
-For the Docker part of your tutorial you will need to have [Docker](https://docs.docker.com/get-docker/) and 
-[nvidia-docker](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html) installed as well.
+For the Docker part of the tutorial you will also need to have [Docker](https://docs.docker.com/get-docker/) and 
+[nvidia-docker](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html) installed.
 
-You'll need to have a python virtual environment (for example [venv](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment) or [conda](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments)). 
-
-Finally, install jina and the python packages we'll need in this tutorial using
+To run python scripts you will need a virtual environment (for example [venv](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment) or [conda](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments)), and to install jina inside it using
 
 ```bash
 pip install jina
@@ -33,6 +31,7 @@ pip install jina
 
 We will create a simple sentence encoder, and we'll start by creating the executor 
 "skeleton" using jina's command line utility:
+
 ```bash
 jina hub new
 ```
@@ -290,4 +289,11 @@ When using GPU encoders from the Hub, always use `jinahub+docker://`, and not `j
 
 ## Conclusion
 
-TBA
+Let's recap what we saw in this tutorial:
+
+1. Using GPU in executors locally is no different than using GPU in a standalone script. You can pass the device you want your executor to use in the initialization.
+2. To use the executor with a GPU inside the docker container, make sure to pass `gpus='all'`
+3. Use volumes (bind mounts), so you don't have to download large files each time you start the executor
+4. You can use GPU with executors from the Hub, just make sure to use the executor with the `gpu` tag
+
+And when you start building your own executor, always remember to check what system requirements (CUDA and similar) are needed, and install them locally (and in the `Dockerfile`) accordingly
