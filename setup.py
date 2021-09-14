@@ -127,7 +127,8 @@ if os.name == 'nt':
     exclude_deps = {i for i in standard_deps if i.startswith('uvloop')}
     perf_deps.difference_update(exclude_deps)
     standard_deps.difference_update(exclude_deps)
-    all_deps['all'].difference_update(exclude_deps)
+    for k in ['all', 'devel', 'cicd']:
+        all_deps[k].difference_update(exclude_deps)
 
 # by default, final deps is the standard deps, unless specified by env otherwise
 final_deps = standard_deps
