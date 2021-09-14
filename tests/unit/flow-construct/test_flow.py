@@ -492,6 +492,7 @@ class EnvChecker1(BaseExecutor):
         # inherit from parent process
         assert os.environ['key_parent'] == 'value3'
 
+
 class EnvChecker2(BaseExecutor):
     """Class used in Flow YAML"""
 

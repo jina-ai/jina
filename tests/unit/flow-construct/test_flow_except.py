@@ -241,6 +241,7 @@ def test_flow_startup_exception_not_hanging1(protocol):
         with f:
             pass
 
+
 class ExceptionExecutor2(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

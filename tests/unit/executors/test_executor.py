@@ -194,26 +194,26 @@ def test_workspace_not_exists(tmpdir):
     e.do()
 
 
+class GoodExecutor(Executor):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    @requests
+    def foo(self, **kwargs):
+        pass
+
+
+class GoodExecutor2(Executor):
+    def __init__(self, metas, requests, runtime_args):
+        pass
+
+    @requests
+    def foo(self, docs, parameters, docs_matrix, groundtruths, groundtruths_matrix):
+        pass
+
+
 def test_bad_executor_constructor():
-
-    # good executor can be declared as class
-    class GoodExecutor(Executor):
-        def __init__(self, **kwargs):
-            super().__init__(**kwargs)
-
-        @requests
-        def foo(self, **kwargs):
-            pass
-
-    class GoodExecutor2(Executor):
-        def __init__(self, metas, requests, runtime_args):
-            pass
-
-        @requests
-        def foo(self, docs, parameters, docs_matrix, groundtruths, groundtruths_matrix):
-            pass
-
-    # can be used as out of Flow as Python object
+    # executor can be used as out of Flow as Python object
     exec1 = GoodExecutor()
     exec2 = GoodExecutor2({}, {}, {})
 

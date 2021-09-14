@@ -88,6 +88,7 @@ def test_gateway_index(flow_with_http, test_img_1, test_img_2):
         assert len(resp['data']['docs']) == 2
         assert resp['data']['docs'][0]['text'] == test_img_1
 
+
 class MimeExec(Executor):
     @req
     def foo(self, docs: 'DocumentArray', **kwargs):
@@ -173,7 +174,7 @@ def test_independent_client(protocol):
 
 
 class MyExec(Executor):
-    @requests
+    @req
     def foo(self, docs, **kwargs):
         pass
 
