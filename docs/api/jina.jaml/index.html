@@ -727,6 +727,22 @@ to load YAML config into objects, please use <code class="xref py py-meth docuti
 </dl>
 </dd></dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="jina.jaml.JAML.cls_from_tag">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">cls_from_tag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/jaml/#JAML.cls_from_tag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.jaml.JAML.cls_from_tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch class from yaml tag</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tag</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – yaml tag</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="#jina.jaml.JAMLCompatible" title="jina.jaml.JAMLCompatible"><code class="xref py py-class docutils literal notranslate"><span class="pre">JAMLCompatible</span></code></a>]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>class object from tag</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
 <dt class="sig sig-object py" id="jina.jaml.JAML.load_no_tags">
 <em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">load_no_tags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stream</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/jaml/#JAML.load_no_tags"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.jaml.JAML.load_no_tags" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load yaml object but ignore all customized tags, e.g. !Executor, !Driver, !Flow.</p>
