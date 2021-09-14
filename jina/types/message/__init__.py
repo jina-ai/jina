@@ -168,6 +168,7 @@ class Message:
         compress_min_bytes: int = 0,
         compress_min_ratio: float = 1.0,
         routing_table: Optional[str] = None,
+        static_routing_table: bool = False,
         *args,
         **kwargs,
     ) -> 'jina_pb2.EnvelopeProto':
@@ -188,6 +189,7 @@ class Message:
         :param compress_min_bytes: used for configuring compression
         :param compress_min_ratio: used for configuring compression
         :param routing_table: routing graph filled by gateway
+        :param static_routing_table: dont include the routing table in the envelope
         :return: the resulted protobuf message
         """
         envelope = jina_pb2.EnvelopeProto()
@@ -229,7 +231,7 @@ class Message:
         envelope.compression.min_ratio = compress_min_ratio
         envelope.compression.min_bytes = compress_min_bytes
         envelope.timeout = 5000
-        if routing_table is not None:
+        if routing_table is not None and not static_routing_table:
             envelope.routing_table.CopyFrom(RoutingTable(routing_table).proto)
         self._add_version(envelope)
         self._add_route(pod_name, identity, envelope)

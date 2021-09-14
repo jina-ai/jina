@@ -1,3 +1,62 @@
 .sidebar-logo {
     max-width: 50%;
 }
+
+
+table.docutils {
+    border: thin;
+}
+
+table.docutils td, table.docutils th {
+    padding: 1rem 1rem;
+}
+
+.highlight {
+    background: #f5f5f5;
+}
+
+h1, h2, h3 {
+    margin-top: 3rem;
+}
+
+.highlight-console .highlight {
+    background: #00232b !important;
+    color: whitesmoke;
+}
+
+.highlight-text .highlight {
+    background: #00232b !important;
+    color: whitesmoke;
+}
+
+.highlight-json .highlight {
+    background: #00232b !important;
+    color: whitesmoke;
+}
+
+.highlight-shell .highlight {
+    background: #00232b !important;
+    color: whitesmoke;
+}
+
+.highlight-bash .highlight {
+    background: #00232b !important;
+    color: whitesmoke;
+}
+
+.tab-set > input:checked + label {
+    border-color: var(--tabs--label-text--active);
+}
+
+.tab-set > input:checked + label:hover {
+    border-color: var(--tabs--label-text--active);
+}
+
+
+table code {
+    background: var(--color-inline-code-background);
+    border: 1px solid var(--color-background-border);
+    border-radius: .2em;
+    font-size: var(--font-size--small--2);
+    padding: .1em .2em;
+}

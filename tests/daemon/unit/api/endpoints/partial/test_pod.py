@@ -14,7 +14,8 @@ def test_pod_api(partial_pod_client):
 
     response = partial_pod_client.get(api)
     assert response
-    assert response.json()['arguments']['port_expose'] == pod_model.port_expose
+
+    assert response.json()['arguments']['port_jinad'] == pod_model.port_jinad
 
     response = partial_pod_client.delete(api)
     assert response

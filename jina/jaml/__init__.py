@@ -507,15 +507,37 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :param kwargs: kwargs for parse_config_source
         :return: :class:`JAMLCompatible` object
         """
+
         stream, s_path = parse_config_source(source, **kwargs)
         with stream as fp:
             # first load yml with no tag
             no_tag_yml = JAML.load_no_tags(fp)
             if no_tag_yml:
                 no_tag_yml.update(**kwargs)
+
+                # if there is `override_with` u should make sure that `uses_with` does not remain in the yaml
+                def _delitem(
+                    obj,
+                    key,
+                ):
+                    value = obj.get(key, None)
+                    if value:
+                        del obj[key]
+                        return
+                    for k, v in obj.items():
+                        if isinstance(v, dict):
+                            _delitem(v, key)
+
+                if override_with is not None:
+                    _delitem(no_tag_yml, key='uses_with')
+                if override_metas is not None:
+                    _delitem(no_tag_yml, key='uses_metas')
+                if override_requests is not None:
+                    _delitem(no_tag_yml, key='uses_requests')
                 cls._override_yml_params(no_tag_yml, 'with', override_with)
                 cls._override_yml_params(no_tag_yml, 'metas', override_metas)
                 cls._override_yml_params(no_tag_yml, 'requests', override_requests)
+
             else:
                 raise BadConfigSource(
                     f'can not construct {cls} from an empty {source}. nothing to read from there'
@@ -524,22 +546,10 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 # expand variables
                 no_tag_yml = JAML.expand_dict(no_tag_yml, context)
             if allow_py_modules:
-                # also add YAML parent path to the search paths
-                if s_path:
-                    # append ExtensionPathFinder into sys.meta_path
-                    from ..importer import ExtensionPathFinder
-
-                    ExtensionPathFinder.__path__ = os.path.dirname(s_path)
-                    sys.meta_path.append(ExtensionPathFinder())
-
                 load_py_modules(
                     no_tag_yml,
                     extra_search_paths=(os.path.dirname(s_path),) if s_path else None,
                 )
-
-                if s_path:
-                    # pop ExtensionPathFinder from sys.meta_path
-                    sys.meta_path.pop()
 
             from ..flow.base import Flow
 

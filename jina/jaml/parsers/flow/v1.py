@@ -1,18 +1,20 @@
+import os
 import argparse
 from typing import Dict, Any
 
 from ..base import VersionedYAMLParser
-from ....enums import PodRoleType
 from .... import Flow
+from ....enums import PodRoleType
 from ....helper import expand_env_var, ArgNamespace
 from ....parsers import set_pod_parser, set_gateway_parser
 
 
-def _get_taboo():
+def _get_taboo(parser: argparse.ArgumentParser):
     """
+    :param parser: pod or gateway parser
     :return: set of keys that should not be dumped
     """
-    return {k.dest for k in set_pod_parser()._actions if k.help == argparse.SUPPRESS}
+    return {k.dest for k in parser._actions if k.help == argparse.SUPPRESS}
 
 
 class V1Parser(VersionedYAMLParser):
@@ -71,6 +73,7 @@ class V1Parser(VersionedYAMLParser):
                 method = p_pod_attr.get('method', 'add')
                 # support methods: add, needs, inspect
                 getattr(obj, method)(**p_pod_attr, copy_flow=False)
+
         return obj
 
     def dump(self, data: 'Flow') -> Dict:
@@ -82,16 +85,19 @@ class V1Parser(VersionedYAMLParser):
         if data._version:
             r['version'] = data._version
 
+        # to maintain order - version -> with -> executors
+        r['with'] = {}
         if data._kwargs:
-            r['with'] = data._kwargs
+            r['with'].update(data._kwargs)
+
+        if data._common_kwargs:
+            r['with'].update(data._common_kwargs)
 
         if data._pod_nodes:
             r['executors'] = []
 
         last_name = 'gateway'
         for k, v in data._pod_nodes.items():
-            if k == 'gateway':
-                continue
             kwargs = {}
             # only add "needs" when the value is not the last pod name
             if list(v.needs) != [last_name]:
@@ -106,9 +112,16 @@ class V1Parser(VersionedYAMLParser):
 
             kwargs.update(non_default_kw)
 
-            for t in _get_taboo():
+            for t in _get_taboo(parser):
                 if t in kwargs:
                     kwargs.pop(t)
-            last_name = kwargs['name']
-            r['executors'].append(kwargs)
+            if k == 'gateway':
+                if 'JINA_FULL_CLI' in os.environ:
+                    r['with'].update(kwargs)
+                else:
+                    continue
+            else:
+                last_name = kwargs['name']
+                r['executors'].append(kwargs)
+
         return r

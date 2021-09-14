@@ -1,6 +1,7 @@
 import collections
 import json
 import os
+import warnings
 from typing import Union, TextIO, Dict, Tuple, Optional
 
 from yaml import MappingNode
@@ -237,5 +238,15 @@ def load_py_modules(d: Dict, extra_search_paths: Optional[Tuple[str]] = None) ->
 
     _finditem(d)
     if mod:
+        if len(mod) > 1:
+            warnings.warn(
+                'It looks like you are trying to import multiple python modules using'
+                ' `py_modules`. When using multiple python files to define an executor,'
+                ' the recommended practice is to structure the files in a python'
+                ' package, and only import the `__init__.py` file of that package.'
+                ' For more details, please check out the cookbook: '
+                'https://docs.jina.ai/fundamentals/executor/repository-structure/'
+            )
+
         mod = [complete_path(m, extra_search_paths) for m in mod]
         PathImporter.add_modules(*mod)

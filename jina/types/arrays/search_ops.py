@@ -12,7 +12,7 @@ if False:
 class DocumentArraySearchOpsMixin:
     """ A mixin that provides search functionality to DocumentArrays"""
 
-    operators = {
+    _operators = {
         '<': operator.lt,
         '>': operator.gt,
         '==': operator.eq,
@@ -51,10 +51,10 @@ class DocumentArraySearchOpsMixin:
         from .document import DocumentArray
 
         assert (
-            operator in self.operators
-        ), f'operator={operator} is not a valid operator from {self.operators.keys()}'
+            operator in self._operators
+        ), f'operator={operator} is not a valid operator from {self._operators.keys()}'
 
-        operator_func = self.operators[operator]
+        operator_func = self._operators[operator]
         iterdocs = self.traverse_flat(traversal_paths)
         filtered = DocumentArray()
 
@@ -85,12 +85,6 @@ class DocumentArraySearchOpsMixin:
         :return: A sampled list of :class:`Document` represented as :class:`DocumentArray`.
         """
 
-        if k > len(self):
-            from ...helper import typename
-
-            raise ValueError(
-                f'Sample size can not be greater than the length of {typename(self)}, but {k} > {len(self)}'
-            )
         if seed is not None:
             random.seed(seed)
         # NOTE, this could simplified to random.sample(self, k)
@@ -126,11 +120,16 @@ class DocumentArraySearchOpsMixin:
             return an empty dict.
         """
         from .document import DocumentArray
+        from ...helper import dunder_get
 
         rv = defaultdict(DocumentArray)
         for doc in self:
-            value = doc.tags.get(tag)
-            if not value:
+            if '__' in tag:
+                value = dunder_get(doc.tags, tag)
+            else:
+                value = doc.tags.get(tag, None)
+
+            if value is None:
                 continue
             rv[value].append(doc)
         return dict(rv)

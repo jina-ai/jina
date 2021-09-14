@@ -64,10 +64,6 @@ def test_data_type_builder_auto(input_type):
     assert d.text == '123'
     assert t == DataInputType.CONTENT
 
-    d, t = _new_doc_from_data(b'45678', input_type)
-    assert t == DataInputType.CONTENT
-    assert d.buffer == b'45678'
-
     d, t = _new_doc_from_data(b'123', input_type)
     assert t == DataInputType.CONTENT
     assert d.buffer == b'123'

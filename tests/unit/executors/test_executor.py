@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from jina import Executor
+from jina import Executor, requests, Flow
 from jina.executors.metas import get_default_metas
 
 
@@ -192,3 +192,55 @@ def test_workspace_not_exists(tmpdir):
 
     e = MyExec(metas={'workspace': tmpdir})
     e.do()
+
+
+def test_bad_executor_constructor():
+
+    # good executor can be declared as class
+    class GoodExecutor(Executor):
+        def __init__(self, **kwargs):
+            super().__init__(**kwargs)
+
+        @requests
+        def foo(self, **kwargs):
+            pass
+
+    class GoodExecutor2(Executor):
+        def __init__(self, metas, requests, runtime_args):
+            pass
+
+        @requests
+        def foo(self, docs, parameters, docs_matrix, groundtruths, groundtruths_matrix):
+            pass
+
+    # can be used as out of Flow as Python object
+    exec1 = GoodExecutor()
+    exec2 = GoodExecutor2({}, {}, {})
+
+    # can be used in the Flow
+    with Flow().add(uses=GoodExecutor):
+        pass
+
+    with Flow().add(uses=GoodExecutor2):
+        pass
+
+    # bad executor due to mismatch on args
+    with pytest.raises(TypeError):
+
+        class BadExecutor1(Executor):
+            def __init__(self):
+                pass
+
+            @requests
+            def foo(self, **kwargs):
+                pass
+
+    with pytest.raises(TypeError):
+
+        class BadExecutor2(Executor):
+            def __init__(self, **kwargs):
+                super().__init__(**kwargs)
+
+            @requests
+            def foo(self):
+                pass

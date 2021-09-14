@@ -108,7 +108,7 @@ def test_dump_dbms_remote(docker_compose):
 
 
 def _send_rest_request(
-    port_expose,
+    port,
     endpoint,
     method,
     data,
@@ -123,7 +123,7 @@ def _send_rest_request(
         json['parameters'] = params
     if target_peapod:
         json['target_peapod'] = target_peapod
-    url = f'http://{ip}:{port_expose}/{endpoint}'
+    url = f'http://{ip}:{port}/{endpoint}'
     if endpoint == 'post':
         json['exec_endpoint'] = exec_endpoint
     logger.info(f'sending {method} request to {url}')

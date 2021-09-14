@@ -8,7 +8,7 @@ from jina.logging.logger import JinaLogger
 
 
 class CrudIndexer(Executor):
-    """Simple indexer class """
+    """Simple indexer class"""
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

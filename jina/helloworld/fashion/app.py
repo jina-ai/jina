@@ -12,7 +12,7 @@ if __name__ == '__main__':
         index_generator,
         query_generator,
     )
-    from my_executors import MyEncoder, MyIndexer, MyEvaluator, MyConverter
+    from my_executors import MyEncoder, MyIndexer, MyEvaluator
 else:
     from .helper import (
         print_result,
@@ -21,7 +21,7 @@ else:
         index_generator,
         query_generator,
     )
-    from .my_executors import MyEncoder, MyIndexer, MyEvaluator, MyConverter
+    from .my_executors import MyEncoder, MyIndexer, MyEvaluator
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -82,7 +82,6 @@ def hello_world(args):
     with f:
         f.index(
             index_generator(num_docs=targets['index']['data'].shape[0], target=targets),
-            request_size=args.request_size,
             show_progress=True,
         )
 
@@ -93,7 +92,6 @@ def hello_world(args):
             ),
             shuffle=True,
             on_done=print_result,
-            request_size=args.request_size,
             parameters={'top_k': args.top_k},
             show_progress=True,
         )

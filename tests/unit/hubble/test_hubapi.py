@@ -16,7 +16,7 @@ def executor_zip_file():
 
 @pytest.fixture
 def test_executor():
-    return HubExecutor(uuid='hello', alias=None, sn=0, tag='v0')
+    return HubExecutor(uuid='hello', name=None, sn=0, tag='v0')
 
 
 @pytest.mark.parametrize('install_deps', [True, False])

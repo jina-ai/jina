@@ -1,11 +1,10 @@
-import requests
 from fastapi import Depends, APIRouter, HTTPException
 
-from ..dependencies import PodDepends
 from ... import Runtime400Exception
-from ...stores import pod_store as store
+from ..dependencies import PodDepends
 from ...models.enums import UpdateOperation
 from ...models import DaemonID, ContainerItem, ContainerStoreStatus, PodModel
+from ...stores import pod_store as store
 
 router = APIRouter(prefix='/pods', tags=['pods'])
 
@@ -36,6 +35,7 @@ async def _create(pod: PodDepends = Depends(PodDepends)):
             workspace_id=pod.workspace_id,
             params=pod.params,
             ports=pod.ports,
+            envs=pod.envs,
         )
     except Exception as ex:
         raise Runtime400Exception from ex

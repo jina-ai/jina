@@ -4,23 +4,23 @@ import shutil
 import sys
 import time
 import timeit
-from typing import Dict
 from pathlib import Path
+from typing import Dict
 
 # this line is needed here for measuring import time accurately for 1M imports
 import_time = timeit.timeit(stmt='import jina', number=1000000)
 
-from pkg_resources import resource_filename
-from packaging import version
-from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import Document, Flow, __version__
 from jina.helloworld.fashion.helper import (
-    index_generator,
     download_data,
+    index_generator,
     query_generator,
 )
-from jina.parsers.helloworld import set_hw_parser
 from jina.logging.logger import JinaLogger
-from jina import Document, Flow, __version__
+from jina.parsers.helloworld import set_hw_parser
+from jina.types.arrays.memmap import DocumentArrayMemmap
+from packaging import version
+from pkg_resources import resource_filename
 
 try:
     from jina.helloworld.fashion.executors import MyEncoder, MyIndexer
@@ -148,7 +148,6 @@ def _benchmark_qps() -> Dict[str, float]:
                 index_generator(
                     num_docs=targets['index']['data'].shape[0], target=targets
                 ),
-                request_size=args.request_size,
                 show_progress=True,
             )
             index_time = time.perf_counter() - st
@@ -164,7 +163,6 @@ def _benchmark_qps() -> Dict[str, float]:
             f.search(
                 query_generator(num_docs=args.num_query, target=targets),
                 shuffle=True,
-                request_size=args.request_size,
                 parameters={'top_k': args.top_k},
                 show_progress=True,
             )

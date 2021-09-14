@@ -61,9 +61,7 @@ class MyEncoder(Executor):
         """
         # reduce dimension to 50 by random orthogonal projection
         content = np.stack(docs.get_attributes('content'))
-        # content.shape=(request_size, 28, 28, 3)
         content = content[:, :, :, 0].reshape(-1, 784)
-        # content.shape=(request_size, 784)
         embeds = (content / 255) @ self.oth_mat
         for doc, embed, cont in zip(docs, embeds, content):
             doc.embedding = embed

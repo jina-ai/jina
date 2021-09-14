@@ -1,0 +1,137 @@
+{% set name = "jina" %}
+{% set version = "2.0.23" %}
+
+package:
+  name: {{ name|lower }}-split
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 1050065287985d07d433f1e4926244e31ba581429aee5a8d6f2b2516565ce359
+
+build:
+  number: 0
+
+outputs:
+  - name: jina-core
+    build:
+      noarch: python
+      entry_points:
+        - jina = cli:main
+        - jinad = daemon:main
+      script: python -m pip install . --no-deps -vv
+      script_env:
+        - JINA_PIP_INSTALL_CORE=1
+    test:
+      requires:
+        - pip
+      imports:
+        - jina
+      commands:
+        - pip check
+        - jina --version
+    requirements:
+      host:
+        - python >=3.7
+        - pip
+      run:
+        - __unix
+        - python >=3.7
+        - grpcio >=1.33.1
+        - numpy
+        - protobuf >=3.13.0
+        - pyyaml >=5.3.1
+        - pyzmq >=17.1.0
+        - tornado >=5.1.0
+  - name: jina-perf
+    test:
+      requires:
+        - pip
+      imports:
+        - jina
+      commands:
+        - pip check
+        - jina --version
+    build:
+      noarch: python
+      entry_points:
+        - jina = cli:main
+        - jinad = daemon:main
+      script: python -m pip install . --no-deps -vv
+      script_env:
+        - JINA_PIP_INSTALL_PERF=1
+    requirements:
+      host:
+        - python >=3.7
+        - pip
+      run:
+        - __unix
+        - python >=3.7
+        - grpcio >=1.33.1
+        - lz4 <3.1.2
+        - numpy
+        - protobuf >=3.13.0
+        - pyyaml >=5.3.1
+        - pyzmq >=17.1.0
+        - tornado >=5.1.0
+        - uvloop
+  - name: jina
+    test:
+      requires:
+        - pip
+      imports:
+        - jina
+      commands:
+        - pip check
+        - jina --version
+    build:
+      noarch: python
+      entry_points:
+        - jina = cli:main
+        - jinad = daemon:main
+      script: python -m pip install . --no-deps -vv
+    requirements:
+      host:
+        - python >=3.7
+        - pip
+      run:
+        - __unix
+        - python >=3.7
+        - aiofiles
+        - aiohttp
+        - aiostream
+        - cryptography
+        - docker-py
+        - fastapi
+        - filelock
+        - grpcio >=1.33.1
+        - lz4 <3.1.2
+        - numpy
+        - pathspec
+        - protobuf >=3.13.0
+        - pydantic
+        - python-multipart
+        - pyyaml >=5.3.1
+        - pyzmq >=17.1.0
+        - requests
+        - rich
+        - tornado >=5.1.0
+        - uvicorn >=0.14.0
+        - uvloop
+        - websockets
+
+about:
+  home: https://github.com/jina-ai/jina/
+  license: Apache-2.0
+  license_family: Apache
+  license_file: LICENSE
+  summary: Jina is the cloud-native neural search framework for any kind of data
+  doc_url: https://docs.jina.ai
+
+extra:
+  recipe-maintainers:
+    - tadejsv
+    - maateen
+    - nan-wang
+    - hanxiao
+  feedstock-name: jina

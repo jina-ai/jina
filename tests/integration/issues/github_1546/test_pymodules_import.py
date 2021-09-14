@@ -3,38 +3,50 @@ import pytest
 from jina.executors import BaseExecutor
 
 
-def test_import_with_abs_namespace_should_pass():
+def test_import_with_new_module_structure_should_pass():
     """
-    This is a valid structure:
-        - "my_cust_module" is not a python module (lack of __init__.py under the root)
-        - to import ``foo.py``, you must to use ``from jinahub.foo import bar``
-        - ``jinahub`` is a common namespace for all plugin-modules, not changeable.
-        - ``helper.py`` needs to be put BEFORE `my_cust.py` in YAML ``py_modules``
+    This is a valid and **RECOMMENDED** structure:
+        - python code for the executor organized in a package structure inside
+          the ``executor/`` folder
+        - core logic in ``executor/my_executor.py``
+        - the ``executor/__init__.py`` contains
+          ``from .my_executor import GoodCrafterNew``, which makes sure the
+          custom executor class gets registered
+        - all imports are relative - so in ``executor/my_executor.py`` the ``helper``
+          module is imported as ``from .helper import foo``
 
     File structure:
 
-         my_cust_module
-           |- my_cust.py
-           |- helper.py
+         my_cust_module/
+           |- executor/
+                |- __init__.py
+                |- my_executor.py
+                |- helper.py
            |- config.yml
                 |- py_modules
-                       |- helper.py
-                       |- my_cust.py
+                       |- executor/__init__.py
     """
 
-    b = BaseExecutor.load_config('good1/crafter.yml')
-    assert b.__class__.__name__ == 'GoodCrafter1'
+    b = BaseExecutor.load_config('good_new/crafter.yml')
+    assert b.__class__.__name__ == 'GoodCrafterNew'
 
 
-def test_import_with_module_structure_should_pass():
+def test_import_with_old_module_structure_should_pass():
     """
-    This is a valid structure and it is RECOMMENDED:
+    This is a valid structure, but not recommended:
         - "my_cust_module" is a python module
         - all core logic of your customized executor goes to ``__init__.py``
-        - to import ``foo.py``, you can use relative import, e.g. ``from .foo import bar``
-        - ``helper.py`` needs to be put BEFORE `__init__.py` in YAML ``py_modules``
+        - to import ``foo.py``, you should use relative import, e.g. ``from .foo import bar``
 
-    This is also the structure given by ``jina hub new`` CLI.
+    This is not a recommended structure because:
+        - putting core logic inside ``__init__.py`` is not how python packages
+          are usually written
+        - Importing from the workspace disables you from trying out the executor in
+          the console, or test files at the root of the workspace, making development
+          more cumbersome
+        - the main directory is now cluttered with python files
+        - extracting all python files to a separate directory is how python packages
+          are usually composed
 
     File structure:
 
@@ -43,31 +55,10 @@ def test_import_with_module_structure_should_pass():
            |- helper.py
            |- config.yml
                 |- py_modules
-                       |- helper.py
                        |- __init__.py
     """
-    b = BaseExecutor.load_config('good2/crafter.yml')
-    assert b.__class__.__name__ == 'GoodCrafter2'
-
-
-def test_import_with_hub_structure_should_pass():
-    """
-    copy paste from hub module structure should work
-    this structure is copy-paste from: https://github.com/jina-ai/jina-hub/tree/master/crafters/image/FiveImageCropper
-
-    File structure:
-        my_cust_modul
-          |
-          |- __init__.py
-          |- helper.py
-          |- config.yml
-                |- py_modules
-                       |- helper.py
-                       |- __init.py
-    :return:
-    """
-    b = BaseExecutor.load_config('good3/config.yml')
-    assert b.__class__.__name__ == 'GoodCrafter3'
+    b = BaseExecutor.load_config('good_old/crafter.yml')
+    assert b.__class__.__name__ == 'GoodCrafterOld'
 
 
 def test_import_casual_structure_should_fail():

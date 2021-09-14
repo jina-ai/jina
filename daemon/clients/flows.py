@@ -26,27 +26,39 @@ class AsyncFlowClient(AsyncBaseClient):
         :return: dict arguments of remote JinaD
         """
         async with aiohttp.request(
-            method='GET', url=f'{self.store_api}/arguments'
+            method='GET', url=f'{self.store_api}/arguments', timeout=self.timeout
         ) as response:
             if response.status == HTTPStatus.OK:
                 return await response.json()
 
     @if_alive
     async def create(
-        self, workspace_id: 'DaemonID', filename: str, *args, **kwargs
+        self,
+        workspace_id: 'DaemonID',
+        filename: str,
+        envs: Dict[str, str] = {},
+        *args,
+        **kwargs,
     ) -> str:
         """Start a Flow on remote JinaD
 
         :param workspace_id: workspace id where flow will be created
         :param filename: name of the flow yaml file in the workspace
+        :param envs: dict of env vars to be passed
         :param args: positional args
         :param kwargs: keyword args
         :return: flow id
         """
+        envs = (
+            [('envs', f'{k}={v}') for k, v in envs.items()]
+            if envs and isinstance(envs, Dict)
+            else []
+        )
         async with aiohttp.request(
             method='POST',
             url=self.store_api,
-            params={'workspace_id': workspace_id, 'filename': filename},
+            params=[('workspace_id', workspace_id), ('filename', filename)] + envs,
+            timeout=self.timeout,
         ) as response:
             response_json = await response.json()
             if response.status != HTTPStatus.CREATED:
@@ -78,6 +90,7 @@ class AsyncFlowClient(AsyncBaseClient):
                 'pod_name': pod_name,
                 'dump_path': dump_path,
             },
+            timeout=self.timeout,
         ) as response:
             response_json = await response.json()
             if response.status != HTTPStatus.OK:
@@ -100,6 +113,7 @@ class AsyncFlowClient(AsyncBaseClient):
         async with aiohttp.request(
             method='DELETE',
             url=f'{self.store_api}/{daemonize(id, self._kind)}',
+            timeout=self.timeout,
         ) as response:
             response_json = await response.json()
             if response.status != HTTPStatus.OK:

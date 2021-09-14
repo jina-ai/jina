@@ -32,38 +32,43 @@ def pea(args: 'Namespace'):
         pass
 
 
-def zed_runtime(args: 'Namespace'):
+def executor_native(args: 'Namespace'):
     """
-    Starts a ZEDRuntime
+    Starts an Executor in ZEDRuntime or GRPCDataRuntime depending on the `runtime_cls`
 
     :param args: arguments coming from the CLI.
     """
     from jina.peapods.runtimes.zmq.zed import ZEDRuntime
+    from jina.peapods.runtimes.grpc import GRPCDataRuntime
 
-    with ZEDRuntime(args) as runtime:
-        runtime.logger.success(
-            f' Executor {runtime._data_request_handler._executor.metas.name} started'
+    if args.runtime_cls == 'ZEDRuntime':
+        runtime_cls = ZEDRuntime
+    elif args.runtime_cls == 'GRPCDataRuntime':
+        runtime_cls = GRPCDataRuntime
+    else:
+        raise RuntimeError(
+            f' runtime_cls {args.runtime_cls} is not supported with `--native` argument. `ZEDRuntime` and `GRPCDataRuntime` are supported'
         )
-        runtime.run_forever()
+
+    with runtime_cls(args) as rt:
+        rt.logger.success(
+            f' Executor {rt._data_request_handler._executor.metas.name} started'
+        )
+        rt.run_forever()
 
 
 def executor(args: 'Namespace'):
     """
-    Starts a ZEDRuntime
+    Starts an Executor in any Runtime
 
     :param args: arguments coming from the CLI.
 
     :returns: return the same as `pea` or `zed_runtime`
     """
-    uses = args.uses
-    if (
-        uses.startswith('jinahub+docker://')
-        or uses.startswith('docker://')
-        or uses.startswith('jinahub://')
-    ):
-        return pea(args)
+    if args.native:
+        return executor_native(args)
     else:
-        return zed_runtime(args)
+        return pea(args)
 
 
 def grpc_data_runtime(args: 'Namespace'):

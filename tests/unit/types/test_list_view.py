@@ -153,3 +153,27 @@ def test_list_view_access_out_of_bounds(list_proto):
     view = ListView(list_proto)
     with pytest.raises(IndexError):
         _ = view[100]
+
+
+def test_list_view_insert():
+    lv = ListValue()
+    view = ListView(lv)
+    assert len(view) == 0
+    view.insert(0, 10)
+    assert len(view) == 1
+    assert view[0] == 10
+    view.insert(20, 20)
+    assert len(view) == 2
+    assert view[1] == 20
+    view.insert(0, 30)
+    assert len(view) == 2
+    assert view[0] == 30
+
+
+def test_list_view_append_empty():
+    lv = ListValue()
+    view = ListView(lv)
+    assert len(view) == 0
+    view.append(10)
+    assert len(view) == 1
+    assert view[0] == 10

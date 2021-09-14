@@ -1,4 +1,5 @@
 import itertools
+from abc import abstractmethod
 from typing import Iterable
 
 
@@ -90,6 +91,7 @@ class TraversableSequence:
         leaves = self.traverse(traversal_paths)
         return self._flatten(leaves)
 
-    @classmethod
-    def _flatten(cls, sequence):
-        return cls(list(itertools.chain.from_iterable(sequence)))
+    @staticmethod
+    @abstractmethod
+    def _flatten(sequence):
+        ...

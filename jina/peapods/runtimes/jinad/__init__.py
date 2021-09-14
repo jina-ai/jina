@@ -37,7 +37,7 @@ class JinadRuntime(AsyncNewLoopRuntime):
         self.ctrl_addr = self.get_control_address(args.host, args.port_ctrl)
         self.timeout_ctrl = args.timeout_ctrl
         self.host = args.host
-        self.port_expose = args.port_expose
+        self.port_jinad = args.port_jinad
 
     async def async_setup(self):
         """Create Workspace, Pea on remote JinaD server"""
@@ -53,7 +53,7 @@ class JinadRuntime(AsyncNewLoopRuntime):
         # NOTE: args.timeout_ready is always set to -1 for JinadRuntime so that wait_for_success doesn't fail in Pea,
         # so it can't be used for Client timeout.
         self.client = AsyncJinaDClient(
-            host=self.args.host, port=self.args.port_expose, logger=self.logger
+            host=self.args.host, port=self.args.port_jinad, logger=self.logger
         )
         if not await self.client.alive:
             raise DaemonConnectivityError
@@ -110,8 +110,7 @@ class JinadRuntime(AsyncNewLoopRuntime):
 
         # reset the runtime to ZEDRuntime/GRPCDataRuntime or ContainerRuntime
         if _args.runtime_cls == 'JinadRuntime':
-            # TODO: add jinahub:// and jinahub+docker:// scheme here
-            if _args.uses.startswith('docker://'):
+            if _args.uses.startswith(('docker://', 'jinahub+docker://')):
                 _args.runtime_cls = 'ContainerRuntime'
             else:
                 if _args.grpc_data_requests:
@@ -126,7 +125,7 @@ class JinadRuntime(AsyncNewLoopRuntime):
 
         # NOTE: on remote relative filepaths should be converted to filename only
         def basename(field):
-            if field and not field.startswith('docker://'):
+            if field and not field.startswith(('docker://', 'jinahub')):
                 try:
                     return os.path.basename(complete_path(field))
                 except FileNotFoundError:

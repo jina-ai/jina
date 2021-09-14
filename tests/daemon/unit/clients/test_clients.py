@@ -2,6 +2,7 @@ import pytest
 import aiohttp
 
 from daemon.models.id import DaemonID
+from daemon.clients import JinaDClient
 from daemon.clients.base import BaseClient, AsyncBaseClient
 from daemon.clients.peas import PeaClient, AsyncPeaClient
 from daemon.clients.pods import PodClient, AsyncPodClient
@@ -371,3 +372,11 @@ async def test_peapod_delete_async(monkeypatch, identity, client_cls):
 
     monkeypatch.setattr(aiohttp, 'request', lambda **kwargs: MockAiohttpException())
     assert not await client.delete(identity)
+
+
+def test_timeout():
+    client = JinaDClient(host='1.2.3.4', port=8000)
+    assert client.peas.timeout.total == 10 * 60
+
+    client = JinaDClient(host='1.2.3.4', port=8000, timeout=10)
+    assert client.peas.timeout.total == 10

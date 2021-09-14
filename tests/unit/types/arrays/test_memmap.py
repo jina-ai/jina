@@ -467,3 +467,53 @@ def test_split(memmap_for_split):
     assert len(rv['c']) == 2
     assert len(rv['b']) == 1
     assert len(rv['a']) == 2
+
+
+def test_dam_embeddings(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend(Document(embedding=np.array([1, 2, 3, 4])) for _ in range(100))
+    np.testing.assert_almost_equal(dam.get_attributes('embedding'), dam.embeddings)
+
+
+def test_dam_get_embeddings_slice(tmpdir):
+    da = DocumentArrayMemmap(tmpdir)
+    da.extend(Document(embedding=np.array([1, 2, 3, 4])) for _ in range(100))
+    np.testing.assert_almost_equal(
+        da.get_attributes('embedding')[10:20], da._get_embeddings(slice(10, 20))
+    )
+
+
+def test_embeddings_setter_dam(tmpdir):
+    emb = np.random.random((100, 128))
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document() for _ in range(100)])
+    dam.embeddings = emb
+    np.testing.assert_almost_equal(dam.embeddings, emb)
+
+    for x, doc in zip(emb, dam):
+        np.testing.assert_almost_equal(x, doc.embedding)
+
+
+def test_embeddings_getter_dam(tmpdir):
+    emb = np.random.random((100, 128))
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document(embedding=x) for x in emb])
+    assert len(dam) == 100
+    np.testing.assert_almost_equal(dam.embeddings, emb)
+
+
+def test_blobs_getter_dam(tmpdir):
+    blobs = np.random.random((100, 10, 10))
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document(blob=blob) for blob in blobs])
+    assert len(dam) == 100
+    np.testing.assert_almost_equal(dam.get_attributes('blob'), dam.blobs)
+
+
+def test_blobs_setter_dma():
+    blobs = np.random.random((100, 10, 10))
+    da = DocumentArray([Document() for _ in range(100)])
+    da.blobs = blobs
+    np.testing.assert_almost_equal(da.blobs, blobs)
+    for x, doc in zip(blobs, da):
+        np.testing.assert_almost_equal(x, doc.blob)

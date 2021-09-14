@@ -96,8 +96,8 @@ class BadImageNameError(Exception):
     """Exception when an image name can not be found either local & remote"""
 
 
-class BadFlowYAMLVersion(Exception):
-    """Exception when Flow YAML config specifies a wrong version number."""
+class BadYAMLVersion(Exception):
+    """Exception when YAML config specifies a wrong version number."""
 
 
 class DaemonConnectivityError(Exception):

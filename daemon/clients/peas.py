@@ -25,27 +25,36 @@ class AsyncPeaClient(AsyncBaseClient):
         :return: dict arguments of remote JinaD
         """
         async with aiohttp.request(
-            method='GET', url=f'{self.store_api}/arguments'
+            method='GET', url=f'{self.store_api}/arguments', timeout=self.timeout
         ) as response:
             if response.status == HTTPStatus.OK:
                 return await response.json()
 
     @if_alive
     async def create(
-        self, workspace_id: Union[str, 'DaemonID'], payload: Dict
+        self,
+        workspace_id: Union[str, 'DaemonID'],
+        payload: Dict,
+        envs: Dict[str, str] = {},
     ) -> Tuple[bool, str]:
         """Create a remote Pea / Pod
 
         :param workspace_id: id of workspace where the Pea would live in
         :param payload: json payload
-        :return: (True if pea creation succeeded) and (the identity of the spawned Pea/Pod or, error message)
+        :param envs: dict of env vars to be passed
+        :return: (True if Pea/Pod creation succeeded) and (the identity of the spawned Pea/Pod or, error message)
         """
-
+        envs = (
+            [('envs', f'{k}={v}') for k, v in envs.items()]
+            if envs and isinstance(envs, Dict)
+            else []
+        )
         async with aiohttp.request(
             method='POST',
             url=self.store_api,
-            params={'workspace_id': daemonize(workspace_id)},
+            params=[('workspace_id', daemonize(workspace_id))] + envs,
             json=payload,
+            timeout=self.timeout,
         ) as response:
             response_json = await response.json()
             if response.status == HTTPStatus.CREATED:
@@ -74,7 +83,9 @@ class AsyncPeaClient(AsyncBaseClient):
         """
 
         async with aiohttp.request(
-            method='DELETE', url=f'{self.store_api}/{daemonize(id, self._kind)}'
+            method='DELETE',
+            url=f'{self.store_api}/{daemonize(id, self._kind)}',
+            timeout=self.timeout,
         ) as response:
             response_json = await response.json()
             if response.status != HTTPStatus.OK:

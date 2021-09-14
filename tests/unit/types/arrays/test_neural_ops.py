@@ -2,14 +2,12 @@ import copy
 import os
 
 import numpy as np
-import scipy.sparse as sp
-from scipy.spatial.distance import cdist as scipy_cdist
 import pytest
-
+import scipy.sparse as sp
 from jina import Document, DocumentArray
-from jina.types.arrays.memmap import DocumentArrayMemmap
 from jina.math.dimensionality_reduction import PCA
-from tests import random_docs
+from jina.types.arrays.memmap import DocumentArrayMemmap
+from scipy.spatial.distance import cdist as scipy_cdist
 
 
 @pytest.fixture()
@@ -111,7 +109,6 @@ def test_matching_same_results_with_sparse(
     docarrays_for_embedding_distance_computation_sparse,
     metric,
 ):
-
     D1, D2 = docarrays_for_embedding_distance_computation
     D1_sp, D2_sp = docarrays_for_embedding_distance_computation_sparse
 
@@ -137,7 +134,6 @@ def test_matching_same_results_with_batch(
     docarrays_for_embedding_distance_computation,
     metric,
 ):
-
     D1, D2 = docarrays_for_embedding_distance_computation
     D1_batch = copy.deepcopy(D1)
     D2_batch = copy.deepcopy(D2)
@@ -265,7 +261,13 @@ def test_docarray_match_docarraymemmap(
 
     D2memmap = DocumentArrayMemmap(tmpdir)
     D2memmap.extend(D2_)
-    D1_.match(D2memmap, metric=metric, limit=3, normalization=normalization)
+    D1_.match(
+        D2memmap,
+        metric=metric,
+        limit=3,
+        normalization=normalization,
+        use_scipy=use_scipy,
+    )
     values_docarraymemmap = [m.scores[metric].value for d in D1_ for m in d.matches]
 
     np.testing.assert_equal(values_docarray, values_docarraymemmap)
@@ -395,27 +397,69 @@ def test_match_inclusive_dam(tmpdir):
     assert len(list(traversed)) == 9
 
 
-def test_da_get_embeddings():
-    da = DocumentArray(random_docs(100))
-    np.testing.assert_almost_equal(da.get_attributes('embedding'), da.embeddings)
-
-
-def test_dam_embeddings(tmpdir):
-    dam = DocumentArrayMemmap(tmpdir)
-    dam.extend(Document(embedding=np.array([1, 2, 3, 4])) for _ in range(100))
-    np.testing.assert_almost_equal(dam.get_attributes('embedding'), dam.embeddings)
-
-
-def test_da_get_embeddings():
-    da = DocumentArray(random_docs(100))
-    np.testing.assert_almost_equal(
-        da.get_attributes('embedding')[10:20], da._get_embeddings(slice(10, 20))
+@pytest.mark.parametrize('exclude_self, num_matches', [(True, 1), (False, 2)])
+def test_match_exclude_self(exclude_self, num_matches):
+    da1 = DocumentArray(
+        [
+            Document(id='1', embedding=np.array([1, 2])),
+            Document(id='2', embedding=np.array([3, 4])),
+        ]
     )
-
-
-def test_dam_get_embeddings(tmpdir):
-    da = DocumentArrayMemmap(tmpdir)
-    da.extend(Document(embedding=np.array([1, 2, 3, 4])) for _ in range(100))
-    np.testing.assert_almost_equal(
-        da.get_attributes('embedding')[10:20], da._get_embeddings(slice(10, 20))
+    da2 = DocumentArray(
+        [
+            Document(id='1', embedding=np.array([1, 2])),
+            Document(id='2', embedding=np.array([3, 4])),
+        ]
     )
+    da1.match(da2, exclude_self=exclude_self)
+    for d in da1:
+        assert len(d.matches) == num_matches
+
+
+@pytest.mark.parametrize(
+    'lhs, rhs',
+    [
+        (DocumentArray(), DocumentArray()),
+        (
+            DocumentArray(
+                [
+                    Document(embedding=np.array([3, 4])),
+                    Document(embedding=np.array([4, 5])),
+                ]
+            ),
+            DocumentArray(
+                [
+                    Document(embedding=np.array([3, 4])),
+                    Document(embedding=np.array([4, 5])),
+                ]
+            ),
+        ),
+        (
+            DocumentArray(),
+            DocumentArray(
+                [
+                    Document(embedding=np.array([3, 4])),
+                    Document(embedding=np.array([4, 5])),
+                ]
+            ),
+        ),
+        (
+            (
+                DocumentArray(
+                    [
+                        Document(embedding=np.array([3, 4])),
+                        Document(embedding=np.array([4, 5])),
+                    ]
+                )
+            ),
+            DocumentArray(),
+        ),
+        (None, DocumentArray()),
+        (DocumentArray(), None),
+    ],
+)
+def test_match_none(lhs, rhs):
+    if lhs is not None:
+        lhs.match(rhs)
+    if rhs is not None:
+        rhs.match(lhs)

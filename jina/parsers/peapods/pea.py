@@ -89,12 +89,3 @@ def mixin_pea_parser(parser):
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
-
-    gp.add_argument(
-        '--runs-in-docker',
-        action='store_true',
-        default=False,
-        help='Informs a Pea that runs in a container. Important to properly set networking information'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
-    )

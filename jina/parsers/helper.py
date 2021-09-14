@@ -1,7 +1,8 @@
 """Module for helper functions in the parser"""
 import argparse
 import os
-from typing import Tuple
+import warnings
+from typing import Tuple, List
 
 _SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
 if _SHOW_ALL_ARGS:
@@ -86,12 +87,10 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
                 captial_heading = ' '.join(
                     v[0].upper() + v[1:] for v in self.heading.split(' ')
                 )
-                heading = '⚙️  %*s%s\n' % (
+                heading = '%*s%s\n' % (
                     current_indent,
                     '',
-                    colored(
-                        captial_heading, 'cyan', attrs=['underline', 'bold', 'reverse']
-                    ),
+                    colored(f'▮ {captial_heading}', 'cyan', attrs=['bold']),
                 )
             else:
                 heading = ''

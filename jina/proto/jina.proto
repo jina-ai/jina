@@ -104,9 +104,6 @@ message DocumentProto {
         // a text document
         string text = 13;
 
-        // a uri of the document could be: a local file path, a remote url starts with http or https or data URI scheme
-        string uri = 9;
-
         // Related information to be used when a Document represents a graph with its chunks as nodes
         GraphProto graph = 27;
     }
@@ -119,6 +116,9 @@ message DocumentProto {
 
     // the matched documents on the same level (recursive structure)
     repeated DocumentProto matches = 8;
+
+    // a uri of the document could be: a local file path, a remote url starts with http or https or data URI scheme
+    string uri = 9;
 
     // mime type of this document, for buffer content, this is required; for other contents, this can be guessed
     string mime_type = 10;

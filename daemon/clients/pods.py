@@ -35,6 +35,7 @@ class AsyncPodClient(AsyncPeaClient):
                 'kind': UpdateOperation.ROLLING_UPDATE.value,
                 'dump_path': dump_path,
             },
+            timeout=self.timeout,
         ) as response:
             response_json = await response.json()
             if response.status != HTTPStatus.OK:

@@ -114,11 +114,6 @@ def test_uri_get_set():
     a.uri = 'https://abc.com/a.jpg'
     assert a.uri == 'https://abc.com/a.jpg'
     assert a.mime_type == 'image/jpeg'
-    a.uri = 'abcdefg'
-    assert a.uri == 'abcdefg'
-    a.content = 'abcdefg'
-    assert a.text == 'abcdefg'
-    assert not a.uri
 
 
 def test_set_get_mime():
@@ -648,7 +643,7 @@ def does_not_raise():
 @pytest.mark.parametrize(
     'doccontent, expectation',
     [
-        ({'content': 'hello', 'uri': 'https://jina.ai'}, pytest.raises(ValueError)),
+        ({'content': 'hello', 'uri': 'https://jina.ai'}, does_not_raise()),
         ({'content': 'hello', 'text': 'world'}, pytest.raises(ValueError)),
         ({'content': 'hello', 'blob': np.array([1, 2, 3])}, pytest.raises(ValueError)),
         ({'content': 'hello', 'buffer': b'hello'}, pytest.raises(ValueError)),
@@ -1102,3 +1097,19 @@ def test_empty_sparse_array():
     doc.embedding = matrix
     assert isinstance(doc.embedding, coo_matrix)
     assert (doc.embedding != matrix).nnz == 0
+
+
+def test_tags_list_append():
+    doc = Document()
+    doc.tags['key'] = []
+    assert len(doc.tags['key']) == 0
+    doc.tags['key'].append(1)
+    assert len(doc.tags['key']) == 1
+    assert doc.tags['key'][0] == 1
+
+
+def test_update_with_tags():
+    d1 = Document(id=1, tags={'lis': [1, 2, 3]})
+    d2 = Document(id=1)
+    d2.update(d1)
+    assert d2.tags['lis'] == [1, 2, 3]

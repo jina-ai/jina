@@ -15,11 +15,11 @@ def graph():
     doc2 = Document(text='Document2')
     doc3 = Document(text='Document3')
 
-    graph.add_edge(doc0, doc1, features={'text': 'I connect Doc0 and Doc1'})
-    graph.add_edge(doc0, doc2, features={'text': 'I connect Doc0 and Doc2'})
-    graph.add_edge(doc2, doc1, features={'text': 'I connect Doc2 and Doc1'})
-    graph.add_edge(doc1, doc3, features={'text': 'I connect Doc1 and Doc3'})
-    graph.add_edge(doc2, doc3, features={'text': 'I connect Doc2 and Doc3'})
+    graph.add_single_edge(doc0, doc1, features={'text': 'I connect Doc0 and Doc1'})
+    graph.add_single_edge(doc0, doc2, features={'text': 'I connect Doc0 and Doc2'})
+    graph.add_single_edge(doc2, doc1, features={'text': 'I connect Doc2 and Doc1'})
+    graph.add_single_edge(doc1, doc3, features={'text': 'I connect Doc1 and Doc3'})
+    graph.add_single_edge(doc2, doc3, features={'text': 'I connect Doc2 and Doc3'})
     return graph
 
 
@@ -138,7 +138,7 @@ def test_remove_nodes(graph):
         num_nodes = graph.num_nodes
         num_edges = graph.num_edges
         num_edges_to_remove = graph.get_in_degree(node) + graph.get_out_degree(node)
-        graph.remove_node(node)
+        graph.remove_single_node(node)
         assert graph.num_nodes == num_nodes - 1
         assert graph.num_edges == num_edges - num_edges_to_remove
 
@@ -152,7 +152,7 @@ def test_remove_edges(graph):
     num_edge_features = len(graph.edge_features.keys())
     for doc1, doc2 in edges:
         num_edges = graph.num_edges
-        graph.remove_edge(doc1, doc2)
+        graph.remove_single_edge(doc1, doc2)
         num_edge_features -= 1
         assert graph.num_edges == num_edges - 1
 
@@ -246,12 +246,11 @@ def test_undirected_graph_to_dgl(graph):
     [(GraphDocument(force_undirected=True), 1), (GraphDocument(), 2)],
 )
 def test_graph_edge_behaviour_creation(graph, expected_output):
-
     doc0 = Document(text='Document0')
     doc1 = Document(text='Document1')
 
-    graph.add_edge(doc0, doc1)
-    graph.add_edge(doc1, doc0)
+    graph.add_single_edge(doc0, doc1)
+    graph.add_single_edge(doc1, doc0)
 
     assert graph.num_edges == expected_output
 
@@ -261,12 +260,11 @@ def test_graph_edge_behaviour_creation(graph, expected_output):
     [(GraphDocument(force_undirected=True), 1), (GraphDocument(), 2)],
 )
 def test_graph_edge_behaviour_creation(graph, expected_output):
-
     doc0 = Document(text='Document0')
     doc1 = Document(text='Document1')
 
-    graph.add_edge(doc0, doc1)
-    graph.add_edge(doc1, doc0)
+    graph.add_single_edge(doc0, doc1)
+    graph.add_single_edge(doc1, doc0)
 
     assert graph.num_edges == expected_output
 
@@ -276,12 +274,11 @@ def test_graph_edge_behaviour_creation(graph, expected_output):
     [(GraphDocument(force_undirected=True), 1), (GraphDocument(), 1)],
 )
 def test_graph_count_invariance(graph, expected_output):
-
     doc0 = Document(text='Document0')
     doc1 = Document(text='Document1')
 
-    graph.add_edge(doc0, doc1)
-    graph.add_edge(doc0, doc1)
+    graph.add_single_edge(doc0, doc1)
+    graph.add_single_edge(doc0, doc1)
 
     assert graph.num_edges == expected_output
 
@@ -291,12 +288,11 @@ def test_graph_count_invariance(graph, expected_output):
     [(GraphDocument(force_undirected=True), 1), (GraphDocument(), 1)],
 )
 def test_added_edges_in_edge_features(graph, expected_output):
-
     doc0 = Document(text='Document0')
     doc1 = Document(text='Document1')
 
-    graph.add_edge(doc0, doc1)
-    edge_key = graph._get_edge_key(doc0, doc1)
+    graph.add_single_edge(doc0, doc1)
+    edge_key = graph._get_edge_key(doc0.id, doc1.id)
 
     assert edge_key in graph.edge_features
     assert graph.edge_features[edge_key] is None
@@ -307,12 +303,11 @@ def test_added_edges_in_edge_features(graph, expected_output):
     [(GraphDocument(force_undirected=True), 1), (GraphDocument(), 1)],
 )
 def test_manual_update_edges_features(graph, expected_output):
-
     doc0 = Document(text='Document0')
     doc1 = Document(text='Document1')
 
-    graph.add_edge(doc0, doc1)
-    edge_key = graph._get_edge_key(doc0, doc1)
+    graph.add_single_edge(doc0, doc1)
+    edge_key = graph._get_edge_key(doc0.id, doc1.id)
 
     graph._pb_body.graph.edge_features[edge_key] = {'number_value': 1234}
 
@@ -324,8 +319,8 @@ def test_edge_update_nested_lists():
     doc0 = Document(text='Document0')
     doc1 = Document(text='Document1')
 
-    graph.add_edge(doc0, doc1)
-    edge_key = graph._get_edge_key(doc0, doc1)
+    graph.add_single_edge(doc0, doc1)
+    edge_key = graph._get_edge_key(doc0.id, doc1.id)
     graph.edge_features[edge_key] = {
         'hey': {'nested': True, 'list': ['elem1', 'elem2', {'inlist': 'here'}]},
         'hoy': [0, 1],
@@ -339,3 +334,235 @@ def test_edge_update_nested_lists():
     assert graph.edge_features[edge_key]['hey']['list'][1] is True
     assert graph.edge_features[edge_key]['hey']['list'][2]['inlist'] == 'not here'
     assert graph.edge_features[edge_key]['hoy'][0] == 1
+
+
+def test_graph_plot_does_not_fail(graph):
+    graph.plot()
+
+
+def test_graph_add_multiple_edges():
+    graph = GraphDocument()
+
+    doc0 = Document(text='Document0')
+    doc1 = Document(text='Document1')
+    doc2 = Document(text='Document2')
+    doc3 = Document(text='Document3')
+    graph.add_edges(
+        [doc0, doc0, doc2, doc1, doc2],
+        [doc1, doc2, doc1, doc3, doc3],
+        edge_features=[
+            {'text': 'I connect Doc0 and Doc1'},
+            {'text': 'I connect Doc0 and Doc2'},
+            {'text': 'I connect Doc2 and Doc1'},
+            {'text': 'I connect Doc1 and Doc3'},
+            {'text': 'I connect Doc2 and Doc3'},
+        ],
+    )
+    assert graph.num_nodes == 4
+    assert graph.num_edges == 5
+
+    doc0 = graph.chunks[0]
+    assert doc0.text == 'Document0'
+    doc1 = graph.chunks[1]
+    assert doc1.text == 'Document1'
+    doc2 = graph.chunks[2]
+    assert doc2.text == 'Document2'
+    doc3 = graph.chunks[3]
+    assert doc3.text == 'Document3'
+
+    edge_features = graph.edge_features
+    for i, (d1, d2) in enumerate(graph):
+        if i == 0:
+            assert (
+                edge_features[f'{d1.id}-{d2.id}']['text'] == 'I connect Doc0 and Doc1'
+            )
+            assert d1.text == 'Document0'
+            assert d2.text == 'Document1'
+        if i == 1:
+            assert (
+                edge_features[f'{d1.id}-{d2.id}']['text'] == 'I connect Doc0 and Doc2'
+            )
+            assert d1.text == 'Document0'
+            assert d2.text == 'Document2'
+        if i == 2:
+            assert (
+                edge_features[f'{d1.id}-{d2.id}']['text'] == 'I connect Doc2 and Doc1'
+            )
+            assert d1.text == 'Document2'
+            assert d2.text == 'Document1'
+        if i == 3:
+            assert (
+                edge_features[f'{d1.id}-{d2.id}']['text'] == 'I connect Doc1 and Doc3'
+            )
+            assert d1.text == 'Document1'
+            assert d2.text == 'Document3'
+        if i == 4:
+            assert (
+                edge_features[f'{d1.id}-{d2.id}']['text'] == 'I connect Doc2 and Doc3'
+            )
+            assert d1.text == 'Document2'
+            assert d2.text == 'Document3'
+
+
+def test_graph_add_multiple_nodes():
+    graph = GraphDocument()
+
+    doc0 = Document(text='Document0')
+    doc1 = Document(text='Document1')
+    doc2 = Document(text='Document2')
+    doc3 = Document(text='Document3')
+    graph.add_nodes([doc0, doc1, doc2, doc3])
+    assert graph.num_nodes == 4
+    assert graph.num_edges == 0
+
+
+def test_add_remove_node_deprecated():
+    graph = GraphDocument()
+    d1 = Document(id='1')
+    d2 = Document(id='2')
+    graph.add_node(d1)
+    graph.add_node(d2)
+    assert len(graph.nodes) == 2
+    graph.remove_node(d1)
+    graph.remove_node(d2)
+    assert len(graph.nodes) == 0
+
+
+def test_add_remove_edge_deprecated():
+    graph = GraphDocument()
+
+    doc0 = Document(text='Document0')
+    doc1 = Document(text='Document1')
+
+    graph.add_edge(doc0, doc1, features={'text': 'I connect Doc0 and Doc1'})
+    assert graph.num_nodes == 2
+    assert graph.num_edges == 1
+    graph.remove_edge(doc0, doc1)
+    assert graph.num_nodes == 2
+    assert graph.num_edges == 0
+
+
+def test_add_single_edge_from_id_strings():
+    graph = GraphDocument()
+
+    doc0 = Document(text='Document0')
+    doc1 = Document(text='Document1')
+    doc2 = Document(text='Document2')
+    doc3 = Document(text='Document3')
+    graph.add_nodes([doc0, doc1, doc2, doc3])
+
+    graph.add_single_edge(
+        doc0.id, doc1.id, features={'text': 'I connect Doc0 and Doc1'}
+    )
+    graph.add_single_edge(
+        doc0.id, doc2.id, features={'text': 'I connect Doc0 and Doc2'}
+    )
+    graph.add_single_edge(
+        doc2.id, doc1.id, features={'text': 'I connect Doc2 and Doc1'}
+    )
+    graph.add_single_edge(
+        doc1.id, doc3.id, features={'text': 'I connect Doc1 and Doc3'}
+    )
+    graph.add_single_edge(
+        doc2.id, doc3.id, features={'text': 'I connect Doc2 and Doc3'}
+    )
+    validate_graph(graph)
+
+
+def test_add_single_edge_from_id_strings_non_existing_nodes():
+    graph = GraphDocument()
+
+    doc0 = Document(text='Document0')
+    doc1 = Document(text='Document1')
+
+    with pytest.raises(AssertionError):
+        graph.add_single_edge(
+            doc0.id, doc1.id, features={'text': 'I connect Doc0 and Doc1'}
+        )
+
+
+def test_remove_single_node_from_string():
+    graph = GraphDocument()
+
+    doc0 = Document(text='Document0')
+    doc1 = Document(text='Document1')
+    doc2 = Document(text='Document2')
+    doc3 = Document(text='Document3')
+
+    graph.add_single_node(doc0)
+    graph.add_single_node(doc1)
+    graph.add_single_node(doc2)
+    graph.add_single_node(doc3)
+    assert len(graph.nodes) == 4
+    assert doc0.id in graph.nodes
+    graph.remove_single_node(doc0.id)
+    assert len(graph.nodes) == 3
+    assert doc0.id not in graph.nodes
+
+
+def test_remove_single_node_from_string_non_existing():
+    graph = GraphDocument()
+
+    doc0 = Document(text='Document0')
+    doc1 = Document(text='Document1')
+    graph.add_node(doc0)
+    assert graph.num_nodes == 1
+    graph.remove_single_node(doc1.id)
+    assert graph.num_nodes == 1
+
+
+def test_remove_single_edge_from_string():
+    graph = GraphDocument()
+
+    doc0 = Document(text='Document0')
+    doc1 = Document(text='Document1')
+    doc2 = Document(text='Document2')
+    doc3 = Document(text='Document3')
+
+    graph.add_nodes([doc0, doc1, doc2, doc3])
+
+    graph.add_single_edge(
+        doc0.id, doc1.id, features={'text': 'I connect Doc0 and Doc1'}
+    )
+    graph.add_single_edge(
+        doc0.id, doc2.id, features={'text': 'I connect Doc0 and Doc2'}
+    )
+    graph.add_single_edge(
+        doc2.id, doc1.id, features={'text': 'I connect Doc2 and Doc1'}
+    )
+    graph.add_single_edge(
+        doc1.id, doc3.id, features={'text': 'I connect Doc1 and Doc3'}
+    )
+    graph.add_single_edge(
+        doc2.id, doc3.id, features={'text': 'I connect Doc2 and Doc3'}
+    )
+    assert graph.num_nodes == 4
+    assert graph.num_edges == 5
+    graph.remove_single_edge(doc0.id, doc1.id)
+    assert graph.num_nodes == 4
+    assert graph.num_edges == 4
+
+
+def test_add_multiple_edges_from_string():
+    graph = GraphDocument()
+
+    doc0 = Document(text='Document0')
+    doc1 = Document(text='Document1')
+    doc2 = Document(text='Document2')
+    doc3 = Document(text='Document3')
+
+    graph.add_nodes([doc0, doc1, doc2, doc3])
+
+    graph.add_edges(
+        [doc0.id, doc0.id, doc2.id, doc1.id, doc2.id],
+        [doc1.id, doc2.id, doc1.id, doc3.id, doc3.id],
+        edge_features=[
+            {'text': 'I connect Doc0 and Doc1'},
+            {'text': 'I connect Doc0 and Doc2'},
+            {'text': 'I connect Doc2 and Doc1'},
+            {'text': 'I connect Doc1 and Doc3'},
+            {'text': 'I connect Doc2 and Doc3'},
+        ],
+    )
+
+    validate_graph(graph)

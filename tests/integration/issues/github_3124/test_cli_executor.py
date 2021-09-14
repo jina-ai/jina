@@ -28,7 +28,7 @@ def test_executor_cli_docker(docker_image):
 
 def test_zed_runtime_cli_docker(docker_image):
     process = subprocess.Popen(
-        ['jina', 'zed_runtime', '--uses', 'docker://clitest:latest']
+        ['jina', 'executor', '--native', '--uses', 'docker://clitest:latest']
     )
     time.sleep(5)
     poll = process.poll()

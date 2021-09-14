@@ -29,7 +29,9 @@ class BaseClient(ABC):
         if args and isinstance(args, argparse.Namespace):
             self.args = args
         else:
-            self.args = ArgNamespace.kwargs2namespace(kwargs, set_client_cli_parser())
+            self.args = ArgNamespace.kwargs2namespace(
+                kwargs, set_client_cli_parser(), warn_unknown=True
+            )
         self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
 
         if not self.args.proxy and os.name != 'nt':

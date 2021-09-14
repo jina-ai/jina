@@ -24,6 +24,8 @@ from .neural_ops import DocumentArrayNeuralOpsMixin
 from .search_ops import DocumentArraySearchOpsMixin
 from .traversable import TraversableSequence
 from ..document import Document
+from ...logging.predefined import default_logger
+
 
 HEADER_NONE_ENTRY = (-1, -1, -1)
 PAGE_SIZE = mmap.ALLOCATIONGRANULARITY
@@ -31,6 +33,7 @@ PAGE_SIZE = mmap.ALLOCATIONGRANULARITY
 
 class DocumentArrayMemmap(
     TraversableSequence,
+    DocumentArrayGetAttrMixin,
     DocumentArrayNeuralOpsMixin,
     DocumentArraySearchOpsMixin,
     Itr,
@@ -83,6 +86,7 @@ class DocumentArrayMemmap(
 
     def __init__(self, path: str, key_length: int = 36, buffer_pool_size: int = 1000):
         Path(path).mkdir(parents=True, exist_ok=True)
+        self._path = path
         self._header_path = os.path.join(path, 'header.bin')
         self._body_path = os.path.join(path, 'body.bin')
         self._embeddings_path = os.path.join(path, 'embeddings.bin')
@@ -174,6 +178,12 @@ class DocumentArrayMemmap(
 
         if idx is not None:
             self._header.seek(idx * self._header_entry_size, 0)
+
+        if (doc.id is not None) and len(doc.id) > self._key_length:
+            default_logger.warning(
+                f'The ID of doc ({doc.id}) will be truncated to the maximum length {self._key_length}'
+            )
+
         self._header.write(
             np.array(
                 (doc.id, p, r, r + l),
@@ -383,8 +393,8 @@ class DocumentArrayMemmap(
         else:
             raise TypeError(f'`key` must be int or str, but receiving {key!r}')
 
-    @classmethod
-    def _flatten(cls, sequence):
+    @staticmethod
+    def _flatten(sequence):
         return itertools.chain.from_iterable(sequence)
 
     def __bool__(self):
@@ -446,11 +456,7 @@ class DocumentArrayMemmap(
         index = None
         fields = list(fields)
         if 'embedding' in fields:
-            if self._embeddings_memmap is None:
-                embeddings = [doc.get_attributes('embedding') for doc in self]
-                self._embeddings_memmap = np.asarray(embeddings)
-            else:
-                embeddings = list(self._embeddings_memmap)
+            embeddings = list(self.embeddings)  # type: List[np.ndarray]
             index = fields.index('embedding')
             fields.remove('embedding')
         if fields:
@@ -521,6 +527,41 @@ class DocumentArrayMemmap(
             fp[:] = other_embeddings[:]
             fp.flush()
             del fp
+
+    @property
+    def embeddings(self) -> np.ndarray:
+        """Return a `np.ndarray` stacking all the `embedding` attributes as rows.
+
+        :return: embeddings stacked per row as `np.ndarray`.
+
+        .. warning:: This operation assumes all embeddings have the same shape and dtype.
+            All dtype and shape values are assumed to be equal to the values of the
+            first element in the DocumentArray / DocumentArrayMemmap.
+
+        .. warning:: This operation currently does not support sparse arrays.
+        """
+        if self._embeddings_memmap is not None:
+            return self._embeddings_memmap
+
+        x_mat = b''.join(d.proto.embedding.dense.buffer for d in self)
+        embeds = np.frombuffer(
+            x_mat, dtype=self[0].proto.embedding.dense.dtype
+        ).reshape((len(self), self[0].proto.embedding.dense.shape[0]))
+
+        self._embeddings_memmap = embeds
+
+        return embeds
+
+    @embeddings.setter
+    def embeddings(self, emb: np.ndarray):
+
+        assert len(emb) == len(self), (
+            'the number of rows in the input ({len(emb)}),'
+            'should match the number of Documents ({len(self)})'
+        )
+
+        for d, x in zip(self, emb):
+            d.embedding = x
 
     def _invalidate_embeddings_memmap(self):
         self._embeddings_memmap = None

@@ -1,6 +1,5 @@
 import argparse
 import asyncio
-import inspect
 from typing import Optional, Callable
 
 import grpc
@@ -34,6 +33,13 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         self.msg_recv = 0
         self.msg_sent = 0
         self._pending_tasks = []
+        self._static_routing_table = args.static_routing_table
+        if args.static_routing_table:
+            self._routing_table = RoutingTable(args.routing_table)
+            self._next_targets = self._routing_table.get_next_target_addresses()
+        else:
+            self._routing_table = None
+            self._next_targets = None
 
     async def send_message(self, msg: 'Message', **kwargs):
         """
@@ -41,44 +47,49 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         :param msg: the protobuf message to send
         :param kwargs: Additional arguments.
         """
-        routing_table = RoutingTable(msg.envelope.routing_table)
 
-        next_targets = routing_table.get_next_targets()
-
-        for target, _ in next_targets:
-            pod_address = target.active_target_pod.full_address
-
-            new_message = self._add_envelope(msg, target)
-
-            if pod_address not in self._stubs:
-                self._stubs[pod_address] = Grpclet._create_grpc_stub(pod_address)
-
-            try:
-                self.msg_sent += 1
-
-                # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
-                # the grpc call function is not a coroutine but some _AioCall
-                async def task_wrapper(new_message, pod_address):
-                    await self._stubs[pod_address].Call(new_message)
-
-                self._pending_tasks.append(
-                    asyncio.create_task(task_wrapper(new_message, pod_address))
+        if self._next_targets:
+            for pod_address in self._next_targets:
+                self._send_message(msg, pod_address)
+        else:
+            routing_table = RoutingTable(msg.envelope.routing_table)
+            next_targets = routing_table.get_next_targets()
+            for target, _ in next_targets:
+                self._send_message(
+                    self._add_envelope(msg, target),
+                    target.active_target_pod.full_address,
                 )
-                self._update_pending_tasks()
-            except grpc.RpcError as ex:
-                self._logger.error('Sending data request via grpc failed', ex)
-                raise ex
+
+    def _send_message(self, msg, pod_address):
+        if pod_address not in self._stubs:
+            self._stubs[pod_address] = Grpclet._create_grpc_stub(pod_address)
+        try:
+            self.msg_sent += 1
+
+            # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
+            # the grpc call function is not a coroutine but some _AioCall
+            async def task_wrapper(new_message, pod_address):
+                await self._stubs[pod_address].Call(new_message)
+
+            self._pending_tasks.append(
+                asyncio.create_task(task_wrapper(msg, pod_address))
+            )
+            self._update_pending_tasks()
+        except grpc.RpcError as ex:
+            self._logger.error('Sending data request via grpc failed', ex)
+            raise ex
 
     @staticmethod
-    def send_ctrl_msg(pod_address: str, command: str):
+    def send_ctrl_msg(pod_address: str, command: str, timeout=1.0):
         """
         Sends a control message via gRPC to pod_address
         :param pod_address: the pod to send the command to
         :param command: the command to send (TERMINATE/ACTIVATE/...)
+        :param timeout: optional timeout for the request in seconds
         :returns: Empty protobuf struct
         """
         stub = Grpclet._create_grpc_stub(pod_address, is_async=False)
-        response = stub.Call(ControlMessage(command))
+        response = stub.Call(ControlMessage(command), timeout=timeout)
         return response
 
     @staticmethod
@@ -105,12 +116,15 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         return stub
 
     def _add_envelope(self, msg, routing_table):
-        new_envelope = jina_pb2.EnvelopeProto()
-        new_envelope.CopyFrom(msg.envelope)
-        new_envelope.routing_table.CopyFrom(routing_table.proto)
-        new_message = Message(request=msg.request, envelope=new_envelope)
+        if not self._static_routing_table:
+            new_envelope = jina_pb2.EnvelopeProto()
+            new_envelope.CopyFrom(msg.envelope)
+            new_envelope.routing_table.CopyFrom(routing_table.proto)
+            new_message = Message(request=msg.request, envelope=new_envelope)
 
-        return new_message
+            return new_message
+        else:
+            return msg
 
     async def close(self, grace_period=None, *args, **kwargs):
         """Stop the Grpc server

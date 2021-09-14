@@ -3,7 +3,7 @@ from typing import List, Optional, Type
 
 from .base import VersionedYAMLParser
 from .. import JAMLCompatible
-from ...excepts import BadFlowYAMLVersion
+from ...excepts import BadYAMLVersion
 
 
 def _get_all_parser(cls: Type['JAMLCompatible']):
@@ -69,15 +69,16 @@ def get_parser(
                     UserWarning,
                 )
                 return p()
-        raise BadFlowYAMLVersion(f'{version} is not a valid version number')
+        raise BadYAMLVersion(f'{version} is not a valid version number')
     else:
+        if version is not None:
+            warnings.warn(
+                f'can not find parser for version: {version}, '
+                f'fallback to legacy parser. '
+                f'this usually mean you are using a depreciated YAML format.',
+                DeprecationWarning,
+            )
         # fallback to legacy parser
-        warnings.warn(
-            f'can not find parser for version: {version}, '
-            f'fallback to legacy parser. '
-            f'this usually mean you are using a depreciated YAML format.',
-            DeprecationWarning,
-        )
         return legacy_parser()
 
 
