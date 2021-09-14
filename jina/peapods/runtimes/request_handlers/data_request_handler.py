@@ -9,6 +9,7 @@ from ....excepts import (
 from ....executors import BaseExecutor
 from ....helper import typename
 from ....types.arrays.document import DocumentArray
+from ....types.arrays.abstract import AbstractDocumentArray
 from ....types.message import Message, Request
 
 if TYPE_CHECKING:
@@ -169,7 +170,7 @@ class DataRequestHandler:
         # 3. Return DocArray, but the memory pointer says it is the same as self.docs: do nothing
         # 4. Return DocArray and its not a shallow copy of self.docs: assign self.request.docs
         if r_docs is not None:
-            if not isinstance(r_docs, DocumentArray):
+            if not isinstance(r_docs, AbstractDocumentArray):
                 raise TypeError(
                     f'return type must be {DocumentArray!r} or None, but getting {typename(r_docs)}'
                 )

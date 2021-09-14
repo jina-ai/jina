@@ -81,11 +81,12 @@ def test_gateway_index(flow_with_http, test_img_1, test_img_2):
             f'http://localhost:{flow_with_http.port_expose}/index',
             json={'data': [test_img_1, test_img_2]},
         )
+
         assert r.status_code == 200
         resp = r.json()
         assert 'data' in resp
         assert len(resp['data']['docs']) == 2
-        assert resp['data']['docs'][0]['uri'] == test_img_1
+        assert resp['data']['docs'][0]['text'] == test_img_1
 
 
 @pytest.mark.slow
@@ -188,10 +189,11 @@ def test_all_sync_clients(protocol, mocker):
     m3 = mocker.Mock()
     m4 = mocker.Mock()
     with f:
-        f.post('/', on_done=m1)
-        f.post('/foo', docs, on_done=m2)
-        f.post('/foo', on_done=m3)
-        f.post('/foo', docs, parameters={'hello': 'world'}, on_done=m4)
+        c = Client(host='localhost', port=f.port_expose, protocol=protocol)
+        c.post('/', on_done=m1)
+        c.post('/foo', docs, on_done=m2)
+        c.post('/foo', on_done=m3)
+        c.post('/foo', docs, parameters={'hello': 'world'}, on_done=m4)
 
     m1.assert_called_once()
     m2.assert_called()

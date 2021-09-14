@@ -263,4 +263,56 @@ with f:
 ```
 ````
 
+## Heavylifting in the Flow, not in the Client
+   
+Heavylifting jobs should be put into an `Executor` if possible.
+For instance, sending high resolution images to the Flow
+can be time-consuming. Putting it into an Executor could leverage Flow to scale it.
+It also reduce the network overhead.
+
+````{tab} ✅ Do
+```python
+import glob
+
+from jina import Executor, Flow, requests, Document
+
+class MyExecutor(Executor):
+
+    @requests
+    def to_blob_conversion(self, docs: DocumentArray, **kwargs):
+        for doc in docs:
+            doc.convert_image_uri_to_blob()  # conversion happens inside Flow
+
+f = Flow().add(uses=MyExecutor, parallel=2)
+
+def my_input():
+    image_uris = glob.glob('/.workspace/*.png')
+    for image_uri in image_uris:
+        yield Document(uri=image_uri)
+
+with f:
+    f.post('/foo', inputs=my_input)
+```
+````
+
+````{tab} 😔 Don't
+```python
+import glob
+
+from jina import Executor, Document
+
+def my_input():
+    image_uris = glob.glob('/.workspace/*.png')  # load high resolution images.
+    for image_uri in image_uris:
+        doc = Document(uri=image_uri)
+        doc.convert_image_uri_to_blob()  # time consuming job at client side
+        yield doc
+
+f = Flow().add()
+
+with f:
+    f.post('/foo', inputs=my_input)
+```
+````
+
 

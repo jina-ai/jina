@@ -222,11 +222,12 @@ your executor has non-trivial dependencies or must be run under certain environm
         table.add_column('Filename', style='cyan', no_wrap=True)
         table.add_column('Description', no_wrap=True)
 
-        table.add_row('executor.py', 'The main logic file of the Executor.')
+        # adding the columns in order of `ls` output
         table.add_row(
             'config.yml',
             'The YAML config file of the Executor. You can define [bold]__init__[/bold] arguments using [bold]with[/bold] keyword.',
         )
+
         table.add_row(
             '',
             Panel(
@@ -236,8 +237,9 @@ jtype: {exec_name}
 with:
     foo: 1
     bar: hello
-py_modules:
-    - executor.py
+metas:
+    py_modules:
+        - executor.py
                 ''',
                     'yaml',
                     theme='monokai',
@@ -249,29 +251,37 @@ py_modules:
                 expand=False,
             ),
         )
-        table.add_row('README.md', 'The usage of the Executor.')
-        table.add_row('requirements.txt', 'The Python dependencies of the Executor.')
-        table.add_row(
-            'manifest.yml',
-            'The annotations of the Executor for getting better appealing on Jina Hub.',
-        )
-
-        field_table = Table(box=box.SIMPLE)
-        field_table.add_column('Field', style='cyan', no_wrap=True)
-        field_table.add_column('Description', no_wrap=True)
-        field_table.add_row('name', 'Human-readable title of the Executor')
-        field_table.add_row('alias', 'The unique identifier in Jina Hub')
-        field_table.add_row('description', 'Human-readable description of the Executor')
-        field_table.add_row('url', 'URL to find more information on the Executor')
-        field_table.add_row('keywords', 'Keywords that help user find the Executor')
-
-        table.add_row('', field_table)
 
         if is_dockerfile:
             table.add_row(
                 'Dockerfile',
                 'The Dockerfile describes how this executor will be built.',
             )
+
+        table.add_row('executor.py', 'The main logic file of the Executor.')
+        table.add_row(
+            'manifest.yml',
+            'Metadata for the Executor, for better appeal on Jina Hub.',
+        )
+
+        manifest_fields_table = Table(box=box.SIMPLE)
+        manifest_fields_table.add_column('Field', style='cyan', no_wrap=True)
+        manifest_fields_table.add_column('Description', no_wrap=True)
+        manifest_fields_table.add_row('name', 'Human-readable title of the Executor')
+        manifest_fields_table.add_row(
+            'description', 'Human-readable description of the Executor'
+        )
+        manifest_fields_table.add_row(
+            'url',
+            'URL to find more information on the Executor (e.g. GitHub repo URL)',
+        )
+        manifest_fields_table.add_row(
+            'keywords', 'Keywords that help user find the Executor'
+        )
+
+        table.add_row('', manifest_fields_table)
+        table.add_row('README.md', 'A usage guide of the Executor.')
+        table.add_row('requirements.txt', 'The Python dependencies of the Executor.')
 
         final_table = Table(box=None)
 
@@ -287,14 +297,14 @@ py_modules:
                 line_numbers=True,
                 word_wrap=True,
             ),
-            title='1. Checkout the Generated Executor',
+            title='1. Check out the generated Executor',
             width=120,
             expand=False,
         )
 
         p1 = Panel(
             table,
-            title='2. Understand Folder Structure',
+            title='2. Understand folder structure',
             width=120,
             expand=False,
         )
@@ -318,7 +328,7 @@ py_modules:
 
         p = Panel(
             final_table,
-            title=':tada: Next Steps',
+            title=':tada: Next steps',
             width=130,
             expand=False,
         )
@@ -447,8 +457,8 @@ py_modules:
         table.add_column('Key', no_wrap=True)
         table.add_column('Value', style='cyan', no_wrap=True)
         table.add_row(':key: ID', uuid8)
-        if 'alias' in image:
-            table.add_row(':name_badge: Alias', image['alias'])
+        if 'name' in image:
+            table.add_row(':name_badge: Name', image['name'])
         table.add_row(':lock: Secret', secret)
         table.add_row(
             '',
@@ -458,7 +468,7 @@ py_modules:
         table.add_row(':whale: DockerHub', f'https://hub.docker.com/r/jinahub/{uuid8}/')
         console.print(table)
 
-        presented_id = image.get('alias', uuid8)
+        presented_id = image.get('name', uuid8)
         usage = (
             f'{presented_id}' if visibility == 'public' else f'{presented_id}:{secret}'
         )
@@ -542,7 +552,7 @@ with f:
         secret: Optional[str] = None,
     ) -> HubExecutor:
         """Fetch the executor meta info from Jina Hub.
-        :param name: the UUID/Alias of the executor
+        :param name: the UUID/Name of the executor
         :param tag: the version tag of the executor
         :param secret: the access secret of the executor
         :return: meta of executor
@@ -570,7 +580,7 @@ with f:
 
         return HubExecutor(
             uuid=resp['id'],
-            alias=resp.get('alias', None),
+            name=resp.get('name', None),
             sn=resp.get('sn', None),
             tag=resp['tag'],
             visibility=resp['visibility'],

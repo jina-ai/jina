@@ -557,3 +557,9 @@ def test_blobs_setter_da():
 
     for x, doc in zip(blobs, da):
         np.testing.assert_almost_equal(x, doc.blob)
+
+
+def test_none_extend():
+    da = DocumentArray([Document() for _ in range(100)])
+    da.extend(None)
+    assert len(da) == 100

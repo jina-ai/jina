@@ -114,6 +114,14 @@ advanced/experimental/index
 ```
 
 ```{toctree}
+:caption: Tutorials
+:hidden:
+
+tutorials/new_executor
+tutorials/gpu_executor
+```
+
+```{toctree}
 :caption: Developer Reference
 :hidden:
 :maxdepth: 1

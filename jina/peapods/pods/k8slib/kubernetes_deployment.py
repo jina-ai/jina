@@ -1,3 +1,4 @@
+import json
 from argparse import Namespace
 from typing import Dict, Optional, Tuple
 
@@ -18,7 +19,7 @@ def to_dns_name(name: str) -> str:
 
 def deploy_service(
     name: str,
-    namespace: Namespace,
+    namespace: str,
     image_name: str,
     container_cmd: str,
     container_args: str,
@@ -26,6 +27,7 @@ def deploy_service(
     replicas: int,
     pull_policy: str,
     init_container: Dict = None,
+    custom_resource_dir: Optional[str] = None,
 ) -> str:
     """Deploy service on Kubernetes.
 
@@ -38,6 +40,8 @@ def deploy_service(
     :param replicas: number of replicas
     :param pull_policy: pull policy used for fetching the Docker images from the registry.
     :param init_container: additional arguments used for the init container
+    :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.
+        Defaults to the standard location jina.resources if not specified.
     :return: dns name of the created service
     """
 
@@ -62,6 +66,7 @@ def deploy_service(
             'port_ctrl': port_ctrl,
             'type': 'ClusterIP',
         },
+        custom_resource_dir=custom_resource_dir,
     )
 
     logger.info(
@@ -69,40 +74,28 @@ def deploy_service(
     )
 
     if init_container:
-        kubernetes_tools.create(
-            'deployment-init',
-            {
-                'name': name,
-                'namespace': namespace,
-                'image': image_name,
-                'replicas': replicas,
-                'command': container_cmd,
-                'args': container_args,
-                'port_expose': port_expose,
-                'port_in': port_in,
-                'port_out': port_out,
-                'port_ctrl': port_ctrl,
-                'pull_policy': pull_policy,
-                **init_container,
-            },
-        )
+        template_name = 'deployment-init'
     else:
-        kubernetes_tools.create(
-            'deployment',
-            {
-                'name': name,
-                'namespace': namespace,
-                'image': image_name,
-                'replicas': replicas,
-                'command': container_cmd,
-                'args': container_args,
-                'port_expose': port_expose,
-                'port_in': port_in,
-                'port_out': port_out,
-                'port_ctrl': port_ctrl,
-                'pull_policy': pull_policy,
-            },
-        )
+        template_name = 'deployment'
+        init_container = {}
+    kubernetes_tools.create(
+        template_name,
+        {
+            'name': name,
+            'namespace': namespace,
+            'image': image_name,
+            'replicas': replicas,
+            'command': container_cmd,
+            'args': container_args,
+            'port_expose': port_expose,
+            'port_in': port_in,
+            'port_out': port_out,
+            'port_ctrl': port_ctrl,
+            'pull_policy': pull_policy,
+            **init_container,
+        },
+        custom_resource_dir=custom_resource_dir,
+    )
     return f'{name}.{namespace}.svc.cluster.local'
 
 
@@ -112,7 +105,7 @@ def get_cli_params(arguments: Namespace, skip_list: Tuple[str] = ()) -> str:
     :param arguments: arguments where the cli parameters are generated from
     :param skip_list: list of arguments which should be ignored
 
-    :return: string wich contains all cli parameters
+    :return: string which contains all cli parameters
     """
     arguments.host = '0.0.0.0'
     skip_attributes = [
@@ -128,8 +121,6 @@ def get_cli_params(arguments: Namespace, skip_list: Tuple[str] = ()) -> str:
         'uses_after',
         'uses_before',
         'replicas',
-        'shards',
-        'parallel',
         'polling',
         'port_in',
         'port_out',
@@ -187,7 +178,7 @@ def dictionary_to_cli_param(dictionary) -> str:
 
     :return: string representation of the dictionary
     """
-    return dictionary.__str__().replace("'", "\\\"") if dictionary else ""
+    return json.dumps(dictionary).replace('"', '\\"') if dictionary else ""
 
 
 def get_init_container_args(pod) -> Optional[Dict]:

@@ -20,6 +20,11 @@ def logger():
 
 
 @pytest.fixture()
+def test_dir() -> str:
+    return cur_dir
+
+
+@pytest.fixture()
 def test_executor_image(logger: JinaLogger):
     image, build_logs = client.images.build(
         path=os.path.join(cur_dir, 'test-executor'), tag='test-executor:0.13.1'

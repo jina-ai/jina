@@ -11,3 +11,4 @@ jina/__init__.py  @hanxiao
 requirements.txt  @hanxiao
 MANIFEST.in  @hanxiao
 README.md  @hanxiao
+docs/      @hanxiao @alexcg1

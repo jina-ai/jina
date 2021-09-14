@@ -73,6 +73,12 @@ def test_unpack_package_unsupported(tmpdir):
         )
 
 
+def test_install_requirements():
+    helper.install_requirements(
+        Path(__file__).parent / 'dummy_executor' / 'requirements.txt'
+    )
+
+
 def test_disk_cache(tmpfile):
     raise_exception = True
 

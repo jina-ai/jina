@@ -25,6 +25,7 @@ class DocumentArrayNeuralOpsMixin:
         use_scipy: bool = False,
         metric_name: Optional[str] = None,
         batch_size: Optional[int] = None,
+        exclude_self: bool = False,
     ) -> None:
         """Compute embedding based nearest neighbour in `another` for each Document in `self`,
         and store results in `matches`.
@@ -49,7 +50,11 @@ class DocumentArrayNeuralOpsMixin:
         :param batch_size: if provided, then `darray` is loaded in chunks of, at most, batch_size elements. This option
                            will be slower but more memory efficient. Specialy indicated if `darray` is a big
                            DocumentArrayMemmap.
+        :param exclude_self: if provided, Documents in ``darray`` with same ``id`` as the left-hand values will not be considered as matches.
         """
+
+        if not (self and darray):
+            return
 
         if callable(metric):
             cdist = metric
@@ -83,7 +88,8 @@ class DocumentArrayNeuralOpsMixin:
                 if d.id in self:
                     d = Document(d, copy=True)
                     d.pop('matches')
-                _q.matches.append(d, scores={metric_name: _dist})
+                if not (d.id == _q.id and exclude_self):
+                    _q.matches.append(d, scores={metric_name: _dist})
 
     def _match(self, darray, cdist, limit, normalization, metric_name):
         """

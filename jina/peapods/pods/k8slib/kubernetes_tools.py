@@ -1,8 +1,11 @@
 import os
 import tempfile
-from typing import Dict
+from typing import Dict, Optional
 
 cur_dir = os.path.dirname(__file__)
+DEFAULT_RESOURCE_DIR = os.path.join(
+    cur_dir, '..', '..', '..', 'resources', 'k8s', 'template'
+)
 
 
 class K8SClients:
@@ -21,7 +24,14 @@ class K8SClients:
         # this import reads the `KUBECONFIG` env var. Lazy load to postpone the reading
         from kubernetes import config, client
 
-        config.load_kube_config()
+        try:
+            # try loading kube config from disk first
+            config.load_kube_config()
+        except config.config_exception.ConfigException:
+            # if the config could not be read from disk, try loading in cluster config
+            # this works if we are running inside k8s
+            config.load_incluster_config()
+
         self.__k8s_client = client.ApiClient()
         self.__v1 = client.CoreV1Api(api_client=self.__k8s_client)
         self.__beta = client.ExtensionsV1beta1Api(api_client=self.__k8s_client)
@@ -73,17 +83,19 @@ class K8SClients:
 __k8s_clients = K8SClients()
 
 
-def create(template: str, params: Dict):
+def create(template: str, params: Dict, custom_resource_dir: Optional[str] = None):
     """Create a resource on Kubernetes based on the `template`. It fills the `template` using the `params`.
 
     :param template: path to the template file.
+    :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.
+        Defaults to the standard location jina.resources if not specified.
     :param params: dictionary for replacing the placeholders (keys) with the actual values.
     """
 
     from kubernetes.utils import FailToCreateError
     from kubernetes import utils
 
-    yaml = _get_yaml(template, params)
+    yaml = _get_yaml(template, params, custom_resource_dir)
     fd, path = tempfile.mkstemp()
     try:
         with os.fdopen(fd, 'w') as tmp:
@@ -101,10 +113,11 @@ def create(template: str, params: Dict):
         os.remove(path)
 
 
-def _get_yaml(template: str, params: Dict):
-    path = os.path.join(
-        cur_dir, '..', '..', '..', 'resources', 'k8s', 'template', f'{template}.yml'
-    )
+def _get_yaml(template: str, params: Dict, custom_resource_dir: Optional[str] = None):
+    if custom_resource_dir:
+        path = os.path.join(custom_resource_dir, f'{template}.yml')
+    else:
+        path = os.path.join(DEFAULT_RESOURCE_DIR, f'{template}.yml')
     with open(path) as f:
         content = f.read()
         for k, v in params.items():

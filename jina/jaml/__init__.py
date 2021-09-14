@@ -507,6 +507,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :param kwargs: kwargs for parse_config_source
         :return: :class:`JAMLCompatible` object
         """
+
         stream, s_path = parse_config_source(source, **kwargs)
         with stream as fp:
             # first load yml with no tag
