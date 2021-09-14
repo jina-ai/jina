@@ -52,7 +52,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <button type="button" v-on:click="callJina()" class="btn btn-primary">Search!</button>
+                    <button id="search-button" type="button" v-on:click="callJina()" class="btn btn-primary">Search!</button>
                 </div>
             </div>
             <br>
@@ -70,6 +70,16 @@
             </div>
         </div>
         <div class="col-lg-9">
+            <div style="
+                display: none;
+                justify-content: center;
+                height: 100vh;
+                align-items: center;
+            "
+                id="search-animation"
+            >
+                <img src="https://github.com/jina-ai/jina/blob/master/.github/logo-only.gif?raw=true"/>
+            </div>
             <div style="width:100%; grid-template-columns: auto auto auto auto auto;display: grid;">
                 <div class="card" v-for="item in results">
                     <img :src="item.uri" class="card-img-top"
@@ -157,6 +167,8 @@
         },
         methods: {
             callJina: function () {
+                document.getElementById("search-button").disabled = true;
+                document.getElementById("search-animation").style.display = 'flex';
                 $.ajax({
                     type: "POST",
                     url: this.serverAddress + "/search",
@@ -164,6 +176,8 @@
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                 }).success(function (data, textStatus, jqXHR) {
+                    document.getElementById("search-animation").style.display = 'none';
+                    document.getElementById("search-button").disabled = false;
                     console.log(data)
                     app.results = data['data']['docs'][0]['matches']
                 }).fail(function () {

@@ -201,6 +201,30 @@ jobs:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
           JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
 
+  k8s-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Prepare enviroment
+        run: |
+          docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+          python -m pip install --upgrade pip
+          python -m pip install wheel
+          pip install ".[all]" --no-cache-dir
+          jina
+          export JINA_LOG_LEVEL="ERROR"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Test k8s
+        run: |
+          ./tests/k8s/test_k8s.sh
+        timeout-minutes: 30
+
+
   prep-testbed:
     runs-on: ubuntu-latest
     needs: [commit-lint, lint-flake-8, code-injection]
@@ -315,14 +339,16 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install ".[all]" --no-cache-dir
+          $env:PYTHONIOENCODING='utf-8'
           jina
-          export JINA_LOG_LEVEL="ERROR"
+          $env:JINA_LOG_LEVEL='ERROR'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Test
         id: test
         run: |
-          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 -timeout=360 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+          $env:PYTHONIOENCODING='utf-8'
+          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --timeout=360 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
         timeout-minutes: 20
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}

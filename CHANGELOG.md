@@ -86,6 +86,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -300,6 +301,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`2.0.19`)](#release-note-2019)
 - [Release Note (`2.0.20`)](#release-note-2020)
 - [Release Note (`2.0.21`)](#release-note-2021)
+- [Release Note (`2.0.22`)](#release-note-2022)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -10228,4 +10230,46 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```4967d6a8```](https://github.com/jina-ai/jina/commit/4967d6a85699ca168fbe949933aaa6c302ec5356)] __-__ fix doc gen job (*Han Xiao*)
  - [[```ef71b991```](https://github.com/jina-ai/jina/commit/ef71b99156a9498af2bd05dcdd625aae7a69fac5)] __-__ update doc website theme (*Han Xiao*)
  - [[```a7cb0921```](https://github.com/jina-ai/jina/commit/a7cb0921cd25b4772051c6d566bf15cd688a7fe4)] __-__ __version__: the next version will be 2.0.21 (*Jina Dev Bot*)
+
+<a name=release-note-2-0-22></a>
+## Release Note (`2.0.22`)
+
+> Release time: 2021-08-31 22:08:52
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  AlaeddineAbdessalem,  Maksudur Rahman Maateen,  Deepankar Mahapatro,  Jina Dev Bot,  Florian Hönicke,  David Buchaca Prats,  🙇
+
+
+### 🆕 New Features
+
+ - [[```b8a61b61```](https://github.com/jina-ai/jina/commit/b8a61b613a5504a13996718b96674de07e539fb6)] __-__ kubernetes mvp (#2939) (*Florian Hönicke*)
+
+### ⚡ Performance Improvements
+
+ - [[```8ac9bc50```](https://github.com/jina-ai/jina/commit/8ac9bc50a07cfa7000c810023fca0c9ce24dc3ec)] __-__ add cache nodes  (#3295) (*David Buchaca Prats*)
+
+### 🐞 Bug fixes
+
+ - [[```a2e9ebbf```](https://github.com/jina-ai/jina/commit/a2e9ebbf64a3f03e6bc75d81c8c7eb34634dd5e4)] __-__ __ci__: fixed benchmark CI (#3311) (*Maksudur Rahman Maateen*)
+ - [[```4221b258```](https://github.com/jina-ai/jina/commit/4221b25862efb8287eb7e30158e18ce2cfab0b31)] __-__ __daemon__: port mapping for compound pods (#3304) (*Deepankar Mahapatro*)
+ - [[```ca7375aa```](https://github.com/jina-ai/jina/commit/ca7375aa518f6a85627bf269da5d81bdfc9dc528)] __-__ __daemon__: manage ports for remote flows (#3266) (*Deepankar Mahapatro*)
+
+### 📗 Documentation
+
+ - [[```370ff14d```](https://github.com/jina-ai/jina/commit/370ff14d34f007523773fb803b62aefe201b98a7)] __-__ update hub documentations (*Han Xiao*)
+ - [[```973a2fbd```](https://github.com/jina-ai/jina/commit/973a2fbda6c5b25f26d52559b245f57bbaad6b42)] __-__ migrate &amp; rewrite cookbooks to the doc website (#3282) (*AlaeddineAbdessalem*)
+
+### 🍹 Other Improvements
+
+ - [[```bec21e75```](https://github.com/jina-ai/jina/commit/bec21e75c5fc71250faaaf23e8a3d44bd51b1360)] __-__ fix release note script (*Han Xiao*)
+ - [[```06e50113```](https://github.com/jina-ai/jina/commit/06e50113563fdd1ac22470f0591b66219f9db108)] __-__ fix typo in readme (*Han Xiao*)
+ - [[```0acf86ad```](https://github.com/jina-ai/jina/commit/0acf86ad309a0ca1e09c9f9131b6ac9b6e5f4c4a)] __-__ move cookbook links to new docs website (*Han Xiao*)
+ - [[```c818f9d9```](https://github.com/jina-ai/jina/commit/c818f9d96858136e1eac5549466fd495c8391c26)] __-__ __docs__: fix inline-tab dependencies (*Han Xiao*)
+ - [[```1cc72fd5```](https://github.com/jina-ai/jina/commit/1cc72fd5d5ef0a85708256dfb61ec0bbd39148eb)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```800b85a9```](https://github.com/jina-ai/jina/commit/800b85a979cbc08a6b6ce4273ca6814f831d3fba)] __-__ Refactor don&#39;t resolve host (#3296) (*Florian Hönicke*)
+ - [[```52cd3074```](https://github.com/jina-ai/jina/commit/52cd3074b65caec7a370386ec5a5f87ad7b0133d)] __-__ update slack counter (*Han Xiao*)
+ - [[```dae5f656```](https://github.com/jina-ai/jina/commit/dae5f656419fba0c722724076eeb14c881a61e94)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```9cde0711```](https://github.com/jina-ai/jina/commit/9cde07115418d33b23c8dc882451ab1de63023ab)] __-__ __version__: the next version will be 2.0.22 (*Jina Dev Bot*)
 

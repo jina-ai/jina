@@ -1,0 +1,13 @@
+jtype: Flow
+version: '1'
+with:
+  port_expose: 9001
+  protocol: http
+pods:
+  - name: indexer_query
+    uses: docker://query-executor
+    replicas: 2
+    parallel: 1
+    polling: all
+    timeout_ready: '-1'
+    volumes: $JINAD_WORKSPACE:/jinad_workspace

@@ -27,6 +27,7 @@ from typing import (
     Sequence,
     Iterable,
 )
+from . import __windows__
 
 __all__ = [
     'batch_iterator',
@@ -571,7 +572,7 @@ _COLORS = {
 
 _RESET = '\033[0m'
 
-if os.name == 'nt':
+if __windows__:
     os.system('color')
 
 
@@ -872,8 +873,6 @@ def format_full_version_info(info: Dict, env_info: Dict) -> str:
 
 
 def _update_policy():
-    from . import __windows__
-
     if __windows__:
         asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 
@@ -1229,8 +1228,6 @@ def is_yaml_filepath(val) -> bool:
     :param val: Path of target file.
     :return: True if the file is YAML else False.
     """
-    from . import __windows__
-
     if __windows__:
         r = r'.*.ya?ml$'  # TODO: might not be exhaustive
     else:

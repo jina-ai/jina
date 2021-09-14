@@ -2,6 +2,7 @@ import argparse
 
 from jina.parsers.client import mixin_comm_protocol_parser
 from .helper import _SHOW_ALL_ARGS
+from .peapods.pod import mixin_k8s_pod_parser
 
 
 def set_pea_parser(parser=None):
@@ -50,6 +51,7 @@ def set_pod_parser(parser=None):
     from .peapods.pod import mixin_base_pod_parser
 
     mixin_base_pod_parser(parser)
+    mixin_k8s_pod_parser(parser)
 
     return parser
 
@@ -265,6 +267,17 @@ def get_main_parser():
             'are doing low-level orchestration',
             formatter_class=_chf,
             **(dict(help='Start a Pea')) if _SHOW_ALL_ARGS else {},
+        )
+    )
+
+    set_pod_parser(
+        sp.add_parser(
+            'pod',
+            description='Start a Pod. '
+            'You should rarely use this directly unless you '
+            'are doing low-level orchestration',
+            formatter_class=_chf,
+            **(dict(help='Start a Pod')) if _SHOW_ALL_ARGS else {},
         )
     )
 
