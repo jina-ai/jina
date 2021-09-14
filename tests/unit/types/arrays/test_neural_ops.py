@@ -4,10 +4,11 @@ import os
 import numpy as np
 import pytest
 import scipy.sparse as sp
+from scipy.spatial.distance import cdist as scipy_cdist
+
 from jina import Document, DocumentArray
 from jina.math.dimensionality_reduction import PCA
 from jina.types.arrays.memmap import DocumentArrayMemmap
-from scipy.spatial.distance import cdist as scipy_cdist
 
 
 @pytest.fixture()
@@ -416,6 +417,44 @@ def test_match_exclude_self(exclude_self, num_matches):
         assert len(d.matches) == num_matches
 
 
+@pytest.fixture()
+def get_pair_document_array():
+    da1 = DocumentArray(
+        [
+            Document(id='1', embedding=np.array([1, 2])),
+            Document(id='2', embedding=np.array([3, 4])),
+        ]
+    )
+    da2 = DocumentArray(
+        [
+            Document(id='1', embedding=np.array([1, 2])),
+            Document(id='2', embedding=np.array([3, 4])),
+            Document(id='3', embedding=np.array([4, 5])),
+        ]
+    )
+    yield da1, da2
+
+
+@pytest.mark.parametrize(
+    'limit, expect_len, exclude_self',
+    [
+        (2, 2, True),
+        (1, 1, True),
+        (3, 2, True),
+        (2, 2, False),
+        (1, 1, False),
+        (3, 3, False),
+    ],
+)
+def test_match_exclude_self_limit_2(
+    get_pair_document_array, exclude_self, limit, expect_len
+):
+    da1, da2 = get_pair_document_array
+    da1.match(da2, exclude_self=exclude_self, limit=limit)
+    for d in da1:
+        assert len(d.matches) == expect_len
+
+
 @pytest.mark.parametrize(
     'lhs, rhs',
     [
@@ -463,3 +502,53 @@ def test_match_none(lhs, rhs):
         lhs.match(rhs)
     if rhs is not None:
         rhs.match(lhs)
+
+
+@pytest.fixture()
+def get_two_docarray():
+    d1 = Document(embedding=np.array([0, 0, 0]))
+    d1c1 = Document(embedding=np.array([0, 1, 0]))
+
+    d2 = Document(embedding=np.array([1, 0, 0]))
+    d2c1 = Document(embedding=np.array([1, 1, 0]))
+    d2c2 = Document(embedding=np.array([1, 0, 1]))
+
+    d3 = Document(embedding=np.array([2, 1, 1]))
+    d3c1 = Document(embedding=np.array([2, 1, 0]))
+    d3c2 = Document(embedding=np.array([2, 0, 1]))
+    d3c3 = Document(embedding=np.array([2, 0, 0]))
+
+    d4 = Document(embedding=np.array([3, 1, 1]))
+    d4c1 = Document(embedding=np.array([3, 1, 0]))
+    d4c2 = Document(embedding=np.array([3, 0, 1]))
+    d4c3 = Document(embedding=np.array([3, 0, 0]))
+    d4c4 = Document(embedding=np.array([3, 1, 1]))
+
+    d1.chunks.extend([d1c1])
+    d2.chunks.extend([d2c1, d2c2])
+    d3.chunks.extend([d3c1, d3c2, d3c3])
+    d4.chunks.extend([d4c1, d4c2, d4c3, d4c4])
+
+    da1 = DocumentArray([d1, d2])
+    da2 = DocumentArray([d3, d4])
+    yield da1, da2
+
+
+def test_match_with_traversal_path(get_two_docarray):
+    da1, da2 = get_two_docarray
+    da1.match(da2, traversal_rdarray=['c'])
+    assert len(da1[0].matches) == len(da2[0].chunks) + len(da2[1].chunks)
+
+    da2.match(da1, traversal_rdarray=['c'])
+    assert len(da2[0].matches) == len(da1[0].chunks) + len(da1[1].chunks)
+
+
+def test_match_on_two_sides_chunks(get_two_docarray):
+    da1, da2 = get_two_docarray
+    da2.match(da1, traversal_ldarray=['c'], traversal_rdarray=['c'])
+    assert len(da2[0].matches) == 0
+    assert len(da2[0].chunks[0].matches) == len(da1[0].chunks) + len(da1[1].chunks)
+
+    da1.match(da2, traversal_ldarray=['c'], traversal_rdarray=['c'])
+    assert len(da1[0].matches) == 0
+    assert len(da1[0].chunks[0].matches) == len(da2[0].chunks) + len(da2[1].chunks)

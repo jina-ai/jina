@@ -5,6 +5,7 @@ import threading
 import time
 from typing import Any, Tuple, Union, Dict, Optional
 
+from ...jaml import JAML
 from .helper import _get_event, ConditionalEvent
 from ... import __stop_msg__, __ready_msg__, __default_host__
 from ...enums import PeaRoleType, RuntimeBackendType, SocketType
@@ -24,6 +25,7 @@ def run(
     is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
     is_ready: Union['multiprocessing.Event', 'threading.Event'],
     cancel_event: Union['multiprocessing.Event', 'threading.Event'],
+    jaml_classes: Optional[Dict] = None,
 ):
     """Method representing the :class:`BaseRuntime` activity.
 
@@ -41,6 +43,11 @@ def run(
     .. warning::
         If you are using ``thread`` as backend, envs setting will likely be overidden by others
 
+    .. note::
+        `jaml_classes` contains all the :class:`JAMLCompatible` classes registered in the main process.
+        When using `spawn` as the multiprocessing start method, passing this argument to `run` method re-imports
+        & re-registers all `JAMLCompatible` classes.
+
     :param args: namespace args from the Pea
     :param name: name of the Pea to have proper logging
     :param runtime_cls: the runtime class to instantiate
@@ -49,12 +56,9 @@ def run(
     :param is_shutdown: concurrency event to communicate runtime is terminated
     :param is_ready: concurrency event to communicate runtime is ready to receive messages
     :param cancel_event: concurrency event to receive cancelling signal from the Pea. Needed by some runtimes
+    :param jaml_classes: all the `JAMLCompatible` classes imported in main process
     """
     logger = JinaLogger(name, **vars(args))
-
-    # Remove workaround used to re-import executor in spawn
-    if hasattr(args, '_exec_cls'):
-        del args._exec_cls
 
     def _unset_envs():
         if envs and args.runtime_backend != RuntimeBackendType.THREAD:
@@ -154,6 +158,7 @@ class BasePea:
                 'is_ready': self.is_ready,
                 'cancel_event': self.cancel_event,
                 'runtime_cls': self.runtime_cls,
+                'jaml_classes': JAML.registered_classes(),
             },
         )
         self.daemon = self.args.daemon  #: required here to set process/thread daemon

@@ -1,4 +1,4 @@
-from typing import Optional, Union, Callable, Tuple
+from typing import Optional, Union, Callable, Tuple, List
 
 import numpy as np
 
@@ -26,15 +26,17 @@ class DocumentArrayNeuralOpsMixin:
         metric_name: Optional[str] = None,
         batch_size: Optional[int] = None,
         exclude_self: bool = False,
+        traversal_ldarray: List[str] = None,
+        traversal_rdarray: List[str] = None,
     ) -> None:
         """Compute embedding based nearest neighbour in `another` for each Document in `self`,
         and store results in `matches`.
         .. note::
             'cosine', 'euclidean', 'sqeuclidean' are supported natively without extra dependency.
-            You can use other distance metric provided by ``scipy``, such as ‘braycurtis’, ‘canberra’, ‘chebyshev’,
-            ‘cityblock’, ‘correlation’, ‘cosine’, ‘dice’, ‘euclidean’, ‘hamming’, ‘jaccard’, ‘jensenshannon’,
-            ‘kulsinski’, ‘mahalanobis’, ‘matching’, ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
-            ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘wminkowski’, ‘yule’.
+            You can use other distance metric provided by ``scipy``, such as `braycurtis`, `canberra`, `chebyshev`,
+            `cityblock`, `correlation`, `cosine`, `dice`, `euclidean`, `hamming`, `jaccard`, `jensenshannon`,
+            `kulsinski`, `mahalanobis`, `matching`, `minkowski`, `rogerstanimoto`, `russellrao`, `seuclidean`,
+            `sokalmichener`, `sokalsneath`, `sqeuclidean`, `wminkowski`, `yule`.
             To use scipy metric, please set ``use_scipy=True``.
         - To make all matches values in [0, 1], use ``dA.match(dB, normalization=(0, 1))``
         - To invert the distance as score and make all values in range [0, 1],
@@ -50,10 +52,23 @@ class DocumentArrayNeuralOpsMixin:
         :param batch_size: if provided, then `darray` is loaded in chunks of, at most, batch_size elements. This option
                            will be slower but more memory efficient. Specialy indicated if `darray` is a big
                            DocumentArrayMemmap.
-        :param exclude_self: if provided, Documents in ``darray`` with same ``id`` as the left-hand values will not be considered as matches.
+        :param exclude_self: if provided, Documents in ``darray`` with same ``id`` as the left-hand values will not be
+                        considered as matches.
+        :param traversal_ldarray: if set, then matching is applied along the `traversal_path` of the
+                left-hand ``DocumentArray``.
+        :param traversal_rdarray: if set, then matching is applied along the `traversal_path` of the
+                right-hand ``DocumentArray``.
         """
 
-        if not (self and darray):
+        lhv = self
+        if traversal_ldarray:
+            lhv = self.traverse_flat(traversal_ldarray)
+
+        rhv = darray
+        if traversal_rdarray:
+            rhv = darray.traverse_flat(traversal_rdarray)
+
+        if not (lhv and rhv):
             return
 
         if callable(metric):
@@ -69,27 +84,31 @@ class DocumentArrayNeuralOpsMixin:
             )
 
         metric_name = metric_name or (metric.__name__ if callable(metric) else metric)
-        limit = len(darray) if limit is None else limit
+        limit = len(rhv) if limit is None else (limit + (1 if exclude_self else 0))
 
         if batch_size:
-            dist, idx = self._match_online(
-                darray, cdist, limit, normalization, metric_name, batch_size
+            dist, idx = lhv._match_online(
+                rhv, cdist, limit, normalization, metric_name, batch_size
             )
         else:
-            dist, idx = self._match(darray, cdist, limit, normalization, metric_name)
+            dist, idx = lhv._match(rhv, cdist, limit, normalization, metric_name)
 
-        for _q, _ids, _dists in zip(self, idx, dist):
+        for _q, _ids, _dists in zip(lhv, idx, dist):
             _q.matches.clear()
+            num_matches = 0
             for _id, _dist in zip(_ids, _dists):
                 # Note, when match self with other, or both of them share the same Document
                 # we might have recursive matches .
                 # checkout https://github.com/jina-ai/jina/issues/3034
-                d = darray[int(_id)]
-                if d.id in self:
+                d = rhv[int(_id)]  # type: Document
+                if d.id in lhv:
                     d = Document(d, copy=True)
                     d.pop('matches')
                 if not (d.id == _q.id and exclude_self):
                     _q.matches.append(d, scores={metric_name: _dist})
+                    num_matches += 1
+                    if num_matches >= limit:
+                        break
 
     def _match(self, darray, cdist, limit, normalization, metric_name):
         """

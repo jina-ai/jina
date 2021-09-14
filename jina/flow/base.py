@@ -4,7 +4,6 @@ import copy
 import json
 import os
 import re
-import socket
 import threading
 import uuid
 import warnings
@@ -715,18 +714,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         args = ArgNamespace.kwargs2namespace(
             kwargs, parser, True, fallback_parsers=FALLBACK_PARSERS
         )
-
-        # Temporary workaround to re-import executor module when using mp spawn start
-        # method, so that the executor is re-registered with pyyaml. The re-import
-        # occurs because the class will be in the arguments passed to mp.Process.start
-        # method. A better solution probably involves deeper refactoring
-        if isinstance(kwargs.get('uses'), type(JAMLCompatible)):
-            args._exec_cls = kwargs['uses']
-
-        if isinstance(kwargs.get('uses'), str):
-            cls = JAML.cls_from_tag(kwargs['uses'])
-            if cls:
-                args._exec_cls = cls
 
         if args.grpc_data_requests and args.runtime_cls == 'ZEDRuntime':
             args.runtime_cls = 'GRPCDataRuntime'

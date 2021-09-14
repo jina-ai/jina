@@ -146,6 +146,19 @@ class JAML:
         )
 
     @staticmethod
+    def registered_classes() -> Dict:
+        """
+        Return a dict of tags and :class:`JAMLCompatible` classes that have been registered.
+
+        :return: tags and classes
+        """
+        return {
+            k[1:]: v
+            for k, v in JinaLoader.yaml_constructors.items()
+            if k and k.startswith('!')
+        }
+
+    @staticmethod
     def cls_from_tag(tag: str) -> Optional['JAMLCompatible']:
         """Fetch class from yaml tag
 
