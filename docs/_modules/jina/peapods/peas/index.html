@@ -822,7 +822,13 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">RuntimeRunForeverEarlyError</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">__ready_msg__</span><span class="p">)</span>
+                <span class="c1"># han: I intentionally change it to debug as the Flow is now polling</span>
+                <span class="c1"># the ready status actively. Hence active print ready status is unnecessary.</span>
+                <span class="c1">#  Notice that, relying on Pod console print for readiness in general makes</span>
+                <span class="c1"># no sense as the Pod can live remote/container whose log can not be observed at all.</span>
+                <span class="c1">#</span>
+                <span class="c1"># in short, do not change it back to info, you don't need it.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">__ready_msg__</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">_timeout</span> <span class="o">=</span> <span class="n">_timeout</span> <span class="ow">or</span> <span class="o">-</span><span class="mi">1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>

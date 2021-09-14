@@ -547,10 +547,13 @@
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">base64</span>
 <span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
@@ -568,7 +571,12 @@
     <span class="n">GatewayProtocolType</span><span class="p">,</span>
     <span class="n">InfrastructureType</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">FlowTopologyError</span><span class="p">,</span> <span class="n">FlowMissingPodError</span><span class="p">,</span> <span class="n">RoutingTableCyclicError</span>
+<span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">FlowTopologyError</span><span class="p">,</span>
+    <span class="n">FlowMissingPodError</span><span class="p">,</span>
+    <span class="n">RoutingTableCyclicError</span><span class="p">,</span>
+    <span class="n">RuntimeFailToStart</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">colored</span><span class="p">,</span>
     <span class="n">get_public_ip</span><span class="p">,</span>
@@ -1591,25 +1599,96 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'external'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'external'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-                    <span class="n">v</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">v</span><span class="si">!r}</span><span class="s1"> can not be started due to </span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">, Flow is aborted'</span>
-                <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-                <span class="k">raise</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_pods</span><span class="si">}</span><span class="s1"> Pods (i.e. </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_peas</span><span class="si">}</span><span class="s1"> Peas) are running in this Flow'</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wait_until_all_ready</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">RUNNING</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_show_success_message</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="bp">self</span></div>
+
+    <span class="k">def</span> <span class="nf">_wait_until_all_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">threads</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">def</span> <span class="nf">_wait_ready</span><span class="p">(</span><span class="n">_pod_name</span><span class="p">,</span> <span class="n">_pod</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">_pod</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'external'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">_pod_name</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'pending'</span>
+                    <span class="n">_pod</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">_pod_name</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'done'</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">_pod_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">_polling_status</span><span class="p">():</span>
+            <span class="n">spinner</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">cycle</span><span class="p">(</span>
+                <span class="p">[</span><span class="s1">'⠋'</span><span class="p">,</span> <span class="s1">'⠙'</span><span class="p">,</span> <span class="s1">'⠹'</span><span class="p">,</span> <span class="s1">'⠸'</span><span class="p">,</span> <span class="s1">'⠼'</span><span class="p">,</span> <span class="s1">'⠴'</span><span class="p">,</span> <span class="s1">'⠦'</span><span class="p">,</span> <span class="s1">'⠧'</span><span class="p">,</span> <span class="s1">'⠇'</span><span class="p">,</span> <span class="s1">'⠏'</span><span class="p">]</span>
+            <span class="p">)</span>
+
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">num_all</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+                <span class="n">num_done</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">pendings</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">_k</span><span class="p">,</span> <span class="n">_v</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">_v</span> <span class="o">==</span> <span class="s1">'pending'</span><span class="p">:</span>
+                        <span class="n">pendings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_k</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">num_done</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'</span><span class="se">\r</span><span class="si">{}</span><span class="se">\r</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">' '</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
+                <span class="n">pending_str</span> <span class="o">=</span> <span class="n">colored</span><span class="p">(</span><span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pendings</span><span class="p">)[:</span><span class="mi">50</span><span class="p">],</span> <span class="s1">'yellow'</span><span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">spinner</span><span class="p">),</span> <span class="s2">"green"</span><span class="p">)</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">num_done</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">num_all</span><span class="si">}</span><span class="s1"> waiting </span><span class="si">{</span><span class="n">pending_str</span><span class="si">}</span><span class="s1"> to be ready...'</span>
+                <span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">pendings</span><span class="p">:</span>
+                    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'</span><span class="se">\r</span><span class="si">{}</span><span class="se">\r</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">' '</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
+                    <span class="k">break</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+
+        <span class="c1"># kick off all pods wait-ready threads</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
+                <span class="n">target</span><span class="o">=</span><span class="n">_wait_ready</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">(</span>
+                    <span class="n">k</span><span class="p">,</span>
+                    <span class="n">v</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+            <span class="n">threads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="c1"># kick off spinner thread</span>
+        <span class="n">t_m</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">_polling_status</span><span class="p">)</span>
+        <span class="n">t_m</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="c1"># kick off ip getter thread</span>
+        <span class="n">addr_table</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">t_ip</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_address_table</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">addr_table</span><span class="p">,))</span>
+        <span class="n">t_ip</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">threads</span><span class="p">:</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+        <span class="n">t_ip</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+        <span class="n">t_m</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+        <span class="n">error_pods</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="o">!=</span> <span class="s1">'done'</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">error_pods</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'Flow is aborted due to </span><span class="si">{</span><span class="n">error_pods</span><span class="si">}</span><span class="s1"> can not be started.'</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">raise</span> <span class="n">RuntimeFailToStart</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">infrastructure</span> <span class="o">==</span> <span class="n">InfrastructureType</span><span class="o">.</span><span class="n">K8S</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'🎉 Kubernetes Flow is ready to use!'</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'🎉 Flow is ready to use!'</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">addr_table</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">addr_table</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_pods</span><span class="si">}</span><span class="s1"> Pods (i.e. </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_peas</span><span class="si">}</span><span class="s1"> Peas) are running in this Flow'</span>
+            <span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">num_pods</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -1933,12 +2012,9 @@
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_show_success_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">infrastructure</span> <span class="o">==</span> <span class="n">InfrastructureType</span><span class="o">.</span><span class="n">K8S</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'🎉 Kubernetes deployment done!'</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">address_table</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="k">def</span> <span class="nf">_get_address_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address_table</span><span class="p">):</span>
+        <span class="n">address_table</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="p">[</span>
                 <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🔗 Protocol: </span><span class="se">\t\t</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s2">"bold"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
                 <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🏠 Local access:</span><span class="se">\t</span><span class="s1">'</span>
                 <span class="o">+</span> <span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">),</span>
@@ -1949,34 +2025,34 @@
                     <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">,</span>
                 <span class="p">),</span>
             <span class="p">]</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="p">:</span>
-                <span class="n">address_table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🌐 Public address:</span><span class="se">\t</span><span class="s1">'</span>
-                    <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
-                        <span class="s1">'cyan'</span><span class="p">,</span>
-                        <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">,</span>
-                    <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="p">:</span>
+            <span class="n">address_table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🌐 Public address:</span><span class="se">\t</span><span class="s1">'</span>
+                <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                    <span class="s1">'cyan'</span><span class="p">,</span>
+                    <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">,</span>
                 <span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">==</span> <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">:</span>
-                <span class="n">address_table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">💬 Swagger UI:</span><span class="se">\t\t</span><span class="s1">'</span>
-                    <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">'http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">/docs'</span><span class="p">,</span>
-                        <span class="s1">'cyan'</span><span class="p">,</span>
-                        <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">,</span>
-                    <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">==</span> <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">:</span>
+            <span class="n">address_table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">💬 Swagger UI:</span><span class="se">\t\t</span><span class="s1">'</span>
+                <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">/docs'</span><span class="p">,</span>
+                    <span class="s1">'cyan'</span><span class="p">,</span>
+                    <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">,</span>
                 <span class="p">)</span>
-                <span class="n">address_table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">📚 Redoc:</span><span class="se">\t\t</span><span class="s1">'</span>
-                    <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">'http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">/redoc'</span><span class="p">,</span>
-                        <span class="s1">'cyan'</span><span class="p">,</span>
-                        <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">,</span>
-                    <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">address_table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">📚 Redoc:</span><span class="se">\t\t</span><span class="s1">'</span>
+                <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">/redoc'</span><span class="p">,</span>
+                    <span class="s1">'cyan'</span><span class="p">,</span>
+                    <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">,</span>
                 <span class="p">)</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'🎉 Flow is ready to use!</span><span class="se">\n</span><span class="s1">'</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">address_table</span><span class="p">))</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">address_table</span>
 
 <div class="viewcode-block" id="Flow.block"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.block">[docs]</a>    <span class="k">def</span> <span class="nf">block</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Block the process until user hits KeyboardInterrupt"""</span>
