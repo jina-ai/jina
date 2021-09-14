@@ -1184,10 +1184,11 @@
 
                 <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Fetching meta data of </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">...'</span><span class="p">)</span>
                 <span class="n">executor</span> <span class="o">=</span> <span class="n">HubIO</span><span class="o">.</span><span class="n">fetch_meta</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="n">secret</span><span class="p">)</span>
+                <span class="n">presented_id</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">executor</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">,</span> <span class="n">executor</span><span class="o">.</span><span class="n">uuid</span><span class="p">)</span>
                 <span class="n">usage</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">executor</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">presented_id</span><span class="si">}</span><span class="s1">'</span>
                     <span class="k">if</span> <span class="n">executor</span><span class="o">.</span><span class="n">visibility</span> <span class="o">==</span> <span class="s1">'public'</span>
-                    <span class="k">else</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">executor</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">secret</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="k">else</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">presented_id</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">secret</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s1">'jinahub+docker'</span><span class="p">:</span>
