@@ -32,3 +32,12 @@ def test_launch_spawn_name():
         env={'JINA_MP_START_METHOD': 'spawn', 'PATH': os.environ['PATH']},
         cwd=Path(__file__).parent / 'modules',
     )
+
+
+def test_launch_spawn_jaml():
+    subprocess.run(
+        [sys.executable, 'main_jaml.py'],
+        check=True,
+        env={'JINA_MP_START_METHOD': 'spawn', 'PATH': os.environ['PATH']},
+        cwd=Path(__file__).parent / 'modules',
+    )
