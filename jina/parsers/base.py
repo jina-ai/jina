@@ -15,6 +15,7 @@ def set_base_parser():
     # create the top-level parser
     urls = {
         'Code': ('💻', 'https://github.com/jina-ai/jina'),
+        'Docs': ('📖', 'https://docs.jina.ai'),
         'Help': ('💬', 'https://slack.jina.ai'),
         'Hiring!': ('🙌', 'https://career.jina.ai'),
     }
