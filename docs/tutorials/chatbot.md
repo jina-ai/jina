@@ -234,7 +234,7 @@ Now we have our Flow ready, we can start to index. But we can't just pass the da
 ```
 
 
-### Create documents from a csv file
+### Create Documents from a csv file
 
 To create a Document in Jina, we do it like this:
 
@@ -270,7 +270,7 @@ Feel free to check it to find more generators.
 
 ````{admonition} Important
 :class: important
-`flow.index` will send the data to the `/index` endpoint. However, both of the added executors do not have an `/index` 
+`flow.index` will send the data to the `/index` endpoint. However, both of the added Executors do not have an `/index` 
 endpoint. In fact, `MyTransformer` and `MyIndexer` only expose endpoints `/foo` and `/bar` respectively:
 ```{code-block} python
 ---
@@ -286,11 +286,11 @@ class MyIndexer(Executor):
     def bar(self, **kwargs):
         print(f'bar is doing cool stuff: {kwargs}')
 ```
-This simply means that no endpoint will be triggered by `flow.index`. Besides, our executors are dummy and still do not 
-have logic to index data. Later, we will modify executors so that calling `flow.index` does indeed store the dataset.
+This simply means that no endpoint will be triggered by `flow.index`. Besides, our Executors are dummy and still do not 
+have logic to index data. Later, we will modify Executors so that calling `flow.index` does indeed store the dataset.
 ````
 
-Let's put the executors and the flow together and re-organize our code a little bit. First, we should import everything 
+Let's put the Executors and the Flow together and re-organize our code a little bit. First, we should import everything 
 we need:
 
 ``` python
@@ -303,8 +303,8 @@ from jina.types.document.generators import from_csv
 ```
 
 Then we should have our `main` and a `tutorial` function that contains all the code that we've done so far.
-`tutorial` accepts 1 parameters that we'll need later: 
-`port_expose` (the port used to expose our flow)
+`tutorial` accepts one parameter that we'll need later: 
+`port_expose` (the port used to expose our Flow)
 
 ``` python
 def tutorial(port_expose):
@@ -335,9 +335,9 @@ If you run this, it should finish without errors. You won't see much yet because
 index.
 
 To actually see something we need to specify how we will display it. For our tutorial we will do so in our browser.
-After indexing, we will open a web browser to serve the static html files. We also need to configure and serve our flow 
-on a specific port with the HTTP protocol so that the web browser can make requests to the flow. So, we'll use the 
-parameter `port_expose` to configure the flow and set the protocol to HTTP.
+After indexing, we will open a web browser to serve the static html files. We also need to configure and serve our Flow 
+on a specific port with the HTTP protocol so that the web browser can make requests to the Flow. So, we'll use the 
+parameter `port_expose` to configure the Flow and set the protocol to HTTP.
 Modify the function `tutorial` like so:
 
 ```{code-block} python
@@ -385,7 +385,7 @@ def tutorial(port_expose):
 
 ```{admonition} See Also
 :class: seealso
-For more information on what the Flow is doing, and how to serve the flow with `f.block()` and configure the protocol, 
+For more information on what the Flow is doing, and how to serve the Flow with `f.block()` and configure the protocol, 
 check {ref}`the Flow fundamentals section <flow-cookbook>`.
 ```
 
@@ -441,8 +441,8 @@ class MyTransformer(Executor):
                 doc.embedding = embedding
 ```
 
-`MyTransformer` exposes only one endpoint: `encode`. This will be called whenever we make a request to the flow, either 
-on query or index. The endpoint will create embeddings for the indexed or query documents so that they can be used 
+`MyTransformer` exposes only one endpoint: `encode`. This will be called whenever we make a request to the Flow, either 
+on query or index. The endpoint will create embeddings for the indexed or query Documents so that they can be used 
 to get the closed matches.
 ```{admonition} Note
 :class: note
@@ -450,7 +450,7 @@ Encoding is a fundamental concept in neural search. It means representing the da
 ```
 
 Encoding is performed through a sentence-transformers model (`paraphrase-mpnet-base-v2` by default). We get the text 
-attributes of docs in batch and then compute embeddings. Later, we set the embedding attribute of each document.
+attributes of docs in batch and then compute embeddings. Later, we set the embedding attribute of each Document.
 
 Now, let's implement our indexer (`MyIndexer`):
 ```python
@@ -477,13 +477,13 @@ class MyIndexer(Executor):
 
 `MyIndexer` exposes 2 endpoints: `index` and `search`. To perform indexing, we use 
 [DocumentArrayMemmap](https://docs.jina.ai/api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap)` 
-which is a Jina data type. Indexing is a simple as adding the documents to the `DocumentArrayMemmap`.
+which is a Jina data type. Indexing is a simple as adding the Documents to the `DocumentArrayMemmap`.
 
 ```{admonition} See Also
 :class: seealso
 Learn more about {ref}`DocumentArrayMemmap<documentarraymemmap-api>`.
 ```
-To perform the search operation, we use the method `match` which will return the top match for the query documents 
+To perform the search operation, we use the method `match` which will return the top match for the query Documents 
 using the cosine similarity.
 
 ```{admonition} See Also
@@ -491,13 +491,13 @@ using the cosine similarity.
 `.match` is a method of both `DocumentArray` and `DocumentArrayMemmap`. Learn more about it {ref}`in this section<match-documentarray>`.
 ```
 
-To import the executors, just add this to the imports:
+To import the Executors, just add this to the imports:
 
 ``` python
 from my_executors import MyTransformer, MyIndexer
 ```
 
-And remove the dummy executors we made. Your `app.py` should now look like this:
+And remove the dummy Executors we made. Your `app.py` should now look like this:
 
 ``` python
 import os

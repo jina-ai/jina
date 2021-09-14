@@ -116,10 +116,10 @@ advanced/experimental/index
 :caption: Tutorials
 :hidden:
 
-tutorials/new_executor
-tutorials/practice-your-learning
 tutorials/chatbot
+tutorials/new_executor
 tutorials/gpu_executor
+tutorials/practice-your-learning
 ```
 
 ```{toctree}
