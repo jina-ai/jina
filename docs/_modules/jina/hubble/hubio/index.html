@@ -1005,7 +1005,10 @@
             <span class="s1">':point_up:️ [bold red]Please keep this token in a safe place!'</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">':eyes: Visibility'</span><span class="p">,</span> <span class="n">visibility</span><span class="p">)</span>
-        <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">':whale: DockerHub'</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'https://hub.docker.com/r/jinahub/</span><span class="si">{</span><span class="n">uuid8</span><span class="si">}</span><span class="s1">/'</span><span class="p">)</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+            <span class="s1">':link: JinaHub'</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">'[link=https://hub.jina.ai/executor/</span><span class="si">{</span><span class="n">uuid8</span><span class="si">}</span><span class="s1">/]https://hub.jina.ai/executor/</span><span class="si">{</span><span class="n">uuid8</span><span class="si">}</span><span class="s1">/[/link]'</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
 
         <span class="n">presented_id</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="n">uuid8</span><span class="p">)</span>
