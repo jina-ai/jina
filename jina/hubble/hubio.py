@@ -638,10 +638,11 @@ with f:
 
                 st.update(f'Fetching meta data of {name}...')
                 executor = HubIO.fetch_meta(name, tag=tag, secret=secret)
+                presented_id = getattr(executor, 'name', executor.uuid)
                 usage = (
-                    f'{executor.uuid}'
+                    f'{presented_id}'
                     if executor.visibility == 'public'
-                    else f'{executor.uuid}:{secret}'
+                    else f'{presented_id}:{secret}'
                 )
 
             if scheme == 'jinahub+docker':
