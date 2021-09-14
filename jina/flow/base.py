@@ -1081,13 +1081,17 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                         pendings.append(_k)
                     else:
                         num_done += 1
+                sys.stdout.write('\r{}\r'.format(' ' * 100))
+                pending_str = colored(' '.join(pendings)[:50], 'yellow')
+                sys.stdout.write(
+                    f'{colored(next(spinner), "green")} {num_done}/{num_all} waiting {pending_str} to be ready...'
+                )
+                sys.stdout.flush()
+
                 if not pendings:
-                    sys.stdout.write('\r{}\r'.format(' ' * 80))
+                    sys.stdout.write('\r{}\r'.format(' ' * 100))
                     break
                 time.sleep(0.1)
-                sys.stdout.write(
-                    f'\r{next(spinner)} {num_done}/{num_all} waiting {pendings} to be ready...'
-                )
 
         # kick off all pods wait-ready threads
         for k, v in self:
@@ -1117,7 +1121,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         error_pods = [k for k, v in results.items() if v != 'done']
         if error_pods:
-            self.logger.error(f'Flow is aborted due to: {error_pods}')
+            self.logger.error(
+                f'Flow is aborted due to {error_pods} can not be started.'
+            )
             self.close()
             return False
         else:
