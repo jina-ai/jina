@@ -556,7 +556,6 @@
 <span class="kn">import</span> <span class="nn">tarfile</span>
 <span class="kn">import</span> <span class="nn">urllib</span>
 <span class="kn">import</span> <span class="nn">zipfile</span>
-<span class="kn">import</span> <span class="nn">pkg_resources</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span><span class="p">,</span> <span class="n">wraps</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
@@ -841,13 +840,14 @@
 
 
 <div class="viewcode-block" id="install_requirements"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.install_requirements">[docs]</a><span class="k">def</span> <span class="nf">install_requirements</span><span class="p">(</span>
-    <span class="n">requirements_file</span><span class="p">:</span> <span class="s1">'Path'</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">excludes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'jina'</span><span class="p">]</span>
+    <span class="n">requirements_file</span><span class="p">:</span> <span class="s1">'Path'</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">excludes</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'jina'</span><span class="p">,)</span>
 <span class="p">):</span>
     <span class="sd">"""Install modules included in requirments file</span>
 <span class="sd">    :param requirements_file: the requirements.txt file</span>
 <span class="sd">    :param timeout: the socket timeout (default = 1000s)</span>
 <span class="sd">    :param excludes: the excluded module dependencies</span>
 <span class="sd">    """</span>
+    <span class="kn">import</span> <span class="nn">pkg_resources</span>
 
     <span class="k">with</span> <span class="n">requirements_file</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">requirements</span><span class="p">:</span>
         <span class="n">install_reqs</span> <span class="o">=</span> <span class="p">[</span>
