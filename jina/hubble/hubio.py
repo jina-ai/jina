@@ -465,7 +465,10 @@ metas:
             ':point_up:️ [bold red]Please keep this token in a safe place!',
         )
         table.add_row(':eyes: Visibility', visibility)
-        table.add_row(':whale: DockerHub', f'https://hub.docker.com/r/jinahub/{uuid8}/')
+        table.add_row(
+            ':link: JinaHub',
+            f'[link=https://hub.jina.ai/executor/{uuid8}/]https://hub.jina.ai/executor/{uuid8}/[/link]',
+        )
         console.print(table)
 
         presented_id = image.get('name', uuid8)
@@ -644,10 +647,11 @@ with f:
 
                 st.update(f'Fetching meta data of {name}...')
                 executor = HubIO.fetch_meta(name, tag=tag, secret=secret)
+                presented_id = getattr(executor, 'name', executor.uuid)
                 usage = (
-                    f'{executor.uuid}'
+                    f'{presented_id}'
                     if executor.visibility == 'public'
-                    else f'{executor.uuid}:{secret}'
+                    else f'{presented_id}:{secret}'
                 )
 
             if scheme == 'jinahub+docker':

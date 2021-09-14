@@ -146,6 +146,18 @@ class JAML:
         )
 
     @staticmethod
+    def cls_from_tag(tag: str) -> Optional['JAMLCompatible']:
+        """Fetch class from yaml tag
+
+        :param tag: yaml tag
+        :return: class object from tag
+        """
+        if not tag.startswith('!'):
+            tag = '!' + tag
+        bound = JinaLoader.yaml_constructors.get(tag, None)
+        return bound.__self__ if bound else None
+
+    @staticmethod
     def load_no_tags(stream, **kwargs):
         """
         Load yaml object but ignore all customized tags, e.g. !Executor, !Driver, !Flow.

@@ -1,3 +1,4 @@
+(documentarraymemmap-api)=
 # DocumentArrayMemmap
 
 When your `DocumentArray` object contains a large number of `Document`, holding it in memory can be very demanding. You

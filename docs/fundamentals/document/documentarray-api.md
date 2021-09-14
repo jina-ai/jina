@@ -496,6 +496,7 @@ da.visualize()
 ```
 
 
+(match-documentarray)=
 ## Matching DocumentArray to another
 
 `DocumentArray` provides a`.match` function that finds the closest documents between two `DocumentArray` objects. This
