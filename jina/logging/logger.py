@@ -160,9 +160,11 @@ class JinaLogger:
                     handler = None
                     pass
             elif h == 'FileHandler':
-                handler = logging.FileHandler(
-                    cfg['output'].format_map(kwargs), delay=True
-                )
+                filename = cfg['output'].format_map(kwargs)
+                if __windows__:
+                    # colons are not allowed in filenames
+                    filename = filename.replace(':', '.')
+                handler = logging.FileHandler(filename, delay=True)
                 handler.setFormatter(fmt(cfg['format'].format_map(kwargs)))
             elif h == 'FluentHandler':
                 from ..importer import ImportExtensions
