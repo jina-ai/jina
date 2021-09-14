@@ -99,7 +99,6 @@ fundamentals/concepts
 fundamentals/document/index
 fundamentals/executor/index
 fundamentals/flow/index
-fundamentals/practice-your-learning
 fundamentals/clean-code
 ```
 
@@ -117,8 +116,10 @@ advanced/experimental/index
 :caption: Tutorials
 :hidden:
 
+tutorials/chatbot
 tutorials/new_executor
 tutorials/gpu_executor
+tutorials/practice-your-learning
 ```
 
 ```{toctree}

@@ -1,3 +1,4 @@
+(chatbot-helloworld)=
 # Covid-19 chatbot
 
 ````{important}

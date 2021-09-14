@@ -226,7 +226,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../flow/remarks/">Remarks</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../practice-your-learning/">Put into Practice</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../clean-code/">Clean &amp; Efficient Code</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Advanced</span></p>
@@ -258,8 +257,10 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/chatbot/">Covid-19 Chatbot Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../tutorials/new_executor/">Executor: From Zero To Hub</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../tutorials/gpu_executor/">Executor on GPU</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/practice-your-learning/">Putting It All Together</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul>
@@ -995,7 +996,7 @@ to project in 2D space: <code class="docutils literal notranslate"><span class="
 </div>
 </div>
 <div class="section" id="matching-documentarray-to-another">
-<h2>Matching DocumentArray to another<a class="headerlink" href="#matching-documentarray-to-another" title="Permalink to this headline">¶</a></h2>
+<span id="match-documentarray"></span><h2>Matching DocumentArray to another<a class="headerlink" href="#matching-documentarray-to-another" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> provides a<code class="docutils literal notranslate"><span class="pre">.match</span></code> function that finds the closest documents between two <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> objects. This
 function requires all documents to be compared have an <code class="docutils literal notranslate"><span class="pre">embedding</span></code> and all embeddings to have the same length.</p>
 <p>The following image shows how <code class="docutils literal notranslate"><span class="pre">DocumentArrayA</span></code> finds <code class="docutils literal notranslate"><span class="pre">limit=5</span></code> matches from the documents in <code class="docutils literal notranslate"><span class="pre">DocumentArrayB</span></code>. By
@@ -1107,7 +1108,7 @@ match emb = [[1.  0.1 0.  0.  0. ]] score = 1.6763054132461548
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Sep 13, 2021.
+            Last updated on Sep 14, 2021.
         </div>
         
       </footer>
