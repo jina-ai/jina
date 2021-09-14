@@ -60,7 +60,7 @@ We will display our results in our browser, so download the static folder from
 folder. This is only the CSS and HTML files to render our results. We will use a dataset in a `.csv` format. 
 We'll use the [COVID](https://www.kaggle.com/xhlulu/covidqa) dataset from Kaggle. 
 
-Download it under your project directory:
+Download it under your `tutorial` directory:
 ```shell
 wget https://static.jina.ai/chatbot/dataset.csv
 ```
@@ -427,8 +427,7 @@ class MyTransformer(Executor):
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
-        self.pretrained_model_name_or_path = pretrained_model_name_or_path
-        self.model = SentenceTransformer(self.pretrained_model_name_or_path, device=device)
+        self.model = SentenceTransformer(pretrained_model_name_or_path, device=device)
         self.model.to(device)
 
     @requests
@@ -544,7 +543,7 @@ if __name__ == '__main__':
 And your directory should be:
 
     .
-    └── project                    
+    └── tutorial                    
         ├── app.py          
         ├── my_executors.py         
         ├── static/         
