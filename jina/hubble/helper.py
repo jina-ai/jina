@@ -10,7 +10,6 @@ import sys
 import tarfile
 import urllib
 import zipfile
-import pkg_resources
 from functools import lru_cache, wraps
 from pathlib import Path
 from typing import Tuple, Optional, Dict, List
@@ -295,13 +294,14 @@ def disk_cache_offline(
 
 
 def install_requirements(
-    requirements_file: 'Path', timeout: int = 1000, excludes: List[str] = ['jina']
+    requirements_file: 'Path', timeout: int = 1000, excludes: Tuple[str] = ('jina',)
 ):
     """Install modules included in requirments file
     :param requirements_file: the requirements.txt file
     :param timeout: the socket timeout (default = 1000s)
     :param excludes: the excluded module dependencies
     """
+    import pkg_resources
 
     with requirements_file.open() as requirements:
         install_reqs = [
