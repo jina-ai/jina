@@ -1,8 +1,8 @@
-# Put into Practice
+# Putting It All Together
 
 Now that you understand all fundamental concepts, let's practice the learnings and build a simple end-to-end demo.
 
-We will build a fuzzy search demo on the source code: given a snippet source code and a query, find all lines that are
+We will build a fuzzy search demo for source code: given a snippet source code and a query, find all lines that are
 similar to the query.
 
 ````{admonition} Preliminaries
