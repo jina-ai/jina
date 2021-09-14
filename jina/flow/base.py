@@ -33,7 +33,7 @@ from ..helper import (
     download_mermaid_url,
     CatchAllCleanupContextManager,
 )
-from ..jaml import JAMLCompatible
+from ..jaml import JAMLCompatible, JAML
 
 from ..logging.logger import JinaLogger
 from ..parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
@@ -722,6 +722,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         # method. A better solution probably involves deeper refactoring
         if isinstance(kwargs.get('uses'), type(JAMLCompatible)):
             args._exec_cls = kwargs['uses']
+
+        if isinstance(kwargs.get('uses'), str):
+            cls = JAML.cls_from_tag(kwargs['uses'])
+            if cls:
+                args._exec_cls = cls
 
         if args.grpc_data_requests and args.runtime_cls == 'ZEDRuntime':
             args.runtime_cls = 'GRPCDataRuntime'
