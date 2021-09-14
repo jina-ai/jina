@@ -84,7 +84,7 @@ class DocumentArrayNeuralOpsMixin:
             )
 
         metric_name = metric_name or (metric.__name__ if callable(metric) else metric)
-        limit = len(rhv) if limit is None else limit
+        limit = len(rhv) if limit is None else (limit + (1 if exclude_self else 0))
 
         if batch_size:
             dist, idx = lhv._match_online(
@@ -95,6 +95,7 @@ class DocumentArrayNeuralOpsMixin:
 
         for _q, _ids, _dists in zip(lhv, idx, dist):
             _q.matches.clear()
+            num_matches = 0
             for _id, _dist in zip(_ids, _dists):
                 # Note, when match self with other, or both of them share the same Document
                 # we might have recursive matches .
@@ -105,6 +106,9 @@ class DocumentArrayNeuralOpsMixin:
                     d.pop('matches')
                 if not (d.id == _q.id and exclude_self):
                     _q.matches.append(d, scores={metric_name: _dist})
+                    num_matches += 1
+                    if num_matches >= limit:
+                        break
 
     def _match(self, darray, cdist, limit, normalization, metric_name):
         """

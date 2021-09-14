@@ -417,6 +417,44 @@ def test_match_exclude_self(exclude_self, num_matches):
         assert len(d.matches) == num_matches
 
 
+@pytest.fixture()
+def get_pair_document_array():
+    da1 = DocumentArray(
+        [
+            Document(id='1', embedding=np.array([1, 2])),
+            Document(id='2', embedding=np.array([3, 4])),
+        ]
+    )
+    da2 = DocumentArray(
+        [
+            Document(id='1', embedding=np.array([1, 2])),
+            Document(id='2', embedding=np.array([3, 4])),
+            Document(id='3', embedding=np.array([4, 5])),
+        ]
+    )
+    yield da1, da2
+
+
+@pytest.mark.parametrize(
+    'limit, expect_len, exclude_self',
+    [
+        (2, 2, True),
+        (1, 1, True),
+        (3, 2, True),
+        (2, 2, False),
+        (1, 1, False),
+        (3, 3, False),
+    ],
+)
+def test_match_exclude_self_limit_2(
+    get_pair_document_array, exclude_self, limit, expect_len
+):
+    da1, da2 = get_pair_document_array
+    da1.match(da2, exclude_self=exclude_self, limit=limit)
+    for d in da1:
+        assert len(d.matches) == expect_len
+
+
 @pytest.mark.parametrize(
     'lhs, rhs',
     [
