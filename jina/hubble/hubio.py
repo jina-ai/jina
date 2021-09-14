@@ -459,7 +459,10 @@ metas:
             ':point_up:️ [bold red]Please keep this token in a safe place!',
         )
         table.add_row(':eyes: Visibility', visibility)
-        table.add_row(':whale: DockerHub', f'https://hub.docker.com/r/jinahub/{uuid8}/')
+        table.add_row(
+            ':link: JinaHub',
+            f'[link=https://hub.jina.ai/executor/{uuid8}/]https://hub.jina.ai/executor/{uuid8}/[/link]',
+        )
         console.print(table)
 
         presented_id = image.get('name', uuid8)
