@@ -25,7 +25,12 @@ from ..enums import (
     GatewayProtocolType,
     InfrastructureType,
 )
-from ..excepts import FlowTopologyError, FlowMissingPodError, RoutingTableCyclicError
+from ..excepts import (
+    FlowTopologyError,
+    FlowMissingPodError,
+    RoutingTableCyclicError,
+    RuntimeFailToStart,
+)
 from ..helper import (
     colored,
     get_public_ip,
@@ -1048,8 +1053,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             if not getattr(v.args, 'external', False):
                 self.enter_context(v)
 
-        if self._wait_until_all_ready():
-            self._build_level = FlowBuildLevel.RUNNING
+        self._wait_until_all_ready()
+
+        self._build_level = FlowBuildLevel.RUNNING
 
         return self
 
@@ -1125,7 +1131,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 f'Flow is aborted due to {error_pods} can not be started.'
             )
             self.close()
-            return False
+            raise RuntimeFailToStart
         else:
             if self.args.infrastructure == InfrastructureType.K8S:
                 self.logger.info('🎉 Kubernetes Flow is ready to use!')
@@ -1137,7 +1143,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             self.logger.debug(
                 f'{self.num_pods} Pods (i.e. {self.num_peas} Peas) are running in this Flow'
             )
-            return True
 
     @property
     def num_pods(self) -> int:
