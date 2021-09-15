@@ -582,26 +582,9 @@ class DocumentArrayMemmap(
 
         :return: blobs stacked per row as `np.ndarray`.
         """
-        
+
         blobs = np.stack(self.get_attributes('blob'))
         return blobs
-
-    @blobs.setter
-    def blobs(self, blobs: np.ndarray):
-        """Set the blobs of the Documents
-
-        :param emb: The blob array to set. The first axis is the "row" axis.
-        """
-
-        if len(blobs) != len(self):
-            raise ValueError(
-                f'the number of rows in the input ({len(blobs)}), should match the'
-                f'number of Documents ({len(self)})'
-            )
-
-        for d, x in zip(self, blobs):
-            d.blob = x
-
 
     def _invalidate_embeddings_memmap(self):
         self._embeddings_memmap = None

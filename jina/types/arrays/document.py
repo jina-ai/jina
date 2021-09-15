@@ -142,9 +142,17 @@ class DocumentArrayGetAttrMixin:
     def blobs(self, blobs: np.ndarray):
         """Set the blobs of the Documents
 
-        :param blobs: The blob array to set. The first axis is the "row" axis.
+        :param emb: The blob array to set. The first axis is the "row" axis.
         """
-        ...
+
+        if len(blobs) != len(self):
+            raise ValueError(
+                f'the number of rows in the input ({len(blobs)}), should match the'
+                f'number of Documents ({len(self)})'
+            )
+
+        for d, x in zip(self, blobs):
+            d.blob = x
 
 
 class DocumentArray(
@@ -557,19 +565,3 @@ class DocumentArray(
         return np.frombuffer(x_mat, dtype=proto.dtype).reshape(
             (len(self), *proto.shape)
         )
-
-    @blobs.setter
-    def blobs(self, blobs: np.ndarray):
-        """Set the blobs of the Documents
-
-        :param emb: The blob array to set. The first axis is the "row" axis.
-        """
-
-        if len(blobs) != len(self):
-            raise ValueError(
-                f'the number of rows in the input ({len(blobs)}), should match the'
-                f'number of Documents ({len(self)})'
-            )
-
-        for d, x in zip(self, blobs):
-            d.blob = x
