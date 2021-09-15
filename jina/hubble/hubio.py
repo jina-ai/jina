@@ -355,7 +355,7 @@ metas:
         with console.status(f'Pushing `{self.args.path}` ...') as st:
             req_header = self._get_request_header()
             try:
-                st.update(f'Packaging {self.args.path} ...')
+                st.update(f'Packaging {self.args.path}...')
                 md5_hash = hashlib.md5()
                 bytesio = archive_package(work_path)
                 content = bytesio.getvalue()
@@ -385,11 +385,11 @@ metas:
 
                 method = 'put' if ('force' in form_data) else 'post'
 
-                st.update(f'Connecting Hubble ...')
+                st.update(f'Connecting to Jina Hub...')
                 hubble_url = get_hubble_url()
 
                 # upload the archived executor to Jina Hub
-                st.update(f'Uploading ...')
+                st.update(f'Uploading...')
                 resp = upload_file(
                     hubble_url,
                     'filename',
@@ -405,9 +405,9 @@ metas:
                     stream_msg = json.loads(stream_line)
 
                     if 'stream' in stream_msg:
-                        console.print(f'=> {stream_msg["stream"]}')
+                        st.update(f'Building... [dim]{stream_msg["stream"]}[/dim]')
                     elif 'status' in stream_msg:
-                        st.update(f'{stream_msg["status"]}')
+                        st.update(f'Building... [dim]{stream_msg["status"]}[/dim]')
                     elif 'result' in stream_msg:
                         result = stream_msg['result']
                         break
@@ -439,7 +439,7 @@ metas:
         # TODO: only support single executor now
 
         from rich.table import Table
-        from rich import box
+        from rich.panel import Panel
 
         data = result.get('data', None)
         image = data['executors'][0]
@@ -447,10 +447,13 @@ metas:
         secret = image['secret']
         visibility = image['visibility']
 
-        table = Table(box=box.SIMPLE)
-        table.add_column('Key', no_wrap=True)
-        table.add_column('Value', style='cyan', no_wrap=True)
-        table.add_row(':key: ID', uuid8)
+        table = Table.grid()
+        table.add_column(width=20, no_wrap=True)
+        table.add_column(style='cyan', no_wrap=True)
+        table.add_row(
+            ':link: Hub URL',
+            f'[link=https://hub.jina.ai/executor/{uuid8}/]https://hub.jina.ai/executor/{uuid8}/[/link]',
+        )
         if 'name' in image:
             table.add_row(':name_badge: Name', image['name'])
         table.add_row(':lock: Secret', secret)
@@ -459,11 +462,15 @@ metas:
             ':point_up:️ [bold red]Please keep this token in a safe place!',
         )
         table.add_row(':eyes: Visibility', visibility)
-        table.add_row(
-            ':link: JinaHub',
-            f'[link=https://hub.jina.ai/executor/{uuid8}/]https://hub.jina.ai/executor/{uuid8}/[/link]',
+
+        p1 = Panel(
+            table,
+            title='Published',
+            width=80,
+            expand=False,
         )
-        console.print(table)
+
+        console.print(p1)
 
         presented_id = image.get('name', uuid8)
         usage = (
@@ -497,7 +504,7 @@ with f:
             Syntax(
                 flow_plain, 'python', theme='monokai', line_numbers=True, word_wrap=True
             ),
-            title='Usage in a Flow',
+            title='Usage',
             width=80,
             expand=False,
         )
@@ -509,7 +516,7 @@ with f:
                 line_numbers=True,
                 word_wrap=True,
             ),
-            title='Docker usage in a Flow',
+            title='Docker usage',
             width=80,
             expand=False,
         )
