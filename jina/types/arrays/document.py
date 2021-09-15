@@ -25,6 +25,7 @@ from .neural_ops import DocumentArrayNeuralOpsMixin
 from .search_ops import DocumentArraySearchOpsMixin
 from .traversable import TraversableSequence
 from ..document import Document
+from ..struct import StructView
 from ...helper import typename
 from ...proto import jina_pb2
 
@@ -152,6 +153,49 @@ class DocumentArrayGetAttrMixin:
 
         for d, x in zip(self, b):
             d.blob = x
+
+    @property
+    def tags(self) -> Tuple[StructView]:
+        """Get the tags attribute of all Documents"""
+        ...
+
+    @tags.setter
+    def tags(self, tags: Sequence[Union[Dict, StructView]]):
+        """Set the tags attribute for all Documents
+
+        :param tags: A sequence of tags to set, should be the same length as the
+            number of Documents
+        """
+
+        if len(tags) != len(self):
+            raise ValueError(
+                f'the number of tags in the input ({len(tags)}), should match the'
+                f'number of Documents ({len(self)})'
+            )
+
+        for doc, tags_doc in zip(self, tags):
+            doc.tags = tags_doc
+
+    @property
+    def texts(self) -> Tuple[str]:
+        """Get the tags attribute of all Documents"""
+        ...
+
+    @texts.setter
+    def texts(self, texts: Sequence[str]):
+        """Set the text attribute for all Documents
+
+        :param texts: A sequence of texts to set, should be the same length as the
+            number of Documents
+        """
+        if len(texts) != len(self):
+            raise ValueError(
+                f'the number of texts in the input ({len(texts)}), should match the'
+                f'number of Documents ({len(self)})'
+            )
+
+        for doc, text in zip(self, texts):
+            doc.text = text
 
 
 class DocumentArray(
@@ -540,3 +584,14 @@ class DocumentArray(
 
         for d, x in zip(self, emb):
             d.embedding = x
+
+    @property
+    def tags(self) -> Tuple[StructView]:
+        """Get the tags attribute of all Documents"""
+        tags = [StructView(d.tags) for d in self._pb_body]
+        return tags
+
+    @property
+    def texts(self) -> Tuple[str]:
+        """Get the tags attribute of all Documents"""
+        return [d.text for d in self._pb_body]
