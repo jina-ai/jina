@@ -1,15 +1,16 @@
 (compound-executor)=
 # Compound Executors
 
-A Compound Executor is an advanced type of Executor. 
-This combines two or more Executors into one class, in order to facilitate special logic.
-Examples of this include:
+A Compound Executor is a special type of Executor. It glues multiple Executors into one Executor class. This allows developers to leverage the feature from multiple Executors while keeping their implementations *as-is*.
+
+
+Here are some examples in practice:
 
 - combining a Storage and a Search Indexer in one, for easier access, scaling etc.
 - combining a custom ranker and an Indexer in one, for cases where `top_k` is not achieved after a ranking process filters out results
 - having Indexers that store multiple level of granularity in one Executor, for easier lookup and custom logic
 
-If you want to develop a `CompoundExecutor`-type Executor based on one of the Executors existing in Jina Hub, you have to copy-paste the code of the classes you need into your own Executor's package.
+If you want to develop a Compound Executor based on existing Executors in Jina Hub, you have to copy-paste the code of the classes you need into your own Executor's package.
 This is because, for now, the Executors in Jina Hub can **not** be imported as Python modules.
 
 ## Example
