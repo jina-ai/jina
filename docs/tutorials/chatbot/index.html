@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark">
-  <meta property="og:title" content="Covid-19 Chatbot Tutorial" />
+  <meta property="og:title" content="Building a Simple Chatbot" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/tutorials/chatbot.html" />
   <meta property="og:site_name" content="Jina Documentation" />
@@ -25,10 +25,10 @@
 
   gtag('config', 'G-48ZDWC8GT6');
 </script>
-    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Executor: From Zero To Hub" href="../new_executor/" /><link rel="prev" title="Indexers on Jina Hub" href="../../advanced/experimental/indexers/" />
+    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Mastering Executors: from Zero to Hub" href="../master-executor/" /><link rel="prev" title="Fuzzy grep in 30 Lines" href="../fuzzy-grep/" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>Covid-19 Chatbot Tutorial - Jina Documentation</title>
+        <title>Building a Simple Chatbot - Jina Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -257,10 +257,10 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="current">
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Covid-19 Chatbot Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../new_executor/">Executor: From Zero To Hub</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../gpu_executor/">Executor on GPU</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../practice-your-learning/">Putting It All Together</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fuzzy-grep/">Fuzzy <code class="docutils literal notranslate"><span class="pre">grep</span></code> in 30 Lines</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Building a Simple Chatbot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../master-executor/">Mastering Executors: from Zero to Hub</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gpu-executor/">Run Executors on GPU</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul>
@@ -566,8 +566,8 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <div class="tex2jax_ignore mathjax_ignore section" id="covid-19-chatbot-tutorial">
-<h1>Covid-19 Chatbot Tutorial<a class="headerlink" href="#covid-19-chatbot-tutorial" title="Permalink to this headline">¶</a></h1>
+        <div class="tex2jax_ignore mathjax_ignore section" id="building-a-simple-chatbot">
+<h1>Building a Simple Chatbot<a class="headerlink" href="#building-a-simple-chatbot" title="Permalink to this headline">¶</a></h1>
 <p>We will use the <a class="reference internal" href="../../get-started/hello-world/covid-19-chatbot/#chatbot-helloworld"><span class="std std-ref">hello world chatbot</span></a> for this tutorial. You can find the complete code <a class="reference external" href="https://github.com/jina-ai/jina/tree/master/jina/helloworld/chatbot">here</a> and we will go step by step.</p>
 <p>At the end of this tutorial, you will have your own chatbot. You will use text as an input and get a text result as output. For this example, we will use a <a class="reference external" href="https://www.kaggle.com/xhlulu/covidqa">covid dataset</a>. You will understand how every part of this example works and how you can create new apps with different datasets on your own.</p>
 <div class="section" id="set-up-overview">
@@ -1052,22 +1052,6 @@ using the cosine similarity.</p>
 <div class="figure align-center">
 <img alt="../../_images/results.png" src="../../_images/results.png"/>
 </div>
-<p>There are still a lot of concepts to learn. So stay tuned for our next tutorials.</p>
-<p>If you have any issues following this tutorial, you can always get support from our <a class="reference external" href="https://slack.jina.ai/">Slack community</a></p>
-</div>
-<div class="section" id="community">
-<h2>Community<a class="headerlink" href="#community" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference external" href="https://slack.jina.ai/">Slack community</a> - a communication platform for developers to discuss Jina.</p></li>
-<li><p><a class="reference external" href="https://www.linkedin.com/company/jinaai/">LinkedIn</a> - get to know Jina AI as a company and find job opportunities.</p></li>
-<li><p><a class="reference external" href="https://twitter.com/JinaAI_">Twitter</a> - follow us and interact with us using hashtag #JinaSearch.</p></li>
-<li><p><a class="reference external" href="https://jina.ai">Company</a> - know more about our company, we are fully committed to open-source!</p></li>
-</ul>
-</div>
-<div class="section" id="license">
-<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
-<p>Copyright (c) 2021 Jina AI Limited. All rights reserved.</p>
-<p>Jina is licensed under the Apache License, Version 2.0. See <a class="reference external" href="https://github.com/jina-ai/jina/blob/master/LICENSE">LICENSE</a> for the full license text.</p>
 </div>
 </div>
 
@@ -1075,23 +1059,23 @@ using the cosine similarity.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../new_executor/">
+          <a class="next-page" href="../master-executor/">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Executor: From Zero To Hub</div>
+                <div class="title">Mastering Executors: from Zero to Hub</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../../advanced/experimental/indexers/">
+          <a class="prev-page" href="../fuzzy-grep/">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Indexers on Jina Hub</div>
+                <div class="title">Fuzzy <code class="docutils literal notranslate"><span class="pre">grep</span></code> in 30 Lines</div>
                 
               </div>
             </a>
@@ -1100,7 +1084,7 @@ using the cosine similarity.</p>
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Sep 14, 2021.
+            Last updated on Sep 15, 2021.
         </div>
         
       </footer>
@@ -1117,7 +1101,7 @@ using the cosine similarity.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Covid-19 Chatbot Tutorial</a><ul>
+<li><a class="reference internal" href="#">Building a Simple Chatbot</a><ul>
 <li><a class="reference internal" href="#set-up-overview">Set-up &amp; overview</a></li>
 <li><a class="reference internal" href="#tutorial">Tutorial</a><ul>
 <li><a class="reference internal" href="#define-data-and-work-directories">Define data and work directories</a></li>
@@ -1130,8 +1114,6 @@ using the cosine similarity.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#creating-executors">Creating Executors</a></li>
-<li><a class="reference internal" href="#community">Community</a></li>
-<li><a class="reference internal" href="#license">License</a></li>
 </ul>
 </li>
 </ul>
