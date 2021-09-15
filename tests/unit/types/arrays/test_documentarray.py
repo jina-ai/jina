@@ -366,16 +366,16 @@ def test_traversal_path():
 
     da.traverse_flat(['r'])
 
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         da.traverse_flat('r')
 
     da.traverse(['r'])
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         for _ in da.traverse('r'):
             pass
 
     da.traverse(['r'])
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         for _ in da.traverse('r'):
             pass
 
