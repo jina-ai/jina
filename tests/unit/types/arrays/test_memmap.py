@@ -493,7 +493,6 @@ def test_embeddings_setter_dam(tmpdir):
     for x, doc in zip(emb, dam):
         np.testing.assert_almost_equal(x, doc.embedding)
 
-
 def test_embeddings_getter_dam(tmpdir):
     emb = np.random.random((100, 128))
     dam = DocumentArrayMemmap(tmpdir)
@@ -510,10 +509,11 @@ def test_blobs_getter_dam(tmpdir):
     np.testing.assert_almost_equal(dam.get_attributes('blob'), dam.blobs)
 
 
-def test_blobs_setter_dma():
+def test_blobs_setter_dam(tmpdir):
     blobs = np.random.random((100, 10, 10))
-    da = DocumentArray([Document() for _ in range(100)])
-    da.blobs = blobs
-    np.testing.assert_almost_equal(da.blobs, blobs)
-    for x, doc in zip(blobs, da):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document() for _ in blobs])
+    dam.blobs = blobs
+    np.testing.assert_almost_equal(dam.blobs, blobs)
+    for x, doc in zip(blobs, dam):
         np.testing.assert_almost_equal(x, doc.blob)
