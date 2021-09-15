@@ -546,14 +546,18 @@
           </label>
         </div>
         <h1>Source code for jina.types.arrays.traversable</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">itertools</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span>
+<span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Sequence</span>
 
 
-<span class="k">def</span> <span class="nf">_check_traversal_path_type</span><span class="p">(</span><span class="n">traversal_paths</span><span class="p">):</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">traversal_paths</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'traversal_paths needs to be an Iterable[str]'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_check_traversal_path_type</span><span class="p">(</span><span class="n">tp</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+        <span class="n">tp</span>
+        <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tp</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tp</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">tp</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">'`traversal_paths` needs to be `Sequence[str]`'</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="TraversableSequence"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence">[docs]</a><span class="k">class</span> <span class="nc">TraversableSequence</span><span class="p">:</span>
@@ -562,7 +566,7 @@
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="TraversableSequence.traverse"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence.traverse">[docs]</a>    <span class="k">def</span> <span class="nf">traverse</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">traversal_paths</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">traversal_paths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="s1">'TraversableSequence'</span><span class="p">]:</span>
         <span class="sd">"""</span>
 <span class="sd">        Return an Iterator of :class:``TraversableSequence`` of the leaves when applying the traversal_paths.</span>
@@ -607,7 +611,7 @@
             <span class="k">yield</span> <span class="n">docs</span>
 
 <div class="viewcode-block" id="TraversableSequence.traverse_flat_per_path"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence.traverse_flat_per_path">[docs]</a>    <span class="k">def</span> <span class="nf">traverse_flat_per_path</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">traversal_paths</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">traversal_paths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="s1">'TraversableSequence'</span><span class="p">]:</span>
         <span class="sd">"""</span>
 <span class="sd">        Returns a flattened :class:``TraversableSequence`` per path in :param:``traversal_paths``</span>
@@ -621,7 +625,7 @@
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">traversal_paths</span><span class="p">:</span>
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flatten</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TraversableSequence.traverse_flat"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence.traverse_flat">[docs]</a>    <span class="k">def</span> <span class="nf">traverse_flat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversal_paths</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">'TraversableSequence'</span><span class="p">:</span>
+<div class="viewcode-block" id="TraversableSequence.traverse_flat"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence.traverse_flat">[docs]</a>    <span class="k">def</span> <span class="nf">traverse_flat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversal_paths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">'TraversableSequence'</span><span class="p">:</span>
         <span class="sd">"""</span>
 <span class="sd">        Returns a single flattened :class:``TraversableSequence`` with all Documents, that are reached</span>
 <span class="sd">        via the :param:``traversal_paths``.</span>
