@@ -567,7 +567,7 @@ class DocumentArrayMemmap(
         for d, x in zip(self, emb):
             d.embedding = x
 
-    @property
+    @DocumentArrayGetAttrMixin.blobs.getter
     def blobs(self) -> np.ndarray:
         """Return a `np.ndarray` stacking all the `blob` attributes.
 

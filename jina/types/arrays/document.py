@@ -142,7 +142,7 @@ class DocumentArrayGetAttrMixin:
     def blobs(self, blobs: np.ndarray):
         """Set the blobs of the Documents
 
-        :param emb: The blob array to set. The first axis is the "row" axis.
+        :param blobs: The blob array to set. The first axis is the "row" axis.
         """
 
         if len(blobs) != len(self):
@@ -544,7 +544,7 @@ class DocumentArray(
         for d, x in zip(self, emb):
             d.embedding = x
 
-    @property
+    @DocumentArrayGetAttrMixin.blobs.getter
     def blobs(self) -> np.ndarray:
         """Return a `np.ndarray` stacking all the `blob` attributes.
 
