@@ -27,6 +27,8 @@ Compound indexer usually made up of a vector-based searcher, for computing the m
 Example Hub Executors:
  - [FaissLMDBSearcher](https://hub.jina.ai/executor/g57rla9l)
  - [FaissPostgresSearcher](https://hub.jina.ai/executor/nflcyqe2)
+ 
+ If you want to develop one like these, check the guide {ref}`here <compound-executor>`.
 ```
 
 ```{tip}
