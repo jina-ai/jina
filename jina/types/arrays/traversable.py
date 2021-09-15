@@ -3,8 +3,8 @@ from typing import Iterable, Sequence
 
 
 def _check_traversal_path_type(tp):
-    if not (tp and isinstance(tp, list) and all(isinstance(p, str) for p in tp)):
-        raise ValueError('traversal_paths needs to be an Sequence[str]')
+    if not (tp and isinstance(tp, Sequence) and all(isinstance(p, str) for p in tp)):
+        raise TypeError('`traversal_paths` needs to be `Sequence[str]`')
 
 
 class TraversableSequence:
