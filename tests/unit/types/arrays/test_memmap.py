@@ -517,3 +517,57 @@ def test_blobs_setter_dma():
     np.testing.assert_almost_equal(da.blobs, blobs)
     for x, doc in zip(blobs, da):
         np.testing.assert_almost_equal(x, doc.blob)
+
+
+def test_tags_getter_da(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document(tags={'a': 2, 'c': 'd'}) for _ in range(100)])
+    assert len(dam.tags) == 100
+    assert dam.tags == dam.get_attributes('tags')
+
+
+def test_tags_setter_da(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    tags = [{'a': 2, 'c': 'd'} for _ in range(100)]
+    dam.extend([Document() for _ in range(100)])
+    dam.tags = tags
+    assert dam.tags == tags
+
+    for x, doc in zip(tags, dam):
+        assert x == doc.tags
+
+
+def test_setter_wrong_len(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document() for _ in range(100)])
+    tags = [{'1': 2}]
+
+    with pytest.raises(ValueError, match='the number of tags in the'):
+        dam.tags = tags
+
+
+def test_texts_getter_da(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document(text='hello') for _ in range(100)])
+    assert len(dam.texts) == 100
+    assert dam.texts == dam.get_attributes('text')
+
+
+def test_texts_setter_da(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document() for _ in range(100)])
+    texts = ['text' for _ in range(100)]
+    dam.texts = texts
+    assert dam.texts == texts
+
+    for x, doc in zip(texts, dam):
+        assert x == doc.text
+
+
+def test_texts_wrong_len(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document() for _ in range(100)])
+    texts = ['hello']
+
+    with pytest.raises(ValueError, match='the number of texts in the'):
+        dam.texts = texts

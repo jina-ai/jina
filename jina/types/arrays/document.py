@@ -155,7 +155,7 @@ class DocumentArrayGetAttrMixin:
             d.blob = x
 
     @property
-    def tags(self) -> Tuple[StructView]:
+    def tags(self) -> List[StructView]:
         """Get the tags attribute of all Documents"""
         ...
 
@@ -177,8 +177,8 @@ class DocumentArrayGetAttrMixin:
             doc.tags = tags_doc
 
     @property
-    def texts(self) -> Tuple[str]:
-        """Get the tags attribute of all Documents"""
+    def texts(self) -> List[str]:
+        """Get the text attribute of all Documents"""
         ...
 
     @texts.setter
@@ -585,13 +585,13 @@ class DocumentArray(
         for d, x in zip(self, emb):
             d.embedding = x
 
-    @property
-    def tags(self) -> Tuple[StructView]:
+    @DocumentArrayGetAttrMixin.tags.getter
+    def tags(self) -> List[StructView]:
         """Get the tags attribute of all Documents"""
         tags = [StructView(d.tags) for d in self._pb_body]
         return tags
 
-    @property
-    def texts(self) -> Tuple[str]:
-        """Get the tags attribute of all Documents"""
+    @DocumentArrayGetAttrMixin.texts.getter
+    def texts(self) -> List[str]:
+        """Get the text attribute of all Documents"""
         return [d.text for d in self._pb_body]
