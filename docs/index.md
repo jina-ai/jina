@@ -116,10 +116,10 @@ advanced/experimental/index
 :caption: Tutorials
 :hidden:
 
+tutorials/fuzzy-grep
 tutorials/chatbot
-tutorials/new_executor
-tutorials/gpu_executor
-tutorials/practice-your-learning
+tutorials/master-executor
+tutorials/gpu-executor
 ```
 
 ```{toctree}

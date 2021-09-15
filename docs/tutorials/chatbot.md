@@ -1,4 +1,4 @@
-# Covid-19 Chatbot Tutorial
+# Building a Simple Chatbot
 
 
 We will use the {ref}`hello world chatbot <chatbot-helloworld>` for this tutorial. You can find the complete code [here](https://github.com/jina-ai/jina/tree/master/jina/helloworld/chatbot) and we will go step by step.
@@ -555,22 +555,3 @@ And we are done! If you followed all the steps, now you should have something li
 ```{figure} ../_static/results.png
 :align: center
 ```
-
-There are still a lot of concepts to learn. So stay tuned for our next tutorials.
-
-If you have any issues following this tutorial, you can always get support from our [Slack community](https://slack.jina.ai/)
-
-## Community
-
-
--   [Slack community](https://slack.jina.ai/) - a communication platform for developers to discuss Jina.
--   [LinkedIn](https://www.linkedin.com/company/jinaai/) - get to know Jina AI as a company and find job opportunities.
--   [Twitter](https://twitter.com/JinaAI_) - follow us and interact with us using hashtag #JinaSearch.
--   [Company](https://jina.ai) - know more about our company, we are fully committed to open-source!
-
-## License
-
-
-Copyright (c) 2021 Jina AI Limited. All rights reserved.
-
-Jina is licensed under the Apache License, Version 2.0. See [LICENSE](https://github.com/jina-ai/jina/blob/master/LICENSE) for the full license text.
