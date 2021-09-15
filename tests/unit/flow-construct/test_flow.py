@@ -838,4 +838,4 @@ def test_flow_grpc_with_shard():
 
     Flow(grpc_data_requests=False).add(shards=1)
     Flow(grpc_data_requests=False).add()
-    Flow(grpc_data_requests=False, infrastructure=InfrastructureType.K8S).add(shards=2)
+    Flow(grpc_data_requests=True, infrastructure=InfrastructureType.K8S).add(shards=2)
