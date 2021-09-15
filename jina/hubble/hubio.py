@@ -428,6 +428,9 @@ metas:
                 else:
                     resp.raise_for_status()
 
+            except KeyboardInterrupt:
+                pass
+
             except Exception as e:  # IO related errors
                 self.logger.error(
                     f'Error while pushing session_id={req_header["jinameta-session-id"]}: '
