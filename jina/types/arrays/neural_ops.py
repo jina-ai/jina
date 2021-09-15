@@ -1,4 +1,4 @@
-from typing import Optional, Union, Callable, Tuple, List
+from typing import Optional, Union, Callable, Tuple, Sequence
 
 import numpy as np
 
@@ -26,8 +26,8 @@ class DocumentArrayNeuralOpsMixin:
         metric_name: Optional[str] = None,
         batch_size: Optional[int] = None,
         exclude_self: bool = False,
-        traversal_ldarray: List[str] = None,
-        traversal_rdarray: List[str] = None,
+        traversal_ldarray: Sequence[str] = None,
+        traversal_rdarray: Sequence[str] = None,
     ) -> None:
         """Compute embedding based nearest neighbour in `another` for each Document in `self`,
         and store results in `matches`.

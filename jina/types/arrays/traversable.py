@@ -1,11 +1,10 @@
-import itertools
 from abc import abstractmethod
-from typing import Iterable
+from typing import Iterable, Sequence
 
 
-def _check_traversal_path_type(traversal_paths):
-    if isinstance(traversal_paths, str):
-        raise ValueError('traversal_paths needs to be an Iterable[str]')
+def _check_traversal_path_type(tp):
+    if not (tp and isinstance(tp, list) and all(isinstance(p, str) for p in tp)):
+        raise ValueError('traversal_paths needs to be an Sequence[str]')
 
 
 class TraversableSequence:
@@ -14,7 +13,7 @@ class TraversableSequence:
     """
 
     def traverse(
-        self, traversal_paths: Iterable[str]
+        self, traversal_paths: Sequence[str]
     ) -> Iterable['TraversableSequence']:
         """
         Return an Iterator of :class:``TraversableSequence`` of the leaves when applying the traversal_paths.
@@ -59,7 +58,7 @@ class TraversableSequence:
             yield docs
 
     def traverse_flat_per_path(
-        self, traversal_paths: Iterable[str]
+        self, traversal_paths: Sequence[str]
     ) -> Iterable['TraversableSequence']:
         """
         Returns a flattened :class:``TraversableSequence`` per path in :param:``traversal_paths``
@@ -73,7 +72,7 @@ class TraversableSequence:
         for p in traversal_paths:
             yield self._flatten(self._traverse(self, p))
 
-    def traverse_flat(self, traversal_paths: Iterable[str]) -> 'TraversableSequence':
+    def traverse_flat(self, traversal_paths: Sequence[str]) -> 'TraversableSequence':
         """
         Returns a single flattened :class:``TraversableSequence`` with all Documents, that are reached
         via the :param:``traversal_paths``.
