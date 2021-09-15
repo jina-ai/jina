@@ -202,3 +202,12 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
+
+    gp.add_argument(
+        '--k8s-connection-pool',
+        action='store_true',
+        default=False,
+        help='Tells if connection pooling should be used in K8s for load balancing'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )

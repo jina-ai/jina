@@ -36,6 +36,15 @@ When not given, then the default naming strategy will apply.
         'If not set, then derive from its parent `workspace`.',
     )
 
+    parser.add_argument(
+        '--k8s-namespace',
+        type=str,
+        default='',
+        help='Name of the namespace where Kubernetes deployment should be deployed, to be filled by flow name'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+
     from ... import __resources_path__
 
     gp.add_argument(

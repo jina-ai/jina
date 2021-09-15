@@ -29,6 +29,7 @@ def test_grpc_data_runtime(mocker):
             args,
             handle_mock,
         ),
+        daemon=True,
     )
     runtime_thread.start()
 
