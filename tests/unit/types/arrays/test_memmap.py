@@ -493,12 +493,22 @@ def test_embeddings_setter_dam(tmpdir):
     for x, doc in zip(emb, dam):
         np.testing.assert_almost_equal(x, doc.embedding)
 
+
 def test_embeddings_getter_dam(tmpdir):
     emb = np.random.random((100, 128))
     dam = DocumentArrayMemmap(tmpdir)
     dam.extend([Document(embedding=x) for x in emb])
     assert len(dam) == 100
     np.testing.assert_almost_equal(dam.embeddings, emb)
+
+
+def test_embeddings_wrong_len(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document() for x in range(100)])
+    embeddings = np.ones((2, 10, 10))
+
+    with pytest.raises(ValueError, match='the number of rows in the'):
+        dam.embeddings = embeddings
 
 
 def test_blobs_getter_dam(tmpdir):
@@ -517,3 +527,12 @@ def test_blobs_setter_dam(tmpdir):
     np.testing.assert_almost_equal(dam.blobs, blobs)
     for x, doc in zip(blobs, dam):
         np.testing.assert_almost_equal(x, doc.blob)
+
+
+def test_blobs_wrong_len(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document() for x in range(100)])
+    blobs = np.ones((2, 10, 10))
+
+    with pytest.raises(ValueError, match='the number of rows in the'):
+        dam.blobs = blobs
