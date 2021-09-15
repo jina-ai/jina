@@ -25,6 +25,7 @@ The whole architecture looks like the following:
 ```{toctree}
 :hidden:
 
+hub-portal
 create-hub-executor
 push-executor
 use-hub-executor

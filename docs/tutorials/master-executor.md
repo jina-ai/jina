@@ -1,4 +1,4 @@
-# Executor: From Zero To Hub
+# Mastering Executors: from Zero to Hub
 
 > A step by step walkthrough on how to create your Executors or use existing ones.
 

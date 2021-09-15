@@ -276,7 +276,13 @@ class BasePea:
                 else:
                     raise RuntimeRunForeverEarlyError
             else:
-                self.logger.success(__ready_msg__)
+                # han: I intentionally change it to debug as the Flow is now polling
+                # the ready status actively. Hence active print ready status is unnecessary.
+                #  Notice that, relying on Pod console print for readiness in general makes
+                # no sense as the Pod can live remote/container whose log can not be observed at all.
+                #
+                # in short, do not change it back to info, you don't need it.
+                self.logger.debug(__ready_msg__)
         else:
             _timeout = _timeout or -1
             self.logger.warning(

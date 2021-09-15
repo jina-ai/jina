@@ -1,10 +1,13 @@
 import argparse
 import base64
 import copy
+import itertools
 import json
 import os
 import re
+import sys
 import threading
+import time
 import uuid
 import warnings
 from collections import OrderedDict
@@ -22,7 +25,12 @@ from ..enums import (
     GatewayProtocolType,
     InfrastructureType,
 )
-from ..excepts import FlowTopologyError, FlowMissingPodError, RoutingTableCyclicError
+from ..excepts import (
+    FlowTopologyError,
+    FlowMissingPodError,
+    RoutingTableCyclicError,
+    RuntimeFailToStart,
+)
 from ..helper import (
     colored,
     get_public_ip,
@@ -1045,25 +1053,96 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             if not getattr(v.args, 'external', False):
                 self.enter_context(v)
 
-        for k, v in self:
-            try:
-                if not getattr(v.args, 'external', False):
-                    v.wait_start_success()
-            except Exception as ex:
-                self.logger.error(
-                    f'{k}:{v!r} can not be started due to {ex!r}, Flow is aborted'
-                )
-                self.close()
-                raise
-
-        self.logger.debug(
-            f'{self.num_pods} Pods (i.e. {self.num_peas} Peas) are running in this Flow'
-        )
+        self._wait_until_all_ready()
 
         self._build_level = FlowBuildLevel.RUNNING
-        self._show_success_message()
 
         return self
+
+    def _wait_until_all_ready(self) -> bool:
+        results = {}
+        threads = []
+
+        def _wait_ready(_pod_name, _pod):
+            try:
+                if not getattr(_pod.args, 'external', False):
+                    results[_pod_name] = 'pending'
+                    _pod.wait_start_success()
+                    results[_pod_name] = 'done'
+            except Exception as ex:
+                results[_pod_name] = repr(ex)
+
+        def _polling_status():
+            spinner = itertools.cycle(
+                ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+            )
+
+            while True:
+                num_all = len(results)
+                num_done = 0
+                pendings = []
+                for _k, _v in results.items():
+                    sys.stdout.flush()
+                    if _v == 'pending':
+                        pendings.append(_k)
+                    else:
+                        num_done += 1
+                sys.stdout.write('\r{}\r'.format(' ' * 100))
+                pending_str = colored(' '.join(pendings)[:50], 'yellow')
+                sys.stdout.write(
+                    f'{colored(next(spinner), "green")} {num_done}/{num_all} waiting {pending_str} to be ready...'
+                )
+                sys.stdout.flush()
+
+                if not pendings:
+                    sys.stdout.write('\r{}\r'.format(' ' * 100))
+                    break
+                time.sleep(0.1)
+
+        # kick off all pods wait-ready threads
+        for k, v in self:
+            t = threading.Thread(
+                target=_wait_ready,
+                args=(
+                    k,
+                    v,
+                ),
+            )
+            threads.append(t)
+            t.start()
+
+        # kick off spinner thread
+        t_m = threading.Thread(target=_polling_status)
+        t_m.start()
+
+        # kick off ip getter thread
+        addr_table = []
+        t_ip = threading.Thread(target=self._get_address_table, args=(addr_table,))
+        t_ip.start()
+
+        for t in threads:
+            t.join()
+        t_ip.join()
+        t_m.join()
+
+        error_pods = [k for k, v in results.items() if v != 'done']
+        if error_pods:
+            self.logger.error(
+                f'Flow is aborted due to {error_pods} can not be started.'
+            )
+            self.close()
+            raise RuntimeFailToStart
+        else:
+            if self.args.infrastructure == InfrastructureType.K8S:
+                self.logger.info('🎉 Kubernetes Flow is ready to use!')
+            else:
+                self.logger.info('🎉 Flow is ready to use!')
+
+            if addr_table:
+                self.logger.info('\n' + '\n'.join(addr_table))
+            self.logger.debug(
+                f'{self.num_pods} Pods (i.e. {self.num_peas} Peas) are running in this Flow'
+            )
 
     @property
     def num_pods(self) -> int:
@@ -1387,12 +1466,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def __iter__(self):
         return self._pod_nodes.items().__iter__()
 
-    def _show_success_message(self):
-
-        if self.args.infrastructure == InfrastructureType.K8S:
-            self.logger.info('🎉 Kubernetes deployment done!')
-        else:
-            address_table = [
+    def _get_address_table(self, address_table):
+        address_table.extend(
+            [
                 f'\t🔗 Protocol: \t\t{colored(self.protocol, attrs="bold")}',
                 f'\t🏠 Local access:\t'
                 + colored(f'{self.host}:{self.port_expose}', 'cyan', attrs='underline'),
@@ -1403,34 +1479,34 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     attrs='underline',
                 ),
             ]
-            if self.address_public:
-                address_table.append(
-                    f'\t🌐 Public address:\t'
-                    + colored(
-                        f'{self.address_public}:{self.port_expose}',
-                        'cyan',
-                        attrs='underline',
-                    )
+        )
+        if self.address_public:
+            address_table.append(
+                f'\t🌐 Public address:\t'
+                + colored(
+                    f'{self.address_public}:{self.port_expose}',
+                    'cyan',
+                    attrs='underline',
                 )
-            if self.protocol == GatewayProtocolType.HTTP:
-                address_table.append(
-                    f'\t💬 Swagger UI:\t\t'
-                    + colored(
-                        f'http://localhost:{self.port_expose}/docs',
-                        'cyan',
-                        attrs='underline',
-                    )
+            )
+        if self.protocol == GatewayProtocolType.HTTP:
+            address_table.append(
+                f'\t💬 Swagger UI:\t\t'
+                + colored(
+                    f'http://localhost:{self.port_expose}/docs',
+                    'cyan',
+                    attrs='underline',
                 )
-                address_table.append(
-                    f'\t📚 Redoc:\t\t'
-                    + colored(
-                        f'http://localhost:{self.port_expose}/redoc',
-                        'cyan',
-                        attrs='underline',
-                    )
+            )
+            address_table.append(
+                f'\t📚 Redoc:\t\t'
+                + colored(
+                    f'http://localhost:{self.port_expose}/redoc',
+                    'cyan',
+                    attrs='underline',
                 )
-
-            self.logger.info('🎉 Flow is ready to use!\n' + '\n'.join(address_table))
+            )
+        return address_table
 
     def block(self):
         """Block the process until user hits KeyboardInterrupt"""

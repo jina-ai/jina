@@ -1,9 +1,9 @@
-# Putting It All Together
+# Fuzzy `grep` in 30 Lines
 
 Now that you understand all fundamental concepts, let's practice the learnings and build a simple end-to-end demo.
 
-We will build a fuzzy search demo for source code: given a snippet source code and a query, find all lines that are
-similar to the query.
+We will use Jina to implement a fuzzy search solution on source code: given a snippet source code and a query, find all lines that are
+similar to the query. It is like `grep` but in fuzzy mode.
 
 ````{admonition} Preliminaries
 :class: hint
