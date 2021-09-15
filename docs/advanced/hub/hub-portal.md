@@ -1,6 +1,6 @@
 # Hub Portal
 
-Hub is a marketplace for Executors. It allows everyone to share their Executors and use others' Executors. You can check the next [tutorials](../create-hub-executor) if you want to know more about the creation of an Executor.
+Hub is a marketplace for Executors. It allows everyone to share their Executors and use others' Executors. You can check the next {ref}`tutorials <create-hub-executor>` if you want to know more about the creation of an Executor.
 
 [Hub portal](https://hub.jina.ai) gives you a bird's eye view of all Hub Executors. You can explore and find Executors that can help you to build your neural search applications.
 
