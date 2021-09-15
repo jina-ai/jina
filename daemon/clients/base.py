@@ -64,6 +64,10 @@ class AsyncBaseClient:
         ) as response:
             if response.status == HTTPStatus.OK:
                 return await response.json()
+            else:
+                self._logger.error(
+                    f'got response {response.status} while getting status {self._kind}s'
+                )
 
     @if_alive
     async def get(self, id: Union[str, DaemonID]) -> Optional[Union[str, Dict]]:
@@ -114,6 +118,22 @@ class AsyncBaseClient:
             else:
                 self._logger.error(
                     f'got response {response.status} while listing all {self._kind}s'
+                )
+
+    @if_alive
+    async def clear(self):
+        """Send delete request to api
+
+        :return : json response of the remote Flow/Pea/Pod/Workspace status
+        """
+        async with aiohttp.request(
+            method='DELETE', url=f'{self.store_api}'
+        ) as response:
+            if response.status == HTTPStatus.OK:
+                return await response.json()
+            else:
+                self._logger.error(
+                    f'got response {response.status} while sending delete request {self._kind}s'
                 )
 
     async def create(self, *args, **kwargs) -> Dict:
