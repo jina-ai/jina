@@ -587,11 +587,17 @@ class DocumentArray(
 
     @DocumentArrayGetAttrMixin.tags.getter
     def tags(self) -> List[StructView]:
-        """Get the tags attribute of all Documents"""
+        """Get the tags attribute of all Documents
+
+        :return: List of ``tags`` attributes for all Documents
+        """
         tags = [StructView(d.tags) for d in self._pb_body]
         return tags
 
     @DocumentArrayGetAttrMixin.texts.getter
     def texts(self) -> List[str]:
-        """Get the text attribute of all Documents"""
+        """Get the text attribute of all Documents
+
+        :return: List of ``text`` attributes for all Documents
+        """
         return [d.text for d in self._pb_body]

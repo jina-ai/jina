@@ -566,14 +566,19 @@ class DocumentArrayMemmap(
 
     @DocumentArrayGetAttrMixin.tags.getter
     def tags(self) -> Tuple[StructView]:
-        """Get the tags attribute of all Documents"""
+        """Get the tags attribute of all Documents
+
+        :return: List of ``tags`` attributes for all Documents
+        """
         return self.get_attributes('tags')
 
     @DocumentArrayGetAttrMixin.texts.getter
     def texts(self) -> Tuple[str]:
-        """Get the text attribute of all Documents"""
-        return self.get_attributes('tags')
+        """Get the text attribute of all Documents
 
+        :return: List of ``text`` attributes for all Documents
+        """
+        return self.get_attributes('tags')
 
     def _invalidate_embeddings_memmap(self):
         self._embeddings_memmap = None
