@@ -975,6 +975,9 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">resp</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
 
+            <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+                <span class="k">pass</span>
+
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># IO related errors</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'Error while pushing session_id=</span><span class="si">{</span><span class="n">req_header</span><span class="p">[</span><span class="s2">"jinameta-session-id"</span><span class="p">]</span><span class="si">}</span><span class="s1">: '</span>
