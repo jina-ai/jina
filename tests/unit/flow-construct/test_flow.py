@@ -6,7 +6,7 @@ import os
 import numpy as np
 import pytest
 
-from jina import Flow, Document, Executor, requests
+from jina import Flow, Document, Executor, requests, __windows__
 from jina.enums import SocketType, FlowBuildLevel
 from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
@@ -761,6 +761,7 @@ async def delayed_send_message_via(self, socket, msg):
         self.logger.error(f'sending message error: {ex!r}, gateway cancelled?')
 
 
+@pytest.mark.skipif(__windows__, reason='timing comparison is broken for 2nd Flow')
 def test_flow_routes_list(monkeypatch):
     def _time(time: str):
         return datetime.datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.%fZ')

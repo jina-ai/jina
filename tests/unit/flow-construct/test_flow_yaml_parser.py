@@ -195,10 +195,11 @@ def test_flow_yaml_from_string():
     assert f3.num_pods == 2
 
 
-def test_flow_uses_from_dict():
-    class DummyEncoder(Executor):
-        pass
+class DummyEncoder(Executor):
+    pass
 
+
+def test_flow_uses_from_dict():
     d1 = {'jtype': 'DummyEncoder', 'metas': {'name': 'dummy1'}}
     with Flow().add(uses=d1):
         pass

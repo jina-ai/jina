@@ -5,6 +5,7 @@ import pytest
 from google.protobuf import json_format
 from grpc import RpcError
 
+from jina import __default_host__
 from jina.parsers import set_pea_parser
 from jina.peapods.grpc import Grpclet
 from jina.proto import jina_pb2
@@ -101,13 +102,13 @@ def _create_msg(args):
         'active_pod': 'pod1',
         'pods': {
             'pod1': {
-                'host': '0.0.0.0',
+                'host': __default_host__,
                 'port': args.port_in,
                 'expected_parts': 1,
                 'out_edges': [{'pod': 'pod2'}],
             },
             'pod2': {
-                'host': '0.0.0.0',
+                'host': __default_host__,
                 'port': args.port_in,
                 'expected_parts': 1,
                 'out_edges': [],
