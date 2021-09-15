@@ -133,8 +133,6 @@ class DocumentArrayGetAttrMixin:
                  first element in the DocumentArray / DocumentArrayMemmap
 
         .. warning:: This operation currently does not support sparse arrays.
-
-        :return: blobs stacked per row as `np.ndarray`.
         """
         ...
 
