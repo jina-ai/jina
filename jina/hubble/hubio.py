@@ -608,7 +608,7 @@ with f:
 
         console = Console()
         cached_zip_file = None
-        no_except = True
+        usage = None
 
         try:
             with console.status(f'Pulling {self.args.uri}...') as st:
@@ -688,14 +688,16 @@ with f:
                         return f'{pkg_path / "config.yml"}'
                 else:
                     raise ValueError(f'{self.args.uri} is not a valid scheme')
+        except KeyboardInterrupt:
+            usage = None
         except Exception as e:
             self.logger.error(f'Error while pulling {self.args.uri}: \n{e!r}')
-            no_except = False
+            usage = None
             raise e
         finally:
             # delete downloaded zip package if existed
             if cached_zip_file is not None:
                 cached_zip_file.unlink()
 
-            if not self.args.no_usage and usage and no_except:
+            if not self.args.no_usage and usage:
                 self._get_prettyprint_usage(console, usage)
