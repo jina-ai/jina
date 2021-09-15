@@ -26,8 +26,8 @@ class DocumentArrayNeuralOpsMixin:
         metric_name: Optional[str] = None,
         batch_size: Optional[int] = None,
         exclude_self: bool = False,
-        traversal_ldarray: Sequence[str] = None,
-        traversal_rdarray: Sequence[str] = None,
+        traversal_ldarray: Optional[Sequence[str]] = None,
+        traversal_rdarray: Optional[Sequence[str]] = None,
     ) -> None:
         """Compute embedding based nearest neighbour in `another` for each Document in `self`,
         and store results in `matches`.
