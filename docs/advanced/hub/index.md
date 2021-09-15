@@ -25,11 +25,11 @@ The whole architecture looks like the following:
 ```{toctree}
 :hidden:
 
+hub-portal
 create-hub-executor
 push-executor
 use-hub-executor
 pull-executor
 practice-your-learning
 executor-best-practices
-hub-portal
 ```
