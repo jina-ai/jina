@@ -2,7 +2,6 @@ import types
 
 import numpy as np
 import pytest
-
 from jina import Document, DocumentArray
 from jina.clients.request import request_generator
 from tests import random_docs
@@ -33,12 +32,6 @@ def test_traverse_type(doc_req):
     ds = doc_req.docs.traverse(['r'])
     assert isinstance(ds, types.GeneratorType)
     assert isinstance(list(ds)[0], DocumentArray)
-
-
-def test_traverse_empty_type(doc_req):
-    ds = doc_req.docs.traverse([])
-    assert isinstance(ds, types.GeneratorType)
-    assert len(list(ds)) == 0
 
 
 def test_traverse_root(doc_req):

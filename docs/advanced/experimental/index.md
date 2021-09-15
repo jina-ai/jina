@@ -17,4 +17,5 @@ That said, have fun!
 
 kubernetes
 indexers
+compound_executors
 ```
