@@ -14,7 +14,7 @@ If you want to develop a Compound Executor based on existing Executors in Jina H
 This is because, for now, the Executors in Jina Hub can **not** be imported as Python modules.
 
 ## Example
-
+### CompoundExecutor in action
 In this short example I will show you how this can be done. 
 I will combine a Storage Indexer and a Searcher Indexer in one class.
 I will trim the copied code.
@@ -35,7 +35,7 @@ class MongoDBStorage(Executor):
 class AnnoySearcher(Executor):
     ...
 
-class MyExecutor(Executor):
+class CompoundExecutor(Executor):
     def __init__(self, ..., **kwargs): # you args go here
         super().__init__(**kwargs)  # you still need to initialize the base class, Executor
         self._storage = MongoDBStorage(**kwargs) # other args could be passed here
@@ -48,6 +48,3 @@ class MyExecutor(Executor):
         # here you would put any other custom logic you have
         docs = self._storage.search(results, **kwargs)
         
-    # you can then continue adding custom logic endpoints
-    # e.g. importing from MongoDB into the vector searcher
-```
