@@ -241,7 +241,12 @@ def test_pod_remote_pea_parallel_pea_host_set_partially(
 @pytest.mark.parametrize(
     'pod_host, peas_hosts, expected_host_in, expected_host_out',
     [
-        (__default_host__, ['0.0.0.1', '0.0.0.2'], get_internal_ip(), get_internal_ip()),
+        (
+            __default_host__,
+            ['0.0.0.1', '0.0.0.2'],
+            get_internal_ip(),
+            get_internal_ip(),
+        ),
         ('0.0.0.1', ['0.0.0.2', '0.0.0.3'], '0.0.0.1', '0.0.0.1'),
         ('0.0.0.1', [__default_host__, '0.0.0.2'], '0.0.0.1', '0.0.0.1'),
     ],

@@ -4,6 +4,7 @@ import threading
 
 import pytest
 
+from jina import __windows__
 from jina.excepts import RuntimeFailToStart
 from jina.parsers import set_pea_parser, set_gateway_parser
 from jina.peapods import Pea
@@ -47,6 +48,7 @@ def test_gateway_runtime(cls, runtime):
         pass
 
 
+@pytest.mark.skipif(__windows__, reason='Windows containers are not supported yet')
 @pytest.mark.parametrize('runtime', ['thread', 'process'])
 def test_container_runtime_bad_entrypoint(runtime):
     class Pea1(BasePea):
@@ -61,6 +63,7 @@ def test_container_runtime_bad_entrypoint(runtime):
             pass
 
 
+@pytest.mark.skipif(__windows__, reason='Windows containers are not supported yet')
 @pytest.mark.parametrize('runtime', ['thread', 'process'])
 def test_container_runtime_good_entrypoint(runtime):
     class Pea1(BasePea):
@@ -93,6 +96,7 @@ def test_address_in_use(runtime):
             pass
 
 
+@pytest.mark.skipif(__windows__, reason='Windows containers are not supported yet')
 @pytest.mark.parametrize('runtime', ['thread', 'process'])
 @pytest.mark.parametrize(
     'parser, args',
