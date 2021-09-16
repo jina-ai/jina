@@ -66,6 +66,7 @@ def deploy_service(
             'port_ctrl': port_ctrl,
             'type': 'ClusterIP',
         },
+        logger=logger,
         custom_resource_dir=custom_resource_dir,
     )
 
@@ -94,6 +95,7 @@ def deploy_service(
             'pull_policy': pull_policy,
             **init_container,
         },
+        logger=logger,
         custom_resource_dir=custom_resource_dir,
     )
     return f'{name}.{namespace}.svc.cluster.local'
