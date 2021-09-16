@@ -2,6 +2,8 @@ import os
 import tempfile
 from typing import Dict, Optional
 
+from jina.logging.logger import JinaLogger
+
 cur_dir = os.path.dirname(__file__)
 DEFAULT_RESOURCE_DIR = os.path.join(
     cur_dir, '..', '..', '..', 'resources', 'k8s', 'template'
@@ -83,7 +85,10 @@ class K8SClients:
 __k8s_clients = K8SClients()
 
 
-def create(template: str, params: Dict, custom_resource_dir: Optional[str] = None):
+def create(template: str, 
+    params: Dict,
+    logger: JinaLogger,
+    custom_resource_dir: Optional[str] = None):
     """Create a resource on Kubernetes based on the `template`. It fills the `template` using the `params`.
 
     :param template: path to the template file.
@@ -104,7 +109,9 @@ def create(template: str, params: Dict, custom_resource_dir: Optional[str] = Non
             utils.create_from_yaml(__k8s_clients.k8s_client, path)
         except FailToCreateError as e:
             if e.api_exceptions[0].status == 409:
-                print('exists already')
+                    logger.info(
+        f'🔁\tThe resource already exists in the kubernetes cluster'
+    )
             else:
                 raise e
         except Exception as e2:
