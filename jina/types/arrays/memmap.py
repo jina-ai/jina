@@ -578,7 +578,7 @@ class DocumentArrayMemmap(
 
         :return: List of ``text`` attributes for all Documents
         """
-        return self.get_attributes('tags')
+        return self.get_attributes('texts')
 
     def _invalidate_embeddings_memmap(self):
         self._embeddings_memmap = None
