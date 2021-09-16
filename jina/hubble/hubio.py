@@ -646,19 +646,9 @@ with f:
                         )
                         exit(1)
 
-                    local_exec_images = client.images.list(f'jinahub/{executor.uuid}')
-                    if local_exec_images:
-                        uses_executor_image_name = local_exec_images[0].tags[0]
-
-                        if (
-                            uses_executor_image_name != executor.image_name
-                            and not self.args.force
-                        ):
-                            warnings.warn(
-                                f'local {uses_executor_image_name} is outdated vs Hub {executor.image_name}, '
-                                f'you may want to add `--force` to update.'
-                            )
-                    else:
+                    try:
+                        client.images.get(executor.image_name)
+                    except docker.errors.ImageNotFound:
                         need_pull = True
 
                     if need_pull:
