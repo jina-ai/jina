@@ -123,7 +123,7 @@ This guide helps you to create your own Executor in 30 seconds.''',
 
         is_dockerfile = False
 
-        if eval(self.args.advance_config) if eval(self.args.advance_config) else Confirm.ask(
+        if eval(self.args.advance_config) if self.args.advance_config else Confirm.ask(
             '[green]That\'s all we need to create an Executor![/green]\n'
             ':grey_question: Or do you want to proceed to advanced configuration',
             default=False,
