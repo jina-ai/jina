@@ -8,7 +8,7 @@
       {"text": "The `Flow` is a graphical interface that lets users see how their `Documents` are flowing into the processing pipeline.",
       "correct": false
       },
-      {"text": "The `Flow` is short for "fast, low-resource" and is a special kind of Executor for low-powered machines.",
+      {"text": "The `Flow` is short for \"fast, low-resource\" and is a special kind of Executor for low-powered machines.",
       "correct": false
       }
     ],
