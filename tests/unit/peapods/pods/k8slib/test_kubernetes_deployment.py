@@ -71,7 +71,7 @@ def test_deploy_service(init_container: Dict, custom_resource: str, monkeypatch)
     else:
         assert deployment_call_args[0] == 'deployment'
 
-    assert service_name == 'test-executor.test-ns.svc.cluster.local'
+    assert service_name == 'test-executor.test-ns.svc'
 
 
 @pytest.mark.parametrize(

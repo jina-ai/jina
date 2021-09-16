@@ -268,7 +268,7 @@ class K8sPod(BasePod):
         dns_name = kubernetes_deployment.to_dns_name(name)
         return {
             'name': name,
-            'head_host': f'{dns_name}.{self.args.k8s_namespace}.svc.cluster.local',
+            'head_host': f'{dns_name}.{self.args.k8s_namespace}.svc',
             'head_port_in': self.fixed_head_port_in,
             'tail_port_out': self.fixed_tail_port_out,
             'head_zmq_identity': self.head_zmq_identity,
