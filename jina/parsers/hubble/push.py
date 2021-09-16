@@ -25,6 +25,7 @@ def mixin_hub_push_parser(parser):
     )
 
     gp.add_argument(
+        '-f',
         '--dockerfile',
         metavar='DOCKERFILE',
         help='The file path to the Dockerfile (default is `${cwd}/Dockerfile`)',

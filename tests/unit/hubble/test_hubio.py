@@ -148,7 +148,7 @@ def test_push_wrong_dockerfile(
     _args_list = [exec_path, mode]
 
     args = set_hub_push_parser().parse_args(_args_list)
-    args.docker_file = dockerfile
+    args.dockerfile = dockerfile
     with pytest.raises(Exception) as info:
         HubIO(args).push()
 
