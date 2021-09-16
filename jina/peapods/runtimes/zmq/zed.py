@@ -56,12 +56,16 @@ class ZEDRuntime(ZMQRuntime):
 
     def run_forever(self):
         """Start the `ZmqStreamlet`."""
+        self.logger.debug('run_forever ZEDRuntime')
         self._zmqstreamlet.start(self._msg_callback)
+        self.logger.debug('run_forever ZEDRuntime complete')
 
     def teardown(self):
         """Close the `ZmqStreamlet` and `Executor`."""
+        self.logger.debug('teardown ZEDRuntime')
         self._zmqstreamlet.close()
         self._data_request_handler.close()
+        self.logger.debug('done teardown ZEDRuntime')
         super().teardown()
 
     #: Private methods required by :meth:`setup`

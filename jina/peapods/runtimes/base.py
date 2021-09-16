@@ -79,6 +79,7 @@ class BaseRuntime:
         """Method called immediately after :meth:`run_forever` is unblocked.
         You can tidy up things here.  Optional in subclasses. The default implementation does nothing.
         """
+        self.logger.debug('teardown Baseruntime')
         self.logger.close()
 
     def __enter__(self):

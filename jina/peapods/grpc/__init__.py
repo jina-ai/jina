@@ -86,8 +86,16 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         :param timeout: optional timeout for the request in seconds
         :returns: Empty protobuf struct
         """
+        print(
+            f'send ctrl message with command {command} to {pod_address} with timeout {timeout}',
+            flush=True,
+        )
         stub = Grpclet._create_grpc_stub(pod_address, is_async=False)
         response = stub.Call(ControlMessage(command), timeout=timeout)
+        print(
+            f'Got response for ctrl message with command {command} to {pod_address} with timeout {timeout}',
+            flush=True,
+        )
         return response
 
     @staticmethod
@@ -130,6 +138,7 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         :param args: Extra positional arguments
         :param kwargs: Extra key-value arguments
         """
+        self._logger.debug('Close Grpclet')
         self._update_pending_tasks()
 
         try:
@@ -143,6 +152,7 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         self._connection_pool.close()
         self._logger.debug('Close grpc server')
         await self._grpc_server.stop(grace_period)
+        self._logger.debug('GRPC server closed')
 
     async def start(self):
         """
@@ -154,14 +164,16 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
                 ('grpc.max_receive_message_length', -1),
             ]
         )
-
+        self._logger.debug('Start Grpclet')
         jina_pb2_grpc.add_JinaDataRequestRPCServicer_to_server(self, self._grpc_server)
         bind_addr = f'{self.args.host}:{self.args.port_in}'
         self._grpc_server.add_insecure_port(bind_addr)
         self._logger.debug(f'Binding gRPC server for data requests to {bind_addr}')
         self._connection_pool.start()
         await self._grpc_server.start()
+        self._logger.debug('Grpc server started')
         await self._grpc_server.wait_for_termination()
+        self._logger.debug('Waiting for grpc server termination complete')
 
     def _update_pending_tasks(self):
         self._pending_tasks = [task for task in self._pending_tasks if not task.done()]
