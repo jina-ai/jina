@@ -30,7 +30,10 @@ def test_no_resource_dir_specified(monkeypatch):
     flow.start()
 
     for call in mock_create.call_args_list:
-        assert call[1]['custom_resource_dir'] is None
+        assert (
+            'custom_resource_dir' not in call[1]
+            or call[1]['custom_resource_dir'] is None
+        )
 
 
 def test_template_file_read_correctly(test_dir: str):
