@@ -435,7 +435,11 @@ class DocumentArrayMemmap(
         dam = DocumentArrayMemmap(tdir, key_length=self._key_length)
         dam.extend(self)
         dam.reload()
+        if hasattr(self, '_body'):
+            self._body.close()
         os.remove(self._body_path)
+        if hasattr(self, '_header'):
+            self._header.close()
         os.remove(self._header_path)
         shutil.copy(os.path.join(tdir, 'header.bin'), self._header_path)
         shutil.copy(os.path.join(tdir, 'body.bin'), self._body_path)
