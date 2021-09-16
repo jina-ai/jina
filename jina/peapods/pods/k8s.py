@@ -92,7 +92,8 @@ class K8sPod(BasePod):
             else ('-' + str(deployment_id))
         )
         dns_name = kubernetes_deployment.to_dns_name(name_suffix)
-        init_container_args = kubernetes_deployment.get_init_container_args(self)
+        init_container_args = kubernetes_deployment.get_init_container_args(
+            self)
         uses_metas = kubernetes_deployment.dictionary_to_cli_param(
             {'pea_id': deployment_id}
         )
@@ -119,7 +120,8 @@ class K8sPod(BasePod):
             replicas=replicas,
             pull_policy='IfNotPresent',
             init_container=init_container_args,
-            custom_resource_dir=getattr(self.args, 'k8s_custom_resource_dir', None),
+            custom_resource_dir=getattr(
+                self.args, 'k8s_custom_resource_dir', None),
         )
 
     @staticmethod
@@ -146,25 +148,27 @@ class K8sPod(BasePod):
         logger.info(
             f'🔑\tCreate Namespace {self.args.k8s_namespace} for {self.name} '
         )
-
         kubernetes_tools.create(
             'namespace',
             {'name': self.args.k8s_namespace},
             logger,
-            custom_resource_dir=getattr(self.args, 'k8s_custom_resource_dir', None),
+            custom_resource_dir=getattr(
+                self.args, 'k8s_custom_resource_dir', None),
         )
         if self.name == 'gateway':
             self._deploy_gateway()
         else:
             if self.deployment_args['head_deployment'] is not None:
-                self._deploy_runtime(self.deployment_args['head_deployment'], 1, 'head')
+                self._deploy_runtime(
+                    self.deployment_args['head_deployment'], 1, 'head')
 
             for i in range(self.args.parallel):
                 deployment_args = self.deployment_args['deployments'][i]
                 self._deploy_runtime(deployment_args, self.args.replicas, i)
 
             if self.deployment_args['tail_deployment'] is not None:
-                self._deploy_runtime(self.deployment_args['tail_deployment'], 1, 'tail')
+                self._deploy_runtime(
+                    self.deployment_args['tail_deployment'], 1, 'tail')
         return self
 
     def wait_start_success(self):
