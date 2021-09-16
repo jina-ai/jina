@@ -333,8 +333,8 @@ metas:
             exec_tags = ','.join(self.args.tag)
 
         dockerfile = None
-        if self.args.docker_file:
-            dockerfile = Path(self.args.docker_file)
+        if self.args.dockerfile:
+            dockerfile = Path(self.args.dockerfile)
             if not dockerfile.exists():
                 raise Exception(f'The given Dockerfile `{dockerfile}` does not exist!')
             if dockerfile.parent != work_path:
@@ -620,8 +620,6 @@ with f:
 
         try:
             need_pull = self.args.force
-            print(need_pull)
-            print(self.args)
             with console.status(f'Pulling {self.args.uri}...') as st:
                 scheme, name, tag, secret = parse_hub_uri(self.args.uri)
 

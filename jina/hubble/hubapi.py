@@ -139,40 +139,27 @@ def install_local(
 
     pkg_path, pkg_dist_path = get_dist_path(executor.uuid, executor.tag)
 
-    # clean existed dist-info
-    for dist in _hub_root.glob(f'{executor.uuid}/*.dist-info'):
-        shutil.rmtree(dist)
-    if pkg_path.exists():
-        shutil.rmtree(pkg_path)
+    # unpack the zip package to the root pkg_path
+    unpack_package(zip_package, pkg_path)
 
-    try:
-        # unpack the zip package to the root pkg_path
-        unpack_package(zip_package, pkg_path)
+    # create dist-info folder
+    pkg_dist_path.mkdir(parents=False, exist_ok=True)
 
-        # create dist-info folder
-        pkg_dist_path.mkdir(parents=False, exist_ok=True)
+    # install the dependencies included in requirements.txt
+    if install_deps:
+        requirements_file = pkg_path / 'requirements.txt'
+        if requirements_file.exists():
+            install_requirements(requirements_file)
+            shutil.copyfile(requirements_file, pkg_dist_path / 'requirements.txt')
 
-        # install the dependencies included in requirements.txt
-        if install_deps:
-            requirements_file = pkg_path / 'requirements.txt'
-            if requirements_file.exists():
-                install_requirements(requirements_file)
-                shutil.copyfile(requirements_file, pkg_dist_path / 'requirements.txt')
+    manifest_path = pkg_path / 'manifest.yml'
+    if manifest_path.exists():
+        shutil.copyfile(manifest_path, pkg_dist_path / 'manifest.yml')
 
-        manifest_path = pkg_path / 'manifest.yml'
-        if manifest_path.exists():
-            shutil.copyfile(manifest_path, pkg_dist_path / 'manifest.yml')
-
-        # store the serial number in local
-        if executor.sn is not None:
-            sn_file = pkg_dist_path / f'PKG-SN-{executor.sn}'
-            sn_file.touch()
-
-    except Exception as ex:
-        # clean pkg_path, pkg_dist_path
-        shutil.rmtree(pkg_path)
-        shutil.rmtree(pkg_dist_path)
-        raise ex
+    # store the serial number in local
+    if executor.sn is not None:
+        sn_file = pkg_dist_path / f'PKG-SN-{executor.sn}'
+        sn_file.touch()
 
 
 def uninstall_local(uuid: str):

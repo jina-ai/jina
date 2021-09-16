@@ -27,7 +27,7 @@ def test_push_parser():
     args = parser.parse_args(['/tmp', '-f', 'Dockerfile'])
     assert args.docker_file == 'Dockerfile'
 
-    args = parser.parse_args(['/tmp', '--docker-file', 'Dockerfile'])
+    args = parser.parse_args(['/tmp', '--dockerfile', 'Dockerfile'])
     assert args.docker_file == 'Dockerfile'
 
     args = parser.parse_args(['/tmp', '--public'])

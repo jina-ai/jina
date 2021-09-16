@@ -21,35 +21,35 @@ def mixin_hub_push_parser(parser):
     gp.add_argument(
         'path',
         type=dir_path,
-        help='''
-The content source to be shipped into a Jina Hub executor. It can one of the followings:
-- a directory containing Dockerfile, manifest.yml, README.md, zero or more yaml config, zero or more Python file.
-''',
+        help='The Executor folder to be pushed to Jina Hub',
     )
 
     gp.add_argument(
-        '-f',
-        '--docker-file',
-        metavar='PATH',
-        help='Name of the Dockerfile (Default is `path/Dockerfile`)',
+        '--dockerfile',
+        metavar='DOCKERFILE',
+        help='The file path to the Dockerfile (default is `${cwd}/Dockerfile`)',
     )
 
     gp.add_argument(
         '-t',
         '--tag',
         action='append',
-        help='Name and optionally a list of tags',
+        help='''
+A list of tags. One can use it to distinguish architecture (e.g. `cpu`, `gpu`) or versions (e.g. `v1`, `v2`).
+
+One can later fetch a tagged Executor via `jinahub[+docker]://MyExecutor/gpu`
+''',
     )
 
     gp.add_argument(
         '--force',
         type=str,
-        help='To overwrite the executor identified as UUID8',
+        help='If set, push will overwrite the Executor on the Hub that shares the same UUID8 identifier',
     )
     gp.add_argument(
         '--secret',
         type=str,
-        help='The secret key of the identified Jina Hub executor',
+        help='The secret for overwrite a Hub executor',
     )
 
     gp = add_arg_group(parser, title='Visibility')
