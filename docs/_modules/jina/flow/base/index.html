@@ -1029,6 +1029,7 @@
         <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">expose_public</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">external</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">force</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">gpus</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span>
         <span class="n">host_in</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span>
@@ -1090,6 +1091,7 @@
 <span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
 <span class="sd">        :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas</span>
 <span class="sd">        :param external: The Pod will be considered an external Pod that has been started independently from the Flow.This Pod will not be context managed by the Flow.</span>
+<span class="sd">        :param force: If set, always pull the latest Hub Executor bundle even it exists on local</span>
 <span class="sd">        :param gpus: This argument allows dockerized Jina executor discover local gpu devices.</span>
 
 <span class="sd">              Note,</span>
@@ -1102,7 +1104,7 @@
 <span class="sd">        :param host_in: The host address for input, by default it is 0.0.0.0</span>
 <span class="sd">        :param host_out: The host address for output, by default it is 0.0.0.0</span>
 <span class="sd">        :param hosts_in_connect: The host address for input, by default it is 0.0.0.0</span>
-<span class="sd">        :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle</span>
+<span class="sd">        :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local</span>
 <span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
 <span class="sd">        :param memory_hwm: The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. -1 means no restriction</span>
 <span class="sd">        :param name: The name of this object.</span>

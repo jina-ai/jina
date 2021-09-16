@@ -736,54 +736,6 @@ in a <code class="docutils literal notranslate"><span class="pre">DocumentArray<
 {'id': '3bd0d392-b6da-11eb-b431-1e008a366d49', 'weight': 5.0}
 </pre></div>
 </div>
-<div class="section" id="advanced-filtering-via-find">
-<h4>Advanced filtering via <code class="docutils literal notranslate"><span class="pre">.find</span></code><a class="headerlink" href="#advanced-filtering-via-find" title="Permalink to this headline">¶</a></h4>
-<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> provides function <code class="docutils literal notranslate"><span class="pre">.find</span></code> that finds the documents in the <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>  whose tag values match a
-dictionary of user provided regular expressions. Since a <code class="docutils literal notranslate"><span class="pre">Document</span></code> can have many tags, the function expects one regular
-expression for each tag that a user wants to consider.</p>
-<p>The simplest way to use this function is to provide only the <code class="docutils literal notranslate"><span class="pre">regexes</span></code> dict. In this case, documents will be selected if
-all regular expressions passed are matched. Sometimes, a user might want to be less restrictive and might want to select
-documents only if a subset of the regular expressions is verified. In this case, <code class="docutils literal notranslate"><span class="pre">threshold</span></code> can be used to set the
-number of regular expressions that need to be matched in order to select a document.</p>
-<p>Let us consider the following example, where we want to select documents form a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> if the <code class="docutils literal notranslate"><span class="pre">city</span></code> tag
-contains a city that starts with <code class="docutils literal notranslate"><span class="pre">'B'</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'city'</span><span class="p">:</span> <span class="s1">'Barcelona'</span><span class="p">,</span> <span class="s1">'phone'</span><span class="p">:</span> <span class="s1">'None'</span><span class="p">})</span>
-<span class="n">d2</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'city'</span><span class="p">:</span> <span class="s1">'Berlin'</span><span class="p">,</span> <span class="s1">'phone'</span><span class="p">:</span> <span class="s1">'648907348'</span><span class="p">})</span>
-<span class="n">d3</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'city'</span><span class="p">:</span> <span class="s1">'Paris'</span><span class="p">,</span> <span class="s1">'phone'</span><span class="p">:</span> <span class="s1">'None'</span><span class="p">})</span>
-<span class="n">d4</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'city'</span><span class="p">:</span> <span class="s1">'Brussels'</span><span class="p">,</span> <span class="s1">'phone'</span><span class="p">:</span> <span class="s1">'None'</span><span class="p">})</span>
-
-<span class="n">docarray</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">,</span> <span class="n">d3</span><span class="p">,</span> <span class="n">d4</span><span class="p">])</span>
-
-<span class="n">regexes</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'city'</span><span class="p">:</span> <span class="sa">r</span><span class="s1">'B.*'</span><span class="p">}</span>
-<span class="hll"><span class="n">docarray_filtered</span> <span class="o">=</span> <span class="n">docarray</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">regexes</span><span class="o">=</span><span class="n">regexes</span><span class="p">)</span>
-</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'len(docarray_filtered)=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">docarray_filtered</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docarray_filtered</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'dict(d.tags)=</span><span class="si">{</span><span class="nb">dict</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">tags</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Will print</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>len(docarray_filtered) = 3
-dict(d.tags) = {'phone': 'None', 'city': 'Barcelona'}
-dict(d.tags) = {'phone': '648907348', 'city': 'Berlin'}
-dict(d.tags) = {'phone': 'None', 'city': 'Brussels'}
-</pre></div>
-</div>
-<p>We can consider more conditions, for example a subset of the previous documents that have <code class="docutils literal notranslate"><span class="pre">None</span></code> in the <code class="docutils literal notranslate"><span class="pre">'phone'</span></code> tag.
-We could do this as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">regexes</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'city'</span><span class="p">:</span> <span class="sa">r</span><span class="s1">'B.*'</span><span class="p">,</span> <span class="s1">'phone'</span><span class="p">:</span> <span class="s1">'None'</span><span class="p">}</span>
-<span class="n">docarray_filtered</span> <span class="o">=</span> <span class="n">docarray</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">regexes</span><span class="o">=</span><span class="n">regexes</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'len(docarray_filtered)=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">docarray_filtered</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docarray_filtered</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'dict(d.tags)=</span><span class="si">{</span><span class="nb">dict</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">tags</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Will print</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>len(docarray_filtered)=2
-dict(d.tags)={'city': 'Barcelona', 'phone': 'None'}
-dict(d.tags)={'phone': 'None', 'city': 'Brussels'}
-</pre></div>
-</div>
-</div>
 </div>
 <div class="section" id="sample-elements">
 <h3>Sample elements<a class="headerlink" href="#sample-elements" title="Permalink to this headline">¶</a></h3>
@@ -1134,10 +1086,7 @@ match emb = [[1.  0.1 0.  0.  0. ]] score = 1.6763054132461548
 <li><a class="reference internal" href="#basic-operations">Basic operations</a><ul>
 <li><a class="reference internal" href="#access-elements">Access elements</a></li>
 <li><a class="reference internal" href="#sort-elements">Sort elements</a></li>
-<li><a class="reference internal" href="#filter-elements">Filter elements</a><ul>
-<li><a class="reference internal" href="#advanced-filtering-via-find">Advanced filtering via <code class="docutils literal notranslate"><span class="pre">.find</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#filter-elements">Filter elements</a></li>
 <li><a class="reference internal" href="#sample-elements">Sample elements</a></li>
 <li><a class="reference internal" href="#shuffle-elements">Shuffle elements</a></li>
 <li><a class="reference internal" href="#split-elements-by-tags">Split elements by tags</a></li>

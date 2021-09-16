@@ -583,6 +583,22 @@
 :return: package and its dist-info path</p>
 </dd></dl>
 <dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.hubapi.get_dist_path_of_executor">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.hubapi.</span></span><span class="sig-name descname"><span class="pre">get_dist_path_of_executor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">executor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubapi/#get_dist_path_of_executor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubapi.get_dist_path_of_executor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the path of the executor if available.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>executor</strong> (<a class="reference internal" href="../jina.hubble/#jina.hubble.HubExecutor" title="jina.hubble.HubExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">HubExecutor</span></code></a>) – the executor to check</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the path of the executor package</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
 <dt class="sig sig-object py" id="jina.hubble.hubapi.get_config_path">
 <span class="sig-prename descclassname"><span class="pre">jina.hubble.hubapi.</span></span><span class="sig-name descname"><span class="pre">get_config_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubapi/#get_config_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubapi.get_config_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the local configure file
@@ -659,22 +675,6 @@
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>the list of local executors (if found)</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.hubble.hubapi.resolve_local">
-<span class="sig-prename descclassname"><span class="pre">jina.hubble.hubapi.</span></span><span class="sig-name descname"><span class="pre">resolve_local</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">executor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubapi/#resolve_local"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubapi.resolve_local" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the path of the executor if available.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>executor</strong> (<a class="reference internal" href="../jina.hubble/#jina.hubble.HubExecutor" title="jina.hubble.HubExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">HubExecutor</span></code></a>) – the executor to check</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>]</p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the path of the executor package</p>
 </dd>
 </dl>
 </dd></dl>

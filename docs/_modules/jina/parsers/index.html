@@ -571,6 +571,7 @@
     <span class="kn">from</span> <span class="nn">.peapods.runtimes.remote</span> <span class="kn">import</span> <span class="n">mixin_remote_runtime_parser</span>
     <span class="kn">from</span> <span class="nn">.peapods.pea</span> <span class="kn">import</span> <span class="n">mixin_pea_parser</span>
     <span class="kn">from</span> <span class="nn">.peapods.runtimes.distributed</span> <span class="kn">import</span> <span class="n">mixin_distributed_feature_parser</span>
+    <span class="kn">from</span> <span class="nn">.hubble.pull</span> <span class="kn">import</span> <span class="n">mixin_hub_pull_options_parser</span>
 
     <span class="n">mixin_base_ppr_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="n">mixin_zmq_runtime_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
@@ -579,6 +580,7 @@
     <span class="n">mixin_remote_runtime_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="n">mixin_distributed_feature_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="n">mixin_pea_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+    <span class="n">mixin_hub_pull_options_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">parser</span></div>
 
@@ -809,17 +811,6 @@
             <span class="s1">'are doing low-level orchestration'</span><span class="p">,</span>
             <span class="n">formatter_class</span><span class="o">=</span><span class="n">_chf</span><span class="p">,</span>
             <span class="o">**</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s1">'Start a Pea'</span><span class="p">))</span> <span class="k">if</span> <span class="n">_SHOW_ALL_ARGS</span> <span class="k">else</span> <span class="p">{},</span>
-        <span class="p">)</span>
-    <span class="p">)</span>
-
-    <span class="n">set_pod_parser</span><span class="p">(</span>
-        <span class="n">sp</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-            <span class="s1">'pod'</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">'Start a Pod. '</span>
-            <span class="s1">'You should rarely use this directly unless you '</span>
-            <span class="s1">'are doing low-level orchestration'</span><span class="p">,</span>
-            <span class="n">formatter_class</span><span class="o">=</span><span class="n">_chf</span><span class="p">,</span>
-            <span class="o">**</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s1">'Start a Pod'</span><span class="p">))</span> <span class="k">if</span> <span class="n">_SHOW_ALL_ARGS</span> <span class="k">else</span> <span class="p">{},</span>
         <span class="p">)</span>
     <span class="p">)</span>
 

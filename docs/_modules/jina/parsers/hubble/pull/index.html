@@ -550,6 +550,26 @@
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">add_arg_group</span>
 
 
+<div class="viewcode-block" id="mixin_hub_pull_options_parser"><a class="viewcode-back" href="../../../../../api/jina.parsers.hubble.pull/#jina.parsers.hubble.pull.mixin_hub_pull_options_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_hub_pull_options_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+    <span class="sd">"""Add the arguments for hub pull options to the parser</span>
+<span class="sd">    :param parser: the parser configure</span>
+<span class="sd">    """</span>
+
+    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Pull'</span><span class="p">)</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--install-requirements'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'If set, install `requirements.txt` in the Hub Executor bundle to local'</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--force'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'If set, always pull the latest Hub Executor bundle even it exists on local'</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="mixin_hub_pull_parser"><a class="viewcode-back" href="../../../../../api/jina.parsers.hubble.pull/#jina.parsers.hubble.pull.mixin_hub_pull_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_hub_pull_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
     <span class="sd">"""Add the arguments for hub pull to the parser</span>
 <span class="sd">    :param parser: the parser configure</span>
@@ -561,18 +581,12 @@
         <span class="n">parse_hub_uri</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">uri</span>
 
-    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Pull'</span><span class="p">)</span>
-    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'uri'</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">hub_uri</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">'The URI of the executor to pull (e.g., jinahub[+docker]://UUID8)'</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--install-requirements'</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'If set, install `requirements.txt` in the Hub Executor bundle to the local system'</span><span class="p">,</span>
-    <span class="p">)</span></div>
+    <span class="n">mixin_hub_pull_options_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span></div>
 </pre></div>
       </article>
       <footer>

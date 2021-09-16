@@ -569,35 +569,36 @@
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'path'</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">dir_path</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
-<span class="s1">The content source to be shipped into a Jina Hub executor. It can one of the followings:</span>
-<span class="s1">- a directory containing Dockerfile, manifest.yml, README.md, zero or more yaml config, zero or more Python file.</span>
-<span class="s1">'''</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'The Executor folder to be pushed to Jina Hub'</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'-f'</span><span class="p">,</span>
-        <span class="s1">'--docker-file'</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">'PATH'</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'Name of the Dockerfile (Default is `path/Dockerfile`)'</span><span class="p">,</span>
+        <span class="s1">'--dockerfile'</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">'DOCKERFILE'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'The file path to the Dockerfile (default is `$</span><span class="si">{cwd}</span><span class="s1">/Dockerfile`)'</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'-t'</span><span class="p">,</span>
         <span class="s1">'--tag'</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">'append'</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'Name and optionally a list of tags'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
+<span class="s1">A list of tags. One can use it to distinguish architecture (e.g. `cpu`, `gpu`) or versions (e.g. `v1`, `v2`).</span>
+
+<span class="s1">One can later fetch a tagged Executor via `jinahub[+docker]://MyExecutor/gpu`</span>
+<span class="s1">'''</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--force'</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'To overwrite the executor identified as UUID8'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'If set, push will overwrite the Executor on the Hub that shares the same UUID8 identifier'</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--secret'</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'The secret key of the identified Jina Hub executor'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'The secret for overwrite a Hub executor'</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Visibility'</span><span class="p">)</span>
