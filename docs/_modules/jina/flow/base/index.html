@@ -1271,6 +1271,15 @@
             <span class="n">kwargs</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">fallback_parsers</span><span class="o">=</span><span class="n">FALLBACK_PARSERS</span>
         <span class="p">)</span>
 
+        <span class="c1"># grpc data runtime does not support sharding at the moment</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">grpc_data_requests</span>
+            <span class="ow">and</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'shards'</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'shards'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">infrastructure</span> <span class="o">!=</span> <span class="n">InfrastructureType</span><span class="o">.</span><span class="n">K8S</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"GRPC data runtime does not support sharding"</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">grpc_data_requests</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="s1">'ZEDRuntime'</span><span class="p">:</span>
             <span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="s1">'GRPCDataRuntime'</span>
 
