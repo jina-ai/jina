@@ -430,7 +430,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
 
-        args.k8s_namespace = self.args.name
+        if self.args.name and self.args.infrastructure == InfrastructureType.K8S:
+            args.k8s_namespace = self.args.name
         args.connect_to_predecessor = False
         self._pod_nodes[GATEWAY_NAME] = PodFactory.build_pod(
             args, needs, self.args.infrastructure
@@ -746,7 +747,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         # pod workspace if not set then derive from flow workspace
         args.workspace = os.path.abspath(args.workspace or self.workspace)
 
-        args.k8s_namespace = self.args.name
+        if self.args.name and self.args.infrastructure == InfrastructureType.K8S:
+            args.k8s_namespace = self.args.name
         op_flow._pod_nodes[pod_name] = PodFactory.build_pod(
             args, needs, self.args.infrastructure
         )
