@@ -634,8 +634,6 @@ with f:
                     else f'{presented_id}:{secret}'
                 )
 
-                print(need_pull)
-
                 if scheme == 'jinahub+docker':
                     import docker
                     import docker.errors
