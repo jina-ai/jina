@@ -606,6 +606,22 @@ with f:
                 elif not pg_detail:
                     progress.update(task_id, advance=0, description=status)
 
+    def _load_docker_client(self):
+        with ImportExtensions(required=True):
+            import docker.errors
+            import docker
+            from docker import APIClient
+
+            try:
+                self._client = docker.from_env()
+                # low-level client
+                self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
+            except docker.errors.DockerException:
+                self.logger.critical(
+                    f'Docker daemon seems not running. Please run Docker daemon and try again.'
+                )
+                exit(1)
+
     def pull(self) -> str:
         """Pull the executor package from Jina Hub.
 
@@ -633,27 +649,17 @@ with f:
                 )
 
                 if scheme == 'jinahub+docker':
+                    self._load_docker_client()
                     import docker
-                    import docker.errors
-                    from docker import APIClient
 
                     try:
-                        client = docker.from_env()
-                        _raw_client = APIClient(base_url='unix://var/run/docker.sock')
-                    except docker.errors.DockerException:
-                        self.logger.critical(
-                            f'Docker daemon seems not running. Please run Docker daemon and try again.'
-                        )
-                        exit(1)
-
-                    try:
-                        client.images.get(executor.image_name)
+                        self._client.images.get(executor.image_name)
                     except docker.errors.ImageNotFound:
                         need_pull = True
 
                     if need_pull:
                         st.update(f'Pulling image ...')
-                        log_stream = _raw_client.pull(
+                        log_stream = self._raw_client.pull(
                             executor.image_name, stream=True, decode=True
                         )
                         st.stop()
@@ -661,9 +667,8 @@ with f:
                             log_stream,
                             console,
                         )
-                        uses_executor_image_name = executor.image_name
 
-                    return f'docker://{uses_executor_image_name}'
+                    return f'docker://{executor.image_name}'
                 elif scheme == 'jinahub':
                     import filelock
 
