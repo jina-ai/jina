@@ -1,14 +1,13 @@
 import multiprocessing
 import threading
+from copy import deepcopy
 from functools import partial
 from typing import Union, TYPE_CHECKING
-from copy import deepcopy
 
 from ... import __default_host__
-from ...hubble.hubio import HubIO
-from ...hubble.helper import is_valid_huburi
 from ...enums import GatewayProtocolType, RuntimeBackendType
-from ...parsers.hubble import set_hub_pull_parser
+from ...hubble.helper import is_valid_huburi
+from ...hubble.hubio import HubIO
 
 if TYPE_CHECKING:
     from argparse import Namespace
@@ -101,11 +100,11 @@ def update_runtime_cls(args, copy=False) -> 'Namespace':
     if _args.runtime_cls == 'ZEDRuntime' and _args.uses.startswith('docker://'):
         _args.runtime_cls = 'ContainerRuntime'
     if _args.runtime_cls == 'ZEDRuntime' and is_valid_huburi(_args.uses):
-        _hub_args = [_args.uses, '--no-usage']
-        if _args.install_requirements:
-            _hub_args.append('--install-requirements')
+        _hub_args = deepcopy(_args)
+        _hub_args.uri = _args.uses
+        _hub_args.no_usage = True
+        _args.uses = HubIO(_hub_args).pull()
 
-        _args.uses = HubIO(set_hub_pull_parser().parse_args(_hub_args)).pull()
         if _args.uses.startswith('docker://'):
             _args.runtime_cls = 'ContainerRuntime'
 

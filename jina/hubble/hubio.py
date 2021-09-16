@@ -20,7 +20,13 @@ from .helper import (
     disk_cache_offline,
 )
 from .helper import install_requirements
-from .hubapi import install_local, resolve_local, load_secret, dump_secret, get_lockfile
+from .hubapi import (
+    install_local,
+    get_dist_path_of_executor,
+    load_secret,
+    dump_secret,
+    get_lockfile,
+)
 from .. import __resources_path__
 from ..helper import get_full_version, ArgNamespace
 from ..importer import ImportExtensions
@@ -605,6 +611,7 @@ with f:
 
         :return: the `uses` string
         """
+
         from rich.console import Console
 
         console = Console()
@@ -612,6 +619,9 @@ with f:
         executor_name = None
 
         try:
+            need_pull = self.args.force
+            print(need_pull)
+            print(self.args)
             with console.status(f'Pulling {self.args.uri}...') as st:
                 scheme, name, tag, secret = parse_hub_uri(self.args.uri)
 
@@ -624,7 +634,7 @@ with f:
                     else f'{presented_id}:{secret}'
                 )
 
-                need_pull = self.args.force
+                print(need_pull)
 
                 if scheme == 'jinahub+docker':
                     import docker
@@ -642,14 +652,14 @@ with f:
 
                     local_exec_images = client.images.list(f'jinahub/{executor.uuid}')
                     if local_exec_images:
-                        used_executor_image_name = local_exec_images[0].tags[0]
+                        uses_executor_image_name = local_exec_images[0].tags[0]
 
                         if (
-                            used_executor_image_name != executor.image_name
+                            uses_executor_image_name != executor.image_name
                             and not self.args.force
                         ):
                             warnings.warn(
-                                f'local {used_executor_image_name} is outdated vs Hub {executor.image_name}, '
+                                f'local {uses_executor_image_name} is outdated vs Hub {executor.image_name}, '
                                 f'you may want to add `--force` to update.'
                             )
                     else:
@@ -665,15 +675,17 @@ with f:
                             log_stream,
                             console,
                         )
-                        used_executor_image_name = executor.image_name
+                        uses_executor_image_name = executor.image_name
 
-                    return f'docker://{used_executor_image_name}'
+                    return f'docker://{uses_executor_image_name}'
                 elif scheme == 'jinahub':
                     import filelock
 
                     with filelock.FileLock(get_lockfile(), timeout=-1):
                         try:
-                            pkg_path, pkg_dist_path = resolve_local(executor)
+                            pkg_path, pkg_dist_path = get_dist_path_of_executor(
+                                executor
+                            )
                             # check serial number to upgrade
                             sn_file_path = pkg_dist_path / f'PKG-SN-{executor.sn or 0}'
                             if (not sn_file_path.exists()) and any(
@@ -687,7 +699,6 @@ with f:
                                 requirements_file = pkg_dist_path / 'requirements.txt'
                                 if requirements_file.exists():
                                     install_requirements(requirements_file)
-                            return f'{pkg_path / "config.yml"}'
                         except FileNotFoundError:
                             need_pull = True
 
@@ -715,7 +726,7 @@ with f:
                                 install_deps=self.args.install_requirements,
                             )
 
-                            pkg_path, _ = resolve_local(executor)
+                            pkg_path, _ = get_dist_path_of_executor(executor)
                         return f'{pkg_path / "config.yml"}'
                 else:
                     raise ValueError(f'{self.args.uri} is not a valid scheme')
