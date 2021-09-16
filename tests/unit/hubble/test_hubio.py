@@ -238,68 +238,6 @@ class MockDockerClient:
             yield {}
 
 
-def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
-    mock = mocker.Mock()
-
-    fail_meta_fetch = True
-
-    @disk_cache_offline(cache_file=str(tmpfile))
-    def _mock_fetch(name, tag=None, secret=None):
-        mock(name=name)
-        if fail_meta_fetch:
-            raise urllib.error.URLError('Failed fetching meta')
-        else:
-            return HubExecutor(
-                uuid='dummy_mwu_encoder',
-                name='alias_dummy',
-                tag='v0',
-                image_name='jinahub/pod.dummy_mwu_encoder',
-                md5sum=None,
-                visibility=True,
-                archive_url=None,
-            )
-
-    def _gen_load_docker_client(fail_pull: bool):
-        def _load_docker_client(obj):
-            obj._raw_client = MockDockerClient(fail_pull=fail_pull)
-
-        return _load_docker_client
-
-    args = set_hub_pull_parser().parse_args(['jinahub+docker://dummy_mwu_encoder'])
-    monkeypatch.setattr(
-        HubIO,
-        '_load_docker_client',
-        _gen_load_docker_client(fail_pull=True),
-    )
-    monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
-
-    # Expect failure due to fetch_meta
-    with pytest.raises(urllib.error.URLError):
-        HubIO(args).pull()
-
-    fail_meta_fetch = False
-    # Expect failure due to image pull
-    with pytest.raises(docker.errors.APIError):
-        HubIO(args).pull()
-
-    # expect successful pull
-    monkeypatch.setattr(
-        HubIO,
-        '_load_docker_client',
-        _gen_load_docker_client(fail_pull=False),
-    )
-    assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder'
-
-    # expect successful pull using cached fetch_meta response and saved image
-    fail_meta_fetch = True
-    monkeypatch.setattr(
-        HubIO,
-        '_load_docker_client',
-        _gen_load_docker_client(fail_pull=False),
-    )
-    assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder'
-
-
 def test_pull_with_progress():
     import json
 
