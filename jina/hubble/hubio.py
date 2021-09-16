@@ -105,16 +105,17 @@ This guide helps you to create your own Executor in 30 seconds.''',
             )
         )
 
-        exec_name = Prompt.ask(
-            ':grey_question: What is the [bold]name[/bold] of your executor?\n'
-            '[dim]CamelCase is required[/dim]',
-            default=f'MyExecutor{random.randint(0, 100)}',
-        )
+        exec_name = self.args.name if self.args.name else Prompt.ask(
+                ':grey_question: What is the [bold]name[/bold] of your executor?\n'
+                '[dim]CamelCase is required[/dim]',
+                default=f'MyExecutor{random.randint(0, 100)}',
+            )
 
-        exec_path = Prompt.ask(
-            ':grey_question: [bold]Which folder[/bold] to store your executor?',
-            default=os.path.join(os.getcwd(), exec_name),
-        )
+        
+        exec_path = self.args.path if self.args.path else Prompt.ask(
+                ':grey_question: [bold]Which folder[/bold] to store your executor?',
+                default=os.path.join(os.getcwd(), exec_name),
+            )
 
         exec_description = '{{}}'
         exec_keywords = '{{}}'
@@ -122,12 +123,12 @@ This guide helps you to create your own Executor in 30 seconds.''',
 
         is_dockerfile = False
 
-        if Confirm.ask(
+        if eval(self.args.advance_config) if eval(self.args.advance_config) else Confirm.ask(
             '[green]That\'s all we need to create an Executor![/green]\n'
             ':grey_question: Or do you want to proceed to advanced configuration',
             default=False,
         ):
-            exec_description = (
+            exec_description = self.args.description if self.args.description else (
                 Prompt.ask(
                     ':grey_question: Please give a [bold]short description[/bold] of your executor?\n'
                     f'[dim]Example: {exec_name} embeds images into 128-dim vectors using ResNet.[/dim]'
@@ -135,7 +136,7 @@ This guide helps you to create your own Executor in 30 seconds.''',
                 or exec_description
             )
 
-            exec_keywords = (
+            exec_keywords = self.args.keywords if self.args.keywords else (
                 Prompt.ask(
                     ':grey_question: Please give some [bold]keywords[/bold] to help people search your executor [dim](separated by space)[/dim]\n'
                     f'[dim]Example: image cv embedding encoding resnet[/dim]'
@@ -143,7 +144,7 @@ This guide helps you to create your own Executor in 30 seconds.''',
                 or exec_keywords
             )
 
-            exec_url = (
+            exec_url = self.args.url if self.args.url else (
                 Prompt.ask(
                     ':grey_question: What is the [bold]URL[/bold] for GitHub repo?\n'
                     f'[dim]Example: https://github.com/yourname/my-executor[/dim]'
