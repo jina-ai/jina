@@ -136,6 +136,53 @@ def set_hub_parser(parser=None):
         )
     )
 
+    sppp.add_argument(
+        '--name',
+        help='Setup name of the executor',
+        action  = "store",
+        type = str,
+        default = None
+    )
+
+    sppp.add_argument(
+        '--path',
+        help='Path to store an executor',
+        action  = "store",
+        type = str,
+        default = None
+    )
+
+    sppp.add_argument(
+        '--advance_config',
+        help='Set up advance configuration',
+        choices=('True','False'),
+        default = 'False'
+    )
+
+    sppp.add_argument(
+        '--description',
+        help='Give a short description of your executor',
+        action  = "store",
+        type = str,
+        default = None
+    )
+
+    sppp.add_argument(
+        '--keywords',
+        help='Give some keywords to help people search your executor(separated by space)',
+        action  = "store",
+        type = str,
+        default = None
+    )
+
+    sppp.add_argument(
+        '--url',
+        help='URL of your GitHub repo',
+        action  = "store",
+        type = str,
+        default = None
+    )
+
     set_hub_push_parser(
         spp.add_parser(
             'push',
