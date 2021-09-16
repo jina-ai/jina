@@ -148,7 +148,7 @@ def test_push_wrong_dockerfile(
     _args_list = [exec_path, mode]
 
     args = set_hub_push_parser().parse_args(_args_list)
-    args.docker_file = dockerfile
+    args.dockerfile = dockerfile
     with pytest.raises(Exception) as info:
         HubIO(args).push()
 
@@ -230,6 +230,8 @@ def test_pull(test_envs, mocker, monkeypatch):
 class MockDockerClient:
     def __init__(self, fail_pull: bool = True):
         self.fail_pull = fail_pull
+        if not self.fail_pull:
+            self.images = {}
 
     def pull(self, repository: str, stream: bool = True, decode: bool = True):
         if self.fail_pull:
@@ -262,6 +264,7 @@ def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
     def _gen_load_docker_client(fail_pull: bool):
         def _load_docker_client(obj):
             obj._raw_client = MockDockerClient(fail_pull=fail_pull)
+            obj._client = MockDockerClient(fail_pull=fail_pull)
 
         return _load_docker_client
 
@@ -279,7 +282,7 @@ def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
 
     fail_meta_fetch = False
     # Expect failure due to image pull
-    with pytest.raises(docker.errors.APIError):
+    with pytest.raises(AttributeError):
         HubIO(args).pull()
 
     # expect successful pull

@@ -16,15 +16,32 @@ _hub_root = Path(
 _hub_root.mkdir(parents=True, exist_ok=True)
 
 
-def get_dist_path(uuid: str, tag: str) -> Tuple['Path', 'Path']:
+def get_dist_path(uuid: str, tag: str) -> Tuple[Path, Path]:
     """Get the package path according ID and TAG
     :param uuid: the UUID of the executor
     :param tag: the TAG of the executor
     :return: package and its dist-info path
     """
     pkg_path = _hub_root / uuid
-    pkg_dist_path = _hub_root / f'{uuid}-{tag}.dist-info'
+    pkg_dist_path = pkg_path / f'{tag}.dist-info'
     return pkg_path, pkg_dist_path
+
+
+def get_dist_path_of_executor(executor: 'HubExecutor') -> Tuple[Path, Path]:
+    """Return the path of the executor if available.
+
+    :param executor: the executor to check
+    :return: the path of the executor package
+    """
+
+    pkg_path, pkg_dist_path = get_dist_path(executor.uuid, executor.tag)
+
+    if not pkg_path.exists():
+        raise FileNotFoundError(f'{pkg_path} does not exist')
+    elif not pkg_dist_path.exists():
+        raise FileNotFoundError(f'{pkg_dist_path} does not exist')
+    else:
+        return pkg_path, pkg_dist_path
 
 
 def get_config_path(local_id: str) -> 'Path':
@@ -122,40 +139,27 @@ def install_local(
 
     pkg_path, pkg_dist_path = get_dist_path(executor.uuid, executor.tag)
 
-    # clean existed dist-info
-    for dist in _hub_root.glob(f'{executor.uuid}-*.dist-info'):
-        shutil.rmtree(dist)
-    if pkg_path.exists():
-        shutil.rmtree(pkg_path)
+    # unpack the zip package to the root pkg_path
+    unpack_package(zip_package, pkg_path)
 
-    try:
-        # unpack the zip package to the root pkg_path
-        unpack_package(zip_package, pkg_path)
+    # create dist-info folder
+    pkg_dist_path.mkdir(parents=False, exist_ok=True)
 
-        # create dist-info folder
-        pkg_dist_path.mkdir(parents=False, exist_ok=True)
+    # install the dependencies included in requirements.txt
+    if install_deps:
+        requirements_file = pkg_path / 'requirements.txt'
+        if requirements_file.exists():
+            install_requirements(requirements_file)
+            shutil.copyfile(requirements_file, pkg_dist_path / 'requirements.txt')
 
-        # install the dependencies included in requirements.txt
-        if install_deps:
-            requirements_file = pkg_path / 'requirements.txt'
-            if requirements_file.exists():
-                install_requirements(requirements_file)
-                shutil.copyfile(requirements_file, pkg_dist_path / 'requirements.txt')
+    manifest_path = pkg_path / 'manifest.yml'
+    if manifest_path.exists():
+        shutil.copyfile(manifest_path, pkg_dist_path / 'manifest.yml')
 
-        manifest_path = pkg_path / 'manifest.yml'
-        if manifest_path.exists():
-            shutil.copyfile(manifest_path, pkg_dist_path / 'manifest.yml')
-
-        # store the serial number in local
-        if executor.sn is not None:
-            sn_file = pkg_dist_path / f'PKG-SN-{executor.sn}'
-            sn_file.touch()
-
-    except Exception as ex:
-        # clean pkg_path, pkg_dist_path
-        shutil.rmtree(pkg_path)
-        shutil.rmtree(pkg_dist_path)
-        raise ex
+    # store the serial number in local
+    if executor.sn is not None:
+        sn_file = pkg_dist_path / f'PKG-SN-{executor.sn}'
+        sn_file.touch()
 
 
 def uninstall_local(uuid: str):
@@ -164,7 +168,7 @@ def uninstall_local(uuid: str):
     :param uuid: the UUID of the executor
     """
     pkg_path, _ = get_dist_path(uuid, None)
-    for dist in _hub_root.glob(f'{uuid}-*.dist-info'):
+    for dist in _hub_root.glob(f'{uuid}/*.dist-info'):
         shutil.rmtree(dist)
     if pkg_path.exists():
         shutil.rmtree(pkg_path)
@@ -176,27 +180,10 @@ def list_local():
     :return: the list of local executors (if found)
     """
     result = []
-    for dist_name in _hub_root.glob(r'*-v*.dist-info'):
+    for dist_name in _hub_root.glob(r'*/v*.dist-info'):
         result.append(dist_name)
 
     return result
-
-
-def resolve_local(executor: 'HubExecutor') -> Optional['Path']:
-    """Return the path of the executor if available.
-
-    :param executor: the executor to check
-    :return: the path of the executor package
-    """
-    pkg_path = _hub_root / executor.uuid
-    pkg_dist_path = _hub_root / f'{executor.uuid}-{executor.tag}.dist-info'
-
-    if not pkg_path.exists():
-        raise FileNotFoundError(f'{pkg_path} does not exist')
-    elif not pkg_dist_path.exists():
-        raise FileNotFoundError(f'{pkg_dist_path} does not exist')
-    else:
-        return pkg_path, pkg_dist_path
 
 
 def exist_local(uuid: str, tag: str = None) -> bool:
@@ -207,7 +194,7 @@ def exist_local(uuid: str, tag: str = None) -> bool:
     :return: True if existed, else False
     """
     try:
-        resolve_local(HubExecutor(uuid=uuid, tag=tag))
+        get_dist_path_of_executor(HubExecutor(uuid=uuid, tag=tag))
         return True
     except FileNotFoundError:
         return False
