@@ -196,7 +196,7 @@ ac_table = {
         'hub push': [
             '--help',
             '--no-usage',
-            '--docker-file',
+            '--dockerfile',
             '--tag',
             '--force',
             '--secret',
