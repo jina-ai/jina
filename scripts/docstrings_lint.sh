@@ -39,7 +39,7 @@ if [[ -z "$PYDOCSTYLE_OUTPUT" ]] && [[ -z "$DARGLINT_OUTPUT" ]]; then
   echo 'OK'
   exit 0
 else
-  echo 'failure. make sure to check the guide for docstrings: https://docs.jina.ai/chapters/docstring.html'
+  echo 'failure. make sure to check the guide for pre-commit hooks: https://github.com/jina-ai/jina/blob/master/CONTRIBUTING.md#install-pre-commit-hooks'
   echo $DARGLINT_OUTPUT
   echo $PYDOCSTYLE_OUTPUT
   exit 1
