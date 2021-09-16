@@ -156,7 +156,7 @@ def set_hub_parser(parser=None):
         '--advance_config',
         help='Set up advance configuration',
         choices=('True','False'),
-        default = 'False'
+        default = None
     )
 
     sppp.add_argument(
