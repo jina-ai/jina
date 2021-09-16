@@ -611,7 +611,12 @@
                 <span class="p">)</span>
                 <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">response_json</span>
             <span class="k">elif</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">UNPROCESSABLE_ENTITY</span><span class="p">:</span>
-                <span class="n">error_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'validation error in the payload: </span><span class="si">{</span><span class="n">response_json</span><span class="p">[</span><span class="s2">"detail"</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">"msg"</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span>
+                <span class="n">field_msg</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">' for field </span><span class="si">{</span><span class="n">response_json</span><span class="p">[</span><span class="s2">"detail"</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">"loc"</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="k">if</span> <span class="s1">'loc'</span> <span class="ow">in</span> <span class="n">response_json</span><span class="p">[</span><span class="s2">"detail"</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">else</span> <span class="s1">''</span>
+                <span class="p">)</span>
+                <span class="n">error_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'validation error in the payload: </span><span class="si">{</span><span class="n">response_json</span><span class="p">[</span><span class="s2">"detail"</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">"msg"</span><span class="p">]</span><span class="si">}{</span><span class="n">field_msg</span><span class="si">}</span><span class="s1">'</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">error_msg</span>
             <span class="k">else</span><span class="p">:</span>
