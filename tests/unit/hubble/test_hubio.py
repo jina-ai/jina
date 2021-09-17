@@ -323,7 +323,7 @@ def test_pull_with_progress():
 @pytest.mark.parametrize("add_dockerfile", ["True", "False"])
 @pytest.mark.parametrize("name", [None])
 @pytest.mark.parametrize("path", [None])
-@pytest.mark.parametrize("advance_configuration", [None])
+@pytest.mark.parametrize("advance_config", [None])
 @pytest.mark.parametrize("description", [None])
 @pytest.mark.parametrize("keywords", [None])
 @pytest.mark.parametrize("url", [None])
@@ -333,7 +333,7 @@ def test_new_args_none(
     add_dockerfile,
     name,
     path,
-    advance_configuration,
+    advance_config,
     description,
     keywords,
     url,
@@ -366,11 +366,11 @@ def test_new_args_none(
         hub="new",
         name=name,
         path=path,
-        advance_configuration=advance_configuration,
+        advance_config=advance_config,
         description=description,
         keywords=keywords,
         url=url,
-        add_dockerfile=add_dockerfile,
+        is_dockerfile=add_dockerfile,
     )
     HubIO(args).new()
     path = tmpdir / "DummyExecutor"
@@ -401,7 +401,7 @@ def test_new_args_none(
 @pytest.mark.parametrize("add_dockerfile", ["True", "False"])
 @pytest.mark.parametrize("name", [False])
 @pytest.mark.parametrize("path", [False])
-@pytest.mark.parametrize("advance_configuration", [False])
+@pytest.mark.parametrize("advance_config", [False])
 @pytest.mark.parametrize("description", [False])
 @pytest.mark.parametrize("keywords", [False])
 @pytest.mark.parametrize("url", [False])
@@ -411,7 +411,7 @@ def test_new_args_false(
     add_dockerfile,
     name,
     path,
-    advance_configuration,
+    advance_config,
     description,
     keywords,
     url,
@@ -444,11 +444,11 @@ def test_new_args_false(
         hub="new",
         name=name,
         path=path,
-        advance_configuration=advance_configuration,
+        advance_config=advance_config,
         description=description,
         keywords=keywords,
         url=url,
-        add_dockerfile=add_dockerfile,
+        is_dockerfile=add_dockerfile,
     )
     HubIO(args).new()
     path = tmpdir / "DummyExecutor"

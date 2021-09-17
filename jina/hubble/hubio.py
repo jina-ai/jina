@@ -76,11 +76,7 @@ class HubIO:
         """
         metas, envs = get_full_version()
 
-<<<<<<< HEAD
         header = {**{f'jinameta-{k}': str(v) for k, v in metas.items()}, **envs}
-=======
-        header = {**{f"jinameta-{k}": str(v) for k, v in metas.items()}, **envs}
->>>>>>> c48659279 (style: format using black)
         return header
 
     def new(self) -> None:
@@ -110,15 +106,9 @@ This guide helps you to create your own Executor in 30 seconds.""",
             self.args.name
             if self.args.name
             else Prompt.ask(
-<<<<<<< HEAD
                 ':grey_question: What is the [bold]name[/bold] of your executor?\n'
                 '[dim]CamelCase is required[/dim]',
                 default=f'MyExecutor{random.randint(0, 100)}',
-=======
-                ":grey_question: What is the [bold]name[/bold] of your executor?\n"
-                "[dim]CamelCase is required[/dim]",
-                default=f"MyExecutor{random.randint(0, 100)}",
->>>>>>> c48659279 (style: format using black)
             )
         )
 
@@ -126,11 +116,7 @@ This guide helps you to create your own Executor in 30 seconds.""",
             self.args.path
             if self.args.path
             else Prompt.ask(
-<<<<<<< HEAD
                 ':grey_question: [bold]Which folder[/bold] to store your executor?',
-=======
-                ":grey_question: [bold]Which folder[/bold] to store your executor?",
->>>>>>> c48659279 (style: format using black)
                 default=os.path.join(os.getcwd(), exec_name),
             )
         )
@@ -155,13 +141,8 @@ This guide helps you to create your own Executor in 30 seconds.""",
                 if self.args.description
                 else (
                     Prompt.ask(
-<<<<<<< HEAD
                         ':grey_question: Please give a [bold]short description[/bold] of your executor?\n'
                         f'[dim]Example: {exec_name} embeds images into 128-dim vectors using ResNet.[/dim]'
-=======
-                        ":grey_question: Please give a [bold]short description[/bold] of your executor?\n"
-                        f"[dim]Example: {exec_name} embeds images into 128-dim vectors using ResNet.[/dim]"
->>>>>>> c48659279 (style: format using black)
                     )
                     or exec_description
                 )
@@ -172,13 +153,8 @@ This guide helps you to create your own Executor in 30 seconds.""",
                 if self.args.keywords
                 else (
                     Prompt.ask(
-<<<<<<< HEAD
                         ':grey_question: Please give some [bold]keywords[/bold] to help people search your executor [dim](separated by space)[/dim]\n'
                         f'[dim]Example: image cv embedding encoding resnet[/dim]'
-=======
-                        ":grey_question: Please give some [bold]keywords[/bold] to help people search your executor [dim](separated by space)[/dim]\n"
-                        f"[dim]Example: image cv embedding encoding resnet[/dim]"
->>>>>>> c48659279 (style: format using black)
                     )
                     or exec_keywords
                 )
@@ -189,13 +165,8 @@ This guide helps you to create your own Executor in 30 seconds.""",
                 if self.args.url
                 else (
                     Prompt.ask(
-<<<<<<< HEAD
                         ':grey_question: What is the [bold]URL[/bold] for GitHub repo?\n'
                         f'[dim]Example: https://github.com/yourname/my-executor[/dim]'
-=======
-                        ":grey_question: What is the [bold]URL[/bold] for GitHub repo?\n"
-                        f"[dim]Example: https://github.com/yourname/my-executor[/dim]"
->>>>>>> c48659279 (style: format using black)
                     )
                     or exec_url
                 )
@@ -214,7 +185,6 @@ your executor has non-trivial dependencies or must be run under certain environm
                 )
             )
 
-<<<<<<< HEAD
             is_dockerfile = (
                 eval(self.args.add_dockerfile)
                 if self.args.add_dockerfile
@@ -222,11 +192,6 @@ your executor has non-trivial dependencies or must be run under certain environm
                     ':grey_question: Do you need to write your own [bold]Dockerfile[/bold] instead of the auto-generated one?',
                     default=False,
                 )
-=======
-            is_dockerfile = Confirm.ask(
-                ":grey_question: Do you need to write your own [bold]Dockerfile[/bold] instead of the auto-generated one?",
-                default=False,
->>>>>>> c48659279 (style: format using black)
             )
 
             print("[green]That's all we need to create an Executor![/green]")
@@ -307,11 +272,7 @@ metas:
 
         table.add_row("executor.py", "The main logic file of the Executor.")
         table.add_row(
-<<<<<<< HEAD
             'manifest.yml', 'Metadata for the Executor, for better appeal on Jina Hub.'
-=======
-            "manifest.yml", "Metadata for the Executor, for better appeal on Jina Hub."
->>>>>>> c48659279 (style: format using black)
         )
 
         manifest_fields_table = Table(box=box.SIMPLE)
@@ -322,11 +283,7 @@ metas:
             "description", "Human-readable description of the Executor"
         )
         manifest_fields_table.add_row(
-<<<<<<< HEAD
             'url', 'URL to find more information on the Executor (e.g. GitHub repo URL)'
-=======
-            "url", "URL to find more information on the Executor (e.g. GitHub repo URL)"
->>>>>>> c48659279 (style: format using black)
         )
         manifest_fields_table.add_row(
             "keywords", "Keywords that help user find the Executor"
@@ -356,11 +313,7 @@ metas:
         )
 
         p1 = Panel(
-<<<<<<< HEAD
             table, title='2. Understand folder structure', width=120, expand=False
-=======
-            table, title="2. Understand folder structure", width=120, expand=False
->>>>>>> c48659279 (style: format using black)
         )
 
         p2 = Panel(
@@ -380,11 +333,7 @@ metas:
         final_table.add_row(p1)
         final_table.add_row(p2)
 
-<<<<<<< HEAD
         p = Panel(final_table, title=':tada: Next steps', width=130, expand=False)
-=======
-        p = Panel(final_table, title=":tada: Next steps", width=130, expand=False)
->>>>>>> c48659279 (style: format using black)
         console.print(p)
 
     def push(self) -> None:
@@ -524,19 +473,11 @@ metas:
             table.add_row(":name_badge: Name", image["name"])
         table.add_row(":lock: Secret", secret)
         table.add_row(
-<<<<<<< HEAD
             '', ':point_up:️ [bold red]Please keep this token in a safe place!'
-=======
-            "", ":point_up:️ [bold red]Please keep this token in a safe place!"
->>>>>>> c48659279 (style: format using black)
         )
         table.add_row(":eyes: Visibility", visibility)
 
-<<<<<<< HEAD
         p1 = Panel(table, title='Published', width=80, expand=False)
-=======
-        p1 = Panel(table, title="Published", width=80, expand=False)
->>>>>>> c48659279 (style: format using black)
 
         console.print(p1)
 
