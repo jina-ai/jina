@@ -93,7 +93,6 @@ def set_hub_parser(parser=None):
     sppp.add_argument(
         "--description",
         help="Give a short description of your executor",
-        action="store",
         type=str,
         default=None,
     )
@@ -101,13 +100,19 @@ def set_hub_parser(parser=None):
     sppp.add_argument(
         "--keywords",
         help="Give some keywords to help people search your executor(separated by space)",
-        action="store",
         type=str,
         default=None,
     )
 
     sppp.add_argument(
         "--url", help="URL of your GitHub repo", action="store", type=str, default=None
+    )
+
+    sppp.add_argument(
+        "--is_dockerfile",
+        help="Set up advance configuration",
+        choices=("True", "False"),
+        default=None,
     )
 
     set_hub_push_parser(
