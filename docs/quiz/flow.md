@@ -97,24 +97,6 @@ f = Flow(executors=[MyExecutor])
 
 > The [`uses` parameter](https://docs.jina.ai/fundamentals/flow/add-exec-to-flow/) specifies the Executor. `uses` accepts multiple value types including class name, Docker image, (inline) YAML.
 
-## 6. How do you create a RESTful gateway for a Flow?
-
-```python
-flow = Flow()
-
-with f:
-  f.protocol = "http"
-  f.port_expose = 12345
-  f.block()
-```
-
-```python
-flow = Flow(protocol="http", port_expose=12345)
-
-with f:
-  f.block()
-```
-
 ```python
 flow = Flow()
 
@@ -124,7 +106,7 @@ with f:
 
 > Jina supports gRPC, WebSocket and RESTful gateways. [To enable a Flow to receive from HTTP requests, you can add protocol='http' in the Flow constructor](https://docs.jina.ai/fundamentals/flow/flow-as-a-service/).
 
-### 7. How would you override the `workspace` directory that an Executor uses?
+## 6. How would you override the `workspace` directory that an Executor uses?
 
 ```python
 flow = Flow().add(
@@ -148,7 +130,7 @@ flow = Flow().add(
 
 > `workspace` is a meta setting, meaning it applies to *all* Executors in the Flow. [As well as meta-configuration, both request-level and Executor-level parameters can be overridden](https://docs.jina.ai/fundamentals/flow/add-exec-to-flow/#override-executor-config).
 
-## 8. What kind of input does an `AsyncFlow` accept?
+## 7. What kind of input does an `AsyncFlow` accept?
 
 - Exactly the same as a standard Flow
 - Async generators
@@ -156,7 +138,7 @@ flow = Flow().add(
 
 > AsyncFlow is an “async version” of the Flow class. Unlike Flow, [AsyncFlow accepts input and output functions as async generators](https://docs.jina.ai/fundamentals/flow/async-flow/#create-asyncflow). This is useful when your data sources involve other asynchronous libraries (e.g. motor for MongoDB):
 
-## 9. What communication protocols does a Flow support?
+## 8. What communication protocols does a Flow support?
 
 - SOAP
 - gRPC
@@ -166,6 +148,24 @@ flow = Flow().add(
 
 > Jina supports [HTTP (RESTful), gRPC, and WebSocket protocols](https://docs.jina.ai/fundamentals/flow/flow-as-a-service/#supported-communication-protocols).
 
+## 9. How do you create a RESTful gateway for a Flow?
+
+```python
+flow = Flow()
+
+with f:
+  f.protocol = "http"
+  f.port_expose = 12345
+  f.block()
+```
+
+```python
+flow = Flow(protocol="http", port_expose=12345)
+
+with f:
+  f.block()
+```
+
 ## 10. Can you access a Flow service from a web page with a different domain?
 
 - No. Jina only supports access from a web page running on the same machine.
@@ -173,4 +173,3 @@ flow = Flow().add(
 - Yes, but you have to enable CORS
 
 > CORS (cross-origin-resources-sharing) is [by default disabled for security](https://docs.jina.ai/fundamentals/flow/flow-as-a-service/#enable-cross-origin-resources-sharing-cors). That means you can not access the service from a webpage with different domain until you enable it.
-
