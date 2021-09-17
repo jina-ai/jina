@@ -446,6 +446,7 @@ metas:
         uuid8 = image['id']
         secret = image['secret']
         visibility = image['visibility']
+        tag = self.args.tag[0] if self.args.tag else None
 
         table = Table.grid()
         table.add_column(width=20, no_wrap=True)
@@ -475,14 +476,14 @@ metas:
         presented_id = image.get('name', uuid8)
         usage = (
             f'{presented_id}' if visibility == 'public' else f'{presented_id}:{secret}'
-        )
+        ) + (f'/{tag}' if tag else '')
 
         if not self.args.no_usage:
             self._get_prettyprint_usage(console, usage)
 
         return uuid8, secret
 
-    def _get_prettyprint_usage(self, console, executor_name, usage_kind):
+    def _get_prettyprint_usage(self, console, executor_name, usage_kind=None):
         from rich.panel import Panel
         from rich.syntax import Syntax
 
@@ -649,15 +650,10 @@ with f:
                 executor = HubIO.fetch_meta(name, tag=tag, secret=secret)
                 presented_id = getattr(executor, 'name', executor.uuid)
                 executor_name = (
-                    (
-                        f'{presented_id}'
-                        if executor.visibility == 'public'
-                        else f'{presented_id}:{secret}'
-                    )
-                    + f'/{tag}'
-                    if tag
-                    else ''
-                )
+                    f'{presented_id}'
+                    if executor.visibility == 'public'
+                    else f'{presented_id}:{secret}'
+                ) + (f'/{tag}' if tag else '')
 
                 if scheme == 'jinahub+docker':
                     self._load_docker_client()
