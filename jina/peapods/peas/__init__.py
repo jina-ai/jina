@@ -92,9 +92,12 @@ def run(
         is_started.set()
         with runtime:
             is_ready.set()
+            logger.debug('runtime.run_forever()')
             runtime.run_forever()
+            logger.debug('runtime.run_forever() complete')
     finally:
         _unset_envs()
+        logger.debug('is_shutdown.set()')
         is_shutdown.set()
 
 
@@ -310,13 +313,18 @@ class BasePea:
         self.logger.debug('waiting for ready or shutdown signal from runtime')
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
             try:
+                self.logger.debug('Cancel runtime')
                 self._cancel_runtime()
+                self.logger.debug(f'Wait for shutdown for {self._timeout_ctrl}')
                 if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
+                    self.logger.debug(f'Cancel timed out after {self._timeout_ctrl}')
                     self.terminate()
                     time.sleep(0.1)
                     raise Exception(
                         f'Shutdown signal was not received for {self._timeout_ctrl}'
                     )
+                else:
+                    self.logger.debug(f'Cancel worked')
             except Exception as ex:
                 self.logger.error(
                     f'{ex!r} during {self.close!r}'
