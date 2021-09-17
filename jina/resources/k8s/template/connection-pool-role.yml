@@ -5,5 +5,5 @@ metadata:
   name: connection-pool
 rules:
 - apiGroups: [""]
-  resources: ["pods"]
+  resources: ["pods", "services"]
   verbs: ["list", "watch"]

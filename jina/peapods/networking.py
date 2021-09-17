@@ -299,17 +299,22 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
                 self._create_connection(target=f'{target}:{connection_pool.port}'),
             )
 
+    def _extract_app(self, service_item):
+        if service_item.metadata.annotations:
+            return ast.literal_eval(
+                list(service_item.metadata.annotations.values())[0]
+            )['spec']['selector']['app']
+        elif service_item.metadata.labels:
+            return service_item.metadata.labels['app']
+
+        return None
+
     def _find_cluster_ip(self, deployment_name):
         service_resp = self._k8s_client.list_namespaced_service(self._namespace)
         for s in service_resp.items:
-            if s.metadata.annotations:
-                annotations = ast.literal_eval(list(s.metadata.annotations.values())[0])
-
-                if (
-                    deployment_name == annotations['spec']['selector']['app']
-                    and s.spec.cluster_ip
-                ):
-                    return s.spec.cluster_ip, s.spec.ports[0].port
+            app = self._extract_app(s)
+            if app and deployment_name == app and s.spec.cluster_ip:
+                return s.spec.cluster_ip, s.spec.ports[0].port
 
         return None, None
 
