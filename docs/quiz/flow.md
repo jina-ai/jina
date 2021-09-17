@@ -97,15 +97,6 @@ f = Flow(executors=[MyExecutor])
 
 > The [`uses` parameter](https://docs.jina.ai/fundamentals/flow/add-exec-to-flow/) specifies the Executor. `uses` accepts multiple value types including class name, Docker image, (inline) YAML.
 
-```python
-flow = Flow()
-
-with f:
-  f.gateway(protocol="restful", port=12345)
-```
-
-> Jina supports gRPC, WebSocket and RESTful gateways. [To enable a Flow to receive from HTTP requests, you can add protocol='http' in the Flow constructor](https://docs.jina.ai/fundamentals/flow/flow-as-a-service/).
-
 ## 6. How would you override the `workspace` directory that an Executor uses?
 
 ```python
@@ -165,6 +156,16 @@ flow = Flow(protocol="http", port_expose=12345)
 with f:
   f.block()
 ```
+
+```python
+flow = Flow()
+
+with f:
+  f.gateway(protocol="restful", port=12345)
+```
+
+> Jina supports gRPC, WebSocket and RESTful gateways. [To enable a Flow to receive from HTTP requests, you can add protocol='http' in the Flow constructor](https://docs.jina.ai/fundamentals/flow/flow-as-a-service/).
+
 
 ## 10. Can you access a Flow service from a web page with a different domain?
 
