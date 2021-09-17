@@ -482,7 +482,7 @@ metas:
 
         return uuid8, secret
 
-    def _get_prettyprint_usage(self, console, executor_name):
+    def _get_prettyprint_usage(self, console, executor_name, usage_kind):
         from rich.panel import Panel
         from rich.syntax import Syntax
 
@@ -521,7 +521,12 @@ with f:
             expand=False,
         )
 
-        console.print(p1, p2)
+        if usage_kind == 'docker':
+            console.print(p2)
+        elif usage_kind == 'source':
+            console.print(p1)
+        else:
+            console.print(p1, p2)
 
     @staticmethod
     @disk_cache_offline(cache_file=str(_cache_file))
@@ -633,6 +638,7 @@ with f:
         console = Console()
         cached_zip_file = None
         executor_name = None
+        usage_kind = None
 
         try:
             need_pull = self.args.force
@@ -643,9 +649,14 @@ with f:
                 executor = HubIO.fetch_meta(name, tag=tag, secret=secret)
                 presented_id = getattr(executor, 'name', executor.uuid)
                 executor_name = (
-                    f'{presented_id}'
-                    if executor.visibility == 'public'
-                    else f'{presented_id}:{secret}'
+                    (
+                        f'{presented_id}'
+                        if executor.visibility == 'public'
+                        else f'{presented_id}:{secret}'
+                    )
+                    + f'/{tag}'
+                    if tag
+                    else ''
                 )
 
                 if scheme == 'jinahub+docker':
@@ -667,7 +678,7 @@ with f:
                             log_stream,
                             console,
                         )
-
+                    usage_kind = 'docker'
                     return f'docker://{executor.image_name}'
                 elif scheme == 'jinahub':
                     import filelock
@@ -718,6 +729,8 @@ with f:
                             )
 
                             pkg_path, _ = get_dist_path_of_executor(executor)
+
+                        usage_kind = 'source'
                         return f'{pkg_path / "config.yml"}'
                 else:
                     raise ValueError(f'{self.args.uri} is not a valid scheme')
@@ -733,4 +746,4 @@ with f:
                 cached_zip_file.unlink()
 
             if not self.args.no_usage and executor_name:
-                self._get_prettyprint_usage(console, executor_name)
+                self._get_prettyprint_usage(console, executor_name, usage_kind)
