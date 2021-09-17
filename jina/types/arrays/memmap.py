@@ -554,14 +554,37 @@ class DocumentArrayMemmap(
 
     @embeddings.setter
     def embeddings(self, emb: np.ndarray):
+        """Set the embeddings of the Documents
 
-        assert len(emb) == len(self), (
-            'the number of rows in the input ({len(emb)}),'
-            'should match the number of Documents ({len(self)})'
-        )
+        :param emb: The embedding matrix to set
+        """
+        if len(emb) != len(self):
+            raise ValueError(
+                f'the number of rows in the input ({len(emb)}), should match the'
+                f'number of Documents ({len(self)})'
+            )
 
         for d, x in zip(self, emb):
             d.embedding = x
+
+    @DocumentArrayGetAttrMixin.blobs.getter
+    def blobs(self) -> np.ndarray:
+        """Return a `np.ndarray` stacking all the `blob` attributes.
+
+        The `blob` attributes are stacked together along a newly created first
+        dimension (as if you would stack using ``np.stack(X, axis=0)``).
+
+        .. warning:: This operation assumes all blobs have the same shape and dtype.
+                 All dtype and shape values are assumed to be equal to the values of the
+                 first element in the DocumentArray / DocumentArrayMemmap
+
+        .. warning:: This operation currently does not support sparse arrays.
+
+        :return: blobs stacked per row as `np.ndarray`.
+        """
+
+        blobs = np.stack(self.get_attributes('blob'))
+        return blobs
 
     def _invalidate_embeddings_memmap(self):
         self._embeddings_memmap = None
