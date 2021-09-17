@@ -28,7 +28,7 @@ docker run --add-host host.docker.internal:host-gateway \
 
 - `--env JINA_DAEMON_BUILD=DEVEL` ?
 
-  This makes sure default build for JinaD is `DEVEL`. This must be passed during development, CICD etc
+  This makes sure default build for JinaD is `DEVEL`. This should be passed only during development, CICD etc and must not be used when using the official image.
 
 - `--add-host` ?
 
