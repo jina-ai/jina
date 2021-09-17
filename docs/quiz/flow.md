@@ -164,8 +164,13 @@ flow = Flow().add(
 - REST
 - GraphQL
 
+> Jina supports [HTTP (RESTful), gRPC, and WebSocket protocols](https://docs.jina.ai/fundamentals/flow/flow-as-a-service/#supported-communication-protocols).
+
 ## 10. Can you access a Flow service from a web page with a different domain?
 
 - No. Jina only supports access from a web page running on the same machine.
 - Yes, out of the box
 - Yes, but you have to enable CORS
+
+> CORS (cross-origin-resources-sharing) is [by default disabled for security](https://docs.jina.ai/fundamentals/flow/flow-as-a-service/#enable-cross-origin-resources-sharing-cors). That means you can not access the service from a webpage with different domain until you enable it.
+
