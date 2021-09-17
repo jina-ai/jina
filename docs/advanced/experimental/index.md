@@ -17,6 +17,6 @@ That said, have fun!
 
 kubernetes
 indexers
-compound-executors
+compound-executor
 graph-document
 ```
