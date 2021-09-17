@@ -7,10 +7,10 @@ def mixin_hub_usage_parser(parser):
     :param parser: the parser configure
     """
     parser.add_argument(
-        "--no-usage",
-        action="store_true",
+        '--no-usage',
+        action='store_true',
         default=False,
-        help="If set, Hub executor usage will not be printed.",
+        help='If set, Hub executor usage will not be printed.',
     )
 
 
@@ -54,81 +54,81 @@ def set_hub_parser(parser=None):
         parser = set_base_parser()
 
     spp = parser.add_subparsers(
-        dest="hub",
-        description="use `%(prog)-8s [sub-command] --help` "
-        "to get detailed information about each sub-command",
+        dest='hub',
+        description='use `%(prog)-8s [sub-command] --help` '
+        'to get detailed information about each sub-command',
         required=True,
     )
 
     sppp = spp.add_parser(
-        "new",
-        help="create a new executor using the template",
-        description="Create a new executor using the template",
+        'new',
+        help='create a new executor using the template',
+        description='Create a new executor using the template',
         formatter_class=_chf,
     )
 
     sppp.add_argument(
-        "--name",
-        help="Setup name of the executor",
-        action="store",
+        '--name',
+        help='Setup name of the executor',
+        action='store',
         type=str,
         default=None,
     )
 
     sppp.add_argument(
-        "--path",
-        help="Path to store an executor",
-        action="store",
+        '--path',
+        help='Path to store an executor',
+        action='store',
         type=str,
         default=None,
     )
 
     sppp.add_argument(
-        "--advance_config",
-        help="Set up advance configuration",
-        choices=("True", "False"),
+        '--advance_config',
+        help='Set up advance configuration',
+        choices=('True', 'False'),
         default=None,
     )
 
     sppp.add_argument(
-        "--description",
-        help="Give a short description of your executor",
+        '--description',
+        help='Give a short description of your executor',
         type=str,
         default=None,
     )
 
     sppp.add_argument(
-        "--keywords",
-        help="Give some keywords to help people search your executor(separated by space)",
+        '--keywords',
+        help='Give some keywords to help people search your executor(separated by space)',
         type=str,
         default=None,
     )
 
     sppp.add_argument(
-        "--url", help="URL of your GitHub repo", action="store", type=str, default=None
+        '--url', help='URL of your GitHub repo', action='store', type=str, default=None
     )
 
     sppp.add_argument(
-        "--is_dockerfile",
-        help="Set up advance configuration",
-        choices=("True", "False"),
+        '--is_dockerfile',
+        help='Set up advance configuration',
+        choices=('True', 'False'),
         default=None,
     )
 
     set_hub_push_parser(
         spp.add_parser(
-            "push",
-            help="push an executor package to Jina hub",
-            description="Push an executor package to Jina hub",
+            'push',
+            help='push an executor package to Jina hub',
+            description='Push an executor package to Jina hub',
             formatter_class=_chf,
         )
     )
 
     set_hub_pull_parser(
         spp.add_parser(
-            "pull",
-            help="download an executor image/package from Jina hub",
-            description="Download an executor image/package from Jina hub",
+            'pull',
+            help='download an executor image/package from Jina hub',
+            description='Download an executor image/package from Jina hub',
             formatter_class=_chf,
         )
     )
