@@ -103,7 +103,7 @@ def deploy_service(
         custom_resource_dir=custom_resource_dir,
     )
 
-    logger.info(f'🔋\tCreate necessary permissions"')
+    logger.info(f'🔑\tCreate necessary permissions"')
 
     kubernetes_tools.create(
         'connection-pool-role',
