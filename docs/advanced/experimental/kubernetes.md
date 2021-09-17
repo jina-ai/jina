@@ -39,7 +39,7 @@ The following code deploys a simple `Flow` with just a single `Executor`.
 ```python
 from jina import Flow
 
-f = Flow(name='test-flow', port_expose=8080, infrastructure='K8S', protocol='http').add(
+f = Flow(name='index-flow', port_expose=8080, infrastructure='K8S', protocol='http').add(
     uses='jinahub+docker://CLIPImageEncoder'
 )
 
