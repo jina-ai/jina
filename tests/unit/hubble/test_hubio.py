@@ -23,17 +23,17 @@ class PostMockResponse:
 
     def json(self):
         return {
-            'code': 0,
-            'success': True,
-            'executors': [
+            "code": 0,
+            "success": True,
+            "executors": [
                 {
-                    'id': 'w7qckiqy',
-                    'secret': 'f7386f9ef7ea238fd955f2de9fb254a0',
-                    'image': 'jinahub/w7qckiqy:v3',
-                    'visibility': 'public',
+                    "id": "w7qckiqy",
+                    "secret": "f7386f9ef7ea238fd955f2de9fb254a0",
+                    "image": "jinahub/w7qckiqy:v3",
+                    "visibility": "public",
                 }
             ],
-            'message': 'uploaded successfully',
+            "message": "uploaded successfully",
         }
 
     @property
@@ -63,16 +63,16 @@ class GetMockResponse:
 
     def json(self):
         return {
-            'keywords': [],
-            'id': 'dummy_mwu_encoder',
-            'name': 'alias_dummy',
-            'tag': 'v0',
-            'versions': [],
-            'visibility': 'public',
-            'image': 'jinahub/pod.dummy_mwu_encoder',
-            'package': {
-                'download': 'http://hubbleapi.jina.ai/files/dummy_mwu_encoder-v0.zip',
-                'md5': 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f',
+            "keywords": [],
+            "id": "dummy_mwu_encoder",
+            "name": "alias_dummy",
+            "tag": "v0",
+            "versions": [],
+            "visibility": "public",
+            "image": "jinahub/pod.dummy_mwu_encoder",
+            "package": {
+                "download": "http://hubbleapi.jina.ai/files/dummy_mwu_encoder-v0.zip",
+                "md5": "ecbe3fdd9cbe25dbb85abaaf6c54ec4f",
             },
         }
 
@@ -85,10 +85,10 @@ class GetMockResponse:
         return self.response_code
 
 
-@pytest.mark.parametrize('tag', [None, '-t v0'])
-@pytest.mark.parametrize('force', [None, 'UUID8'])
-@pytest.mark.parametrize('path', ['dummy_executor'])
-@pytest.mark.parametrize('mode', ['--public', '--private'])
+@pytest.mark.parametrize("tag", [None, "-t v0"])
+@pytest.mark.parametrize("force", [None, "UUID8"])
+@pytest.mark.parametrize("path", ["dummy_executor"])
+@pytest.mark.parametrize("mode", ["--public", "--private"])
 def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag):
     mock = mocker.Mock()
 
@@ -96,15 +96,15 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag):
         mock(url=url, data=data)
         return PostMockResponse(response_code=requests.codes.created)
 
-    monkeypatch.setattr(requests, 'post', _mock_post)
+    monkeypatch.setattr(requests, "post", _mock_post)
     # Second push will use --force --secret because of .jina/secret.key
     # Then it will use put method
-    monkeypatch.setattr(requests, 'put', _mock_post)
+    monkeypatch.setattr(requests, "put", _mock_post)
 
     exec_path = os.path.join(cur_dir, path)
     _args_list = [exec_path, mode]
     if force:
-        _args_list.extend(['--force', force])
+        _args_list.extend(["--force", force])
 
     if tag:
         _args_list.append(tag)
@@ -113,22 +113,22 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag):
     result = HubIO(args).push()
 
     # remove .jina
-    exec_config_path = os.path.join(exec_path, '.jina')
+    exec_config_path = os.path.join(exec_path, ".jina")
     shutil.rmtree(exec_config_path)
 
 
 @pytest.mark.parametrize(
-    'dockerfile, expected_error',
+    "dockerfile, expected_error",
     [
-        ('Dockerfile', 'The given Dockerfile `{dockerfile}` does not exist!'),
+        ("Dockerfile", "The given Dockerfile `{dockerfile}` does not exist!"),
         (
-            '../Dockerfile',
-            'The Dockerfile must be placed at the given folder `{work_path}`',
+            "../Dockerfile",
+            "The Dockerfile must be placed at the given folder `{work_path}`",
         ),
     ],
 )
-@pytest.mark.parametrize('path', ['dummy_executor'])
-@pytest.mark.parametrize('mode', ['--public', '--private'])
+@pytest.mark.parametrize("path", ["dummy_executor"])
+@pytest.mark.parametrize("mode", ["--public", "--private"])
 def test_push_wrong_dockerfile(
     mocker, monkeypatch, path, mode, tmpdir, dockerfile, expected_error
 ):
@@ -139,10 +139,10 @@ def test_push_wrong_dockerfile(
         mock(url=url, data=data)
         return PostMockResponse(response_code=requests.codes.created)
 
-    monkeypatch.setattr(requests, 'post', _mock_post)
+    monkeypatch.setattr(requests, "post", _mock_post)
     # Second push will use --force --secret because of .jina/secret.key
     # Then it will use put method
-    monkeypatch.setattr(requests, 'put', _mock_post)
+    monkeypatch.setattr(requests, "put", _mock_post)
 
     exec_path = os.path.join(cur_dir, path)
     _args_list = [exec_path, mode]
@@ -164,16 +164,16 @@ def test_fetch(mocker, monkeypatch):
         mock(url=url)
         return GetMockResponse(response_code=200)
 
-    monkeypatch.setattr(requests, 'get', _mock_get)
-    args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
+    monkeypatch.setattr(requests, "get", _mock_get)
+    args = set_hub_pull_parser().parse_args(["jinahub://dummy_mwu_encoder"])
 
-    executor = HubIO(args).fetch_meta('dummy_mwu_encoder')
+    executor = HubIO(args).fetch_meta("dummy_mwu_encoder")
 
-    assert executor.uuid == 'dummy_mwu_encoder'
-    assert executor.name == 'alias_dummy'
-    assert executor.tag == 'v0'
-    assert executor.image_name == 'jinahub/pod.dummy_mwu_encoder'
-    assert executor.md5sum == 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f'
+    assert executor.uuid == "dummy_mwu_encoder"
+    assert executor.name == "alias_dummy"
+    assert executor.tag == "v0"
+    assert executor.image_name == "jinahub/pod.dummy_mwu_encoder"
+    assert executor.md5sum == "ecbe3fdd9cbe25dbb85abaaf6c54ec4f"
 
 
 class DownloadMockResponse:
@@ -181,8 +181,8 @@ class DownloadMockResponse:
         self.response_code = response_code
 
     def iter_content(self, buffer=32 * 1024):
-        zip_file = Path(__file__).parent / 'dummy_executor.zip'
-        with zip_file.open('rb') as f:
+        zip_file = Path(__file__).parent / "dummy_executor.zip"
+        with zip_file.open("rb") as f:
             yield f.read(buffer)
 
     @property
@@ -196,16 +196,16 @@ def test_pull(test_envs, mocker, monkeypatch):
     def _mock_fetch(name, tag=None, secret=None):
         mock(name=name)
         return HubExecutor(
-            uuid='dummy_mwu_encoder',
-            name='alias_dummy',
-            tag='v0',
-            image_name='jinahub/pod.dummy_mwu_encoder',
+            uuid="dummy_mwu_encoder",
+            name="alias_dummy",
+            tag="v0",
+            image_name="jinahub/pod.dummy_mwu_encoder",
             md5sum=None,
             visibility=True,
             archive_url=None,
         )
 
-    monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
+    monkeypatch.setattr(HubIO, "fetch_meta", _mock_fetch)
 
     def _mock_download(url, stream=True, headers=None):
         mock(url=url)
@@ -214,16 +214,16 @@ def test_pull(test_envs, mocker, monkeypatch):
     def _mock_head(url):
         from collections import namedtuple
 
-        HeadInfo = namedtuple('HeadInfo', ['headers'])
+        HeadInfo = namedtuple("HeadInfo", ["headers"])
         return HeadInfo(headers={})
 
-    monkeypatch.setattr(requests, 'get', _mock_download)
-    monkeypatch.setattr(requests, 'head', _mock_head)
+    monkeypatch.setattr(requests, "get", _mock_download)
+    monkeypatch.setattr(requests, "head", _mock_head)
 
-    args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
+    args = set_hub_pull_parser().parse_args(["jinahub://dummy_mwu_encoder"])
     HubIO(args).pull()
 
-    args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder:secret'])
+    args = set_hub_pull_parser().parse_args(["jinahub://dummy_mwu_encoder:secret"])
     HubIO(args).pull()
 
 
@@ -235,7 +235,7 @@ class MockDockerClient:
 
     def pull(self, repository: str, stream: bool = True, decode: bool = True):
         if self.fail_pull:
-            raise docker.errors.APIError('Failed pulling docker image')
+            raise docker.errors.APIError("Failed pulling docker image")
         else:
             yield {}
 
@@ -249,13 +249,13 @@ def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
     def _mock_fetch(name, tag=None, secret=None):
         mock(name=name)
         if fail_meta_fetch:
-            raise urllib.error.URLError('Failed fetching meta')
+            raise urllib.error.URLError("Failed fetching meta")
         else:
             return HubExecutor(
-                uuid='dummy_mwu_encoder',
-                name='alias_dummy',
-                tag='v0',
-                image_name='jinahub/pod.dummy_mwu_encoder',
+                uuid="dummy_mwu_encoder",
+                name="alias_dummy",
+                tag="v0",
+                image_name="jinahub/pod.dummy_mwu_encoder",
                 md5sum=None,
                 visibility=True,
                 archive_url=None,
@@ -268,13 +268,13 @@ def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
 
         return _load_docker_client
 
-    args = set_hub_pull_parser().parse_args(['jinahub+docker://dummy_mwu_encoder'])
+    args = set_hub_pull_parser().parse_args(["jinahub+docker://dummy_mwu_encoder"])
     monkeypatch.setattr(
         HubIO,
-        '_load_docker_client',
+        "_load_docker_client",
         _gen_load_docker_client(fail_pull=True),
     )
-    monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
+    monkeypatch.setattr(HubIO, "fetch_meta", _mock_fetch)
 
     # Expect failure due to fetch_meta
     with pytest.raises(urllib.error.URLError):
@@ -288,28 +288,28 @@ def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
     # expect successful pull
     monkeypatch.setattr(
         HubIO,
-        '_load_docker_client',
+        "_load_docker_client",
         _gen_load_docker_client(fail_pull=False),
     )
-    assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder'
+    assert HubIO(args).pull() == "docker://jinahub/pod.dummy_mwu_encoder"
 
     # expect successful pull using cached fetch_meta response and saved image
     fail_meta_fetch = True
     monkeypatch.setattr(
         HubIO,
-        '_load_docker_client',
+        "_load_docker_client",
         _gen_load_docker_client(fail_pull=False),
     )
-    assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder'
+    assert HubIO(args).pull() == "docker://jinahub/pod.dummy_mwu_encoder"
 
 
 def test_pull_with_progress():
     import json
 
-    args = set_hub_pull_parser().parse_args(['jinahub+docker://dummy_mwu_encoder'])
+    args = set_hub_pull_parser().parse_args(["jinahub+docker://dummy_mwu_encoder"])
 
     def _log_stream_generator():
-        with open(os.path.join(cur_dir, 'docker_pull.logs')) as fin:
+        with open(os.path.join(cur_dir, "docker_pull.logs")) as fin:
             for line in fin:
                 if line.strip():
                     yield json.loads(line)
@@ -320,18 +320,34 @@ def test_pull_with_progress():
     HubIO(args)._pull_with_progress(_log_stream_generator(), console)
 
 
-@pytest.mark.parametrize('add_dockerfile', [True, False])
-def test_new(monkeypatch, tmpdir, add_dockerfile):
+@pytest.mark.parametrize("add_dockerfile", ["True", "False"])
+@pytest.mark.parametrize("name", [None])
+@pytest.mark.parametrize("path", [None])
+@pytest.mark.parametrize("advance_config", [None])
+@pytest.mark.parametrize("description", [None])
+@pytest.mark.parametrize("keywords", [None])
+@pytest.mark.parametrize("url", [None])
+def test_new_args_none(
+    monkeypatch,
+    tmpdir,
+    add_dockerfile,
+    name,
+    path,
+    advance_config,
+    description,
+    keywords,
+    url,
+):
     from rich.prompt import Prompt, Confirm
 
     prompts = iter(
         [
-            'DummyExecutor',
-            tmpdir / 'DummyExecutor',
-            'dummy description',
-            'dummy author',
-            'dummy tags',
-            'dummy docs',
+            "DummyExecutor",
+            tmpdir / "DummyExecutor",
+            "dummy description",
+            "dummy author",
+            "dummy tags",
+            "dummy docs",
         ]
     )
 
@@ -343,31 +359,118 @@ def test_new(monkeypatch, tmpdir, add_dockerfile):
     def _mock_confirm_ask(*args, **kwargs):
         return next(confirms)
 
-    monkeypatch.setattr(Prompt, 'ask', _mock_prompt_ask)
-    monkeypatch.setattr(Confirm, 'ask', _mock_confirm_ask)
+    monkeypatch.setattr(Prompt, "ask", _mock_prompt_ask)
+    monkeypatch.setattr(Confirm, "ask", _mock_confirm_ask)
 
-    args = argparse.Namespace(hub='new')
+    args = argparse.Namespace(
+        hub="new",
+        name=name,
+        path=path,
+        advance_config=advance_config,
+        description=description,
+        keywords=keywords,
+        url=url,
+        is_dockerfile=add_dockerfile,
+    )
     HubIO(args).new()
-    path = tmpdir / 'DummyExecutor'
+    path = tmpdir / "DummyExecutor"
 
     pkg_files = [
-        'executor.py',
-        'manifest.yml',
-        'README.md',
-        'requirements.txt',
-        'config.yml',
+        "executor.py",
+        "manifest.yml",
+        "README.md",
+        "requirements.txt",
+        "config.yml",
     ]
 
-    if add_dockerfile:
-        pkg_files.append('Dockerfile')
+    if eval(add_dockerfile):
+        pkg_files.append("Dockerfile")
 
     for file in pkg_files:
         assert (path / file).exists()
     for file in [
-        'executor.py',
-        'manifest.yml',
-        'README.md',
-        'config.yml',
+        "executor.py",
+        "manifest.yml",
+        "README.md",
+        "config.yml",
     ]:
-        with open(path / file, 'r') as fp:
-            assert 'DummyExecutor' in fp.read()
+        with open(path / file, "r") as fp:
+            assert "DummyExecutor" in fp.read()
+
+
+@pytest.mark.parametrize("add_dockerfile", ["True", "False"])
+@pytest.mark.parametrize("name", [False])
+@pytest.mark.parametrize("path", [False])
+@pytest.mark.parametrize("advance_config", [False])
+@pytest.mark.parametrize("description", [False])
+@pytest.mark.parametrize("keywords", [False])
+@pytest.mark.parametrize("url", [False])
+def test_new_args_false(
+    monkeypatch,
+    tmpdir,
+    add_dockerfile,
+    name,
+    path,
+    advance_config,
+    description,
+    keywords,
+    url,
+):
+    from rich.prompt import Prompt, Confirm
+
+    prompts = iter(
+        [
+            "DummyExecutor",
+            tmpdir / "DummyExecutor",
+            "dummy description",
+            "dummy author",
+            "dummy tags",
+            "dummy docs",
+        ]
+    )
+
+    confirms = iter([True, add_dockerfile])
+
+    def _mock_prompt_ask(*args, **kwargs):
+        return next(prompts)
+
+    def _mock_confirm_ask(*args, **kwargs):
+        return next(confirms)
+
+    monkeypatch.setattr(Prompt, "ask", _mock_prompt_ask)
+    monkeypatch.setattr(Confirm, "ask", _mock_confirm_ask)
+
+    args = argparse.Namespace(
+        hub="new",
+        name=name,
+        path=path,
+        advance_config=advance_config,
+        description=description,
+        keywords=keywords,
+        url=url,
+        is_dockerfile=add_dockerfile,
+    )
+    HubIO(args).new()
+    path = tmpdir / "DummyExecutor"
+
+    pkg_files = [
+        "executor.py",
+        "manifest.yml",
+        "README.md",
+        "requirements.txt",
+        "config.yml",
+    ]
+
+    if eval(add_dockerfile) if add_dockerfile else add_dockerfile:
+        pkg_files.append("Dockerfile")
+
+    for file in pkg_files:
+        assert (path / file).exists()
+    for file in [
+        "executor.py",
+        "manifest.yml",
+        "README.md",
+        "config.yml",
+    ]:
+        with open(path / file, "r") as fp:
+            assert "DummyExecutor" in fp.read()
