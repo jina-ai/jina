@@ -253,7 +253,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../advanced/experimental/"><svg aria-hidden="true" class="sd-octicon sd-octicon-beaker" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M5 5.782V2.5h-.25a.75.75 0 010-1.5h6.5a.75.75 0 010 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458L5 5.782zM9.5 2.5h-3V6a.75.75 0 01-.117.403L4.73 9h6.54L9.617 6.403A.75.75 0 019.5 6V2.5zm-6.9 9.847L3.775 10.5h8.45l1.175 1.847a.75.75 0 01-.633 1.153H3.233a.75.75 0 01-.633-1.153z" fill-rule="evenodd"></path></svg> Experimental Features</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../advanced/experimental/kubernetes/">Jina on Kubernetes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../advanced/experimental/indexers/">Indexers on Jina Hub</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../advanced/experimental/compound_executors/">Compound Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../advanced/experimental/graph-document/">Graph Document</a></li>
 </ul>
 </li>
 </ul>
@@ -1273,150 +1273,6 @@ follows:</p>
 </div>
 </div>
 </div>
-<div class="section" id="document-as-a-graph">
-<h2>Document as a graph<a class="headerlink" href="#document-as-a-graph" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">GraphDocument</span></code> is a subclass of <code class="docutils literal notranslate"><span class="pre">Document</span></code>. It’s a special type of <code class="docutils literal notranslate"><span class="pre">Document</span></code> that adds functionality to let you work
-with a <code class="docutils literal notranslate"><span class="pre">Document</span></code> as a <code class="docutils literal notranslate"><span class="pre">directed</span> <span class="pre">graph</span></code>. Chunks of the document represent the nodes of the graph. <code class="docutils literal notranslate"><span class="pre">GraphDocument</span></code> adds
-graph-specific attributes (<code class="docutils literal notranslate"><span class="pre">nodes</span></code>, <code class="docutils literal notranslate"><span class="pre">adjacency</span></code> list, <code class="docutils literal notranslate"><span class="pre">edge_features</span></code>,…) and operations (<code class="docutils literal notranslate"><span class="pre">add_node</span></code>, <code class="docutils literal notranslate"><span class="pre">remove_node</span></code>
-, <code class="docutils literal notranslate"><span class="pre">add_edge</span></code>, <code class="docutils literal notranslate"><span class="pre">remove_edge</span></code>,…)</p>
-<div class="section" id="graphdocument-constructor">
-<h3><code class="docutils literal notranslate"><span class="pre">GraphDocument</span></code> constructor<a class="headerlink" href="#graphdocument-constructor" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">GraphDocument</span></code>’s constructor supports the same parameters as <code class="docutils literal notranslate"><span class="pre">Document</span></code>. It mainly adds one
-parameter <code class="docutils literal notranslate"><span class="pre">force_undirected</span></code>. It’s a boolean flag that, when set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, forces the graph document to be undirected.</p>
-</div>
-<div class="section" id="graphdocument-additional-attributes">
-<h3><code class="docutils literal notranslate"><span class="pre">GraphDocument</span></code> additional attributes<a class="headerlink" href="#graphdocument-additional-attributes" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">GraphDocument</span></code> adds the following attributes to <code class="docutils literal notranslate"><span class="pre">Document</span></code>:</p>
-<div class="table-wrapper"><table border="1" class="docutils">
-<thead>
-<tr>
-<th>Attribute</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>edge_features</code></td>
-<td>The dictionary of edge features, indexed by <code>edge_id</code></td>
-</tr>
-<tr>
-<td><code>adjacency</code></td>
-<td>Adjacency list</td>
-</tr>
-<tr>
-<td><code>undirected</code></td>
-<td>Type of the graph: undirected or directed</td>
-</tr>
-<tr>
-<td><code>num_nodes</code></td>
-<td>Number of nodes in the graph</td>
-</tr>
-<tr>
-<td><code>num_edges</code></td>
-<td>Number of edges in the graph</td>
-</tr>
-<tr>
-<td><code>nodes</code></td>
-<td>The list of nodes. Equivalent to <code>chunks</code></td>
-</tr>
-</tbody>
-</table></div>
-</div>
-<div class="section" id="graphdocument-methods">
-<h3><code class="docutils literal notranslate"><span class="pre">GraphDocument</span></code> methods<a class="headerlink" href="#graphdocument-methods" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">GraphDocument</span></code> adds the following methods to <code class="docutils literal notranslate"><span class="pre">Document</span></code>:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">add_node</span></code>: adds a document to the graoh:</p></li>
-</ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina.types.document.graph</span> <span class="kn">import</span> <span class="n">GraphDocument</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-
-<span class="n">gd</span> <span class="o">=</span> <span class="n">GraphDocument</span><span class="p">()</span>
-<span class="hll"><span class="n">gd</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'hello world'</span><span class="p">))</span>
-</span><span class="n">gd</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</pre></div>
-</div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.document.Document id=8f9a60ce-f5d7-11eb-8383-c7034ef3edd4 mime_type=text/plain text=hello world granularity=1 parent_id=7ec9087c-f5d7-11eb-8383-c7034ef3edd4 at 140287929173088&gt;
-</pre></div>
-</div>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">add_edge</span></code>: Adds an edge between 2 documents. If a document does not exist in the graph, it is added. You can also add
-dict features to the edge with parameter <code class="docutils literal notranslate"><span class="pre">features</span></code></p></li>
-</ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-<span class="kn">from</span> <span class="nn">jina.types.document.graph</span> <span class="kn">import</span> <span class="n">GraphDocument</span>
-
-<span class="n">graph</span> <span class="o">=</span> <span class="n">GraphDocument</span><span class="p">()</span>
-<span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'1'</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">'hello world'</span><span class="p">)</span>
-<span class="n">d2</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'2'</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">'goodbye world'</span><span class="p">)</span>
-<span class="hll"><span class="n">gd</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="p">{</span><span class="s2">"text"</span><span class="p">:</span> <span class="s2">"both documents are linked"</span><span class="p">})</span>
-</span><span class="n">gd</span><span class="o">.</span><span class="n">nodes</span>
-</pre></div>
-</div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.arrays.chunk.ChunkArray length=2 at 140039698424448&gt;
-</pre></div>
-</div>
-<p>You access the edge features using id1-id2 as key:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">gd</span><span class="o">.</span><span class="n">edge_features</span><span class="p">[</span><span class="s1">'1-2'</span><span class="p">]</span>
-</pre></div>
-</div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.struct.StructView text=both documents are linked at 140132368471280&gt;
-</pre></div>
-</div>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">remove_edge</span></code> and <code class="docutils literal notranslate"><span class="pre">remove_node</span></code> allows removing an edge (between 2 nodes) and removing a node respectively.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">GraphDocument</span></code> exposes methods that return node-specific information:</p></li>
-</ul>
-<div class="table-wrapper"><table border="1" class="docutils">
-<thead>
-<tr>
-<th>Method</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>get_out_degree</code></td>
-<td>node outdegree</td>
-</tr>
-<tr>
-<td><code>get_in_degree</code></td>
-<td>node indegree</td>
-</tr>
-<tr>
-<td><code>get_outgoing_nodes</code></td>
-<td>Array of outgoing nodes for a given node</td>
-</tr>
-<tr>
-<td><code>get_incoming_nodes</code></td>
-<td>Array of incoming nodes for a given node</td>
-</tr>
-</tbody>
-</table></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-<span class="kn">from</span> <span class="nn">jina.types.document.graph</span> <span class="kn">import</span> <span class="n">GraphDocument</span>
-
-<span class="n">gd</span> <span class="o">=</span> <span class="n">GraphDocument</span><span class="p">()</span>
-<span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'1'</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">'hello world'</span><span class="p">)</span>
-<span class="n">d2</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'2'</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">'goodbye world'</span><span class="p">)</span>
-<span class="n">d3</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'3'</span><span class="p">)</span>
-<span class="n">gd</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">)</span>
-<span class="n">gd</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d3</span><span class="p">)</span>
-
-<span class="k">assert</span> <span class="n">gd</span><span class="o">.</span><span class="n">get_out_degree</span><span class="p">(</span><span class="n">d1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
-
-<span class="n">gd</span><span class="o">.</span><span class="n">get_outgoing_nodes</span><span class="p">(</span><span class="n">d1</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.arrays.chunk.ChunkArray length=2 at 140689776342112&gt;
-</pre></div>
-</div>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">to_dgl_graph</span></code>: returns a <code class="docutils literal notranslate"><span class="pre">dgl.DGLGraph</span></code> from the graph document.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">load_from_dgl_graph</span></code>: returns a <code class="docutils literal notranslate"><span class="pre">GraphDocument</span></code> from a <code class="docutils literal notranslate"><span class="pre">dgl.DGLGraph</span></code>.</p></li>
-</ul>
-</div>
-</div>
 </div>
 
       </article>
@@ -1495,12 +1351,6 @@ dict features to the edge with parameter <code class="docutils literal notransla
 </li>
 <li><a class="reference internal" href="#add-relevancy-to-document">Add relevancy to Document</a><ul>
 <li><a class="reference internal" href="#relevance-attributes">Relevance attributes</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#document-as-a-graph">Document as a graph</a><ul>
-<li><a class="reference internal" href="#graphdocument-constructor"><code class="docutils literal notranslate"><span class="pre">GraphDocument</span></code> constructor</a></li>
-<li><a class="reference internal" href="#graphdocument-additional-attributes"><code class="docutils literal notranslate"><span class="pre">GraphDocument</span></code> additional attributes</a></li>
-<li><a class="reference internal" href="#graphdocument-methods"><code class="docutils literal notranslate"><span class="pre">GraphDocument</span></code> methods</a></li>
 </ul>
 </li>
 </ul>
