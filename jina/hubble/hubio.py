@@ -185,9 +185,13 @@ your executor has non-trivial dependencies or must be run under certain environm
                 )
             )
 
-            is_dockerfile = Confirm.ask(
-                ":grey_question: Do you need to write your own [bold]Dockerfile[/bold] instead of the auto-generated one?",
-                default=False,
+            is_dockerfile = (
+                eval(self.args.is_dockerfile)
+                if self.args.is_dockerfile
+                else Confirm.ask(
+                    ":grey_question: Do you need to write your own [bold]Dockerfile[/bold] instead of the auto-generated one?",
+                    default=False,
+                )
             )
 
             print("[green]That's all we need to create an Executor![/green]")
