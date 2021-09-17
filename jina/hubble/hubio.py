@@ -446,6 +446,7 @@ metas:
         uuid8 = image['id']
         secret = image['secret']
         visibility = image['visibility']
+        tag = self.args.tag[0] if self.args.tag else None
 
         table = Table.grid()
         table.add_column(width=20, no_wrap=True)
@@ -475,14 +476,14 @@ metas:
         presented_id = image.get('name', uuid8)
         usage = (
             f'{presented_id}' if visibility == 'public' else f'{presented_id}:{secret}'
-        )
+        ) + (f'/{tag}' if tag else '')
 
         if not self.args.no_usage:
             self._get_prettyprint_usage(console, usage)
 
         return uuid8, secret
 
-    def _get_prettyprint_usage(self, console, executor_name):
+    def _get_prettyprint_usage(self, console, executor_name, usage_kind=None):
         from rich.panel import Panel
         from rich.syntax import Syntax
 
@@ -521,7 +522,12 @@ with f:
             expand=False,
         )
 
-        console.print(p1, p2)
+        if usage_kind == 'docker':
+            console.print(p2)
+        elif usage_kind == 'source':
+            console.print(p1)
+        else:
+            console.print(p1, p2)
 
     @staticmethod
     @disk_cache_offline(cache_file=str(_cache_file))
@@ -633,6 +639,7 @@ with f:
         console = Console()
         cached_zip_file = None
         executor_name = None
+        usage_kind = None
 
         try:
             need_pull = self.args.force
@@ -646,7 +653,7 @@ with f:
                     f'{presented_id}'
                     if executor.visibility == 'public'
                     else f'{presented_id}:{secret}'
-                )
+                ) + (f'/{tag}' if tag else '')
 
                 if scheme == 'jinahub+docker':
                     self._load_docker_client()
@@ -667,7 +674,7 @@ with f:
                             log_stream,
                             console,
                         )
-
+                    usage_kind = 'docker'
                     return f'docker://{executor.image_name}'
                 elif scheme == 'jinahub':
                     import filelock
@@ -718,6 +725,8 @@ with f:
                             )
 
                             pkg_path, _ = get_dist_path_of_executor(executor)
+
+                        usage_kind = 'source'
                         return f'{pkg_path / "config.yml"}'
                 else:
                     raise ValueError(f'{self.args.uri} is not a valid scheme')
@@ -733,4 +742,4 @@ with f:
                 cached_zip_file.unlink()
 
             if not self.args.no_usage and executor_name:
-                self._get_prettyprint_usage(console, executor_name)
+                self._get_prettyprint_usage(console, executor_name, usage_kind)
