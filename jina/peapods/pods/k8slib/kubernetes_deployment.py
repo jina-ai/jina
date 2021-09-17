@@ -96,7 +96,7 @@ def deploy_service(
         },
         custom_resource_dir=custom_resource_dir,
     )
-    return f'{name}.{namespace}.svc.cluster.local'
+    return f'{name}.{namespace}.svc'
 
 
 def get_cli_params(arguments: Namespace, skip_list: Tuple[str] = ()) -> str:
