@@ -994,6 +994,7 @@
         <span class="n">uuid8</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span>
         <span class="n">secret</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">'secret'</span><span class="p">]</span>
         <span class="n">visibility</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">'visibility'</span><span class="p">]</span>
+        <span class="n">tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">tag</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">tag</span> <span class="k">else</span> <span class="kc">None</span>
 
         <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
         <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">no_wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1023,14 +1024,14 @@
         <span class="n">presented_id</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="n">uuid8</span><span class="p">)</span>
         <span class="n">usage</span> <span class="o">=</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">presented_id</span><span class="si">}</span><span class="s1">'</span> <span class="k">if</span> <span class="n">visibility</span> <span class="o">==</span> <span class="s1">'public'</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">presented_id</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">secret</span><span class="si">}</span><span class="s1">'</span>
-        <span class="p">)</span>
+        <span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s1">'/</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s1">'</span> <span class="k">if</span> <span class="n">tag</span> <span class="k">else</span> <span class="s1">''</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">no_usage</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_get_prettyprint_usage</span><span class="p">(</span><span class="n">console</span><span class="p">,</span> <span class="n">usage</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">uuid8</span><span class="p">,</span> <span class="n">secret</span>
 
-    <span class="k">def</span> <span class="nf">_get_prettyprint_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">console</span><span class="p">,</span> <span class="n">executor_name</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_prettyprint_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">console</span><span class="p">,</span> <span class="n">executor_name</span><span class="p">,</span> <span class="n">usage_kind</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">rich.panel</span> <span class="kn">import</span> <span class="n">Panel</span>
         <span class="kn">from</span> <span class="nn">rich.syntax</span> <span class="kn">import</span> <span class="n">Syntax</span>
 
@@ -1069,7 +1070,12 @@
             <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">usage_kind</span> <span class="o">==</span> <span class="s1">'docker'</span><span class="p">:</span>
+            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">usage_kind</span> <span class="o">==</span> <span class="s1">'source'</span><span class="p">:</span>
+            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HubIO.fetch_meta"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.fetch_meta">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@disk_cache_offline</span><span class="p">(</span><span class="n">cache_file</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">_cache_file</span><span class="p">))</span>
@@ -1181,6 +1187,7 @@
         <span class="n">console</span> <span class="o">=</span> <span class="n">Console</span><span class="p">()</span>
         <span class="n">cached_zip_file</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">executor_name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">usage_kind</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">need_pull</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span>
@@ -1194,7 +1201,7 @@
                     <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">presented_id</span><span class="si">}</span><span class="s1">'</span>
                     <span class="k">if</span> <span class="n">executor</span><span class="o">.</span><span class="n">visibility</span> <span class="o">==</span> <span class="s1">'public'</span>
                     <span class="k">else</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">presented_id</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">secret</span><span class="si">}</span><span class="s1">'</span>
-                <span class="p">)</span>
+                <span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s1">'/</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s1">'</span> <span class="k">if</span> <span class="n">tag</span> <span class="k">else</span> <span class="s1">''</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s1">'jinahub+docker'</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_load_docker_client</span><span class="p">()</span>
@@ -1215,7 +1222,7 @@
                             <span class="n">log_stream</span><span class="p">,</span>
                             <span class="n">console</span><span class="p">,</span>
                         <span class="p">)</span>
-
+                    <span class="n">usage_kind</span> <span class="o">=</span> <span class="s1">'docker'</span>
                     <span class="k">return</span> <span class="sa">f</span><span class="s1">'docker://</span><span class="si">{</span><span class="n">executor</span><span class="o">.</span><span class="n">image_name</span><span class="si">}</span><span class="s1">'</span>
                 <span class="k">elif</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s1">'jinahub'</span><span class="p">:</span>
                     <span class="kn">import</span> <span class="nn">filelock</span>
@@ -1266,6 +1273,8 @@
                             <span class="p">)</span>
 
                             <span class="n">pkg_path</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_dist_path_of_executor</span><span class="p">(</span><span class="n">executor</span><span class="p">)</span>
+
+                        <span class="n">usage_kind</span> <span class="o">=</span> <span class="s1">'source'</span>
                         <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">pkg_path</span> <span class="o">/</span> <span class="s2">"config.yml"</span><span class="si">}</span><span class="s1">'</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1"> is not a valid scheme'</span><span class="p">)</span>
@@ -1281,7 +1290,7 @@
                 <span class="n">cached_zip_file</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">no_usage</span> <span class="ow">and</span> <span class="n">executor_name</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_get_prettyprint_usage</span><span class="p">(</span><span class="n">console</span><span class="p">,</span> <span class="n">executor_name</span><span class="p">)</span></div></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_get_prettyprint_usage</span><span class="p">(</span><span class="n">console</span><span class="p">,</span> <span class="n">executor_name</span><span class="p">,</span> <span class="n">usage_kind</span><span class="p">)</span></div></div>
 </pre></div>
       </article>
       <footer>

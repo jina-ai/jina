@@ -548,7 +548,11 @@
         <h1>Source code for jina.peapods.pods.k8slib.kubernetes_tools</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">jina.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
 <span class="n">cur_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
 <span class="n">DEFAULT_RESOURCE_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
@@ -631,12 +635,18 @@
 <span class="n">__k8s_clients</span> <span class="o">=</span> <span class="n">K8SClients</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="create"><a class="viewcode-back" href="../../../../../../api/jina.peapods.pods.k8slib.kubernetes_tools/#jina.peapods.pods.k8slib.kubernetes_tools.create">[docs]</a><span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="n">template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">custom_resource_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="create"><a class="viewcode-back" href="../../../../../../api/jina.peapods.pods.k8slib.kubernetes_tools/#jina.peapods.pods.k8slib.kubernetes_tools.create">[docs]</a><span class="k">def</span> <span class="nf">create</span><span class="p">(</span>
+    <span class="n">template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">logger</span><span class="p">:</span> <span class="n">JinaLogger</span> <span class="o">=</span> <span class="n">default_logger</span><span class="p">,</span>
+    <span class="n">custom_resource_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sd">"""Create a resource on Kubernetes based on the `template`. It fills the `template` using the `params`.</span>
 
 <span class="sd">    :param template: path to the template file.</span>
 <span class="sd">    :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.</span>
 <span class="sd">        Defaults to the standard location jina.resources if not specified.</span>
+<span class="sd">    :param logger: logger to use. Defaults to the default logger.</span>
 <span class="sd">    :param params: dictionary for replacing the placeholders (keys) with the actual values.</span>
 <span class="sd">    """</span>
 
@@ -651,10 +661,15 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">utils</span><span class="o">.</span><span class="n">create_from_yaml</span><span class="p">(</span><span class="n">__k8s_clients</span><span class="o">.</span><span class="n">k8s_client</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">FailToCreateError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">api_exceptions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">409</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">'exists already'</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">e</span>
+            <span class="k">for</span> <span class="n">api_exception</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">api_exceptions</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">api_exception</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">409</span><span class="p">:</span>
+                    <span class="c1"># The exception's body is the error response from the</span>
+                    <span class="c1"># Kubernetes apiserver, it looks like:</span>
+                    <span class="c1"># {..."message": "&lt;resource&gt; &lt;name&gt; already exists"...}</span>
+                    <span class="n">resp</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">api_exception</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'🔁</span><span class="se">\t</span><span class="si">{</span><span class="n">resp</span><span class="p">[</span><span class="s2">"message"</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">e</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e2</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">e2</span>
     <span class="k">finally</span><span class="p">:</span>

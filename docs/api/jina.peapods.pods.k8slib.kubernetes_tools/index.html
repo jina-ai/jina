@@ -617,7 +617,7 @@
 </dd></dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.peapods.pods.k8slib.kubernetes_tools.create">
-<span class="sig-prename descclassname"><span class="pre">jina.peapods.pods.k8slib.kubernetes_tools.</span></span><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_resource_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/k8slib/kubernetes_tools/#create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.k8slib.kubernetes_tools.create" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">jina.peapods.pods.k8slib.kubernetes_tools.</span></span><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">template</span></em>, <em class="sig-param"><span class="pre">params</span></em>, <em class="sig-param"><span class="pre">logger=&lt;jina.logging.logger.JinaLogger</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">custom_resource_dir=None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/k8slib/kubernetes_tools/#create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.k8slib.kubernetes_tools.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a resource on Kubernetes based on the <cite>template</cite>. It fills the <cite>template</cite> using the <cite>params</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -625,6 +625,7 @@
 <li><p><strong>template</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – path to the template file.</p></li>
 <li><p><strong>custom_resource_dir</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Path to a folder containing the kubernetes yml template files.
 Defaults to the standard location jina.resources if not specified.</p></li>
+<li><p><strong>logger</strong> (<a class="reference internal" href="../jina.logging.logger/#jina.logging.logger.JinaLogger" title="jina.logging.logger.JinaLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">JinaLogger</span></code></a>) – logger to use. Defaults to the default logger.</p></li>
 <li><p><strong>params</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>) – dictionary for replacing the placeholders (keys) with the actual values.</p></li>
 </ul>
 </dd>

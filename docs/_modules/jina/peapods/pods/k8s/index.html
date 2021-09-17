@@ -690,9 +690,14 @@
 
 <span class="sd">        :return: self</span>
 <span class="sd">        """</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="sa">f</span><span class="s1">'start_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">'🏝️</span><span class="se">\t</span><span class="s1">Create Namespace "</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">k8s_namespace</span><span class="si">}</span><span class="s1">" for "</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">"'</span>
+        <span class="p">)</span>
         <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
             <span class="s1">'namespace'</span><span class="p">,</span>
             <span class="p">{</span><span class="s1">'name'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">k8s_namespace</span><span class="p">},</span>
+            <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
             <span class="n">custom_resource_dir</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'k8s_custom_resource_dir'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'gateway'</span><span class="p">:</span>
