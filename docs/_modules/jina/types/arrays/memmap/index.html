@@ -1102,14 +1102,37 @@
 
     <span class="nd">@embeddings</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">emb</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="sd">"""Set the embeddings of the Documents</span>
 
-        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">emb</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="p">(</span>
-            <span class="s1">'the number of rows in the input ({len(emb)}),'</span>
-            <span class="s1">'should match the number of Documents ({len(self)})'</span>
-        <span class="p">)</span>
+<span class="sd">        :param emb: The embedding matrix to set</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">emb</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'the number of rows in the input (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">emb</span><span class="p">)</span><span class="si">}</span><span class="s1">), should match the'</span>
+                <span class="sa">f</span><span class="s1">'number of Documents (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s1">)'</span>
+            <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">emb</span><span class="p">):</span>
             <span class="n">d</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">x</span>
+
+    <span class="nd">@DocumentArrayGetAttrMixin</span><span class="o">.</span><span class="n">blobs</span><span class="o">.</span><span class="n">getter</span>
+    <span class="k">def</span> <span class="nf">blobs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">"""Return a `np.ndarray` stacking all the `blob` attributes.</span>
+
+<span class="sd">        The `blob` attributes are stacked together along a newly created first</span>
+<span class="sd">        dimension (as if you would stack using ``np.stack(X, axis=0)``).</span>
+
+<span class="sd">        .. warning:: This operation assumes all blobs have the same shape and dtype.</span>
+<span class="sd">                 All dtype and shape values are assumed to be equal to the values of the</span>
+<span class="sd">                 first element in the DocumentArray / DocumentArrayMemmap</span>
+
+<span class="sd">        .. warning:: This operation currently does not support sparse arrays.</span>
+
+<span class="sd">        :return: blobs stacked per row as `np.ndarray`.</span>
+<span class="sd">        """</span>
+
+        <span class="n">blobs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'blob'</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">blobs</span>
 
     <span class="k">def</span> <span class="nf">_invalidate_embeddings_memmap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_memmap</span> <span class="o">=</span> <span class="kc">None</span>

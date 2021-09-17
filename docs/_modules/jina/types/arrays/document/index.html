@@ -671,34 +671,33 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">blobs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-        <span class="sd">"""Return a `np.ndarray` stacking all the `blob` attributes as rows.</span>
+        <span class="sd">"""Return a `np.ndarray` stacking all the `blob` attributes.</span>
 
-<span class="sd">        .. warning:: This operation assumes all Documents have `blob` as content, blobs have the same shape and dtype.</span>
+<span class="sd">        The `blob` attributes are stacked together along a newly created first</span>
+<span class="sd">        dimension (as if you would stack using ``np.stack(X, axis=0)``).</span>
+
+<span class="sd">        .. warning:: This operation assumes all blobs have the same shape and dtype.</span>
 <span class="sd">                 All dtype and shape values are assumed to be equal to the values of the</span>
 <span class="sd">                 first element in the DocumentArray / DocumentArrayMemmap</span>
 
 <span class="sd">        .. warning:: This operation currently does not support sparse arrays.</span>
-
-<span class="sd">        :return: blobs stacked per row as `np.ndarray`.</span>
 <span class="sd">        """</span>
-        <span class="n">x_mat</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">dense</span><span class="o">.</span><span class="n">buffer</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">x_mat</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">dense</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
-            <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="o">*</span><span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">dense</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-        <span class="p">)</span>
+        <span class="o">...</span>
 
     <span class="nd">@blobs</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">blobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">blobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blobs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
         <span class="sd">"""Set the blobs of the Documents</span>
 
-<span class="sd">        :param b: The blobs matrix to set</span>
+<span class="sd">        :param blobs: The blob array to set. The first axis is the "row" axis.</span>
 <span class="sd">        """</span>
 
-        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span>
-            <span class="bp">self</span>
-        <span class="p">),</span> <span class="sa">f</span><span class="s1">'the number of rows in the input (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="si">}</span><span class="s1">), should match the number of Documents (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s1">)'</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">blobs</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'the number of rows in the input (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">blobs</span><span class="p">)</span><span class="si">}</span><span class="s1">), should match the'</span>
+                <span class="sa">f</span><span class="s1">'number of Documents (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s1">)'</span>
+            <span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blobs</span><span class="p">):</span>
             <span class="n">d</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">x</span></div>
 
 
@@ -1082,12 +1081,36 @@
 <span class="sd">        :param emb: The embedding matrix to set</span>
 <span class="sd">        """</span>
 
-        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">emb</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span>
-            <span class="bp">self</span>
-        <span class="p">),</span> <span class="sa">f</span><span class="s1">'the number of rows in the input (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">emb</span><span class="p">)</span><span class="si">}</span><span class="s1">), should match the number of Documents (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s1">)'</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">emb</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'the number of rows in the input (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">emb</span><span class="p">)</span><span class="si">}</span><span class="s1">), should match the'</span>
+                <span class="sa">f</span><span class="s1">'number of Documents (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s1">)'</span>
+            <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">emb</span><span class="p">):</span>
-            <span class="n">d</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">x</span></div>
+            <span class="n">d</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">x</span>
+
+    <span class="nd">@DocumentArrayGetAttrMixin</span><span class="o">.</span><span class="n">blobs</span><span class="o">.</span><span class="n">getter</span>
+    <span class="k">def</span> <span class="nf">blobs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">"""Return a `np.ndarray` stacking all the `blob` attributes.</span>
+
+<span class="sd">        The `blob` attributes are stacked together along a newly created first</span>
+<span class="sd">        dimension (as if you would stack using ``np.stack(X, axis=0)``).</span>
+
+<span class="sd">        .. warning:: This operation assumes all blobs have the same shape and dtype.</span>
+<span class="sd">                 All dtype and shape values are assumed to be equal to the values of the</span>
+<span class="sd">                 first element in the DocumentArray / DocumentArrayMemmap</span>
+
+<span class="sd">        .. warning:: This operation currently does not support sparse arrays.</span>
+
+<span class="sd">        :return: blobs stacked per row as `np.ndarray`.</span>
+<span class="sd">        """</span>
+        <span class="n">x_mat</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">dense</span><span class="o">.</span><span class="n">buffer</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">)</span>
+        <span class="n">proto</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">dense</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">x_mat</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">proto</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+            <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="o">*</span><span class="n">proto</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="p">)</span></div>
 </pre></div>
       </article>
       <footer>

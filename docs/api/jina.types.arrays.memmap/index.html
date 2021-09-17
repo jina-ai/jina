@@ -767,6 +767,31 @@ first element in the DocumentArray / DocumentArrayMemmap.</p>
 <p>This operation currently does not support sparse arrays.</p>
 </div>
 </dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.types.arrays.memmap.DocumentArrayMemmap.blobs">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">blobs</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.blobs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a <cite>np.ndarray</cite> stacking all the <cite>blob</cite> attributes.</p>
+<p>The <cite>blob</cite> attributes are stacked together along a newly created first
+dimension (as if you would stack using <code class="docutils literal notranslate"><span class="pre">np.stack(X,</span> <span class="pre">axis=0)</span></code>).</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This operation assumes all blobs have the same shape and dtype.
+All dtype and shape values are assumed to be equal to the values of the
+first element in the DocumentArray / DocumentArrayMemmap</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This operation currently does not support sparse arrays.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>blobs stacked per row as <cite>np.ndarray</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 </div>
 
