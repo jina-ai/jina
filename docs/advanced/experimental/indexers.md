@@ -60,6 +60,7 @@ For a showcase code, check our [integration tests](https://github.com/jina-ai/ex
 
 The split between indexing and search Flows allows you to continuously serve requests in your application (in the search Flow), while still being able to write or modify the underlying data. Then when you want to update the state of the searchable data for your users, you perform a dump and rolling update.
 
+(dump-rolling-update)=
 ## Dump and rolling update
 
 The communication between index and search Flows is done via this pair of actions.
