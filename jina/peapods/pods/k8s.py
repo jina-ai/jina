@@ -149,7 +149,7 @@ class K8sPod(BasePod):
         kubernetes_tools.create(
             'namespace',
             {'name': self.args.k8s_namespace},
-            logger,
+            logger=logger,
             custom_resource_dir=getattr(self.args, 'k8s_custom_resource_dir', None),
         )
         if self.name == 'gateway':
