@@ -1,6 +1,8 @@
 import datetime
+import itertools
 import math
 import sys
+import threading
 import time
 from collections import defaultdict
 from functools import wraps
@@ -198,6 +200,7 @@ class ProgressBar(TimeContext):
 
     col_width = 100
     clear_line = '\r{}\r'.format(' ' * col_width)
+    spinner = itertools.cycle(['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'])
 
     def __init__(
         self,
@@ -216,6 +219,7 @@ class ProgressBar(TimeContext):
         self._last_rendered_progress = 0
         self._num_update_called = 0
         self._on_done = message_on_done
+        self._stop_event = threading.Event()
 
     def update(
         self,
@@ -236,13 +240,7 @@ class ProgressBar(TimeContext):
         """
         self._num_update_called += 0 if first_enter else 1
         self._completed_progress += progress
-        if (
-            abs(self._completed_progress - self._last_rendered_progress) < 0.5
-            and not all_completed
-        ):
-            return
         self._last_rendered_progress = self._completed_progress
-        sys.stdout.write(self.clear_line)
         elapsed = time.perf_counter() - self.start
         num_bars = self._completed_progress % self._bars_on_row
         num_bars = (
@@ -269,28 +267,70 @@ class ProgressBar(TimeContext):
 
         description_str = description or self.task_name or ''
         msg_str = message or ''
+        self._bar_info = dict(
+            bar_color=bar_color,
+            description_str=description_str,
+            msg_str=msg_str,
+            num_fullbars=num_fullbars,
+            num_halfbars=num_halfbars,
+            speed_str=speed_str,
+            time_str=time_str,
+            unfinished_bar_color=unfinished_bar_color,
+            all_completed=all_completed,
+        )
 
+    def _print_bar(self, bar_info):
+        sys.stdout.write(self.clear_line)
         sys.stdout.write(
-            '{:>10} {:<}{:<} {} {} {}'.format(
-                description_str,
-                colored('━' * num_fullbars, bar_color)
-                + (colored('╸', bar_color if num_halfbars else unfinished_bar_color)),
+            '{} {:>10} {:<}{:<} {} {} {}'.format(
+                colored(next(self.spinner), 'green'),
+                bar_info['description_str'],
+                colored('━' * bar_info['num_fullbars'], bar_info['bar_color'])
+                + (
+                    colored(
+                        '╸',
+                        bar_info['bar_color']
+                        if bar_info['num_halfbars']
+                        else bar_info['unfinished_bar_color'],
+                    )
+                ),
                 colored(
-                    '━' * (self._bars_on_row - num_fullbars),
-                    unfinished_bar_color,
+                    '━' * (self._bars_on_row - bar_info['num_fullbars']),
+                    bar_info['unfinished_bar_color'],
                     attrs=['dark'],
                 ),
-                colored(time_str, 'cyan'),
-                speed_str,
-                msg_str,
+                colored(bar_info['time_str'], 'cyan'),
+                bar_info['speed_str'],
+                bar_info['msg_str'],
             )
         )
         sys.stdout.flush()
 
+    def _update_thread(self):
+        while not self._stop_event.is_set():
+            self._print_bar(self._bar_info)
+            time.sleep(0.1)
+
     def _enter_msg(self):
         self.update(first_enter=True)
+        try:
+            self._progress_thread = threading.Thread(
+                target=self._update_thread, daemon=True
+            )
+            self._progress_thread.start()
+        except (KeyboardInterrupt, SystemExit):
+            self._stop_event.set()
+            self.update(0, all_completed=True)
+            self._print_bar(self._bar_info)
 
     def _exit_msg(self):
+        self._stop_event.set()
+        self._progress_thread.join()
+        self.update(0, all_completed=True)
+        self._print_bar(self._bar_info)
+        self._print_final_msg()
+
+    def _print_final_msg(self):
         if self._last_rendered_progress > 1:
             final_msg = f'\033[K{self._completed_progress:.0f} steps done in {self.readable_duration}'
             if self._on_done:
@@ -298,7 +338,6 @@ class ProgressBar(TimeContext):
                     final_msg = self._on_done
                 elif callable(self._on_done):
                     final_msg = self._on_done()
-            self.update(0, all_completed=True)
             sys.stdout.write(final_msg)
             sys.stdout.write('\n')
         else:
