@@ -127,59 +127,13 @@ def set_hub_parser(parser=None):
         required=True,
     )
 
-    sppp = spp.add_parser(
-        'new',
-        help='create a new executor using the template',
-        description='Create a new executor using the template',
-        formatter_class=_chf,
-    )
-
-    sppp.add_argument(
-        '--name',
-        help='Setup name of the executor',
-        action='store',
-        type=str,
-        default=None,
-    )
-
-    sppp.add_argument(
-        '--path',
-        help='Path to store an executor',
-        action='store',
-        type=str,
-        default=None,
-    )
-
-    sppp.add_argument(
-        '--advance_config',
-        help='Set up advance configuration',
-        choices=('True', 'False'),
-        default=None,
-    )
-
-    sppp.add_argument(
-        '--description',
-        help='Give a short description of your executor',
-        type=str,
-        default=None,
-    )
-
-    sppp.add_argument(
-        '--keywords',
-        help='Give some keywords to help people search your executor(separated by space)',
-        type=str,
-        default=None,
-    )
-
-    sppp.add_argument(
-        '--url', help='URL of your GitHub repo', action='store', type=str, default=None
-    )
-
-    sppp.add_argument(
-        '--is_dockerfile',
-        help='Set up advance configuration',
-        choices=('True', 'False'),
-        default=None,
+    set_hub_new_parser(
+        spp.add_parser(
+            'new',
+            help='create a new executor using the template',
+            description='Create a new executor using the template',
+            formatter_class=_chf,
+        )
     )
 
     set_hub_push_parser(
