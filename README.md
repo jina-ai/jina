@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-<b>Cloud-Native <ins>Neural Search</ins><sup><a href="https://docs.jina.ai/get-started/neural-search/">[?]</a></sup> Framework for <i>Any</i> Kind of Data</b>
+<b>Cloud-Native Neural Search<sup><a href="https://docs.jina.ai/get-started/neural-search/">?</a></sup> Framework for <i>Any</i> Kind of Data</b>
 </p>
 
 
@@ -18,15 +18,14 @@
 </p>
 
 
-Jina<sup><a href=".github/pronounce-jina.mp3">`🔊`</a></sup> is a neural search framework that empowers anyone to build SOTA & scalable deep learning search applications in minutes. 
+Jina<sup><a href=".github/pronounce-jina.mp3">`🔊`</a></sup> is a neural search framework that empowers anyone to build SOTA & scalable deep learning search applications in minutes.
 
+🌌 **All data types** - Scalable indexing, querying, understanding of any data: video, image, long/short text, music, source code, PDF, etc.
 
-🌌 **All data types** - Large-scale indexing and querying of any kind of unstructured data: video, image, long/short text, music, source code, PDF, etc.
+⏱️ **Save time** - *The* design pattern of neural search systems, from zero to a production-ready system in minutes.
 
 🌩️ **Fast & cloud-native** - Distributed architecture from day one, scalable & cloud-native by design: enjoy
 containerizing, streaming, paralleling, sharding, async scheduling, HTTP/gRPC/WebSocket protocol.
-
-⏱️ **Save time** - *The* design pattern of neural search systems, from zero to a production-ready system in minutes.
 
 🍱 **Own your stack** - Keep end-to-end stack ownership of your solution, avoid integration pitfalls you get with
 fragmented, multi-vendor, generic legacy tools.
@@ -60,6 +59,7 @@ Document, Executor, and Flow are three fundamental concepts in Jina.
 Leveraging these three components, let's build an app that **find lines from a code snippet that are most similar to the query.**
 
 <sup>💡 Preliminaries: <a href="https://en.wikipedia.org/wiki/Word_embedding">character embedding</a>, <a href="https://computersciencewiki.org/index.php/Max-pooling_/_Pooling">pooling</a>, <a href="https://en.wikipedia.org/wiki/Euclidean_distance">Euclidean distance</a></sup>
+<sup><a href="https://docs.jina.ai/tutorials/fuzzy-grep/">📗 Read our docs for details</a></sup>
 
 
 1️⃣ Copy-paste the minimum example below and run it:
@@ -155,8 +155,7 @@ c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
 
 ## Join Us
 
-Jina is backed by [Jina AI](https://jina.ai). [We are actively hiring](https://jobs.jina.ai) full-stack developers,
-solution engineers to build the next neural search ecosystem in open source.
+Jina is backed by [Jina AI](https://jina.ai). [We are actively hiring](https://jobs.jina.ai) AI engineers, solution engineers to build the next neural search ecosystem in opensource.
 
 ## Contributing
 
