@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark">
-  <meta property="og:title" content="Remote Management via JinaD" />
+  <meta property="og:title" content="Remote Executors and Flows via JinaD" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/advanced/daemon/index.html" />
   <meta property="og:site_name" content="Jina Documentation" />
@@ -25,10 +25,10 @@
 
   gtag('config', 'G-48ZDWC8GT6');
 </script>
-    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Setup JinaD Server" href="setup-jinad-server/" /><link rel="prev" title="Best Practices" href="../hub/executor-best-practices/" />
+    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="JinaD Server" href="jinad-server/" /><link rel="prev" title="Best Practices" href="../hub/executor-best-practices/" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>Remote Management via JinaD - Jina Documentation</title>
+        <title>Remote Executors and Flows via JinaD - Jina Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -240,12 +240,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../hub/executor-best-practices/">Best Practices</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">Remote Management via JinaD</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="setup-jinad-server/">Setup JinaD Server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="start-jinad-client/">Start JinaD Client</a></li>
+<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">Remote Executors and Flows via JinaD</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="jinad-server/">JinaD Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jinad-client/">JinaD Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="remote-executors/">Remote Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="workspace/">Workspace</a></li>
-<li class="toctree-l2"><a class="reference internal" href="create-remote-executors/">Remote Executor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="create-remote-flows/">Remote Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="remote-flows/">Remote Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="stream-remote-logs/">Streaming Remote Logs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="development-using-jinad/">JinaD Development Guides</a></li>
 </ul>
@@ -569,8 +569,8 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <div class="tex2jax_ignore mathjax_ignore section" id="remote-management-via-jinad">
-<span id="daemon-cookbook"></span><h1>Remote Management via JinaD<a class="headerlink" href="#remote-management-via-jinad" title="Permalink to this headline">¶</a></h1>
+        <div class="tex2jax_ignore mathjax_ignore section" id="remote-executors-and-flows-via-jinad">
+<span id="daemon-cookbook"></span><h1>Remote Executors and Flows via JinaD<a class="headerlink" href="#remote-executors-and-flows-via-jinad" title="Permalink to this headline">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">JinaD</span></code> is a <a class="reference external" href="https://en.wikipedia.org/wiki/Daemon_(computing)">daemon</a> for deploying and managing Jina on remote via a
 RESTful interface. It allows users to create/update/delete Executors and Flows on remote hosts. It achieves isolation of
 deployments by defining a <code class="docutils literal notranslate"><span class="pre">workspace</span></code> for each Jina object, hence allowing a multi-tenant setup with parallel Flows on
@@ -612,12 +612,12 @@ docker run --add-host host.docker.internal:host-gateway <span class="se">\</span
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="setup-jinad-server/">
+          <a class="next-page" href="jinad-server/">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Setup JinaD Server</div>
+                <div class="title">JinaD Server</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -637,7 +637,7 @@ docker run --add-host host.docker.internal:host-gateway <span class="se">\</span
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Sep 17, 2021.
+            Last updated on Sep 18, 2021.
         </div>
         
       </footer>
@@ -654,7 +654,7 @@ docker run --add-host host.docker.internal:host-gateway <span class="se">\</span
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Remote Management via JinaD</a><ul>
+<li><a class="reference internal" href="#">Remote Executors and Flows via JinaD</a><ul>
 <li><a class="reference internal" href="#minimum-working-example">Minimum working example</a></li>
 </ul>
 </li>

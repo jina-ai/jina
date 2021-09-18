@@ -240,12 +240,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../../hub/executor-best-practices/">Best Practices</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../">Remote Management via JinaD</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../setup-jinad-server/">Setup JinaD Server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../start-jinad-client/">Start JinaD Client</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../">Remote Executors and Flows via JinaD</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../jinad-server/">JinaD Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jinad-client/">JinaD Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../remote-executors/">Remote Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../workspace/">Workspace</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../create-remote-executors/">Remote Executor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../create-remote-flows/">Remote Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../remote-flows/">Remote Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../stream-remote-logs/">Streaming Remote Logs</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">JinaD Development Guides</a></li>
 </ul>
@@ -597,7 +597,7 @@
 <p>All images created by JinaD during local tests use image with this name (hard-coded).</p>
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--env</span> <span class="pre">JINA_DAEMON_BUILD=DEVEL</span></code> ?</p>
-<p>This makes sure default build for JinaD is <code class="docutils literal notranslate"><span class="pre">DEVEL</span></code>. This must be passed during development, CICD etc</p>
+<p>This makes sure default build for JinaD is <code class="docutils literal notranslate"><span class="pre">DEVEL</span></code>. This should be passed only during development, CICD etc and must not be used when using the official image.</p>
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--add-host</span></code> ?</p>
 <p><code class="docutils literal notranslate"><span class="pre">DOCKERHOST</span> <span class="pre">=</span> <span class="pre">'host.docker.internal'</span></code></p>
@@ -645,7 +645,7 @@ DOCKERHOST</p>
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Sep 17, 2021.
+            Last updated on Sep 18, 2021.
         </div>
         
       </footer>

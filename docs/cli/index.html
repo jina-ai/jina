@@ -240,12 +240,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../advanced/hub/executor-best-practices/">Best Practices</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../advanced/daemon/">Remote Management via JinaD</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../advanced/daemon/setup-jinad-server/">Setup JinaD Server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../advanced/daemon/start-jinad-client/">Start JinaD Client</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../advanced/daemon/">Remote Executors and Flows via JinaD</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../advanced/daemon/jinad-server/">JinaD Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced/daemon/jinad-client/">JinaD Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced/daemon/remote-executors/">Remote Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced/daemon/workspace/">Workspace</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../advanced/daemon/create-remote-executors/">Remote Executor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../advanced/daemon/create-remote-flows/">Remote Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced/daemon/remote-flows/">Remote Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced/daemon/stream-remote-logs/">Streaming Remote Logs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced/daemon/development-using-jinad/">JinaD Development Guides</a></li>
 </ul>
@@ -630,7 +630,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “469bbcb8-09ae-47dd-b5ca-46ca8800fd7e”</p>
+<p>Default: “dacf8c6c-0640-4bfe-a575-6ec9e6354222”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -701,7 +701,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “a41e03ac-6ad2-4992-8737-ba30da565960”</p>
+<p>Default: “5603e634-40ea-43ca-b133-b00c14256a8e”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -734,7 +734,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “f91c7d48-ba2b-4390-92a3-ea289af6eac0”</p>
+<p>Default: “66f01c95-ea86-4822-81d9-4ed9cfe3ae73”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -829,7 +829,7 @@
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 43567</p>
+<p>Default: 58193</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -891,11 +891,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 34415</p>
+<p>Default: 33873</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 60979</p>
+<p>Default: 39149</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1237,7 +1237,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 60337</p>
+<p>Default: 54457</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1299,11 +1299,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 45543</p>
+<p>Default: 59595</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 60369</p>
+<p>Default: 42865</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1437,7 +1437,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port that the gateway exposes for clients for GRPC connections.</p>
-<p>Default: 42471</p>
+<p>Default: 45143</p>
 </dd>
 </dl>
 </div>
@@ -1664,7 +1664,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 46605</p>
+<p>Default: 48079</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1726,11 +1726,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 42379</p>
+<p>Default: 60263</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 57225</p>
+<p>Default: 56801</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1972,7 +1972,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 35091</p>
+<p>Default: 33999</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -2034,11 +2034,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 50053</p>
+<p>Default: 56373</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 39729</p>
+<p>Default: 42999</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -2273,7 +2273,7 @@ peas are running on host provided by the argument <code class="docutils literal 
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port of the Gateway, which the client should connect to.</p>
-<p>Default: 45387</p>
+<p>Default: 54009</p>
 </dd>
 </dl>
 </div>
@@ -2333,7 +2333,7 @@ peas are running on host provided by the argument <code class="docutils literal 
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Sep 17, 2021.
+            Last updated on Sep 18, 2021.
         </div>
         
       </footer>
