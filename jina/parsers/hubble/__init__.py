@@ -44,9 +44,9 @@ def set_hub_pull_parser(parser=None):
     return parser
 
 
-def set_hub_new_parser(parser=None):
-    """Set the parser for the hub pull
-    :param parser: an optional existing parser to build upon
+def set_hub_new_parser(parser):
+    """Set the parser for the hub new
+    :param parser: existing parser to build upon
     :return: the parser
     """
 
