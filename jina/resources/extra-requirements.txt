@@ -75,3 +75,4 @@ matplotlib:                 devel
 kubernetes>=18.20.0:        devel
 pykube-ng==21.3.0:          test
 pytest-kind==21.1.3:        test
+pytest-lazy-fixture:        test

@@ -503,7 +503,7 @@ class DocumentArray(
             return da
 
     @staticmethod
-    def _flatten(sequence):
+    def _flatten(sequence) -> 'DocumentArray':
         return DocumentArray(list(itertools.chain.from_iterable(sequence)))
 
     # Properties for fast access of commonly used attributes
