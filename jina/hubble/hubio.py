@@ -348,8 +348,8 @@ metas:
             exec_tags = ','.join(self.args.tag)
 
         dockerfile = None
-        if self.args.add_dockerfile:
-            dockerfile = Path(self.args.add_dockerfile)
+        if self.args.dockerfile:
+            dockerfile = Path(self.args.dockerfile)
             if not dockerfile.exists():
                 raise Exception(f'The given Dockerfile `{dockerfile}` does not exist!')
             if dockerfile.parent != work_path:
