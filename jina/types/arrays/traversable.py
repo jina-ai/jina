@@ -1,5 +1,8 @@
 from abc import abstractmethod
-from typing import Iterable, Sequence
+from typing import Iterable, Sequence, TYPE_CHECKING, Union, Optional, Generator
+
+if TYPE_CHECKING:
+    from .document import DocumentArray
 
 
 def _check_traversal_path_type(tp):
@@ -62,9 +65,7 @@ class TraversableSequence:
         else:
             yield docs
 
-    def traverse_flat_per_path(
-        self, traversal_paths: Sequence[str]
-    ) -> Iterable['TraversableSequence']:
+    def traverse_flat_per_path(self, traversal_paths: Sequence[str]):
         """
         Returns a flattened :class:``TraversableSequence`` per path in :param:``traversal_paths``
         with all Documents, that are reached by the path.
@@ -77,7 +78,7 @@ class TraversableSequence:
         for p in traversal_paths:
             yield self._flatten(self._traverse(self, p))
 
-    def traverse_flat(self, traversal_paths: Sequence[str]) -> 'TraversableSequence':
+    def traverse_flat(self, traversal_paths: Sequence[str]):
         """
         Returns a single flattened :class:``TraversableSequence`` with all Documents, that are reached
         via the :param:``traversal_paths``.
@@ -94,6 +95,49 @@ class TraversableSequence:
 
         leaves = self.traverse(traversal_paths)
         return self._flatten(leaves)
+
+    def batch(
+        self,
+        batch_size: int,
+        traversal_paths: Sequence[str] = None,
+        require_attr: Optional[str] = None,
+    ) -> Generator['DocumentArray', None, None]:
+        """
+        Creates a `Generator` that yields `DocumentArray` of size `batch_size` until `docs` is fully traversed along
+        the `traversal_path`. The None `docs` are filtered out and optionally the `docs` can be filtered by checking for
+        the existence of a `Document` attribute.
+        Note, that the last batch might be smaller than `batch_size`.
+
+        :param traversal_paths: Specifies along which "axis" the document shall be traversed. (defaults to ['r'])
+        :param batch_size: Size of each generated batch (except the last one, which might be smaller, default: 32)
+        :param require_attr: Optionally, you can filter out docs which don't have this attribute
+        :yield: a Generator of `DocumentArray`, each in the length of `batch_size`
+        """
+
+        if not (isinstance(batch_size, int) and batch_size > 0):
+            raise ValueError('`batch_size` should be a positive integer')
+
+        if traversal_paths:
+            _check_traversal_path_type(traversal_paths)
+            docs = self.traverse_flat(traversal_paths)
+        else:
+            docs = self
+
+        from .document import DocumentArray
+
+        _batch = DocumentArray()
+        for d in docs:
+            if require_attr:
+                if getattr(d, require_attr):
+                    _batch.append(d)
+            else:
+                _batch.append(d)
+            if len(_batch) == batch_size:
+                yield _batch
+                _batch = DocumentArray()
+
+        if _batch:
+            yield _batch
 
     @staticmethod
     @abstractmethod

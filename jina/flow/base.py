@@ -1118,17 +1118,20 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     k,
                     v,
                 ),
+                daemon=True,
             )
             threads.append(t)
             t.start()
 
         # kick off spinner thread
-        t_m = threading.Thread(target=_polling_status)
+        t_m = threading.Thread(target=_polling_status, daemon=True)
         t_m.start()
 
         # kick off ip getter thread
         addr_table = []
-        t_ip = threading.Thread(target=self._get_address_table, args=(addr_table,))
+        t_ip = threading.Thread(
+            target=self._get_address_table, args=(addr_table,), daemon=True
+        )
         t_ip.start()
 
         for t in threads:
