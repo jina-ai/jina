@@ -1,4 +1,4 @@
-'''Module for wrapping Jina Hub API calls.'''
+"""Module for wrapping Jina Hub API calls."""
 
 import argparse
 import hashlib
@@ -128,8 +128,8 @@ This guide helps you to create your own Executor in 30 seconds.''',
         is_dockerfile = False
 
         if (
-            eval(self.args.advance_config)
-            if self.args.advance_config
+            eval(self.args.advance_configuration)
+            if self.args.advance_configuration
             else Confirm.ask(
                 '[green]That\'s all we need to create an Executor![/green]\n'
                 ':grey_question: Or do you want to proceed to advanced configuration',
@@ -186,8 +186,8 @@ your executor has non-trivial dependencies or must be run under certain environm
             )
 
             is_dockerfile = (
-                eval(self.args.is_dockerfile)
-                if self.args.is_dockerfile
+                eval(self.args.add_dockerfile)
+                if self.args.add_dockerfile
                 else Confirm.ask(
                     ':grey_question: Do you need to write your own [bold]Dockerfile[/bold] instead of the auto-generated one?',
                     default=False,
@@ -348,8 +348,8 @@ metas:
             exec_tags = ','.join(self.args.tag)
 
         dockerfile = None
-        if self.args.dockerfile:
-            dockerfile = Path(self.args.dockerfile)
+        if self.args.add_dockerfile:
+            dockerfile = Path(self.args.add_dockerfile)
             if not dockerfile.exists():
                 raise Exception(f'The given Dockerfile `{dockerfile}` does not exist!')
             if dockerfile.parent != work_path:
