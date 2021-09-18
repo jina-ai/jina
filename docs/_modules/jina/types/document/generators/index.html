@@ -630,7 +630,7 @@
                 <span class="k">yield</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">g</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">read_mode</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'r'</span><span class="p">,</span> <span class="s1">'rb'</span><span class="p">}:</span>
                 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">read_mode</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
-                    <span class="k">yield</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+                    <span class="k">yield</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="n">uri</span><span class="o">=</span><span class="n">g</span><span class="p">)</span>
             <span class="n">d</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">d</span> <span class="o">&gt;=</span> <span class="n">size</span><span class="p">:</span>
             <span class="k">break</span></div>

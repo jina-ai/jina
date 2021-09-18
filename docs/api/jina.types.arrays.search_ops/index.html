@@ -576,37 +576,6 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A mixin that provides search functionality to DocumentArrays</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.types.arrays.search_ops.DocumentArraySearchOpsMixin.find">
-<span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">regexes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traversal_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('r',)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'&gt;='</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/search_ops/#DocumentArraySearchOpsMixin.find"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.search_ops.DocumentArraySearchOpsMixin.find" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find Documents whose tag match the regular expressions in <cite>regexes</cite>.
-If <cite>regexes</cite> contain several regular expressions an <cite>operator</cite> can be used to
-specify a decision depending on the of regular expression matches specified by <cite>value</cite>.</p>
-<p>The supported operators are: [‘&lt;’, ‘&gt;’, ‘==’, ‘!=’, ‘&lt;=’, ‘&gt;=’]</p>
-<dl class="simple">
-<dt>Example: If <cite>len(regexes)=3</cite> then the documents from the DocumentArray will be accepted if</dt><dd><p>they match all 3 regular expressions.</p>
-</dd>
-<dt>Example: If <cite>len(regexes)=3</cite>,  <cite>value=2</cite> and <cite>operator=’&gt;=’</cite> then the documents</dt><dd><p>from the DocumentArray will be accepted if they match at least 2 regular expressions.</p>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>regexes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Pattern</span></code>]]) – Dictionary of the form {tag: Optional[str, regex]}</p></li>
-<li><p><strong>traversal_paths</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – List specifying traversal paths</p></li>
-<li><p><strong>operator</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Operator used to accept/reject a document</p></li>
-<li><p><strong>threshold</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Number of regex that should match the operator to accept a Document.
-If no value is provided <cite>threshold=len(regexes)</cite>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference internal" href="../jina/#jina.DocumentArray" title="jina.DocumentArray">DocumentArray</a></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>DocumentArray with Documents that match the regexes</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
 <dt class="sig sig-object py" id="jina.types.arrays.search_ops.DocumentArraySearchOpsMixin.sample">
 <span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/search_ops/#DocumentArraySearchOpsMixin.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.search_ops.DocumentArraySearchOpsMixin.sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>random sample k elements from <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code> without replacement.</p>
