@@ -6,8 +6,6 @@ import pytest
 from jina import DocumentArray, Document
 from pytest_lazyfixture import lazy_fixture
 
-from jina_commons.batching import get_docs_batch_generator
-
 NUM_DOCS = 15
 
 
