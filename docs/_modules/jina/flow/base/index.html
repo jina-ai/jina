@@ -1203,6 +1203,7 @@
 <div class="viewcode-block" id="Flow.add"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.add">[docs]</a>    <span class="nd">@allowed_levels</span><span class="p">([</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">])</span>
     <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
         <span class="n">needs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">copy_flow</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">pod_role</span><span class="p">:</span> <span class="s1">'PodRoleType'</span> <span class="o">=</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">POD</span><span class="p">,</span>
@@ -1220,7 +1221,6 @@
 <span class="sd">        :param kwargs: other keyword-value arguments that the Pod CLI supports</span>
 <span class="sd">        :return: a (new) Flow object with modification</span>
 <span class="sd">        """</span>
-
         <span class="n">op_flow</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">if</span> <span class="n">copy_flow</span> <span class="k">else</span> <span class="bp">self</span>
 
         <span class="c1"># pod naming logic</span>
