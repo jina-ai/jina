@@ -654,6 +654,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     @allowed_levels([FlowBuildLevel.EMPTY])
     def add(
         self,
+        *,
         needs: Optional[Union[str, Tuple[str], List[str]]] = None,
         copy_flow: bool = True,
         pod_role: 'PodRoleType' = PodRoleType.POD,
@@ -671,7 +672,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param kwargs: other keyword-value arguments that the Pod CLI supports
         :return: a (new) Flow object with modification
         """
-
         op_flow = copy.deepcopy(self) if copy_flow else self
 
         # pod naming logic
