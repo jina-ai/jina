@@ -1147,13 +1147,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             self.close()
             raise RuntimeFailToStart
         else:
+
             if self.args.infrastructure == InfrastructureType.K8S:
-                self.logger.info('🎉 Kubernetes Flow is ready to use!')
+                success_msg = colored('🎉 Kubernetes Flow is ready to use!', 'green')
             else:
-                self.logger.info('🎉 Flow is ready to use!')
+                success_msg = colored('🎉 Flow is ready to use!', 'green')
 
             if addr_table:
-                self.logger.info('\n' + '\n'.join(addr_table))
+                self.logger.info(success_msg + '\n' + '\n'.join(addr_table))
             self.logger.debug(
                 f'{self.num_pods} Pods (i.e. {self.num_peas} Peas) are running in this Flow'
             )

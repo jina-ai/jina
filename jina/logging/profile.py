@@ -8,6 +8,8 @@ from collections import defaultdict
 from functools import wraps
 from typing import Optional, Union, Callable
 
+from jina.enums import ProgressBarStatus
+
 from .logger import JinaLogger
 from ..helper import colored, get_readable_size, get_readable_time
 
@@ -226,7 +228,7 @@ class ProgressBar(TimeContext):
         progress: float = 1.0,
         description: Optional[str] = None,
         message: Optional[str] = None,
-        all_completed: bool = False,
+        status: ProgressBarStatus = ProgressBarStatus.WORKING,
         first_enter: bool = False,
     ) -> None:
         """
@@ -235,7 +237,7 @@ class ProgressBar(TimeContext):
         :param progress: The number of unit to increment.
         :param description: Change the description text before the progress bar on update.
         :param message: Change the message text followed after the progress bar on update.
-        :param all_completed: Mark the task as fully completed.
+        :param status: If set to a value, it will mark the task as complete, can be either "Done" or "Canceled"
         :param first_enter: if this method is called by `__enter__`
         """
         self._num_update_called += 0 if first_enter else 1
@@ -251,14 +253,13 @@ class ProgressBar(TimeContext):
         num_fullbars = math.floor(num_bars)
         num_halfbars = 1 if (num_bars - num_fullbars <= 0.5) else 0
 
-        bar_color = 'yellow' if all_completed else 'green'
-        unfinished_bar_color = 'yellow' if all_completed else 'green'
+        if status in {ProgressBarStatus.DONE, ProgressBarStatus.CANCELED}:
+            bar_color, unfinished_bar_color = 'yellow', 'yellow'
+        elif status == ProgressBarStatus.ERROR:
+            bar_color, unfinished_bar_color = 'red', 'red'
+        else:
+            bar_color, unfinished_bar_color = 'green', 'green'
 
-        time_str = (
-            '-:--:--'
-            if first_enter
-            else str(datetime.timedelta(seconds=elapsed)).split('.')[0]
-        )
         speed_str = (
             'estimating...'
             if first_enter
@@ -266,6 +267,8 @@ class ProgressBar(TimeContext):
         )
 
         description_str = description or self.task_name or ''
+        if status != ProgressBarStatus.WORKING:
+            description_str = str(status)
         msg_str = message or ''
         self._bar_info = dict(
             bar_color=bar_color,
@@ -274,12 +277,13 @@ class ProgressBar(TimeContext):
             num_fullbars=num_fullbars,
             num_halfbars=num_halfbars,
             speed_str=speed_str,
-            time_str=time_str,
             unfinished_bar_color=unfinished_bar_color,
-            all_completed=all_completed,
         )
 
     def _print_bar(self, bar_info):
+        time_str = str(
+            datetime.timedelta(seconds=time.perf_counter() - self.start)
+        ).split('.')[0]
         sys.stdout.write(self.clear_line)
         sys.stdout.write(
             '{} {:>10} {:<}{:<} {} {} {}'.format(
@@ -299,7 +303,7 @@ class ProgressBar(TimeContext):
                     bar_info['unfinished_bar_color'],
                     attrs=['dark'],
                 ),
-                colored(bar_info['time_str'], 'cyan'),
+                colored(time_str, 'cyan'),
                 bar_info['speed_str'],
                 bar_info['msg_str'],
             )
@@ -313,22 +317,33 @@ class ProgressBar(TimeContext):
 
     def _enter_msg(self):
         self.update(first_enter=True)
-        try:
-            self._progress_thread = threading.Thread(
-                target=self._update_thread, daemon=True
-            )
-            self._progress_thread.start()
-        except (KeyboardInterrupt, SystemExit):
-            self._stop_event.set()
-            self.update(0, all_completed=True)
-            self._print_bar(self._bar_info)
 
-    def _exit_msg(self):
-        self._stop_event.set()
-        self._progress_thread.join()
-        self.update(0, all_completed=True)
-        self._print_bar(self._bar_info)
-        self._print_final_msg()
+        self._progress_thread = threading.Thread(
+            target=self._update_thread, daemon=True
+        )
+        self._progress_thread.start()
+
+    def __exit__(self, exc_type, value, traceback):
+        self.duration = self.now()
+
+        self.readable_duration = get_readable_time(seconds=self.duration)
+
+        if exc_type in {KeyboardInterrupt, SystemExit}:
+            self._stop_event.set()
+            self.update(0, status=ProgressBarStatus.CANCELED)
+            self._print_bar(self._bar_info)
+            return True  # prevent it from being propagated
+        elif exc_type and issubclass(exc_type, Exception):
+            self._stop_event.set()
+            self.update(0, status=ProgressBarStatus.ERROR)
+            self._print_bar(self._bar_info)
+        else:
+            # normal ending, i.e. task is complete
+            self._stop_event.set()
+            self._progress_thread.join()
+            self.update(0, status=ProgressBarStatus.DONE)
+            self._print_bar(self._bar_info)
+            self._print_final_msg()
 
     def _print_final_msg(self):
         if self._last_rendered_progress > 1:
