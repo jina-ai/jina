@@ -235,8 +235,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../advanced/hub/create-hub-executor/">Create Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced/hub/push-executor/">Publish Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced/hub/use-hub-executor/">Use Hub Executor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../advanced/hub/pull-executor/">Pull Executor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../advanced/hub/practice-your-learning/">Put into Practice</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced/hub/executor-best-practices/">Best Practices</a></li>
 </ul>
 </li>
@@ -246,7 +244,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../advanced/daemon/remote-executors/">Remote Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced/daemon/workspace/">Workspace</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced/daemon/remote-flows/">Remote Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../advanced/daemon/stream-remote-logs/">Streaming Remote Logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced/daemon/stream-remote-logs/">Remote Logs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced/daemon/development-using-jinad/">JinaD Development Guides</a></li>
 </ul>
 </li>
@@ -261,8 +259,9 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/fuzzy-grep/">Fuzzy <code class="docutils literal notranslate"><span class="pre">grep</span></code> in 30 Lines</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials/chatbot/">Building a Simple Chatbot</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials/master-executor/">Mastering Executors: from Zero to Hub</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/chatbot/">Simple Chatbot in Jina</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/master-executor/">Master Executor: from Zero to Hub</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/refactor-hello-world/">Use Hub Executors in Hello World</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/gpu-executor/">Run Executors on GPU</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
@@ -630,7 +629,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “ad290b60-07d1-4730-bf98-05aca7217b05”</p>
+<p>Default: “e6349cbc-a7f6-4308-99f3-2c28c2d346b4”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -701,7 +700,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “1243dff4-7acb-4db9-8f28-929a076a0016”</p>
+<p>Default: “9d877482-8c8b-45ff-8888-70aabe29a4f7”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -734,7 +733,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “9f5a1ee6-0f94-4c18-9deb-e14950b18184”</p>
+<p>Default: “3f4770db-13fa-4238-ae51-db93caa10264”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -829,7 +828,7 @@
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 37399</p>
+<p>Default: 51061</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -891,11 +890,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 51091</p>
+<p>Default: 41705</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 56763</p>
+<p>Default: 54243</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1237,7 +1236,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 37755</p>
+<p>Default: 46623</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1299,11 +1298,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 34931</p>
+<p>Default: 33243</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 55131</p>
+<p>Default: 54113</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1437,7 +1436,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port that the gateway exposes for clients for GRPC connections.</p>
-<p>Default: 55603</p>
+<p>Default: 38853</p>
 </dd>
 </dl>
 </div>
@@ -1664,7 +1663,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 36795</p>
+<p>Default: 33741</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1726,11 +1725,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 54751</p>
+<p>Default: 50437</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 46621</p>
+<p>Default: 49353</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1972,7 +1971,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 44927</p>
+<p>Default: 50791</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -2034,11 +2033,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 53741</p>
+<p>Default: 46149</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 40167</p>
+<p>Default: 42899</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -2273,7 +2272,7 @@ peas are running on host provided by the argument <code class="docutils literal 
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port of the Gateway, which the client should connect to.</p>
-<p>Default: 51325</p>
+<p>Default: 35791</p>
 </dd>
 </dl>
 </div>
@@ -2333,7 +2332,7 @@ peas are running on host provided by the argument <code class="docutils literal 
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Sep 18, 2021.
+            Last updated on Sep 19, 2021.
         </div>
         
       </footer>

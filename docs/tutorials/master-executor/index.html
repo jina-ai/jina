@@ -3,13 +3,13 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark">
-  <meta property="og:title" content="Mastering Executors: from Zero to Hub" />
+  <meta property="og:title" content="Master Executor: from Zero to Hub" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/tutorials/master-executor.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="A step by step walkthrough on how to create your Executors or use existing ones. We will create a simple logging Executor. It will log the Documents’ information as they reach it, and save these to a file. We will also see how to push our Executor to Jina Hub to use it later. Set-up & overview: W..." />
-  <meta property="og:image" content="../../_images/push-executor.png" />
-  <meta property="og:image:alt" content="Jina Documentation" />
+  <meta property="og:description" content="Cristian @ Jina AI Sept. 10, 2021 This is a step-by-step walkthrough on how to create your Executors or use existing ones. We will create a simple logging Executor. It will log the Documents’ information as they reach it, and save these to a file. We will also see how to push our Executor to Jina..." />
+  <meta property="og:image" content="../../_images/cristian.jpg" />
+  <meta property="og:image:alt" content="" />
   <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -25,10 +25,10 @@
 
   gtag('config', 'G-48ZDWC8GT6');
 </script>
-    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Run Executors on GPU" href="../gpu-executor/" /><link rel="prev" title="Building a Simple Chatbot" href="../chatbot/" />
+    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Use Hub Executors in Hello World" href="../refactor-hello-world/" /><link rel="prev" title="Simple Chatbot in Jina" href="../chatbot/" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>Mastering Executors: from Zero to Hub - Jina Documentation</title>
+        <title>Master Executor: from Zero to Hub - Jina Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -235,8 +235,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../advanced/hub/create-hub-executor/">Create Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../advanced/hub/push-executor/">Publish Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../advanced/hub/use-hub-executor/">Use Hub Executor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../advanced/hub/pull-executor/">Pull Executor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../advanced/hub/practice-your-learning/">Put into Practice</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../advanced/hub/executor-best-practices/">Best Practices</a></li>
 </ul>
 </li>
@@ -246,7 +244,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/remote-executors/">Remote Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/workspace/">Workspace</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/remote-flows/">Remote Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/stream-remote-logs/">Streaming Remote Logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/stream-remote-logs/">Remote Logs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/development-using-jinad/">JinaD Development Guides</a></li>
 </ul>
 </li>
@@ -261,8 +259,9 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../fuzzy-grep/">Fuzzy <code class="docutils literal notranslate"><span class="pre">grep</span></code> in 30 Lines</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../chatbot/">Building a Simple Chatbot</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Mastering Executors: from Zero to Hub</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chatbot/">Simple Chatbot in Jina</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Master Executor: from Zero to Hub</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../refactor-hello-world/">Use Hub Executors in Hello World</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../gpu-executor/">Run Executors on GPU</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
@@ -569,11 +568,28 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <div class="tex2jax_ignore mathjax_ignore section" id="mastering-executors-from-zero-to-hub">
-<h1>Mastering Executors: from Zero to Hub<a class="headerlink" href="#mastering-executors-from-zero-to-hub" title="Permalink to this headline">¶</a></h1>
-<blockquote>
-<div><p>A step by step walkthrough on how to create your Executors or use existing ones.</p>
-</div></blockquote>
+        <div class="tex2jax_ignore mathjax_ignore section" id="master-executor-from-zero-to-hub">
+<h1>Master Executor: from Zero to Hub<a class="headerlink" href="#master-executor-from-zero-to-hub" title="Permalink to this headline">¶</a></h1>
+<div class="sd-container-fluid sd-sphinx-override sd-p-0 sd-mt-2 sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-2 sd-gx-2 sd-gy-1 docutils">
+<div class="sd-col sd-col-auto sd-d-flex-row sd-align-minor-center docutils">
+<a class="reference external image-reference" href="https://jobs.jina.ai"><img alt="" class="sd-avatar-sm sd-outline-muted" src="../../_images/cristian.jpg"/></a>
+</div>
+<div class="sd-col sd-d-flex-row sd-align-minor-center docutils">
+<div class="sd-container-fluid sd-sphinx-override docutils">
+<div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-3 sd-row-cols-md-3 sd-row-cols-lg-3 sd-gx-3 sd-gy-1 docutils">
+<div class="sd-col sd-col-auto sd-d-flex-row sd-align-minor-center docutils">
+<p class="sd-p-0 sd-m-0">Cristian @ Jina AI</p>
+</div>
+<div class="sd-col sd-col-auto sd-d-flex-row sd-align-minor-center docutils">
+<p class="sd-p-0 sd-m-0"><span class="sd-pr-2"><svg aria-hidden="true" class="sd-octicon sd-octicon-calendar" height="16.0px" version="1.1" viewbox="0 0 16 16" width="16.0px"><path d="M4.75 0a.75.75 0 01.75.75V2h5V.75a.75.75 0 011.5 0V2h1.25c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0113.25 16H2.75A1.75 1.75 0 011 14.25V3.75C1 2.784 1.784 2 2.75 2H4V.75A.75.75 0 014.75 0zm0 3.5h8.5a.25.25 0 01.25.25V6h-11V3.75a.25.25 0 01.25-.25h2zm-2.25 4v6.75c0 .138.112.25.25.25h10.5a.25.25 0 00.25-.25V7.5h-11z" fill-rule="evenodd"></path></svg></span>Sept. 10, 2021</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>This is a step-by-step walkthrough on how to create your Executors or use existing ones.</p>
 <p>We will create a simple logging Executor. It will log the Documents’ information as they reach it, and save these to a file. We will also see how to push our Executor to Jina Hub to use it later.</p>
 <div class="section" id="set-up-overview">
 <h2>Set-up &amp; overview<a class="headerlink" href="#set-up-overview" title="Permalink to this headline">¶</a></h2>
@@ -871,12 +887,12 @@ Create an <code class="docutils literal notranslate"><span class="pre">app.py</s
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../gpu-executor/">
+          <a class="next-page" href="../refactor-hello-world/">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Run Executors on GPU</div>
+                <div class="title">Use Hub Executors in Hello World</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -887,7 +903,7 @@ Create an <code class="docutils literal notranslate"><span class="pre">app.py</s
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Building a Simple Chatbot</div>
+                <div class="title">Simple Chatbot in Jina</div>
                 
               </div>
             </a>
@@ -896,7 +912,7 @@ Create an <code class="docutils literal notranslate"><span class="pre">app.py</s
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Sep 18, 2021.
+            Last updated on Sep 19, 2021.
         </div>
         
       </footer>
@@ -913,7 +929,7 @@ Create an <code class="docutils literal notranslate"><span class="pre">app.py</s
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Mastering Executors: from Zero to Hub</a><ul>
+<li><a class="reference internal" href="#">Master Executor: from Zero to Hub</a><ul>
 <li><a class="reference internal" href="#set-up-overview">Set-up &amp; overview</a></li>
 <li><a class="reference internal" href="#create-your-executor">Create your Executor</a><ul>
 <li><a class="reference internal" href="#logger-executor">Logger Executor</a></li>

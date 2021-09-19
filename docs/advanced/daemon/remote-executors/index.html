@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/advanced/daemon/remote-executors.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="JinaD enables deploying Executors on remote machines. We can pass the remote info using host and port_jinad arguments in the Flow syntax. Here are a few examples of using remote Executors. Executor defined in YAML: Local f = Flow().add(uses='executor.yml', py_modules=['executor.py']) Remote f = F..." />
+  <meta property="og:description" content="JinaD enables deploying Executors on remote machines. We can pass the remote info using host and port_jinad arguments in the Flow syntax. Here are a few examples of using remote Executors. Executor defined in YAML: Local from jina import Flow f = Flow().add(uses='executor.yml', py_modules=['execu..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -235,8 +235,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../hub/create-hub-executor/">Create Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../hub/push-executor/">Publish Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../hub/use-hub-executor/">Use Hub Executor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../hub/pull-executor/">Pull Executor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../hub/practice-your-learning/">Put into Practice</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../hub/executor-best-practices/">Best Practices</a></li>
 </ul>
 </li>
@@ -246,7 +244,7 @@
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Remote Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../workspace/">Workspace</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../remote-flows/">Remote Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../stream-remote-logs/">Streaming Remote Logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../stream-remote-logs/">Remote Logs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../development-using-jinad/">JinaD Development Guides</a></li>
 </ul>
 </li>
@@ -261,8 +259,9 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../tutorials/fuzzy-grep/">Fuzzy <code class="docutils literal notranslate"><span class="pre">grep</span></code> in 30 Lines</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/chatbot/">Building a Simple Chatbot</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/master-executor/">Mastering Executors: from Zero to Hub</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/chatbot/">Simple Chatbot in Jina</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/master-executor/">Master Executor: from Zero to Hub</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/refactor-hello-world/">Use Hub Executors in Hello World</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../tutorials/gpu-executor/">Run Executors on GPU</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
@@ -576,16 +575,20 @@
 <h2>Executor defined in YAML<a class="headerlink" href="#executor-defined-in-yaml" title="Permalink to this headline">¶</a></h2>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">Local</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">'executor.yml'</span><span class="p">,</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">'executor.yml'</span><span class="p">,</span>
                <span class="n">py_modules</span><span class="o">=</span><span class="p">[</span><span class="s1">'executor.py'</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">Remote</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">'executor.yml'</span><span class="p">,</span>
-<span class="hll">               <span class="n">host</span><span class="o">=</span><span class="s1">'1.2.3.4'</span><span class="p">,</span>
-</span><span class="hll">               <span class="n">port_jinad</span><span class="o">=</span><span class="mi">8000</span><span class="p">,</span>
-</span>               <span class="n">py_modules</span><span class="o">=</span><span class="p">[</span><span class="s1">'executor.py'</span><span class="p">])</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="hll"><span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">'executor.yml'</span><span class="p">,</span>
+</span><span class="hll">               <span class="n">host</span><span class="o">=</span><span class="s1">'1.2.3.4'</span><span class="p">,</span>
+</span>               <span class="n">port_jinad</span><span class="o">=</span><span class="mi">8000</span><span class="p">,</span>
+               <span class="n">py_modules</span><span class="o">=</span><span class="p">[</span><span class="s1">'executor.py'</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -595,15 +598,19 @@
 <h2>Executor from Hub<a class="headerlink" href="#executor-from-hub" title="Permalink to this headline">¶</a></h2>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">Local</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">'jinahub+docker://AdvancedExecutor'</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">'jinahub+docker://AdvancedExecutor'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--2">Remote</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">'jinahub+docker://AdvancedExecutor'</span><span class="p">,</span>
-<span class="hll">               <span class="n">host</span><span class="o">=</span><span class="s1">'1.2.3.4'</span><span class="p">,</span>
-</span><span class="hll">               <span class="n">port_jinad</span><span class="o">=</span><span class="mi">8000</span><span class="p">)</span>
-</span></pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="hll"><span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">'jinahub+docker://AdvancedExecutor'</span><span class="p">,</span>
+</span><span class="hll">               <span class="n">host</span><span class="o">=</span><span class="s1">'1.2.3.4'</span><span class="p">,</span>
+</span>               <span class="n">port_jinad</span><span class="o">=</span><span class="mi">8000</span><span class="p">)</span>
+</pre></div>
 </div>
 </div>
 </div>
@@ -612,7 +619,9 @@
 <h2>Executors on different hosts<a class="headerlink" href="#executors-on-different-hosts" title="Permalink to this headline">¶</a></h2>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--1">Local</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>f = (Flow()
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>from jina import Flow
+
+f = (Flow()
     .add(name=’encoder’,
          uses='encoder.yml',
          py_modules=['encoder.py'])
@@ -690,8 +699,8 @@
 </div>
 </div>
 <input class="tab-input" id="tab-set--4-input--2" name="tab-set--4" type="radio"/><label class="tab-label" for="tab-set--4-input--2">Remote</label><div class="tab-content docutils">
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># requirements.txt
-tensorflow==2.4.0
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># requirements.txt</span>
+<span class="nv">tensorflow</span><span class="o">==</span><span class="m">2</span>.4.0
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
@@ -747,7 +756,7 @@ tensorflow==2.4.0
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Sep 18, 2021.
+            Last updated on Sep 19, 2021.
         </div>
         
       </footer>

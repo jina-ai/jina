@@ -8,7 +8,7 @@
   <meta property="og:url" content="https://docs.jina.ai/advanced/hub/create-hub-executor.html" />
   <meta property="og:site_name" content="Jina Documentation" />
   <meta property="og:description" content="To create your Hub Executor, you just need to run this command in your terminal: jina hub new When you run the command above, a wizard will ask you some questions about the Executor. For the basic configuration, you will be asked two things: The Executor’s name and where it should be saved. The w..." />
-  <meta property="og:image" content="../../../_images/hub-new.png" />
+  <meta property="og:image" content="../../../_images/create-new.gif" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -235,8 +235,6 @@
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Create Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../push-executor/">Publish Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../use-hub-executor/">Use Hub Executor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../pull-executor/">Pull Executor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../practice-your-learning/">Put into Practice</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../executor-best-practices/">Best Practices</a></li>
 </ul>
 </li>
@@ -246,7 +244,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../daemon/remote-executors/">Remote Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../daemon/workspace/">Workspace</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../daemon/remote-flows/">Remote Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../daemon/stream-remote-logs/">Streaming Remote Logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../daemon/stream-remote-logs/">Remote Logs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../daemon/development-using-jinad/">JinaD Development Guides</a></li>
 </ul>
 </li>
@@ -261,8 +259,9 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../tutorials/fuzzy-grep/">Fuzzy <code class="docutils literal notranslate"><span class="pre">grep</span></code> in 30 Lines</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/chatbot/">Building a Simple Chatbot</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/master-executor/">Mastering Executors: from Zero to Hub</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/chatbot/">Simple Chatbot in Jina</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/master-executor/">Master Executor: from Zero to Hub</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/refactor-hello-world/">Use Hub Executors in Hello World</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../tutorials/gpu-executor/">Run Executors on GPU</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
@@ -576,17 +575,7 @@
 </pre></div>
 </div>
 <div class="figure align-center">
-<img alt="../../../_images/hub-new.png" src="../../../_images/hub-new.png"/>
-</div>
-<div class="note admonition">
-<p class="admonition-title">Note</p>
-<p>A <code class="docutils literal notranslate"><span class="pre">Hub</span> <span class="pre">Executor</span></code> is an executor that is published in JinaHub. Such an executor can be easily used in a flow like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
-
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">'jinahub+docker://MyExecutor'</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>We’ll discuss more how to use hub executors in this <a class="reference internal" href="../use-hub-executor/#use-hub-executor"><span class="std std-ref">section</span></a></p>
+<img alt="../../../_images/create-new.gif" src="../../../_images/create-new.gif"/>
 </div>
 <p>When you run the command above, a wizard will ask you some questions about the Executor. For the basic configuration,
 you will be asked two things: The Executor’s name and where it should be saved. The wizard will ask if you want to have
@@ -643,7 +632,7 @@ a more advanced configuration, but it is unnecessary for most of use cases.</p>
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Sep 18, 2021.
+            Last updated on Sep 19, 2021.
         </div>
         
       </footer>

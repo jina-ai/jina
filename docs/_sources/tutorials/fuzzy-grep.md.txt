@@ -1,5 +1,14 @@
 # Fuzzy `grep` in 30 Lines
 
+```{article-info}
+:avatar: avatars/han.jpg
+:avatar-link: https://jobs.jina.ai
+:avatar-outline: muted
+:author: Han @ Jina AI
+:date: July 15, 2021
+```
+
+
 Now that you understand all fundamental concepts, let's practice the learnings and build a simple end-to-end demo.
 
 We will use Jina to implement a fuzzy search solution on source code: given a snippet source code and a query, find all lines that are
