@@ -742,7 +742,9 @@
 
                 <span class="kn">from</span> <span class="nn">.memmap</span> <span class="kn">import</span> <span class="n">DocumentArrayMemmap</span>
 
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">DocumentArrayMemmap</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
+                    <span class="n">docs</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">DocumentArrayMemmap</span><span class="p">,</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">)</span>
+                <span class="p">):</span>
                     <span class="c1"># This would happen in the client</span>
                     <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
                         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">Document</span><span class="p">):</span>
@@ -1049,10 +1051,6 @@
             <span class="n">dap</span><span class="o">.</span><span class="n">ParseFromString</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
             <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">dap</span><span class="o">.</span><span class="n">docs</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">da</span></div>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_flatten</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'DocumentArray'</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">sequence</span><span class="p">)))</span>
 
     <span class="c1"># Properties for fast access of commonly used attributes</span>
     <span class="nd">@property</span>
