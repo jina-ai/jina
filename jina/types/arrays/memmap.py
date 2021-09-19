@@ -393,10 +393,6 @@ class DocumentArrayMemmap(
         else:
             raise TypeError(f'`key` must be int or str, but receiving {key!r}')
 
-    @staticmethod
-    def _flatten(sequence):
-        return itertools.chain.from_iterable(sequence)
-
     def __bool__(self):
         """To simulate ```l = []; if l: ...```
 

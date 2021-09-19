@@ -1,5 +1,5 @@
-from abc import abstractmethod
-from typing import Iterable, Sequence, TYPE_CHECKING, Union, Optional, Generator
+import itertools
+from typing import Iterable, Sequence, TYPE_CHECKING, Optional, Generator
 
 if TYPE_CHECKING:
     from .document import DocumentArray
@@ -140,6 +140,7 @@ class TraversableSequence:
             yield _batch
 
     @staticmethod
-    @abstractmethod
-    def _flatten(sequence):
-        ...
+    def _flatten(sequence) -> 'DocumentArray':
+        from .document import DocumentArray
+
+        return DocumentArray(itertools.chain.from_iterable(sequence))

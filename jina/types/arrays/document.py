@@ -194,7 +194,9 @@ class DocumentArray(
 
                 from .memmap import DocumentArrayMemmap
 
-                if isinstance(docs, (list, tuple, Generator, DocumentArrayMemmap)):
+                if isinstance(
+                    docs, (list, tuple, Generator, DocumentArrayMemmap, itertools.chain)
+                ):
                     # This would happen in the client
                     for doc in docs:
                         if isinstance(doc, Document):
@@ -501,10 +503,6 @@ class DocumentArray(
             dap.ParseFromString(fp.read())
             da = DocumentArray(dap.docs)
             return da
-
-    @staticmethod
-    def _flatten(sequence) -> 'DocumentArray':
-        return DocumentArray(list(itertools.chain.from_iterable(sequence)))
 
     # Properties for fast access of commonly used attributes
     @property
