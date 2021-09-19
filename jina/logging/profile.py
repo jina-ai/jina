@@ -333,7 +333,7 @@ class ProgressBar(TimeContext):
             self.update(0, status=ProgressBarStatus.CANCELED)
             self._print_bar(self._bar_info)
             return True  # prevent it from being propagated
-        elif issubclass(exc_type, Exception):
+        elif exc_type and issubclass(exc_type, Exception):
             self._stop_event.set()
             self.update(0, status=ProgressBarStatus.ERROR)
             self._print_bar(self._bar_info)
