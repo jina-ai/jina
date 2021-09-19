@@ -1695,13 +1695,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
             <span class="k">raise</span> <span class="n">RuntimeFailToStart</span>
         <span class="k">else</span><span class="p">:</span>
+
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">infrastructure</span> <span class="o">==</span> <span class="n">InfrastructureType</span><span class="o">.</span><span class="n">K8S</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'🎉 Kubernetes Flow is ready to use!'</span><span class="p">)</span>
+                <span class="n">success_msg</span> <span class="o">=</span> <span class="n">colored</span><span class="p">(</span><span class="s1">'🎉 Kubernetes Flow is ready to use!'</span><span class="p">,</span> <span class="s1">'green'</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'🎉 Flow is ready to use!'</span><span class="p">)</span>
+                <span class="n">success_msg</span> <span class="o">=</span> <span class="n">colored</span><span class="p">(</span><span class="s1">'🎉 Flow is ready to use!'</span><span class="p">,</span> <span class="s1">'green'</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">addr_table</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">addr_table</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">success_msg</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">addr_table</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_pods</span><span class="si">}</span><span class="s1"> Pods (i.e. </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_peas</span><span class="si">}</span><span class="s1"> Peas) are running in this Flow'</span>
             <span class="p">)</span>

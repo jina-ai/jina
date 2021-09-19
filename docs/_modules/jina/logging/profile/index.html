@@ -556,6 +556,8 @@
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span>
 
+<span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">ProgressBarStatus</span>
+
 <span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">colored</span><span class="p">,</span> <span class="n">get_readable_size</span><span class="p">,</span> <span class="n">get_readable_time</span>
 
@@ -774,7 +776,7 @@
         <span class="n">progress</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">message</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">all_completed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">status</span><span class="p">:</span> <span class="n">ProgressBarStatus</span> <span class="o">=</span> <span class="n">ProgressBarStatus</span><span class="o">.</span><span class="n">WORKING</span><span class="p">,</span>
         <span class="n">first_enter</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""</span>
@@ -783,7 +785,7 @@
 <span class="sd">        :param progress: The number of unit to increment.</span>
 <span class="sd">        :param description: Change the description text before the progress bar on update.</span>
 <span class="sd">        :param message: Change the message text followed after the progress bar on update.</span>
-<span class="sd">        :param all_completed: Mark the task as fully completed.</span>
+<span class="sd">        :param status: If set to a value, it will mark the task as complete, can be either "Done" or "Canceled"</span>
 <span class="sd">        :param first_enter: if this method is called by `__enter__`</span>
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_num_update_called</span> <span class="o">+=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">first_enter</span> <span class="k">else</span> <span class="mi">1</span>
@@ -799,14 +801,13 @@
         <span class="n">num_fullbars</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">num_bars</span><span class="p">)</span>
         <span class="n">num_halfbars</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="p">(</span><span class="n">num_bars</span> <span class="o">-</span> <span class="n">num_fullbars</span> <span class="o">&lt;=</span> <span class="mf">0.5</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span>
 
-        <span class="n">bar_color</span> <span class="o">=</span> <span class="s1">'yellow'</span> <span class="k">if</span> <span class="n">all_completed</span> <span class="k">else</span> <span class="s1">'green'</span>
-        <span class="n">unfinished_bar_color</span> <span class="o">=</span> <span class="s1">'yellow'</span> <span class="k">if</span> <span class="n">all_completed</span> <span class="k">else</span> <span class="s1">'green'</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="ow">in</span> <span class="p">{</span><span class="n">ProgressBarStatus</span><span class="o">.</span><span class="n">DONE</span><span class="p">,</span> <span class="n">ProgressBarStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="p">}:</span>
+            <span class="n">bar_color</span><span class="p">,</span> <span class="n">unfinished_bar_color</span> <span class="o">=</span> <span class="s1">'yellow'</span><span class="p">,</span> <span class="s1">'yellow'</span>
+        <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="n">ProgressBarStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span>
+            <span class="n">bar_color</span><span class="p">,</span> <span class="n">unfinished_bar_color</span> <span class="o">=</span> <span class="s1">'red'</span><span class="p">,</span> <span class="s1">'red'</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bar_color</span><span class="p">,</span> <span class="n">unfinished_bar_color</span> <span class="o">=</span> <span class="s1">'green'</span><span class="p">,</span> <span class="s1">'green'</span>
 
-        <span class="n">time_str</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s1">'-:--:--'</span>
-            <span class="k">if</span> <span class="n">first_enter</span>
-            <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">elapsed</span><span class="p">))</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="p">)</span>
         <span class="n">speed_str</span> <span class="o">=</span> <span class="p">(</span>
             <span class="s1">'estimating...'</span>
             <span class="k">if</span> <span class="n">first_enter</span>
@@ -814,6 +815,8 @@
         <span class="p">)</span>
 
         <span class="n">description_str</span> <span class="o">=</span> <span class="n">description</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_name</span> <span class="ow">or</span> <span class="s1">''</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="n">ProgressBarStatus</span><span class="o">.</span><span class="n">WORKING</span><span class="p">:</span>
+            <span class="n">description_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
         <span class="n">msg_str</span> <span class="o">=</span> <span class="n">message</span> <span class="ow">or</span> <span class="s1">''</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_bar_info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
             <span class="n">bar_color</span><span class="o">=</span><span class="n">bar_color</span><span class="p">,</span>
@@ -822,12 +825,13 @@
             <span class="n">num_fullbars</span><span class="o">=</span><span class="n">num_fullbars</span><span class="p">,</span>
             <span class="n">num_halfbars</span><span class="o">=</span><span class="n">num_halfbars</span><span class="p">,</span>
             <span class="n">speed_str</span><span class="o">=</span><span class="n">speed_str</span><span class="p">,</span>
-            <span class="n">time_str</span><span class="o">=</span><span class="n">time_str</span><span class="p">,</span>
             <span class="n">unfinished_bar_color</span><span class="o">=</span><span class="n">unfinished_bar_color</span><span class="p">,</span>
-            <span class="n">all_completed</span><span class="o">=</span><span class="n">all_completed</span><span class="p">,</span>
         <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_print_bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bar_info</span><span class="p">):</span>
+        <span class="n">time_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
+            <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clear_line</span><span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
             <span class="s1">'</span><span class="si">{}</span><span class="s1"> </span><span class="si">{:&gt;10}</span><span class="s1"> </span><span class="si">{:&lt;}{:&lt;}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -847,7 +851,7 @@
                     <span class="n">bar_info</span><span class="p">[</span><span class="s1">'unfinished_bar_color'</span><span class="p">],</span>
                     <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="s1">'dark'</span><span class="p">],</span>
                 <span class="p">),</span>
-                <span class="n">colored</span><span class="p">(</span><span class="n">bar_info</span><span class="p">[</span><span class="s1">'time_str'</span><span class="p">],</span> <span class="s1">'cyan'</span><span class="p">),</span>
+                <span class="n">colored</span><span class="p">(</span><span class="n">time_str</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">),</span>
                 <span class="n">bar_info</span><span class="p">[</span><span class="s1">'speed_str'</span><span class="p">],</span>
                 <span class="n">bar_info</span><span class="p">[</span><span class="s1">'msg_str'</span><span class="p">],</span>
             <span class="p">)</span>
@@ -861,22 +865,33 @@
 
     <span class="k">def</span> <span class="nf">_enter_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">first_enter</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_progress_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
-                <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_thread</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_progress_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyboardInterrupt</span><span class="p">,</span> <span class="ne">SystemExit</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_stop_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">all_completed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_print_bar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bar_info</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_exit_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_stop_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_progress_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">all_completed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_print_bar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bar_info</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_print_final_msg</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_progress_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
+            <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_thread</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_progress_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">readable_duration</span> <span class="o">=</span> <span class="n">get_readable_time</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">exc_type</span> <span class="ow">in</span> <span class="p">{</span><span class="ne">KeyboardInterrupt</span><span class="p">,</span> <span class="ne">SystemExit</span><span class="p">}:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stop_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">ProgressBarStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_print_bar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bar_info</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># prevent it from being propagated</span>
+        <span class="k">elif</span> <span class="n">exc_type</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stop_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">ProgressBarStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_print_bar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bar_info</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># normal ending, i.e. task is complete</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stop_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_progress_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">ProgressBarStatus</span><span class="o">.</span><span class="n">DONE</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_print_bar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bar_info</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_print_final_msg</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_print_final_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_rendered_progress</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
