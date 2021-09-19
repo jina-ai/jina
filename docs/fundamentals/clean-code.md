@@ -5,7 +5,10 @@ tips to help you write beautiful and efficient code.
 
 ## Clean import
 
-`from jina import Document, DocumentArray, Executor, Flow, requests` is all you need. Copy-paste it as the first line of your code.
+```python
+from jina import Document, DocumentArray, Executor, Flow, requests
+```
+is often all you need. Copy-paste it as the first line of your code.
 
 ## Generator as Flow input
 
@@ -316,3 +319,56 @@ with f:
 ````
 
 
+## Keep only necessary fields
+
+Sometimes you do not want to pass the full Document to the sequel Executors due to efficiency reason. 
+You can simply use `.pop` method to remove those fields.
+
+When using Jina with an HTTP frontend, the frontend often does not need `ndarray` or binary content. Hence, 
+fields such as `blob`, `embedding`, and `buffer` can often be removed at the last Executor before returning the final results to the frontend.
+
+````{tab} ✅ Do
+
+```{code-block} python
+---
+emphasize-lines: 9
+---
+from jina import Executor, requests
+
+class FirstExecutor(Executor):
+    
+    @requests
+    def foo(self, docs, **kwargs):
+        # some process on docs
+        for d in docs:
+            d.pop('embedding', 'blob')
+
+class SecondExecutor(Executor):
+    
+    @requests
+    def bar(self, docs, **kwargs):
+        # do follow up processing, but now `.embedding` and `.blob` is empty
+        # but that's fine because this Executor does not need those fields 
+```
+
+````
+
+````{tab} 😔 Don't
+
+```python
+from jina import Executor, requests
+
+class FirstExecutor(Executor):
+    
+    @requests
+    def foo(self, docs, **kwargs):
+        # some process on docs
+
+class SecondExecutor(Executor):
+    
+    @requests
+    def bar(self, docs, **kwargs):
+        # do follow up processing, even though `.embedding` and `.blob` is never used 
+```
+
+````
