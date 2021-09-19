@@ -106,12 +106,12 @@ def test_parse_args_custom_executor(parallel: int):
         (
             'gateway',
             '1',
-            [{'name': 'gateway', 'head_host': 'gateway.ns.svc.cluster.local'}],
+            [{'name': 'gateway', 'head_host': 'gateway.ns.svc'}],
         ),
         (
             'test-pod',
             '1',
-            [{'name': 'test-pod', 'head_host': 'test-pod.ns.svc.cluster.local'}],
+            [{'name': 'test-pod', 'head_host': 'test-pod.ns.svc'}],
         ),
         (
             'test-pod',
@@ -119,13 +119,13 @@ def test_parse_args_custom_executor(parallel: int):
             [
                 {
                     'name': 'test-pod_head',
-                    'head_host': 'test-pod-head.ns.svc.cluster.local',
+                    'head_host': 'test-pod-head.ns.svc',
                 },
-                {'name': 'test-pod_0', 'head_host': 'test-pod-0.ns.svc.cluster.local'},
-                {'name': 'test-pod_1', 'head_host': 'test-pod-1.ns.svc.cluster.local'},
+                {'name': 'test-pod_0', 'head_host': 'test-pod-0.ns.svc'},
+                {'name': 'test-pod_1', 'head_host': 'test-pod-1.ns.svc'},
                 {
                     'name': 'test-pod_tail',
-                    'head_host': 'test-pod-tail.ns.svc.cluster.local',
+                    'head_host': 'test-pod-tail.ns.svc',
                 },
             ],
         ),

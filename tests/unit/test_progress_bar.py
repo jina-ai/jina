@@ -1,7 +1,7 @@
 import time
 
 import pytest
-
+from jina.enums import ProgressBarStatus
 from jina.logging.profile import ProgressBar
 
 
@@ -25,3 +25,26 @@ def test_never_call_update(capsys):
         pass
     captured = capsys.readouterr()
     assert captured.out.endswith(ProgressBar.clear_line)
+
+
+def test_error_in_progress_bar(capsys):
+    with pytest.raises(NotImplementedError):
+        with ProgressBar('update') as p:
+            for j in range(100):
+                p.update()
+                time.sleep(0.01)
+                if j > 5:
+                    raise NotImplementedError
+    captured = capsys.readouterr()
+    assert str(ProgressBarStatus.ERROR) in captured.out
+
+
+def test_kb_interrupt_in_progress_bar(capsys):
+    with ProgressBar('update') as p:
+        for j in range(100):
+            p.update()
+            time.sleep(0.01)
+            if j > 5:
+                raise KeyboardInterrupt
+    captured = capsys.readouterr()
+    assert str(ProgressBarStatus.CANCELED) in captured.out

@@ -1,4 +1,4 @@
-# Setup JinaD Server
+# JinaD Server
 
 `JinaD` docker image is published
 on [Docker Hub](https://hub.docker.com/r/jinaai/jina/tags?page=1&ordering=last_updated&name=-daemon) and follows

@@ -8,20 +8,10 @@ jina hub new
 ```
 
 
-```{figure} ../../../.github/hub-new.png
+```{figure} screenshots/create-new.gif
 :align: center
 ```
 
-````{admonition} Note
-:class: note
-A `Hub Executor` is an executor that is published in JinaHub. Such an executor can be easily used in a flow like this:
-```python
-from jina import Flow
-
-f = Flow().add(uses='jinahub+docker://MyExecutor')
-``` 
-We'll discuss more how to use hub executors in this {ref}`section <use-hub-executor>`
-````
 When you run the command above, a wizard will ask you some questions about the Executor. For the basic configuration, 
 you will be asked two things: The Executor’s name and where it should be saved. The wizard will ask if you want to have 
 a more advanced configuration, but it is unnecessary for most of use cases.

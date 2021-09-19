@@ -142,9 +142,14 @@ class K8sPod(BasePod):
 
         :return: self
         """
+        logger = JinaLogger(f'start_{self.name}')
+        logger.info(
+            f'🏝️\tCreate Namespace "{self.args.k8s_namespace}" for "{self.name}"'
+        )
         kubernetes_tools.create(
             'namespace',
             {'name': self.args.k8s_namespace},
+            logger=logger,
             custom_resource_dir=getattr(self.args, 'k8s_custom_resource_dir', None),
         )
         if self.name == 'gateway':
@@ -268,7 +273,7 @@ class K8sPod(BasePod):
         dns_name = kubernetes_deployment.to_dns_name(name)
         return {
             'name': name,
-            'head_host': f'{dns_name}.{self.args.k8s_namespace}.svc.cluster.local',
+            'head_host': f'{dns_name}.{self.args.k8s_namespace}.svc',
             'head_port_in': self.fixed_head_port_in,
             'tail_port_out': self.fixed_tail_port_out,
             'head_zmq_identity': self.head_zmq_identity,

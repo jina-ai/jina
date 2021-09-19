@@ -361,6 +361,15 @@ class RuntimeBackendType(BetterEnum):
     PROCESS = 1
 
 
+class ProgressBarStatus(BetterEnum):
+    """Type of the progress bar status."""
+
+    WORKING = 0
+    DONE = 1
+    CANCELED = 2
+    ERROR = 3
+
+
 class EmbeddingClsType(BetterEnum):
     """Enums for representing the type of embeddings supported."""
 

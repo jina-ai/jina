@@ -18,5 +18,6 @@ That said, have fun!
 windows
 kubernetes
 indexers
-compound_executors
+compound-executor
+graph-document
 ```

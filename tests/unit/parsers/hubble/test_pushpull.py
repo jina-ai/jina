@@ -26,10 +26,10 @@ def test_push_parser(tmpdir):
     assert args.tag == ['v1', 'v2']
 
     args = parser.parse_args([tmpdir, '-f', 'Dockerfile'])
-    assert args.docker_file == 'Dockerfile'
+    assert args.dockerfile == 'Dockerfile'
 
-    args = parser.parse_args([tmpdir, '--docker-file', 'Dockerfile'])
-    assert args.docker_file == 'Dockerfile'
+    args = parser.parse_args([tmpdir, '--dockerfile', 'Dockerfile'])
+    assert args.dockerfile == 'Dockerfile'
 
     args = parser.parse_args([tmpdir, '--public'])
     assert args.public is True

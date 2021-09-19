@@ -123,34 +123,33 @@ class DocumentArrayGetAttrMixin:
 
     @property
     def blobs(self) -> np.ndarray:
-        """Return a `np.ndarray` stacking all the `blob` attributes as rows.
+        """Return a `np.ndarray` stacking all the `blob` attributes.
 
-        .. warning:: This operation assumes all Documents have `blob` as content, blobs have the same shape and dtype.
+        The `blob` attributes are stacked together along a newly created first
+        dimension (as if you would stack using ``np.stack(X, axis=0)``).
+
+        .. warning:: This operation assumes all blobs have the same shape and dtype.
                  All dtype and shape values are assumed to be equal to the values of the
                  first element in the DocumentArray / DocumentArrayMemmap
 
         .. warning:: This operation currently does not support sparse arrays.
-
-        :return: blobs stacked per row as `np.ndarray`.
         """
-        x_mat = b''.join(d.proto.blob.dense.buffer for d in self)
-
-        return np.frombuffer(x_mat, dtype=self[0].proto.blob.dense.dtype).reshape(
-            (len(self), *self[0].proto.blob.dense.shape)
-        )
+        ...
 
     @blobs.setter
-    def blobs(self, b: np.ndarray):
+    def blobs(self, blobs: np.ndarray):
         """Set the blobs of the Documents
 
-        :param b: The blobs matrix to set
+        :param blobs: The blob array to set. The first axis is the "row" axis.
         """
 
-        assert len(b) == len(
-            self
-        ), f'the number of rows in the input ({len(b)}), should match the number of Documents ({len(self)})'
+        if len(blobs) != len(self):
+            raise ValueError(
+                f'the number of rows in the input ({len(blobs)}), should match the'
+                f'number of Documents ({len(self)})'
+            )
 
-        for d, x in zip(self, b):
+        for d, x in zip(self, blobs):
             d.blob = x
 
 
@@ -504,7 +503,7 @@ class DocumentArray(
             return da
 
     @staticmethod
-    def _flatten(sequence):
+    def _flatten(sequence) -> 'DocumentArray':
         return DocumentArray(list(itertools.chain.from_iterable(sequence)))
 
     # Properties for fast access of commonly used attributes
@@ -534,9 +533,33 @@ class DocumentArray(
         :param emb: The embedding matrix to set
         """
 
-        assert len(emb) == len(
-            self
-        ), f'the number of rows in the input ({len(emb)}), should match the number of Documents ({len(self)})'
+        if len(emb) != len(self):
+            raise ValueError(
+                f'the number of rows in the input ({len(emb)}), should match the'
+                f'number of Documents ({len(self)})'
+            )
 
         for d, x in zip(self, emb):
             d.embedding = x
+
+    @DocumentArrayGetAttrMixin.blobs.getter
+    def blobs(self) -> np.ndarray:
+        """Return a `np.ndarray` stacking all the `blob` attributes.
+
+        The `blob` attributes are stacked together along a newly created first
+        dimension (as if you would stack using ``np.stack(X, axis=0)``).
+
+        .. warning:: This operation assumes all blobs have the same shape and dtype.
+                 All dtype and shape values are assumed to be equal to the values of the
+                 first element in the DocumentArray / DocumentArrayMemmap
+
+        .. warning:: This operation currently does not support sparse arrays.
+
+        :return: blobs stacked per row as `np.ndarray`.
+        """
+        x_mat = b''.join(d.blob.dense.buffer for d in self._pb_body)
+        proto = self[0].proto.blob.dense
+
+        return np.frombuffer(x_mat, dtype=proto.dtype).reshape(
+            (len(self), *proto.shape)
+        )

@@ -1,6 +1,10 @@
 import os
 import tempfile
+import json
 from typing import Dict, Optional
+
+from jina.logging.logger import JinaLogger
+from jina.logging.predefined import default_logger
 
 cur_dir = os.path.dirname(__file__)
 DEFAULT_RESOURCE_DIR = os.path.join(
@@ -83,12 +87,18 @@ class K8SClients:
 __k8s_clients = K8SClients()
 
 
-def create(template: str, params: Dict, custom_resource_dir: Optional[str] = None):
+def create(
+    template: str,
+    params: Dict,
+    logger: JinaLogger = default_logger,
+    custom_resource_dir: Optional[str] = None,
+):
     """Create a resource on Kubernetes based on the `template`. It fills the `template` using the `params`.
 
     :param template: path to the template file.
     :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.
         Defaults to the standard location jina.resources if not specified.
+    :param logger: logger to use. Defaults to the default logger.
     :param params: dictionary for replacing the placeholders (keys) with the actual values.
     """
 
@@ -103,10 +113,15 @@ def create(template: str, params: Dict, custom_resource_dir: Optional[str] = Non
         try:
             utils.create_from_yaml(__k8s_clients.k8s_client, path)
         except FailToCreateError as e:
-            if e.api_exceptions[0].status == 409:
-                print('exists already')
-            else:
-                raise e
+            for api_exception in e.api_exceptions:
+                if api_exception.status == 409:
+                    # The exception's body is the error response from the
+                    # Kubernetes apiserver, it looks like:
+                    # {..."message": "<resource> <name> already exists"...}
+                    resp = json.loads(api_exception.body)
+                    logger.info(f'🔁\t{resp["message"]}')
+                else:
+                    raise e
         except Exception as e2:
             raise e2
     finally:
