@@ -1,4 +1,4 @@
-# Put into Practice
+# Use Hub Executors in Hello World
 
 Now that you understand how to use public Executor from Hub, let's practice our learning with three hello-world demos in Jina.
 

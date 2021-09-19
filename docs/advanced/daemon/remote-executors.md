@@ -3,20 +3,25 @@
 JinaD enables deploying Executors on remote machines. We can pass the remote info using `host`and `port_jinad` arguments in the Flow syntax. Here are a few examples of using remote Executors.
 
 
-### Executor defined in YAML
+## Executor defined in YAML
 
 ````{tab} Local
 ```{code-block} python
+
+from jina import Flow
+
 f = Flow().add(uses='executor.yml',
                py_modules=['executor.py'])
+
 ```
 ````
 
 ````{tab} Remote
 ```{code-block} python
 ---
-emphasize-lines: 2, 3
+emphasize-lines: 3, 4
 ---
+from jina import Flow
 
 f = Flow().add(uses='executor.yml',
                host='1.2.3.4',
@@ -25,10 +30,11 @@ f = Flow().add(uses='executor.yml',
 ```
 ````
 
-### Executor from Hub
+## Executor from Hub
 
 ````{tab} Local
 ```{code-block} python
+from jina import Flow
 
 f = Flow().add(uses='jinahub+docker://AdvancedExecutor')
 
@@ -38,8 +44,9 @@ f = Flow().add(uses='jinahub+docker://AdvancedExecutor')
 ````{tab} Remote
 ```{code-block} python
 ---
-emphasize-lines: 2, 3
+emphasize-lines: 3, 4
 ---
+from jina import Flow
 
 f = Flow().add(uses='jinahub+docker://AdvancedExecutor',
                host='1.2.3.4',
@@ -48,10 +55,12 @@ f = Flow().add(uses='jinahub+docker://AdvancedExecutor',
 ```
 ````
 
-### Executors on different hosts
+## Executors on different hosts
 
 ````{tab} Local
 ```{code-block} python
+
+from jina import Flow
 
 f = (Flow()
     .add(name=’encoder’,
@@ -87,7 +96,7 @@ f = (Flow()
 ```
 ````
 
-### Executor using class
+## Executor using class
 
 ````{tab} Local
 ```{code-block} python
@@ -124,7 +133,7 @@ f = Flow().add(uses=MyAwesomeExecutor,
 ````
 
 
-### Executor using class + pip dependency
+## Executor using class + pip dependency
 
 ````{tab} Local
 ```{code-block} python
@@ -146,7 +155,7 @@ f = Flow().add(uses=TFExecutor)
 
 ````{tab} Remote
 
-```none
+```bash
 # requirements.txt
 tensorflow==2.4.0
 ```

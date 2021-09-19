@@ -1,6 +1,14 @@
-# Mastering Executors: from Zero to Hub
+# Master Executor: from Zero to Hub
 
-> A step by step walkthrough on how to create your Executors or use existing ones.
+```{article-info}
+:avatar: avatars/cristian.jpg
+:avatar-link: https://jobs.jina.ai
+:avatar-outline: muted
+:author: Cristian @ Jina AI
+:date: Sept. 10, 2021
+```
+
+This is a step-by-step walkthrough on how to create your Executors or use existing ones.
 
 [comment]: <> (TODO add link to the chatbot tutorial when it's moved here )
 
