@@ -39,6 +39,8 @@ exclude_patterns = [
     'tests',
     'page_templates',
     '.github',
+    'api',
+    'proto',
 ]
 pygments_style = 'rainbow_dash'
 html_theme = 'furo'
@@ -65,7 +67,14 @@ html_theme_options = {
 
 html_static_path = ['_static']
 html_extra_path = ['html_extra']
-html_css_files = ['main.css']
+html_css_files = [
+    'main.css',
+    'docbot.css'
+]
+html_js_files = [
+    'https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js',
+    'docbot.js'
+]
 htmlhelp_basename = slug
 html_show_sourcelink = False
 html_title = 'Jina Documentation'
