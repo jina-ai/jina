@@ -254,11 +254,6 @@ class ProgressBar(TimeContext):
         bar_color = 'yellow' if all_completed else 'green'
         unfinished_bar_color = 'yellow' if all_completed else 'green'
 
-        time_str = (
-            '-:--:--'
-            if first_enter
-            else str(datetime.timedelta(seconds=elapsed)).split('.')[0]
-        )
         speed_str = (
             'estimating...'
             if first_enter
@@ -274,12 +269,14 @@ class ProgressBar(TimeContext):
             num_fullbars=num_fullbars,
             num_halfbars=num_halfbars,
             speed_str=speed_str,
-            time_str=time_str,
             unfinished_bar_color=unfinished_bar_color,
             all_completed=all_completed,
         )
 
     def _print_bar(self, bar_info):
+        time_str = str(
+            datetime.timedelta(seconds=time.perf_counter() - self.start)
+        ).split('.')[0]
         sys.stdout.write(self.clear_line)
         sys.stdout.write(
             '{} {:>10} {:<}{:<} {} {} {}'.format(
@@ -299,7 +296,7 @@ class ProgressBar(TimeContext):
                     bar_info['unfinished_bar_color'],
                     attrs=['dark'],
                 ),
-                colored(bar_info['time_str'], 'cyan'),
+                colored(time_str, 'cyan'),
                 bar_info['speed_str'],
                 bar_info['msg_str'],
             )
