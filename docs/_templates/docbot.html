@@ -26,9 +26,8 @@
             <div class="jina-doc-answer-hint" v-if="qa_pairs.length===0">
                 <p class="jina-doc-bot-help-text sd-font-weight-bold">You can ask questions about our docs. Try:</p>
                 <ul class="example-question simple sd-font-weight-light">
-                    <li><p>Can I reuse my Executor in another project?</p></li>
-                    <li><p>Can I share my Executor to my colleague?</p></li>
-                    <li><p>Can I simply use others’ Executor without implementing it?</p></li>
+                    <li><p>How can I share an Executor with my friend?</p></li>
+                    <li><p>What is the difference between DocumentArray and DocumentArrayMemmap</p></li>
                 </ul>
             </div>
             <div class="jina-doc-answer-dialog" v-else>
@@ -42,7 +41,7 @@
                     </div>
                     <div class="talk-bubble answer-bubble">
                         <div class="talktext">
-                            <p v-if="qa.answer">${qa.answer}</p>
+                            <p v-if="qa.answer">${qa.answer.text}</p>
                             <div v-else>
                                 <svg height="10" width="40" class="loader">
                                     <circle class="dot" cx="10" cy="5" r="3"/>
@@ -51,7 +50,9 @@
                                 </svg>
                             </div>
                         </div>
+                        <a v-if="qa.answer" class="answer-reference" :href="root_url + qa.answer.uri">Source</a>
                     </div>
+
                 </div>
             </div>
 

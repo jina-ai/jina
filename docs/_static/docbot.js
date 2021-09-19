@@ -5,13 +5,14 @@ const app = new Vue({
         is_busy: false,
         is_conn_broken: false,
         general_config: {
-            server_port: 65123,
+            server_port: 65432,
             server_address: `http://localhost`,
             search_endpoint: '/search',
             slack_endpoint: '/slack'
         },
         qa_pairs: [],
         cur_question: '',
+        root_url: 'http://localhost:63342/jina/docs/_build/dirhtml/'
     },
     computed: {
         host_address: function () {
@@ -25,13 +26,33 @@ const app = new Vue({
         },
     },
     methods: {
+        notify_slack: function (question, answer) {
+            $.ajax({
+                type: "POST",
+                url: app.slack_address,
+                data: JSON.stringify({
+                    data: [],
+                    parameters: {"question": question, "answer": answer.text, "answer_uri": answer.uri},
+                    target_peapod: "indexer"
+                }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data, textStatus, jqXHR) {
+                    // reset current question to empty
+                    console.log('notified')
+                },
+                error: function (request, status, error) {
+                    console.error(error)
+                }
+            });
+        },
         submit_q: function () {
             app.is_busy = true
             app.is_conn_broken = false
             app.qa_pairs.push({"question": app.cur_question})
             $.ajax({
                 type: "POST",
-                url: app.fit_address,
+                url: app.search_address,
                 data: JSON.stringify({
                     data: [{'text': app.cur_question}],
                 }),
@@ -39,12 +60,14 @@ const app = new Vue({
                 dataType: "json",
                 success: function (data, textStatus, jqXHR) {
                     // reset current question to empty
+                    const answer = data['data'].docs[0].matches[0]
+                    app.qa_pairs.slice(-1)[0]['answer'] = answer
+                    app.notify_slack(app.cur_question, answer)
                     app.cur_question = ""
                 },
-                error: function () {
-                    app.qa_pairs.slice(-1)[0]['answer'] = `Server (${app.host_address}) is not responding atm! Please report this issue via Slack.`
+                error: function (xhr, status, error) {
+                    app.qa_pairs.slice(-1)[0]['answer'] = {'text': `Connection error: ${xhr.responseText}. Please report this issue via Slack.`, 'source': 'https://slack.jina.ai'}
                     app.is_conn_broken = true
-
                 },
                 complete: function () {
                     app.is_busy = false
