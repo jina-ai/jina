@@ -2,7 +2,6 @@ import argparse
 
 from jina.parsers.client import mixin_comm_protocol_parser
 from .helper import _SHOW_ALL_ARGS
-from .peapods.pod import mixin_k8s_pod_parser
 
 
 def set_pea_parser(parser=None):
@@ -50,7 +49,7 @@ def set_pod_parser(parser=None):
 
     set_pea_parser(parser)
 
-    from .peapods.pod import mixin_base_pod_parser
+    from .peapods.pod import mixin_base_pod_parser, mixin_k8s_pod_parser
 
     mixin_base_pod_parser(parser)
     mixin_k8s_pod_parser(parser)
@@ -78,6 +77,7 @@ def set_gateway_parser(parser=None):
         mixin_http_gateway_parser,
         mixin_compressor_parser,
     )
+    from .peapods.pod import mixin_base_pod_parser, mixin_k8s_pod_parser
     from .peapods.pea import mixin_pea_parser
 
     mixin_base_ppr_parser(parser)
@@ -89,6 +89,8 @@ def set_gateway_parser(parser=None):
     mixin_comm_protocol_parser(parser)
     mixin_gateway_parser(parser)
     mixin_pea_parser(parser)
+    mixin_base_pod_parser(parser)
+    mixin_k8s_pod_parser(parser)
 
     from ..enums import SocketType, PodRoleType
 
@@ -108,13 +110,6 @@ def set_gateway_parser(parser=None):
         help='The Pod will setup the socket types of the HeadPea and TailPea depending on this argument.'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
-    )
-
-    parser.add_argument(
-        '--connect-to-predecessor',
-        action='store_true',
-        default=False,
-        help='The head Pea of this Pod will connect to the TailPea of the predecessor Pod.',
     )
 
     return parser

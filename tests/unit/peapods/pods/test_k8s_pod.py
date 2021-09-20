@@ -5,7 +5,7 @@ import pytest
 
 import jina
 from jina.helper import Namespace
-from jina.parsers import set_pod_parser
+from jina.parsers import set_pod_parser, set_gateway_parser
 from jina.peapods.pods.k8s import K8sPod
 from jina.peapods.pods.k8slib import kubernetes_tools, kubernetes_deployment
 from jina.peapods.pods.k8slib.kubernetes_deployment import dictionary_to_cli_param
@@ -157,6 +157,7 @@ def get_k8s_pod(
     needs: Optional[Set[str]] = None,
     uses_before=None,
     uses_after=None,
+    port_expose=None,
 ):
     if parallel is None:
         parallel = '1'
@@ -172,6 +173,13 @@ def get_k8s_pod(
         '--replicas',
         replicas,
     ]
+    if port_expose:
+        parameter_list.extend(
+            [
+                '--port-expose',
+                str(port_expose),
+            ]
+        )
     if uses_before:
         parameter_list.extend(
             [
@@ -181,22 +189,23 @@ def get_k8s_pod(
         )
     if uses_after:
         parameter_list.extend(['--uses-after', uses_after])
-    args = set_pod_parser().parse_args(parameter_list)
+    parser = set_gateway_parser() if pod_name == 'gateway' else set_pod_parser()
+    args = parser.parse_args(parameter_list)
     pod = K8sPod(args, needs)
     return pod
 
 
 def test_start_creates_namespace():
     ns = 'test'
-    pod = get_k8s_pod('gateway', ns)
-    pod._deploy_gateway = Mock()
+    pod = get_k8s_pod('gateway', ns, port_expose=8085)
+    kubernetes_deployment.deploy_service = Mock()
     kubernetes_tools.create = Mock()
-
     pod.start()
-
     kubernetes_tools.create.assert_called_once()
     assert kubernetes_tools.create.call_args[0][0] == 'namespace'
     assert kubernetes_tools.create.call_args[0][1] == {'name': ns}
+    assert kubernetes_deployment.deploy_service.call_args[0][0] == 'gateway'
+    assert kubernetes_deployment.deploy_service.call_args[1]['port_expose'] == 8085
 
 
 def test_start_deploys_gateway():

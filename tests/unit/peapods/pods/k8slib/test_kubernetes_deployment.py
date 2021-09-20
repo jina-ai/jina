@@ -99,7 +99,7 @@ def test_deploy_service(init_container: Dict, custom_resource: str, monkeypatch)
 )
 def test_get_cli_params(namespace: Dict, skip_attr: Tuple, expected_string: str):
     base_string = (
-        ', "--host", "0.0.0.0", "--port-expose", "8080", "--port-in",'
+        ', "--host", "0.0.0.0", "--port-in",'
         ' "8081", "--port-out", "8082", "--port-ctrl", "8083"'
     )
     namespace = Namespace(**namespace)
