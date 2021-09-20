@@ -124,7 +124,7 @@ tutorials/gpu-executor
 ```
 
 ```{toctree}
-:caption: Developer Reference
+:caption: API Reference
 :hidden:
 :maxdepth: 1
 
