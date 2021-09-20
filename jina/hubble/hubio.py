@@ -337,7 +337,7 @@ metas:
         console.print(p)
 
     def push(self) -> None:
-        '''Push the executor pacakge to Jina Hub.'''
+        """Push the executor pacakge to Jina Hub."""
 
         from rich.console import Console
 
