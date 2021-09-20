@@ -65,6 +65,7 @@ const app = new Vue({
                     // reset current question to empty
                     const answer = data['data'].docs[0].matches[0]
                     app.qa_pairs.slice(-1)[0]['answer'] = answer
+                    answer.uri = answer.uri.replace('/index/', '/')  // temp fix, this should be fixed in the backend instead
                     app.notify_slack(app.cur_question, answer)
                     app.cur_question = ""
                 },
