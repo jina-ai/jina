@@ -1,5 +1,5 @@
 """Argparser module for remote runtime"""
-from ...helper import add_arg_group
+from ...helper import KVAppendAction, add_arg_group
 from .... import __default_host__
 from .... import helper
 from ....enums import CompressAlgo
@@ -33,6 +33,13 @@ def mixin_client_gateway_parser(parser):
         type=int,
         default=helper.random_port(),
         help='The port of the Gateway, which the client should connect to.',
+    )
+
+    gp.add_argument(
+        '--https',
+        action='store_true',
+        default=False,
+        help='If set, connect to gateway using https',
     )
 
 
@@ -132,6 +139,19 @@ def mixin_http_gateway_parser(parser=None):
         help='''
         A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         ''',
+    )
+
+    gp.add_argument(
+        '--uvicorn-kwargs',
+        action=KVAppendAction,
+        metavar='KEY: VALUE',
+        nargs='*',
+        help='''
+Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
+
+More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
+
+''',
     )
 
 
