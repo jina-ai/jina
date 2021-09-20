@@ -91,6 +91,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -10493,4 +10494,37 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```ce061940```](https://github.com/jina-ai/jina/commit/ce061940c4e46cfd729e7b7a624eef6e5fcfc22e)] __-__ fix doc style in jinad (*Han Xiao*)
  - [[```e2eb8d66```](https://github.com/jina-ai/jina/commit/e2eb8d6624ee12021ef325f9cbc94539006dfd7c)] __-__ fix doc style (*Han Xiao*)
  - [[```64b64155```](https://github.com/jina-ai/jina/commit/64b64155b254d1f13fe3d1b647f73b3fbceac15a)] __-__ __version__: the next version will be 2.1.1 (*Jina Dev Bot*)
+
+<a name=release-note-2-1-2></a>
+## Release Note (`2.1.2`)
+
+> Release time: 2021-09-20 12:41:49
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ AlaeddineAbdessalem,  Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```c9f2e651```](https://github.com/jina-ai/jina/commit/c9f2e6514948cbc0055ecc7f80af3e0c18c2ae93)] __-__ new image force (#3441) (*AlaeddineAbdessalem*)
+ - [[```d2c1db8c```](https://github.com/jina-ai/jina/commit/d2c1db8cd3f2f1199afb0450ce59d821feea444b)] __-__ add doc bot to doc website (#3440) (*Han Xiao*)
+ - [[```053cc520```](https://github.com/jina-ai/jina/commit/053cc52016947349c2e795c62fa93ede3f0d0a91)] __-__ __types__: add batch method to DA and DAM (#3435) (*Han Xiao*)
+ - [[```9de19939```](https://github.com/jina-ai/jina/commit/9de199398d57c4e91e7d629c4e3cd45928244d66)] __-__ __helper__: progressbar now has a spinner (#3434) (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```b25945eb```](https://github.com/jina-ai/jina/commit/b25945ebcc5d6231f387a034c0c37cdb2a0199fe)] __-__ __types__: make _flatten of da and dam consistent (#3437) (*Han Xiao*)
+ - [[```1d214f7f```](https://github.com/jina-ai/jina/commit/1d214f7f99a278d544d1e5f69080b4cc6a77201f)] __-__ __helper__: fix spinner timer update (#3436) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```e51f6062```](https://github.com/jina-ai/jina/commit/e51f60627e7ba0d421afe263721011e14604c639)] __-__ __docs__: add powered by to docbot (*Han Xiao*)
+ - [[```964e7174```](https://github.com/jina-ai/jina/commit/964e717487ab44ea291b967d8752560514c4a383)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```86c842f5```](https://github.com/jina-ai/jina/commit/86c842f5e14981c9fe6519d18df1102a620e3497)] __-__ __docs__: add clean code on pop (*Han Xiao*)
+ - [[```1616d567```](https://github.com/jina-ai/jina/commit/1616d567d676e49cb19b1ca36021beb8e89ae401)] __-__ __docs__: fix typos in multiple docs (*Han Xiao*)
+ - [[```20da7feb```](https://github.com/jina-ai/jina/commit/20da7feb20703e714b6389d423e60512a135d381)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```0684129e```](https://github.com/jina-ai/jina/commit/0684129efbbed44d4fff3a51b0baa3f71701bfbf)] __-__ add pytest-lazy-fixture to extra-requirements.txt (*Han Xiao*)
+ - [[```569ccafe```](https://github.com/jina-ai/jina/commit/569ccafe69c27471a8af6e073fc3bbd60e868055)] __-__ __version__: the next version will be 2.1.2 (*Jina Dev Bot*)
 
