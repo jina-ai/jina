@@ -615,10 +615,12 @@
             <span class="c1"># setting `max_size` as None to avoid connection closure due to size of message</span>
             <span class="c1"># https://websockets.readthedocs.io/en/stable/api.html?highlight=1009#module-websockets.protocol</span>
 
+            <span class="n">proto</span> <span class="o">=</span> <span class="s1">'wss'</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">https</span> <span class="k">else</span> <span class="s1">'ws'</span>
             <span class="k">async</span> <span class="k">with</span> <span class="n">websockets</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'ws://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/'</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">proto</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/'</span><span class="p">,</span>
                 <span class="n">max_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">ping_interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">ssl</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">https</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">)</span> <span class="k">as</span> <span class="n">websocket</span><span class="p">:</span>
                 <span class="c1"># To enable websockets debug logs</span>
                 <span class="c1"># https://websockets.readthedocs.io/en/stable/cheatsheet.html#debugging</span>

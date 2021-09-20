@@ -576,13 +576,13 @@
                 <h1>Source code for jina.clients</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Module wrapping the Client of Jina."""</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">overload</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">overload</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'Client'</span><span class="p">]</span>
 
 <span class="kn">from</span> <span class="nn">..enums</span> <span class="kn">import</span> <span class="n">GatewayProtocolType</span>
 
-<span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">.grpc</span> <span class="kn">import</span> <span class="n">GRPCClient</span><span class="p">,</span> <span class="n">AsyncGRPCClient</span>
     <span class="kn">from</span> <span class="nn">.websocket</span> <span class="kn">import</span> <span class="n">WebSocketClient</span><span class="p">,</span> <span class="n">AsyncWebSocketClient</span>
     <span class="kn">from</span> <span class="nn">.http</span> <span class="kn">import</span> <span class="n">HTTPClient</span><span class="p">,</span> <span class="n">AsyncHTTPClient</span>
@@ -594,6 +594,7 @@
     <span class="o">*</span><span class="p">,</span>
     <span class="n">asyncio</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span>
+    <span class="n">https</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'GRPC'</span><span class="p">,</span>
     <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -610,6 +611,7 @@
 
 <span class="sd">    :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.</span>
 <span class="sd">    :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
+<span class="sd">    :param https: If set, connect to gateway using https</span>
 <span class="sd">    :param port: The port of the Gateway, which the client should connect to.</span>
 <span class="sd">    :param protocol: Communication protocol between server and client.</span>
 <span class="sd">    :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>

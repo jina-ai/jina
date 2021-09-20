@@ -575,7 +575,7 @@
                 </div>
                 <h1>Source code for jina.parsers.peapods.runtimes.remote</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Argparser module for remote runtime"""</span>
-<span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">add_arg_group</span>
+<span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">KVAppendAction</span><span class="p">,</span> <span class="n">add_arg_group</span>
 <span class="kn">from</span> <span class="nn">....</span> <span class="kn">import</span> <span class="n">__default_host__</span>
 <span class="kn">from</span> <span class="nn">....</span> <span class="kn">import</span> <span class="n">helper</span>
 <span class="kn">from</span> <span class="nn">....enums</span> <span class="kn">import</span> <span class="n">CompressAlgo</span>
@@ -609,6 +609,13 @@
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">(),</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">'The port of the Gateway, which the client should connect to.'</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--https'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'If set, connect to gateway using https'</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
@@ -708,6 +715,19 @@
         <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
 <span class="s1">        A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.</span>
 <span class="s1">        '''</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--uvicorn-kwargs'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="n">KVAppendAction</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">'KEY: VALUE'</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s1">'*'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
+<span class="s1">Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server</span>
+
+<span class="s1">More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/</span>
+
+<span class="s1">'''</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 

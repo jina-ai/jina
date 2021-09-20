@@ -657,7 +657,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “64f6cee2-2723-4211-baa7-9aeb2f6201db”</p>
+<p>Default: “516e1f79-a0ad-4ea3-b19a-9b4f21c2cebc”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -728,7 +728,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “994736da-2221-4b8c-b7e9-c3f4af39fa05”</p>
+<p>Default: “4558bdf8-8840-42b5-a5ec-3049c99b2ad5”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -761,7 +761,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “b2f43a82-096a-48b2-90c8-0b685ec4e113”</p>
+<p>Default: “dcd88a27-66bd-4b32-952c-9a4acfb93ec4”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -856,7 +856,7 @@
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 42191</p>
+<p>Default: 52309</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -918,11 +918,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 48649</p>
+<p>Default: 58803</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 44391</p>
+<p>Default: 40225</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1199,6 +1199,7 @@ Python files, data files.</p>
              <span class="p">[</span><span class="o">--</span><span class="n">native</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">runs</span><span class="o">-</span><span class="ow">in</span><span class="o">-</span><span class="n">docker</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefetch</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefetch</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">recv</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">title</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cors</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">default</span><span class="o">-</span><span class="n">swagger</span><span class="o">-</span><span class="n">ui</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">debug</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">crud</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">uvicorn</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">compress</span> <span class="p">{</span><span class="n">NONE</span><span class="p">,</span> <span class="n">LZ4</span><span class="p">,</span> <span class="n">ZLIB</span><span class="p">,</span> <span class="n">GZIP</span> <span class="o">...</span> <span class="mi">2</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">compress</span><span class="o">-</span><span class="nb">min</span><span class="o">-</span><span class="nb">bytes</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">compress</span><span class="o">-</span><span class="nb">min</span><span class="o">-</span><span class="n">ratio</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span>
@@ -1264,7 +1265,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 58941</p>
+<p>Default: 49895</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1326,11 +1327,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 35233</p>
+<p>Default: 39123</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 41687</p>
+<p>Default: 57499</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1427,6 +1428,10 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
 <div><p>A JSON string that represents a map from executor endpoints (<cite>@requests(on=…)</cite>) to HTTP endpoints.</p>
 </div></blockquote>
 </dd>
+<dt><kbd>--uvicorn-kwargs</kbd></dt>
+<dd><p>Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server</p>
+<p>More details can be found in Uvicorn docs: <a class="reference external" href="https://www.uvicorn.org/settings/">https://www.uvicorn.org/settings/</a></p>
+</dd>
 </dl>
 </div>
 <div class="section" id="Compression arguments">
@@ -1464,7 +1469,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port that the gateway exposes for clients for GRPC connections.</p>
-<p>Default: 42177</p>
+<p>Default: 49241</p>
 </dd>
 </dl>
 </div>
@@ -1691,7 +1696,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 45271</p>
+<p>Default: 55537</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1753,11 +1758,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 38973</p>
+<p>Default: 37757</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 45223</p>
+<p>Default: 46405</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1999,7 +2004,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 51629</p>
+<p>Default: 36943</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -2061,11 +2066,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 50413</p>
+<p>Default: 39091</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 48415</p>
+<p>Default: 44809</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -2269,7 +2274,7 @@ peas are running on host provided by the argument <code class="docutils literal 
 <div class="section" id="client">
 <h3>client<a class="headerlink" href="#client" title="Permalink to this headline">¶</a></h3>
 <p>Start a Python client that connects to a remote Jina gateway</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">client</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">asyncio</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">client</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">https</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">asyncio</span><span class="p">]</span>
             <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}]</span>
 </pre></div>
 </div>
@@ -2300,7 +2305,11 @@ peas are running on host provided by the argument <code class="docutils literal 
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port of the Gateway, which the client should connect to.</p>
-<p>Default: 48815</p>
+<p>Default: 51151</p>
+</dd>
+<dt><kbd>--https</kbd></dt>
+<dd><p>If set, connect to gateway using https</p>
+<p>Default: False</p>
 </dd>
 </dl>
 </div>
