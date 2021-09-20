@@ -280,7 +280,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/refactor-hello-world/">Use Hub Executors in Hello World</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/gpu-executor/">Run Executors on GPU</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../jina/">jina package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -662,8 +662,11 @@ behavior then in :method:<code class="docutils literal notranslate"><span class=
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>traversal_paths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – a list of string that represents the traversal path</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>a single :class:<code class="docutils literal notranslate"><span class="pre">TraversableSequence</span></code> containing the document of all leaves when applying the traversal_paths.</p>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a single :class:<code class="docutils literal notranslate"><span class="pre">TraversableSequence</span></code> containing the document of all leaves when applying the traversal_paths.</p>
 </dd>
 </dl>
 </dd></dl>
