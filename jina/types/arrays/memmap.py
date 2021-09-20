@@ -585,3 +585,7 @@ class DocumentArrayMemmap(
     def _invalidate_embeddings_memmap(self):
         self._embeddings_memmap = None
         self._embeddings_shape = None
+
+    @staticmethod
+    def _flatten(sequence):
+        return itertools.chain.from_iterable(sequence)
