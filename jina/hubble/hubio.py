@@ -529,17 +529,20 @@ with f:
         else:
             console.print(p1, p2)
 
+    @staticmethod
     @disk_cache_offline(cache_file=str(_cache_file))
     def fetch_meta(
-        self,
         name: str,
         tag: Optional[str] = None,
         secret: Optional[str] = None,
+        force: bool = False,
     ) -> HubExecutor:
         """Fetch the executor meta info from Jina Hub.
         :param name: the UUID/Name of the executor
         :param tag: the version tag of the executor
         :param secret: the access secret of the executor
+        :param force: if set to True, access to fetch_meta will always pull latest Executor metas, otherwise, default
+            to local cache
         :return: meta of executor
         """
 
@@ -647,7 +650,9 @@ with f:
                 scheme, name, tag, secret = parse_hub_uri(self.args.uri)
 
                 st.update(f'Fetching [bold]{name}[/bold] from Jina Hub ...')
-                executor = self.fetch_meta(name, tag=tag, secret=secret)
+                executor = HubIO.fetch_meta(
+                    name, tag=tag, secret=secret, force=need_pull
+                )
                 presented_id = getattr(executor, 'name', executor.uuid)
                 executor_name = (
                     f'{presented_id}'
