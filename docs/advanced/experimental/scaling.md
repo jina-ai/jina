@@ -1,14 +1,14 @@
 # Scaling Executors in kubernetes
 
-In Jina we support to ways of scaling:
-- *Replicas* can be used with any Executor type.
-- *Shards* should only be used with Indexers, since they store a state.
+In Jina we support two ways of scaling:
+- **Replicas** can be used with any Executor type.
+- **Shards** should only be used with Indexers, since they store a state.
 
 ```{admonition} Important
 :class: important
-This page describes Jinas behavior with kubernetes deployment for now.
+This page describes Jina's behavior with kubernetes deployment for now.
 When using `shards` and `replicas` without kubernetes, Jina will behave slightly different.
-It is discouraged to use the `parallel` argument, when deploying to kubernetes.
+It is discouraged to use the `parallel` argument when deploying to kubernetes.
 ```
 
 (replicas)=
@@ -34,27 +34,41 @@ f = Flow().add(name='ExecutorWithReplicas', replicas=3)
 
 Sharding means splitting the content of an Indexer into several parts.
 These parts are then put on different machines.
-This is helpful, in two situations:
+This is helpful in two situations:
 
 - When the full data does not fit onto one machine.
-- When the latency of a single request becomes to slow.
-  Then two machines can compute the result faster.
+- When the latency of a single request becomes too slow.
+  Then splitting the load across two or more machines yields better results.
 
 When you shard your index, the request handling usually differes for index and search requests:
 
-- Index (and update, delete) will just be handled by a single shard.
-- Search requests are handled by all shards.
+- Index (and update, delete) will just be handled by a single shard => `polling='any'`
+- Search requests are handled by all shards => `polling='all'`
 
 ```python Usage
 from jina import Flow
 
-f = Flow().add(name='ExecutorWithShards', shards=3)
+index_flow = Flow().add(name='ExecutorWithShards', shards=3, polling='any')
+search_flow = Flow().add(name='ExecutorWithShards', shards=3, polling='all', uses_after='MatchMerger')
+```
+
+### Merging search results via `uses_after`
+
+Each shard of a search Flow returns one set of results for each query Document.
+A merger Executor combines them afterwards.
+You can use the pre-build [MatchMerger](https://hub.jina.ai/executor/mruax3k7) or define your own merger.
+
+```{admonition} Example
+:class: example
+A search Flow has 10 shards for an Indexer.
+Each shard returns the top 20 results.
+After the merger there will be 200 results per query Document.
 ```
 
 ## Combining Replicas & Shards
 
-Combining both gives all above mentioned advantages.
-When deploying to kubernetes, Jina replicates is applied on each single shard.
+Combining both gives all the advantages mentioned above.
+When deploying to kubernetes, Jina replicates each single shard.
 Thus, shards can scale independently.
 The data syncronisation across replicas must be handled by the respective Indexer.
-For more detailed see {doc}`Dump and rolling update <./indexers/dump-rolling-update>`.
+For more detailed see {ref}`Dump and rolling update <dump-rolling-restart>`.
