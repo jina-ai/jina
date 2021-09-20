@@ -6,7 +6,7 @@ const app = new Vue({
         is_conn_broken: false,
         general_config: {
             server_port: 65432,
-            server_address: `http://localhost`,
+            server_address: `https://docsbot.jina.ai`,
             search_endpoint: '/search',
             slack_endpoint: '/slack'
         },
@@ -16,7 +16,7 @@ const app = new Vue({
     },
     computed: {
         host_address: function () {
-            return `${this.general_config.server_address}:${this.general_config.server_port}`
+            return `${this.general_config.server_address}` // :${this.general_config.server_port}
         },
         search_address: function () {
             return `${this.host_address}${this.general_config.search_endpoint}`
@@ -32,8 +32,11 @@ const app = new Vue({
                 url: app.slack_address,
                 data: JSON.stringify({
                     data: [],
-                    parameters: {"question": question, "answer": answer.text, "answer_uri": answer.uri},
-                    target_peapod: "indexer"
+                    parameters: {
+                        "question": question,
+                        "answer": answer.text,
+                        "answer_uri": `${app.root_url}${answer.uri}`
+                    },
                 }),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
@@ -66,12 +69,15 @@ const app = new Vue({
                     app.cur_question = ""
                 },
                 error: function (xhr, status, error) {
-                    app.qa_pairs.slice(-1)[0]['answer'] = {'text': `Connection error: ${xhr.responseText}. Please report this issue via Slack.`, 'source': 'https://slack.jina.ai'}
+                    app.qa_pairs.slice(-1)[0]['answer'] = {'text': `Connection error: ${xhr.responseText}. Please report this issue via Slack.`}
                     app.is_conn_broken = true
                 },
                 complete: function () {
                     app.is_busy = false
-                    Array.from(document.getElementsByClassName("answer-bubble")).slice(-1)[0].scrollIntoView({block: "nearest", inline: "nearest"});
+                    Array.from(document.getElementsByClassName("answer-bubble")).slice(-1)[0].scrollIntoView({
+                        block: "nearest",
+                        inline: "nearest"
+                    });
                 }
             });
         },

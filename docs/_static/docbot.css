@@ -61,6 +61,7 @@
     background-color: var(--color-brand-primary);
     margin-bottom: 20px;
     border-radius: 5px;
+    max-width: 80%;
 }
 
 .question-bubble {
