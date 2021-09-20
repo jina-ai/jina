@@ -147,3 +147,10 @@
     vertical-align: middle;
     color: var(--color-sidebar-link-text);
 }
+
+.poweredby {
+    color: var(--color-foreground-muted);
+    font-size: .1em;
+    padding: 3px;
+    margin: 0;
+}
