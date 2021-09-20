@@ -193,7 +193,7 @@ class DownloadMockResponse:
 def test_pull(test_envs, mocker, monkeypatch):
     mock = mocker.Mock()
 
-    def _mock_fetch(name, tag=None, secret=None):
+    def _mock_fetch(name, tag=None, secret=None, force=False):
         mock(name=name)
         return HubExecutor(
             uuid='dummy_mwu_encoder',
@@ -247,7 +247,7 @@ def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
     version = 'v0'
 
     @disk_cache_offline(cache_file=str(tmpfile))
-    def _mock_fetch(name, tag=None, secret=None):
+    def _mock_fetch(name, tag=None, secret=None, force=False):
         mock(name=name)
         if fail_meta_fetch:
             raise urllib.error.URLError('Failed fetching meta')
