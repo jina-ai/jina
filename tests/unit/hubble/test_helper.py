@@ -82,39 +82,32 @@ def test_install_requirements():
 
 def test_disk_cache(tmpfile):
     raise_exception = True
+    result = 1
 
-    class MyClass:
-        def __init__(self):
-            self.args = set_hub_pull_parser().parse_args(
-                ['jinahub://dummy_mwu_encoder']
-            )
-            self.count = 0
+    @disk_cache_offline(cache_file=str(tmpfile))
+    def _myfunc(force=False) -> bool:
+        if raise_exception:
+            raise urllib.error.URLError('Failing')
+        else:
+            return result
 
-        @disk_cache_offline(cache_file=str(tmpfile))
-        def _inc_count(self) -> bool:
-            if raise_exception:
-                raise urllib.error.URLError('Failing')
-            else:
-                self.count += 1
-                return self.count
-
-    instance = MyClass()
     # test fails
     with pytest.raises(urllib.error.URLError) as info:
-        instance._inc_count()
+        _myfunc()
     assert 'Failing' in str(info.value)
 
     raise_exception = False
-    # counter incremented, saves result in cache
-    assert instance._inc_count() == 1
+    # returns latest, saves result in cache
+    assert _myfunc() == 1
 
-    # counter not incremented, defaults to cache since force == False
-    assert instance._inc_count() == 1
+    result = 2
+    # does not return latest, defaults to cache since force == False
+    assert _myfunc() == 1
 
-    instance.args.force = True
-    # counter incremented since force == True
-    assert instance._inc_count() == 2
+    # returns latest since force == True
+    assert _myfunc(force=True) == 2
 
     raise_exception = True
-    # counter not incremented and exception is not raised, defaults to cache
-    assert instance._inc_count() == 2
+    result = 3
+    # does not return latest and exception is not raised, defaults to cache
+    assert _myfunc(force=True) == 2
