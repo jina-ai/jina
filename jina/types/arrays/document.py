@@ -561,3 +561,7 @@ class DocumentArray(
         return np.frombuffer(x_mat, dtype=proto.dtype).reshape(
             (len(self), *proto.shape)
         )
+
+    @staticmethod
+    def _flatten(sequence) -> 'DocumentArray':
+        return DocumentArray(list(itertools.chain.from_iterable(sequence)))
