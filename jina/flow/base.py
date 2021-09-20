@@ -1221,6 +1221,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             'graph LR',
         ]
 
+        def _get_node_name(v):
+            return v.args.name + f'_{(v.args.uses)}_'
+
         start_repl = {}
         end_repl = {}
         for node, v in self._pod_nodes.items():
@@ -1261,7 +1264,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                         )
 
                     for j in range(v.args.parallel):
-                        r = v.args.uses
+                        r = _get_node_name(v)
                         if v.args.replicas > 1:
                             r += f'_{i}_{j}'
                         elif v.args.parallel > 1:
@@ -1281,9 +1284,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             for need in sorted(v.needs):
 
                 _s = start_repl.get(
-                    need, (need, f'("{need}<br>({self._pod_nodes[need].args.uses})")')
+                    need,
+                    (need, f'("{need}<br>({_get_node_name(self._pod_nodes[need])})")'),
                 )
-                _e = end_repl.get(node, (node, f'("{node}<br>({v.args.uses})")'))
+                _e = end_repl.get(node, (node, f'("{node}<br>({_get_node_name(v)})")'))
                 _s_role = self._pod_nodes[need].role
                 _e_role = self._pod_nodes[node].role
                 line_st = '-->'
