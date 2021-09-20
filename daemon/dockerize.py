@@ -252,7 +252,7 @@ class Dockerizer:
                 command=command,
                 entrypoint=entrypoint,
                 extra_hosts=cls.extrahosts(),
-                publish_all_ports=(container_id.jtype == IDLiterals.JFLOW),
+                # publish_all_ports=(container_id.jtype == IDLiterals.JFLOW),
             )
         except docker.errors.NotFound as e:
             cls.logger.critical(

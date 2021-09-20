@@ -186,7 +186,7 @@ class ContainerStore(BaseStore):
             )
 
             container = Dockerizer.run(
-                workspace_id=workspace_id, container_id=id, command=command, ports=ports
+                workspace_id=workspace_id, container_id=id, command=command, ports=dockerports
             )
             if not await self.ready(uri):
                 raise PartialDaemonConnectionException(

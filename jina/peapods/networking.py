@@ -14,8 +14,6 @@ def is_remote_local_connection(first: str, second: str):
     :return: True, if first is remote and second is local
     """
 
-    print('\n\nin is_remote_local_connection')
-    print(f'first: {first}, second: {second}\n\n')
     try:
         first_ip = ipaddress.ip_address(first)
         first_global = first_ip.is_global
