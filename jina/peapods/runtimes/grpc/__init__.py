@@ -38,7 +38,7 @@ class GRPCDataRuntime(BaseRuntime, ABC):
         self._pending_msgs = defaultdict(list)  # type: Dict[str, List[Message]]
         self._partial_requests = None
         self._pending_tasks = []
-        self._static_routing_table = hasattr(args, 'routing_table')
+        self._static_routing_table = args.static_routing_table
 
         self._data_request_handler = DataRequestHandler(args, self.logger)
         self._grpclet = Grpclet(
@@ -122,7 +122,11 @@ class GRPCDataRuntime(BaseRuntime, ABC):
         :param control_address: the address where the control message needs to be sent
         :param kwargs: extra keyword arguments
         """
-        Grpclet.send_ctrl_msg(control_address, 'TERMINATE')
+        try:
+            Grpclet.send_ctrl_msg(control_address, 'TERMINATE')
+        except RpcError:
+            # TERMINATE can fail if the the runtime dies before sending the return value
+            pass
 
     @staticmethod
     def wait_for_ready_or_shutdown(

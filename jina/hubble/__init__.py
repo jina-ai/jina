@@ -7,7 +7,7 @@ class HubExecutor:
     """Basic Executor Data Class from Hubble"""
 
     uuid: str = None
-    alias: Optional[str] = None
+    name: Optional[str] = None
     sn: Optional[int] = None
     tag: Optional[str] = None
     visibility: Optional[bool] = None

@@ -56,11 +56,11 @@ elif _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
 
-__version__ = '2.0.20'
+__version__ = '2.1.3'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
-__proto_version__ = '0.0.85'
+__proto_version__ = '0.0.86'
 
 __uptime__ = _datetime.datetime.now().isoformat()
 
@@ -97,7 +97,14 @@ __default_endpoint__ = '/default'
 __ready_msg__ = 'ready and listening'
 __stop_msg__ = 'terminated'
 __unset_msg__ = '(unset)'
-__num_args_executor_func__ = 5
+__args_executor_func__ = {
+    'docs',
+    'parameters',
+    'docs_matrix',
+    'groundtruths',
+    'groundtruths_matrix',
+}
+__args_executor_init__ = {'metas', 'requests', 'runtime_args'}
 __root_dir__ = _os.path.dirname(_os.path.abspath(__file__))
 __resources_path__ = _os.path.join(
     _os.path.dirname(_sys.modules['jina'].__file__), 'resources'
@@ -178,6 +185,7 @@ from jina.clients import Client
 # Document
 from jina.types.document import Document
 from jina.types.arrays.document import DocumentArray
+from jina.types.arrays.memmap import DocumentArrayMemmap
 
 # Executor
 from jina.executors import BaseExecutor as Executor

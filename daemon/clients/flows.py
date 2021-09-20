@@ -33,20 +33,31 @@ class AsyncFlowClient(AsyncBaseClient):
 
     @if_alive
     async def create(
-        self, workspace_id: 'DaemonID', filename: str, *args, **kwargs
+        self,
+        workspace_id: 'DaemonID',
+        filename: str,
+        envs: Dict[str, str] = {},
+        *args,
+        **kwargs,
     ) -> str:
         """Start a Flow on remote JinaD
 
         :param workspace_id: workspace id where flow will be created
         :param filename: name of the flow yaml file in the workspace
+        :param envs: dict of env vars to be passed
         :param args: positional args
         :param kwargs: keyword args
         :return: flow id
         """
+        envs = (
+            [('envs', f'{k}={v}') for k, v in envs.items()]
+            if envs and isinstance(envs, Dict)
+            else []
+        )
         async with aiohttp.request(
             method='POST',
             url=self.store_api,
-            params={'workspace_id': workspace_id, 'filename': filename},
+            params=[('workspace_id', workspace_id), ('filename', filename)] + envs,
             timeout=self.timeout,
         ) as response:
             response_json = await response.json()

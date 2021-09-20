@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import APIRouter
 
 from jina.helper import ArgNamespace
@@ -5,6 +6,7 @@ from jina.parsers.flow import set_flow_parser
 
 from ....models import FlowModel
 from ....models.enums import UpdateOperation
+from ....models.ports import PortMappings
 from ....models.partial import PartialFlowItem
 from ....excepts import PartialDaemon400Exception
 from ....stores import partial_store as store
@@ -29,14 +31,14 @@ async def _status():
     status_code=201,
     response_model=PartialFlowItem,
 )
-async def _create(flow: 'FlowModel', port_expose: int):
+async def _create(flow: 'FlowModel', ports: Optional[PortMappings] = None):
     """
 
     .. #noqa: DAR101
     .. #noqa: DAR201"""
     try:
         args = ArgNamespace.kwargs2namespace(flow.dict(), set_flow_parser())
-        return store.add(args, port_expose)
+        return store.add(args, ports)
     except Exception as ex:
         raise PartialDaemon400Exception from ex
 

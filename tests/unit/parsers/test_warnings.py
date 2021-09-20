@@ -17,7 +17,7 @@ with:
     '''
     with pytest.warns(UserWarning, match='ignored unknown') as record:
         Flow().load_config(yaml)
-    assert len(record) == 2
+    assert len(record) == 1
     assert record[0].message.args[0].startswith('ignored unknown')
 
 
@@ -29,7 +29,7 @@ executors:
     '''
     with pytest.warns(UserWarning, match='ignored unknown') as record:
         Flow().load_config(yaml)
-    assert len(record) == 2
+    assert len(record) == 1
     assert record[0].message.args[0].startswith('ignored unknown')
 
 
@@ -42,7 +42,7 @@ executors:
     '''
     with pytest.warns(UserWarning, match='ignored unknown') as record:
         Flow().load_config(yaml)
-    assert len(record) == 2
+    assert len(record) == 1
     assert record[0].message.args[0].startswith('ignored unknown')
 
 
@@ -66,7 +66,7 @@ executors:
     '''
     with pytest.warns(None, match='ignored unknown') as record:
         Flow().load_config(yaml)
-    assert len(record) == 2
+    assert len(record) == 1
 
 
 def test_executor_metas_works():
@@ -82,3 +82,31 @@ executors:
         with Flow().load_config(yaml):
             pass
     assert len(record) == 0
+
+
+def test_children_should_not_warn_inherited_kwargs_from_parent():
+    with pytest.warns(None, match='ignored unknown') as record:
+        with Flow(protocol='http', description='test').add():
+            pass
+    assert len(record) == 0
+
+
+def test_parent_should_not_warn_inheriting_kwargs_to_children():
+    with pytest.warns(None, match='ignored unknown') as record:
+        with Flow(gpus='all').add():
+            pass
+    assert len(record) == 0
+
+
+def test_warn_real_unknown_kwargs():
+    with pytest.warns(None, match='ignored unknown') as record:
+        with Flow(abcdefg='http').add():
+            pass
+    # two times warnings, 1. in Flow.init, second time in .add()
+    assert len(record) == 2
+
+    with pytest.warns(None, match='ignored unknown') as record:
+        with Flow(abcdefg='http').add().add():
+            pass
+    # same here but three times warnings
+    assert len(record) == 3

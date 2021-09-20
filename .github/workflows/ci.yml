@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: find the prev warning if exist
+        if: ${{ !github.event.pull_request.head.repo.fork }}
         uses: peter-evans/find-comment@v1
         id: fc
         with:
@@ -19,7 +20,7 @@ jobs:
           comment-author: 'github-actions[bot]'
           body-includes: 'bad commit message'
       - name: Delete comment if exist
-        if: ${{ steps.fc.outputs.comment-id != 0 }}
+        if: ${{ steps.fc.outputs.comment-id != 0 && !github.event.pull_request.head.repo.fork }}
         uses: actions/github-script@v3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -107,7 +108,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          token: ${{ secrets.JINA_DEV_BOT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Set up Python 3.7
         uses: actions/setup-python@v2
@@ -128,7 +129,9 @@ jobs:
             git commit -m "style: fix overload and cli autocomplete"
             echo '::set-output name=IS_CHANGED::YES'
           fi
-      - uses: ad-m/github-push-action@v0.6.0
+      - name: Push changes to head ref
+        if: ${{ !github.event.pull_request.head.repo.fork }}
+        uses: ad-m/github-push-action@v0.6.0
         with:
           github_token: ${{ secrets.JINA_DEV_BOT }}
           branch: ${{ github.head_ref }}
@@ -160,11 +163,6 @@ jobs:
         with:
           install: true
           driver-opts: network=host
-      - name: Login to DockerHub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
-          password: ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
       - run: |
           docker run --privileged --rm tonistiigi/binfmt --uninstall qemu-aarch64
           docker run --rm --privileged tonistiigi/binfmt --install all
@@ -183,6 +181,7 @@ jobs:
   hub-test:
     runs-on: ubuntu-latest
     needs: [commit-lint, lint-flake-8, code-injection]
+    if: ${{ !github.event.pull_request.head.repo.fork }}
     steps:
 #      - name: Cancel Previous Runs
 #        uses: styfle/cancel-workflow-action@0.9.0
@@ -200,6 +199,30 @@ jobs:
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
           JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
+
+  k8s-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Prepare enviroment
+        run: |
+          docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+          python -m pip install --upgrade pip
+          python -m pip install wheel
+          pip install ".[all]" --no-cache-dir
+          jina
+          export JINA_LOG_LEVEL="ERROR"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Test k8s
+        run: |
+          ./tests/k8s/test_k8s.sh
+        timeout-minutes: 30
+
 
   prep-testbed:
     runs-on: ubuntu-latest
@@ -243,8 +266,6 @@ jobs:
           pip install ".[all]" --no-cache-dir
           jina
           export JINA_LOG_LEVEL="ERROR"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Test
         id: test
         run: |
@@ -278,11 +299,7 @@ jobs:
             echo "flag it as jina for codeoverage"
             echo "::set-output name=codecov_flag::jina"
           fi
-        timeout-minutes: 20
-        env:
-          JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
-          JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        timeout-minutes: 30
       - name: Check codecov file
         id: check_files
         uses: andstor/file-existence-action@v1

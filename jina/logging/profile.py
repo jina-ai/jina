@@ -1,8 +1,14 @@
+import datetime
+import itertools
+import math
 import sys
+import threading
 import time
 from collections import defaultdict
 from functools import wraps
-from typing import Optional
+from typing import Optional, Union, Callable
+
+from jina.enums import ProgressBarStatus
 
 from .logger import JinaLogger
 from ..helper import colored, get_readable_size, get_readable_time
@@ -194,76 +200,162 @@ class ProgressBar(TimeContext):
                 do_busy()
     """
 
+    col_width = 100
+    clear_line = '\r{}\r'.format(' ' * col_width)
+    spinner = itertools.cycle(['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'])
+
     def __init__(
         self,
-        bar_len: int = 20,
-        task_name: str = '',
-        logger=None,
+        description: str = 'Working...',
+        message_on_done: Union[str, Callable[..., str], None] = None,
     ):
         """
         Create the ProgressBar.
 
-        :param bar_len: Total length of the bar.
-        :param task_name: The name of the task, will be displayed in front of the bar.
-        :param logger: Jina logger
+        :param description: The name of the task, will be displayed in front of the bar.
+        :param message_on_done: The final message to print when the progress is complete
         """
-        super().__init__(task_name, logger)
-        self.bar_len = bar_len
-        self.num_docs = 0
-        self._ticks = 0
+        super().__init__(description, None)
+        self._bars_on_row = 40
+        self._completed_progress = 0
+        self._last_rendered_progress = 0
+        self._num_update_called = 0
+        self._on_done = message_on_done
+        self._stop_event = threading.Event()
 
-    def update_tick(self, tick: float = 0.1) -> None:
-        """
-        Increment the progress bar by one tick, when the ticks accumulate to one, trigger one :meth:`update`.
-
-        :param tick: A float unit to increment (should < 1).
-        """
-        self._ticks += tick
-        if self._ticks > 1:
-            self.update()
-            self._ticks = 0
-
-    def update(self, progress: Optional[int] = None, *args, **kwargs) -> None:
+    def update(
+        self,
+        progress: float = 1.0,
+        description: Optional[str] = None,
+        message: Optional[str] = None,
+        status: ProgressBarStatus = ProgressBarStatus.WORKING,
+        first_enter: bool = False,
+    ) -> None:
         """
         Increment the progress bar by one unit.
 
         :param progress: The number of unit to increment.
-        :param args: extra arguments
-        :param kwargs: keyword arguments
+        :param description: Change the description text before the progress bar on update.
+        :param message: Change the message text followed after the progress bar on update.
+        :param status: If set to a value, it will mark the task as complete, can be either "Done" or "Canceled"
+        :param first_enter: if this method is called by `__enter__`
         """
-        self.num_reqs += 1
-        sys.stdout.write('\r')
+        self._num_update_called += 0 if first_enter else 1
+        self._completed_progress += progress
+        self._last_rendered_progress = self._completed_progress
         elapsed = time.perf_counter() - self.start
-        num_bars = self.num_reqs % self.bar_len
-        num_bars = self.bar_len if not num_bars and self.num_reqs else max(num_bars, 1)
-        if progress:
-            self.num_docs += progress
+        num_bars = self._completed_progress % self._bars_on_row
+        num_bars = (
+            self._bars_on_row
+            if not num_bars and self._completed_progress
+            else max(num_bars, 1)
+        )
+        num_fullbars = math.floor(num_bars)
+        num_halfbars = 1 if (num_bars - num_fullbars <= 0.5) else 0
 
+        if status in {ProgressBarStatus.DONE, ProgressBarStatus.CANCELED}:
+            bar_color, unfinished_bar_color = 'yellow', 'yellow'
+        elif status == ProgressBarStatus.ERROR:
+            bar_color, unfinished_bar_color = 'red', 'red'
+        else:
+            bar_color, unfinished_bar_color = 'green', 'green'
+
+        speed_str = (
+            'estimating...'
+            if first_enter
+            else f'{self._num_update_called / elapsed:3.1f} step/s'
+        )
+
+        description_str = description or self.task_name or ''
+        if status != ProgressBarStatus.WORKING:
+            description_str = str(status)
+        msg_str = message or ''
+        self._bar_info = dict(
+            bar_color=bar_color,
+            description_str=description_str,
+            msg_str=msg_str,
+            num_fullbars=num_fullbars,
+            num_halfbars=num_halfbars,
+            speed_str=speed_str,
+            unfinished_bar_color=unfinished_bar_color,
+        )
+
+    def _print_bar(self, bar_info):
+        time_str = str(
+            datetime.timedelta(seconds=time.perf_counter() - self.start)
+        ).split('.')[0]
+        sys.stdout.write(self.clear_line)
         sys.stdout.write(
-            '⏳ {:>10} |{:<{}}| ⏱️ {:3.1f}s 🐎 {:3.1f} RPS'.format(
-                colored(self.task_name, 'cyan'),
-                colored('█' * num_bars, 'green'),
-                self.bar_len + 9,
-                elapsed,
-                self.num_reqs / elapsed,
+            '{} {:>10} {:<}{:<} {} {} {}'.format(
+                colored(next(self.spinner), 'green'),
+                bar_info['description_str'],
+                colored('━' * bar_info['num_fullbars'], bar_info['bar_color'])
+                + (
+                    colored(
+                        '╸',
+                        bar_info['bar_color']
+                        if bar_info['num_halfbars']
+                        else bar_info['unfinished_bar_color'],
+                    )
+                ),
+                colored(
+                    '━' * (self._bars_on_row - bar_info['num_fullbars']),
+                    bar_info['unfinished_bar_color'],
+                    attrs=['dark'],
+                ),
+                colored(time_str, 'cyan'),
+                bar_info['speed_str'],
+                bar_info['msg_str'],
             )
         )
-        if num_bars == self.bar_len:
-            sys.stdout.write('\n')
         sys.stdout.flush()
 
-    def __enter__(self):
-        super().__enter__()
-        self.num_reqs = -1
-        self.num_docs = 0
-        self.update()
-        return self
+    def _update_thread(self):
+        while not self._stop_event.is_set():
+            self._print_bar(self._bar_info)
+            time.sleep(0.1)
 
     def _enter_msg(self):
-        pass
+        self.update(first_enter=True)
 
-    def _exit_msg(self):
-        speed = self.num_reqs / self.duration
-        sys.stdout.write(
-            f'{f"✅ {self.num_reqs} requests done in ⏱ {self.readable_duration} 🐎 {speed:3.1f} RPS"}\n'
+        self._progress_thread = threading.Thread(
+            target=self._update_thread, daemon=True
         )
+        self._progress_thread.start()
+
+    def __exit__(self, exc_type, value, traceback):
+        self.duration = self.now()
+
+        self.readable_duration = get_readable_time(seconds=self.duration)
+
+        if exc_type in {KeyboardInterrupt, SystemExit}:
+            self._stop_event.set()
+            self.update(0, status=ProgressBarStatus.CANCELED)
+            self._print_bar(self._bar_info)
+            return True  # prevent it from being propagated
+        elif exc_type and issubclass(exc_type, Exception):
+            self._stop_event.set()
+            self.update(0, status=ProgressBarStatus.ERROR)
+            self._print_bar(self._bar_info)
+        else:
+            # normal ending, i.e. task is complete
+            self._stop_event.set()
+            self._progress_thread.join()
+            self.update(0, status=ProgressBarStatus.DONE)
+            self._print_bar(self._bar_info)
+            self._print_final_msg()
+
+    def _print_final_msg(self):
+        if self._last_rendered_progress > 1:
+            final_msg = f'\033[K{self._completed_progress:.0f} steps done in {self.readable_duration}'
+            if self._on_done:
+                if isinstance(self._on_done, str):
+                    final_msg = self._on_done
+                elif callable(self._on_done):
+                    final_msg = self._on_done()
+            sys.stdout.write(final_msg)
+            sys.stdout.write('\n')
+        else:
+            # no actual render happens
+            sys.stdout.write(self.clear_line)
+        sys.stdout.flush()

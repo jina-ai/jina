@@ -21,11 +21,6 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 img_name = 'jina/mwu-encoder'
 
 defaulthost = '0.0.0.0'
-localhost = (
-    defaulthost
-    if (platform == "linux" or platform == "linux2")
-    else 'host.docker.internal'
-)
 
 
 @pytest.fixture
@@ -210,7 +205,7 @@ def test_tail_host_docker2local():
         .add(name='d13')
     )
     with f:
-        assert getattr(f._pod_nodes['d12'].tail_args, 'host_out') == localhost
+        assert getattr(f._pod_nodes['d12'].tail_args, 'host_out') == defaulthost
 
 
 def test_pass_arbitrary_kwargs(monkeypatch, mocker):
@@ -233,11 +228,13 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
         def __init__(self):
             pass
 
+        def get(self, *args):
+            pass
+
         def run(self, *args, **kwargs):
-            mock_kwargs = {k: kwargs[k] for k in ['hello', 'ports', 'environment']}
+            mock_kwargs = {k: kwargs[k] for k in ['hello', 'environment']}
             mock(**mock_kwargs)
             assert 'ports' in kwargs
-            assert kwargs['ports'] is None
             assert 'environment' in kwargs
             assert kwargs['environment'] == ['VAR1=BAR', 'VAR2=FOO']
             assert 'hello' in kwargs
@@ -277,7 +274,7 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
         ]
     )
     _ = ContainerRuntime(args, ctrl_addr='', ready_event=multiprocessing.Event())
-    expected_args = {'hello': 0, 'ports': None, 'environment': ['VAR1=BAR', 'VAR2=FOO']}
+    expected_args = {'hello': 0, 'environment': ['VAR1=BAR', 'VAR2=FOO']}
     mock.assert_called_with(**expected_args)
 
 
@@ -410,6 +407,9 @@ def test_pass_native_arg(monkeypatch, mocker):
                 return []
 
         def __init__(self):
+            pass
+
+        def get(self, *args):
             pass
 
         def run(self, *args, **kwargs):

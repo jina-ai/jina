@@ -2,6 +2,7 @@ import argparse
 
 from jina.parsers.client import mixin_comm_protocol_parser
 from .helper import _SHOW_ALL_ARGS
+from .peapods.pod import mixin_k8s_pod_parser
 
 
 def set_pea_parser(parser=None):
@@ -19,17 +20,19 @@ def set_pea_parser(parser=None):
     from .peapods.runtimes.zmq import mixin_zmq_runtime_parser
     from .peapods.runtimes.zed import mixin_zed_runtime_parser
     from .peapods.runtimes.container import mixin_container_runtime_parser
-    from .peapods.runtimes.remote import mixin_remote_parser
+    from .peapods.runtimes.remote import mixin_remote_runtime_parser
     from .peapods.pea import mixin_pea_parser
     from .peapods.runtimes.distributed import mixin_distributed_feature_parser
+    from .hubble.pull import mixin_hub_pull_options_parser
 
     mixin_base_ppr_parser(parser)
     mixin_zmq_runtime_parser(parser)
     mixin_zed_runtime_parser(parser)
     mixin_container_runtime_parser(parser)
-    mixin_remote_parser(parser)
+    mixin_remote_runtime_parser(parser)
     mixin_distributed_feature_parser(parser)
     mixin_pea_parser(parser)
+    mixin_hub_pull_options_parser(parser)
 
     return parser
 
@@ -50,6 +53,7 @@ def set_pod_parser(parser=None):
     from .peapods.pod import mixin_base_pod_parser
 
     mixin_base_pod_parser(parser)
+    mixin_k8s_pod_parser(parser)
 
     return parser
 
@@ -69,7 +73,7 @@ def set_gateway_parser(parser=None):
     from .peapods.runtimes.zmq import mixin_zmq_runtime_parser
     from .peapods.runtimes.zed import mixin_zed_runtime_parser
     from .peapods.runtimes.remote import (
-        mixin_remote_parser,
+        mixin_gateway_parser,
         mixin_prefetch_parser,
         mixin_http_gateway_parser,
         mixin_compressor_parser,
@@ -83,7 +87,7 @@ def set_gateway_parser(parser=None):
     mixin_http_gateway_parser(parser)
     mixin_compressor_parser(parser)
     mixin_comm_protocol_parser(parser)
-    mixin_remote_parser(parser)
+    mixin_gateway_parser(parser)
     mixin_pea_parser(parser)
 
     from ..enums import SocketType, PodRoleType
@@ -95,12 +99,6 @@ def set_gateway_parser(parser=None):
         ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
         runtime_cls='GRPCRuntime',
         pod_role=PodRoleType.GATEWAY,
-    )
-
-    parser.add_argument(
-        '--routing-table',
-        type=str,
-        help='Routing graph for the gateway' if _SHOW_ALL_ARGS else argparse.SUPPRESS,
     )
 
     parser.add_argument(
@@ -133,10 +131,10 @@ def set_client_cli_parser(parser=None):
 
         parser = set_base_parser()
 
-    from .peapods.runtimes.remote import mixin_remote_parser
+    from .peapods.runtimes.remote import mixin_client_gateway_parser
     from .client import mixin_client_features_parser, mixin_comm_protocol_parser
 
-    mixin_remote_parser(parser)
+    mixin_client_gateway_parser(parser)
     mixin_client_features_parser(parser)
     mixin_comm_protocol_parser(parser)
 
@@ -274,6 +272,7 @@ def get_main_parser():
             description='Start a Pod. '
             'You should rarely use this directly unless you '
             'are doing low-level orchestration',
+            formatter_class=_chf,
             **(dict(help='Start a Pod')) if _SHOW_ALL_ARGS else {},
         )
     )

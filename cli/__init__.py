@@ -14,7 +14,7 @@ def _get_run_args(print_args: bool = True):
         args, unknown = parser.parse_known_args()
 
         if unknown:
-            from ..parsers.helper import warn_unknown_args
+            from jina.helper import warn_unknown_args
 
             warn_unknown_args(unknown)
 

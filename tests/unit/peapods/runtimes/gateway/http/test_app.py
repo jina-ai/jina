@@ -2,6 +2,7 @@ import pytest
 import requests as req
 from fastapi.testclient import TestClient
 
+from jina.helper import random_port
 from jina import Executor, requests, Flow, DocumentArray
 from jina.logging.logger import JinaLogger
 from jina.parsers import set_gateway_parser
@@ -27,13 +28,17 @@ class TestExecutor(Executor):
         print(f"# docs {docs}")
 
 
-def test_tag_update():
-    PORT_EXPOSE = 33300
+@pytest.mark.parametrize(
+    'grpc_data_requests',
+    [True, False],
+)
+def test_tag_update(grpc_data_requests):
+    PORT_EXPOSE = random_port()
 
     f = Flow(
         port_expose=PORT_EXPOSE,
-        restful=True,
         protocol='http',
+        grpc_data_requests=grpc_data_requests,
     ).add(uses=TestExecutor)
 
     with f:

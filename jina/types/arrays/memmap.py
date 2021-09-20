@@ -24,6 +24,8 @@ from .neural_ops import DocumentArrayNeuralOpsMixin
 from .search_ops import DocumentArraySearchOpsMixin
 from .traversable import TraversableSequence
 from ..document import Document
+from ...logging.predefined import default_logger
+
 
 HEADER_NONE_ENTRY = (-1, -1, -1)
 PAGE_SIZE = mmap.ALLOCATIONGRANULARITY
@@ -84,6 +86,7 @@ class DocumentArrayMemmap(
 
     def __init__(self, path: str, key_length: int = 36, buffer_pool_size: int = 1000):
         Path(path).mkdir(parents=True, exist_ok=True)
+        self._path = path
         self._header_path = os.path.join(path, 'header.bin')
         self._body_path = os.path.join(path, 'body.bin')
         self._embeddings_path = os.path.join(path, 'embeddings.bin')
@@ -175,6 +178,12 @@ class DocumentArrayMemmap(
 
         if idx is not None:
             self._header.seek(idx * self._header_entry_size, 0)
+
+        if (doc.id is not None) and len(doc.id) > self._key_length:
+            default_logger.warning(
+                f'The ID of doc ({doc.id}) will be truncated to the maximum length {self._key_length}'
+            )
+
         self._header.write(
             np.array(
                 (doc.id, p, r, r + l),
@@ -384,10 +393,6 @@ class DocumentArrayMemmap(
         else:
             raise TypeError(f'`key` must be int or str, but receiving {key!r}')
 
-    @staticmethod
-    def _flatten(sequence):
-        return itertools.chain.from_iterable(sequence)
-
     def __bool__(self):
         """To simulate ```l = []; if l: ...```
 
@@ -545,14 +550,37 @@ class DocumentArrayMemmap(
 
     @embeddings.setter
     def embeddings(self, emb: np.ndarray):
+        """Set the embeddings of the Documents
 
-        assert len(emb) == len(self), (
-            'the number of rows in the input ({len(emb)}),'
-            'should match the number of Documents ({len(self)})'
-        )
+        :param emb: The embedding matrix to set
+        """
+        if len(emb) != len(self):
+            raise ValueError(
+                f'the number of rows in the input ({len(emb)}), should match the'
+                f'number of Documents ({len(self)})'
+            )
 
         for d, x in zip(self, emb):
             d.embedding = x
+
+    @DocumentArrayGetAttrMixin.blobs.getter
+    def blobs(self) -> np.ndarray:
+        """Return a `np.ndarray` stacking all the `blob` attributes.
+
+        The `blob` attributes are stacked together along a newly created first
+        dimension (as if you would stack using ``np.stack(X, axis=0)``).
+
+        .. warning:: This operation assumes all blobs have the same shape and dtype.
+                 All dtype and shape values are assumed to be equal to the values of the
+                 first element in the DocumentArray / DocumentArrayMemmap
+
+        .. warning:: This operation currently does not support sparse arrays.
+
+        :return: blobs stacked per row as `np.ndarray`.
+        """
+
+        blobs = np.stack(self.get_attributes('blob'))
+        return blobs
 
     def _invalidate_embeddings_memmap(self):
         self._embeddings_memmap = None

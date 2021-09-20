@@ -86,7 +86,7 @@ DocumentSourceType = TypeVar(
 
 _all_mime_types = set(mimetypes.types_map.values())
 
-_all_doc_content_keys = {'content', 'uri', 'blob', 'text', 'buffer'}
+_all_doc_content_keys = {'content', 'blob', 'text', 'buffer', 'graph'}
 _all_doc_array_keys = ('blob', 'embedding')
 _special_mapped_keys = ('scores', 'evaluations')
 
@@ -144,11 +144,13 @@ class Document(ProtoTypeMixin, VersionedMixin):
     """
 
     ON_GETATTR = ['matches', 'chunks']
+    CNT = 0
 
     # overload_inject_start_document
     @overload
     def __init__(
         self,
+        *,
         adjacency: Optional[int] = None,
         blob: Optional[Union['ArrayType', 'jina_pb2.NdArrayProto', 'NdArray']] = None,
         buffer: Optional[bytes] = None,
@@ -226,13 +228,18 @@ class Document(ProtoTypeMixin, VersionedMixin):
                 assert d.tags['hello'] == 'world'  # true
                 assert d.tags['good'] == 'bye'  # true
         """
-        self._pb_body = jina_pb2.DocumentProto()
+        Document.CNT += 1
+
         try:
             if isinstance(document, jina_pb2.DocumentProto):
                 if copy:
+                    self._pb_body = jina_pb2.DocumentProto()
                     self._pb_body.CopyFrom(document)
                 else:
                     self._pb_body = document
+            elif isinstance(document, bytes):
+                self._pb_body = jina_pb2.DocumentProto()
+                self._pb_body.ParseFromString(document)
             elif isinstance(document, (dict, str)):
                 if isinstance(document, str):
                     document = json.loads(document)
@@ -260,10 +267,12 @@ class Document(ProtoTypeMixin, VersionedMixin):
                 user_fields = set(document)
                 support_fields = set(
                     self.attributes(
-                        include_proto_fields_camelcase=True, include_properties=False
+                        include_proto_fields_camelcase=True,
+                        include_properties=False,
                     )
                 )
 
+                self._pb_body = jina_pb2.DocumentProto()
                 if support_fields.issuperset(user_fields):
                     json_format.ParseDict(document, self._pb_body)
                 else:
@@ -289,16 +298,18 @@ class Document(ProtoTypeMixin, VersionedMixin):
                             self._pb_body.tags.update(
                                 {k: document[k] for k in _remainder}
                             )
-            elif isinstance(document, bytes):
-                self._pb_body.ParseFromString(document)
             elif isinstance(document, Document):
                 if copy:
+                    self._pb_body = jina_pb2.DocumentProto()
                     self._pb_body.CopyFrom(document.proto)
                 else:
                     self._pb_body = document.proto
             elif document is not None:
                 # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(document)} is not recognizable')
+            else:
+                # create an empty document
+                self._pb_body = jina_pb2.DocumentProto()
         except Exception as ex:
             raise BadDocType(
                 f'fail to construct a document from {document}, '
@@ -309,13 +320,14 @@ class Document(ProtoTypeMixin, VersionedMixin):
         if self._pb_body.id is None or not self._pb_body.id:
             self.id = random_identity(use_uuid1=True)
 
-        # check if there are mutually exclusive content fields
-        if _contains_conflicting_content(**kwargs):
-            raise ValueError(
-                f'Document content fields are mutually exclusive, please provide only one of {_all_doc_content_keys}'
-            )
-        self._mermaid_id = random_identity()
-        self.set_attributes(**kwargs)
+        if kwargs:
+            # check if there are mutually exclusive content fields
+            if len(_all_doc_content_keys.intersection(kwargs.keys())) > 1:
+                raise ValueError(
+                    f'Document content fields are mutually exclusive, please provide only one of {_all_doc_content_keys}'
+                )
+            self.set_attributes(**kwargs)
+        self._mermaid_id = str(Document.CNT) + self._pb_body.id
 
     def pop(self, *fields) -> None:
         """Remove the values from the given fields of this Document.
@@ -411,7 +423,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
             if (
                 field == 'tags'
             ):  # For the tags, stay consistent with the python update method.
-                self._pb_body.tags.update(source.tags)
+                self.tags.update(source.tags)
             else:
                 self._pb_body.ClearField(field)
                 try:
@@ -884,10 +896,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
         if isinstance(value, bytes):
             self.buffer = value
         elif isinstance(value, str):
-            if _is_uri(value):
-                self.uri = value
-            else:
-                self.text = value
+            self.text = value
         elif isinstance(value, np.ndarray):
             self.blob = value
         else:
@@ -1340,14 +1349,3 @@ def _is_uri(value: str) -> bool:
 def _is_datauri(value: str) -> bool:
     scheme = urllib.parse.urlparse(value).scheme
     return scheme in {'data'}
-
-
-def _contains_conflicting_content(**kwargs):
-    content_keys = 0
-    for k in kwargs:
-        if k in _all_doc_content_keys:
-            content_keys += 1
-            if content_keys > 1:
-                return True
-
-    return False

@@ -87,12 +87,10 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
                 captial_heading = ' '.join(
                     v[0].upper() + v[1:] for v in self.heading.split(' ')
                 )
-                heading = '⚙️  %*s%s\n' % (
+                heading = '%*s%s\n' % (
                     current_indent,
                     '',
-                    colored(
-                        captial_heading, 'cyan', attrs=['underline', 'bold', 'reverse']
-                    ),
+                    colored(f'▮ {captial_heading}', 'cyan', attrs=['bold']),
                 )
             else:
                 heading = ''

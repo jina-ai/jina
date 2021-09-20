@@ -366,16 +366,16 @@ def test_traversal_path():
 
     da.traverse_flat(['r'])
 
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         da.traverse_flat('r')
 
     da.traverse(['r'])
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         for _ in da.traverse('r'):
             pass
 
     da.traverse(['r'])
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         for _ in da.traverse('r'):
             pass
 
@@ -533,13 +533,18 @@ def test_embeddings_setter_da():
 
 
 def test_embeddings_getter_da():
-    emb = np.random.random((100, 128))
-    da = DocumentArray([Document(embedding=x) for x in emb])
+    embeddings = np.random.random((100, 10))
+    da = DocumentArray([Document(embedding=emb) for emb in embeddings])
     assert len(da) == 100
-    np.testing.assert_almost_equal(da.embeddings, emb)
+    np.testing.assert_almost_equal(da.get_attributes('embedding'), da.embeddings)
 
-    for x, doc in zip(emb, da):
-        np.testing.assert_almost_equal(x, doc.embedding)
+
+def test_embeddings_wrong_len():
+    da = DocumentArray([Document() for _ in range(100)])
+    embeddings = np.ones((2, 10))
+
+    with pytest.raises(ValueError, match='the number of rows in the'):
+        da.embeddings = embeddings
 
 
 def test_blobs_getter_da():
@@ -557,3 +562,17 @@ def test_blobs_setter_da():
 
     for x, doc in zip(blobs, da):
         np.testing.assert_almost_equal(x, doc.blob)
+
+
+def test_blobs_wrong_len():
+    da = DocumentArray([Document() for _ in range(100)])
+    blobs = np.ones((2, 10, 10))
+
+    with pytest.raises(ValueError, match='the number of rows in the'):
+        da.blobs = blobs
+
+
+def test_none_extend():
+    da = DocumentArray([Document() for _ in range(100)])
+    da.extend(None)
+    assert len(da) == 100

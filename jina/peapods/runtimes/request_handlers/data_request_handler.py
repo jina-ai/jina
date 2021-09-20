@@ -1,5 +1,5 @@
 import re
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, TYPE_CHECKING
 
 from .... import __default_endpoint__
 from ....excepts import (
@@ -9,9 +9,10 @@ from ....excepts import (
 from ....executors import BaseExecutor
 from ....helper import typename
 from ....types.arrays.document import DocumentArray
+from ....types.arrays.abstract import AbstractDocumentArray
 from ....types.message import Message, Request
 
-if False:
+if TYPE_CHECKING:
     import argparse
     from ....logging.logger import JinaLogger
 
@@ -64,15 +65,7 @@ class DataRequestHandler:
         super().__init__()
         self.args = args
         self.logger = logger
-        self._load_plugins()
         self._load_executor()
-
-    def _load_plugins(self):
-        """Load the plugins if needed necessary to load executors."""
-        if self.args.py_modules:
-            from ....importer import PathImporter
-
-            PathImporter.add_modules(*self.args.py_modules)
 
     def _load_executor(self):
         """Load the executor to this runtime, specified by ``uses`` CLI argument."""
@@ -132,18 +125,27 @@ class DataRequestHandler:
             self.logger.debug(
                 f'skip executor: mismatch request, exec_endpoint: {msg.envelope.header.exec_endpoint}, requests: {self._executor.requests}'
             )
+            if partial_requests:
+                DataRequestHandler.replace_docs(
+                    msg,
+                    docs=_get_docs_from_msg(
+                        msg,
+                        partial_request=partial_requests,
+                        field='docs',
+                    ),
+                )
             return
 
         params = self._parse_params(msg.request.parameters, self._executor.metas.name)
-
+        docs = _get_docs_from_msg(
+            msg,
+            partial_request=partial_requests,
+            field='docs',
+        )
         # executor logic
         r_docs = self._executor(
             req_endpoint=msg.envelope.header.exec_endpoint,
-            docs=_get_docs_from_msg(
-                msg,
-                partial_request=partial_requests,
-                field='docs',
-            ),
+            docs=docs,
             parameters=params,
             docs_matrix=_get_docs_matrix_from_message(
                 msg,
@@ -168,14 +170,25 @@ class DataRequestHandler:
         # 3. Return DocArray, but the memory pointer says it is the same as self.docs: do nothing
         # 4. Return DocArray and its not a shallow copy of self.docs: assign self.request.docs
         if r_docs is not None:
-            if not isinstance(r_docs, DocumentArray):
+            if not isinstance(r_docs, AbstractDocumentArray):
                 raise TypeError(
                     f'return type must be {DocumentArray!r} or None, but getting {typename(r_docs)}'
                 )
             elif r_docs != msg.request.docs:
                 # this means the returned DocArray is a completely new one
-                msg.request.docs.clear()
-                msg.request.docs.extend(r_docs)
+                DataRequestHandler.replace_docs(msg, r_docs)
+        elif partial_requests:
+            DataRequestHandler.replace_docs(msg, docs)
+
+    @staticmethod
+    def replace_docs(msg, docs):
+        """Replaces the docs in a message with new Documents.
+
+        :param msg: The message object
+        :param docs: the new docs to be used
+        """
+        msg.request.docs.clear()
+        msg.request.docs.extend(docs)
 
     def close(self):
         """ Close the data request handler, by closing the executor """

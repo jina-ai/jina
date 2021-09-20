@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block body -%}
+{% include "partials/icons.html" %}
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+    <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+    <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+{% if theme_announcement -%}
+<div class="announcement">
+    <aside class="announcement-content">
+        {% block announcement %} {{ theme_announcement }} {% endblock announcement %}
+    </aside>
+</div>
+{%- endif %}
+
+<div class="page">
+    <header class="mobile-header">
+        <div class="header-left">
+            <label class="nav-overlay-icon" for="__navigation">
+                <div class="visually-hidden">Toggle site navigation sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-menu"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+        <div class="header-center">
+            <a href="{{ pathto(master_doc) }}">
+                <div class="brand">{{ docstitle }}</div>
+            </a>
+        </div>
+        <div class="header-right">
+            <div class="theme-toggle-container theme-toggle-header">
+                <button class="theme-toggle">
+                    <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                    <svg class="theme-icon-when-auto">
+                        <use href="#svg-sun-half"></use>
+                    </svg>
+                    <svg class="theme-icon-when-dark">
+                        <use href="#svg-moon"></use>
+                    </svg>
+                    <svg class="theme-icon-when-light">
+                        <use href="#svg-sun"></use>
+                    </svg>
+                </button>
+            </div>
+            <label class="toc-overlay-icon toc-header-icon{% if furo_hide_toc %} no-toc{% endif %}" for="__toc">
+                <div class="visually-hidden">Toggle table of contents sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-toc"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+    </header>
+    <aside class="sidebar-drawer">
+        <div class="sidebar-container">
+            {% block left_sidebar %}
+            <div class="sidebar-sticky">
+                {%- for sidebar_section in sidebars %}
+                {%- include sidebar_section %}
+                {%- endfor %}
+            </div>
+            {% endblock left_sidebar %}
+        </div>
+    </aside>
+    <div class="main">
+        <div class="content">
+            <article role="main">
+                <div class="content-icon-container">
+                    <div class="theme-toggle-container theme-toggle-content">
+                        <button class="theme-toggle">
+                            <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                            <svg class="theme-icon-when-auto">
+                                <use href="#svg-sun-half"></use>
+                            </svg>
+                            <svg class="theme-icon-when-dark">
+                                <use href="#svg-moon"></use>
+                            </svg>
+                            <svg class="theme-icon-when-light">
+                                <use href="#svg-sun"></use>
+                            </svg>
+                        </button>
+                    </div>
+                    <label class="toc-overlay-icon toc-content-icon"
+                           for="__toc">
+                        <div class="visually-hidden">Toggle table of contents sidebar</div>
+                        <i class="icon">
+                            <svg>
+                                <use href="#svg-toc"></use>
+                            </svg>
+                        </i>
+                    </label>
+                </div>
+                {% block content %}{{ body }}{% endblock %}
+            </article>
+            <footer>
+                {% block footer %}
+                <div class="related-pages">
+                    {% if next -%}
+                    <a class="next-page" href="{{ next.link }}">
+                        <div class="page-info">
+                            <div class="context">
+                                <span>{{ _("Next") }}</span>
+                            </div>
+                            <div class="title">{{ next.title }}</div>
+                        </div>
+                        <svg>
+                            <use href="#svg-arrow-right"></use>
+                        </svg>
+                    </a>
+                    {%- endif %}
+                    {% if prev -%}
+                    <a class="prev-page" href="{{ prev.link }}">
+                        <svg>
+                            <use href="#svg-arrow-right"></use>
+                        </svg>
+                        <div class="page-info">
+                            <div class="context">
+                                <span>{{ _("Previous") }}</span>
+                            </div>
+                            {% if prev.link == pathto(master_doc) %}
+                            <div class="title">{{ _("Home") }}</div>
+                            {% else %}
+                            <div class="title">{{ prev.title }}</div>
+                            {% endif %}
+                        </div>
+                    </a>
+                    {%- endif %}
+                </div>
+
+                <div class="related-information">
+                    {%- if show_copyright %}
+                    {%- if hasdoc('copyright') %}
+                    {% trans path=pathto('copyright'), copyright=copyright|e -%}
+                    <a href="{{ path }}">Copyright</a> &#169; {{ copyright }}.
+                    {%- endtrans %}
+                    {%- else %}
+                    {% trans copyright=copyright|e -%}
+                    Copyright &#169; {{ copyright }}
+                    {%- endtrans %}
+                    {%- endif %}
+                    {%- endif %}
+                    {%- if last_updated %}
+                    |
+                    {% trans last_updated=last_updated|e -%}
+                    Last updated on {{ last_updated }}.
+                    {%- endtrans %}
+                    {%- endif %}
+                </div>
+                {% endblock footer %}
+            </footer>
+        </div>
+        <aside class="toc-drawer">
+            {% block right_sidebar %}
+
+            <div class="toc-sticky toc-scroll">
+                {% if not furo_hide_toc %}
+                <div class="toc-title-container">
+          <span class="toc-title">
+            {{ _("Contents") }}
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        {{ toc }}
+                    </div>
+                </div>
+                {% endif %}
+                {% include "docbot.html" %}
+            </div>
+
+            {% endblock right_sidebar %}
+        </aside>
+
+    </div>
+</div>
+{%- endblock %}

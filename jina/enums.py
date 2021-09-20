@@ -322,6 +322,13 @@ class FlowInspectType(BetterEnum):
         return self.value in {0, 2}
 
 
+class InfrastructureType(BetterEnum):
+    """Infrastructure where the Flow runs on."""
+
+    JINA = 0  # flow is orchestrated by Jina
+    K8S = 1  # flow is orchestrated by kubernetes
+
+
 class RemoteAccessType(BetterEnum):
     """Remote access type when connect to the host."""
 
@@ -352,6 +359,15 @@ class RuntimeBackendType(BetterEnum):
 
     THREAD = 0
     PROCESS = 1
+
+
+class ProgressBarStatus(BetterEnum):
+    """Type of the progress bar status."""
+
+    WORKING = 0
+    DONE = 1
+    CANCELED = 2
+    ERROR = 3
 
 
 class EmbeddingClsType(BetterEnum):

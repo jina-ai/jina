@@ -1,0 +1,79 @@
+<details id='jina-docbot' class="jina-doc-bot sd-sphinx-override sd-dropdown sd-card">
+    <summary class="sd-summary-title sd-card-header">
+        <svg aria-hidden="true" class="sd-octicon sd-octicon-comment-discussion" height="1.0em"
+             version="1.1" viewBox="0 0 16 16" width="1.0em">
+            <path d="M1.5 2.75a.25.25 0 01.25-.25h8.5a.25.25 0 01.25.25v5.5a.25.25 0 01-.25.25h-3.5a.75.75 0 00-.53.22L3.5 11.44V9.25a.75.75 0 00-.75-.75h-1a.25.25 0 01-.25-.25v-5.5zM1.75 1A1.75 1.75 0 000 2.75v5.5C0 9.216.784 10 1.75 10H2v1.543a1.457 1.457 0 002.487 1.03L7.061 10h3.189A1.75 1.75 0 0012 8.25v-5.5A1.75 1.75 0 0010.25 1h-8.5zM14.5 4.75a.25.25 0 00-.25-.25h-.5a.75.75 0 110-1.5h.5c.966 0 1.75.784 1.75 1.75v5.5A1.75 1.75 0 0114.25 12H14v1.543a1.457 1.457 0 01-2.487 1.03L9.22 12.28a.75.75 0 111.06-1.06l2.22 2.22v-2.19a.75.75 0 01.75-.75h1a.25.25 0 00.25-.25v-5.5z"
+                  fill-rule="evenodd"></path>
+        </svg>
+        &nbsp; Ask our docs!
+        <div class="sd-summary-down docutils">
+            <svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-down" height="1.5em"
+                 version="1.1" viewBox="0 0 24 24" width="1.5em">
+                <path d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"
+                      fill-rule="evenodd"></path>
+            </svg>
+        </div>
+        <div class="sd-summary-up docutils">
+            <svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-up" height="1.5em"
+                 version="1.1" viewBox="0 0 24 24" width="1.5em">
+                <path d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"
+                      fill-rule="evenodd"></path>
+            </svg>
+        </div>
+    </summary>
+    <div class="sd-summary-content sd-card-body docutils">
+        <div class="jina-doc-answer">
+            <div class="jina-doc-answer-hint" v-if="qa_pairs.length===0">
+                <p class="jina-doc-bot-help-text sd-font-weight-bold">You can ask questions about our docs. Try:</p>
+                <ul class="example-question simple sd-font-weight-light">
+                    <li><p>Does Jina support Kubernetes?</p></li>
+                    <li><p>How can I traverse a nested DocumentArray?</p></li>
+                    <li><p>What are the basic concepts in Jina?</p></li>
+                </ul>
+            </div>
+            <div class="jina-doc-answer-dialog" v-else>
+                <div v-for="qa in qa_pairs" style="padding-top: 20px;">
+                    <div class="sd-text-right">
+                        <div class="talk-bubble question-bubble">
+                            <div class="talktext">
+                                <p>${qa.question}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="talk-bubble answer-bubble">
+                        <div class="talktext">
+                            <p v-if="qa.answer">${qa.answer.text}</p>
+                            <div v-else>
+                                <svg height="10" width="40" class="loader">
+                                    <circle class="dot" cx="10" cy="5" r="3"/>
+                                    <circle class="dot" cx="20" cy="5" r="3"/>
+                                    <circle class="dot" cx="30" cy="5" r="3"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <a v-if="qa.answer && is_conn_broken" class="answer-reference" href="https://slack.jina.ai" target="_blank">Report</a>
+                        <a v-if="qa.answer && !is_conn_broken" class="answer-reference" :href="root_url + qa.answer.uri">Source</a>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+        <div class="jina-doc-bot-controls sd-d-flex-row sd-border-1">
+            <textarea v-model="cur_question" class="sd-border-0" maxlength="100" rows="3"
+                      id="bot-input-question"
+                      style="width: 100%"
+                      placeholder="Type your question here"
+                      :readonly="is_busy" autofocus></textarea>
+            <button class="sd-sphinx-override sd-btn sd-text-wrap sd-btn-outline-primary sd-rounded-0" v-on:click="submit_q" v-show="cur_question.length>0 && !is_busy" id="bot-input-btn">
+                <svg aria-hidden="true" class="sd-octicon sd-octicon-paper-airplane" height="1.0em"
+                     version="1.1" viewBox="0 0 16 16" width="1.0em">
+                    <path d="M1.592 2.712L2.38 7.25h4.87a.75.75 0 110 1.5H2.38l-.788 4.538L13.929 8 1.592 2.712zM.989 8L.064 2.68a1.341 1.341 0 011.85-1.462l13.402 5.744a1.13 1.13 0 010 2.076L1.913 14.782a1.341 1.341 0 01-1.85-1.463L.99 8z"
+                          fill-rule="evenodd"></path>
+                </svg>
+            </button>
+        </div>
+        <p class="sd-text-uppercase sd-font-weight-bolder poweredby">Powered by Jina AI</p>
+    </div>
+</details>

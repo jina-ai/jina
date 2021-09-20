@@ -208,6 +208,7 @@ class Dockerizer:
         container_id: DaemonID,
         command: str,
         ports: Dict,
+        envs: Dict = {},
         entrypoint: Optional[str] = None,
     ) -> 'Container':
         """
@@ -219,6 +220,7 @@ class Dockerizer:
         :param container_id: name of the container
         :param command: command to be appended to default entrypoint
         :param ports: ports to be mapped with local
+        :param envs: dict of env vars to be set in the container
         :param entrypoint: custom entrypoint
         :raises DockerImageException: if image is not found locally
         :raises DockerContainerException: if container creation fails
@@ -243,7 +245,7 @@ class Dockerizer:
                 image=image,
                 name=container_id,
                 volumes=cls.volume(workspace_id),
-                environment=cls.environment(),
+                environment=cls.environment(envs),
                 network=network,
                 ports=ports,
                 detach=True,
@@ -337,7 +339,7 @@ class Dockerizer:
         """
         Local volumes to be mounted inside the container during `run`.
         .. note::
-            Local workspace should always be mounted to fefault WORKDIR for the container (/workspace).
+            Local workspace should always be mounted to default WORKDIR for the container (/workspace).
             docker sock on dockerhost should also be mounted to make sure DIND works
         :param workspace_id: workspace id
         :return: dict of volume mappings
@@ -351,9 +353,11 @@ class Dockerizer:
         }
 
     @classmethod
-    def environment(cls) -> Dict[str, str]:
+    def environment(cls, envs: Dict[str, str]) -> Dict[str, str]:
         """
         Environment variables to be set inside the container during `run`
+
+        :param envs: dict of env vars to be set in the container
         :return: dict of env vars
         """
         return {
@@ -365,6 +369,7 @@ class Dockerizer:
             ),
             'JINA_HUB_CACHE_DIR': os.path.join(__partial_workspace__, '.cache', 'jina'),
             'HOME': __partial_workspace__,
+            **envs,
         }
 
     @classmethod

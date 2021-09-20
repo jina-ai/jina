@@ -143,13 +143,15 @@ def write_html(html_path):
         pass  # intentional pass, browser support isn't cross-platform
     finally:
         default_logger.info(
-            f'You should see a "hello-world.html" opened in your browser, '
+            f'You should see a "demo.html" opened in your browser, '
             f'if not you may open {url_html_path} manually'
         )
 
-    colored_url = colored('https://opensource.jina.ai', color='cyan', attrs='underline')
+    colored_url = colored(
+        'https://github.com/jina-ai/jina', color='cyan', attrs='underline'
+    )
     default_logger.info(
-        f'🤩 Intrigued? Play with "jina hello fashion --help" and learn more about Jina at {colored_url}'
+        f'🤩 Intrigued? Play with `jina hello fashion --help` and learn more about Jina at {colored_url}'
     )
 
 
@@ -169,11 +171,11 @@ def download_data(targets, download_proxy=None, task_name='download fashion-mnis
         )
         opener.add_handler(proxy)
     urllib.request.install_opener(opener)
-    with ProgressBar(task_name=task_name) as t:
+    with ProgressBar(description=task_name) as t:
         for k, v in targets.items():
             if not os.path.exists(v['filename']):
                 urllib.request.urlretrieve(
-                    v['url'], v['filename'], reporthook=lambda *x: t.update_tick(0.01)
+                    v['url'], v['filename'], reporthook=lambda *x: t.update(0.01)
                 )
             if k == 'index-labels' or k == 'query-labels':
                 v['data'] = load_labels(v['filename'])

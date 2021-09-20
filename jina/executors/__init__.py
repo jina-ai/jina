@@ -1,10 +1,10 @@
+import inspect
 import os
 from types import SimpleNamespace
 from typing import Dict, TypeVar, Optional, Callable
 
 from .decorators import store_init_kwargs, wrap_func
-from .metas import get_default_metas
-from .. import __default_endpoint__
+from .. import __default_endpoint__, __args_executor_init__
 from ..helper import typename
 from ..jaml import JAMLCompatible, JAML, subvar_regex, internal_var_regex
 
@@ -39,6 +39,15 @@ class ExecutorType(type(JAMLCompatible), type):
 
         cls_id = f'{cls.__module__}.{cls.__name__}'
         if cls_id not in reg_cls_set or getattr(cls, 'force_register', False):
+            arg_spec = inspect.getfullargspec(cls.__init__)
+
+            if not arg_spec.varkw and not __args_executor_init__.issubset(
+                arg_spec.args
+            ):
+                raise TypeError(
+                    f'{cls.__init__} does not follow the full signature of `Executor.__init__`, '
+                    f'please add `**kwargs` to your __init__ function'
+                )
             wrap_func(cls, ['__init__'], store_init_kwargs)
 
             reg_cls_set.add(cls_id)
@@ -121,6 +130,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self.requests = request_mapping
 
     def _add_metas(self, _metas: Optional[Dict]):
+        from .metas import get_default_metas
 
         tmp = get_default_metas()
 
@@ -212,7 +222,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 os.makedirs(complete_workspace)
             return os.path.abspath(complete_workspace)
         else:
-            raise Exception('can not find metas.workspace or runtime_args.workspace')
+            raise ValueError(
+                'Neither `metas.workspace` nor `runtime_args.workspace` is set, '
+                'are you using this Executor is a Flow?'
+            )
 
     def __enter__(self):
         return self

@@ -31,7 +31,7 @@ except FileNotFoundError:
 version = __version__
 release = __version__
 
-templates_path = ['template']
+templates_path = ['_templates']
 exclude_patterns = [
     '_build',
     'Thumbs.db',
@@ -53,13 +53,30 @@ html_theme_options = {
     'light_logo': 'logo-light.svg',
     'dark_logo': 'logo-dark.svg',
     "sidebar_hide_name": True,
+    "light_css_variables": {
+        "color-brand-primary": "#009191",
+        "color-brand-content": "#009191",
+    },
+    "dark_css_variables": {
+        "color-brand-primary": "#FBCB67",
+        "color-brand-content": "#FBCB67",
+    },
 }
 
 html_static_path = ['_static']
 html_extra_path = ['html_extra']
-html_css_files = ['main.css']
+html_css_files = [
+    'main.css',
+    'docbot.css'
+]
+html_js_files = [
+    'https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js',
+    'docbot.js'
+]
 htmlhelp_basename = slug
 html_show_sourcelink = False
+html_title = 'Jina Documentation'
+html_favicon = '_static/favicon.ico'
 
 latex_documents = [(master_doc, f'{slug}.tex', project, author, 'manual')]
 man_pages = [(master_doc, slug, project, [author], 1)]
@@ -78,14 +95,18 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinxcontrib.apidoc',
     'sphinxarg.ext',
-    'recommonmark',
     'sphinx_markdown_tables',
     'sphinx_copybutton',
     'sphinx_sitemap',
     'sphinx.ext.intersphinx',
     'sphinxext.opengraph',
     'notfound.extension',
+    'myst_parser',
+    'sphinx_design',
+    'sphinx_inline_tabs',
 ]
+
+myst_enable_extensions = ['colon_fence']
 
 # -- Custom 404 page
 

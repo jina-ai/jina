@@ -1,7 +1,6 @@
 import os
 import time
 from types import SimpleNamespace
-from typing import Iterable
 
 import numpy as np
 import pytest
@@ -96,8 +95,8 @@ def test_wrap_func():
     from jina import Executor
 
     class DummyEncoder(Executor):
-        def __init__(self):
-            pass
+        def __init__(self, **kwargs):
+            super().__init__(**kwargs)
 
     class MockEnc(DummyEncoder):
         pass
@@ -106,8 +105,8 @@ def test_wrap_func():
         pass
 
     class MockMockMockEnc(MockEnc):
-        def __init__(self):
-            pass
+        def __init__(self, **kwargs):
+            super().__init__(**kwargs)
 
     def check_override(cls, method):
         is_inherit = any(
@@ -249,7 +248,7 @@ def test_yaml_filepath_validate_good(val):
         '''
     shards: $JINA_SHARDS_INDEXERS
     host: $JINA_REDIS_INDEXER_HOST
-    port_expose: 8000
+    port_jinad: 8000
     polling: all
     timeout_ready: 100000 # larger timeout as in query time will read all the data
     uses_after: merge_and_topk.yml

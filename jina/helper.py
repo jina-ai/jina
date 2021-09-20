@@ -125,6 +125,21 @@ def deprecated_alias(**aliases):
     return deco
 
 
+def deprecated_method(new_function_name):
+    def deco(func):
+        def wrapper(*args, **kwargs):
+            warnings.warn(
+                f'`{func.__name__}` is renamed to `{new_function_name}`, the usage of `{func.__name__}` is '
+                f'deprecated and will be removed.',
+                DeprecationWarning,
+            )
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return deco
+
+
 def get_readable_size(num_bytes: Union[int, float]) -> str:
     """
     Transform the bytes into readable value with different units (e.g. 1 KB, 20 MB, 30.1 GB).
@@ -642,18 +657,31 @@ class ColorContext:
 def warn_unknown_args(unknown_args: List[str]):
     """Creates warnings for all given arguments.
 
-    :param unknown_args: arguments that are unknown to Jina
+    :param unknown_args: arguments that are possibly unknown to Jina
     """
-    for arg in unknown_args:
-        from .parsers.deprecated import get_deprecated_replacement
 
-        new_arg = get_deprecated_replacement(arg)
-        if new_arg:
-            warnings.warn(
-                f'''Ignored the deprecated argument '{arg}'. Please use '{new_arg}'.'''
-            )
-        else:
-            warnings.warn(f'ignored unknown argument: {arg}')
+    from cli.lookup import _build_lookup_table
+
+    all_args = _build_lookup_table()[0]
+
+    has_migration_tip = False
+    real_unknown_args = []
+    warn_strs = []
+    for arg in unknown_args:
+        if arg.replace('--', '') not in all_args:
+            from .parsers.deprecated import get_deprecated_replacement
+
+            new_arg = get_deprecated_replacement(arg)
+            if new_arg:
+                if not has_migration_tip:
+                    warn_strs.append('Migration tips:')
+                    has_migration_tip = True
+                warn_strs.append(f'\t`{arg}` has been renamed to `{new_arg}`')
+            real_unknown_args.append(arg)
+
+    if real_unknown_args:
+        warn_strs = [f'ignored unknown argument: {real_unknown_args}.'] + warn_strs
+        warnings.warn(''.join(warn_strs))
 
 
 class ArgNamespace:
@@ -691,6 +719,7 @@ class ArgNamespace:
         kwargs: Dict[str, Union[str, int, bool]],
         parser: ArgumentParser,
         warn_unknown: bool = False,
+        fallback_parsers: List[ArgumentParser] = None,
     ) -> Namespace:
         """
         Convert dict to a namespace.
@@ -698,12 +727,21 @@ class ArgNamespace:
         :param kwargs: dictionary of key-values to be converted
         :param parser: the parser for building kwargs into a namespace
         :param warn_unknown: True, if unknown arguments should be logged
+        :param fallback_parsers: a list of parsers to help resolving the args
         :return: argument list
         """
         args = ArgNamespace.kwargs2list(kwargs)
         p_args, unknown_args = parser.parse_known_args(args)
         if warn_unknown and unknown_args:
-            warn_unknown_args(unknown_args)
+            _leftovers = set(unknown_args)
+            if fallback_parsers:
+                for p in fallback_parsers:
+                    _, _unk_args = p.parse_known_args(args)
+                    _leftovers = _leftovers.intersection(_unk_args)
+                    if not _leftovers:
+                        # all args have been resolved
+                        break
+            warn_unknown_args(_leftovers)
 
         return p_args
 
@@ -896,7 +934,7 @@ class CatchAllCleanupContextManager:
         pass
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if exc_type is not None:
+        if exc_type:
             self.sub_context.__exit__(exc_type, exc_val, exc_tb)
 
 

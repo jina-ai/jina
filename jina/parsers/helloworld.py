@@ -139,14 +139,6 @@ def set_hw_parser(parser=None):
     )
 
     gp.add_argument(
-        '--request-size',
-        type=int,
-        default=1024,
-        help='The request size in indexing (the maximum number of documents that will be included in a '
-        'Request before sending it)',
-    )
-
-    gp.add_argument(
         '--num-query', type=int, default=128, help='The number of queries to visualize'
     )
     gp.add_argument(

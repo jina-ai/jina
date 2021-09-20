@@ -68,6 +68,7 @@ instance/
 
 # Sphinx documentation
 docs/_build/
+docs/api/
 
 # PyBuilder
 target/
@@ -128,6 +129,7 @@ shell/jina-wizard.sh
 /junit/
 /tests/junit/
 /docs/chapters/proto/docs.md
+/tests/.pytest-kind
 
 # IntelliJ IDEA
 *.iml
@@ -145,3 +147,7 @@ MyIndexer/
 MyMemMap/
 original/
 output/
+
+# kubernetes testing
+.pytest-kind
+.kube

@@ -1,15 +1,14 @@
 import os
-import sys
 import asyncio
 from copy import deepcopy
-from platform import uname
 from http import HTTPStatus
-from typing import Dict, TYPE_CHECKING
+from typing import Dict, TYPE_CHECKING, Union
 
 import aiohttp
 
 from jina import __default_host__, __docker_host__
 from jina.helper import colored, random_port
+from jina.enums import RemoteWorkspaceState
 from .base import BaseStore
 from ..dockerize import Dockerizer
 from ..excepts import (
@@ -19,6 +18,7 @@ from ..excepts import (
 from ..helper import if_alive, id_cleaner, error_msg_from
 from ..models import DaemonID
 from ..models.enums import UpdateOperation, IDLiterals, OSOptions
+from ..models.ports import PortMappings
 from ..models.containers import (
     ContainerArguments,
     ContainerItem,
@@ -126,11 +126,11 @@ class ContainerStore(BaseStore):
         NOTE: `command` is appended to already existing entrypoint, hence removed the prefix `jinad`
         NOTE: Important to set `workspace_id` here as this gets set in jina objects in the container
 
-        :param port: mini jinad port
+        :param port: partial-daemon port
         :param workspace_id: workspace id
         :return: command for partial-daemon container
         """
-        return f'--port-expose {port} --mode {self._kind} --workspace-id {workspace_id.jid}'
+        return f'--port {port} --mode {self._kind} --workspace-id {workspace_id.jid}'
 
     @BaseStore.dump
     async def add(
@@ -138,7 +138,8 @@ class ContainerStore(BaseStore):
         id: DaemonID,
         workspace_id: DaemonID,
         params: 'BaseModel',
-        ports: Dict,
+        ports: Union[Dict, PortMappings],
+        envs: Dict[str, str] = {},
         **kwargs,
     ) -> DaemonID:
         """Add a container to the store
@@ -147,8 +148,9 @@ class ContainerStore(BaseStore):
         :param workspace_id: workspace id where the container lives
         :param params: pydantic model representing the args for the container
         :param ports: ports to be mapped to local
+        :param envs: dict of env vars to be passed
         :param kwargs: keyword args
-        :raises KeyError: if workspace_id doesn't exist in the store
+        :raises KeyError: if workspace_id doesn't exist in the store or not ACTIVE
         :raises PartialDaemonConnectionException: if jinad cannot connect to partial
         :return: id of the container
         """
@@ -157,11 +159,18 @@ class ContainerStore(BaseStore):
 
             if workspace_id not in workspace_store:
                 raise KeyError(f'{workspace_id} not found in workspace store')
+            elif workspace_store[workspace_id].state != RemoteWorkspaceState.ACTIVE:
+                raise KeyError(
+                    f'{workspace_id} is not ACTIVE yet. Please retry once it becomes ACTIVE'
+                )
 
-            minid_port = random_port()
-            ports.update({f'{minid_port}/tcp': minid_port})
-            uri = self._uri(minid_port)
-            command = self._command(minid_port, workspace_id)
+            partiald_port = random_port()
+            dockerports = (
+                ports.docker_ports if isinstance(ports, PortMappings) else ports
+            )
+            dockerports.update({f'{partiald_port}/tcp': partiald_port})
+            uri = self._uri(partiald_port)
+            command = self._command(partiald_port, workspace_id)
             params = params.dict(exclude={'log_config'})
 
             self._logger.debug(
@@ -170,7 +179,7 @@ class ContainerStore(BaseStore):
                     [
                         '{:15s} -> {:15s}'.format('id', id),
                         '{:15s} -> {:15s}'.format('workspace', workspace_id),
-                        '{:15s} -> {:15s}'.format('ports', str(ports)),
+                        '{:15s} -> {:15s}'.format('dockerports', str(dockerports)),
                         '{:15s} -> {:15s}'.format('command', command),
                     ]
                 )
@@ -183,6 +192,9 @@ class ContainerStore(BaseStore):
                 raise PartialDaemonConnectionException(
                     f'{id.type.title()} creation failed, couldn\'t reach the container at {uri} after 10secs'
                 )
+            kwargs.update(
+                {'ports': ports.dict()} if isinstance(ports, PortMappings) else {}
+            )
             object = await self._add(uri=uri, params=params, **kwargs)
         except Exception as e:
             self._logger.error(f'{self._kind} creation failed as {e}')
@@ -208,11 +220,11 @@ class ContainerStore(BaseStore):
                     container_name=container.name,
                     image_id=id_cleaner(container.image.id),
                     network=Dockerizer.network_id(container),
-                    ports=ports,
+                    ports=dockerports,
                     uri=uri,
                 ),
                 arguments=ContainerArguments(
-                    command=command,
+                    command=f'jinad {command}',
                     object=object,
                 ),
                 workspace_id=workspace_id,

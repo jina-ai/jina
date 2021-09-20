@@ -65,7 +65,7 @@ class GetMockResponse:
         return {
             'keywords': [],
             'id': 'dummy_mwu_encoder',
-            'alias': 'alias_dummy',
+            'name': 'alias_dummy',
             'tag': 'v0',
             'versions': [],
             'visibility': 'public',
@@ -148,7 +148,7 @@ def test_push_wrong_dockerfile(
     _args_list = [exec_path, mode]
 
     args = set_hub_push_parser().parse_args(_args_list)
-    args.docker_file = dockerfile
+    args.dockerfile = dockerfile
     with pytest.raises(Exception) as info:
         HubIO(args).push()
 
@@ -167,10 +167,10 @@ def test_fetch(mocker, monkeypatch):
     monkeypatch.setattr(requests, 'get', _mock_get)
     args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
 
-    executor = HubIO(args)._fetch_meta('dummy_mwu_encoder')
+    executor = HubIO(args).fetch_meta('dummy_mwu_encoder')
 
     assert executor.uuid == 'dummy_mwu_encoder'
-    assert executor.alias == 'alias_dummy'
+    assert executor.name == 'alias_dummy'
     assert executor.tag == 'v0'
     assert executor.image_name == 'jinahub/pod.dummy_mwu_encoder'
     assert executor.md5sum == 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f'
@@ -193,11 +193,11 @@ class DownloadMockResponse:
 def test_pull(test_envs, mocker, monkeypatch):
     mock = mocker.Mock()
 
-    def _mock_fetch(name, tag=None, secret=None):
+    def _mock_fetch(name, tag=None, secret=None, force=False):
         mock(name=name)
         return HubExecutor(
             uuid='dummy_mwu_encoder',
-            alias='alias_dummy',
+            name='alias_dummy',
             tag='v0',
             image_name='jinahub/pod.dummy_mwu_encoder',
             md5sum=None,
@@ -205,7 +205,7 @@ def test_pull(test_envs, mocker, monkeypatch):
             archive_url=None,
         )
 
-    monkeypatch.setattr(HubIO, '_fetch_meta', _mock_fetch)
+    monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
 
     def _mock_download(url, stream=True, headers=None):
         mock(url=url)
@@ -230,6 +230,8 @@ def test_pull(test_envs, mocker, monkeypatch):
 class MockDockerClient:
     def __init__(self, fail_pull: bool = True):
         self.fail_pull = fail_pull
+        if not self.fail_pull:
+            self.images = {}
 
     def pull(self, repository: str, stream: bool = True, decode: bool = True):
         if self.fail_pull:
@@ -242,18 +244,19 @@ def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
     mock = mocker.Mock()
 
     fail_meta_fetch = True
+    version = 'v0'
 
     @disk_cache_offline(cache_file=str(tmpfile))
-    def _mock_fetch(name, tag=None, secret=None):
+    def _mock_fetch(name, tag=None, secret=None, force=False):
         mock(name=name)
         if fail_meta_fetch:
             raise urllib.error.URLError('Failed fetching meta')
         else:
             return HubExecutor(
                 uuid='dummy_mwu_encoder',
-                alias='alias_dummy',
+                name='alias_dummy',
                 tag='v0',
-                image_name='jinahub/pod.dummy_mwu_encoder',
+                image_name=f'jinahub/pod.dummy_mwu_encoder:{version}',
                 md5sum=None,
                 visibility=True,
                 archive_url=None,
@@ -262,24 +265,27 @@ def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
     def _gen_load_docker_client(fail_pull: bool):
         def _load_docker_client(obj):
             obj._raw_client = MockDockerClient(fail_pull=fail_pull)
+            obj._client = MockDockerClient(fail_pull=fail_pull)
 
         return _load_docker_client
 
-    args = set_hub_pull_parser().parse_args(['jinahub+docker://dummy_mwu_encoder'])
+    args = set_hub_pull_parser().parse_args(
+        ['--force', 'jinahub+docker://dummy_mwu_encoder']
+    )
     monkeypatch.setattr(
         HubIO,
         '_load_docker_client',
         _gen_load_docker_client(fail_pull=True),
     )
-    monkeypatch.setattr(HubIO, '_fetch_meta', _mock_fetch)
+    monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
 
-    # Expect failure due to _fetch_meta
+    # Expect failure due to fetch_meta
     with pytest.raises(urllib.error.URLError):
         HubIO(args).pull()
 
     fail_meta_fetch = False
     # Expect failure due to image pull
-    with pytest.raises(docker.errors.APIError):
+    with pytest.raises(AttributeError):
         HubIO(args).pull()
 
     # expect successful pull
@@ -288,16 +294,26 @@ def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
         '_load_docker_client',
         _gen_load_docker_client(fail_pull=False),
     )
-    assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder'
+    assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder:v0'
 
-    # expect successful pull using cached _fetch_meta response and saved image
+    version = 'v1'
+    # expect successful forced pull because force == True
+    assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder:v1'
+
+    # expect successful pull using cached fetch_meta response and saved image
     fail_meta_fetch = True
     monkeypatch.setattr(
         HubIO,
         '_load_docker_client',
         _gen_load_docker_client(fail_pull=False),
     )
-    assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder'
+    assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder:v1'
+
+    args.force = False
+    fail_meta_fetch = False
+    version = 'v2'
+    # expect successful but outdated pull because force == False
+    assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder:v1'
 
 
 def test_pull_with_progress():

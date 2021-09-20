@@ -5,15 +5,13 @@ import threading
 import time
 from typing import Any, Tuple, Union, Dict, Optional
 
+from ...jaml import JAML
 from .helper import _get_event, ConditionalEvent
 from ... import __stop_msg__, __ready_msg__, __default_host__
-from ...enums import PeaRoleType, RuntimeBackendType, SocketType, GatewayProtocolType
+from ...enums import PeaRoleType, RuntimeBackendType, SocketType
 from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
 from ...helper import typename
-from ...hubble.helper import is_valid_huburi
-from ...hubble.hubio import HubIO
 from ...logging.logger import JinaLogger
-from ...parsers.hubble import set_hub_pull_parser
 
 __all__ = ['BasePea']
 
@@ -27,6 +25,7 @@ def run(
     is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
     is_ready: Union['multiprocessing.Event', 'threading.Event'],
     cancel_event: Union['multiprocessing.Event', 'threading.Event'],
+    jaml_classes: Optional[Dict] = None,
 ):
     """Method representing the :class:`BaseRuntime` activity.
 
@@ -44,6 +43,11 @@ def run(
     .. warning::
         If you are using ``thread`` as backend, envs setting will likely be overidden by others
 
+    .. note::
+        `jaml_classes` contains all the :class:`JAMLCompatible` classes registered in the main process.
+        When using `spawn` as the multiprocessing start method, passing this argument to `run` method re-imports
+        & re-registers all `JAMLCompatible` classes.
+
     :param args: namespace args from the Pea
     :param name: name of the Pea to have proper logging
     :param runtime_cls: the runtime class to instantiate
@@ -52,6 +56,7 @@ def run(
     :param is_shutdown: concurrency event to communicate runtime is terminated
     :param is_ready: concurrency event to communicate runtime is ready to receive messages
     :param cancel_event: concurrency event to receive cancelling signal from the Pea. Needed by some runtimes
+    :param jaml_classes: all the `JAMLCompatible` classes imported in main process
     """
     logger = JinaLogger(name, **vars(args))
 
@@ -153,6 +158,7 @@ class BasePea:
                 'is_ready': self.is_ready,
                 'cancel_event': self.cancel_event,
                 'runtime_cls': self.runtime_cls,
+                'jaml_classes': JAML.registered_classes(),
             },
         )
         self.daemon = self.args.daemon  #: required here to set process/thread daemon
@@ -270,7 +276,13 @@ class BasePea:
                 else:
                     raise RuntimeRunForeverEarlyError
             else:
-                self.logger.success(__ready_msg__)
+                # han: I intentionally change it to debug as the Flow is now polling
+                # the ready status actively. Hence active print ready status is unnecessary.
+                #  Notice that, relying on Pod console print for readiness in general makes
+                # no sense as the Pod can live remote/container whose log can not be observed at all.
+                #
+                # in short, do not change it back to info, you don't need it.
+                self.logger.debug(__ready_msg__)
         else:
             _timeout = _timeout or -1
             self.logger.warning(
@@ -359,34 +371,10 @@ class BasePea:
         self.close()
 
     def _get_runtime_cls(self) -> Tuple[Any, bool]:
-        gateway_runtime_dict = {
-            GatewayProtocolType.GRPC: 'GRPCRuntime',
-            GatewayProtocolType.WEBSOCKET: 'WebSocketRuntime',
-            GatewayProtocolType.HTTP: 'HTTPRuntime',
-        }
-        if (
-            self.args.runtime_cls not in gateway_runtime_dict.values()
-            and self.args.host != __default_host__
-            and not self.args.disable_remote
-        ):
-            self.args.runtime_cls = 'JinadRuntime'
-            # NOTE: remote pea would also create a remote workspace which might take alot of time.
-            # setting it to -1 so that wait_start_success doesn't fail
-            self.args.timeout_ready = -1
-        if self.args.runtime_cls == 'ZEDRuntime' and self.args.uses.startswith(
-            'docker://'
-        ):
-            self.args.runtime_cls = 'ContainerRuntime'
-        if self.args.runtime_cls == 'ZEDRuntime' and is_valid_huburi(self.args.uses):
-            self.args.uses = HubIO(
-                set_hub_pull_parser().parse_args([self.args.uses, '--no-usage'])
-            ).pull()
-            if self.args.uses.startswith('docker://'):
-                self.args.runtime_cls = 'ContainerRuntime'
-        if hasattr(self.args, 'protocol'):
-            self.args.runtime_cls = gateway_runtime_dict[self.args.protocol]
+        from .helper import update_runtime_cls
         from ..runtimes import get_runtime
 
+        update_runtime_cls(self.args)
         return get_runtime(self.args.runtime_cls)
 
     @property

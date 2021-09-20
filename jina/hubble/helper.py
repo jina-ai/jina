@@ -12,7 +12,7 @@ import urllib
 import zipfile
 from functools import lru_cache, wraps
 from pathlib import Path
-from typing import Tuple, Optional, Dict
+from typing import Tuple, Optional, Dict, List
 from urllib.parse import urlparse, urljoin
 from urllib.request import Request, urlopen
 
@@ -264,6 +264,8 @@ def disk_cache_offline(
 ):
     """
     Decorator which caches a function in disk and uses cache when a urllib.error.URLError exception is raised
+    If the function was called with a kwarg force=True, then this decorator will always attempt to call it, otherwise,
+    will always default to local cache.
 
     :param cache_file: the cache file
     :param message: the warning message shown when defaulting to cache. Use "{func_name}" if you want to print
@@ -278,6 +280,9 @@ def disk_cache_offline(
             call_hash = f'{func.__name__}({", ".join(map(str, args))})'
             with shelve.open(cache_file) as cache_db:
                 try:
+                    if call_hash in cache_db and not kwargs.get('force', False):
+                        return cache_db[call_hash]
+
                     result = func(*args, **kwargs)
                     cache_db[call_hash] = result
                 except urllib.error.URLError:
@@ -293,11 +298,34 @@ def disk_cache_offline(
     return decorator
 
 
-def install_requirements(requirements_file: 'Path'):
+def install_requirements(
+    requirements_file: 'Path', timeout: int = 1000, excludes: Tuple[str] = ('jina',)
+):
     """Install modules included in requirments file
-
     :param requirements_file: the requirements.txt file
+    :param timeout: the socket timeout (default = 1000s)
+    :param excludes: the excluded module dependencies
     """
+    import pkg_resources
+
+    with requirements_file.open() as requirements:
+        install_reqs = [
+            str(req)
+            for req in pkg_resources.parse_requirements(requirements)
+            if req.project_name not in excludes or len(req.extras) > 0
+        ]
+
+    if len(install_reqs) == 0:
+        return
+
     subprocess.check_call(
-        [sys.executable, '-m', 'pip', 'install', '-r', f'{requirements_file}']
+        [
+            sys.executable,
+            '-m',
+            'pip',
+            'install',
+            '--compile',
+            f'--default-timeout={timeout}',
+        ]
+        + install_reqs
     )

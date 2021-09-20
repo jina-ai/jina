@@ -4,19 +4,20 @@ import sys
 import time
 import socket
 import warnings
-from typing import TYPE_CHECKING, Union, Optional, Dict
+from typing import Union, Optional, Dict, TYPE_CHECKING
 from pathlib import Path
 from platform import uname
 
 from ..zmq.base import ZMQRuntime
 from ...zmq import Zmqlet
 from .... import __docker_host__
+from .helper import get_docker_network
 from ....excepts import BadImageNameError, DockerVersionError
 from ...zmq import send_ctrl_message
 from ....helper import ArgNamespace, slugify
 from ....enums import SocketType
 
-if False:
+if TYPE_CHECKING:
     import multiprocessing
     import threading
     from ....logging.logger import JinaLogger
@@ -211,7 +212,6 @@ class ContainerRuntime(ZMQRuntime):
                 'gpus',
             },
         )
-
         img_not_found = False
 
         try:
@@ -466,7 +466,7 @@ class ContainerRuntime(ZMQRuntime):
         import docker
 
         client = docker.from_env()
-        _, network = ContainerRuntime._get_docker_network(client)
+        network = get_docker_network(client)
 
         if (
             docker_kwargs
@@ -475,12 +475,15 @@ class ContainerRuntime(ZMQRuntime):
         ):
             ctrl_host = __docker_host__
         elif network:
-            # If the caller is in a docker network, replace ctrl-host with network gateway
-            ctrl_host = client.networks.get(network).attrs['IPAM']['Config'][0][
-                'Gateway'
-            ]
+            # If the caller is already in a docker network, replace ctrl-host with network gateway
+            try:
+                ctrl_host = client.networks.get(network).attrs['IPAM']['Config'][0][
+                    'Gateway'
+                ]
+            except Exception:
+                ctrl_host = __docker_host__
         else:
             ctrl_host = host
 
-        print(f'ctrl_host is: {ctrl_host}')
+
         return Zmqlet.get_ctrl_address(ctrl_host, port, False)[0]

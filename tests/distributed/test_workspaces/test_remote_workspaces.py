@@ -146,6 +146,21 @@ def test_workspace_delete():
         assert client.workspaces.delete(workspace_id)
 
 
+def test_workspace_clear():
+    client = JinaDClient(host=__default_host__, port=8000)
+    for _ in range(2):
+        workspace_id = client.workspaces.create(
+            paths=[os.path.join(cur_dir, 'empty_flow.yml')]
+        )
+        assert DaemonID(workspace_id).type == 'workspace'
+        assert (
+            WorkspaceItem(**client.workspaces.get(id=workspace_id)).state
+            == RemoteWorkspaceState.ACTIVE
+        )
+        assert workspace_id in client.workspaces.list()
+        assert client.workspaces.clear()
+
+
 @pytest.mark.asyncio
 async def test_custom_project():
 
@@ -157,7 +172,7 @@ async def test_custom_project():
     )
     assert DaemonID(workspace_id).type == 'workspace'
     # Sleep to allow the workspace container to start
-    await asyncio.sleep(5)
+    await asyncio.sleep(20)
 
     async def gen_docs():
         import string
@@ -170,12 +185,12 @@ async def test_custom_project():
                 return
 
     async for resp in Client(
-        asyncio=True, host=HOST, port_expose=42860, show_progress=True
+        asyncio=True, host=HOST, port=42860, show_progress=True
     ).post(on='/index', inputs=gen_docs):
         pass
 
     async for resp in Client(
-        asyncio=True, host=HOST, port_expose=42860, show_progress=True
+        asyncio=True, host=HOST, port=42860, show_progress=True
     ).post(
         on='/search',
         inputs=Document(tags={'key': 'first', 'value': 's'}),

@@ -78,14 +78,6 @@ def get_connect_host(
         not bind_local and not conn_local and (bind_host == connect_args.host)
     )
 
-    print(f'\n\nin get_connect_host')
-    print(f'bind_host: {bind_host}')
-    print(f'runs_in_docker: {runs_in_docker}')
-    print(f'bind_local: {bind_local}')
-    print(f'conn_local: {conn_local}')
-    print(f'conn_docker: {conn_docker}\n')
-    print(f'connect_args: {connect_args}\n\n')
-
     # pod1 in local, pod2 in local (conn_docker if pod2 in docker)
     if bind_local and conn_local:
         return __docker_host__ if conn_docker else __default_host__
