@@ -12,7 +12,7 @@ const app = new Vue({
         },
         qa_pairs: [],
         cur_question: '',
-        root_url: 'http://localhost:63342/jina/docs/_build/dirhtml/'
+        root_url: 'http://docs.jina.ai/'
     },
     computed: {
         host_address: function () {
