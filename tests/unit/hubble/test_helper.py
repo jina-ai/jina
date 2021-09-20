@@ -5,6 +5,7 @@ import pytest
 from pathlib import Path
 from jina.hubble import helper
 from jina.hubble.helper import disk_cache_offline
+from jina.parsers.hubble import set_hub_pull_parser
 
 
 @pytest.fixture
@@ -82,22 +83,38 @@ def test_install_requirements():
 def test_disk_cache(tmpfile):
     raise_exception = True
 
-    @disk_cache_offline(cache_file=str(tmpfile))
-    def _myfunc() -> bool:
-        if raise_exception:
-            raise urllib.error.URLError('Failing')
-        else:
-            return True
+    class MyClass:
+        def __init__(self):
+            self.args = set_hub_pull_parser().parse_args(
+                ['jinahub://dummy_mwu_encoder']
+            )
+            self.count = 0
 
+        @disk_cache_offline(cache_file=str(tmpfile))
+        def _inc_count(self) -> bool:
+            if raise_exception:
+                raise urllib.error.URLError('Failing')
+            else:
+                self.count += 1
+                return self.count
+
+    instance = MyClass()
     # test fails
     with pytest.raises(urllib.error.URLError) as info:
-        _myfunc()
+        instance._inc_count()
     assert 'Failing' in str(info.value)
 
     raise_exception = False
-    # saves result in cache
-    assert _myfunc()
+    # counter incremented, saves result in cache
+    assert instance._inc_count() == 1
+
+    # counter not incremented, defaults to cache since force == False
+    assert instance._inc_count() == 1
+
+    instance.args.force = True
+    # counter incremented since force == True
+    assert instance._inc_count() == 2
 
     raise_exception = True
-    # defaults to cache
-    assert _myfunc()
+    # counter not incremented and exception is not raised, defaults to cache
+    assert instance._inc_count() == 2
