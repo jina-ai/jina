@@ -1868,6 +1868,32 @@ first element in the DocumentArray / DocumentArrayMemmap</p>
 </dl>
 </dd></dl>
 <dl class="py property">
+<dt class="sig sig-object py" id="jina.DocumentArray.tags">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">tags</span></span><em class="property"><span class="pre">:</span> <span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../jina.types.struct/#jina.types.struct.StructView" title="jina.types.struct.StructView"><span class="pre">jina.types.struct.StructView</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.DocumentArray.tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the tags attribute of all Documents</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="../jina.types.struct/#jina.types.struct.StructView" title="jina.types.struct.StructView"><code class="xref py py-class docutils literal notranslate"><span class="pre">StructView</span></code></a>]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of <code class="docutils literal notranslate"><span class="pre">tags</span></code> attributes for all Documents</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.DocumentArray.texts">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">texts</span></span><em class="property"><span class="pre">:</span> <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.DocumentArray.texts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the text attribute of all Documents</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of <code class="docutils literal notranslate"><span class="pre">text</span></code> attributes for all Documents</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py property">
 <dt class="sig sig-object py" id="jina.DocumentArray.blobs">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">blobs</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#jina.DocumentArray.blobs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a <cite>np.ndarray</cite> stacking all the <cite>blob</cite> attributes.</p>
@@ -2090,6 +2116,32 @@ first element in the DocumentArray / DocumentArrayMemmap.</p>
 <p class="admonition-title">Warning</p>
 <p>This operation currently does not support sparse arrays.</p>
 </div>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.DocumentArrayMemmap.tags">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">tags</span></span><em class="property"><span class="pre">:</span> <span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../jina.types.struct/#jina.types.struct.StructView" title="jina.types.struct.StructView"><span class="pre">jina.types.struct.StructView</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.DocumentArrayMemmap.tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the tags attribute of all Documents</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<a class="reference internal" href="../jina.types.struct/#jina.types.struct.StructView" title="jina.types.struct.StructView"><code class="xref py py-class docutils literal notranslate"><span class="pre">StructView</span></code></a>]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of <code class="docutils literal notranslate"><span class="pre">tags</span></code> attributes for all Documents</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.DocumentArrayMemmap.texts">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">texts</span></span><em class="property"><span class="pre">:</span> <span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.DocumentArrayMemmap.texts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the text attribute of all Documents</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of <code class="docutils literal notranslate"><span class="pre">text</span></code> attributes for all Documents</p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.DocumentArrayMemmap.blobs">
