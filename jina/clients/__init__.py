@@ -1,12 +1,12 @@
 """Module wrapping the Client of Jina."""
 import argparse
-from typing import overload, Optional, Union
+from typing import overload, Optional, Union, TYPE_CHECKING
 
 __all__ = ['Client']
 
 from ..enums import GatewayProtocolType
 
-if False:
+if TYPE_CHECKING:
     from .grpc import GRPCClient, AsyncGRPCClient
     from .websocket import WebSocketClient, AsyncWebSocketClient
     from .http import HTTPClient, AsyncHTTPClient
