@@ -13,6 +13,8 @@ from jina.hubble.helper import disk_cache_offline
 from jina.hubble.hubio import HubIO, HubExecutor
 from jina.parsers.hubble import set_hub_push_parser
 from jina.parsers.hubble import set_hub_pull_parser
+from jina.parsers.hubble import set_hub_new_parser
+
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -359,7 +361,7 @@ def test_new(monkeypatch, tmpdir, add_dockerfile):
     monkeypatch.setattr(Prompt, 'ask', _mock_prompt_ask)
     monkeypatch.setattr(Confirm, 'ask', _mock_confirm_ask)
 
-    args = argparse.Namespace(hub='new')
+    args = set_hub_new_parser().parse_args([])
     HubIO(args).new()
     path = tmpdir / 'DummyExecutor'
 
