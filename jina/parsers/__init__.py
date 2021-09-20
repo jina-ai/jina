@@ -23,6 +23,7 @@ def set_pea_parser(parser=None):
     from .peapods.runtimes.remote import mixin_remote_runtime_parser
     from .peapods.pea import mixin_pea_parser
     from .peapods.runtimes.distributed import mixin_distributed_feature_parser
+    from .hubble.pull import mixin_hub_pull_options_parser
 
     mixin_base_ppr_parser(parser)
     mixin_zmq_runtime_parser(parser)
@@ -31,6 +32,7 @@ def set_pea_parser(parser=None):
     mixin_remote_runtime_parser(parser)
     mixin_distributed_feature_parser(parser)
     mixin_pea_parser(parser)
+    mixin_hub_pull_options_parser(parser)
 
     return parser
 
@@ -261,17 +263,6 @@ def get_main_parser():
             'are doing low-level orchestration',
             formatter_class=_chf,
             **(dict(help='Start a Pea')) if _SHOW_ALL_ARGS else {},
-        )
-    )
-
-    set_pod_parser(
-        sp.add_parser(
-            'pod',
-            description='Start a Pod. '
-            'You should rarely use this directly unless you '
-            'are doing low-level orchestration',
-            formatter_class=_chf,
-            **(dict(help='Start a Pod')) if _SHOW_ALL_ARGS else {},
         )
     )
 

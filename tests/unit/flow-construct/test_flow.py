@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 
 from jina import Flow, Document
-from jina.enums import SocketType, FlowBuildLevel
+from jina.enums import InfrastructureType, SocketType, FlowBuildLevel
 from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
 from jina.helper import random_identity
@@ -827,3 +827,15 @@ def test_connect_to_predecessor():
     assert len(f._pod_nodes['gateway'].head_args.hosts_in_connect) == 0
     assert len(f._pod_nodes['pod1'].head_args.hosts_in_connect) == 0
     assert len(f._pod_nodes['pod2'].head_args.hosts_in_connect) == 1
+
+
+def test_flow_grpc_with_shard():
+    with pytest.raises(
+        NotImplementedError, match='GRPC data runtime does not support sharding'
+    ):
+        Flow(grpc_data_requests=True).add(shards=2)
+        Flow(grpc_data_requests=True).add(shards=None)
+
+    Flow(grpc_data_requests=False).add(shards=1)
+    Flow(grpc_data_requests=False).add()
+    Flow(grpc_data_requests=True, infrastructure=InfrastructureType.K8S).add(shards=2)

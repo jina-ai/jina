@@ -72,7 +72,7 @@ def test_use_from_local_hub_pod_level(
 
     mock = mocker.Mock()
 
-    def _mock_fetch(name, tag=None, secret=None):
+    def _mock_fetch(name, tag=None, secret=None, force=False):
         mock(name=name)
         return HubExecutor(
             uuid='hello',
@@ -97,7 +97,7 @@ def test_use_from_local_hub_flow_level(
 
     mock = mocker.Mock()
 
-    def _mock_fetch(name, tag=None, secret=None):
+    def _mock_fetch(name, tag=None, secret=None, force=False):
         mock(name=name)
         return HubExecutor(
             uuid='hello',

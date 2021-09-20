@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 import random
+import warnings
 from pathlib import Path
 from typing import Optional, Dict
 from urllib.parse import urlencode
@@ -19,7 +20,13 @@ from .helper import (
     disk_cache_offline,
 )
 from .helper import install_requirements
-from .hubapi import install_local, resolve_local, load_secret, dump_secret, get_lockfile
+from .hubapi import (
+    install_local,
+    get_dist_path_of_executor,
+    load_secret,
+    dump_secret,
+    get_lockfile,
+)
 from .. import __resources_path__
 from ..helper import get_full_version, ArgNamespace
 from ..importer import ImportExtensions
@@ -60,20 +67,6 @@ class HubIO:
             assert rich  #: prevent pycharm auto remove the above line
             assert cryptography
             assert filelock
-
-    def _load_docker_client(self):
-        with ImportExtensions(required=True):
-            import docker
-            from docker import APIClient
-
-            try:
-                # low-level client
-                self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
-            except docker.errors.DockerException:
-                self.logger.critical(
-                    f'Docker daemon seems not running. Please run Docker daemon and try again.'
-                )
-                exit(1)
 
     @staticmethod
     def _get_request_header() -> Dict:
@@ -340,8 +333,8 @@ metas:
             exec_tags = ','.join(self.args.tag)
 
         dockerfile = None
-        if self.args.docker_file:
-            dockerfile = Path(self.args.docker_file)
+        if self.args.dockerfile:
+            dockerfile = Path(self.args.dockerfile)
             if not dockerfile.exists():
                 raise Exception(f'The given Dockerfile `{dockerfile}` does not exist!')
             if dockerfile.parent != work_path:
@@ -355,7 +348,7 @@ metas:
         with console.status(f'Pushing `{self.args.path}` ...') as st:
             req_header = self._get_request_header()
             try:
-                st.update(f'Packaging {self.args.path}...')
+                st.update(f'Packaging {self.args.path} ...')
                 md5_hash = hashlib.md5()
                 bytesio = archive_package(work_path)
                 content = bytesio.getvalue()
@@ -385,7 +378,7 @@ metas:
 
                 method = 'put' if ('force' in form_data) else 'post'
 
-                st.update(f'Connecting to Jina Hub...')
+                st.update(f'Connecting to Jina Hub ...')
                 hubble_url = get_hubble_url()
 
                 # upload the archived executor to Jina Hub
@@ -405,9 +398,13 @@ metas:
                     stream_msg = json.loads(stream_line)
 
                     if 'stream' in stream_msg:
-                        st.update(f'Building... [dim]{stream_msg["stream"]}[/dim]')
+                        st.update(
+                            f'Cloud building ... [dim]{stream_msg["stream"]}[/dim]'
+                        )
                     elif 'status' in stream_msg:
-                        st.update(f'Building... [dim]{stream_msg["status"]}[/dim]')
+                        st.update(
+                            f'Cloud building ... [dim]{stream_msg["status"]}[/dim]'
+                        )
                     elif 'result' in stream_msg:
                         result = stream_msg['result']
                         break
@@ -449,6 +446,7 @@ metas:
         uuid8 = image['id']
         secret = image['secret']
         visibility = image['visibility']
+        tag = self.args.tag[0] if self.args.tag else None
 
         table = Table.grid()
         table.add_column(width=20, no_wrap=True)
@@ -478,27 +476,27 @@ metas:
         presented_id = image.get('name', uuid8)
         usage = (
             f'{presented_id}' if visibility == 'public' else f'{presented_id}:{secret}'
-        )
+        ) + (f'/{tag}' if tag else '')
 
         if not self.args.no_usage:
             self._get_prettyprint_usage(console, usage)
 
         return uuid8, secret
 
-    def _get_prettyprint_usage(self, console, usage):
+    def _get_prettyprint_usage(self, console, executor_name, usage_kind=None):
         from rich.panel import Panel
         from rich.syntax import Syntax
 
         flow_plain = f'''from jina import Flow
 
-f = Flow().add(uses='jinahub://{usage}')
+f = Flow().add(uses='jinahub://{executor_name}')
 
 with f:
     ...'''
 
         flow_docker = f'''from jina import Flow
 
-f = Flow().add(uses='jinahub+docker://{usage}')
+f = Flow().add(uses='jinahub+docker://{executor_name}')
 
 with f:
     ...'''
@@ -524,7 +522,12 @@ with f:
             expand=False,
         )
 
-        console.print(p1, p2)
+        if usage_kind == 'docker':
+            console.print(p2)
+        elif usage_kind == 'source':
+            console.print(p1)
+        else:
+            console.print(p1, p2)
 
     @staticmethod
     @disk_cache_offline(cache_file=str(_cache_file))
@@ -532,11 +535,14 @@ with f:
         name: str,
         tag: Optional[str] = None,
         secret: Optional[str] = None,
+        force: bool = False,
     ) -> HubExecutor:
         """Fetch the executor meta info from Jina Hub.
         :param name: the UUID/Name of the executor
         :param tag: the version tag of the executor
         :param secret: the access secret of the executor
+        :param force: if set to True, access to fetch_meta will always pull latest Executor metas, otherwise, default
+            to local cache
         :return: meta of executor
         """
 
@@ -609,50 +615,80 @@ with f:
                 elif not pg_detail:
                     progress.update(task_id, advance=0, description=status)
 
+    def _load_docker_client(self):
+        with ImportExtensions(required=True):
+            import docker.errors
+            import docker
+            from docker import APIClient
+
+            try:
+                self._client = docker.from_env()
+                # low-level client
+                self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
+            except docker.errors.DockerException:
+                self.logger.critical(
+                    f'Docker daemon seems not running. Please run Docker daemon and try again.'
+                )
+                exit(1)
+
     def pull(self) -> str:
         """Pull the executor package from Jina Hub.
 
         :return: the `uses` string
         """
+
         from rich.console import Console
 
         console = Console()
         cached_zip_file = None
-        usage = None
+        executor_name = None
+        usage_kind = None
 
         try:
+            need_pull = self.args.force
             with console.status(f'Pulling {self.args.uri}...') as st:
                 scheme, name, tag, secret = parse_hub_uri(self.args.uri)
 
-                st.update(f'Fetching [bold]{name}[/bold] from Jina Hub...')
-                executor = HubIO.fetch_meta(name, tag=tag, secret=secret)
+                st.update(f'Fetching [bold]{name}[/bold] from Jina Hub ...')
+                executor = HubIO.fetch_meta(
+                    name, tag=tag, secret=secret, force=need_pull
+                )
                 presented_id = getattr(executor, 'name', executor.uuid)
-                usage = (
+                executor_name = (
                     f'{presented_id}'
                     if executor.visibility == 'public'
                     else f'{presented_id}:{secret}'
-                )
+                ) + (f'/{tag}' if tag else '')
 
                 if scheme == 'jinahub+docker':
-                    st.update(f'Starting Docker client...')
                     self._load_docker_client()
-                    st.update(f'Pulling image information...')
-                    log_stream = self._raw_client.pull(
-                        executor.image_name, stream=True, decode=True
-                    )
-                    st.stop()
-                    self._pull_with_progress(
-                        log_stream,
-                        console,
-                    )
+                    import docker
 
+                    try:
+                        self._client.images.get(executor.image_name)
+                    except docker.errors.ImageNotFound:
+                        need_pull = True
+
+                    if need_pull:
+                        st.update(f'Pulling image ...')
+                        log_stream = self._raw_client.pull(
+                            executor.image_name, stream=True, decode=True
+                        )
+                        st.stop()
+                        self._pull_with_progress(
+                            log_stream,
+                            console,
+                        )
+                    usage_kind = 'docker'
                     return f'docker://{executor.image_name}'
                 elif scheme == 'jinahub':
                     import filelock
 
                     with filelock.FileLock(get_lockfile(), timeout=-1):
                         try:
-                            pkg_path, pkg_dist_path = resolve_local(executor)
+                            pkg_path, pkg_dist_path = get_dist_path_of_executor(
+                                executor
+                            )
                             # check serial number to upgrade
                             sn_file_path = pkg_dist_path / f'PKG-SN-{executor.sn or 0}'
                             if (not sn_file_path.exists()) and any(
@@ -666,48 +702,49 @@ with f:
                                 requirements_file = pkg_dist_path / 'requirements.txt'
                                 if requirements_file.exists():
                                     install_requirements(requirements_file)
-                            return f'{pkg_path / "config.yml"}'
                         except FileNotFoundError:
-                            pass  # have not been downloaded yet, download for the first time
+                            need_pull = True
 
-                        # download the package
-                        cache_dir = Path(
-                            os.environ.get(
-                                'JINA_HUB_CACHE_DIR',
-                                Path.home().joinpath('.cache', 'jina'),
+                        if need_pull:
+                            cache_dir = Path(
+                                os.environ.get(
+                                    'JINA_HUB_CACHE_DIR',
+                                    Path.home().joinpath('.cache', 'jina'),
+                                )
                             )
-                        )
-                        cache_dir.mkdir(parents=True, exist_ok=True)
+                            cache_dir.mkdir(parents=True, exist_ok=True)
 
-                        st.update(f'Downloading {name} ...')
-                        cached_zip_file = download_with_resume(
-                            executor.archive_url,
-                            cache_dir,
-                            f'{executor.uuid}-{executor.md5sum}.zip',
-                            md5sum=executor.md5sum,
-                        )
+                            st.update(f'Downloading {name} ...')
+                            cached_zip_file = download_with_resume(
+                                executor.archive_url,
+                                cache_dir,
+                                f'{executor.uuid}-{executor.md5sum}.zip',
+                                md5sum=executor.md5sum,
+                            )
 
-                        st.update(f'Unpacking {name} ...')
-                        install_local(
-                            cached_zip_file,
-                            executor,
-                            install_deps=self.args.install_requirements,
-                        )
+                            st.update(f'Unpacking {name} ...')
+                            install_local(
+                                cached_zip_file,
+                                executor,
+                                install_deps=self.args.install_requirements,
+                            )
 
-                        pkg_path, _ = resolve_local(executor)
+                            pkg_path, _ = get_dist_path_of_executor(executor)
+
+                        usage_kind = 'source'
                         return f'{pkg_path / "config.yml"}'
                 else:
                     raise ValueError(f'{self.args.uri} is not a valid scheme')
         except KeyboardInterrupt:
-            usage = None
+            executor_name = None
         except Exception as e:
             self.logger.error(f'Error while pulling {self.args.uri}: \n{e!r}')
-            usage = None
+            executor_name = None
             raise e
         finally:
             # delete downloaded zip package if existed
             if cached_zip_file is not None:
                 cached_zip_file.unlink()
 
-            if not self.args.no_usage and usage:
-                self._get_prettyprint_usage(console, usage)
+            if not self.args.no_usage and executor_name:
+                self._get_prettyprint_usage(console, executor_name, usage_kind)

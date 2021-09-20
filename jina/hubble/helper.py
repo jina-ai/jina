@@ -264,6 +264,8 @@ def disk_cache_offline(
 ):
     """
     Decorator which caches a function in disk and uses cache when a urllib.error.URLError exception is raised
+    If the function was called with a kwarg force=True, then this decorator will always attempt to call it, otherwise,
+    will always default to local cache.
 
     :param cache_file: the cache file
     :param message: the warning message shown when defaulting to cache. Use "{func_name}" if you want to print
@@ -278,6 +280,9 @@ def disk_cache_offline(
             call_hash = f'{func.__name__}({", ".join(map(str, args))})'
             with shelve.open(cache_file) as cache_db:
                 try:
+                    if call_hash in cache_db and not kwargs.get('force', False):
+                        return cache_db[call_hash]
+
                     result = func(*args, **kwargs)
                     cache_db[call_hash] = result
                 except urllib.error.URLError:

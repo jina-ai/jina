@@ -105,6 +105,8 @@ ac_table = {
             '--pea-id',
             '--pea-role',
             '--noblock-on-start',
+            '--install-requirements',
+            '--force',
         ],
         'flow': [
             '--help',
@@ -194,14 +196,14 @@ ac_table = {
         'hub push': [
             '--help',
             '--no-usage',
-            '--docker-file',
+            '--dockerfile',
             '--tag',
             '--force',
             '--secret',
             '--public',
             '--private',
         ],
-        'hub pull': ['--help', '--no-usage', '--install-requirements'],
+        'hub pull': ['--help', '--no-usage', '--install-requirements', '--force'],
         'hub': ['--help', 'new', 'push', 'pull'],
         'help': ['--help'],
         'pea': [
@@ -263,6 +265,8 @@ ac_table = {
             '--pea-id',
             '--pea-role',
             '--noblock-on-start',
+            '--install-requirements',
+            '--force',
         ],
         'pod': [
             '--help',
@@ -324,6 +328,7 @@ ac_table = {
             '--pea-role',
             '--noblock-on-start',
             '--install-requirements',
+            '--force',
             '--uses-before',
             '--uses-after',
             '--parallel',

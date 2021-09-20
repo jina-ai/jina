@@ -63,7 +63,12 @@ class AsyncPeaClient(AsyncBaseClient):
                 )
                 return True, response_json
             elif response.status == HTTPStatus.UNPROCESSABLE_ENTITY:
-                error_msg = f'validation error in the payload: {response_json["detail"][0]["msg"]}'
+                field_msg = (
+                    f' for field {response_json["detail"][0]["loc"][1]}'
+                    if 'loc' in response_json["detail"][0]
+                    else ''
+                )
+                error_msg = f'validation error in the payload: {response_json["detail"][0]["msg"]}{field_msg}'
                 self._logger.error(error_msg)
                 return False, error_msg
             else:

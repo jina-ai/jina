@@ -3,8 +3,7 @@
 # Compound Executors
 
 A "Compound" Executor is a special pattern of composing Executor. It glues multiple Executors into one Executor class.
-This allows developers to leverage the feature of multiple Executors while keeping their original implementations *
-as-is*.
+This allows developers to leverage the feature of multiple Executors while keeping their original implementations *as-is*.
 
 Here are some examples in practice:
 

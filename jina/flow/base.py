@@ -481,6 +481,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         env: Optional[dict] = None,
         expose_public: Optional[bool] = False,
         external: Optional[bool] = False,
+        force: Optional[bool] = False,
         gpus: Optional[str] = None,
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
@@ -542,6 +543,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param env: The map of environment variables that are available inside runtime
         :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas
         :param external: The Pod will be considered an external Pod that has been started independently from the Flow.This Pod will not be context managed by the Flow.
+        :param force: If set, always pull the latest Hub Executor bundle even it exists on local
         :param gpus: This argument allows dockerized Jina executor discover local gpu devices.
 
               Note,
@@ -554,7 +556,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param host_in: The host address for input, by default it is 0.0.0.0
         :param host_out: The host address for output, by default it is 0.0.0.0
         :param hosts_in_connect: The host address for input, by default it is 0.0.0.0
-        :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle
+        :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
         :param log_config: The YAML config of the logger used in this object.
         :param memory_hwm: The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. -1 means no restriction
         :param name: The name of this object.
@@ -652,6 +654,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     @allowed_levels([FlowBuildLevel.EMPTY])
     def add(
         self,
+        *,
         needs: Optional[Union[str, Tuple[str], List[str]]] = None,
         copy_flow: bool = True,
         pod_role: 'PodRoleType' = PodRoleType.POD,
@@ -669,7 +672,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param kwargs: other keyword-value arguments that the Pod CLI supports
         :return: a (new) Flow object with modification
         """
-
         op_flow = copy.deepcopy(self) if copy_flow else self
 
         # pod naming logic
@@ -722,6 +724,15 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         args = ArgNamespace.kwargs2namespace(
             kwargs, parser, True, fallback_parsers=FALLBACK_PARSERS
         )
+
+        # grpc data runtime does not support sharding at the moment
+        if (
+            args.grpc_data_requests
+            and kwargs.get('shards') is not None
+            and kwargs.get('shards', 1) > 1
+            and self.args.infrastructure != InfrastructureType.K8S
+        ):
+            raise NotImplementedError("GRPC data runtime does not support sharding")
 
         if args.grpc_data_requests and args.runtime_cls == 'ZEDRuntime':
             args.runtime_cls = 'GRPCDataRuntime'
@@ -1107,17 +1118,20 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     k,
                     v,
                 ),
+                daemon=True,
             )
             threads.append(t)
             t.start()
 
         # kick off spinner thread
-        t_m = threading.Thread(target=_polling_status)
+        t_m = threading.Thread(target=_polling_status, daemon=True)
         t_m.start()
 
         # kick off ip getter thread
         addr_table = []
-        t_ip = threading.Thread(target=self._get_address_table, args=(addr_table,))
+        t_ip = threading.Thread(
+            target=self._get_address_table, args=(addr_table,), daemon=True
+        )
         t_ip.start()
 
         for t in threads:
@@ -1133,13 +1147,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             self.close()
             raise RuntimeFailToStart
         else:
+
             if self.args.infrastructure == InfrastructureType.K8S:
-                self.logger.info('🎉 Kubernetes Flow is ready to use!')
+                success_msg = colored('🎉 Kubernetes Flow is ready to use!', 'green')
             else:
-                self.logger.info('🎉 Flow is ready to use!')
+                success_msg = colored('🎉 Flow is ready to use!', 'green')
 
             if addr_table:
-                self.logger.info('\n' + '\n'.join(addr_table))
+                self.logger.info(success_msg + '\n' + '\n'.join(addr_table))
             self.logger.debug(
                 f'{self.num_pods} Pods (i.e. {self.num_peas} Peas) are running in this Flow'
             )

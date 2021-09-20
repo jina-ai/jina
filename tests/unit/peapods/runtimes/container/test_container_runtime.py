@@ -232,10 +232,9 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
             pass
 
         def run(self, *args, **kwargs):
-            mock_kwargs = {k: kwargs[k] for k in ['hello', 'ports', 'environment']}
+            mock_kwargs = {k: kwargs[k] for k in ['hello', 'environment']}
             mock(**mock_kwargs)
             assert 'ports' in kwargs
-            assert kwargs['ports'] is None
             assert 'environment' in kwargs
             assert kwargs['environment'] == ['VAR1=BAR', 'VAR2=FOO']
             assert 'hello' in kwargs
@@ -275,7 +274,7 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
         ]
     )
     _ = ContainerRuntime(args, ctrl_addr='', ready_event=multiprocessing.Event())
-    expected_args = {'hello': 0, 'ports': None, 'environment': ['VAR1=BAR', 'VAR2=FOO']}
+    expected_args = {'hello': 0, 'environment': ['VAR1=BAR', 'VAR2=FOO']}
     mock.assert_called_with(**expected_args)
 
 
