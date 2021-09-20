@@ -1111,11 +1111,14 @@
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">tag</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">secret</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HubExecutor</span><span class="p">:</span>
         <span class="sd">"""Fetch the executor meta info from Jina Hub.</span>
 <span class="sd">        :param name: the UUID/Name of the executor</span>
 <span class="sd">        :param tag: the version tag of the executor</span>
 <span class="sd">        :param secret: the access secret of the executor</span>
+<span class="sd">        :param force: if set to True, access to fetch_meta will always pull latest Executor metas, otherwise, default</span>
+<span class="sd">            to local cache</span>
 <span class="sd">        :return: meta of executor</span>
 <span class="sd">        """</span>
 
@@ -1223,7 +1226,9 @@
                 <span class="n">scheme</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">parse_hub_uri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
 
                 <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Fetching [bold]</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">[/bold] from Jina Hub ...'</span><span class="p">)</span>
-                <span class="n">executor</span> <span class="o">=</span> <span class="n">HubIO</span><span class="o">.</span><span class="n">fetch_meta</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="n">secret</span><span class="p">)</span>
+                <span class="n">executor</span> <span class="o">=</span> <span class="n">HubIO</span><span class="o">.</span><span class="n">fetch_meta</span><span class="p">(</span>
+                    <span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="n">secret</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="n">need_pull</span>
+                <span class="p">)</span>
                 <span class="n">presented_id</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">executor</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">,</span> <span class="n">executor</span><span class="o">.</span><span class="n">uuid</span><span class="p">)</span>
                 <span class="n">executor_name</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">presented_id</span><span class="si">}</span><span class="s1">'</span>

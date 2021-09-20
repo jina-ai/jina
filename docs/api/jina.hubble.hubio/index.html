@@ -642,7 +642,7 @@ Examples:</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.hubble.hubio.HubIO.fetch_meta">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">fetch_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secret</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubio/#HubIO.fetch_meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubio.HubIO.fetch_meta" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">fetch_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secret</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubio/#HubIO.fetch_meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubio.HubIO.fetch_meta" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetch the executor meta info from Jina Hub.
 :type name: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
 :param name: the UUID/Name of the executor
@@ -650,8 +650,19 @@ Examples:</p>
 :param tag: the version tag of the executor
 :type secret: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
 :param secret: the access secret of the executor
-:rtype: <a class="reference internal" href="../jina.hubble/#jina.hubble.HubExecutor" title="jina.hubble.HubExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">HubExecutor</span></code></a>
-:return: meta of executor</p>
+:type force: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:param force: if set to True, access to fetch_meta will always pull latest Executor metas, otherwise, default</p>
+<blockquote>
+<div><p>to local cache</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../jina.hubble/#jina.hubble.HubExecutor" title="jina.hubble.HubExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">HubExecutor</span></code></a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>meta of executor</p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.hubble.hubio.HubIO.pull">

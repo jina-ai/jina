@@ -840,6 +840,8 @@
 <span class="p">):</span>
     <span class="sd">"""</span>
 <span class="sd">    Decorator which caches a function in disk and uses cache when a urllib.error.URLError exception is raised</span>
+<span class="sd">    If the function was called with a kwarg force=True, then this decorator will always attempt to call it, otherwise,</span>
+<span class="sd">    will always default to local cache.</span>
 
 <span class="sd">    :param cache_file: the cache file</span>
 <span class="sd">    :param message: the warning message shown when defaulting to cache. Use "{func_name}" if you want to print</span>
@@ -854,6 +856,9 @@
             <span class="n">call_hash</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">(</span><span class="si">{</span><span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">args</span><span class="p">))</span><span class="si">}</span><span class="s1">)'</span>
             <span class="k">with</span> <span class="n">shelve</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">cache_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">cache_db</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">call_hash</span> <span class="ow">in</span> <span class="n">cache_db</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'force'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="n">cache_db</span><span class="p">[</span><span class="n">call_hash</span><span class="p">]</span>
+
                     <span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                     <span class="n">cache_db</span><span class="p">[</span><span class="n">call_hash</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
                 <span class="k">except</span> <span class="n">urllib</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">URLError</span><span class="p">:</span>
