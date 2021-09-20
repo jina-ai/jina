@@ -519,14 +519,14 @@ def test_blobs_setter_dma():
         np.testing.assert_almost_equal(x, doc.blob)
 
 
-def test_tags_getter_da(tmpdir):
+def test_tags_getter_dam(tmpdir):
     dam = DocumentArrayMemmap(tmpdir)
     dam.extend([Document(tags={'a': 2, 'c': 'd'}) for _ in range(100)])
     assert len(dam.tags) == 100
     assert dam.tags == dam.get_attributes('tags')
 
 
-def test_tags_setter_da(tmpdir):
+def test_tags_setter_dam(tmpdir):
     dam = DocumentArrayMemmap(tmpdir)
     tags = [{'a': 2, 'c': 'd'} for _ in range(100)]
     dam.extend([Document() for _ in range(100)])
@@ -546,14 +546,14 @@ def test_setter_wrong_len(tmpdir):
         dam.tags = tags
 
 
-def test_texts_getter_da(tmpdir):
+def test_texts_getter_dam(tmpdir):
     dam = DocumentArrayMemmap(tmpdir)
     dam.extend([Document(text='hello') for _ in range(100)])
     assert len(dam.texts) == 100
     assert dam.texts == dam.get_attributes('text')
 
 
-def test_texts_setter_da(tmpdir):
+def test_texts_setter_dam(tmpdir):
     dam = DocumentArrayMemmap(tmpdir)
     dam.extend([Document() for _ in range(100)])
     texts = ['text' for _ in range(100)]
