@@ -263,7 +263,7 @@ def disk_cache_offline(
     message: str = 'Calling {func_name} failed, using cached results',
 ):
     """
-    Decorator which caches a function in disk and uses cache when a urllib.error.URLError exception is raised
+    Decorator which caches a class method in disk and uses cache when a urllib.error.URLError exception is raised
 
     :param cache_file: the cache file
     :param message: the warning message shown when defaulting to cache. Use "{func_name}" if you want to print
@@ -274,11 +274,14 @@ def disk_cache_offline(
 
     def decorator(func):
         @wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(self, *args, **kwargs):
             call_hash = f'{func.__name__}({", ".join(map(str, args))})'
             with shelve.open(cache_file) as cache_db:
                 try:
-                    result = func(*args, **kwargs)
+                    if call_hash in cache_db and not self.args.force:
+                        return cache_db[call_hash]
+
+                    result = func(self, *args, **kwargs)
                     cache_db[call_hash] = result
                 except urllib.error.URLError:
                     if call_hash in cache_db:
