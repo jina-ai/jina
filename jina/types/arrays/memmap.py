@@ -578,7 +578,7 @@ class DocumentArrayMemmap(
 
         :return: List of ``text`` attributes for all Documents
         """
-        return self.get_attributes('texts')
+        return self.get_attributes('text')
 
     @DocumentArrayGetAttrMixin.blobs.getter
     def blobs(self) -> np.ndarray:

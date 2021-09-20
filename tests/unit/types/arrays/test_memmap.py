@@ -560,7 +560,9 @@ def test_texts_getter_dam(tmpdir):
     dam = DocumentArrayMemmap(tmpdir)
     dam.extend([Document(text='hello') for _ in range(100)])
     assert len(dam.texts) == 100
-    assert dam.texts == dam.get_attributes('text')
+    t1 = dam.texts
+    t2 = dam.get_attributes('text')
+    assert t1 == t2
 
 
 def test_texts_setter_dam(tmpdir):
