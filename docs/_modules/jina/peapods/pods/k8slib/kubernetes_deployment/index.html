@@ -604,6 +604,7 @@
     <span class="n">pull_policy</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">init_container</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">custom_resource_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">port_expose</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">"""Deploy service on Kubernetes.</span>
 
@@ -618,11 +619,14 @@
 <span class="sd">    :param init_container: additional arguments used for the init container</span>
 <span class="sd">    :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.</span>
 <span class="sd">        Defaults to the standard location jina.resources if not specified.</span>
+<span class="sd">    :param port_expose: port which will be exposed by the deployed containers</span>
 <span class="sd">    :return: dns name of the created service</span>
 <span class="sd">    """</span>
 
-    <span class="c1"># small hack - we can always assume the ports are the same for all executors since they run on different k8s pods</span>
-    <span class="n">port_expose</span> <span class="o">=</span> <span class="mi">8080</span>
+    <span class="c1"># we can always assume the ports are the same for all executors since they run on different k8s pods</span>
+    <span class="c1"># port expose can be defined by the user</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">port_expose</span><span class="p">:</span>
+        <span class="n">port_expose</span> <span class="o">=</span> <span class="mi">8080</span>
     <span class="n">port_in</span> <span class="o">=</span> <span class="mi">8081</span>
     <span class="n">port_out</span> <span class="o">=</span> <span class="mi">8082</span>
     <span class="n">port_ctrl</span> <span class="o">=</span> <span class="mi">8083</span>
@@ -703,7 +707,6 @@
         <span class="s1">'port_in'</span><span class="p">,</span>
         <span class="s1">'port_out'</span><span class="p">,</span>
         <span class="s1">'port_ctrl'</span><span class="p">,</span>
-        <span class="s1">'port_expose'</span><span class="p">,</span>
         <span class="s1">'k8s_init_container_command'</span><span class="p">,</span>
         <span class="s1">'k8s_uses_init'</span><span class="p">,</span>
         <span class="s1">'k8s_mount_path'</span><span class="p">,</span>
@@ -724,7 +727,6 @@
                 <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'</span><span class="se">\'</span><span class="s1">'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'"'</span><span class="p">,</span> <span class="s1">'</span><span class="se">\\</span><span class="s1">"'</span><span class="p">)</span>
                 <span class="n">cli_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'"--</span><span class="si">{</span><span class="n">cli_attribute</span><span class="si">}</span><span class="s1">", "</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">"'</span><span class="p">)</span>
 
-    <span class="n">cli_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'"--port-expose", "8080"'</span><span class="p">)</span>
     <span class="n">cli_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'"--port-in", "8081"'</span><span class="p">)</span>
     <span class="n">cli_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'"--port-out", "8082"'</span><span class="p">)</span>
     <span class="n">cli_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'"--port-ctrl", "8083"'</span><span class="p">)</span>
