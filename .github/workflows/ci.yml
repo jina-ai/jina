@@ -253,7 +253,7 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Prepare enviroment
+      - name: Prepare environment
         run: |
           docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
