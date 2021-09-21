@@ -159,20 +159,23 @@ def get_k8s_pod(
     uses_after=None,
     port_expose=None,
 ):
-    if parallel is None:
-        parallel = '1'
-    if replicas is None:
-        replicas = '1'
-    parameter_list = [
-        '--name',
-        pod_name,
-        '--k8s-namespace',
-        namespace,
-        '--parallel',
-        parallel,
-        '--replicas',
-        replicas,
-    ]
+
+    parameter_list = ['--name', pod_name, '--k8s-namespace', namespace]
+    if parallel:
+        parameter_list.extend(
+            [
+                '--parallel',
+                str(parallel),
+            ]
+        )
+    if replicas:
+        parameter_list.extend(
+            [
+                '--replicas',
+                str(replicas),
+            ]
+        )
+
     if port_expose:
         parameter_list.extend(
             [
