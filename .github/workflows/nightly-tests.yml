@@ -5,9 +5,9 @@ on:
     inputs:
       branch:
         default: master
-  pull_request:             # this will be replaced with a cronjob
   schedule:
     - cron: "0 6 * * 1-5"   # runs at 6AM UTC (mon-fri)
+  # pull_request:             # uncomment this if you want to run nightly tests in your PR
 
 jobs:
   prep-testbed:

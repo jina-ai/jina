@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pytest
 
-from jina import Document
+from jina import Document, __windows__
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -60,6 +60,9 @@ def test_convert_blob_to_uri(arr_size, mode):
     assert doc.mime_type == 'image/png'
 
 
+@pytest.mark.xfail(
+    condition=__windows__, reason='x-python is not detected on windows CI'
+)
 @pytest.mark.parametrize(
     'uri, mimetype',
     [

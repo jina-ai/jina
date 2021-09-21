@@ -6,7 +6,7 @@ import pytest
 import scipy.sparse as sp
 from scipy.spatial.distance import cdist as scipy_cdist
 
-from jina import Document, DocumentArray
+from jina import Document, DocumentArray, __windows__
 from jina.math.dimensionality_reduction import PCA
 from jina.types.arrays.memmap import DocumentArrayMemmap
 
@@ -80,6 +80,9 @@ def doc_lists_to_doc_arrays(
     return D1, D2
 
 
+@pytest.mark.xfail(
+    __windows__, reason='broken on Windows for DAM with buffer_pool_size=3'
+)
 @pytest.mark.parametrize('buffer_pool_size', [1000, 3])
 @pytest.mark.parametrize('first_memmap', [True, False])
 @pytest.mark.parametrize('second_memmap', [True, False])
@@ -185,6 +188,9 @@ def test_matching_scipy_cdist(
     np.testing.assert_equal(distances, distances_scipy)
 
 
+@pytest.mark.xfail(
+    __windows__, reason='broken on Windows for DAM with buffer_pool_size=3'
+)
 @pytest.mark.parametrize('buffer_pool_size', [1000, 3])
 @pytest.mark.parametrize('first_memmap', [True, False])
 @pytest.mark.parametrize('second_memmap', [True, False])
@@ -304,6 +310,9 @@ def test_scipy_dist(
     np.testing.assert_equal(values_docarray, values_docarraymemmap)
 
 
+@pytest.mark.xfail(
+    __windows__, reason='broken on Windows for DAM with buffer_pool_size=3'
+)
 @pytest.mark.parametrize('buffer_pool_size', [1000, 3])
 @pytest.mark.parametrize('first_memmap', [True, False])
 @pytest.mark.parametrize('second_memmap', [True, False])

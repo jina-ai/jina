@@ -154,6 +154,10 @@ We haven't added suppoort to JinaD on Windows. If you can make it work, feel fre
 
 Since Windows doesn't support `resource` module, memory watermark checks are disabled by default.
 
+### Limited support for `DocumentArrayMemmap`
+
+Even though support for [DocumentArrayMemmap](../../fundamentals/document/documentarraymemmap-api) is added, it is error prone. Please proceed with caution.
+
 ### UnicodeEncodeError while using jina cli
 
 ```python

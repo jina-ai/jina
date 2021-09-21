@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from jina import Flow, __windows__
+from jina import Flow
 from jina.parsers.helloworld import set_hw_parser
 
 if __name__ == '__main__':
