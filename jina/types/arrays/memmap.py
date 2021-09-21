@@ -24,6 +24,7 @@ from .neural_ops import DocumentArrayNeuralOpsMixin
 from .search_ops import DocumentArraySearchOpsMixin
 from .traversable import TraversableSequence
 from ..document import Document
+from ..struct import StructView
 from ...logging.predefined import default_logger
 
 
@@ -563,6 +564,22 @@ class DocumentArrayMemmap(
         for d, x in zip(self, emb):
             d.embedding = x
 
+    @DocumentArrayGetAttrMixin.tags.getter
+    def tags(self) -> Tuple[StructView]:
+        """Get the tags attribute of all Documents
+
+        :return: List of ``tags`` attributes for all Documents
+        """
+        return self.get_attributes('tags')
+
+    @DocumentArrayGetAttrMixin.texts.getter
+    def texts(self) -> Tuple[str]:
+        """Get the text attribute of all Documents
+
+        :return: List of ``text`` attributes for all Documents
+        """
+        return self.get_attributes('text')
+
     @DocumentArrayGetAttrMixin.blobs.getter
     def blobs(self) -> np.ndarray:
         """Return a `np.ndarray` stacking all the `blob` attributes.
@@ -585,3 +602,7 @@ class DocumentArrayMemmap(
     def _invalidate_embeddings_memmap(self):
         self._embeddings_memmap = None
         self._embeddings_shape = None
+
+    @staticmethod
+    def _flatten(sequence):
+        return itertools.chain.from_iterable(sequence)

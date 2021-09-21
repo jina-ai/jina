@@ -186,7 +186,10 @@ class ContainerStore(BaseStore):
             )
 
             container = Dockerizer.run(
-                workspace_id=workspace_id, container_id=id, command=command, ports=dockerports
+                workspace_id=workspace_id,
+                container_id=id,
+                command=command,
+                ports=dockerports,
             )
             if not await self.ready(uri):
                 raise PartialDaemonConnectionException(
@@ -211,7 +214,7 @@ class ContainerStore(BaseStore):
                     e.message += container_logs
             if id in Dockerizer.containers:
                 self._logger.info(f'removing container {id_cleaner(container.id)}')
-                # Dockerizer.rm_container(container.id)
+                Dockerizer.rm_container(container.id)
             raise
         else:
             self[id] = ContainerItem(
