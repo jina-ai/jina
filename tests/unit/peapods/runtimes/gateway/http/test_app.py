@@ -1,3 +1,4 @@
+import os
 import ssl
 from tempfile import NamedTemporaryFile
 
@@ -58,7 +59,8 @@ def test_tag_update(grpc_data_requests):
 @pytest.fixture
 def cert_pem():
     """This is the cert entry of a self-signed local cert"""
-    tmp = NamedTemporaryFile('w')
+    # avoid PermissionError on Windows by deleting later
+    tmp = NamedTemporaryFile('w', delete=False)
     tmp.write(
         """-----BEGIN CERTIFICATE-----
 MIIFazCCA1OgAwIBAgIUE663J9NKJE5sTDXei0ScmKE1TskwDQYJKoZIhvcNAQEL
@@ -93,14 +95,16 @@ adVnffnjz+hTFEjwXL48iGRPM142AGNOfXNp8tvPZOYjkc2prtIhGlvOu+De8tg=
 -----END CERTIFICATE-----"""
     )
     tmp.flush()
-    yield tmp.name
     tmp.close()
+    yield tmp.name
+    os.unlink(tmp.name)
 
 
 @pytest.fixture
 def key_pem():
     """This is the key entry of a self-signed local cert"""
-    tmp = NamedTemporaryFile('w')
+    # avoid PermissionError on Windows by deleting later
+    tmp = NamedTemporaryFile('w', delete=False)
     tmp.write(
         """-----BEGIN ENCRYPTED PRIVATE KEY-----
 MIIJnDBOBgkqhkiG9w0BBQ0wQTApBgkqhkiG9w0BBQwwHAQIQZi3yv841tUCAggA
@@ -158,8 +162,9 @@ xZ36Vrgc4hfaUiifsIiDwA==
 -----END ENCRYPTED PRIVATE KEY-----"""
     )
     tmp.flush()
-    yield tmp.name
     tmp.close()
+    yield tmp.name
+    os.unlink(tmp.name)
 
 
 @pytest.mark.parametrize('runtime_cls', [HTTPRuntime, WebSocketRuntime])
