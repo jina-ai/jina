@@ -606,3 +606,7 @@ class DocumentArrayMemmap(
     @staticmethod
     def _flatten(sequence):
         return itertools.chain.from_iterable(sequence)
+
+    @property
+    def path(self):
+        return self._path
