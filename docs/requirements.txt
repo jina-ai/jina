@@ -1,7 +1,7 @@
 sphinx
 sphinx-argparse==0.3.1
 sphinxcontrib-apidoc==0.3.0
-sphinx-autodoc-typehints==1.20.0
+sphinx-autodoc-typehints==1.12.0
 sphinx_markdown_tables==0.0.15
 sphinx_copybutton==0.4.0
 sphinx-notfound-page==0.7.1
