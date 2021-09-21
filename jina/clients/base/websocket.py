@@ -39,10 +39,12 @@ class WebSocketBaseClient(BaseClient):
             # setting `max_size` as None to avoid connection closure due to size of message
             # https://websockets.readthedocs.io/en/stable/api.html?highlight=1009#module-websockets.protocol
 
+            proto = 'wss' if self.args.https else 'ws'
             async with websockets.connect(
-                f'ws://{self.args.host}:{self.args.port}/',
+                f'{proto}://{self.args.host}:{self.args.port}/',
                 max_size=None,
                 ping_interval=None,
+                ssl=self.args.https or None,
             ) as websocket:
                 # To enable websockets debug logs
                 # https://websockets.readthedocs.io/en/stable/cheatsheet.html#debugging

@@ -22,12 +22,13 @@ class DocumentArrayNeuralOpsMixin:
         ] = 'cosine',
         limit: Optional[int] = 20,
         normalization: Optional[Tuple[int, int]] = None,
-        use_scipy: bool = False,
         metric_name: Optional[str] = None,
         batch_size: Optional[int] = None,
-        exclude_self: bool = False,
         traversal_ldarray: Optional[Sequence[str]] = None,
         traversal_rdarray: Optional[Sequence[str]] = None,
+        use_scipy: bool = False,
+        exclude_self: bool = False,
+        is_sparse: bool = False,
     ) -> None:
         """Compute embedding based nearest neighbour in `another` for each Document in `self`,
         and store results in `matches`.
@@ -47,26 +48,37 @@ class DocumentArrayNeuralOpsMixin:
         :param normalization: a tuple [a, b] to be used with min-max normalization,
                                 the min distance will be rescaled to `a`, the max distance will be rescaled to `b`
                                 all values will be rescaled into range `[a, b]`.
-        :param use_scipy: use Scipy as the computation backend
         :param metric_name: if provided, then match result will be marked with this string.
         :param batch_size: if provided, then `darray` is loaded in chunks of, at most, batch_size elements. This option
                            will be slower but more memory efficient. Specialy indicated if `darray` is a big
                            DocumentArrayMemmap.
-        :param exclude_self: if provided, Documents in ``darray`` with same ``id`` as the left-hand values will not be
-                        considered as matches.
         :param traversal_ldarray: if set, then matching is applied along the `traversal_path` of the
                 left-hand ``DocumentArray``.
         :param traversal_rdarray: if set, then matching is applied along the `traversal_path` of the
                 right-hand ``DocumentArray``.
+        :param use_scipy: if set, use ``scipy`` as the computation backend
+        :param exclude_self: if set, Documents in ``darray`` with same ``id`` as the left-hand values will not be
+                        considered as matches.
+        :param is_sparse: if set, the embeddings of left & right DocumentArray are considered as sparse NdArray
         """
 
         lhv = self
         if traversal_ldarray:
             lhv = self.traverse_flat(traversal_ldarray)
 
+            from .document import DocumentArray
+
+            if not isinstance(lhv, DocumentArray):
+                lhv = DocumentArray(lhv)
+
         rhv = darray
         if traversal_rdarray:
             rhv = darray.traverse_flat(traversal_rdarray)
+
+            from .document import DocumentArray
+
+            if not isinstance(rhv, DocumentArray):
+                rhv = DocumentArray(rhv)
 
         if not (lhv and rhv):
             return
@@ -91,7 +103,9 @@ class DocumentArrayNeuralOpsMixin:
                 rhv, cdist, limit, normalization, metric_name, batch_size
             )
         else:
-            dist, idx = lhv._match(rhv, cdist, limit, normalization, metric_name)
+            dist, idx = lhv._match(
+                rhv, cdist, limit, normalization, metric_name, is_sparse
+            )
 
         for _q, _ids, _dists in zip(lhv, idx, dist):
             _q.matches.clear()
@@ -110,7 +124,7 @@ class DocumentArrayNeuralOpsMixin:
                     if num_matches >= limit:
                         break
 
-    def _match(self, darray, cdist, limit, normalization, metric_name):
+    def _match(self, darray, cdist, limit, normalization, metric_name, is_sparse):
         """
         Computes the matches between self and `darray` loading `darray` into main memory.
         :param darray: the other DocumentArray or DocumentArrayMemmap to match against
@@ -121,25 +135,19 @@ class DocumentArrayNeuralOpsMixin:
                                 the min distance will be rescaled to `a`, the max distance will be rescaled to `b`
                                 all values will be rescaled into range `[a, b]`.
         :param metric_name: if provided, then match result will be marked with this string.
+        :param is_sparse: if provided, then match is computed on sparse embeddings
         :return: distances and indices
         """
-        is_sparse = False
-
-        if isinstance(darray[0].embedding, np.ndarray):
-            x_mat = self.embeddings
-            y_mat = darray.embeddings
-
-        else:
-            import scipy.sparse as sp
-
-            if sp.issparse(darray[0].embedding):
-                x_mat = sp.vstack(self.get_attributes('embedding'))
-                y_mat = sp.vstack(darray.get_attributes('embedding'))
-                is_sparse = True
 
         if is_sparse:
-            dists = cdist(x_mat, y_mat, metric_name, is_sparse=is_sparse)
+            import scipy.sparse as sp
+
+            x_mat = sp.vstack(self.get_attributes('embedding'))
+            y_mat = sp.vstack(darray.get_attributes('embedding'))
+            dists = cdist(x_mat, y_mat, metric_name, is_sparse=True)
         else:
+            x_mat = self.embeddings
+            y_mat = darray.embeddings
             dists = cdist(x_mat, y_mat, metric_name)
 
         dist, idx = top_k(dists, min(limit, len(darray)), descending=False)

@@ -85,6 +85,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         *,
         asyncio: Optional[bool] = False,
         host: Optional[str] = '0.0.0.0',
+        https: Optional[bool] = False,
         port: Optional[int] = None,
         protocol: Optional[str] = 'GRPC',
         proxy: Optional[bool] = False,
@@ -94,6 +95,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
         :param host: The host address of the runtime, by default it is 0.0.0.0.
+        :param https: If set, connect to gateway using https
         :param port: The port of the Gateway, which the client should connect to.
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
@@ -160,6 +162,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         uses_metas: Optional[dict] = None,
         uses_requests: Optional[dict] = None,
         uses_with: Optional[dict] = None,
+        uvicorn_kwargs: Optional[dict] = None,
         workspace: Optional[str] = None,
         zmq_identity: Optional[str] = None,
         **kwargs,
@@ -250,6 +253,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
         :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
+        :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
+
+          More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
         :param zmq_identity: The identity of a ZMQRuntime. It is used for unique socket identification towards other ZMQRuntimes.
 

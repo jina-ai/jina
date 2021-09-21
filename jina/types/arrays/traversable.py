@@ -1,8 +1,9 @@
 from abc import abstractmethod
-from typing import Iterable, Sequence, TYPE_CHECKING, Union, Optional, Generator
+from typing import Iterable, Sequence, TYPE_CHECKING, Optional, Generator
 
 if TYPE_CHECKING:
     from .document import DocumentArray
+    from ..document import Document
 
 
 def _check_traversal_path_type(tp):
@@ -78,7 +79,7 @@ class TraversableSequence:
         for p in traversal_paths:
             yield self._flatten(self._traverse(self, p))
 
-    def traverse_flat(self, traversal_paths: Sequence[str]):
+    def traverse_flat(self, traversal_paths: Sequence[str]) -> Iterable['Document']:
         """
         Returns a single flattened :class:``TraversableSequence`` with all Documents, that are reached
         via the :param:``traversal_paths``.
