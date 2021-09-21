@@ -1,4 +1,4 @@
-# Scaling Executors in kubernetes
+# Scaling Executors in Kubernetes
 
 In Jina we support two ways of scaling:
 - **Replicas** can be used with any Executor type.
@@ -52,7 +52,7 @@ index_flow = Flow().add(name='ExecutorWithShards', shards=3, polling='any')
 search_flow = Flow().add(name='ExecutorWithShards', shards=3, polling='all', uses_after='MatchMerger')
 ```
 
-### Merging search results via `uses_after`
+### Merging Search Results Via `uses_after`
 
 Each shard of a search Flow returns one set of results for each query Document.
 A merger Executor combines them afterwards.
