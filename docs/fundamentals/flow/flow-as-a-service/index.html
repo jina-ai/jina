@@ -2,7 +2,8 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="Serving Flow" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/flow-as-a-service.html" />
@@ -498,7 +499,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -596,11 +596,11 @@
                         </i>
                     </label>
                 </div>
-                <div class="tex2jax_ignore mathjax_ignore section" id="serving-flow">
+                <section class="tex2jax_ignore mathjax_ignore" id="serving-flow">
 <h1>Serving Flow<a class="headerlink" href="#serving-flow" title="Permalink to this headline">¶</a></h1>
 <p>If you come to this page, most likely you have already built some cool stuff with Jina and now want to share it to the world. This cookbook will
 guide you from basic serving for demo purpose to advanced serving in production.</p>
-<div class="section" id="minimum-working-example">
+<section id="minimum-working-example">
 <h2>Minimum working example<a class="headerlink" href="#minimum-working-example" title="Permalink to this headline">¶</a></h2>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">Server</label><div class="tab-content docutils">
@@ -621,14 +621,14 @@ guide you from basic serving for demo purpose to advanced serving in production.
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="flow-as-a-service">
+</section>
+<section id="flow-as-a-service">
 <h2>Flow-as-a-Service<a class="headerlink" href="#flow-as-a-service" title="Permalink to this headline">¶</a></h2>
 <p>A <code class="docutils literal notranslate"><span class="pre">Flow</span></code> <em>is</em> a service by nature. Though implicitly, you are already using it as a service.</p>
 <p>When you start a <code class="docutils literal notranslate"><span class="pre">Flow</span></code> and call <code class="docutils literal notranslate"><span class="pre">.post()</span></code> inside the context, a <code class="docutils literal notranslate"><span class="pre">jina.Client</span></code> object is created and used for
 communication.</p>
-<div class="figure align-center">
-<img alt="../../../_images/implict-vs-explicit-service.svg" src="../../../_images/implict-vs-explicit-service.svg"/></div>
+<figure class="align-center">
+<img alt="../../../_images/implict-vs-explicit-service.svg" src="../../../_images/implict-vs-explicit-service.svg"/></figure>
 <p>Many times we need to use <code class="docutils literal notranslate"><span class="pre">Flow</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">Client</span></code> in a more explicit way, often due to one of the following reasons:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Flow</span></code> and <code class="docutils literal notranslate"><span class="pre">Client</span></code> are on different machines: one on GPU, one on CPU;</p></li>
@@ -639,8 +639,8 @@ communication.</p>
 </ul>
 <p>Before this cookbook, you are mostly using Flow as an implicit service. In the sequel, we will show you how to serve
 Flow in an explicit C/S style.</p>
-</div>
-<div class="section" id="supported-communication-protocols">
+</section>
+<section id="supported-communication-protocols">
 <h2>Supported communication protocols<a class="headerlink" href="#supported-communication-protocols" title="Permalink to this headline">¶</a></h2>
 <p>Jina supports <code class="docutils literal notranslate"><span class="pre">grpc</span></code>, <code class="docutils literal notranslate"><span class="pre">websocket</span></code>, <code class="docutils literal notranslate"><span class="pre">http</span></code> three communication protocols between <code class="docutils literal notranslate"><span class="pre">Flow</span></code> and <code class="docutils literal notranslate"><span class="pre">Client</span></code>.</p>
 <div class="table-wrapper"><table border="1" class="docutils">
@@ -674,9 +674,9 @@ Flow in an explicit C/S style.</p>
 </tbody>
 </table></div>
 <p>The protocol is controlled by <code class="docutils literal notranslate"><span class="pre">protocol=</span></code> argument in <code class="docutils literal notranslate"><span class="pre">Flow</span></code>/<code class="docutils literal notranslate"><span class="pre">Client</span></code>’s constructor.</p>
-<div class="figure align-center">
-<img alt="../../../_images/client-server.svg" src="../../../_images/client-server.svg"/></div>
-<div class="section" id="via-grpc">
+<figure class="align-center">
+<img alt="../../../_images/client-server.svg" src="../../../_images/client-server.svg"/></figure>
+<section id="via-grpc">
 <h3>via gRPC<a class="headerlink" href="#via-grpc" title="Permalink to this headline">¶</a></h3>
 <p>On the server-side, create an empty Flow and use <code class="docutils literal notranslate"><span class="pre">.block</span></code> to prevent the process exiting.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -705,8 +705,8 @@ Flow in an explicit C/S style.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">GRPCClient@14744[S]:connected to the gateway at 0.0.0.0:12345!</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="via-websocket">
+</section>
+<section id="via-websocket">
 <h3>via WebSocket<a class="headerlink" href="#via-websocket" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
@@ -733,8 +733,8 @@ Flow in an explicit C/S style.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">WebSocketClient@14574[S]:connected to the gateway at 0.0.0.0:12345!</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="via-http">
+</section>
+<section id="via-http">
 <h3>via HTTP<a class="headerlink" href="#via-http" title="Permalink to this headline">¶</a></h3>
 <p>To enable a Flow to receive from HTTP requests, you can add <code class="docutils literal notranslate"><span class="pre">protocol='http'</span></code> in the Flow constructor.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -755,8 +755,8 @@ Flow in an explicit C/S style.</p>
 <span class="go">	📚 Redoc:		http://localhost:12345/redoc</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="switch-between-communication-protocols">
+</section>
+<section id="switch-between-communication-protocols">
 <h3>Switch between communication protocols<a class="headerlink" href="#switch-between-communication-protocols" title="Permalink to this headline">¶</a></h3>
 <p>You can switch to other protocol also via <code class="docutils literal notranslate"><span class="pre">.protocol</span></code> property setter. This setter works even in Flow runtime.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Document</span>
@@ -769,11 +769,11 @@ Flow in an explicit C/S style.</p>
     <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="flow-with-http-protocol">
+</section>
+</section>
+<section id="flow-with-http-protocol">
 <h2>Flow with HTTP protocol<a class="headerlink" href="#flow-with-http-protocol" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="enable-cross-origin-resources-sharing-cors">
+<section id="enable-cross-origin-resources-sharing-cors">
 <h3>Enable cross-origin-resources-sharing (CORS)<a class="headerlink" href="#enable-cross-origin-resources-sharing-cors" title="Permalink to this headline">¶</a></h3>
 <p>CORS is by default disabled for security. That means you can not access the service from a webpage with different domain. To override this, simply do:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -781,15 +781,15 @@ Flow in an explicit C/S style.</p>
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">cors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'http'</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="use-swagger-ui-to-send-http-request">
+</section>
+<section id="use-swagger-ui-to-send-http-request">
 <h3>Use swagger UI to send HTTP request<a class="headerlink" href="#use-swagger-ui-to-send-http-request" title="Permalink to this headline">¶</a></h3>
 <p>You can navigate to the Swagger docs UI via <code class="docutils literal notranslate"><span class="pre">http://localhost:12345/docs</span></code>:</p>
-<div class="figure align-center">
+<figure class="align-center">
 <img alt="../../../_images/swagger-ui.png" src="../../../_images/swagger-ui.png"/>
-</div>
-</div>
-<div class="section" id="use-curl-to-send-http-request">
+</figure>
+</section>
+<section id="use-curl-to-send-http-request">
 <h3>Use <code class="docutils literal notranslate"><span class="pre">curl</span></code> to send HTTP request<a class="headerlink" href="#use-curl-to-send-http-request" title="Permalink to this headline">¶</a></h3>
 <p>Now you can send data request via <code class="docutils literal notranslate"><span class="pre">curl</span></code>/Postman:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>curl --request POST <span class="s1">'http://localhost:12345/post'</span> --header <span class="s1">'Content-Type: application/json'</span> -d <span class="s1">'{"data": [{"text": "hello world"}],"execEndpoint": "/index"}'</span>
@@ -845,8 +845,8 @@ Flow in an explicit C/S style.</p>
 <span class="go">}</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="use-python-to-send-http-request">
+</section>
+<section id="use-python-to-send-http-request">
 <h3>Use Python to send HTTP request<a class="headerlink" href="#use-python-to-send-http-request" title="Permalink to this headline">¶</a></h3>
 <p>One can also use Python Client to send HTTP request, simply:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
@@ -859,8 +859,8 @@ Flow in an explicit C/S style.</p>
 <p class="admonition-title">Warning</p>
 <p>This HTTP client is less-performant on large data, it does not stream. Hence, it should be only used for debugging &amp; testing.</p>
 </div>
-</div>
-<div class="section" id="extend-http-interface">
+</section>
+<section id="extend-http-interface">
 <h3>Extend HTTP Interface<a class="headerlink" href="#extend-http-interface" title="Permalink to this headline">¶</a></h3>
 <p>By default the following endpoints are exposed to the public:</p>
 <div class="table-wrapper"><table border="1" class="docutils">
@@ -897,7 +897,7 @@ Flow in an explicit C/S style.</p>
 </tr>
 </tbody>
 </table></div>
-<div class="section" id="hide-crud-and-debug-endpoints-from-http-interface">
+<section id="hide-crud-and-debug-endpoints-from-http-interface">
 <h4>Hide CRUD and debug endpoints from HTTP interface<a class="headerlink" href="#hide-crud-and-debug-endpoints-from-http-interface" title="Permalink to this headline">¶</a></h4>
 <p>User can decide to hide CRUD and debug endpoints in production, or when the context is not applicable. For example, in the code snippet below, we didn’t implement any CRUD endpoints for the executor, hence it does not make sense to expose them to public.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -906,15 +906,15 @@ Flow in an explicit C/S style.</p>
          <span class="n">no_crud_endpoints</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="figure align-center">
+<figure class="align-center">
 <img alt="../../../_images/hide-crud-debug-endpoints.png" src="../../../_images/hide-crud-debug-endpoints.png"/>
-</div>
-</div>
-<div class="section" id="expose-customized-endpoints-to-http-interface">
+</figure>
+</section>
+<section id="expose-customized-endpoints-to-http-interface">
 <h4>Expose customized endpoints to HTTP interface<a class="headerlink" href="#expose-customized-endpoints-to-http-interface" title="Permalink to this headline">¶</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">Flow.expose_endpoint</span></code> can be used to expose executor’s endpoint to HTTP interface, e.g.</p>
-<div class="figure align-center">
-<img alt="../../../_images/expose-endpoints.svg" src="../../../_images/expose-endpoints.svg"/></div>
+<figure class="align-center">
+<img alt="../../../_images/expose-endpoints.svg" src="../../../_images/expose-endpoints.svg"/></figure>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span>
 
 <span class="k">class</span> <span class="nc">MyExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
@@ -929,9 +929,9 @@ Flow in an explicit C/S style.</p>
     <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-center">
+<figure class="align-center">
 <img alt="../../../_images/customized-foo-endpoint.png" src="../../../_images/customized-foo-endpoint.png"/>
-</div>
+</figure>
 <p>Now, sending HTTP data request to <code class="docutils literal notranslate"><span class="pre">/foo</span></code> is equivalent as calling <code class="docutils literal notranslate"><span class="pre">f.post('/foo',</span> <span class="pre">...)</span></code> in Python.</p>
 <p>You can add more kwargs to build richer semantics on your HTTP endpoint. Those meta information will be rendered by Swagger UI and be forwarded to the OpenAPI schema.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">expose_endpoint</span><span class="p">(</span><span class="s1">'/bar'</span><span class="p">,</span> 
@@ -941,11 +941,11 @@ Flow in an explicit C/S style.</p>
                   <span class="p">)</span>
 </pre></div>
 </div>
-<div class="figure align-center">
+<figure class="align-center">
 <img alt="../../../_images/rich-openapi.png" src="../../../_images/rich-openapi.png"/>
-</div>
-</div>
-<div class="section" id="add-non-jina-related-routes">
+</figure>
+</section>
+<section id="add-non-jina-related-routes">
 <h4>Add non-Jina related routes<a class="headerlink" href="#add-non-jina-related-routes" title="Permalink to this headline">¶</a></h4>
 <p>If you want to add more customized routes, configs, options to HTTP interface, you can simply
 override <code class="docutils literal notranslate"><span class="pre">jina.helper.extend_rest_interface</span></code> function as follows:</p>
@@ -969,13 +969,13 @@ override <code class="docutils literal notranslate"><span class="pre">jina.helpe
 </pre></div>
 </div>
 <p>And you will see <code class="docutils literal notranslate"><span class="pre">/hello</span></code> is now available:</p>
-<div class="figure align-center">
+<figure class="align-center">
 <img alt="../../../_images/swagger-extend.png" src="../../../_images/swagger-extend.png"/>
-</div>
-</div>
-</div>
-</div>
-</div>
+</figure>
+</section>
+</section>
+</section>
+</section>
 
             </article>
             <footer>

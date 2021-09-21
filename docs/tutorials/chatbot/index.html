@@ -2,7 +2,8 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="Simple Chatbot in Jina" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/tutorials/chatbot.html" />
@@ -498,7 +499,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -596,7 +596,7 @@
                         </i>
                     </label>
                 </div>
-                <div class="tex2jax_ignore mathjax_ignore section" id="simple-chatbot-in-jina">
+                <section class="tex2jax_ignore mathjax_ignore" id="simple-chatbot-in-jina">
 <h1>Simple Chatbot in Jina<a class="headerlink" href="#simple-chatbot-in-jina" title="Permalink to this headline">¶</a></h1>
 <div class="sd-container-fluid sd-sphinx-override sd-p-0 sd-mt-2 sd-mb-4 docutils">
 <div class="sd-row sd-row-cols-2 sd-gx-2 sd-gy-1 docutils">
@@ -619,7 +619,7 @@
 </div>
 <p>We will use the <a class="reference internal" href="../../get-started/hello-world/covid-19-chatbot/#chatbot-helloworld"><span class="std std-ref">hello world chatbot</span></a> for this tutorial. You can find the complete code <a class="reference external" href="https://github.com/jina-ai/jina/tree/master/jina/helloworld/chatbot">here</a> and we will go step by step.</p>
 <p>At the end of this tutorial, you will have your own chatbot. You will use text as an input and get a text result as output. For this example, we will use a <a class="reference external" href="https://www.kaggle.com/xhlulu/covidqa">covid dataset</a>. You will understand how every part of this example works and how you can create new apps with different datasets on your own.</p>
-<div class="section" id="set-up-overview">
+<section id="set-up-overview">
 <h2>Set-up &amp; overview<a class="headerlink" href="#set-up-overview" title="Permalink to this headline">¶</a></h2>
 <p>We recommend creating a <a class="reference external" href="https://docs.python.org/3/tutorial/venv.html">new python virtual environment</a>, to have a clean install of Jina and prevent dependency clashing.</p>
 <p>We can start by installing Jina:</p>
@@ -635,9 +635,9 @@
 </pre></div>
 </div>
 <p>Once you have Jina and the dependencies installed, let’s get a broad overview of the process we’ll follow:</p>
-<div class="figure align-center">
+<figure class="align-center">
 <img alt="../../_images/flow.png" src="../../_images/flow.png"/>
-</div>
+</figure>
 <p>You see from this image that you have your data at the beginning of this Flow process, and this can be any data type:</p>
 <ul class="simple">
 <li><p>Text</p></li>
@@ -652,10 +652,10 @@
 <p class="admonition-title">Note</p>
 <p>If you have a different use case or dataset you may need to process your data somehow (this is a very common task in machine learning)</p>
 </div>
-</div>
-<div class="section" id="tutorial">
+</section>
+<section id="tutorial">
 <h2>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="define-data-and-work-directories">
+<section id="define-data-and-work-directories">
 <h3>Define data and work directories<a class="headerlink" href="#define-data-and-work-directories" title="Permalink to this headline">¶</a></h3>
 <p>We can start by creating an empty folder, I’ll call mine <code class="docutils literal notranslate"><span class="pre">tutorial</span></code> and that’s the name you’ll see through the tutorial but feel free to use whatever you wish.</p>
 <p>We will display our results in our browser, so download the static folder from
@@ -666,8 +666,8 @@ We’ll use the <a class="reference external" href="https://www.kaggle.com/xhlul
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>wget https://static.jina.ai/chatbot/dataset.csv
 </pre></div>
 </div>
-</div>
-<div class="section" id="create-a-flow">
+</section>
+<section id="create-a-flow">
 <h3>Create a Flow<a class="headerlink" href="#create-a-flow" title="Permalink to this headline">¶</a></h3>
 <p>The very first concept you’ll see in Jina is a Flow. You can see <a class="reference internal" href="../../fundamentals/flow/#flow-cookbook"><span class="std std-ref">here</span></a> a more formal introduction of what it is, but for now, think of the Flow as a manager in Jina, it takes care of the all the tasks that will run on your application and each Flow object will take care of one real-world task.</p>
 <p>To create a Flow you only need to import it from Jina. So open your favorite IDE, create an <code class="docutils literal notranslate"><span class="pre">app.py</span></code> file and let’s start writing our code:</p>
@@ -676,8 +676,8 @@ We’ll use the <a class="reference external" href="https://www.kaggle.com/xhlul
 </pre></div>
 </div>
 <p>But this is an empty Flow. Since we want to encode our data and then index it, we need to add elements to it. The only things we add to a Flow are Executors. We will talk about them more formally later, but think of them as the elements that will do all the data processing you want.</p>
-</div>
-<div class="section" id="add-elements-to-a-flow">
+</section>
+<section id="add-elements-to-a-flow">
 <h3>Add elements to a Flow<a class="headerlink" href="#add-elements-to-a-flow" title="Permalink to this headline">¶</a></h3>
 <p>To add elements to your Flow you just need to use the <code class="docutils literal notranslate"><span class="pre">.add()</span></code> method. You can add as many pods as you wish.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -699,8 +699,8 @@ We’ll use the <a class="reference external" href="https://www.kaggle.com/xhlul
 </pre></div>
 </div>
 <p>Right now we haven’t defined <code class="docutils literal notranslate"><span class="pre">MyTransformer</span></code> or <code class="docutils literal notranslate"><span class="pre">MyIndexer</span></code>. Let’s create some dummy Executors so we can try our app. These will not be our final Executors but just something basic to learn first.</p>
-</div>
-<div class="section" id="create-dummy-executors">
+</section>
+<section id="create-dummy-executors">
 <h3>Create dummy Executors<a class="headerlink" href="#create-dummy-executors" title="Permalink to this headline">¶</a></h3>
 <p>Now we have a Flow with two Executors. Write the following in your code:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
@@ -718,8 +718,8 @@ We’ll use the <a class="reference external" href="https://www.kaggle.com/xhlul
 </div>
 <p>We will have more complex Executors later. For now our two Executors are only printing a line.</p>
 <p>So far it’s a simple Flow but it is still useful to visualize it to make sure we have what we want.</p>
-</div>
-<div class="section" id="visualize-a-flow">
+</section>
+<section id="visualize-a-flow">
 <h3>Visualize a Flow<a class="headerlink" href="#visualize-a-flow" title="Permalink to this headline">¶</a></h3>
 <p>By now, your code should look like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
@@ -752,8 +752,8 @@ We’ll use the <a class="reference external" href="https://www.kaggle.com/xhlul
 </pre></div>
 </div>
 <p>Let’s run the code we have so far. If you try it, not much will happen since we are not indexing anything yet, but you will see the new file <code class="docutils literal notranslate"><span class="pre">our_flow.svg</span></code> created on your working folder, and if you open it you would see this:</p>
-<div class="figure align-center">
-<img alt="../../_images/plot_flow1.svg" src="../../_images/plot_flow1.svg"/></div>
+<figure class="align-center">
+<img alt="../../_images/plot_flow1.svg" src="../../_images/plot_flow1.svg"/></figure>
 <p>You can see a Flow with two Executors, but what if you have many Executors? this can quickly become very messy, so it is better to name the Executors with <code class="docutils literal notranslate"><span class="pre">name='CoolName'</span></code>. So in our example, we use:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 <span class="n">flow</span> <span class="o">=</span> <span class="p">(</span>
@@ -766,10 +766,10 @@ We’ll use the <a class="reference external" href="https://www.kaggle.com/xhlul
 </pre></div>
 </div>
 <p>Now if you run this, you should have a Flow that is more explicit:</p>
-<div class="figure align-center">
-<img alt="../../_images/plot_flow2.svg" src="../../_images/plot_flow2.svg"/></div>
-</div>
-<div class="section" id="use-a-flow">
+<figure class="align-center">
+<img alt="../../_images/plot_flow2.svg" src="../../_images/plot_flow2.svg"/></figure>
+</section>
+<section id="use-a-flow">
 <h3>Use a Flow<a class="headerlink" href="#use-a-flow" title="Permalink to this headline">¶</a></h3>
 <p>Ok, we have our Flow created and visualized. Let’s put it to use now. The correct way to use a Flow is to open it as a context manager, using the <code class="docutils literal notranslate"><span class="pre">with</span></code> keyword:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">flow</span><span class="p">:</span>
@@ -817,8 +817,8 @@ We’ll use the <a class="reference external" href="https://www.kaggle.com/xhlul
 <p><code class="docutils literal notranslate"><span class="pre">Document</span></code> is the basic data type in Jina. It can hold different types of information. You can learn more about
 <code class="docutils literal notranslate"><span class="pre">Document</span></code> <a class="reference internal" href="../../fundamentals/document/#document-cookbook"><span class="std std-ref">in this section</span></a></p>
 </div>
-</div>
-<div class="section" id="create-documents-from-a-csv-file">
+</section>
+<section id="create-documents-from-a-csv-file">
 <h3>Create Documents from a csv file<a class="headerlink" href="#create-documents-from-a-csv-file" title="Permalink to this headline">¶</a></h3>
 <p>To create a Document in Jina, we do it like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'hello, world!'</span><span class="p">)</span>
@@ -960,9 +960,9 @@ check <a class="reference internal" href="../../fundamentals/flow/#flow-cookbook
 and there you will have a text box ready for you to input some text. However, if you try to enter anything you won’t
 get any results. This is because we are using dummy Executors. Our <code class="docutils literal notranslate"><span class="pre">MyTransformer</span></code> and <code class="docutils literal notranslate"><span class="pre">MyIndexer</span></code> aren’t actually
 doing anything. So far they only print a line when they are called. So we need real Executors.</p>
-</div>
-</div>
-<div class="section" id="creating-executors">
+</section>
+</section>
+<section id="creating-executors">
 <h2>Creating Executors<a class="headerlink" href="#creating-executors" title="Permalink to this headline">¶</a></h2>
 <p>We will be creating our Executors in a separate file: <code class="docutils literal notranslate"><span class="pre">my_executors.py</span></code>.</p>
 <p>First, let’s import the following:</p>
@@ -1098,11 +1098,11 @@ using the cosine similarity.</p>
 </pre></div>
 </div>
 <p>And we are done! If you followed all the steps, now you should have something like this in your browser:</p>
-<div class="figure align-center">
+<figure class="align-center">
 <img alt="../../_images/results.png" src="../../_images/results.png"/>
-</div>
-</div>
-</div>
+</figure>
+</section>
+</section>
 
             </article>
             <footer>

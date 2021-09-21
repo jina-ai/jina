@@ -2,7 +2,8 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="Flow IO" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/send-recv.html" />
@@ -498,7 +499,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -596,7 +596,7 @@
                         </i>
                     </label>
                 </div>
-                <div class="tex2jax_ignore mathjax_ignore section" id="flow-io">
+                <section class="tex2jax_ignore mathjax_ignore" id="flow-io">
 <h1>Flow IO<a class="headerlink" href="#flow-io" title="Permalink to this headline">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">.post()</span></code> is the core method for sending data to a <code class="docutils literal notranslate"><span class="pre">Flow</span></code> object, it provides multiple callbacks for fetching results from the Flow.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -623,7 +623,7 @@ with <code class="docutils literal notranslate"><span class="pre">on='/index'</s
 </pre></div>
 </div>
 </div>
-<div class="section" id="request-data">
+<section id="request-data">
 <h2>Request data<a class="headerlink" href="#request-data" title="Permalink to this headline">¶</a></h2>
 <p>Request data can be a single <code class="docutils literal notranslate"><span class="pre">Document</span></code> object, an iterator of <code class="docutils literal notranslate"><span class="pre">Document</span></code>, a generator of <code class="docutils literal notranslate"><span class="pre">Document</span></code>, a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>
 object, and None.</p>
@@ -665,8 +665,8 @@ in conjunction with <code class="docutils literal notranslate"><span class="pre"
 <span class="hll">    <span class="n">f</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">from_csv</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">field_resolver</span><span class="o">=</span><span class="p">{</span><span class="s1">'question'</span><span class="p">:</span> <span class="s1">'text'</span><span class="p">}))</span>
 </span></pre></div>
 </div>
-</div>
-<div class="section" id="request-parameters">
+</section>
+<section id="request-parameters">
 <h2>Request parameters<a class="headerlink" href="#request-parameters" title="Permalink to this headline">¶</a></h2>
 <p>To send parameters to the Executor, use</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span>
@@ -759,8 +759,8 @@ sent to executor.</strong></p>
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="size-of-request">
+</section>
+<section id="size-of-request">
 <h2>Size of request<a class="headerlink" href="#size-of-request" title="Permalink to this headline">¶</a></h2>
 <p>You can control how many <code class="docutils literal notranslate"><span class="pre">Documents</span></code> in each request by <code class="docutils literal notranslate"><span class="pre">request_size</span></code>. Say your <code class="docutils literal notranslate"><span class="pre">inputs</span></code> has length of 100, whereas
 you <code class="docutils literal notranslate"><span class="pre">request_size</span></code> is set to <code class="docutils literal notranslate"><span class="pre">10</span></code>. Then <code class="docutils literal notranslate"><span class="pre">f.post</span></code> will send ten requests and return 10 responses:</p>
@@ -794,8 +794,8 @@ you <code class="docutils literal notranslate"><span class="pre">request_size</s
 <span class="go">⏳   |██████████          | ⏱️ 0.0s 🐎 429.0 RPS✅ 10 requests done in ⏱ 0 seconds 🐎 425.1 RPS</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="response-result">
+</section>
+<section id="response-result">
 <h2>Response result<a class="headerlink" href="#response-result" title="Permalink to this headline">¶</a></h2>
 <p>Once a request is returned, callback functions are fired. Jina Flow implements a Promise-like interface. You can add
 callback functions <code class="docutils literal notranslate"><span class="pre">on_done</span></code>, <code class="docutils literal notranslate"><span class="pre">on_error</span></code>, <code class="docutils literal notranslate"><span class="pre">on_always</span></code> to hook different events.</p>
@@ -829,7 +829,7 @@ beeps. Finally, the result is written to <code class="docutils literal notransla
            <span class="n">on_always</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">fp</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="section" id="get-all-responses">
+<section id="get-all-responses">
 <h3>Get all responses<a class="headerlink" href="#get-all-responses" title="Permalink to this headline">¶</a></h3>
 <p>In some scenarios (e.g. testing), you may want to get the all responses in bulk and then process them; instead of
 processing responses on the fly. To do that, you can turn on <code class="docutils literal notranslate"><span class="pre">return_results</span></code>:</p>
@@ -867,9 +867,9 @@ then <code class="docutils literal notranslate"><span class="pre">return_results
 takes 10MB memory, it means you will consume upto 10GB memory! On contrary, with callback and <code class="docutils literal notranslate"><span class="pre">return_results=False</span></code>,
 your memory usage will stay constant at 10MB.</p>
 </div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
             </article>
             <footer>

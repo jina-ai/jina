@@ -2,7 +2,8 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="Asynchronous Flow" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/async-flow.html" />
@@ -498,7 +499,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -596,13 +596,13 @@
                         </i>
                     </label>
                 </div>
-                <div class="tex2jax_ignore mathjax_ignore section" id="asynchronous-flow">
+                <section class="tex2jax_ignore mathjax_ignore" id="asynchronous-flow">
 <h1>Asynchronous Flow<a class="headerlink" href="#asynchronous-flow" title="Permalink to this headline">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">AsyncFlow</span></code> is an “async version” of the <code class="docutils literal notranslate"><span class="pre">Flow</span></code> class.</p>
 <p>The quote mark represents the explicit async when using <code class="docutils literal notranslate"><span class="pre">AsyncFlow</span></code>.</p>
 <p>While synchronous from outside, <code class="docutils literal notranslate"><span class="pre">Flow</span></code> also runs asynchronously under the hood: it manages the eventloop(s) for
 scheduling the jobs. If the user wants more control over the eventloop, then <code class="docutils literal notranslate"><span class="pre">AsyncFlow</span></code> can be used.</p>
-<div class="section" id="create-asyncflow">
+<section id="create-asyncflow">
 <h2>Create AsyncFlow<a class="headerlink" href="#create-asyncflow" title="Permalink to this headline">¶</a></h2>
 <p>To create an <code class="docutils literal notranslate"><span class="pre">AsyncFlow</span></code>, simply</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">AsyncFlow</span>
@@ -616,8 +616,8 @@ scheduling the jobs. If the user wants more control over the eventloop, then <co
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">asyncio</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="input-output">
+</section>
+<section id="input-output">
 <h2>Input &amp; output<a class="headerlink" href="#input-output" title="Permalink to this headline">¶</a></h2>
 <p>Unlike <code class="docutils literal notranslate"><span class="pre">Flow</span></code>, <code class="docutils literal notranslate"><span class="pre">AsyncFlow</span></code> accepts input and output functions
 as <a class="reference external" href="https://www.python.org/dev/peps/pep-0525/">async generators</a>. This is useful when your data sources involve other
@@ -638,8 +638,8 @@ asynchronous libraries (e.g. motor for MongoDB):</p>
         <span class="nb">print</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="using-asyncflow-for-overlapping-heavy-lifting-job">
+</section>
+<section id="using-asyncflow-for-overlapping-heavy-lifting-job">
 <h2>Using AsyncFlow for overlapping heavy-lifting job<a class="headerlink" href="#using-asyncflow-for-overlapping-heavy-lifting-job" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">AsyncFlow</span></code> is particularly useful when Jina and another heavy-lifting job are running concurrently:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
@@ -676,8 +676,8 @@ asynchronous libraries (e.g. motor for MongoDB):</p>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">AsyncFlow</span></code> is very useful when using Jina inside a Jupyter Notebook, where it can run out-of-the-box.</p>
-</div>
-</div>
+</section>
+</section>
 
             </article>
             <footer>

@@ -2,7 +2,8 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="Publish Executor" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/advanced/hub/push-executor.html" />
@@ -498,7 +499,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -596,7 +596,7 @@
                         </i>
                     </label>
                 </div>
-                <div class="tex2jax_ignore mathjax_ignore section" id="publish-executor">
+                <section class="tex2jax_ignore mathjax_ignore" id="publish-executor">
 <span id="push-executor"></span><h1>Publish Executor<a class="headerlink" href="#publish-executor" title="Permalink to this headline">¶</a></h1>
 <p>If you want to share your Executors to other persons or colleges, you can push your local Executor to the Hub.</p>
 <p>There are two types of sharing:</p>
@@ -604,14 +604,14 @@
 <li><p><strong>Public</strong> (default): anyone can use the public executors without any restriction.</p></li>
 <li><p><strong>Private</strong>: only people that has the <code class="docutils literal notranslate"><span class="pre">secret</span></code> can use the private executors.</p></li>
 </ul>
-<div class="section" id="first-publish">
+<section id="first-publish">
 <span id="jina-hub-usage"></span><h2>First publish<a class="headerlink" href="#first-publish" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hub push <span class="o">[</span>--public/--private<span class="o">]</span> &lt;path_to_executor_folder&gt;
 </pre></div>
 </div>
-<div class="figure align-center">
+<figure class="align-center">
 <img alt="../../../_images/hub-push.gif" src="../../../_images/hub-push.gif"/>
-</div>
+</figure>
 <p>It will return <code class="docutils literal notranslate"><span class="pre">UUID</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">SECRET</span></code>, which you will need when using (if private) or update the Executor later. <strong>Please keep them carefully.</strong></p>
 <p>You can then visit <a class="reference external" href="https://hub.jina.ai">the Hub portal</a>, click on the “Recent” tab and see your published Executor.</p>
 <div class="note admonition">
@@ -622,15 +622,15 @@
 <p class="admonition-title">Important</p>
 <p>Anyone can use any public Executor, but to use a private Executor one must know <code class="docutils literal notranslate"><span class="pre">SECRET</span></code>.</p>
 </div>
-</div>
-<div class="section" id="update-published-executors">
+</section>
+<section id="update-published-executors">
 <h2>Update published Executors<a class="headerlink" href="#update-published-executors" title="Permalink to this headline">¶</a></h2>
 <p>To override or update a published Executor, you must have both <code class="docutils literal notranslate"><span class="pre">UUID</span></code> and <code class="docutils literal notranslate"><span class="pre">SECRET</span></code>.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hub push <span class="o">[</span>--public/--private<span class="o">]</span> --force &lt;UUID&gt; --secret &lt;SECRET&gt; &lt;path_to_executor_folder&gt;
 </pre></div>
 </div>
-</div>
-<div class="section" id="tagging-executor">
+</section>
+<section id="tagging-executor">
 <span id="hub-tags"></span><h2>Tagging Executor<a class="headerlink" href="#tagging-executor" title="Permalink to this headline">¶</a></h2>
 <p>Tagging can be useful for versioning Executors; or differing Executors by their architectures (e.g. <code class="docutils literal notranslate"><span class="pre">gpu</span></code>, <code class="docutils literal notranslate"><span class="pre">cpu</span></code>).</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hub push &lt;path_to_executor_folder&gt; -t TAG1 -t TAG2
@@ -647,8 +647,8 @@ jina hub push . -t v1.0.0 -t latest <span class="c1"># Result in two tags: v1.0.
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hub push <span class="o">[</span>--public/--private<span class="o">]</span> --force &lt;UUID&gt; --secret &lt;SECRET&gt; -t TAG &lt;path_to_executor_folder&gt;
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
             </article>
             <footer>

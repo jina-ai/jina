@@ -2,7 +2,8 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="Install" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/get-started/install.html" />
@@ -498,7 +499,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -596,7 +596,7 @@
                         </i>
                     </label>
                 </div>
-                <div class="tex2jax_ignore mathjax_ignore section" id="install">
+                <section class="tex2jax_ignore mathjax_ignore" id="install">
 <span id="id1"></span><h1>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h1>
 <p>Standard install enables the full features of Jina.</p>
 <div class="tab-set docutils">
@@ -616,12 +616,12 @@
 </div>
 </div>
 </div>
-<div class="section" id="more-install-options">
+<section id="more-install-options">
 <h2>More install options<a class="headerlink" href="#more-install-options" title="Permalink to this headline">¶</a></h2>
 <p>Version identifiers <a class="reference external" href="https://github.com/jina-ai/jina/blob/master/RELEASE.md">are explained here</a>. Jina can run
 on <a class="reference external" href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">Windows Subsystem for Linux</a>. We welcome the community
 to help us with <a class="reference external" href="https://github.com/jina-ai/jina/issues/1252">native Windows support</a>.</p>
-<div class="section" id="minimum">
+<section id="minimum">
 <h3>Minimum<a class="headerlink" href="#minimum" title="Permalink to this headline">¶</a></h3>
 <p>Minimum install enables basic features of Jina, but without support on HTTP, WebSocket, Docker &amp; Hub.</p>
 <p>Minimum install is often used when building &amp; depolying an Executor.</p>
@@ -642,8 +642,8 @@ to help us with <a class="reference external" href="https://github.com/jina-ai/j
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="minimum-but-more-performant">
+</section>
+<section id="minimum-but-more-performant">
 <h3>Minimum but more performant<a class="headerlink" href="#minimum-but-more-performant" title="Permalink to this headline">¶</a></h3>
 <p>Same as Minimum install, but also install <code class="docutils literal notranslate"><span class="pre">uvloop</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">lz4</span></code>.</p>
 <div class="tab-set docutils">
@@ -663,15 +663,15 @@ to help us with <a class="reference external" href="https://github.com/jina-ai/j
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="with-daemon-jinad">
+</section>
+<section id="with-daemon-jinad">
 <h3>With Daemon (JinaD)<a class="headerlink" href="#with-daemon-jinad" title="Permalink to this headline">¶</a></h3>
 <p>Same as Minimum install, but also install <code class="docutils literal notranslate"><span class="pre">uvloop</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">lz4</span></code>.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install <span class="s2">"jina[daemon]"</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="full-development-dependencies">
+</section>
+<section id="full-development-dependencies">
 <h3>Full development dependencies<a class="headerlink" href="#full-development-dependencies" title="Permalink to this headline">¶</a></h3>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--1">via PyPI</label><div class="tab-content docutils">
@@ -685,8 +685,8 @@ to help us with <a class="reference external" href="https://github.com/jina-ai/j
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="prerelease">
+</section>
+<section id="prerelease">
 <h3>Prerelease<a class="headerlink" href="#prerelease" title="Permalink to this headline">¶</a></h3>
 <p>Prerelease is the version always synced with <code class="docutils literal notranslate"><span class="pre">master</span></code> branch of Jina Github repository.</p>
 <div class="tab-set docutils">
@@ -701,9 +701,9 @@ to help us with <a class="reference external" href="https://github.com/jina-ai/j
 </div>
 </div>
 </div>
-</div>
-</div>
-<div class="section" id="autocomplete-commands-on-bash-zsh-and-fish">
+</section>
+</section>
+<section id="autocomplete-commands-on-bash-zsh-and-fish">
 <h2>Autocomplete commands on Bash, Zsh and Fish<a class="headerlink" href="#autocomplete-commands-on-bash-zsh-and-fish" title="Permalink to this headline">¶</a></h2>
 <p>After installing Jina via <code class="docutils literal notranslate"><span class="pre">pip</span></code>, you should be able to use your shell’s autocomplete feature while using Jina’s CLI. For example, typing <code class="docutils literal notranslate"><span class="pre">jina</span></code> then hitting your Tab key will provide the following suggestions:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina 
@@ -740,8 +740,8 @@ to help us with <a class="reference external" href="https://github.com/jina-ai/j
 </tr>
 </tbody>
 </table></div>
-</div>
-</div>
+</section>
+</section>
 
             </article>
             <footer>

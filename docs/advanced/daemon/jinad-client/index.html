@@ -2,7 +2,8 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="JinaD Client" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/advanced/daemon/jinad-client.html" />
@@ -498,7 +499,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -596,11 +596,11 @@
                         </i>
                     </label>
                 </div>
-                <div class="tex2jax_ignore mathjax_ignore section" id="jinad-client">
+                <section class="tex2jax_ignore mathjax_ignore" id="jinad-client">
 <h1>JinaD Client<a class="headerlink" href="#jinad-client" title="Permalink to this headline">¶</a></h1>
 <p>You can use <code class="docutils literal notranslate"><span class="pre">JinaDClient</span></code> or (for your async
 code) feel free to use <code class="docutils literal notranslate"><span class="pre">AsyncJinaDClient</span></code> which makes all following code awaitables.</p>
-<div class="section" id="check-if-remote-server-is-alive">
+<section id="check-if-remote-server-is-alive">
 <h2>Check if remote server is alive<a class="headerlink" href="#check-if-remote-server-is-alive" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">daemon.clients</span> <span class="kn">import</span> <span class="n">JinaDClient</span>
 
@@ -615,8 +615,8 @@ code) feel free to use <code class="docutils literal notranslate"><span class="p
 <span class="k">assert</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">alive</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="get-the-status-of-the-remote-server">
+</section>
+<section id="get-the-status-of-the-remote-server">
 <h2>Get the status of the remote server<a class="headerlink" href="#get-the-status-of-the-remote-server" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">daemon.clients</span> <span class="kn">import</span> <span class="n">JinaDClient</span>
 
@@ -647,8 +647,8 @@ code) feel free to use <code class="docutils literal notranslate"><span class="p
 }
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
             </article>
             <footer>

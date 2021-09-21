@@ -2,7 +2,8 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="Parallelization" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/parallel.html" />
@@ -498,7 +499,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -596,9 +596,9 @@
                         </i>
                     </label>
                 </div>
-                <div class="tex2jax_ignore mathjax_ignore section" id="parallelization">
+                <section class="tex2jax_ignore mathjax_ignore" id="parallelization">
 <h1>Parallelization<a class="headerlink" href="#parallelization" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="intra-parallelism-via-needs">
+<section id="intra-parallelism-via-needs">
 <h2>Intra parallelism via <code class="docutils literal notranslate"><span class="pre">needs</span></code><a class="headerlink" href="#intra-parallelism-via-needs" title="Permalink to this headline">¶</a></h2>
 <p>For parallelism, use the <code class="docutils literal notranslate"><span class="pre">needs</span></code> parameter:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -610,8 +610,8 @@
      <span class="o">.</span><span class="n">needs</span><span class="p">([</span><span class="s1">'p1'</span><span class="p">,</span> <span class="s1">'p2'</span><span class="p">,</span> <span class="s1">'p3'</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">'r1'</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="figure align-center">
-<img alt="../../../_images/simple-plot3.svg" src="../../../_images/simple-plot3.svg"/></div>
+<figure class="align-center">
+<img alt="../../../_images/simple-plot3.svg" src="../../../_images/simple-plot3.svg"/></figure>
 <p><code class="docutils literal notranslate"><span class="pre">p1</span></code>, <code class="docutils literal notranslate"><span class="pre">p2</span></code>, <code class="docutils literal notranslate"><span class="pre">p3</span></code> now subscribe to <code class="docutils literal notranslate"><span class="pre">Gateway</span></code> and conduct their work in parallel. The last <code class="docutils literal notranslate"><span class="pre">.needs()</span></code> blocks all Executors
 until they finish their work.</p>
 <p><code class="docutils literal notranslate"><span class="pre">.needs()</span></code> is syntax sugar and roughly equal to:</p>
@@ -632,8 +632,8 @@ until they finish their work.</p>
      <span class="o">.</span><span class="n">needs_all</span><span class="p">())</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="inter-parallelism-via-parallel">
+</section>
+<section id="inter-parallelism-via-parallel">
 <h2>Inter parallelism via <code class="docutils literal notranslate"><span class="pre">parallel</span></code><a class="headerlink" href="#inter-parallelism-via-parallel" title="Permalink to this headline">¶</a></h2>
 <p>Parallelism can also be performed inside an Executor using <code class="docutils literal notranslate"><span class="pre">parallel</span></code>. The example below starts three <code class="docutils literal notranslate"><span class="pre">p1</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -643,8 +643,8 @@ until they finish their work.</p>
      <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'p2'</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="figure align-center">
-<img alt="../../../_images/parallel-explain.svg" src="../../../_images/parallel-explain.svg"/></div>
+<figure class="align-center">
+<img alt="../../../_images/parallel-explain.svg" src="../../../_images/parallel-explain.svg"/></figure>
 <div class="note admonition">
 <p class="admonition-title">Note</p>
 <p>By default:</p>
@@ -691,10 +691,10 @@ Specifically,</p>
      <span class="o">.</span><span class="n">needs</span><span class="p">([</span><span class="s1">'p1'</span><span class="p">,</span> <span class="s1">'p3'</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">'r1'</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="figure align-center">
-<img alt="../../../_images/simple-plot4.svg" src="../../../_images/simple-plot4.svg"/></div>
-</div>
-</div>
+<figure class="align-center">
+<img alt="../../../_images/simple-plot4.svg" src="../../../_images/simple-plot4.svg"/></figure>
+</section>
+</section>
 
             </article>
             <footer>

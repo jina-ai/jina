@@ -1,30 +1,45 @@
 /* Copy buttons */
-a.copybtn {
+button.copybtn {
     position: absolute;
-    top: .2em;
-    right: .2em;
-    width: 1em;
-    height: 1em;
-	opacity: .3;
-    transition: opacity 0.5s;
-    border: none;
+    display: flex;
+    top: .3em;
+    right: .5em;
+    width: 1.7em;
+    height: 1.7em;
+	opacity: 0;
+    transition: opacity 0.3s, border .3s, background-color .3s;
     user-select: none;
+    padding: 0;
+    border: none;
+    outline: none;
+    border-radius: 0.4em;
+    border: #e1e1e1 1px solid;
+    background-color: rgb(245, 245, 245);
+}
+
+button.copybtn.success {
+    border-color: #22863a;
+}
+
+button.copybtn img {
+    width: 100%;
+    padding: .2em;
 }
 
 div.highlight  {
     position: relative;
 }
 
-a.copybtn > img {
-    vertical-align: top;
-    margin: 0;
-    top: 0;
-    left: 0;
-    position: absolute;
+.highlight:hover button.copybtn {
+	opacity: 1;
 }
 
-.highlight:hover .copybtn {
-	opacity: 1;
+.highlight button.copybtn:hover {
+    background-color: rgb(235, 235, 235);
+}
+
+.highlight button.copybtn:active {
+    background-color: rgb(187, 187, 187);
 }
 
 /**
@@ -44,11 +59,10 @@ a.copybtn > img {
     visibility: hidden;
     position: absolute;
     content: attr(data-tooltip);
-    padding: 2px;
-    top: 0;
+    padding: .2em;
+    font-size: .8em;
     left: -.2em;
     background: grey;
-    font-size: 1rem;
     color: white;
     white-space: nowrap;
     z-index: 2;

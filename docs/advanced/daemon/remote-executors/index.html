@@ -2,7 +2,8 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="Remote Executor" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/advanced/daemon/remote-executors.html" />
@@ -498,7 +499,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -596,10 +596,10 @@
                         </i>
                     </label>
                 </div>
-                <div class="tex2jax_ignore mathjax_ignore section" id="remote-executor">
+                <section class="tex2jax_ignore mathjax_ignore" id="remote-executor">
 <h1>Remote Executor<a class="headerlink" href="#remote-executor" title="Permalink to this headline">¶</a></h1>
 <p>JinaD enables deploying Executors on remote machines. We can pass the remote info using <code class="docutils literal notranslate"><span class="pre">host</span></code>and <code class="docutils literal notranslate"><span class="pre">port_jinad</span></code> arguments in the Flow syntax. Here are a few examples of using remote Executors.</p>
-<div class="section" id="executor-defined-in-yaml">
+<section id="executor-defined-in-yaml">
 <h2>Executor defined in YAML<a class="headerlink" href="#executor-defined-in-yaml" title="Permalink to this headline">¶</a></h2>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">Local</label><div class="tab-content docutils">
@@ -621,8 +621,8 @@
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="executor-from-hub">
+</section>
+<section id="executor-from-hub">
 <h2>Executor from Hub<a class="headerlink" href="#executor-from-hub" title="Permalink to this headline">¶</a></h2>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">Local</label><div class="tab-content docutils">
@@ -642,8 +642,8 @@
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="executors-on-different-hosts">
+</section>
+<section id="executors-on-different-hosts">
 <h2>Executors on different hosts<a class="headerlink" href="#executors-on-different-hosts" title="Permalink to this headline">¶</a></h2>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--1">Local</label><div class="tab-content docutils">
@@ -677,8 +677,8 @@ f = (Flow()
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="executor-using-class">
+</section>
+<section id="executor-using-class">
 <h2>Executor using class<a class="headerlink" href="#executor-using-class" title="Permalink to this headline">¶</a></h2>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--1">Local</label><div class="tab-content docutils">
@@ -709,8 +709,8 @@ f = (Flow()
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="executor-using-class-pip-dependency">
+</section>
+<section id="executor-using-class-pip-dependency">
 <h2>Executor using class + pip dependency<a class="headerlink" href="#executor-using-class-pip-dependency" title="Permalink to this headline">¶</a></h2>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--4-input--1" name="tab-set--4" type="radio"/><label class="tab-label" for="tab-set--4-input--1">Local</label><div class="tab-content docutils">
@@ -752,8 +752,8 @@ f = (Flow()
 <p class="admonition-title">Caution</p>
 <p><a class="reference internal" href="../../../fundamentals/executor/repository-structure/"><span class="doc std std-doc">Directory structure for Executors</span></a> is not supported in JinaD yet.</p>
 </div>
-</div>
-</div>
+</section>
+</section>
 
             </article>
             <footer>

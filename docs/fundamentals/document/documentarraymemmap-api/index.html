@@ -2,7 +2,8 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="DocumentArrayMemmap" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/fundamentals/document/documentarraymemmap-api.html" />
@@ -498,7 +499,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -596,7 +596,7 @@
                         </i>
                     </label>
                 </div>
-                <div class="tex2jax_ignore mathjax_ignore section" id="documentarraymemmap">
+                <section class="tex2jax_ignore mathjax_ignore" id="documentarraymemmap">
 <span id="documentarraymemmap-api"></span><h1>DocumentArrayMemmap<a class="headerlink" href="#documentarraymemmap" title="Permalink to this headline">¶</a></h1>
 <p>When your <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> object contains a large number of <code class="docutils literal notranslate"><span class="pre">Document</span></code>, holding it in memory can be very demanding. You
 may want to use <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> to alleviate this issue.</p>
@@ -637,15 +637,15 @@ modifying documents.</p>
 </tr>
 </tbody>
 </table></div>
-<div class="section" id="create">
+<section id="create">
 <h2>Create<a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArrayMemmap</span>
 
 <span class="n">dam</span> <span class="o">=</span> <span class="n">DocumentArrayMemmap</span><span class="p">(</span><span class="s1">'./my-memmap'</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="add-elements">
+</section>
+<section id="add-elements">
 <h2>Add elements<a class="headerlink" href="#add-elements" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArrayMemmap</span><span class="p">,</span> <span class="n">Document</span>
 
@@ -657,7 +657,7 @@ modifying documents.</p>
 </span></pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">dam</span></code> object stores all Documents into <code class="docutils literal notranslate"><span class="pre">./my-memmap</span></code> folder on the disk, there is no need to manually call save or load.</p>
-<div class="section" id="buffer-pool">
+<section id="buffer-pool">
 <h3>Buffer pool<a class="headerlink" href="#buffer-pool" title="Permalink to this headline">¶</a></h3>
 <p>Recently added, modified or accessed documents are kept in an in-memory buffer pool. This allows all changes to Documents
 applied first in the memory and then be persisted to disk in a lazy way (i.e. when they quit the buffer pool or when
@@ -676,9 +676,9 @@ documents exist in the pool. Replacement of documents follows the LRU strategy.<
 documents manually and modify them if they might be outside of the buffer pool. The <a class="reference internal" href="#modify-memmap"><span class="std std-ref">next section</span></a>
 explains the best practices when modifying documents.</p>
 </div>
-</div>
-</div>
-<div class="section" id="modifying-elements">
+</section>
+</section>
+<section id="modifying-elements">
 <span id="modify-memmap"></span><h2>Modifying elements<a class="headerlink" href="#modifying-elements" title="Permalink to this headline">¶</a></h2>
 <p>Modifying elements of a <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> is possible due to the fact that accessed and modified documents are kept
 in the buffer pool:</p>
@@ -794,8 +794,8 @@ might not be in the buffer pool. Here are some practices to avoid:</p>
 </div>
 </div>
 <p>To summarize, it’s a best practice to <strong>rely on the <code class="docutils literal notranslate"><span class="pre">dam</span></code> object to reference the docs that you modify</strong>.</p>
-</div>
-<div class="section" id="clear-elements">
+</section>
+<section id="clear-elements">
 <h2>Clear elements<a class="headerlink" href="#clear-elements" title="Permalink to this headline">¶</a></h2>
 <p>To clear all contents in a <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> object, simply call <code class="docutils literal notranslate"><span class="pre">.clear()</span></code>. It will clean all content on disk.</p>
 <div class="admonition tip">
@@ -803,8 +803,8 @@ might not be in the buffer pool. Here are some practices to avoid:</p>
 <p>One may notice another method <code class="docutils literal notranslate"><span class="pre">.prune()</span></code> that shares similar semantics. <code class="docutils literal notranslate"><span class="pre">.prune()</span></code> method is designed for “
 post-optimizing” the on-disk data structure of <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> object. It can reduce the on-disk usage.</p>
 </div>
-</div>
-<div class="section" id="api-side-by-side-vs-documentarray">
+</section>
+<section id="api-side-by-side-vs-documentarray">
 <h2>API side-by-side vs. DocumentArray<a class="headerlink" href="#api-side-by-side-vs-documentarray" title="Permalink to this headline">¶</a></h2>
 <p>The API of <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> is <em>almost</em> the same as <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>, you can use integer/string index to
 access element; you can loop over a <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> to get all <code class="docutils literal notranslate"><span class="pre">Document</span></code>; you can use <code class="docutils literal notranslate"><span class="pre">get_attributes</span></code>
@@ -926,8 +926,8 @@ or <code class="docutils literal notranslate"><span class="pre">traverse_flat</s
 </tr>
 </tbody>
 </table></div>
-</div>
-<div class="section" id="convert-to-from-documentarray">
+</section>
+<section id="convert-to-from-documentarray">
 <h2>Convert to/from DocumentArray<a class="headerlink" href="#convert-to-from-documentarray" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">DocumentArrayMemmap</span>
 
@@ -941,8 +941,8 @@ or <code class="docutils literal notranslate"><span class="pre">traverse_flat</s
 <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">dam</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="maintaining-consistency-via-reload-and-save">
+</section>
+<section id="maintaining-consistency-via-reload-and-save">
 <h2>Maintaining consistency via <code class="docutils literal notranslate"><span class="pre">.reload()</span></code> and <code class="docutils literal notranslate"><span class="pre">.save()</span></code><a class="headerlink" href="#maintaining-consistency-via-reload-and-save" title="Permalink to this headline">¶</a></h2>
 <p>Considering two <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> objects that share the same on-disk storage <code class="docutils literal notranslate"><span class="pre">./memmap</span></code> but sit in different
 processes/threads. After some writing ops, the consistency of the lookup table and the buffer pool may be corrupted, as
@@ -994,8 +994,8 @@ to use it:</p>
 <span class="k">assert</span> <span class="n">dam2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s1">'goodbye'</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
             </article>
             <footer>

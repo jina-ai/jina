@@ -2,7 +2,8 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="Master Executor: from Zero to Hub" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/tutorials/master-executor.html" />
@@ -498,7 +499,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -596,7 +596,7 @@
                         </i>
                     </label>
                 </div>
-                <div class="tex2jax_ignore mathjax_ignore section" id="master-executor-from-zero-to-hub">
+                <section class="tex2jax_ignore mathjax_ignore" id="master-executor-from-zero-to-hub">
 <h1>Master Executor: from Zero to Hub<a class="headerlink" href="#master-executor-from-zero-to-hub" title="Permalink to this headline">¶</a></h1>
 <div class="sd-container-fluid sd-sphinx-override sd-p-0 sd-mt-2 sd-mb-4 docutils">
 <div class="sd-row sd-row-cols-2 sd-gx-2 sd-gy-1 docutils">
@@ -619,7 +619,7 @@
 </div>
 <p>This is a step-by-step walkthrough on how to create your Executors or use existing ones.</p>
 <p>We will create a simple logging Executor. It will log the Documents’ information as they reach it, and save these to a file. We will also see how to push our Executor to Jina Hub to use it later.</p>
-<div class="section" id="set-up-overview">
+<section id="set-up-overview">
 <h2>Set-up &amp; overview<a class="headerlink" href="#set-up-overview" title="Permalink to this headline">¶</a></h2>
 <p>We recommend creating a <a class="reference external" href="https://docs.python.org/3/tutorial/venv.html">new python virtual environment</a> to have a clean installation of Jina and prevent dependency clashing.</p>
 <p>We can start by installing Jina:</p>
@@ -627,8 +627,8 @@
 </pre></div>
 </div>
 <p>For more information on installing Jina, refer to <a class="reference internal" href="../../get-started/install/#install"><span class="std std-ref">this page</span></a>.</p>
-</div>
-<div class="section" id="create-your-executor">
+</section>
+<section id="create-your-executor">
 <h2>Create your Executor<a class="headerlink" href="#create-your-executor" title="Permalink to this headline">¶</a></h2>
 <p>To create your Executor, you just need to run this command in your terminal:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina hub new
@@ -640,7 +640,7 @@
 <li><p>where it should be saved</p></li>
 </ul>
 <p>For this tutorial, we will call ours <strong>RequestLogger</strong>. And you can save it wherever you want to have your project. The wizard will ask if you want to have a more advanced configuration, but it is unnecessary for this tutorial.</p>
-<div class="section" id="logger-executor">
+<section id="logger-executor">
 <h3>Logger Executor<a class="headerlink" href="#logger-executor" title="Permalink to this headline">¶</a></h3>
 <p>Once we followed the wizard, we have our folder structure ready. We can start working with the <code class="docutils literal notranslate"><span class="pre">executor.py</span></code>. Open that file, and let’s import the following</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
@@ -784,8 +784,8 @@
 </div>
 <p>And that’s it. We have an <code class="docutils literal notranslate"><span class="pre">Executor</span></code> that takes whatever Documents we pass to it and logs them.</p>
 <p>Ok, and what now? How can you use this in your app?</p>
-</div>
-<div class="section" id="push-your-executor-to-hub">
+</section>
+<section id="push-your-executor-to-hub">
 <h3>Push your Executor to Hub<a class="headerlink" href="#push-your-executor-to-hub" title="Permalink to this headline">¶</a></h3>
 <p>We could use our Executor directly in our app, but here we will see how to push it to Jina Hub so we can share it with more people, or use it later.</p>
 <p>First step is to actually make sure the <code class="docutils literal notranslate"><span class="pre">manifest.yml</span></code> and <code class="docutils literal notranslate"><span class="pre">config.yml</span></code> files are still relevant. Check that the data in there still represent you Executor’s purpose.</p>
@@ -794,15 +794,15 @@
 </pre></div>
 </div>
 <p>This means you will push your Executor publicly to Jina Hub. The last dot means you will use your current path. Once you run that command, you should see something like this:</p>
-<div class="figure align-center">
+<figure class="align-center">
 <img alt="../../_images/push-executor.png" src="../../_images/push-executor.png"/>
-</div>
+</figure>
 <div class="note admonition">
 <p class="admonition-title">Note</p>
 <p>Since we pushed our Executor using the <code class="docutils literal notranslate"><span class="pre">--public</span></code> flag, the only thing we will use is the ID. In this case, it’s <code class="docutils literal notranslate"><span class="pre">zsor7fe6</span></code>. Refer to <a class="reference internal" href="../../advanced/hub/push-executor/#jina-hub-usage"><span class="std std-ref">Jina Hub usage</span></a>.</p>
 </div>
-</div>
-<div class="section" id="use-your-executor">
+</section>
+<section id="use-your-executor">
 <h3>Use your Executor<a class="headerlink" href="#use-your-executor" title="Permalink to this headline">¶</a></h3>
 <p>Let’s create a Jina Flow that can use the Executor we just wrote.
 Create an <code class="docutils literal notranslate"><span class="pre">app.py</span></code> in the same folder as <code class="docutils literal notranslate"><span class="pre">RequestLogger</span></code>. Now open it and import <code class="docutils literal notranslate"><span class="pre">Flow</span></code>, <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>, <code class="docutils literal notranslate"><span class="pre">Document</span></code> before we create our `main function:</p>
@@ -901,15 +901,15 @@ Create an <code class="docutils literal notranslate"><span class="pre">app.py</s
 </pre></div>
 </div>
 <p>When you run this, you will see a new <code class="docutils literal notranslate"><span class="pre">workspace</span></code> folder created with two other folders inside. One called <code class="docutils literal notranslate"><span class="pre">RequestLogger</span></code> or whatever name you used in your class. And another folder for the sharding, but we won’t talk about that in this tutorial because it’s out of scope. Inside the sharding folder called <code class="docutils literal notranslate"><span class="pre">0</span></code>, you will see a <code class="docutils literal notranslate"><span class="pre">log.txt</span></code> file. And there you will have the 3 Documents with their information.</p>
-<div class="figure align-center">
+<figure class="align-center">
 <img alt="../../_images/log.png" src="../../_images/log.png"/>
-</div>
+</figure>
 <p>And that’s it! You created an Executor, pushed it to Jina Hub, and used it in your app.</p>
 <p>There are still a lot of concepts to learn. So stay tuned for our following tutorials.</p>
 <p>If you have any issues following this tutorial, you can always get support from our <a class="reference external" href="https://slack.jina.ai/">Slack community</a></p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
             </article>
             <footer>

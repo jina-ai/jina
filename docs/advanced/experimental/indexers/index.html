@@ -2,7 +2,8 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="Indexers on Jina Hub" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/advanced/experimental/indexers.html" />
@@ -498,7 +499,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -596,7 +596,7 @@
                         </i>
                     </label>
                 </div>
-                <div class="tex2jax_ignore mathjax_ignore section" id="indexers-on-jina-hub">
+                <section class="tex2jax_ignore mathjax_ignore" id="indexers-on-jina-hub">
 <h1>Indexers on Jina Hub<a class="headerlink" href="#indexers-on-jina-hub" title="Permalink to this headline">¶</a></h1>
 <p>Indexers are a subtype of Hub Executors that store or retrieve data. They are designed to replace <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> and <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> in large-scale applications.</p>
 <p>They are split by usage and interface. These types are:</p>
@@ -637,23 +637,23 @@
 <li><p><a class="reference external" href="https://hub.jina.ai/executor/mruax3k7">MatchMerger</a>. It is used for merging the results retrieved from sharding. It merges the results of shards by aggregating all matches by the corresponding Document in the original search request.</p></li>
 </ul>
 </div>
-<div class="section" id="indexing-vs-searching-operations">
+<section id="indexing-vs-searching-operations">
 <h2>Indexing vs searching operations<a class="headerlink" href="#indexing-vs-searching-operations" title="Permalink to this headline">¶</a></h2>
 <p>The recommended usage of these Executors is to split them into Indexing vs Search Flows.
 In the Indexing Flow, you perform write, update, and delete.
 In order to search them, you need to start a Search Flow, dump the data from the Index Flow, and load it into the Query Flow.</p>
 <p>See below figure for how this would look like:</p>
-<div class="figure align-center">
+<figure class="align-center">
 <a class="reference internal image-reference" href="../../../_images/replicas.png"><img alt="../../../_images/replicas.png" src="../../../_images/replicas.png" style="width: 80%;"/></a>
-</div>
+</figure>
 <p>In the above case, the Storage could be the <a class="reference external" href="https://hub.jina.ai/executor/d45rawx6">PostgreSQL</a>-based Storage, while the Query Flow could be based on <a class="reference external" href="https://hub.jina.ai/executor/nflcyqe2">FaissPostgresSearcher</a>.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>For a showcase code, check our <a class="reference external" href="https://github.com/jina-ai/executors/tree/main/tests/integration/psql_dump_reload">integration tests</a>.</p>
 </div>
 <p>The split between indexing and search Flows allows you to continuously serve requests in your application (in the search Flow), while still being able to write or modify the underlying data. Then when you want to update the state of the searchable data for your users, you perform a dump and rolling update.</p>
-</div>
-<div class="section" id="dump-and-rolling-update">
+</section>
+<section id="dump-and-rolling-update">
 <h2>Dump and rolling update<a class="headerlink" href="#dump-and-rolling-update" title="Permalink to this headline">¶</a></h2>
 <p>The communication between index and search Flows is done via this pair of actions.
 The <strong>dump</strong> action tells the indexer to export its internal data (from whatever format it stores it in) to a disk location, optimized to be read by the shards in your search Flow.
@@ -691,8 +691,8 @@ At the other end, the <strong>rolling update</strong> tells the search Flow to r
 <p class="admonition-title">Note</p>
 <p><code class="docutils literal notranslate"><span class="pre">dump_path</span></code> needs to be accessible by local reference. It can however be a network location / internal Docker location that you have mapped</p>
 </div>
-</div>
-</div>
+</section>
+</section>
 
             </article>
             <footer>

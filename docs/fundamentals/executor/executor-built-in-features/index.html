@@ -2,7 +2,8 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="Executor Features" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/fundamentals/executor/executor-built-in-features.html" />
@@ -498,7 +499,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -596,9 +596,9 @@
                         </i>
                     </label>
                 </div>
-                <div class="tex2jax_ignore mathjax_ignore section" id="executor-features">
+                <section class="tex2jax_ignore mathjax_ignore" id="executor-features">
 <h1>Executor Features<a class="headerlink" href="#executor-features" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="exception-handling">
+<section id="exception-handling">
 <h2>Exception handling<a class="headerlink" href="#exception-handling" title="Permalink to this headline">¶</a></h2>
 <p>Exception inside <code class="docutils literal notranslate"><span class="pre">@requests</span></code> decorated functions can be simply raised. The Flow will handle it.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span>
@@ -651,8 +651,8 @@
 <span class="go">NotImplementedError('no time for it')</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="use-executor-out-of-flow">
+</section>
+<section id="use-executor-out-of-flow">
 <h2>Use Executor out of Flow<a class="headerlink" href="#use-executor-out-of-flow" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">Executor</span></code> object can be used directly just like a regular Python object. For example,</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
@@ -677,8 +677,8 @@
 </pre></div>
 </div>
 <p>This is useful in debugging an Executor.</p>
-</div>
-<div class="section" id="gracefully-close-executor">
+</section>
+<section id="gracefully-close-executor">
 <h2>Gracefully close Executor<a class="headerlink" href="#gracefully-close-executor" title="Permalink to this headline">¶</a></h2>
 <p>You might need to execute some logic when your executor’s destructor is called. For example, you want to
 persist data to the disk (e.g. in-memory indexed data, fine-tuned model,…). To do so, you can overwrite the
@@ -705,8 +705,8 @@ method <code class="docutils literal notranslate"><span class="pre">close</span>
 closing...
 </pre></div>
 </div>
-</div>
-<div class="section" id="yaml-interface">
+</section>
+<section id="yaml-interface">
 <h2>YAML interface<a class="headerlink" href="#yaml-interface" title="Permalink to this headline">¶</a></h2>
 <p>An Executor can be loaded from and stored to a YAML file. The YAML file has the following format:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MyExecutor</span>
@@ -731,7 +731,7 @@ closing...
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">requests</span></code> is a map. Defines the mapping from endpoint to class method name;</p></li>
 </ul>
-<div class="section" id="load-and-save-executor-config">
+<section id="load-and-save-executor-config">
 <h3>Load and save Executor config<a class="headerlink" href="#load-and-save-executor-config" title="Permalink to this headline">¶</a></h3>
 <p>You can use class method <code class="docutils literal notranslate"><span class="pre">Executor.load_config</span></code> and object method <code class="docutils literal notranslate"><span class="pre">exec.save_config</span></code> to load and save YAML config:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
@@ -763,9 +763,9 @@ closing...
 </span><span class="hll"><span class="n">Executor</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="s1">'y.yml'</span><span class="p">)</span>
 </span></pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="meta-attributes">
+</section>
+</section>
+<section id="meta-attributes">
 <h2>Meta attributes<a class="headerlink" href="#meta-attributes" title="Permalink to this headline">¶</a></h2>
 <p>By default, an <code class="docutils literal notranslate"><span class="pre">Executor</span></code> object contains two collections of attributes: <code class="docutils literal notranslate"><span class="pre">.metas</span></code> and <code class="docutils literal notranslate"><span class="pre">.runtime_args</span></code>. They are both
 in <code class="docutils literal notranslate"><span class="pre">SimpleNamespace</span></code> type and contain some key-value information. However, they are defined differently and serve
@@ -808,15 +808,15 @@ class <code class="docutils literal notranslate"><span class="pre">__init__</spa
 <p class="admonition-title">Note</p>
 <p><code class="docutils literal notranslate"><span class="pre">workspace</span></code> will be retrieved from either <code class="docutils literal notranslate"><span class="pre">metas</span></code> or <code class="docutils literal notranslate"><span class="pre">runtime_args</span></code>, in that order</p>
 </div>
-</div>
-<div class="section" id="workspace">
+</section>
+<section id="workspace">
 <h2>Workspace<a class="headerlink" href="#workspace" title="Permalink to this headline">¶</a></h2>
 <p>Executor’s workspace is inherited according to the following rule (<code class="docutils literal notranslate"><span class="pre">OR</span></code> is a python <code class="docutils literal notranslate"><span class="pre">or</span></code>, i.e. first thing first, if NA
 then second):</p>
-<div class="figure align-center">
-<img alt="../../../_images/workspace-inherit.svg" src="../../../_images/workspace-inherit.svg"/></div>
-<span class="target" id="executor-request-parameters"></span></div>
-</div>
+<figure class="align-center">
+<img alt="../../../_images/workspace-inherit.svg" src="../../../_images/workspace-inherit.svg"/></figure>
+<span class="target" id="executor-request-parameters"></span></section>
+</section>
 
             </article>
             <footer>

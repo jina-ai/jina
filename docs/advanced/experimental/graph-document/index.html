@@ -2,7 +2,8 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="Graph Document" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/advanced/experimental/graph-document.html" />
@@ -498,7 +499,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -596,18 +596,18 @@
                         </i>
                     </label>
                 </div>
-                <div class="tex2jax_ignore mathjax_ignore section" id="graph-document">
+                <section class="tex2jax_ignore mathjax_ignore" id="graph-document">
 <h1>Graph Document<a class="headerlink" href="#graph-document" title="Permalink to this headline">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">GraphDocument</span></code> is a subclass of <code class="docutils literal notranslate"><span class="pre">Document</span></code>. It’s a special type of <code class="docutils literal notranslate"><span class="pre">Document</span></code> that adds functionality to let you work
 with a <code class="docutils literal notranslate"><span class="pre">Document</span></code> as a <code class="docutils literal notranslate"><span class="pre">directed</span> <span class="pre">graph</span></code>. Chunks of the document represent the nodes of the graph. <code class="docutils literal notranslate"><span class="pre">GraphDocument</span></code> adds
 graph-specific attributes (<code class="docutils literal notranslate"><span class="pre">nodes</span></code>, <code class="docutils literal notranslate"><span class="pre">adjacency</span></code> list, <code class="docutils literal notranslate"><span class="pre">edge_features</span></code>,…) and operations (<code class="docutils literal notranslate"><span class="pre">add_node</span></code>, <code class="docutils literal notranslate"><span class="pre">remove_node</span></code>
 , <code class="docutils literal notranslate"><span class="pre">add_edge</span></code>, <code class="docutils literal notranslate"><span class="pre">remove_edge</span></code>,…)</p>
-<div class="section" id="graphdocument-constructor">
+<section id="graphdocument-constructor">
 <h2><code class="docutils literal notranslate"><span class="pre">GraphDocument</span></code> constructor<a class="headerlink" href="#graphdocument-constructor" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">GraphDocument</span></code>’s constructor supports the same parameters as <code class="docutils literal notranslate"><span class="pre">Document</span></code>. It mainly adds one
 parameter <code class="docutils literal notranslate"><span class="pre">force_undirected</span></code>. It’s a boolean flag that, when set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, forces the graph document to be undirected.</p>
-</div>
-<div class="section" id="graphdocument-additional-attributes">
+</section>
+<section id="graphdocument-additional-attributes">
 <h2><code class="docutils literal notranslate"><span class="pre">GraphDocument</span></code> additional attributes<a class="headerlink" href="#graphdocument-additional-attributes" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">GraphDocument</span></code> adds the following attributes to <code class="docutils literal notranslate"><span class="pre">Document</span></code>:</p>
 <div class="table-wrapper"><table border="1" class="docutils">
@@ -644,8 +644,8 @@ parameter <code class="docutils literal notranslate"><span class="pre">force_und
 </tr>
 </tbody>
 </table></div>
-</div>
-<div class="section" id="graphdocument-methods">
+</section>
+<section id="graphdocument-methods">
 <h2><code class="docutils literal notranslate"><span class="pre">GraphDocument</span></code> methods<a class="headerlink" href="#graphdocument-methods" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">GraphDocument</span></code> adds the following methods to <code class="docutils literal notranslate"><span class="pre">Document</span></code>:</p>
 <ul class="simple">
@@ -738,8 +738,8 @@ dict features to the edge with parameter <code class="docutils literal notransla
 <li><p><code class="docutils literal notranslate"><span class="pre">to_dgl_graph</span></code>: returns a <code class="docutils literal notranslate"><span class="pre">dgl.DGLGraph</span></code> from the graph document.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">load_from_dgl_graph</span></code>: returns a <code class="docutils literal notranslate"><span class="pre">GraphDocument</span></code> from a <code class="docutils literal notranslate"><span class="pre">dgl.DGLGraph</span></code>.</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
             </article>
             <footer>

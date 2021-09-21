@@ -2,7 +2,8 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="Jina on Kubernetes" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/advanced/experimental/kubernetes.html" />
@@ -498,7 +499,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -596,10 +596,10 @@
                         </i>
                     </label>
                 </div>
-                <div class="tex2jax_ignore mathjax_ignore section" id="jina-on-kubernetes">
+                <section class="tex2jax_ignore mathjax_ignore" id="jina-on-kubernetes">
 <h1>Jina on Kubernetes<a class="headerlink" href="#jina-on-kubernetes" title="Permalink to this headline">¶</a></h1>
 <p>Jina natively supports Kubernetes and you can use it via Flow API.</p>
-<div class="section" id="preliminaries">
+<section id="preliminaries">
 <h2>Preliminaries<a class="headerlink" href="#preliminaries" title="Permalink to this headline">¶</a></h2>
 <p>Please first set up a <code class="docutils literal notranslate"><span class="pre">Kubernetes</span></code> cluster and configure the cluster access locally.</p>
 <div class="admonition tip">
@@ -616,20 +616,20 @@
 <li><p><a class="reference external" href="https://www.digitalocean.com/products/kubernetes/">Digital Ocean</a></p></li>
 </ul>
 </div>
-</div>
-<div class="section" id="deploy-your-flow">
+</section>
+<section id="deploy-your-flow">
 <h2>Deploy your <code class="docutils literal notranslate"><span class="pre">Flow</span></code><a class="headerlink" href="#deploy-your-flow" title="Permalink to this headline">¶</a></h2>
 <p>To deploy a <code class="docutils literal notranslate"><span class="pre">Flow</span></code> on <code class="docutils literal notranslate"><span class="pre">Kubernetes</span></code>, you have to set <code class="docutils literal notranslate"><span class="pre">infrastructure='K8S'</span></code> when creating the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>.</p>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
 <p>All Executors in the Flow should be used with <code class="docutils literal notranslate"><span class="pre">jinahub+docker://</span></code>.</p>
 </div>
-</div>
-<div class="section" id="examples">
+</section>
+<section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="clip-image-encoder">
+<section id="clip-image-encoder">
 <h3>CLIP image encoder<a class="headerlink" href="#clip-image-encoder" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="server">
+<section id="server">
 <h4>Server<a class="headerlink" href="#server" title="Permalink to this headline">¶</a></h4>
 <p>The following code deploys a simple <code class="docutils literal notranslate"><span class="pre">Flow</span></code> with just a single <code class="docutils literal notranslate"><span class="pre">Executor</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -646,8 +646,8 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl port-forward svc/gateway -n index-flow <span class="m">8080</span>:8080 <span class="p">&amp;</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="client">
+</section>
+<section id="client">
 <h4>Client<a class="headerlink" href="#client" title="Permalink to this headline">¶</a></h4>
 <p>Once the port forward is set up, you can request embeddings for images.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">base64</span>
@@ -675,9 +675,9 @@
 <span class="nb">print</span><span class="p">(</span><span class="n">embedding</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="postgres-indexer">
+</section>
+</section>
+<section id="postgres-indexer">
 <h3>Postgres indexer<a class="headerlink" href="#postgres-indexer" title="Permalink to this headline">¶</a></h3>
 <p>This example deploys the index <code class="docutils literal notranslate"><span class="pre">Flow</span></code> on <code class="docutils literal notranslate"><span class="pre">Kubernetes</span></code></p>
 <div class="admonition caution">
@@ -685,7 +685,7 @@
 <p>In this example, we assume that there is a postgres database deployed on <code class="docutils literal notranslate"><span class="pre">Kubernetes</span></code> already.
 You can also modify the database configuration to use a postgres database outside the <code class="docutils literal notranslate"><span class="pre">Kubernetes</span></code> cluster.</p>
 </div>
-<div class="section" id="index-server">
+<section id="index-server">
 <h4>Index server<a class="headerlink" href="#index-server" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
@@ -713,8 +713,8 @@ You can also modify the database configuration to use a postgres database outsid
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl port-forward svc/gateway -n index-flow <span class="m">8080</span>:8080 <span class="p">&amp;</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="index-client">
+</section>
+<section id="index-client">
 <h4>Index client<a class="headerlink" href="#index-client" title="Permalink to this headline">¶</a></h4>
 <p>On the client side, let’s index 100 <code class="docutils literal notranslate"><span class="pre">Documents</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -735,8 +735,8 @@ You can also modify the database configuration to use a postgres database outsid
     <span class="nb">print</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="search-server">
+</section>
+<section id="search-server">
 <h4>Search server<a class="headerlink" href="#search-server" title="Permalink to this headline">¶</a></h4>
 <p>The following code deploys a search <code class="docutils literal notranslate"><span class="pre">Flow</span></code> on <code class="docutils literal notranslate"><span class="pre">Kubernetes</span></code>. In total, there are 9 <code class="docutils literal notranslate"><span class="pre">Kubernetes</span></code> deployments and services
 created.</p>
@@ -786,8 +786,8 @@ created.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl port-forward svc/gateway -n search-flow <span class="m">8081</span>:8080 <span class="p">&amp;</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="search-client">
+</section>
+<section id="search-client">
 <h4>Search client<a class="headerlink" href="#search-client" title="Permalink to this headline">¶</a></h4>
 <p>Get search results for a single <code class="docutils literal notranslate"><span class="pre">Document</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -824,10 +824,10 @@ Please inject the <code class="docutils literal notranslate"><span class="pre">e
 You can use the service mesh <code class="docutils literal notranslate"><span class="pre">Istio</span></code> to automatically inject <code class="docutils literal notranslate"><span class="pre">envoy</span></code> proxies into the <code class="docutils literal notranslate"><span class="pre">Executor</span></code> <code class="docutils literal notranslate"><span class="pre">Pods</span></code> as sidecar.</p></li>
 </ul>
 </div>
-</div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
+</section>
 
             </article>
             <footer>

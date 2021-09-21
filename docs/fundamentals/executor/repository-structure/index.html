@@ -2,7 +2,8 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="Executor File Structure" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/fundamentals/executor/repository-structure.html" />
@@ -498,7 +499,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -596,7 +596,7 @@
                         </i>
                     </label>
                 </div>
-                <div class="tex2jax_ignore mathjax_ignore section" id="executor-file-structure">
+                <section class="tex2jax_ignore mathjax_ignore" id="executor-file-structure">
 <span id="structure-of-the-repository"></span><h1>Executor File Structure<a class="headerlink" href="#executor-file-structure" title="Permalink to this headline">¶</a></h1>
 <p>Besides organizing your Executor code inline-ly (i.e. with <code class="docutils literal notranslate"><span class="pre">Flow.add()</span></code> in the same file), you can also write it as “extern” module and then use it via YAML. This is useful when your Executor’s logic is too complicated to fit into a single file.</p>
 <div class="tab-set docutils">
@@ -679,7 +679,7 @@ flow.py<div class="sd-summary-down docutils">
 </div>
 </details></div>
 </div>
-<div class="section" id="single-python-file">
+<section id="single-python-file">
 <h2>Single Python file<a class="headerlink" href="#single-python-file" title="Permalink to this headline">¶</a></h2>
 <p>When you are only working with a single python file (let’s call it <code class="docutils literal notranslate"><span class="pre">my_executor.py</span></code>), you can simply put it at the root of the repository, and import it directly in <code class="docutils literal notranslate"><span class="pre">config.yml</span></code></p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MyExecutor</span>
@@ -688,8 +688,8 @@ flow.py<div class="sd-summary-down docutils">
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">my_executor.py</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="multiple-python-files">
+</section>
+<section id="multiple-python-files">
 <h2>Multiple Python files<a class="headerlink" href="#multiple-python-files" title="Permalink to this headline">¶</a></h2>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
@@ -757,8 +757,8 @@ your repository (as you would normally do with Python packages). Specifically, y
 </div>
 <p>Here you can then import from <code class="docutils literal notranslate"><span class="pre">utils/data.py</span></code> in <code class="docutils literal notranslate"><span class="pre">my_executor.py</span></code> like this: <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">.utils.data</span> <span class="pre">import</span> <span class="pre">foo</span></code>, and do any other kinds of relative imports that python enables.</p>
 <p>The best thing is that no matter how complicated your package structure, “importing” it in your <code class="docutils literal notranslate"><span class="pre">config.yml</span></code> file is super easy - you always put only <code class="docutils literal notranslate"><span class="pre">executor/__init__.py</span></code> under <code class="docutils literal notranslate"><span class="pre">py_modules</span></code>.</p>
-</div>
-</div>
+</section>
+</section>
 
             </article>
             <footer>

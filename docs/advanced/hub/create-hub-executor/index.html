@@ -2,7 +2,8 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="Create Executor" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/advanced/hub/create-hub-executor.html" />
@@ -498,7 +499,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -596,15 +596,15 @@
                         </i>
                     </label>
                 </div>
-                <div class="tex2jax_ignore mathjax_ignore section" id="create-executor">
+                <section class="tex2jax_ignore mathjax_ignore" id="create-executor">
 <span id="create-hub-executor"></span><h1>Create Executor<a class="headerlink" href="#create-executor" title="Permalink to this headline">¶</a></h1>
 <p>To create your Hub Executor, you just need to run this command in your terminal:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hub new
 </pre></div>
 </div>
-<div class="figure align-center">
+<figure class="align-center">
 <img alt="../../../_images/create-new.gif" src="../../../_images/create-new.gif"/>
-</div>
+</figure>
 <p>When you run the command above, a wizard will ask you some questions about the Executor. For the basic configuration,
 you will be asked two things: The Executor’s name and where it should be saved. The wizard will ask if you want to have
 a more advanced configuration, but it is unnecessary for most of use cases.</p>
@@ -625,7 +625,7 @@ a more advanced configuration, but it is unnecessary for most of use cases.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">executor.py</span></code> should contain the main logic of your Executor.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">README.md</span></code> should describe the usage of the Executor.</p></li>
 </ul>
-<div class="section" id="fields-of-manifest-yml">
+<section id="fields-of-manifest-yml">
 <h2>Fields of <code class="docutils literal notranslate"><span class="pre">manifest.yml</span></code><a class="headerlink" href="#fields-of-manifest-yml" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">manifest.yml</span></code> is optional.</p>
 <p><code class="docutils literal notranslate"><span class="pre">manifest.yml</span></code> annotates your image so that it can be better managed by the Hub portal. To get better appealing on Jina Hub, you may want to
@@ -670,8 +670,8 @@ carefully set <code class="docutils literal notranslate"><span class="pre">manif
 <p class="admonition-title">See Also</p>
 <p><a class="reference internal" href="../executor-best-practices/#hub-executor-best-practices"><span class="std std-ref">Hub Executor best practices</span></a></p>
 </div>
-</div>
-</div>
+</section>
+</section>
 
             </article>
             <footer>

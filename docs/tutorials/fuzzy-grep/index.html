@@ -2,7 +2,8 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="Fuzzy grep in 30 Lines" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/tutorials/fuzzy-grep.html" />
@@ -498,7 +499,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -596,7 +596,7 @@
                         </i>
                     </label>
                 </div>
-                <div class="tex2jax_ignore mathjax_ignore section" id="fuzzy-grep-in-30-lines">
+                <section class="tex2jax_ignore mathjax_ignore" id="fuzzy-grep-in-30-lines">
 <h1>Fuzzy <code class="docutils literal notranslate"><span class="pre">grep</span></code> in 30 Lines<a class="headerlink" href="#fuzzy-grep-in-30-lines" title="Permalink to this headline">¶</a></h1>
 <div class="sd-container-fluid sd-sphinx-override sd-p-0 sd-mt-2 sd-mb-4 docutils">
 <div class="sd-row sd-row-cols-2 sd-gx-2 sd-gy-1 docutils">
@@ -628,14 +628,14 @@ similar to the query. It is like <code class="docutils literal notranslate"><spa
 <li><p><a class="reference external" href="https://en.wikipedia.org/wiki/Euclidean_distance">Euclidean distance</a></p></li>
 </ul>
 </div>
-<div class="section" id="client-server-architecture">
+<section id="client-server-architecture">
 <h2>Client-Server architecture<a class="headerlink" href="#client-server-architecture" title="Permalink to this headline">¶</a></h2>
-<div class="figure align-center">
-<img alt="../../_images/simple-arch.svg" src="../../_images/simple-arch.svg"/></div>
-</div>
-<div class="section" id="server">
+<figure class="align-center">
+<img alt="../../_images/simple-arch.svg" src="../../_images/simple-arch.svg"/></figure>
+</section>
+<section id="server">
 <h2>Server<a class="headerlink" href="#server" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="character-embedding">
+<section id="character-embedding">
 <h3>Character embedding<a class="headerlink" href="#character-embedding" title="Permalink to this headline">¶</a></h3>
 <p>Let’s first build a simple Executor for character embedding:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -654,8 +654,8 @@ similar to the query. It is like <code class="docutils literal notranslate"><spa
             <span class="n">d</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">char_embd</span><span class="p">[</span><span class="n">r_emb</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># average pooling</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="indexer-with-euclidean-distance">
+</section>
+<section id="indexer-with-euclidean-distance">
 <h3>Indexer with Euclidean distance<a class="headerlink" href="#indexer-with-euclidean-distance" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 
@@ -673,8 +673,8 @@ similar to the query. It is like <code class="docutils literal notranslate"><spa
 
 </pre></div>
 </div>
-</div>
-<div class="section" id="put-it-together-in-a-flow">
+</section>
+<section id="put-it-together-in-a-flow">
 <h3>Put it together in a Flow<a class="headerlink" href="#put-it-together-in-a-flow" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
@@ -684,8 +684,8 @@ similar to the query. It is like <code class="docutils literal notranslate"><spa
 
 </pre></div>
 </div>
-</div>
-<div class="section" id="start-the-flow-and-index-data">
+</section>
+<section id="start-the-flow-and-index-data">
 <h3>Start the Flow and index data<a class="headerlink" href="#start-the-flow-and-index-data" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
@@ -699,9 +699,9 @@ similar to the query. It is like <code class="docutils literal notranslate"><spa
 <p><code class="docutils literal notranslate"><span class="pre">open(__file__)</span></code> means open the current file and use it for indexing. Note in some enviroment such as Jupyter Notebook
 and Google Colab, <code class="docutils literal notranslate"><span class="pre">__file__</span></code> is not defined. In this case, you may want to replace it to <code class="docutils literal notranslate"><span class="pre">open('my-source-code.py')</span></code>.</p>
 </div>
-</div>
-</div>
-<div class="section" id="query-via-swaggerui">
+</section>
+</section>
+<section id="query-via-swaggerui">
 <h2>Query via SwaggerUI<a class="headerlink" href="#query-via-swaggerui" title="Permalink to this headline">¶</a></h2>
 <p>Open <code class="docutils literal notranslate"><span class="pre">http://localhost:12345/docs</span></code> (an extended Swagger UI) in your browser, click <kbd>/search</kbd> tab and input:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -715,11 +715,11 @@ and Google Colab, <code class="docutils literal notranslate"><span class="pre">_
 </div>
 <p>That means, **we want to find lines from the above code snippet that are most similar to <code class="docutils literal notranslate"><span class="pre">@request(on=something)</span></code>.**Now
 click <kbd>Execute</kbd> button!</p>
-<div class="figure align-center">
+<figure class="align-center">
 <img alt="../../_images/swagger-ui-prettyprint1.gif" src="../../_images/swagger-ui-prettyprint1.gif"/>
-</div>
-</div>
-<div class="section" id="query-from-python">
+</figure>
+</section>
+<section id="query-from-python">
 <h2>Query from Python<a class="headerlink" href="#query-from-python" title="Permalink to this headline">¶</a></h2>
 <p>Let’s do it in Python then! Keep the above server running and start a simple client:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Document</span>
@@ -742,8 +742,8 @@ click <kbd>Execute</kbd> button!</p>
 [2]0.218218: "from jina import Document, DocumentArray, Executor, Flow, requests"
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
             </article>
             <footer>

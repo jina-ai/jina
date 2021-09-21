@@ -2,7 +2,8 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="Compound Executors" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/advanced/experimental/compound-executor.html" />
@@ -498,7 +499,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -596,7 +596,7 @@
                         </i>
                     </label>
                 </div>
-                <div class="tex2jax_ignore mathjax_ignore section" id="compound-executors">
+                <section class="tex2jax_ignore mathjax_ignore" id="compound-executors">
 <span id="compound-executor"></span><h1>Compound Executors<a class="headerlink" href="#compound-executors" title="Permalink to this headline">¶</a></h1>
 <p>A “Compound” Executor is a special pattern of composing Executor. It glues multiple Executors into one Executor class.
 This allows developers to leverage the feature of multiple Executors while keeping their original implementations <em>as-is</em>.</p>
@@ -609,7 +609,7 @@ filters out results;</p></li>
 </ul>
 <p>A Compound Executor can be also seen as a monolith counterpart of the microservice design. A Compound Executor,
 regardless how many sub-Executors it contains, is normally <strong>located in one process</strong>; hence it can only be scaled in/out jointly.</p>
-<div class="section" id="example">
+<section id="example">
 <h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
 <p>In this example, I will show you how to build a Compound Indexer. I will combine a Storage Indexer and a Searcher Indexer
 into one Executor class.</p>
@@ -649,8 +649,8 @@ you have to copy-paste the code of the classes into your own Executor’s packag
 </div>
 <p>You can then continue adding custom endpoints as you want.</p>
 <p>The usage of <code class="docutils literal notranslate"><span class="pre">CompoundExecutor</span></code> is no different from the normal Executor.</p>
-</div>
-</div>
+</section>
+</section>
 
             </article>
             <footer>

@@ -2,7 +2,8 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="Create Flow" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/flow-api.html" />
@@ -498,7 +499,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -596,7 +596,7 @@
                         </i>
                     </label>
                 </div>
-                <div class="tex2jax_ignore mathjax_ignore section" id="create-flow">
+                <section class="tex2jax_ignore mathjax_ignore" id="create-flow">
 <span id="flow"></span><h1>Create Flow<a class="headerlink" href="#create-flow" title="Permalink to this headline">¶</a></h1>
 <p>An empty Flow can be created via:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -604,7 +604,7 @@
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="section" id="use-a-flow">
+<section id="use-a-flow">
 <h2>Use a Flow<a class="headerlink" href="#use-a-flow" title="Permalink to this headline">¶</a></h2>
 <p>To use <code class="docutils literal notranslate"><span class="pre">f</span></code>, always open it as a context manager, just like you open a file. This is considered the best practice in
 Jina:</p>
@@ -630,19 +630,19 @@ prevent that, use <code class="docutils literal notranslate"><span class="pre">.
 </pre></div>
 </div>
 </div>
-</div>
-<div class="section" id="visualize-a-flow">
+</section>
+<section id="visualize-a-flow">
 <h2>Visualize a Flow<a class="headerlink" href="#visualize-a-flow" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s1">'f.svg'</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="figure align-center">
-<img alt="../../../_images/empty-flow.svg" src="../../../_images/empty-flow.svg"/></div>
+<figure class="align-center">
+<img alt="../../../_images/empty-flow.svg" src="../../../_images/empty-flow.svg"/></figure>
 <p>In Jupyter Lab/Notebook, the <code class="docutils literal notranslate"><span class="pre">Flow</span></code> object is rendered automatically without needing to call <code class="docutils literal notranslate"><span class="pre">plot()</span></code>.</p>
-</div>
-</div>
+</section>
+</section>
 
             </article>
             <footer>

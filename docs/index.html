@@ -2,12 +2,13 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="Welcome to Jina!" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/index.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="Jina is a neural search framework that allows anyone to build SOTA & scalable deep learning search applications in minutes. Make sure that you have Python 3.7+ installed on Linux/MacOS., Install Jina: pip install jina, Run hello-world demos: jina hello fashion, That’s it! In the next few seconds ..." />
+  <meta property="og:description" content="Jina is a neural search framework that allows anyone to build SOTA & scalable deep learning search applications in minutes. Make sure that you have Python 3.7+ installed on Linux/MacOS., Install Jina via PyPI pip install -U jina via Conda conda install jina -c conda-forge via Docker docker run ji..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -498,7 +499,6 @@
 <li class="toctree-l4"><a class="reference internal" href="api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/jina.types.document.helper/">jina.types.document.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -596,17 +596,39 @@
                         </i>
                     </label>
                 </div>
-                <div class="tex2jax_ignore mathjax_ignore section" id="welcome-to-jina">
+                <section class="tex2jax_ignore mathjax_ignore" id="welcome-to-jina">
 <h1>Welcome to Jina!<a class="headerlink" href="#welcome-to-jina" title="Permalink to this headline">¶</a></h1>
 <p>Jina is a neural search framework that allows anyone to build SOTA &amp; scalable deep learning search applications in minutes.</p>
-<ol class="simple">
+<ol>
 <li><p>Make sure that you have Python 3.7+ installed on Linux/MacOS.</p></li>
-<li><p>Install Jina: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">jina</span></code></p></li>
-<li><p>Run hello-world demos: <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">hello</span> <span class="pre">fashion</span></code></p></li>
+<li><p>Install Jina</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">via PyPI</label><div class="tab-content docutils">
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install -U jina
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">via Conda</label><div class="tab-content docutils">
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda install jina -c conda-forge
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--3" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--3">via Docker</label><div class="tab-content docutils">
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker run jinaai/jina:latest
+</pre></div>
+</div>
+</div>
+</div>
+</li>
+<li><p>Run hello-world demo</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hello fashion
+</pre></div>
+</div>
+</li>
 <li><p>That’s it! In the next few seconds the demo will open in a new page in your browser.</p></li>
 </ol>
 <p>Now that you’re set up, let’s dive into more of how Jina works and how to build great apps.</p>
-<div class="section" id="next-steps">
+<section id="next-steps">
 <h2>Next Steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
 <div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
@@ -675,8 +697,8 @@
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="join-the-community">
+</section>
+<section id="join-the-community">
 <h2>Join the community<a class="headerlink" href="#join-the-community" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Join our 1.3K+ members <a class="reference external" href="https://slack.jina.ai">Slack community</a> to chat to our engineers about your use cases, questions, and
@@ -705,8 +727,8 @@ and <a class="reference external" href="https://youtube.com/c/jina-ai">live stre
 </div>
 <hr class="docutils"/>
 <p><a class="reference internal" href="genindex/"><span class="std std-ref">Index</span></a> <a class="reference internal" href="py-modindex/"><span class="std std-ref">Module Index</span></a></p>
-</div>
-</div>
+</section>
+</section>
 
             </article>
             <footer>

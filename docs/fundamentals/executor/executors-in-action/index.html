@@ -2,7 +2,8 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="Executor in Action" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/fundamentals/executor/executors-in-action.html" />
@@ -498,7 +499,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -596,9 +596,9 @@
                         </i>
                     </label>
                 </div>
-                <div class="tex2jax_ignore mathjax_ignore section" id="executor-in-action">
+                <section class="tex2jax_ignore mathjax_ignore" id="executor-in-action">
 <h1>Executor in Action<a class="headerlink" href="#executor-in-action" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="fastai">
+<section id="fastai">
 <h2>Fastai<a class="headerlink" href="#fastai" title="Permalink to this headline">¶</a></h2>
 <p>This <code class="docutils literal notranslate"><span class="pre">Executor</span></code> uses the <a class="reference external" href="https://docs.fast.ai">ResNet18</a> network for object classification on images provided
 by <a class="reference external" href="https://github.com/fastai/fastai">fastai</a>.</p>
@@ -636,8 +636,8 @@ completed.</p>
 
 </pre></div>
 </div>
-</div>
-<div class="section" id="pytorch-lightning">
+</section>
+<section id="pytorch-lightning">
 <h2>Pytorch Lightning<a class="headerlink" href="#pytorch-lightning" title="Permalink to this headline">¶</a></h2>
 <p>This code snippet uses an autoencoder pretrained from cifar10-resnet18 to build an executor that encodes Document blob(
 an ndarray that could for example be an image) into embedding . It demonstrates the use of prebuilt model
@@ -665,8 +665,8 @@ encoder.”</p>
                 <span class="n">doc</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">output_tensor</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="paddle">
+</section>
+<section id="paddle">
 <h2>Paddle<a class="headerlink" href="#paddle" title="Permalink to this headline">¶</a></h2>
 <p>The example below use PaddlePaddle <a class="reference external" href="https://github.com/PaddlePaddle/ERNIE">Ernie</a> model as encoder. The Executor load
 pre-trained Ernie family of tokenizer and model. Convert Jina Document <code class="docutils literal notranslate"><span class="pre">doc.text</span></code> into Paddle Tensor and encode it as
@@ -695,8 +695,8 @@ embedding. As a result, each <code class="docutils literal notranslate"><span cl
             <span class="n">doc</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">pooled</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="tensorflow">
+</section>
+<section id="tensorflow">
 <h2>Tensorflow<a class="headerlink" href="#tensorflow" title="Permalink to this headline">¶</a></h2>
 <p>This <code class="docutils literal notranslate"><span class="pre">Executor</span></code> uses the <a class="reference external" href="https://keras.io/api/applications/mobilenet/">MobileNetV2</a> network for object classification
 on images.</p>
@@ -741,8 +741,8 @@ The <code class="docutils literal notranslate"><span class="pre">Executor</span>
         <span class="k">return</span> <span class="n">resized_tensors</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="mindspore">
+</section>
+<section id="mindspore">
 <h2>MindSpore<a class="headerlink" href="#mindspore" title="Permalink to this headline">¶</a></h2>
 <p>The code snippet below takes <code class="docutils literal notranslate"><span class="pre">docs</span></code> as input and perform matrix multiplication with <code class="docutils literal notranslate"><span class="pre">self.encoding_matrix</span></code>. It
 leverages Mindspore <code class="docutils literal notranslate"><span class="pre">Tensor</span></code> conversion and operation. Finally, the <code class="docutils literal notranslate"><span class="pre">embedding</span></code> of each document will be set as the
@@ -770,8 +770,8 @@ multiplied result as <code class="docutils literal notranslate"><span class="pre
             <span class="n">doc</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">output_tensor</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">()</span>  <span class="c1"># assign the encoding results to ``embedding``</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="scikit-learn">
+</section>
+<section id="scikit-learn">
 <h2>Scikit-learn<a class="headerlink" href="#scikit-learn" title="Permalink to this headline">¶</a></h2>
 <p>This <code class="docutils literal notranslate"><span class="pre">Executor</span></code> uses
 a <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html">TF-IDF</a>
@@ -813,8 +813,8 @@ a single function call) to achieve higher performance.</p>
             <span class="n">doc</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">embedding_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="pytorch">
+</section>
+<section id="pytorch">
 <h2>PyTorch<a class="headerlink" href="#pytorch" title="Permalink to this headline">¶</a></h2>
 <p>The code snippet below takes <code class="docutils literal notranslate"><span class="pre">docs</span></code> as input and perform feature extraction with <code class="docutils literal notranslate"><span class="pre">modelnet</span> <span class="pre">v2</span></code>. It leverages
 Pytorch’s <code class="docutils literal notranslate"><span class="pre">Tensor</span></code> conversion and operation. Finally, the <code class="docutils literal notranslate"><span class="pre">embedding</span></code> of each document will be set as the extracted
@@ -839,8 +839,8 @@ features.</p>
                 <span class="n">doc</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">embed</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="onnx">
+</section>
+<section id="onnx">
 <h2>ONNX<a class="headerlink" href="#onnx" title="Permalink to this headline">¶</a></h2>
 <p>The code snippet bellow converts a <code class="docutils literal notranslate"><span class="pre">Pytorch</span></code> model to the <code class="docutils literal notranslate"><span class="pre">ONNX</span></code> and leverage <code class="docutils literal notranslate"><span class="pre">onnxruntime</span></code> to run inference tasks on
 models from <code class="docutils literal notranslate"><span class="pre">hugging-face</span> <span class="pre">transformers</span></code>.</p>
@@ -891,8 +891,8 @@ models from <code class="docutils literal notranslate"><span class="pre">hugging
             <span class="n">doc</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">pooled</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
             </article>
             <footer>

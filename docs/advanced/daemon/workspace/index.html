@@ -2,7 +2,8 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="Workspace" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/advanced/daemon/workspace.html" />
@@ -498,7 +499,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -596,7 +596,7 @@
                         </i>
                     </label>
                 </div>
-                <div class="tex2jax_ignore mathjax_ignore section" id="workspace">
+                <section class="tex2jax_ignore mathjax_ignore" id="workspace">
 <h1>Workspace<a class="headerlink" href="#workspace" title="Permalink to this headline">¶</a></h1>
 <p>Workspace is the entrypoint for all objects in JinaD. It primarily represents 4 pieces.</p>
 <ol>
@@ -646,7 +646,7 @@ tensorflow
 </ul>
 </li>
 </ol>
-<div class="section" id="create-a-workspace-redoc">
+<section id="create-a-workspace-redoc">
 <h2>Create a workspace (<a class="reference external" href="https://api.jina.ai/daemon/#operation/_create_workspaces_post">redoc</a>)<a class="headerlink" href="#create-a-workspace-redoc" title="Permalink to this headline">¶</a></h2>
 <p>Create a directory (say <code class="docutils literal notranslate"><span class="pre">awesome_project</span></code>) on local which has all your files (<code class="docutils literal notranslate"><span class="pre">yaml</span></code>, <code class="docutils literal notranslate"><span class="pre">py_modules</span></code>, <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code>
 , <code class="docutils literal notranslate"><span class="pre">.jinad</span></code> etc.)</p>
@@ -699,8 +699,8 @@ tensorflow
   🌎  Workspace: Creating...    JinaDClient@16018[I]:jworkspace-480ec0d8-ea02-4adb-8e02-04cd27962863 created successfully
 </pre></div>
 </div>
-</div>
-<div class="section" id="get-details-of-a-workspace-redoc">
+</section>
+<section id="get-details-of-a-workspace-redoc">
 <h2>Get details of a workspace (<a class="reference external" href="https://api.jina.ai/daemon/#operation/_list_workspaces__id__get">redoc</a>)<a class="headerlink" href="#get-details-of-a-workspace-redoc" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">daemon.clients</span> <span class="kn">import</span> <span class="n">JinaDClient</span>
 
@@ -730,8 +730,8 @@ tensorflow
 }
 </pre></div>
 </div>
-</div>
-<div class="section" id="list-all-workspaces-redoc">
+</section>
+<section id="list-all-workspaces-redoc">
 <h2>List all workspaces (<a class="reference external" href="https://api.jina.ai/daemon/#operation/_get_items_workspaces_get">redoc</a>)<a class="headerlink" href="#list-all-workspaces-redoc" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">workspaces</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
 </pre></div>
@@ -758,15 +758,15 @@ tensorflow
 }
 </pre></div>
 </div>
-</div>
-<div class="section" id="delete-a-workspace-redoc">
+</section>
+<section id="delete-a-workspace-redoc">
 <h2>Delete a workspace (<a class="reference external" href="https://api.jina.ai/daemon/#operation/_delete_workspaces__id__delete">redoc</a>)<a class="headerlink" href="#delete-a-workspace-redoc" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">success_deleted</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">workspaces</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">workspace_id</span><span class="p">)</span>
 <span class="k">assert</span> <span class="n">success_deleted</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
             </article>
             <footer>

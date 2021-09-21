@@ -2,7 +2,8 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="JinaD Server" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/advanced/daemon/jinad-server.html" />
@@ -498,7 +499,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -596,13 +596,13 @@
                         </i>
                     </label>
                 </div>
-                <div class="tex2jax_ignore mathjax_ignore section" id="jinad-server">
+                <section class="tex2jax_ignore mathjax_ignore" id="jinad-server">
 <h1>JinaD Server<a class="headerlink" href="#jinad-server" title="Permalink to this headline">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">JinaD</span></code> docker image is published
 on <a class="reference external" href="https://hub.docker.com/r/jinaai/jina/tags?page=1&amp;ordering=last_updated&amp;name=-daemon">Docker Hub</a> and follows
 the <a class="reference external" href="https://github.com/jina-ai/jina/blob/master/RELEASE.md#docker-image-versioning">standard image versioning</a> used in
 Jina.</p>
-<div class="section" id="run">
+<section id="run">
 <h2>Run<a class="headerlink" href="#run" title="Permalink to this headline">¶</a></h2>
 <p>To deploy JinaD, SSH into a remote instance (e.g.- ec2 instance) and run the below command.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker run --add-host host.docker.internal:host-gateway <span class="se">\</span>
@@ -623,15 +623,15 @@ instance and <code class="docutils literal notranslate"><span class="pre">PORT</
 <p><code class="docutils literal notranslate"><span class="pre">JinaD</span></code> should always be deployed as a docker container. Simply starting the server using <code class="docutils literal notranslate"><span class="pre">jinad</span></code> command would not
 work.</p>
 </div>
-</div>
-<div class="section" id="api-docs">
+</section>
+<section id="api-docs">
 <h2>API docs<a class="headerlink" href="#api-docs" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://api.jina.ai/daemon/">Static docs with redoc</a></p></li>
 <li><p><a class="reference external" href="http://localhost:8000/docs">Interactive swagger docs</a> (works once JinaD is started)</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
             </article>
             <footer>

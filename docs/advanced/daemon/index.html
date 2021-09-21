@@ -2,7 +2,8 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="Remote Executors and Flows via JinaD" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/advanced/daemon/index.html" />
@@ -498,7 +499,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -596,13 +596,13 @@
                         </i>
                     </label>
                 </div>
-                <div class="tex2jax_ignore mathjax_ignore section" id="remote-executors-and-flows-via-jinad">
+                <section class="tex2jax_ignore mathjax_ignore" id="remote-executors-and-flows-via-jinad">
 <span id="daemon-cookbook"></span><h1>Remote Executors and Flows via JinaD<a class="headerlink" href="#remote-executors-and-flows-via-jinad" title="Permalink to this headline">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">JinaD</span></code> is a <a class="reference external" href="https://en.wikipedia.org/wiki/Daemon_(computing)">daemon</a> for deploying and managing Jina on remote via a
 RESTful interface. It allows users to create/update/delete Executors and Flows on remote hosts. It achieves isolation of
 deployments by defining a <code class="docutils literal notranslate"><span class="pre">workspace</span></code> for each Jina object, hence allowing a multi-tenant setup with parallel Flows on
 the same host.</p>
-<div class="section" id="minimum-working-example">
+<section id="minimum-working-example">
 <h2>Minimum working example<a class="headerlink" href="#minimum-working-example" title="Permalink to this headline">¶</a></h2>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">Remote (1.2.3.4) </label><div class="tab-content docutils">
@@ -632,8 +632,8 @@ docker run --add-host host.docker.internal:host-gateway <span class="se">\</span
 </div>
 <div class="toctree-wrapper compound">
 </div>
-</div>
-</div>
+</section>
+</section>
 
             </article>
             <footer>

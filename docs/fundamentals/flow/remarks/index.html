@@ -2,7 +2,8 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="Remarks" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/remarks.html" />
@@ -498,7 +499,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -596,9 +596,9 @@
                         </i>
                     </label>
                 </div>
-                <div class="tex2jax_ignore mathjax_ignore section" id="remarks">
+                <section class="tex2jax_ignore mathjax_ignore" id="remarks">
 <h1>Remarks<a class="headerlink" href="#remarks" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="joining-merging">
+<section id="joining-merging">
 <h2>Joining/Merging<a class="headerlink" href="#joining-merging" title="Permalink to this headline">¶</a></h2>
 <p>Combining <code class="docutils literal notranslate"><span class="pre">docs</span></code> from multiple requests is already done by the <code class="docutils literal notranslate"><span class="pre">ZEDRuntime</span></code> before feeding them to the Executor’s
 function. Hence, simple joining is just returning this <code class="docutils literal notranslate"><span class="pre">docs</span></code>. Complicated joining should be implemented at <code class="docutils literal notranslate"><span class="pre">Document</span></code>
@@ -651,8 +651,8 @@ function. Hence, simple joining is just returning this <code class="docutils lit
         <span class="k">return</span> <span class="n">docs</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
             </article>
             <footer>
