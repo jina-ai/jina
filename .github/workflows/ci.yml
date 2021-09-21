@@ -223,7 +223,6 @@ jobs:
           ./tests/k8s/test_k8s.sh
         timeout-minutes: 30
 
-
   prep-testbed:
     runs-on: ubuntu-latest
     needs: [commit-lint, lint-flake-8, code-injection]
@@ -233,10 +232,8 @@ jobs:
         run: |
           sudo apt-get install jq
           echo "::set-output name=matrix::$(bash scripts/get-all-test-paths.sh)"
-          echo "::set-output name=windows::$(bash scripts/get-all-test-paths.sh windows)"
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
-      windows: ${{ steps.set-matrix.outputs.windows }}
 
   core-test:
     needs: prep-testbed
@@ -249,10 +246,6 @@ jobs:
         python-version: [3.7]
         test-path: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
     steps:
-#      - name: Cancel Previous Runs
-#        uses: styfle/cancel-workflow-action@0.9.0
-#        with:
-#          access_token: ${{ github.token }}
       - uses: actions/checkout@v2
 #        with:
 #          submodules: true
@@ -309,45 +302,6 @@ jobs:
           name: ${{ matrix.test-path }}-codecov
           flags: ${{ steps.test.outputs.codecov_flag }}
           fail_ci_if_error: false
-
-  windows-test:
-    needs: prep-testbed
-    runs-on: windows-latest
-    env:
-      JINA_DAEMON_BUILD: DEVEL
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: [3.7]
-        test-path: ${{fromJson(needs.prep-testbed.outputs.windows)}}
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-          architecture: x64
-      - name: Prepare enviroment
-        run: |
-          docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
-          python -m pip install --upgrade pip
-          python -m pip install wheel
-          pip install ".[all]" --no-cache-dir
-          $env:PYTHONIOENCODING='utf-8'
-          jina
-          $env:JINA_LOG_LEVEL='ERROR'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Test
-        id: test
-        run: |
-          $env:PYTHONIOENCODING='utf-8'
-          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --timeout=360 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
-        timeout-minutes: 20
-        env:
-          JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
-          JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # just for blocking the merge until all parallel core-test are successful
   success-all-test:
