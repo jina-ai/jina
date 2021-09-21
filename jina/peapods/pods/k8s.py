@@ -81,7 +81,7 @@ class K8sPod(BasePod):
             logger=JinaLogger(f'deploy_{self.name}'),
             replicas=1,
             pull_policy='Always',
-            init_container=None,
+            port_expose=self.args.port_expose,
         )
 
     def _deploy_runtime(self, deployment_args, replicas, deployment_id):
