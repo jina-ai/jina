@@ -179,7 +179,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -625,9 +625,51 @@ a more advanced configuration, but it is unnecessary for most of use cases.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">executor.py</span></code> should contain the main logic of your Executor.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">README.md</span></code> should describe the usage of the Executor.</p></li>
 </ul>
+<div class="section" id="fields-of-manifest-yml">
+<h2>Fields of <code class="docutils literal notranslate"><span class="pre">manifest.yml</span></code><a class="headerlink" href="#fields-of-manifest-yml" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">manifest.yml</span></code> is optional.</p>
+<p><code class="docutils literal notranslate"><span class="pre">manifest.yml</span></code> annotates your image so that it can be better managed by the Hub portal. To get better appealing on Jina Hub, you may want to
+carefully set <code class="docutils literal notranslate"><span class="pre">manifest.yml</span></code> to the correct values.</p>
+<div class="table-wrapper"><table border="1" class="docutils">
+<thead>
+<tr>
+<th>Key</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>manifest_version</code></td>
+<td>The version of the manifest protocol</td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>Human-readable title of the Executor</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td>Human-readable description of the Executor</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>url</code></td>
+<td>URL to find more information on the Executor, normally it should be the GitHub repo URL</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>keywords</code></td>
+<td>A list of strings help user to filter and locate your package</td>
+<td>None</td>
+</tr>
+</tbody>
+</table></div>
 <div class="seealso admonition">
 <p class="admonition-title">See Also</p>
 <p><a class="reference internal" href="../executor-best-practices/#hub-executor-best-practices"><span class="std std-ref">Hub Executor best practices</span></a></p>
+</div>
 </div>
 </div>
 
@@ -664,7 +706,7 @@ a more advanced configuration, but it is unnecessary for most of use cases.</p>
                 <div class="related-information">
                     Copyright &#169; Jina AI Limited. All rights reserved.
                     |
-                    Last updated on Sep 20, 2021.
+                    Last updated on Sep 21, 2021.
                 </div>
                 
             </footer>
@@ -673,6 +715,23 @@ a more advanced configuration, but it is unnecessary for most of use cases.</p>
             
 
             <div class="toc-sticky toc-scroll">
+                
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">Create Executor</a><ul>
+<li><a class="reference internal" href="#fields-of-manifest-yml">Fields of <code class="docutils literal notranslate"><span class="pre">manifest.yml</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
                 
                 <details id='jina-docbot' class="jina-doc-bot sd-sphinx-override sd-dropdown sd-card">
     <summary class="sd-summary-title sd-card-header">

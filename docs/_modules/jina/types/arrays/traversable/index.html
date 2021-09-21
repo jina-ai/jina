@@ -704,11 +704,16 @@
 
         <span class="n">_batch</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">require_attr</span><span class="p">:</span>
+            <span class="c1"># For array-valued attributes we need to compare to None</span>
+            <span class="k">if</span> <span class="n">require_attr</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'embedding'</span><span class="p">,</span> <span class="s1">'blob'</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">require_attr</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">_batch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">require_attr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">require_attr</span><span class="p">):</span>
                     <span class="n">_batch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">_batch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_batch</span><span class="p">)</span> <span class="o">==</span> <span class="n">batch_size</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="n">_batch</span>
                 <span class="n">_batch</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>
@@ -732,7 +737,7 @@
                 <div class="related-information">
                     Copyright &#169; Jina AI Limited. All rights reserved.
                     |
-                    Last updated on Sep 20, 2021.
+                    Last updated on Sep 21, 2021.
                 </div>
                 
             </footer>

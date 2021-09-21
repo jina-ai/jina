@@ -34,6 +34,22 @@ MyExecutor/
 - `executor.py` should contain the main logic of your Executor.
 - `README.md` should describe the usage of the Executor.
 
+
+## Fields of `manifest.yml`
+
+`manifest.yml` is optional.
+
+`manifest.yml` annotates your image so that it can be better managed by the Hub portal. To get better appealing on Jina Hub, you may want to 
+carefully set `manifest.yml` to the correct values.
+
+| Key | Description | Default |
+| --- | --- | --- |
+| `manifest_version` | The version of the manifest protocol | `1` |
+| `name` | Human-readable title of the Executor | None |
+| `description` | Human-readable description of the Executor | None |
+| `url` | URL to find more information on the Executor, normally it should be the GitHub repo URL | None |
+| `keywords` | A list of strings help user to filter and locate your package  | None | 
+
 ```{admonition} See Also
 :class: seealso
 {ref}`Hub Executor best practices <hub-executor-best-practices>`
