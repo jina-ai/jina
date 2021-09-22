@@ -39,7 +39,7 @@ Besides, there are two types of special indexer,
 
 ```
 
-## Indexing vs searching operations
+## Indexing vs Searching Operations
 
 The recommended usage of these Executors is to split them into Indexing vs Search Flows.
 In the Indexing Flow, you perform write, update, and delete. 
@@ -60,7 +60,8 @@ For a showcase code, check our [integration tests](https://github.com/jina-ai/ex
 
 The split between indexing and search Flows allows you to continuously serve requests in your application (in the search Flow), while still being able to write or modify the underlying data. Then when you want to update the state of the searchable data for your users, you perform a dump and rolling update.
 
-## Dump and rolling update
+(dump-rolling-restart)=
+## Dump and Rolling Update
 
 The communication between index and search Flows is done via this pair of actions.
 The **dump** action tells the indexer to export its internal data (from whatever format it stores it in) to a disk location, optimized to be read by the shards in your search Flow.

@@ -271,6 +271,8 @@
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Indexers on Jina Hub</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../compound-executor/">Compound Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../graph-document/">Graph Document</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scaling/">Scaling Executors in Kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../indexers-cheat-sheet/">Indexer Cheat Sheet</a></li>
 </ul>
 </li>
 </ul>
@@ -638,7 +640,7 @@
 </ul>
 </div>
 <section id="indexing-vs-searching-operations">
-<h2>Indexing vs searching operations<a class="headerlink" href="#indexing-vs-searching-operations" title="Permalink to this headline">¶</a></h2>
+<h2>Indexing vs Searching Operations<a class="headerlink" href="#indexing-vs-searching-operations" title="Permalink to this headline">¶</a></h2>
 <p>The recommended usage of these Executors is to split them into Indexing vs Search Flows.
 In the Indexing Flow, you perform write, update, and delete.
 In order to search them, you need to start a Search Flow, dump the data from the Index Flow, and load it into the Query Flow.</p>
@@ -654,7 +656,7 @@ In order to search them, you need to start a Search Flow, dump the data from the
 <p>The split between indexing and search Flows allows you to continuously serve requests in your application (in the search Flow), while still being able to write or modify the underlying data. Then when you want to update the state of the searchable data for your users, you perform a dump and rolling update.</p>
 </section>
 <section id="dump-and-rolling-update">
-<h2>Dump and rolling update<a class="headerlink" href="#dump-and-rolling-update" title="Permalink to this headline">¶</a></h2>
+<span id="dump-rolling-restart"></span><h2>Dump and Rolling Update<a class="headerlink" href="#dump-and-rolling-update" title="Permalink to this headline">¶</a></h2>
 <p>The communication between index and search Flows is done via this pair of actions.
 The <strong>dump</strong> action tells the indexer to export its internal data (from whatever format it stores it in) to a disk location, optimized to be read by the shards in your search Flow.
 At the other end, the <strong>rolling update</strong> tells the search Flow to recreate its internal state with the new version of the data.</p>
@@ -746,8 +748,8 @@ At the other end, the <strong>rolling update</strong> tells the search Flow to r
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">Indexers on Jina Hub</a><ul>
-<li><a class="reference internal" href="#indexing-vs-searching-operations">Indexing vs searching operations</a></li>
-<li><a class="reference internal" href="#dump-and-rolling-update">Dump and rolling update</a></li>
+<li><a class="reference internal" href="#indexing-vs-searching-operations">Indexing vs Searching Operations</a></li>
+<li><a class="reference internal" href="#dump-and-rolling-update">Dump and Rolling Update</a></li>
 </ul>
 </li>
 </ul>
