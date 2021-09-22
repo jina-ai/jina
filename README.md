@@ -18,14 +18,14 @@
 </p>
 
 
-Jina<sup><a href=".github/pronounce-jina.mp3">`🔊`</a></sup> is a neural search framework that empowers anyone to build SOTA & scalable deep learning search applications in minutes.
+Jina<sup><a href=".github/pronounce-jina.mp3">`🔊`</a></sup> is a neural search framework that empowers anyone to build SOTA and scalable deep learning search applications in minutes.
 
 🌌 **All data types** - Scalable indexing, querying, understanding of any data: video, image, long/short text, music, source code, PDF, etc.
 
 ⏱️ **Save time** - *The* design pattern of neural search systems, from zero to a production-ready system in minutes.
 
 🌩️ **Fast & cloud-native** - Distributed architecture from day one, scalable & cloud-native by design: enjoy
-containerizing, streaming, paralleling, sharding, async scheduling, HTTP/gRPC/WebSocket protocol.
+containerizing, streaming, paralleling, sharding, async scheduling, HTTP/gRPC/WebSocket protocols.
 
 🍱 **Own your stack** - Keep end-to-end stack ownership of your solution, avoid integration pitfalls you get with
 fragmented, multi-vendor, generic legacy tools.
@@ -132,7 +132,7 @@ c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
 
 <!-- README-CLIENT-END -->
 
-, which prints the following results:
+This prints the following results:
 
 ```text
          Client@1608[S]:connected to the gateway at localhost:12345!
@@ -165,8 +165,7 @@ your active involvement.
 - [Release cycles and development stages](RELEASE.md)
 - [Contributing guidelines](CONTRIBUTING.md)
 - [Code of conduct](https://github.com/jina-ai/jina/blob/master/.github/CODE_OF_CONDUCT.md)
-  community
-- [Get yourself some swags](https://jina.ai/blog/swag)
+- [Get swag](https://jina.ai/blog/swag)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-181-orange.svg?style=flat-square)](#contributors-)
