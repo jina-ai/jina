@@ -1,7 +1,7 @@
 name: PR
 
 on:
-  pull_request_target:
+  pull_request:
 
 jobs:
   assign-label-to-pr:
@@ -19,9 +19,49 @@ jobs:
       - uses: actions/labeler@v3
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
+      - run: |
+          echo ${{ github.event.pull_request.labels.*.name }}
       - if: contains( github.event.pull_request.labels.*.name, 'area/docs')
-        uses: benc-uk/workflow-dispatch@v1
+        run: echo '::set-output name=DOCS_UPDATED::YES'
+      # - uses: benc-uk/workflow-dispatch@v1
+      #   with:
+      #     workflow: Deploy docs to Netlify
+      #     inputs: '{ "branch": "${{ github.head_ref }}" }'
+      #     ref: master
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-to-netlify:
+    runs-on: ubuntu-latest
+    needs: [assign-label-to-pr]
+    if: needs.assign-label-to-pr.outputs.DOCS_UPDATED == 'YES'
+    steps:
+      - run: |
+          echo "BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
+      - uses: actions/checkout@v2
         with:
-          workflow: Deploy docs to Netlify
-          inputs: '{ "branch": "${{ github.head_ref }}" }'
-          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: jina-ai/jina
+          ref: ${{ env.BRANCH_NAME }}
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - run: |
+          npm i -g netlify-cli
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          bash makedoc.sh
+          netlify deploy --dir=_build/dirhtml --alias=${{ env.BRANCH_NAME }} --message="Deploying docs to ${{ env.BRANCH_NAME }} branch"
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        working-directory: docs
+      - name: Status check
+        uses: Sibz/github-status-action@v1.1.1
+        with:
+          authToken: ${{ secrets.GITHUB_TOKEN }}
+          context: Netlify preview
+          state: success
+          target_url: https://${{ env.BRANCH_NAME }}--jina-docs.netlify.app
+          
