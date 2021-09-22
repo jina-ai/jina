@@ -18,6 +18,7 @@ from typing import (
 import numpy as np
 
 from ... import __windows__
+__windows__ = True
 from .abstract import AbstractDocumentArray
 from .bpm import BufferPoolManager
 from .document import DocumentArray, DocumentArrayGetAttrMixin
@@ -118,8 +119,8 @@ class DocumentArrayMemmap(
         open(self._header_path, mode).close()
         open(self._body_path, mode).close()
 
-        self._header = open(self._header_path, 'r+b')
-        self._body = open(self._body_path, 'r+b')
+        self._header = open(self._header_path, 'w+b')
+        self._body = open(self._body_path, 'w+b', buffering=0)
 
         tmp = np.frombuffer(
             self._header.read(),
@@ -285,6 +286,8 @@ class DocumentArrayMemmap(
                 if __windows__
                 else mmap.mmap(self._body_fileno, length=0, prot=mmap.PROT_READ)
             )
+        if __windows__:
+            self._body.seek(self._start)
         return self._last_mmap
 
     def get_doc_by_key(self, key: str):
@@ -295,6 +298,7 @@ class DocumentArrayMemmap(
         :return: returns a document
         """
         pos_info = self._header_map[key]
+        print(pos_info)
         _, p, r, r_plus_l = pos_info
         return Document(self._mmap[p + r : p + r_plus_l])
 
