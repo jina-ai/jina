@@ -19,16 +19,16 @@ jobs:
       - uses: actions/labeler@v3
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
-      - run: |
-          printf ${{ github.event }}
-          echo ${{ github.event.pull_request.labels.*.name }}
-      - if: contains( github.event.pull_request.labels.*.name, 'area/docs')
-        run: echo '::set-output name=DOCS_UPDATED::YES'
+      - id: docs_updated
+        if: contains( github.event.pull_request.labels.*.name, 'area/docs')
+        run: echo '::set-output name=docs::true'
+    outputs:
+      docs: ${{ steps.docs_updated.outputs.docs }}
 
   deploy-to-netlify:
     runs-on: ubuntu-latest
     needs: [assign-label-to-pr]
-    if: {{ needs.assign-label-to-pr.outputs.DOCS_UPDATED == 'YES' }}
+    if: ${{ needs.assign-label-to-pr.outputs.docs == 'true' }}
     steps:
       - run: |
           echo "BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
@@ -42,7 +42,8 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
-      - run: |
+      - name: Build and Deploy
+        run: |
           npm i -g netlify-cli
           python -m pip install --upgrade pip
           pip install -r requirements.txt
@@ -52,11 +53,27 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         working-directory: docs
-      - name: Status check
-        uses: Sibz/github-status-action@v1.1.1
+      - name: Find the prev comment if exists
+        uses: peter-evans/find-comment@v1
+        id: fc
         with:
-          authToken: ${{ secrets.GITHUB_TOKEN }}
-          context: Netlify preview
-          state: success
-          target_url: https://${{ env.BRANCH_NAME }}--jina-docs.netlify.app
-          
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: 'Docs are deployed'
+      - name: Delete comment if exists
+        if: ${{ steps.fc.outputs.comment-id != 0 && !github.event.pull_request.head.repo.fork }}
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.issues.deleteComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: ${{ steps.fc.outputs.comment-id }},
+            })
+      - name: Add or update comment
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            :memo: Docs are deployed on https://${{ env.BRANCH_NAME }}--jina-docs.netlify.app :tada: 
