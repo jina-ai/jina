@@ -584,3 +584,6 @@ def test_exclude_self_should_keep_limit(limit, exclude_self):
     da.match(da, exclude_self=exclude_self, limit=limit)
     for d in da:
         assert len(d.matches) == limit
+        if exclude_self:
+            for m in d.matches:
+                assert d.id != m.id
