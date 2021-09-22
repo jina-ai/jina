@@ -33,7 +33,7 @@ client.status
 ```json
 {
   "jina" {
-    "jina": "2.0.11",
+    "jina": "2.1.2",
     ...
   },
   "envs": {
