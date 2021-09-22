@@ -45,5 +45,5 @@ docker run --add-host host.docker.internal:host-gateway \
 
   This is the default root workspace for JinaD. This gets mounted internally to all child containers. If we don't mount
   this while starting, `/tmp/jinad` local to JinaD would get mounted to child containers, which is not accessible by
-  DOCKERHOST
+  DOCKERHOST.
 
