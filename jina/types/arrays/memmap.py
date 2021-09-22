@@ -18,6 +18,7 @@ from typing import (
 import numpy as np
 
 from ... import __windows__
+
 __windows__ = True
 from .abstract import AbstractDocumentArray
 from .bpm import BufferPoolManager
