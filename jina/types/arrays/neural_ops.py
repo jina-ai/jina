@@ -96,15 +96,15 @@ class DocumentArrayNeuralOpsMixin:
             )
 
         metric_name = metric_name or (metric.__name__ if callable(metric) else metric)
-        limit = len(rhv) if limit is None else (limit + (1 if exclude_self else 0))
+        _limit = len(rhv) if limit is None else (limit + (1 if exclude_self else 0))
 
         if batch_size:
             dist, idx = lhv._match_online(
-                rhv, cdist, limit, normalization, metric_name, batch_size
+                rhv, cdist, _limit, normalization, metric_name, batch_size
             )
         else:
             dist, idx = lhv._match(
-                rhv, cdist, limit, normalization, metric_name, is_sparse
+                rhv, cdist, _limit, normalization, metric_name, is_sparse
             )
 
         for _q, _ids, _dists in zip(lhv, idx, dist):
@@ -121,7 +121,7 @@ class DocumentArrayNeuralOpsMixin:
                 if not (d.id == _q.id and exclude_self):
                     _q.matches.append(d, scores={metric_name: _dist})
                     num_matches += 1
-                    if num_matches >= limit:
+                    if num_matches >= (limit or _limit):
                         break
 
     def _match(self, darray, cdist, limit, normalization, metric_name, is_sparse):
