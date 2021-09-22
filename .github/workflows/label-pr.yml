@@ -19,3 +19,9 @@ jobs:
       - uses: actions/labeler@v3
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
+      - if: contains( github.event.pull_request.labels.*.name, 'area/docs')
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: Deploy docs to Netlify
+          inputs: '{ "branch": "${{ github.head_ref }}" }'
+          token: ${{ secrets.GITHUB_TOKEN }}
