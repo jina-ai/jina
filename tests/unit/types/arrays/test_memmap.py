@@ -337,7 +337,6 @@ def test_memmap_update_in_memory(tmpdir):
         assert doc.content == f'new content {idx}'
 
 
-@pytest.mark.xfail(__windows__, reason='broken on Windows')
 def test_memmap_save_reload(tmpdir):
     docs = list(random_docs(100))
     dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=100)

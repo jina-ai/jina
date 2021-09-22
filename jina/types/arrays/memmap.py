@@ -119,8 +119,8 @@ class DocumentArrayMemmap(
         open(self._header_path, mode).close()
         open(self._body_path, mode).close()
 
-        self._header = open(self._header_path, 'w+b')
-        self._body = open(self._body_path, 'w+b', buffering=0)
+        self._header = open(self._header_path, 'r+b')
+        self._body = open(self._body_path, 'r+b')
 
         tmp = np.frombuffer(
             self._header.read(),
@@ -298,7 +298,6 @@ class DocumentArrayMemmap(
         :return: returns a document
         """
         pos_info = self._header_map[key]
-        print(pos_info)
         _, p, r, r_plus_l = pos_info
         return Document(self._mmap[p + r : p + r_plus_l])
 
