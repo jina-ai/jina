@@ -4,6 +4,8 @@ The [Jina Hub](http://hub.jina.ai) offers multiple Indexers for different use-ca
 In a lot of production use-cases Indexers heavily use {ref}`shards <shards>` and {ref}`replicas <replicas>`.
 There are four major questions that should be answered, when deciding for an Indexer and its configuration.
 
+## Questions
+
 ### Does my data fit into memory?
 
 Estimated the total number `N` of Documents that you want to index.
