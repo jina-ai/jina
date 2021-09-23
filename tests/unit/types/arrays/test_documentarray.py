@@ -320,6 +320,18 @@ def test_da_sort_by_document_interface_not_in_proto():
     assert da[0].embedding.shape == (1,)
 
 
+def test_da_sort_by_document_interface_not_in_proto_topk():
+    docs = [Document(embedding=np.array([1] * (10 - i))) for i in range(10)]
+    da = DocumentArray(
+        [docs[i] if (i % 2 == 0) else docs[i].proto for i in range(len(docs))]
+    )
+    assert len(da) == 10
+    assert da[0].embedding.shape == (10,)
+
+    da.sort(key=lambda d: d.embedding.shape[0], top_k=2)
+    assert da[0].embedding.shape == (9,)
+
+
 def test_da_sort_by_document_interface_in_proto():
     docs = [Document(embedding=np.array([1] * (10 - i))) for i in range(10)]
     da = DocumentArray(
@@ -330,6 +342,18 @@ def test_da_sort_by_document_interface_in_proto():
 
     da.sort(key=lambda d: d.embedding.dense.shape[0])
     assert da[0].embedding.shape == (1,)
+
+
+def test_da_sort_by_document_interface_in_proto_topk():
+    docs = [Document(embedding=np.array([1] * (10 - i))) for i in range(10)]
+    da = DocumentArray(
+        [docs[i] if (i % 2 == 0) else docs[i].proto for i in range(len(docs))]
+    )
+    assert len(da) == 10
+    assert da[0].embedding.shape == (10,)
+
+    da.sort(key=lambda d: d.embedding.dense.shape[0], top_k=2)
+    assert da[0].embedding.shape == (9,)
 
 
 def test_da_reverse():

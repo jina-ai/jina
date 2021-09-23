@@ -375,14 +375,19 @@ class DocumentArray(
             hi_idx -= 1
         self._update_id_to_index_map()
 
-    def sort(self, key=None, *args, **kwargs):
+    def sort(self, key=None, top_k: int = None, *args, **kwargs):
         """
         Sort the items of the :class:`DocumentArray` in place.
 
         :param key: key callable to sort based upon
+        :param top_k: sort only upto top_k Document from DocumentArray
         :param args: variable set of arguments to pass to the sorting underlying function
         :param kwargs: keyword arguments to pass to the sorting underlying function
         """
+        # Only for DocumentArray
+        if isinstance(self._pb_body, list):
+            self._pb_body = self._pb_body[:top_k]
+
         if key:
 
             def overriden_key(proto):
