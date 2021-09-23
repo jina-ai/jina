@@ -190,8 +190,12 @@ ac_table = {
             '--pea-id',
             '--pea-role',
             '--noblock-on-start',
+            '--k8s-uses-init',
+            '--k8s-mount-path',
+            '--k8s-init-container-command',
+            '--k8s-namespace',
+            '--k8s-custom-resource-dir',
             '--dynamic-routing',
-            '--connect-to-predecessor',
         ],
         'hub new': ['--help'],
         'hub push': [

@@ -568,3 +568,22 @@ def test_match_dam_traversal_c_on_right(get_two_docarray, tmpdir):
     dam.extend(da2)
     da1.match(dam, traversal_rdarray=['c'])
     assert len(da1[0].matches) == len(da2[0].chunks) + len(da2[1].chunks)
+
+
+@pytest.mark.parametrize('exclude_self', [True, False])
+@pytest.mark.parametrize('limit', [1, 2, 3])
+def test_exclude_self_should_keep_limit(limit, exclude_self):
+    da = DocumentArray(
+        [
+            Document(embedding=np.array([3, 1, 0])),
+            Document(embedding=np.array([3, 0, 1])),
+            Document(embedding=np.array([3, 0, 0])),
+            Document(embedding=np.array([3, 1, 1])),
+        ]
+    )
+    da.match(da, exclude_self=exclude_self, limit=limit)
+    for d in da:
+        assert len(d.matches) == limit
+        if exclude_self:
+            for m in d.matches:
+                assert d.id != m.id

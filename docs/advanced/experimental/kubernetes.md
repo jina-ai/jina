@@ -1,3 +1,4 @@
+(kubernetes)=
 # Jina on Kubernetes
 
 Jina natively supports Kubernetes and you can use it via Flow API.

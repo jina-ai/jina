@@ -28,6 +28,7 @@ from ..document import Document
 from ..struct import StructView
 from ...helper import typename
 from ...proto import jina_pb2
+import csv
 
 try:
     # when protobuf using Cpp backend
@@ -440,28 +441,32 @@ class DocumentArray(
     def save(
         self, file: Union[str, TextIO, BinaryIO], file_format: str = 'json'
     ) -> None:
-        """Save array elements into a JSON or a binary file.
+        """Save array elements into a JSON, a binary file or a CSV file.
 
         :param file: File or filename to which the data is saved.
-        :param file_format: `json` or `binary`. JSON file is human-readable,
-            but binary format gives much smaller size and faster save/load speed.
+        :param file_format: `json` or `binary` or `csv`. JSON and CSV files are human-readable,
+            but binary format gives much smaller size and faster save/load speed. Note that, CSV file has very limited
+            compatability, complex DocumentArray with nested structure can not be restored from a CSV file.
         """
         if file_format == 'json':
             self.save_json(file)
         elif file_format == 'binary':
             self.save_binary(file)
+        elif file_format == 'csv':
+            self.save_csv(file)
         else:
-            raise ValueError('`format` must be one of [`json`, `binary`]')
+            raise ValueError('`format` must be one of [`json`, `binary`, `csv`]')
 
     @classmethod
     def load(
         cls, file: Union[str, TextIO, BinaryIO], file_format: str = 'json'
     ) -> 'DocumentArray':
-        """Load array elements from a JSON or a binary file.
+        """Load array elements from a JSON or a binary file, or a CSV file.
 
         :param file: File or filename to which the data is saved.
-        :param file_format: `json` or `binary`. JSON file is human-readable,
-            but binary format gives much smaller size and faster save/load speed.
+        :param file_format: `json` or `binary` or `csv`. JSON and CSV files are human-readable,
+            but binary format gives much smaller size and faster save/load speed. CSV file has very limited compatability,
+            complex DocumentArray with nested structure can not be restored from a CSV file.
 
         :return: the loaded DocumentArray object
         """
@@ -469,8 +474,10 @@ class DocumentArray(
             return cls.load_json(file)
         elif file_format == 'binary':
             return cls.load_binary(file)
+        elif file_format == 'csv':
+            return cls.load_csv(file)
         else:
-            raise ValueError('`format` must be one of [`json`, `binary`]')
+            raise ValueError('`format` must be one of [`json`, `binary`, `csv`]')
 
     def save_binary(self, file: Union[str, BinaryIO]) -> None:
         """Save array elements into a binary file.
@@ -506,6 +513,37 @@ class DocumentArray(
             for d in self:
                 json.dump(d.dict(), fp)
                 fp.write('\n')
+
+    def save_csv(self, file: Union[str, TextIO], flatten_tags: bool = True) -> None:
+        """Save array elements into a CSV file.
+
+        :param file: File or filename to which the data is saved.
+        :param flatten_tags: if set, then all fields in ``Document.tags`` will be flattened into ``tag__fieldname`` and
+            stored as separated columns. It is useful when ``tags`` contain a lot of information.
+        """
+        if hasattr(file, 'write'):
+            file_ctx = nullcontext(file)
+        else:
+            file_ctx = open(file, 'w')
+
+        with file_ctx as fp:
+            if flatten_tags:
+                keys = list(self[0].dict().keys()) + list(
+                    f'tag__{k}' for k in self[0].tags
+                )
+                keys.remove('tags')
+            else:
+                keys = list(self[0].dict().keys())
+
+            writer = csv.DictWriter(fp, fieldnames=keys)
+
+            writer.writeheader()
+            for d in self:
+                pd = d.dict(prettify_ndarrays=True)
+                if flatten_tags:
+                    t = pd.pop('tags')
+                    pd.update({f'tag__{k}': v for k, v in t.items()})
+                writer.writerow(pd)
 
     @classmethod
     def load_json(cls, file: Union[str, TextIO]) -> 'DocumentArray':
@@ -546,6 +584,26 @@ class DocumentArray(
         with file_ctx as fp:
             dap.ParseFromString(fp.read())
             da = DocumentArray(dap.docs)
+            return da
+
+    @classmethod
+    def load_csv(cls, file: Union[str, BinaryIO]) -> 'DocumentArray':
+        """Load array elements from a binary file.
+
+        :param file: File or filename to which the data is saved.
+
+        :return: a DocumentArray object
+        """
+
+        if hasattr(file, 'read'):
+            file_ctx = nullcontext(file)
+        else:
+            file_ctx = open(file, 'r')
+
+        with file_ctx as fp:
+            da = DocumentArray()
+            for v in csv.DictReader(fp):
+                da.append(Document(v))
             return da
 
     # Properties for fast access of commonly used attributes

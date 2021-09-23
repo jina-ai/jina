@@ -276,6 +276,15 @@ def test_document_save_load(method, tmp_path):
             assert d.content == d_r.content
 
 
+@pytest.mark.parametrize('flatten_tags', [True, False])
+def test_da_csv_write(flatten_tags, tmp_path):
+    da1 = DocumentArray(random_docs(1000))
+    tmpfile = os.path.join(tmp_path, 'test')
+    da1.save_csv(tmpfile, flatten_tags)
+    with open(tmpfile) as fp:
+        assert len([v for v in fp]) == len(da1) + 1
+
+
 def test_documentarray_filter():
     da = DocumentArray([Document() for _ in range(6)])
 

@@ -594,3 +594,7 @@ def test_blobs_wrong_len(tmpdir):
 
     with pytest.raises(ValueError, match='the number of rows in the'):
         dam.blobs = blobs
+
+
+def test_mmap_path_getter(memmap_with_text_and_embedding, tmpdir):
+    assert memmap_with_text_and_embedding.path == tmpdir
