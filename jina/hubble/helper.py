@@ -278,17 +278,32 @@ def disk_cache_offline(
         @wraps(func)
         def wrapper(*args, **kwargs):
             call_hash = f'{func.__name__}({", ".join(map(str, args))})'
-            with shelve.open(cache_file) as cache_db:
+
+            pickle_protocol = 4
+
+            try:
+                cache_db = shelve.open(
+                    cache_file, protocol=pickle_protocol, writeback=True
+                )
+            except Exception as ex:
+                if os.path.exists(cache_file):
+                    # cache is in an unsupported format, reset the cache
+                    os.remove(cache_file)
+                    cache_db = shelve.open(
+                        cache_file, protocol=pickle_protocol, writeback=True
+                    )
+
+            with cache_db as dict_db:
                 try:
-                    if call_hash in cache_db and not kwargs.get('force', False):
-                        return cache_db[call_hash]
+                    if call_hash in dict_db and not kwargs.get('force', False):
+                        return dict_db[call_hash]
 
                     result = func(*args, **kwargs)
-                    cache_db[call_hash] = result
+                    dict_db[call_hash] = result
                 except urllib.error.URLError:
-                    if call_hash in cache_db:
+                    if call_hash in dict_db:
                         default_logger.warning(message.format(func_name=func.__name__))
-                        return cache_db[call_hash]
+                        return dict_db[call_hash]
                     else:
                         raise
             return result
