@@ -299,13 +299,13 @@ to `Document.embedding`. The whole procedure is in-place and there is no need to
 import numpy as np
 from jina import requests, Executor, DocumentArray
 
-from pods.pn import get_predict_model
+from my_model import get_predict_model
 
 
 class PNEncoder(Executor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.model = get_predict_model(ckpt_path='ckpt', num_class=2260)
+        self.model = get_predict_model()
 
     @requests
     def encode(self, docs: DocumentArray, *args, **kwargs) -> None:
