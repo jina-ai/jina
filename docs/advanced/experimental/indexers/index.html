@@ -271,8 +271,6 @@
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Indexers on Jina Hub</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../compound-executor/">Compound Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../graph-document/">Graph Document</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../scaling/">Scaling Executors in Kubernetes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../indexers-cheat-sheet/">Indexer Cheat Sheet</a></li>
 </ul>
 </li>
 </ul>
@@ -694,6 +692,83 @@ At the other end, the <strong>rolling update</strong> tells the search Flow to r
 <p><code class="docutils literal notranslate"><span class="pre">dump_path</span></code> needs to be accessible by local reference. It can however be a network location / internal Docker location that you have mapped</p>
 </div>
 </section>
+<section id="indexer-cheat-sheet">
+<h2>Indexer Cheat Sheet<a class="headerlink" href="#indexer-cheat-sheet" title="Permalink to this headline">¶</a></h2>
+<div class="table-wrapper"><table border="1" class="docutils">
+<thead>
+<tr>
+<th>Index Size</th>
+<th>RPS</th>
+<th>Latency p95</th>
+<th>Best Indexer + configuration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fit into memory</td>
+<td>&lt; 20</td>
+<td>any</td>
+<td><a href="https://hub.jina.ai/executor/zb38xlt4">SimpleIndexer</a> + use default</td>
+</tr>
+<tr>
+<td>any</td>
+<td>&gt; 20</td>
+<td>any</td>
+<td><a href="https://hub.jina.ai/executor/nflcyqe2">FaissPostgresSearcher</a> + use k8s &amp; replicas</td>
+</tr>
+<tr>
+<td>not fit into memory</td>
+<td>any</td>
+<td>any</td>
+<td><a href="https://hub.jina.ai/executor/nflcyqe2">FaissPostgresSearcher</a> + use shards</td>
+</tr>
+<tr>
+<td>not fit into memory</td>
+<td>&gt; 20</td>
+<td>any</td>
+<td><a href="https://hub.jina.ai/executor/nflcyqe2">FaissPostgresSearcher</a> + use k8s &amp; shards &amp; replicas</td>
+</tr>
+<tr>
+<td>any</td>
+<td>any</td>
+<td>small</td>
+<td><a href="https://hub.jina.ai/executor/nflcyqe2">FaissPostgresSearcher</a> + use k8s &amp; shards &amp; replicas</td>
+</tr>
+</tbody>
+</table></div>
+<p>The <a class="reference external" href="http://hub.jina.ai">Jina Hub</a> offers multiple Indexers for different use-cases.
+In a lot of production use-cases Indexers heavily use <a class="reference internal" href="../kubernetes/#shards"><span class="std std-ref">shards</span></a> and <a class="reference internal" href="../kubernetes/#replicas"><span class="std std-ref">replicas</span></a>.
+There are four major questions that should be answered, when deciding for an Indexer and its configuration.</p>
+<section id="does-my-data-fit-into-memory">
+<h3>Does my data fit into memory?<a class="headerlink" href="#does-my-data-fit-into-memory" title="Permalink to this headline">¶</a></h3>
+<p>Estimated the total number <code class="docutils literal notranslate"><span class="pre">N</span></code> of Documents that you want to index.
+Understand the average size <code class="docutils literal notranslate"><span class="pre">x</span></code> of a Document.
+Does <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">*</span> <span class="pre">x</span></code> fit into memory?</p>
+</section>
+<section id="how-many-requests-per-second-rps-does-the-system-need-to-handle">
+<h3>How many requests per second (RPS) does the system need to handle?<a class="headerlink" href="#how-many-requests-per-second-rps-does-the-system-need-to-handle" title="Permalink to this headline">¶</a></h3>
+<p>RPS is typically used for knowing how big to scale distributed systems.
+Depending on your use-case you might have completely different RPS expectations.</p>
+</section>
+<section id="what-latency-do-your-users-expect">
+<h3>What latency do your users expect?<a class="headerlink" href="#what-latency-do-your-users-expect" title="Permalink to this headline">¶</a></h3>
+<p>Latency is typically measured via the p95 or p99 <a class="reference external" href="https://en.wikipedia.org/wiki/Percentile">percentile</a>.
+Meaning, how fast are 95% or 99% percent of the requests answered.</p>
+<div class="tip admonition">
+<p class="admonition-title">Tip</p>
+<p>A webshop might want a really low latency in order to increase user experience.
+A high-quality Q&amp;A chatbot might be OK with having answers only after one or even several seconds.</p>
+</div>
+</section>
+<section id="do-you-need-instant-failure-recovery">
+<h3>Do you need instant failure recovery?<a class="headerlink" href="#do-you-need-instant-failure-recovery" title="Permalink to this headline">¶</a></h3>
+<p>When running any service in the cloud, an underlying machine could die at any time.
+Usually, a new machine will spawn and take over.
+Anyhow, this might take some minutes.
+If you need instant failure recovery, you need to use replicas.
+Jina provides this via the <a class="reference external" href="https://hub.jina.ai/executor/nflcyqe2">FaissPostgresSearcher</a> in combination with <a class="reference internal" href="../kubernetes/#replicas"><span class="std std-ref">replicas</span></a> inside <a class="reference internal" href="../kubernetes/#kubernetes"><span class="std std-ref">kubernetes (k8s)</span></a>.</p>
+</section>
+</section>
 </section>
 
             </article>
@@ -750,6 +825,13 @@ At the other end, the <strong>rolling update</strong> tells the search Flow to r
 <li><a class="reference internal" href="#">Indexers on Jina Hub</a><ul>
 <li><a class="reference internal" href="#indexing-vs-searching-operations">Indexing vs Searching Operations</a></li>
 <li><a class="reference internal" href="#dump-and-rolling-update">Dump and Rolling Update</a></li>
+<li><a class="reference internal" href="#indexer-cheat-sheet">Indexer Cheat Sheet</a><ul>
+<li><a class="reference internal" href="#does-my-data-fit-into-memory">Does my data fit into memory?</a></li>
+<li><a class="reference internal" href="#how-many-requests-per-second-rps-does-the-system-need-to-handle">How many requests per second (RPS) does the system need to handle?</a></li>
+<li><a class="reference internal" href="#what-latency-do-your-users-expect">What latency do your users expect?</a></li>
+<li><a class="reference internal" href="#do-you-need-instant-failure-recovery">Do you need instant failure recovery?</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

@@ -19,6 +19,4 @@ kubernetes
 indexers
 compound-executor
 graph-document
-scaling
-indexers-cheat-sheet
 ```

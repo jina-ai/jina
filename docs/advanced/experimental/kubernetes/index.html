@@ -271,8 +271,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../indexers/">Indexers on Jina Hub</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../compound-executor/">Compound Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../graph-document/">Graph Document</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../scaling/">Scaling Executors in Kubernetes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../indexers-cheat-sheet/">Indexer Cheat Sheet</a></li>
 </ul>
 </li>
 </ul>
@@ -829,6 +827,78 @@ You can use the service mesh <code class="docutils literal notranslate"><span cl
 </section>
 </section>
 </section>
+<section id="scaling-executors-on-kubernetes">
+<h2>Scaling Executors on Kubernetes<a class="headerlink" href="#scaling-executors-on-kubernetes" title="Permalink to this headline">¶</a></h2>
+<p>In Jina we support two ways of scaling:</p>
+<ul class="simple">
+<li><p><strong>Replicas</strong> can be used with any Executor type.</p></li>
+<li><p><strong>Shards</strong> should only be used with Indexers, since they store a state.</p></li>
+</ul>
+<div class="important admonition">
+<p class="admonition-title">Important</p>
+<p>This page describes Jina’s behavior with kubernetes deployment for now.
+When using <code class="docutils literal notranslate"><span class="pre">shards</span></code> and <code class="docutils literal notranslate"><span class="pre">replicas</span></code> without kubernetes, Jina will behave slightly different.
+It is discouraged to use the <code class="docutils literal notranslate"><span class="pre">parallel</span></code> argument when deploying to kubernetes.</p>
+</div>
+<section id="replicas">
+<span id="id1"></span><h3>Replicas<a class="headerlink" href="#replicas" title="Permalink to this headline">¶</a></h3>
+<p>Replication (or horizontal scaling) means duplicating an Executor and its state.
+It allows more requests to be served in parallel.
+A single request to Jina is only send to one of the replicas.
+Furthermore, it increases the failure tolerance.
+When one replica dies, another will immediately take over.
+In a cloud environment any machine might die at any point in time.
+Thus, using replicas is important for reliable services.
+Replicas are currently only supported, when deploying Jina with kubernetes.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'ExecutorWithReplicas'</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="shards">
+<span id="id2"></span><h3>Shards<a class="headerlink" href="#shards" title="Permalink to this headline">¶</a></h3>
+<p>Sharding means splitting the content of an Indexer into several parts.
+These parts are then put on different machines.
+This is helpful in two situations:</p>
+<ul class="simple">
+<li><p>When the full data does not fit onto one machine.</p></li>
+<li><p>When the latency of a single request becomes too slow.
+Then splitting the load across two or more machines yields better results.</p></li>
+</ul>
+<p>When you shard your index, the request handling usually differes for index and search requests:</p>
+<ul class="simple">
+<li><p>Index (and update, delete) will just be handled by a single shard =&gt; <code class="docutils literal notranslate"><span class="pre">polling='any'</span></code></p></li>
+<li><p>Search requests are handled by all shards =&gt; <code class="docutils literal notranslate"><span class="pre">polling='all'</span></code></p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">index_flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'ExecutorWithShards'</span><span class="p">,</span> <span class="n">shards</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">polling</span><span class="o">=</span><span class="s1">'any'</span><span class="p">)</span>
+<span class="n">search_flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'ExecutorWithShards'</span><span class="p">,</span> <span class="n">shards</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">polling</span><span class="o">=</span><span class="s1">'all'</span><span class="p">,</span> <span class="n">uses_after</span><span class="o">=</span><span class="s1">'MatchMerger'</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="merging-search-results-via-uses-after">
+<h3>Merging search results via <code class="docutils literal notranslate"><span class="pre">uses_after</span></code><a class="headerlink" href="#merging-search-results-via-uses-after" title="Permalink to this headline">¶</a></h3>
+<p>Each shard of a search Flow returns one set of results for each query Document.
+A merger Executor combines them afterwards.
+You can use the pre-build <a class="reference external" href="https://hub.jina.ai/executor/mruax3k7">MatchMerger</a> or define your own merger.</p>
+<div class="example admonition">
+<p class="admonition-title">Example</p>
+<p>A search Flow has 10 shards for an Indexer.
+Each shard returns the top 20 results.
+After the merger there will be 200 results per query Document.</p>
+</div>
+</section>
+</section>
+<section id="combining-replicas-shards">
+<h2>Combining replicas &amp; shards<a class="headerlink" href="#combining-replicas-shards" title="Permalink to this headline">¶</a></h2>
+<p>Combining both gives all the advantages mentioned above.
+When deploying to kubernetes, Jina replicates each single shard.
+Thus, shards can scale independently.
+The data syncronisation across replicas must be handled by the respective Indexer.
+For more detailed see <a class="reference internal" href="../indexers/#dump-rolling-restart"><span class="std std-ref">Dump and rolling update</span></a>.</p>
+</section>
 </section>
 
             </article>
@@ -900,6 +970,13 @@ You can use the service mesh <code class="docutils literal notranslate"><span cl
 </li>
 </ul>
 </li>
+<li><a class="reference internal" href="#scaling-executors-on-kubernetes">Scaling Executors on Kubernetes</a><ul>
+<li><a class="reference internal" href="#replicas">Replicas</a></li>
+<li><a class="reference internal" href="#shards">Shards</a></li>
+<li><a class="reference internal" href="#merging-search-results-via-uses-after">Merging search results via <code class="docutils literal notranslate"><span class="pre">uses_after</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#combining-replicas-shards">Combining replicas &amp; shards</a></li>
 </ul>
 </li>
 </ul>
