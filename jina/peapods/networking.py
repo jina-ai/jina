@@ -1,6 +1,7 @@
 import ast
 import asyncio
 import ipaddress
+from abc import abstractmethod
 from argparse import Namespace
 from threading import Thread
 
@@ -133,11 +134,13 @@ class ConnectionPool:
         """
         self._connections.clear()
 
+    @abstractmethod
     def _send_message(self, msg: Message, connection):
-        raise NotImplementedError
+        ...
 
+    @abstractmethod
     def _create_connection(self, target):
-        raise NotImplementedError
+        ...
 
 
 class GrpcConnectionPool(ConnectionPool):
