@@ -1,6 +1,7 @@
 import ast
 import asyncio
 import ipaddress
+import socket
 from abc import abstractmethod
 from argparse import Namespace
 from threading import Thread
@@ -244,6 +245,18 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         self._api_watch.stop()
         super().close()
 
+    def send_message(self, msg: Message, target_address: str):
+        """
+        Send msg to target_address via one of the pooled connections.
+
+        :param msg: message to send
+        :param target_address: address to send to, should include the port like 1.1.1.1:53
+        :return: result of the actual send method
+        """
+        host, port = target_address.split(':')
+        # host can be a domain instead of IP Address, resolve it to IP Address
+        return super().send_message(msg, f'{socket.gethostbyname(host)}:{port}')
+
     @staticmethod
     def _pod_is_up(item):
         return item.status.pod_ip is not None and item.status.phase == 'Running'
@@ -317,7 +330,10 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         for s in service_resp.items:
             app = self._extract_app(s)
             if app and deployment_name == app and s.spec.cluster_ip:
-                return s.spec.cluster_ip, s.spec.ports[0].port
+                # find the port-in for this deployment
+                for p in s.spec.ports:
+                    if p.name == 'port-in':
+                        return s.spec.cluster_ip, p.port
 
         return None, None
 
