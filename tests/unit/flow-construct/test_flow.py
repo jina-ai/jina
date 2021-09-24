@@ -544,7 +544,7 @@ def test_return_results_sync_flow(return_results, protocol):
     ],
 )
 def test_flow_host_expose_shortcut(input, expect_host, expect_port):
-    f = Flow().add(host=input).build()
+    f = Flow().add(name='pod0', host=input).build()
     assert f['pod0'].args.host == expect_host
     if expect_port is not None:
         assert f['pod0'].args.port_jinad == expect_port
