@@ -1586,6 +1586,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
     @workspace.setter
     def workspace(self, value: str):
+        """set workspace dir for flow & all pods
+
+        :param value: workspace to be set
+        """
         self.args.workspace = value
         for k, p in self:
             p.args.workspace = value
@@ -1626,6 +1630,25 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     if v and isinstance(v, List):
                         for i in v:
                             i.workspace_id = value
+
+    @property
+    def env(self) -> Optional[Dict]:
+        """Get all envs to be set in the Flow
+
+        :return: envs as dict
+        """
+        return self.args.env
+
+    @env.setter
+    def env(self, value: Dict[str, str]):
+        """set env vars for flow & all pods.
+        This can be used by jinad to set envs for Flow and all child objects
+
+        :param value: value to be set
+        """
+        self.args.env = value
+        for k, v in self:
+            v.args.env = value
 
     @property
     def identity(self) -> Dict[str, str]:

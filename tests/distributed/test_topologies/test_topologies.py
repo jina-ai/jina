@@ -189,7 +189,7 @@ def test_remote_flow_local_executors(mocker, parallel):
 
 
 def test_remote_workspace_value():
-    HOST = __default_host__  # '3.208.18.63'
+    HOST = __default_host__
     client = JinaDClient(host=HOST, port=8000)
     workspace_id = client.workspaces.create(paths=[os.path.join(cur_dir, 'yamls')])
     flow_id = client.flows.create(

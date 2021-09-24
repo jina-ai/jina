@@ -309,7 +309,7 @@ class AsyncWorkspaceClient(AsyncBaseClient):
             response_json = await response.json()
             if response.status != HTTPStatus.OK:
                 self._logger.error(
-                    f'deletion of {self._kind.title()} {id} failed: {error_msg_from(response_json)}'
+                    f'deletion of {self._kind.title()} failed as {error_msg_from(response_json)}'
                 )
             return response.status == HTTPStatus.OK
 
