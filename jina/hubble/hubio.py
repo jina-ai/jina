@@ -570,7 +570,7 @@ with f:
             uuid=resp['id'],
             name=resp.get('name', None),
             sn=resp.get('sn', None),
-            tag=resp['tag'],
+            tag=tag or resp['tag'],
             visibility=resp['visibility'],
             image_name=resp['image'],
             archive_url=resp['package']['download'],
@@ -656,9 +656,8 @@ with f:
                 scheme, name, tag, secret = parse_hub_uri(self.args.uri)
 
                 st.update(f'Fetching [bold]{name}[/bold] from Jina Hub ...')
-                executor = HubIO.fetch_meta(
-                    name, tag=tag, secret=secret, force=need_pull
-                )
+                executor = HubIO.fetch_meta(name, tag=tag, secret=secret, force=True)
+
                 presented_id = getattr(executor, 'name', executor.uuid)
                 executor_name = (
                     f'{presented_id}'
