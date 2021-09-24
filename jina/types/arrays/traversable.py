@@ -79,15 +79,6 @@ class TraversableSequence:
         for p in traversal_paths:
             yield self._flatten(self._traverse(self, p))
 
-    def traverse_flat_cached(self, traversal_paths):
-        if traversal_paths in self.cached_results:
-            return self.cached_results[traversal_paths]
-        else:
-            results = self.traverse_flat(traversal_paths)
-            cached_results = DocumentArrayMemmap(results)
-            self.cached_results[traversal_paths] = cached_results
-            return results
-
     def traverse_flat(self, traversal_paths: Sequence[str]) -> Iterable['Document']:
         """
         Returns a single flattened :class:``TraversableSequence`` with all Documents, that are reached
