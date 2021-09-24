@@ -29,14 +29,14 @@ with f:
 
 ```console
 
-           pod0@47887[L]:ready and listening
+       executor@47887[L]:ready and listening
         gateway@47887[L]:ready and listening
            Flow@47887[I]:🎉 Flow is ready to use!
 	🔗 Protocol: 		GRPC
 	🏠 Local access:	0.0.0.0:49242
 	🔒 Private network:	192.168.178.31:49242
 	🌐 Public address:	217.70.138.123:49242
-           pod0@47893[E]:NotImplementedError('no time for it')
+       executor@47893[E]:NotImplementedError('no time for it')
  add "--quiet-error" to suppress the exception details
 Traceback (most recent call last):
   File "/Users/hanxiao/Documents/jina/jina/peapods/runtimes/zmq/zed.py", line 250, in _msg_callback

@@ -610,15 +610,15 @@
 <span class="sd">            !Flow</span>
 <span class="sd">            version: '1.0'</span>
 <span class="sd">            pods:</span>
-<span class="sd">              - name: pod0  # notice the change here, name is now an attribute</span>
+<span class="sd">              - name: executor0  # notice the change here, name is now an attribute</span>
 <span class="sd">                method: add  # by default method is always add, available: add, needs, inspect</span>
 <span class="sd">                needs: gateway</span>
-<span class="sd">              - name: pod1  # notice the change here, name is now an attribute</span>
+<span class="sd">              - name: executor1  # notice the change here, name is now an attribute</span>
 <span class="sd">                method: add  # by default method is always add, available: add, needs, inspect</span>
 <span class="sd">                needs: gateway</span>
-<span class="sd">              - method: inspect  # add an inspect node on pod1</span>
+<span class="sd">              - method: inspect  # add an inspect node on executor1</span>
 <span class="sd">              - method: needs  # let's try something new in Flow YAML v1: needs</span>
-<span class="sd">                needs: [pod1, pod0]</span>
+<span class="sd">                needs: [executor1, executor0]</span>
 
 
 <span class="sd">    """</span>
@@ -712,7 +712,7 @@
                 <div class="related-information">
                     Copyright &#169; Jina AI Limited. All rights reserved.
                     |
-                    Last updated on Sep 23, 2021.
+                    Last updated on Sep 24, 2021.
                 </div>
                 
             </footer>
