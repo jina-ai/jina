@@ -292,6 +292,8 @@ def disk_cache_offline(
                     cache_db = shelve.open(
                         cache_file, protocol=pickle_protocol, writeback=True
                     )
+                else:
+                    raise
 
             with cache_db as dict_db:
                 try:

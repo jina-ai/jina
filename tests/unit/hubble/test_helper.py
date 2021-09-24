@@ -84,6 +84,10 @@ def test_disk_cache(tmpfile):
     raise_exception = True
     result = 1
 
+    # create an invalid cache file
+    with open(str(tmpfile), 'w') as f:
+        f.write('Oops: db type could not be determined')
+
     @disk_cache_offline(cache_file=str(tmpfile))
     def _myfunc(force=False) -> bool:
         if raise_exception:
