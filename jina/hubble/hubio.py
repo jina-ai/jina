@@ -533,7 +533,7 @@ with f:
     @disk_cache_offline(cache_file=str(_cache_file))
     def fetch_meta(
         name: str,
-        tag: Optional[str] = None,
+        tag: str,
         secret: Optional[str] = None,
         force: bool = False,
     ) -> HubExecutor:
@@ -656,7 +656,7 @@ with f:
                 scheme, name, tag, secret = parse_hub_uri(self.args.uri)
 
                 st.update(f'Fetching [bold]{name}[/bold] from Jina Hub ...')
-                executor = HubIO.fetch_meta(name, tag=tag, secret=secret, force=True)
+                executor = HubIO.fetch_meta(name, tag, secret=secret, force=need_pull)
 
                 presented_id = getattr(executor, 'name', executor.uuid)
                 executor_name = (
