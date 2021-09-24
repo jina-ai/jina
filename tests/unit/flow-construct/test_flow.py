@@ -89,7 +89,7 @@ def test_simple_flow(protocol):
         for _ in range(100):
             yield Document()
 
-    f = Flow(protocol=protocol).add()
+    f = Flow(protocol=protocol).add(name='pod0')
 
     with f:
         f.index(inputs=bytes_gen)
@@ -676,7 +676,12 @@ def test_single_document_flow_index():
 
 
 def test_flow_equalities():
-    f1 = Flow().add().add(needs='gateway').needs_all(name='joiner')
+    f1 = (
+        Flow()
+        .add(name='pod0')
+        .add(name='pod1', needs='gateway')
+        .needs_all(name='joiner')
+    )
     f2 = (
         Flow()
         .add(name='pod0')
@@ -685,12 +690,17 @@ def test_flow_equalities():
     )
     assert f1 == f2
 
-    f2 = f2.add()
+    f2 = f2.add(name='pod0')
     assert f1 != f2
 
 
 def test_flow_get_item():
-    f1 = Flow().add().add(needs='gateway').needs_all(name='joiner')
+    f1 = (
+        Flow()
+        .add(name='pod0')
+        .add(name='pod1', needs='gateway')
+        .needs_all(name='joiner')
+    )
     assert isinstance(f1[1], BasePod)
     assert isinstance(f1['pod0'], BasePod)
 
