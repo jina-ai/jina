@@ -1,8 +1,10 @@
 import os
 
 import pytest
+import numpy as np
 
-from jina import Flow, Document
+from jina import Flow, Document, Client, __default_host__
+from daemon.clients import JinaDClient
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -36,6 +38,7 @@ def test_r_l_simple(silent_log, parallels, mocker):
         f.index(
             inputs=(Document(text='hello') for _ in range(NUM_DOCS)),
             on_done=response_mock,
+            show_progress=True,
         )
 
     response_mock.assert_called()
@@ -50,6 +53,7 @@ def test_l_r_simple(parallels, mocker):
         f.index(
             inputs=(Document(text='hello') for _ in range(NUM_DOCS)),
             on_done=response_mock,
+            show_progress=True,
         )
     response_mock.assert_called()
 
@@ -68,6 +72,7 @@ def test_r_l_r_simple(parallels, mocker):
         f.index(
             inputs=(Document(text='hello') for _ in range(NUM_DOCS)),
             on_done=response_mock,
+            show_progress=True,
         )
     response_mock.assert_called()
 
@@ -86,6 +91,7 @@ def test_r_r_r_simple(parallels, mocker):
         f.index(
             inputs=(Document(text='hello') for _ in range(NUM_DOCS)),
             on_done=response_mock,
+            show_progress=True,
         )
     response_mock.assert_called()
 
@@ -99,6 +105,7 @@ def test_l_r_l_simple(parallels, mocker):
         f.index(
             inputs=(Document(text='hello') for _ in range(NUM_DOCS)),
             on_done=response_mock,
+            show_progress=True,
         )
     response_mock.assert_called()
 
@@ -144,3 +151,36 @@ def test_complex_needs(parallels, mocker):
             on_done=response_mock,
         )
     response_mock.assert_called()
+
+
+@pytest.mark.parametrize('parallel', [1, 2])
+def test_remote_flow_local_executors(mocker, parallel):
+    response_mock = mocker.Mock()
+    client = JinaDClient(host=__default_host__, port=8000)
+    workspace_id = client.workspaces.create(paths=[os.path.join(cur_dir, 'yamls')])
+
+    GATEWAY_LOCAL_GATEWAY = 'flow_glg.yml'
+    GATEWAY_LOCAL_LOCAL_GATEWAY = 'flow_gllg.yml'
+
+    for flow_yaml in [
+        GATEWAY_LOCAL_GATEWAY,
+        GATEWAY_LOCAL_LOCAL_GATEWAY,
+    ]:
+        flow_id = client.flows.create(
+            workspace_id=workspace_id, filename=flow_yaml, envs={'PARALLEL': parallel}
+        )
+        args = client.flows.get(flow_id)['arguments']['object']['arguments']
+        Client(
+            host=__default_host__,
+            port=args['port_expose'],
+            protocol=args['protocol'],
+        ).post(
+            on='/',
+            inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
+            on_done=response_mock,
+            show_progress=True,
+        )
+        response_mock.assert_called()
+        assert client.flows.delete(flow_id)
+
+    assert client.workspaces.delete(workspace_id)

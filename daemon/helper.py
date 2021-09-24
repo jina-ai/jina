@@ -99,8 +99,8 @@ def error_msg_from(response: Dict) -> str:
     :param response: dict response
     :return: prettified response string
     """
-    assert 'detail' in response, '\'detail\' not found in response'
-    assert 'body' in response, '\'body\' not found in response'
+    if 'detail' not in response or 'body' not in response:
+        return response
     if response['detail'] == PartialDaemon400Exception.__name__:
         return response['body']
     return (
