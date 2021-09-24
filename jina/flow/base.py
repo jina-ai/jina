@@ -1584,6 +1584,12 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         .. # noqa: DAR201"""
         return os.path.abspath(self.args.workspace or './')
 
+    @workspace.setter
+    def workspace(self, value: str):
+        self.args.workspace = value
+        for k, p in self:
+            p.args.workspace = value
+
     @property
     def workspace_id(self) -> Dict[str, str]:
         """Get all Pods' ``workspace_id`` values in a dict

@@ -3,8 +3,9 @@ import os
 import pytest
 import numpy as np
 
-from jina import Flow, Document, Client, __default_host__
 from daemon.clients import JinaDClient
+from daemon import __partial_workspace__
+from jina import Flow, Document, Client, __default_host__
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -183,4 +184,24 @@ def test_remote_flow_local_executors(mocker, parallel):
         response_mock.assert_called()
         assert client.flows.delete(flow_id)
 
+    assert client.workspaces.delete(workspace_id)
+
+
+def test_remote_workspace_value():
+    HOST = __default_host__  # '3.208.18.63'
+    client = JinaDClient(host=HOST, port=8000)
+    workspace_id = client.workspaces.create(paths=[os.path.join(cur_dir, 'yamls')])
+    flow_id = client.flows.create(
+        workspace_id=workspace_id, filename='flow_workspace_validate.yml'
+    )
+    args = client.flows.get(flow_id)['arguments']['object']['arguments']
+    response = Client(
+        host=HOST, port=args['port_expose'], protocol=args['protocol']
+    ).post(on='/', inputs=[Document()], show_progress=True, return_results=True)
+    assert (
+        response[0]
+        .data.docs[0]
+        .text.startswith(f'{__partial_workspace__}/WorkspaceValidator/0')
+    )
+    assert client.flows.delete(flow_id)
     assert client.workspaces.delete(workspace_id)

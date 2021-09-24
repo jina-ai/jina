@@ -8,7 +8,7 @@ from jina.peapods.peas.helper import update_runtime_cls
 from jina import Flow, __docker_host__
 from jina.logging.logger import JinaLogger
 
-from .. import jinad_args
+from .. import jinad_args, __partial_workspace__
 from ..models import GATEWAY_RUNTIME_DICT
 from ..models.enums import UpdateOperation
 from ..models.ports import Ports, PortMappings
@@ -108,6 +108,7 @@ class PartialFlowStore(PartialStore):
 
             self.object: Flow = Flow.load_config(yaml_source).build()
             self.object.workspace_id = jinad_args.workspace_id
+            self.object.workspace = __partial_workspace__
 
             for pod in self.object._pod_nodes.values():
                 runtime_cls = update_runtime_cls(pod.args, copy=True).runtime_cls
