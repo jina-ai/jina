@@ -268,3 +268,25 @@ class CompoundPod(BasePod, ExitStack):
         .. # noqa: DAR201
         """
         return False
+
+    def _mermaid_str(self) -> str:
+        """String that will be used to represent the Pod graphically when `Flow.plot()` is invoked
+
+
+        .. # noqa: DAR201
+        """
+        mermaid_graph = [f'\tsubgraph {self.name}\n']
+
+        head_name = []
+        for args in self._fifo_args:
+            names.append(args.name)
+
+        if len(names) == 1:
+            mermaid_graph.append(f'\t\t{names[0]}\n')
+        else:
+            head_name = names[0]
+            tail_name = names[-1]
+            for name in names[1:-1]:
+                mermaid_graph.append(f'\t\t{head_name} --> {name}\n')
+                mermaid_graph.append(f'\t\t{name} --> {tail_name}\n')
+        mermaid_graph.append('end\n')

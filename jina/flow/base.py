@@ -858,7 +858,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             },
         )
 
-    # TODO needs to be refactored - deployment should not be a dictionary. Related Ticket: https://github.com/jina-ai/jina/issues/3280
+    # TODO needs to be refactored - deployment should not be a dictionary. Related Ticket:
+    #  https://github.com/jina-ai/jina/issues/3280
     def _get_routing_table(self) -> RoutingTable:
         graph = RoutingTable()
         for pod_id, pod in self._pod_nodes.items():
@@ -1223,11 +1224,15 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             "%%{init: {'theme': 'base', "
             "'themeVariables': { 'primaryColor': '#32C8CD', "
             "'edgeLabelBackground':'#fff', 'clusterBkg': '#FFCC66'}}}%%",
-            'graph LR',
+            'flowchart LR',
         ]
 
         def _get_node_name(v):
             return v.args.name + f'_{(v.args.uses)}_'
+
+        # plot subgraphs
+        for node, v in self._pod_nodes.items():
+            mermaid_graph.append(v._mermaid_str)
 
         start_repl = {}
         end_repl = {}
