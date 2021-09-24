@@ -268,18 +268,18 @@ def test_flow_with_external_pod_parallel(
         del external_args_2['dynamic_routing']
         flow = (
             Flow()
-            .add(name='pod1')
+            .add(name='executor1')
             .add(
                 **external_args_1,
                 name='external_fake_1',
                 external=True,
-                needs=['pod1'],
+                needs=['executor1'],
             )
             .add(
                 **external_args_2,
                 name='external_fake_2',
                 external=True,
-                needs=['pod1'],
+                needs=['executor1'],
             )
             .join(needs=['external_fake_1', 'external_fake_2'], port_in=random_port())
         )
@@ -338,14 +338,14 @@ def test_flow_with_external_pod_pre_parallel(
                 external=True,
             )
             .add(
-                name='pod1',
+                name='executor1',
                 needs=['external_fake'],
             )
             .add(
-                name='pod2',
+                name='executor2',
                 needs=['external_fake'],
             )
-            .join(needs=['pod1', 'pod2'])
+            .join(needs=['executor1', 'executor2'])
         )
         with flow:
             resp = flow.index(inputs=input_docs, return_results=True)
@@ -402,17 +402,17 @@ def test_flow_with_external_pod_join(
                 external=True,
             )
             .add(
-                name='pod1',
-                needs=['pod0'],
+                name='executor1',
+                needs=['executor0'],
             )
             .add(
-                name='pod2',
-                needs=['pod0'],
+                name='executor2',
+                needs=['executor0'],
             )
             .join(
                 **external_args,
                 external=True,
-                needs=['pod1', 'pod2'],
+                needs=['executor1', 'executor2'],
             )
         )
         with flow:

@@ -280,7 +280,7 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
 
 def test_pass_arbitrary_kwargs_from_yaml():
     f = Flow.load_config(os.path.join(cur_dir, 'flow.yml'))
-    assert f._pod_nodes['pod1'].args.docker_kwargs == {
+    assert f._pod_nodes['executor1'].args.docker_kwargs == {
         'hello': 0,
         'environment': ['VAR1=BAR', 'VAR2=FOO'],
     }

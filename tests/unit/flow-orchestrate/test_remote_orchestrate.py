@@ -16,10 +16,10 @@ def ip_from(flow, pod_number):
 def test_remote_pod_local_gateway(local_ip, on_public):
     # BIND socket's host must always be 0.0.0.0
     remote_ip = '111.111.111.111'
-    f = Flow(expose_public=on_public).add(host=remote_ip, name='pod1')
+    f = Flow(expose_public=on_public).add(host=remote_ip, name='executor1')
     f.build()
     assert ip_from(f, 'start-gateway') == __default_host__
-    assert ip_from(f, 'pod1') == remote_ip
+    assert ip_from(f, 'executor1') == remote_ip
     assert ip_from(f, 'end-gateway') == ip_from(f, 'start-gateway')
 
 
@@ -32,14 +32,14 @@ def test_remote_pod_local_pod_local_gateway_input_socket_pull_connect_from_remot
     remote_ip = '111.111.111.111'
     f = (
         Flow(expose_public=on_public)
-        .add(host=remote_ip, name='pod1')
-        .add(name='pod2')
+        .add(host=remote_ip, name='executor1')
+        .add(name='executor2')
         .build()
     )
 
     assert ip_from(f, 'start-gateway') == __default_host__
-    assert ip_from(f, 'pod1') == remote_ip
-    assert ip_from(f, 'pod2') == __default_host__
+    assert ip_from(f, 'executor1') == remote_ip
+    assert ip_from(f, 'executor2') == __default_host__
     assert ip_from(f, 'end-gateway') == ip_from(f, 'start-gateway')
 
 
@@ -50,13 +50,13 @@ def test_remote_pod_local_pod_local_gateway(local_ip, on_public):
     remote_ip = '111.111.111.111'
     f = (
         Flow(expose_public=on_public)
-        .add(host=remote_ip, name='pod1')
-        .add(name='pod2')
+        .add(host=remote_ip, name='executor1')
+        .add(name='executor2')
         .build()
     )
     assert ip_from(f, 'start-gateway') == __default_host__
-    assert ip_from(f, 'pod1') == remote_ip
-    assert ip_from(f, 'pod2') == __default_host__
+    assert ip_from(f, 'executor1') == remote_ip
+    assert ip_from(f, 'executor2') == __default_host__
     assert ip_from(f, 'end-gateway') == ip_from(f, 'start-gateway')
 
 
@@ -71,15 +71,15 @@ def test_remote_pod_local_pod_remote_pod_local_gateway_input_socket_pull_connect
 
     f = (
         Flow(expose_public=on_public)
-        .add(host=remote1, name='pod1')
-        .add(name='pod2')
-        .add(host=remote2, name='pod3')
+        .add(host=remote1, name='executor1')
+        .add(name='executor2')
+        .add(host=remote2, name='executor3')
         .build()
     )
     assert ip_from(f, 'start-gateway') == __default_host__
-    assert ip_from(f, 'pod1') == remote1
-    assert ip_from(f, 'pod2') == __default_host__
-    assert ip_from(f, 'pod3') == remote2
+    assert ip_from(f, 'executor1') == remote1
+    assert ip_from(f, 'executor2') == __default_host__
+    assert ip_from(f, 'executor3') == remote2
     assert ip_from(f, 'end-gateway') == ip_from(f, 'start-gateway')
 
 
@@ -92,15 +92,15 @@ def test_local_pod_remote_pod_remote_pod_local_gateway(local_ip, on_public):
 
     f = (
         Flow(expose_public=on_public)
-        .add(name='pod1')
-        .add(host=remote1, name='pod2')
-        .add(host=remote2, name='pod3')
+        .add(name='executor1')
+        .add(host=remote1, name='executor2')
+        .add(host=remote2, name='executor3')
     )
     f.build()
     assert ip_from(f, 'start-gateway') == __default_host__
-    assert ip_from(f, 'pod1') == __default_host__
-    assert ip_from(f, 'pod2') == remote1
-    assert ip_from(f, 'pod3') == remote2
+    assert ip_from(f, 'executor1') == __default_host__
+    assert ip_from(f, 'executor2') == remote1
+    assert ip_from(f, 'executor3') == remote2
     assert ip_from(f, 'end-gateway') == ip_from(f, 'start-gateway')
 
 
@@ -108,15 +108,15 @@ def test_gateway_remote():
     remote1 = '111.111.111.111'
     f = Flow().add(host=remote1).build()
 
-    assert f['pod0'].args.socket_in.is_bind
-    assert f['pod0'].args.socket_out.is_bind
+    assert f['executor0'].args.socket_in.is_bind
+    assert f['executor0'].args.socket_out.is_bind
 
 
 def test_gateway_remote_local():
     """
 
     remote  IN: 0.0.0.0:61913 (PULL_BIND)   internal_ip:61914 (PUSH_CONNECT)
-    pod1    IN: 0.0.0.0:61914 (PULL_BIND)    0.0.0.0:61918 (PUSH_BIND)
+    executor1    IN: 0.0.0.0:61914 (PULL_BIND)    0.0.0.0:61918 (PUSH_BIND)
     gateway IN: 0.0.0.0:61918 (PULL_CONNECT)  111.111.111.111:61913 (PUSH_CONNECT)
 
     :return:
@@ -124,11 +124,11 @@ def test_gateway_remote_local():
     remote1 = '111.111.111.111'
     f = Flow().add(host=remote1).add().build()
 
-    assert f['pod0'].args.socket_in == SocketType.ROUTER_BIND
-    assert f['pod0'].args.socket_out == SocketType.ROUTER_BIND
+    assert f['executor0'].args.socket_in == SocketType.ROUTER_BIND
+    assert f['executor0'].args.socket_out == SocketType.ROUTER_BIND
 
-    assert f['pod1'].args.socket_in == SocketType.ROUTER_BIND
-    assert f['pod1'].args.socket_out == SocketType.ROUTER_BIND
+    assert f['executor1'].args.socket_in == SocketType.ROUTER_BIND
+    assert f['executor1'].args.socket_out == SocketType.ROUTER_BIND
     assert f['gateway'].args.socket_in == SocketType.ROUTER_BIND
     assert f['gateway'].args.socket_out == SocketType.ROUTER_BIND
 
@@ -136,7 +136,7 @@ def test_gateway_remote_local():
 def test_gateway_local_remote():
     """
 
-    pod0    IN: 0.0.0.0:62322 (PULL_BIND)   3.135.17.36:62326 (PUSH_CONNECT)
+    executor0    IN: 0.0.0.0:62322 (PULL_BIND)   3.135.17.36:62326 (PUSH_CONNECT)
     remote  IN: 0.0.0.0:62326 (PULL_BIND)   0.0.0.0:62327 (PUSH_BIND)
     gateway IN: 3.135.17.36:62327 (PULL_CONNECT)    0.0.0.0:62322 (PUSH_CONNECT)
 
@@ -145,7 +145,7 @@ def test_gateway_local_remote():
     remote1 = '111.111.111.111'
     f = Flow().add().add(host=remote1).build()
 
-    assert f['pod0'].args.socket_in.is_bind
-    assert f['pod0'].args.socket_out.is_bind
-    assert f['pod1'].args.socket_in.is_bind
-    assert f['pod1'].args.socket_out.is_bind
+    assert f['executor0'].args.socket_in.is_bind
+    assert f['executor0'].args.socket_out.is_bind
+    assert f['executor1'].args.socket_in.is_bind
+    assert f['executor1'].args.socket_out.is_bind

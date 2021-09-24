@@ -4,7 +4,7 @@ with:
   protocol: http
   port_expose: 9001
   cors: true
-pods:
+executors:
   - name: indexer_query
     uses: indexer_query.yml
     replicas: 2

@@ -3,7 +3,7 @@ version: '1'
 with:
   port_expose: 9001
   protocol: http
-pods:
+executors:
   - name: indexer_query
     uses: docker://query-executor
     replicas: 2

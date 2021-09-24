@@ -2,7 +2,7 @@
 version: '1'
 with:
   sse_logger: false
-pods:
+executors:
   - name: chunk_seg
     parallel: 3
   - name: wqncode1
