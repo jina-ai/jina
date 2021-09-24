@@ -144,6 +144,12 @@ class PartialFlowStore(PartialStore):
                             pod.replicas_args = CompoundPod._set_replica_args(
                                 pod.args, pod.head_args, pod.tail_args
                             )
+                else:
+                    # avoid setting runs_in_docker for Pods with parallel > 1 and using `ZEDRuntime`
+                    # else, replica-peas would try connecting to head/tail-pea via __docker_host__
+                    if runtime_cls == 'ZEDRuntime' and pod.args.parallel > 1:
+                        pod.args.runs_in_docker = False
+                        pod.update_pea_args()
 
             self.object = self.object.__enter__()
         except Exception as e:
