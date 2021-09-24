@@ -690,7 +690,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             pod_name = new_name
 
         if not pod_name:
-            pod_name = f'pod{len(op_flow._pod_nodes)}'
+            pod_name = f'executor{len(op_flow._pod_nodes)}'
 
         if not pod_name.isidentifier():
             # hyphen - can not be used in the name
