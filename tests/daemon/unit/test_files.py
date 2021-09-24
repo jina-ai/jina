@@ -25,6 +25,7 @@ cur_filename = os.path.basename(__file__)
 )
 def test_jinad_file_workspace(workdir, expected_response):
     d = DaemonFile(workdir=f'{cur_dir}/models/{workdir}')
+
     assert d.build == expected_response[0]
     assert d.python == expected_response[1]
     assert d.run == expected_response[2]
