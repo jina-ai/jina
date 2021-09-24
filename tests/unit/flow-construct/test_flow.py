@@ -89,7 +89,7 @@ def test_simple_flow(protocol):
         for _ in range(100):
             yield Document()
 
-    f = Flow(protocol=protocol).add(name='pod0')
+    f = Flow(protocol=protocol).add(name='executor0')
 
     with f:
         f.index(inputs=bytes_gen)
@@ -107,7 +107,7 @@ def test_simple_flow(protocol):
 
     assert 'gateway' not in f
 
-    node = f._pod_nodes['pod0']
+    node = f._pod_nodes['executor0']
     assert node.head_args.socket_in == SocketType.ROUTER_BIND
     assert node.tail_args.socket_out == SocketType.ROUTER_BIND
 
@@ -545,9 +545,9 @@ def test_return_results_sync_flow(return_results, protocol):
 )
 def test_flow_host_expose_shortcut(input, expect_host, expect_port):
     f = Flow().add(host=input).build()
-    assert f['pod0'].args.host == expect_host
+    assert f['executor0'].args.host == expect_host
     if expect_port is not None:
-        assert f['pod0'].args.port_jinad == expect_port
+        assert f['executor0'].args.port_jinad == expect_port
 
 
 def test_flow_workspace_id():
@@ -593,7 +593,7 @@ def test_flow_identity_override():
     y = '''
 !Flow
 version: '1.0'
-pods:
+executors:
     - name: hello
     - name: world
       parallel: 3
@@ -639,33 +639,33 @@ def test_bad_pod_graceful_termination():
 def test_socket_types_2_remote_one_local():
     f = (
         Flow()
-        .add(name='pod1', host='0.0.0.1')
-        .add(name='pod2', parallel=2, host='0.0.0.2')
-        .add(name='pod3', parallel=2, host='1.2.3.4', needs=['gateway'])
-        .join(name='join', needs=['pod2', 'pod3'])
+        .add(name='executor1', host='0.0.0.1')
+        .add(name='executor2', parallel=2, host='0.0.0.2')
+        .add(name='executor3', parallel=2, host='1.2.3.4', needs=['gateway'])
+        .join(name='join', needs=['executor2', 'executor3'])
     )
 
     f.build()
 
     assert f._pod_nodes['join'].head_args.socket_in == SocketType.ROUTER_BIND
-    assert f._pod_nodes['pod2'].tail_args.socket_out == SocketType.ROUTER_BIND
-    assert f._pod_nodes['pod3'].tail_args.socket_out == SocketType.ROUTER_BIND
+    assert f._pod_nodes['executor2'].tail_args.socket_out == SocketType.ROUTER_BIND
+    assert f._pod_nodes['executor3'].tail_args.socket_out == SocketType.ROUTER_BIND
 
 
 def test_socket_types_2_remote_one_local_input_socket_pull_connect_from_remote():
     f = (
         Flow()
-        .add(name='pod1', host='0.0.0.1')
-        .add(name='pod2', parallel=2, host='0.0.0.2')
-        .add(name='pod3', parallel=2, host='1.2.3.4', needs=['gateway'])
-        .join(name='join', needs=['pod2', 'pod3'])
+        .add(name='executor1', host='0.0.0.1')
+        .add(name='executor2', parallel=2, host='0.0.0.2')
+        .add(name='executor3', parallel=2, host='1.2.3.4', needs=['gateway'])
+        .join(name='join', needs=['executor2', 'executor3'])
     )
 
     f.build()
 
     assert f._pod_nodes['join'].head_args.socket_in == SocketType.ROUTER_BIND
-    assert f._pod_nodes['pod2'].tail_args.socket_out == SocketType.ROUTER_BIND
-    assert f._pod_nodes['pod3'].tail_args.socket_out == SocketType.ROUTER_BIND
+    assert f._pod_nodes['executor2'].tail_args.socket_out == SocketType.ROUTER_BIND
+    assert f._pod_nodes['executor3'].tail_args.socket_out == SocketType.ROUTER_BIND
 
 
 def test_single_document_flow_index():
@@ -678,31 +678,31 @@ def test_single_document_flow_index():
 def test_flow_equalities():
     f1 = (
         Flow()
-        .add(name='pod0')
-        .add(name='pod1', needs='gateway')
+        .add(name='executor0')
+        .add(name='executor1', needs='gateway')
         .needs_all(name='joiner')
     )
     f2 = (
         Flow()
-        .add(name='pod0')
-        .add(name='pod1', needs='gateway')
-        .add(name='joiner', needs=['pod0', 'pod1'])
+        .add(name='executor0')
+        .add(name='executor1', needs='gateway')
+        .add(name='joiner', needs=['executor0', 'executor1'])
     )
     assert f1 == f2
 
-    f2 = f2.add(name='pod0')
+    f2 = f2.add(name='executor0')
     assert f1 != f2
 
 
 def test_flow_get_item():
     f1 = (
         Flow()
-        .add(name='pod0')
-        .add(name='pod1', needs='gateway')
+        .add(name='executor0')
+        .add(name='executor1', needs='gateway')
         .needs_all(name='joiner')
     )
     assert isinstance(f1[1], BasePod)
-    assert isinstance(f1['pod0'], BasePod)
+    assert isinstance(f1['executor0'], BasePod)
 
 
 def test_flow_add_class():
@@ -780,12 +780,12 @@ def test_flow_routes_list(monkeypatch):
     def _time(time: str):
         return datetime.datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.%fZ')
 
-    with Flow().add(name='pod1') as simple_flow:
+    with Flow().add(name='executor1') as simple_flow:
 
         def validate_routes(x):
             gateway_entry, pod1_entry = json.loads(x.json())['routes']
             assert gateway_entry['pod'] == 'gateway'
-            assert pod1_entry['pod'].startswith('pod1')
+            assert pod1_entry['pod'].startswith('executor1')
             assert (
                 _time(gateway_entry['end_time'])
                 > _time(pod1_entry['end_time'])
@@ -830,13 +830,13 @@ def test_flow_routes_list(monkeypatch):
 
 
 def test_connect_to_predecessor():
-    f = Flow().add(name='pod1').add(name='pod2', connect_to_predecessor=True)
+    f = Flow().add(name='executor1').add(name='executor2', connect_to_predecessor=True)
 
     f.build()
 
     assert len(f._pod_nodes['gateway'].head_args.hosts_in_connect) == 0
-    assert len(f._pod_nodes['pod1'].head_args.hosts_in_connect) == 0
-    assert len(f._pod_nodes['pod2'].head_args.hosts_in_connect) == 1
+    assert len(f._pod_nodes['executor1'].head_args.hosts_in_connect) == 0
+    assert len(f._pod_nodes['executor2'].head_args.hosts_in_connect) == 1
 
 
 def test_flow_grpc_with_shard():

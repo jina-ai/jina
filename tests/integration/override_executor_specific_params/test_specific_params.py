@@ -3,14 +3,9 @@ from typing import Dict
 from jina import Flow, DocumentArray, Document, Executor, requests
 
 ORIGINAL_PARAMS = {'param1': 50, 'param2': 60, 'exec_name': {'param1': 'changed'}}
-OVERRIDEN_POD1_PARAMS = {
+OVERRIDEN_EXECUTOR1_PARAMS = {
     'param1': 'changed',
     'param2': 60,
-    'exec_name': {'param1': 'changed'},
-}
-OVERRIDEN_POD2_PARAMS = {
-    'param1': 50,
-    'param2': 'change_in_pod',
     'exec_name': {'param1': 'changed'},
 }
 
@@ -60,7 +55,7 @@ def test_override_params(mocker):
     assert len(resp) == 1
     assert len(resp[0].docs) == 1
     for doc in resp[0].docs:
-        assert doc.tags == OVERRIDEN_POD1_PARAMS
+        assert doc.tags == OVERRIDEN_EXECUTOR1_PARAMS
         assert doc.tags['param1'] == 'changed'
         assert doc.tags['param2'] == 60
         assert doc.tags['exec_name']['param1'] == 'changed'

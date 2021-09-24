@@ -1,11 +1,10 @@
 !Flow
 version: '1'
-pods:
-  - name: pod0
+executors:
+  - name: executor0
     needs: gateway
-  - name: pod1
+  - name: executor1
     needs: gateway
-  - name: pod2
+  - name: executor2
     uses: _merge
-    needs: [pod1, pod0]
-
+    needs: [executor1, executor0]

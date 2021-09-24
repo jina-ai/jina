@@ -53,7 +53,7 @@ def test_normal(docs):
             doc_id_path[int(doc.id)] = (doc.tags['replica'], doc.tags['shard'])
 
     flow = Flow().add(
-        name='pod1',
+        name='executor1',
         uses=DummyMarkExecutor,
         replicas=NUM_REPLICAS,
         parallel=NUM_SHARDS,
@@ -79,14 +79,14 @@ def test_normal(docs):
 @pytest.mark.timeout(60)
 def test_simple_run(docs):
     flow = Flow().add(
-        name='pod1',
+        name='executor1',
         replicas=2,
         parallel=3,
     )
     with flow:
         # test rolling update does not hang
         flow.search(docs)
-        flow.rolling_update('pod1', None)
+        flow.rolling_update('executor1', None)
         flow.search(docs)
 
 
@@ -111,7 +111,7 @@ def test_thread_run(docs, mocker, reraise, docker_image, uses):
     total_responses = []
     with Flow().add(
         uses=uses,
-        name='pod1',
+        name='executor1',
         replicas=2,
         parallel=2,
         timeout_ready=5000,
@@ -120,7 +120,7 @@ def test_thread_run(docs, mocker, reraise, docker_image, uses):
             target=update_rolling,
             args=(
                 flow,
-                'pod1',
+                'executor1',
             ),
         )
         for i in range(50):
@@ -145,7 +145,7 @@ def test_vector_indexer_thread(config, docs, mocker, reraise):
     error_mock = mocker.Mock()
     total_responses = []
     with Flow().add(
-        name='pod1',
+        name='executor1',
         uses=DummyMarkExecutor,
         replicas=2,
         parallel=3,
@@ -157,7 +157,7 @@ def test_vector_indexer_thread(config, docs, mocker, reraise):
             target=update_rolling,
             args=(
                 flow,
-                'pod1',
+                'executor1',
             ),
         )
         for i in range(40):
@@ -174,7 +174,7 @@ def test_vector_indexer_thread(config, docs, mocker, reraise):
 
 def test_workspace(config, tmpdir, docs):
     with Flow().add(
-        name='pod1',
+        name='executor1',
         uses=DummyMarkExecutor,
         workspace=str(tmpdir),
         replicas=2,
@@ -267,7 +267,7 @@ def test_port_configuration(replicas_and_parallel):
 
 def test_num_peas(config):
     with Flow().add(
-        name='pod1',
+        name='executor1',
         uses='!DummyMarkExecutor',
         replicas=3,
         parallel=4,

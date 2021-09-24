@@ -109,9 +109,9 @@ def test_needs(parallels, mocker):
     response_mock = mocker.Mock()
     f = (
         Flow()
-        .add(name='pod1', parallel=parallels)
-        .add(host=CLOUD_HOST, name='pod2', parallel=parallels, needs='gateway')
-        .add(name='pod3', parallel=parallels, needs=['pod1'])
+        .add(name='executor1', parallel=parallels)
+        .add(host=CLOUD_HOST, name='executor2', parallel=parallels, needs='gateway')
+        .add(name='executor3', parallel=parallels, needs=['executor1'])
         .needs_all()
     )
     with f:

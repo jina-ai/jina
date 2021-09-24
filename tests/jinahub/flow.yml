@@ -3,8 +3,8 @@ version: '1'
 with:
   protocol: http
   port_expose: 45678
-pods:
-  - name: pod1
+executors:
+  - name: executor1
     uses: docker://hubpod:test
-  - name: pod2
+  - name: executor2
     uses: docker://hubpod:test

@@ -2,7 +2,7 @@
 version: '1'
 metas:
   prefetch: 10
-pods:
+executors:
   - name: loader
     parallel: 4
     read_only: true
