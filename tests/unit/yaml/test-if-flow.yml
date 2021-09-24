@@ -1,6 +1,6 @@
 !Flow
 version: '1'
-pods:
+executors:
   - name: encode1
     uses: test-if-encode1.yml
   - name: encode2

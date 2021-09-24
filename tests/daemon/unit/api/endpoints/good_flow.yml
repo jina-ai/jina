@@ -1,5 +1,5 @@
 !Flow
 version: '1.0'
-pods:
+executors:
   - name: hello
   - name: world

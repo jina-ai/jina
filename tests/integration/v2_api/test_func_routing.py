@@ -111,7 +111,7 @@ def test_func_joiner(mocker):
         Flow()
         .add(uses=M1)
         .add(uses=M2, needs='gateway')
-        .add(uses=Joiner, needs=['pod0', 'pod1'])
+        .add(uses=Joiner, needs=['executor0', 'executor1'])
     )
 
     mock = mocker.Mock()
@@ -225,7 +225,7 @@ def test_target_peapod_with_one_pathways():
 
 
 def test_target_peapod_with_two_pathways():
-    f = Flow().add().add(needs=['gateway', 'pod0'], name='my_target')
+    f = Flow().add().add(needs=['gateway', 'executor0'], name='my_target')
     with f:
         results = f.post(
             on='/search',
@@ -237,7 +237,7 @@ def test_target_peapod_with_two_pathways():
 
 
 def test_target_peapod_with_two_pathways_one_skip():
-    f = Flow().add().add(needs=['gateway', 'pod0']).add(name='my_target')
+    f = Flow().add().add(needs=['gateway', 'executor0']).add(name='my_target')
     with f:
         results = f.post(
             on='/search',
