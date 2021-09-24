@@ -127,7 +127,6 @@ def test_l_r_l_docker(parallels, docker_image, mocker):
 
 
 def test_remote_flow_containerized_executors(docker_image, mocker):
-    response_mock = mocker.Mock()
     client = JinaDClient(host=__default_host__, port=8000)
     workspace_id = client.workspaces.create(paths=[os.path.join(cur_dir, 'yamls')])
 
@@ -142,6 +141,7 @@ def test_remote_flow_containerized_executors(docker_image, mocker):
         GATEWAY_LOCAL_CONTAINER_GATEWAY,
         GATEWAY_CONTAINER_LOCAL_CONTAINER_GATEWAY,
     ]:
+        response_mock = mocker.Mock()
         flow_id = client.flows.create(workspace_id=workspace_id, filename=flow_yaml)
         args = client.flows.get(flow_id)['arguments']['object']['arguments']
         Client(
