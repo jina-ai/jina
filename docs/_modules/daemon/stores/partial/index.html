@@ -583,7 +583,7 @@
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">__docker_host__</span>
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 
-<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">jinad_args</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">jinad_args</span><span class="p">,</span> <span class="n">__partial_workspace__</span>
 <span class="kn">from</span> <span class="nn">..models</span> <span class="kn">import</span> <span class="n">GATEWAY_RUNTIME_DICT</span>
 <span class="kn">from</span> <span class="nn">..models.enums</span> <span class="kn">import</span> <span class="n">UpdateOperation</span>
 <span class="kn">from</span> <span class="nn">..models.ports</span> <span class="kn">import</span> <span class="n">Ports</span><span class="p">,</span> <span class="n">PortMappings</span>
@@ -683,6 +683,7 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="p">:</span> <span class="n">Flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="n">yaml_source</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">workspace_id</span> <span class="o">=</span> <span class="n">jinad_args</span><span class="o">.</span><span class="n">workspace_id</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">workspace</span> <span class="o">=</span> <span class="n">__partial_workspace__</span>
 
             <span class="k">for</span> <span class="n">pod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="n">runtime_cls</span> <span class="o">=</span> <span class="n">update_runtime_cls</span><span class="p">(</span><span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">runtime_cls</span>
@@ -691,8 +692,14 @@
                     <span class="c1"># `runs_in_docker` to be False. Since `Flow` args are sent to all Pods, `runs_in_docker` gets set</span>
                     <span class="c1"># for the `CompoundPod`, which blocks the requests. Below we unset that (hacky &amp; ugly).</span>
                     <span class="c1"># We do it only for runtimes that starts on local (not container or remote)</span>
-                    <span class="k">if</span> <span class="n">runtime_cls</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'ZEDRuntime'</span><span class="p">,</span> <span class="s1">'ContainerRuntime'</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span>
-                        <span class="n">GATEWAY_RUNTIME_DICT</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">runtime_cls</span>
+                        <span class="ow">in</span> <span class="p">[</span>
+                            <span class="s1">'ZEDRuntime'</span><span class="p">,</span>
+                            <span class="s1">'GRPCDataRuntime'</span><span class="p">,</span>
+                            <span class="s1">'ContainerRuntime'</span><span class="p">,</span>
+                        <span class="p">]</span>
+                        <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">GATEWAY_RUNTIME_DICT</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
                     <span class="p">):</span>
                         <span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runs_in_docker</span> <span class="o">=</span> <span class="kc">False</span>
                         <span class="k">for</span> <span class="n">replica_args</span> <span class="ow">in</span> <span class="n">pod</span><span class="o">.</span><span class="n">replicas_args</span><span class="p">:</span>
@@ -719,6 +726,15 @@
                             <span class="n">pod</span><span class="o">.</span><span class="n">replicas_args</span> <span class="o">=</span> <span class="n">CompoundPod</span><span class="o">.</span><span class="n">_set_replica_args</span><span class="p">(</span>
                                 <span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">pod</span><span class="o">.</span><span class="n">head_args</span><span class="p">,</span> <span class="n">pod</span><span class="o">.</span><span class="n">tail_args</span>
                             <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># avoid setting runs_in_docker for Pods with parallel &gt; 1 and using `ZEDRuntime`</span>
+                    <span class="c1"># else, replica-peas would try connecting to head/tail-pea via __docker_host__</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">runtime_cls</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'ZEDRuntime'</span><span class="p">,</span> <span class="s1">'GRPCDataRuntime'</span><span class="p">]</span>
+                        <span class="ow">and</span> <span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">parallel</span> <span class="o">&gt;</span> <span class="mi">1</span>
+                    <span class="p">):</span>
+                        <span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runs_in_docker</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="n">pod</span><span class="o">.</span><span class="n">update_pea_args</span><span class="p">()</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>

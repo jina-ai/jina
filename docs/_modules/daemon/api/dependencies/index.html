@@ -713,8 +713,14 @@
             <span class="k">for</span> <span class="n">pod_name</span><span class="p">,</span> <span class="n">pod</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">runtime_cls</span> <span class="o">=</span> <span class="n">update_runtime_cls</span><span class="p">(</span><span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">runtime_cls</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pod</span><span class="p">,</span> <span class="n">CompoundPod</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="n">runtime_cls</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'ZEDRuntime'</span><span class="p">,</span> <span class="s1">'ContainerRuntime'</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span>
-                        <span class="n">GATEWAY_RUNTIME_DICT</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">runtime_cls</span>
+                        <span class="ow">in</span> <span class="p">[</span>
+                            <span class="s1">'ZEDRuntime'</span><span class="p">,</span>
+                            <span class="s1">'GRPCDataRuntime'</span><span class="p">,</span>
+                            <span class="s1">'ContainerRuntime'</span><span class="p">,</span>
+                        <span class="p">]</span>
+                        <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">GATEWAY_RUNTIME_DICT</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
                     <span class="p">):</span>
                         <span class="c1"># For a `CompoundPod`, publish ports for head Pea &amp; tail Pea</span>
                         <span class="c1"># Check daemon.stores.partial.PartialFlowStore.add() for addtional logic</span>
@@ -737,7 +743,7 @@
                                 <span class="p">)</span>
                             <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">runtime_cls</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'ZEDRuntime'</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span>
+                    <span class="k">if</span> <span class="n">runtime_cls</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'ZEDRuntime'</span><span class="p">,</span> <span class="s1">'GRPCDataRuntime'</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span>
                         <span class="n">GATEWAY_RUNTIME_DICT</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
                     <span class="p">):</span>
                         <span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runs_in_docker</span> <span class="o">=</span> <span class="kc">True</span>

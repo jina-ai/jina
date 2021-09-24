@@ -642,6 +642,9 @@
                     <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s1"> creation failed as: </span><span class="si">{</span><span class="n">error_msg</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
                 <span class="k">return</span> <span class="n">error_msg</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'Remote Flow created successfully with id </span><span class="si">{</span><span class="n">response_json</span><span class="si">}</span><span class="s1">'</span>
+            <span class="p">)</span>
             <span class="k">return</span> <span class="n">response_json</span>
 
     <span class="nd">@if_alive</span>
