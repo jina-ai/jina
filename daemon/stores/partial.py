@@ -117,8 +117,14 @@ class PartialFlowStore(PartialStore):
                     # `runs_in_docker` to be False. Since `Flow` args are sent to all Pods, `runs_in_docker` gets set
                     # for the `CompoundPod`, which blocks the requests. Below we unset that (hacky & ugly).
                     # We do it only for runtimes that starts on local (not container or remote)
-                    if runtime_cls in ['ZEDRuntime', 'ContainerRuntime'] + list(
-                        GATEWAY_RUNTIME_DICT.values()
+                    if (
+                        runtime_cls
+                        in [
+                            'ZEDRuntime',
+                            'GRPCDataRuntime',
+                            'ContainerRuntime',
+                        ]
+                        + list(GATEWAY_RUNTIME_DICT.values())
                     ):
                         pod.args.runs_in_docker = False
                         for replica_args in pod.replicas_args:
@@ -148,7 +154,10 @@ class PartialFlowStore(PartialStore):
                 else:
                     # avoid setting runs_in_docker for Pods with parallel > 1 and using `ZEDRuntime`
                     # else, replica-peas would try connecting to head/tail-pea via __docker_host__
-                    if runtime_cls == 'ZEDRuntime' and pod.args.parallel > 1:
+                    if (
+                        runtime_cls in ['ZEDRuntime', 'GRPCDataRuntime']
+                        and pod.args.parallel > 1
+                    ):
                         pod.args.runs_in_docker = False
                         pod.update_pea_args()
 

@@ -156,7 +156,7 @@ def test_complex_needs(parallels, mocker):
 
 @pytest.mark.parametrize('parallel', [1, 2])
 def test_remote_flow_local_executors(mocker, parallel):
-    response_mock = mocker.Mock()
+
     client = JinaDClient(host=__default_host__, port=8000)
     workspace_id = client.workspaces.create(paths=[os.path.join(cur_dir, 'yamls')])
 
@@ -167,6 +167,7 @@ def test_remote_flow_local_executors(mocker, parallel):
         GATEWAY_LOCAL_GATEWAY,
         GATEWAY_LOCAL_LOCAL_GATEWAY,
     ]:
+        response_mock = mocker.Mock()
         flow_id = client.flows.create(
             workspace_id=workspace_id, filename=flow_yaml, envs={'PARALLEL': parallel}
         )
