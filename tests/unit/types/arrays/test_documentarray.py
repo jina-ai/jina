@@ -276,6 +276,15 @@ def test_document_save_load(method, tmp_path):
             assert d.content == d_r.content
 
 
+@pytest.mark.parametrize('flatten_tags', [True, False])
+def test_da_csv_write(flatten_tags, tmp_path):
+    da1 = DocumentArray(random_docs(1000))
+    tmpfile = os.path.join(tmp_path, 'test')
+    da1.save_csv(tmpfile, flatten_tags)
+    with open(tmpfile) as fp:
+        assert len([v for v in fp]) == len(da1) + 1
+
+
 def test_documentarray_filter():
     da = DocumentArray([Document() for _ in range(6)])
 
@@ -562,6 +571,54 @@ def test_blobs_setter_da():
 
     for x, doc in zip(blobs, da):
         np.testing.assert_almost_equal(x, doc.blob)
+
+
+def test_tags_getter_da():
+    da = DocumentArray([Document(tags={'a': 2, 'c': 'd'}) for _ in range(100)])
+    assert len(da.tags) == 100
+    assert da.tags == da.get_attributes('tags')
+
+
+def test_tags_setter_da():
+    tags = [{'a': 2, 'c': 'd'} for _ in range(100)]
+    da = DocumentArray([Document() for _ in range(100)])
+    da.tags = tags
+    assert da.tags == tags
+
+    for x, doc in zip(tags, da):
+        assert x == doc.tags
+
+
+def test_setter_wrong_len():
+    da = DocumentArray([Document() for _ in range(100)])
+    tags = [{'1': 2}]
+
+    with pytest.raises(ValueError, match='the number of tags in the'):
+        da.tags = tags
+
+
+def test_texts_getter_da():
+    da = DocumentArray([Document(text='hello') for _ in range(100)])
+    assert len(da.texts) == 100
+    assert da.texts == da.get_attributes('text')
+
+
+def test_texts_setter_da():
+    texts = ['text' for _ in range(100)]
+    da = DocumentArray([Document() for _ in range(100)])
+    da.texts = texts
+    assert da.texts == texts
+
+    for x, doc in zip(texts, da):
+        assert x == doc.text
+
+
+def test_texts_wrong_len():
+    da = DocumentArray([Document() for _ in range(100)])
+    texts = ['hello']
+
+    with pytest.raises(ValueError, match='the number of texts in the'):
+        da.texts = texts
 
 
 def test_blobs_wrong_len():

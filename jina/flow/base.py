@@ -85,6 +85,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         *,
         asyncio: Optional[bool] = False,
         host: Optional[str] = '0.0.0.0',
+        https: Optional[bool] = False,
         port: Optional[int] = None,
         protocol: Optional[str] = 'GRPC',
         proxy: Optional[bool] = False,
@@ -94,6 +95,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
         :param host: The host address of the runtime, by default it is 0.0.0.0.
+        :param https: If set, connect to gateway using https
         :param port: The port of the Gateway, which the client should connect to.
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
@@ -113,7 +115,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         compress: Optional[str] = 'NONE',
         compress_min_bytes: Optional[int] = 1024,
         compress_min_ratio: Optional[float] = 1.1,
-        connect_to_predecessor: Optional[bool] = False,
         cors: Optional[bool] = False,
         ctrl_with_ipc: Optional[bool] = True,
         daemon: Optional[bool] = False,
@@ -160,6 +161,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         uses_metas: Optional[dict] = None,
         uses_requests: Optional[dict] = None,
         uses_with: Optional[dict] = None,
+        uvicorn_kwargs: Optional[dict] = None,
         workspace: Optional[str] = None,
         zmq_identity: Optional[str] = None,
         **kwargs,
@@ -172,7 +174,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
               it depends on the settings of `--compress-min-bytes` and `compress-min-ratio`
         :param compress_min_bytes: The original message size must be larger than this number to trigger the compress algorithm, -1 means disable compression.
         :param compress_min_ratio: The compression ratio (uncompressed_size/compressed_size) must be higher than this number to trigger the compress algorithm.
-        :param connect_to_predecessor: The head Pea of this Pod will connect to the TailPea of the predecessor Pod.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
         :param ctrl_with_ipc: If set, use ipc protocol for control socket
         :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
@@ -250,6 +251,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
         :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
+        :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
+
+          More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
         :param zmq_identity: The identity of a ZMQRuntime. It is used for unique socket identification towards other ZMQRuntimes.
 
@@ -426,6 +430,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
 
         args.k8s_namespace = self.args.name
+        args.connect_to_predecessor = False
         self._pod_nodes[GATEWAY_NAME] = PodFactory.build_pod(
             args, needs, self.args.infrastructure
         )
@@ -685,7 +690,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             pod_name = new_name
 
         if not pod_name:
-            pod_name = f'pod{len(op_flow._pod_nodes)}'
+            pod_name = f'executor{len(op_flow._pod_nodes)}'
 
         if not pod_name.isidentifier():
             # hyphen - can not be used in the name

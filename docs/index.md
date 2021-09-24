@@ -3,8 +3,28 @@
 Jina is a neural search framework that allows anyone to build SOTA & scalable deep learning search applications in minutes.
 
 1. Make sure that you have Python 3.7+ installed on Linux/MacOS.
-2. Install Jina: ``pip install jina``
-3. Run hello-world demos: ``jina hello fashion``
+2. Install Jina
+
+    ````{tab} via PyPI
+    ```shell
+    pip install -U jina
+    ```
+    ````
+    ````{tab} via Conda
+    ```shell
+    conda install jina -c conda-forge
+    ```
+    ````
+    ````{tab} via Docker
+    ```shell
+    docker run jinaai/jina:latest
+    ```
+    ````
+
+3. Run hello-world demo
+   ```bash 
+   jina hello fashion
+   ```
 4. That’s it! In the next few seconds the demo will open in a new page in your browser.
 
 Now that you’re set up, let’s dive into more of how Jina works and how to build great apps.
@@ -124,7 +144,7 @@ tutorials/gpu-executor
 ```
 
 ```{toctree}
-:caption: Developer Reference
+:caption: API Reference
 :hidden:
 :maxdepth: 1
 

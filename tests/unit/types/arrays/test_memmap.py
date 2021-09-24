@@ -529,6 +529,62 @@ def test_blobs_setter_dam(tmpdir):
         np.testing.assert_almost_equal(x, doc.blob)
 
 
+def test_tags_getter_dam(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document(tags={'a': 2, 'c': 'd'}) for _ in range(100)])
+    assert len(dam.tags) == 100
+    assert dam.tags == dam.get_attributes('tags')
+
+
+def test_tags_setter_dam(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    tags = [{'a': 2, 'c': 'd'} for _ in range(100)]
+    dam.extend([Document() for _ in range(100)])
+    dam.tags = tags
+    assert dam.tags == tags
+
+    for x, doc in zip(tags, dam):
+        assert x == doc.tags
+
+
+def test_setter_wrong_len(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document() for _ in range(100)])
+    tags = [{'1': 2}]
+
+    with pytest.raises(ValueError, match='the number of tags in the'):
+        dam.tags = tags
+
+
+def test_texts_getter_dam(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document(text='hello') for _ in range(100)])
+    assert len(dam.texts) == 100
+    t1 = dam.texts
+    t2 = dam.get_attributes('text')
+    assert t1 == t2
+
+
+def test_texts_setter_dam(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document() for _ in range(100)])
+    texts = ['text' for _ in range(100)]
+    dam.texts = texts
+    assert dam.texts == texts
+
+    for x, doc in zip(texts, dam):
+        assert x == doc.text
+
+
+def test_texts_wrong_len(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document() for _ in range(100)])
+    texts = ['hello']
+
+    with pytest.raises(ValueError, match='the number of texts in the'):
+        dam.texts = texts
+
+
 def test_blobs_wrong_len(tmpdir):
     dam = DocumentArrayMemmap(tmpdir)
     dam.extend([Document() for x in range(100)])
@@ -536,3 +592,7 @@ def test_blobs_wrong_len(tmpdir):
 
     with pytest.raises(ValueError, match='the number of rows in the'):
         dam.blobs = blobs
+
+
+def test_mmap_path_getter(memmap_with_text_and_embedding, tmpdir):
+    assert memmap_with_text_and_embedding.path == tmpdir

@@ -73,9 +73,11 @@ def test_batching(
         ('text', 'text'),
         ('buffer', b'text'),
         ('blob', np.array([1])),
+        ('blob', np.array([1, 2])),
         ('uri', 'https://uri'),
         ('content', 'text'),
         ('embedding', np.array([1])),
+        ('embedding', np.array([1, 2])),
     ],
 )
 def test_needs_attr_empty(attr_name: str, attr_value: Any):

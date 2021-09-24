@@ -121,7 +121,7 @@ def test_matching_same_results_with_sparse(
             distances.extend([d.scores[metric].value])
 
     # use match with sparse arrays
-    D1_sp.match(D2_sp, metric=metric)
+    D1_sp.match(D2_sp, metric=metric, is_sparse=True)
     distances_sparse = []
     for m in D1.get_attributes('matches'):
         for d in m:
@@ -552,3 +552,38 @@ def test_match_on_two_sides_chunks(get_two_docarray):
     da1.match(da2, traversal_ldarray=['c'], traversal_rdarray=['c'])
     assert len(da1[0].matches) == 0
     assert len(da1[0].chunks[0].matches) == len(da2[0].chunks) + len(da2[1].chunks)
+
+
+def test_match_dam_on_right(get_two_docarray, tmpdir):
+    da1, da2 = get_two_docarray
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend(da2)
+    da1.match(dam)
+    assert len(da1[0].matches) == len(da2)
+
+
+def test_match_dam_traversal_c_on_right(get_two_docarray, tmpdir):
+    da1, da2 = get_two_docarray
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend(da2)
+    da1.match(dam, traversal_rdarray=['c'])
+    assert len(da1[0].matches) == len(da2[0].chunks) + len(da2[1].chunks)
+
+
+@pytest.mark.parametrize('exclude_self', [True, False])
+@pytest.mark.parametrize('limit', [1, 2, 3])
+def test_exclude_self_should_keep_limit(limit, exclude_self):
+    da = DocumentArray(
+        [
+            Document(embedding=np.array([3, 1, 0])),
+            Document(embedding=np.array([3, 0, 1])),
+            Document(embedding=np.array([3, 0, 0])),
+            Document(embedding=np.array([3, 1, 1])),
+        ]
+    )
+    da.match(da, exclude_self=exclude_self, limit=limit)
+    for d in da:
+        assert len(d.matches) == limit
+        if exclude_self:
+            for m in d.matches:
+                assert d.id != m.id

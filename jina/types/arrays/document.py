@@ -25,8 +25,10 @@ from .neural_ops import DocumentArrayNeuralOpsMixin
 from .search_ops import DocumentArraySearchOpsMixin
 from .traversable import TraversableSequence
 from ..document import Document
+from ..struct import StructView
 from ...helper import typename
 from ...proto import jina_pb2
+import csv
 
 try:
     # when protobuf using Cpp backend
@@ -151,6 +153,49 @@ class DocumentArrayGetAttrMixin:
 
         for d, x in zip(self, blobs):
             d.blob = x
+
+    @property
+    def tags(self) -> List[StructView]:
+        """Get the tags attribute of all Documents"""
+        ...
+
+    @tags.setter
+    def tags(self, tags: Sequence[Union[Dict, StructView]]):
+        """Set the tags attribute for all Documents
+
+        :param tags: A sequence of tags to set, should be the same length as the
+            number of Documents
+        """
+
+        if len(tags) != len(self):
+            raise ValueError(
+                f'the number of tags in the input ({len(tags)}), should match the'
+                f'number of Documents ({len(self)})'
+            )
+
+        for doc, tags_doc in zip(self, tags):
+            doc.tags = tags_doc
+
+    @property
+    def texts(self) -> List[str]:
+        """Get the text attribute of all Documents"""
+        ...
+
+    @texts.setter
+    def texts(self, texts: Sequence[str]):
+        """Set the text attribute for all Documents
+
+        :param texts: A sequence of texts to set, should be the same length as the
+            number of Documents
+        """
+        if len(texts) != len(self):
+            raise ValueError(
+                f'the number of texts in the input ({len(texts)}), should match the'
+                f'number of Documents ({len(self)})'
+            )
+
+        for doc, text in zip(self, texts):
+            doc.text = text
 
 
 class DocumentArray(
@@ -396,28 +441,32 @@ class DocumentArray(
     def save(
         self, file: Union[str, TextIO, BinaryIO], file_format: str = 'json'
     ) -> None:
-        """Save array elements into a JSON or a binary file.
+        """Save array elements into a JSON, a binary file or a CSV file.
 
         :param file: File or filename to which the data is saved.
-        :param file_format: `json` or `binary`. JSON file is human-readable,
-            but binary format gives much smaller size and faster save/load speed.
+        :param file_format: `json` or `binary` or `csv`. JSON and CSV files are human-readable,
+            but binary format gives much smaller size and faster save/load speed. Note that, CSV file has very limited
+            compatability, complex DocumentArray with nested structure can not be restored from a CSV file.
         """
         if file_format == 'json':
             self.save_json(file)
         elif file_format == 'binary':
             self.save_binary(file)
+        elif file_format == 'csv':
+            self.save_csv(file)
         else:
-            raise ValueError('`format` must be one of [`json`, `binary`]')
+            raise ValueError('`format` must be one of [`json`, `binary`, `csv`]')
 
     @classmethod
     def load(
         cls, file: Union[str, TextIO, BinaryIO], file_format: str = 'json'
     ) -> 'DocumentArray':
-        """Load array elements from a JSON or a binary file.
+        """Load array elements from a JSON or a binary file, or a CSV file.
 
         :param file: File or filename to which the data is saved.
-        :param file_format: `json` or `binary`. JSON file is human-readable,
-            but binary format gives much smaller size and faster save/load speed.
+        :param file_format: `json` or `binary` or `csv`. JSON and CSV files are human-readable,
+            but binary format gives much smaller size and faster save/load speed. CSV file has very limited compatability,
+            complex DocumentArray with nested structure can not be restored from a CSV file.
 
         :return: the loaded DocumentArray object
         """
@@ -425,8 +474,10 @@ class DocumentArray(
             return cls.load_json(file)
         elif file_format == 'binary':
             return cls.load_binary(file)
+        elif file_format == 'csv':
+            return cls.load_csv(file)
         else:
-            raise ValueError('`format` must be one of [`json`, `binary`]')
+            raise ValueError('`format` must be one of [`json`, `binary`, `csv`]')
 
     def save_binary(self, file: Union[str, BinaryIO]) -> None:
         """Save array elements into a binary file.
@@ -462,6 +513,37 @@ class DocumentArray(
             for d in self:
                 json.dump(d.dict(), fp)
                 fp.write('\n')
+
+    def save_csv(self, file: Union[str, TextIO], flatten_tags: bool = True) -> None:
+        """Save array elements into a CSV file.
+
+        :param file: File or filename to which the data is saved.
+        :param flatten_tags: if set, then all fields in ``Document.tags`` will be flattened into ``tag__fieldname`` and
+            stored as separated columns. It is useful when ``tags`` contain a lot of information.
+        """
+        if hasattr(file, 'write'):
+            file_ctx = nullcontext(file)
+        else:
+            file_ctx = open(file, 'w')
+
+        with file_ctx as fp:
+            if flatten_tags:
+                keys = list(self[0].dict().keys()) + list(
+                    f'tag__{k}' for k in self[0].tags
+                )
+                keys.remove('tags')
+            else:
+                keys = list(self[0].dict().keys())
+
+            writer = csv.DictWriter(fp, fieldnames=keys)
+
+            writer.writeheader()
+            for d in self:
+                pd = d.dict(prettify_ndarrays=True)
+                if flatten_tags:
+                    t = pd.pop('tags')
+                    pd.update({f'tag__{k}': v for k, v in t.items()})
+                writer.writerow(pd)
 
     @classmethod
     def load_json(cls, file: Union[str, TextIO]) -> 'DocumentArray':
@@ -504,6 +586,26 @@ class DocumentArray(
             da = DocumentArray(dap.docs)
             return da
 
+    @classmethod
+    def load_csv(cls, file: Union[str, BinaryIO]) -> 'DocumentArray':
+        """Load array elements from a binary file.
+
+        :param file: File or filename to which the data is saved.
+
+        :return: a DocumentArray object
+        """
+
+        if hasattr(file, 'read'):
+            file_ctx = nullcontext(file)
+        else:
+            file_ctx = open(file, 'r')
+
+        with file_ctx as fp:
+            da = DocumentArray()
+            for v in csv.DictReader(fp):
+                da.append(Document(v))
+            return da
+
     # Properties for fast access of commonly used attributes
     @property
     def embeddings(self) -> np.ndarray:
@@ -540,6 +642,23 @@ class DocumentArray(
         for d, x in zip(self, emb):
             d.embedding = x
 
+    @DocumentArrayGetAttrMixin.tags.getter
+    def tags(self) -> List[StructView]:
+        """Get the tags attribute of all Documents
+
+        :return: List of ``tags`` attributes for all Documents
+        """
+        tags = [StructView(d.tags) for d in self._pb_body]
+        return tags
+
+    @DocumentArrayGetAttrMixin.texts.getter
+    def texts(self) -> List[str]:
+        """Get the text attribute of all Documents
+
+        :return: List of ``text`` attributes for all Documents
+        """
+        return [d.text for d in self._pb_body]
+
     @DocumentArrayGetAttrMixin.blobs.getter
     def blobs(self) -> np.ndarray:
         """Return a `np.ndarray` stacking all the `blob` attributes.
@@ -561,3 +680,7 @@ class DocumentArray(
         return np.frombuffer(x_mat, dtype=proto.dtype).reshape(
             (len(self), *proto.shape)
         )
+
+    @staticmethod
+    def _flatten(sequence) -> 'DocumentArray':
+        return DocumentArray(list(itertools.chain.from_iterable(sequence)))
