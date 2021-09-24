@@ -695,12 +695,7 @@ def test_flow_equalities():
 
 
 def test_flow_get_item():
-    f1 = (
-        Flow()
-        .add(name='executor0')
-        .add(name='executor1', needs='gateway')
-        .needs_all(name='joiner')
-    )
+    f1 = Flow().add().add(needs='gateway').needs_all(name='joiner')
     assert isinstance(f1[1], BasePod)
     assert isinstance(f1['executor0'], BasePod)
 
