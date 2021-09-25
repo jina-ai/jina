@@ -22,7 +22,7 @@ jobs:
         env:
           release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}
 
-  regular-release:
+  update-announcement:
     needs: token-check
     runs-on: ubuntu-latest
     steps:
@@ -33,7 +33,7 @@ jobs:
         with:
           python-version: 3.7
       - run: |
-          python scripts/announcememt.py "${{ github.event.inputs.announce_text }}" "${{ github.event.inputs.announce_url }}"
+          python scripts/announcement.py "${{ github.event.inputs.announce_text }}" "${{ github.event.inputs.announce_url }}"
           git add -u
           git commit -m "chore: update announcement"
       - name: push to master
