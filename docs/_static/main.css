@@ -60,3 +60,19 @@ table code {
     font-size: var(--font-size--small--2);
     padding: .1em .2em;
 }
+
+.related-information {
+    justify-content: space-between;
+}
+
+.social-btn {
+    margin: 0 .3em;
+}
+
+.social-btn:hover {
+    opacity: .5;
+}
+
+.social-btns {
+    display: inline-block;
+}
