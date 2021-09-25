@@ -1134,14 +1134,17 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         # kick off ip getter thread
         addr_table = []
-        t_ip = threading.Thread(
-            target=self._get_address_table, args=(addr_table,), daemon=True
-        )
-        t_ip.start()
+        t_ip = None
+        if self.args.infrastructure != InfrastructureType.K8S:
+            t_ip = threading.Thread(
+                target=self._get_address_table, args=(addr_table,), daemon=True
+            )
+            t_ip.start()
 
         for t in threads:
             t.join()
-        t_ip.join()
+        if t_ip is not None:
+            t_ip.join()
         t_m.join()
 
         error_pods = [k for k, v in results.items() if v != 'done']
