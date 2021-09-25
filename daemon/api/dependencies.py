@@ -138,8 +138,14 @@ class FlowDepends:
             for pod_name, pod in f._pod_nodes.items():
                 runtime_cls = update_runtime_cls(pod.args, copy=True).runtime_cls
                 if isinstance(pod, CompoundPod):
-                    if runtime_cls in ['ZEDRuntime', 'ContainerRuntime'] + list(
-                        GATEWAY_RUNTIME_DICT.values()
+                    if (
+                        runtime_cls
+                        in [
+                            'ZEDRuntime',
+                            'GRPCDataRuntime',
+                            'ContainerRuntime',
+                        ]
+                        + list(GATEWAY_RUNTIME_DICT.values())
                     ):
                         # For a `CompoundPod`, publish ports for head Pea & tail Pea
                         # Check daemon.stores.partial.PartialFlowStore.add() for addtional logic
@@ -162,7 +168,7 @@ class FlowDepends:
                                 )
                             )
                 else:
-                    if runtime_cls in ['ZEDRuntime'] + list(
+                    if runtime_cls in ['ZEDRuntime', 'GRPCDataRuntime'] + list(
                         GATEWAY_RUNTIME_DICT.values()
                     ):
                         pod.args.runs_in_docker = True

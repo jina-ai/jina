@@ -62,7 +62,7 @@ def test_flowstore_add(monkeypatch, partial_flow_store):
 
     assert partial_store_item
     assert isinstance(partial_flow_store.object, Flow)
-    assert 'pod1' in partial_store_item.yaml_source
+    assert 'executor1' in partial_store_item.yaml_source
     assert partial_flow_store.object.port_expose == 12345
 
 
@@ -77,7 +77,10 @@ def test_flowstore_update(partial_flow_store, mocker):
     partial_flow_store.object.rolling_update = update_mock
 
     partial_flow_store.update(
-        kind=UpdateOperation.ROLLING_UPDATE, dump_path='', pod_name='pod1', shards=1
+        kind=UpdateOperation.ROLLING_UPDATE,
+        dump_path='',
+        pod_name='executor1',
+        shards=1,
     )
 
     update_mock.assert_called()

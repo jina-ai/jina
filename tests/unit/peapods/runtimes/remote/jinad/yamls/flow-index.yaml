@@ -1,6 +1,6 @@
 !Flow
 version: '1'
-pods:
+executors:
   - name: encode
     uses: yamls/encoder.yml
     parallel: 2

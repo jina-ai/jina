@@ -2,5 +2,5 @@
 version: '1.0'
 with:
   port_expose: 12345
-pods:
-  - name: pod1
+executors:
+  - name: executor1

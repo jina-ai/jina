@@ -171,7 +171,7 @@ Let's try it out by running
 python main.py
 ```
 ```console
-           pod0@26554[L]:ready and listening
+      executor0@26554[L]:ready and listening
         gateway@26554[L]:ready and listening
            Flow@26554[I]:🎉 Flow is ready to use!
         🔗 Protocol:            GRPC
@@ -198,7 +198,7 @@ First, we need to make sure that the encoder is using the GPU - change the `'dev
 python main.py
 ```
 ```console
-           pod0@21032[L]:ready and listening
+      executor0@21032[L]:ready and listening
         gateway@21032[L]:ready and listening
            Flow@21032[I]:🎉 Flow is ready to use!
         🔗 Protocol:            GRPC

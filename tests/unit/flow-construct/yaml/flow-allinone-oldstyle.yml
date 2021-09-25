@@ -1,6 +1,6 @@
 jtype: Flow
 version: '1'
-pods:
+executors:
   - uses:
     !CustomizedEncoder {}
   - uses:

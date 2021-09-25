@@ -53,15 +53,15 @@ def test_simple_dynamic_routing_zmqlet():
         msg = Message(None, req, 'tmp', '')
         routing_pb = jina_pb2.RoutingTableProto()
         routing_table = {
-            'active_pod': 'pod1',
+            'active_pod': 'executor1',
             'pods': {
-                'pod1': {
+                'executor1': {
                     'host': '0.0.0.0',
                     'port': args1.port_in,
                     'expected_parts': 0,
-                    'out_edges': [{'pod': 'pod2'}],
+                    'out_edges': [{'pod': 'executor2'}],
                 },
-                'pod2': {
+                'executor2': {
                     'host': '0.0.0.0',
                     'port': args2.port_in,
                     'expected_parts': 1,
@@ -103,21 +103,21 @@ def test_double_dynamic_routing_zmqlet():
         d.tags['id'] = 2
         msg = Message(None, req, 'tmp', '')
         routing_table = {
-            'active_pod': 'pod1',
+            'active_pod': 'executor1',
             'pods': {
-                'pod1': {
+                'executor1': {
                     'host': '0.0.0.0',
                     'port': args1.port_in,
                     'expected_parts': 0,
-                    'out_edges': [{'pod': 'pod2'}, {'pod': 'pod3'}],
+                    'out_edges': [{'pod': 'executor2'}, {'pod': 'executor3'}],
                 },
-                'pod2': {
+                'executor2': {
                     'host': '0.0.0.0',
                     'port': args2.port_in,
                     'expected_parts': 1,
                     'out_edges': [],
                 },
-                'pod3': {
+                'executor3': {
                     'host': '0.0.0.0',
                     'port': args3.port_in,
                     'expected_parts': 1,
@@ -170,21 +170,21 @@ async def test_double_dynamic_routing_async_zmqlet():
         msg = Message(None, req, 'tmp', '')
         routing_pb = jina_pb2.RoutingTableProto()
         routing_table = {
-            'active_pod': 'pod1',
+            'active_pod': 'executor1',
             'pods': {
-                'pod1': {
+                'executor1': {
                     'host': '0.0.0.0',
                     'port': args1.port_in,
                     'expected_parts': 0,
-                    'out_edges': [{'pod': 'pod2'}, {'pod': 'pod3'}],
+                    'out_edges': [{'pod': 'executor2'}, {'pod': 'executor3'}],
                 },
-                'pod2': {
+                'executor2': {
                     'host': '0.0.0.0',
                     'port': args2.port_in,
                     'expected_parts': 1,
                     'out_edges': [],
                 },
-                'pod3': {
+                'executor3': {
                     'host': '0.0.0.0',
                     'port': args3.port_in,
                     'expected_parts': 1,
@@ -228,21 +228,21 @@ def test_double_dynamic_routing_zmqstreamlet():
         msg = Message(None, req, 'tmp', '')
         routing_pb = jina_pb2.RoutingTableProto()
         routing_table = {
-            'active_pod': 'pod1',
+            'active_pod': 'executor1',
             'pods': {
-                'pod1': {
+                'executor1': {
                     'host': '0.0.0.0',
                     'port': args1.port_in,
                     'expected_parts': 0,
-                    'out_edges': [{'pod': 'pod2'}, {'pod': 'pod3'}],
+                    'out_edges': [{'pod': 'executor2'}, {'pod': 'executor3'}],
                 },
-                'pod2': {
+                'executor2': {
                     'host': '0.0.0.0',
                     'port': args2.port_in,
                     'expected_parts': 1,
                     'out_edges': [],
                 },
-                'pod3': {
+                'executor3': {
                     'host': '0.0.0.0',
                     'port': args3.port_in,
                     'expected_parts': 1,
@@ -291,15 +291,15 @@ def test_remote_local_dynamic_routing_zmqlet():
         msg = Message(None, req, 'tmp', '')
         routing_pb = jina_pb2.RoutingTableProto()
         routing_table = {
-            'active_pod': 'pod1',
+            'active_pod': 'executor1',
             'pods': {
-                'pod1': {
+                'executor1': {
                     'host': '0.0.0.0',
                     'port': args1.port_in,
                     'expected_parts': 0,
-                    'out_edges': [{'pod': 'pod2', 'send_as_bind': True}],
+                    'out_edges': [{'pod': 'executor2', 'send_as_bind': True}],
                 },
-                'pod2': {
+                'executor2': {
                     'host': '0.0.0.0',
                     'port': args2.port_in,
                     'expected_parts': 1,

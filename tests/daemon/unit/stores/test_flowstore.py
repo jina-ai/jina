@@ -20,11 +20,11 @@ def workspace():
 
 
 def pod_list_one():
-    return [{'name': 'pod1'}]
+    return [{'name': 'executor1'}]
 
 
 def pod_list_multiple():
-    return [{'name': 'pod1'}, {'name': 'pod2'}]
+    return [{'name': 'executor1'}, {'name': 'executor2'}]
 
 
 @pytest.mark.asyncio

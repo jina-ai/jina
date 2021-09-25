@@ -78,13 +78,15 @@ def test_merging_head_pea():
 
     f = (
         Flow()
-        .add(uses={'jtype': 'DummyExecutor', 'with': {'mode': '1'}}, name='pod1')
+        .add(uses={'jtype': 'DummyExecutor', 'with': {'mode': '1'}}, name='executor1')
         .add(
             uses={'jtype': 'DummyExecutor', 'with': {'mode': '2'}},
-            name='pod2',
+            name='executor2',
             needs='gateway',
         )
-        .add(uses_before=ChunkMerger, name='pod3', needs=['pod1', 'pod2'])
+        .add(
+            uses_before=ChunkMerger, name='executor3', needs=['executor1', 'executor2']
+        )
     )
     with f:
         results = f.post(

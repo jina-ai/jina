@@ -76,7 +76,6 @@ class K8sPod(BasePod):
             container_cmd='["jina"]',
             container_args=f'["gateway", '
             f'"--grpc-data-requests", '
-            f'"--runtime-cls", "GRPCDataRuntime", '
             f'{kubernetes_deployment.get_cli_params(self.args, ("pod_role",))}]',
             logger=JinaLogger(f'deploy_{self.name}'),
             replicas=1,
@@ -127,7 +126,8 @@ class K8sPod(BasePod):
         deployment_args, uses, uses_metas, uses_with_string
     ):
         container_args = (
-            f'["pea", '
+            f'["executor", '
+            f'"--native", '
             f'"--uses", "{uses}", '
             f'"--grpc-data-requests", '
             f'"--runtime-cls", "GRPCDataRuntime", '

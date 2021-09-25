@@ -4,13 +4,13 @@ with:
   read_only: true
   protocol: http
   port_expose: 45630
-pods:
-  - name: pod1
+executors:
+  - name: executor1
     uses: docker://hubpod:test
     host: host.docker.internal
     port_jinad: 8001
-  - name: pod2
-  - name: pod3
+  - name: executor2
+  - name: executor3
     uses: docker://hubpod:test
     host: host.docker.internal
     port_jinad: 8002

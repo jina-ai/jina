@@ -196,7 +196,7 @@ with flow as f:
 ```
 
 ```text
-           pod0@219291[L]:ready and listening
+      executor0@219291[L]:ready and listening
         gateway@219291[L]:ready and listening
            Flow@219291[I]:🎉 Flow is ready to use!
 	🔗 Protocol: 		GRPC
@@ -230,7 +230,7 @@ with flow as f:
     f.post('/')
 ```
 ```text
-           pod0@219662[L]:ready and listening
+      executor0@219662[L]:ready and listening
         gateway@219662[L]:ready and listening
            Flow@219662[I]:🎉 Flow is ready to use!
 	🔗 Protocol: 		GRPC
@@ -265,7 +265,7 @@ with flow as f:
 ```
 
 ```text
-           pod0@221058[L]:ready and listening
+      executor0@221058[L]:ready and listening
         gateway@221058[L]:ready and listening
            Flow@221058[I]:🎉 Flow is ready to use!
 	🔗 Protocol: 		GRPC
