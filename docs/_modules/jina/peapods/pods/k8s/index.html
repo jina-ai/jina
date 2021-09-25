@@ -651,7 +651,6 @@
             <span class="n">container_cmd</span><span class="o">=</span><span class="s1">'["jina"]'</span><span class="p">,</span>
             <span class="n">container_args</span><span class="o">=</span><span class="sa">f</span><span class="s1">'["gateway", '</span>
             <span class="sa">f</span><span class="s1">'"--grpc-data-requests", '</span>
-            <span class="sa">f</span><span class="s1">'"--runtime-cls", "GRPCDataRuntime", '</span>
             <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">get_cli_params</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="p">(</span><span class="s2">"pod_role"</span><span class="p">,))</span><span class="si">}</span><span class="s1">]'</span><span class="p">,</span>
             <span class="n">logger</span><span class="o">=</span><span class="n">JinaLogger</span><span class="p">(</span><span class="sa">f</span><span class="s1">'deploy_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span><span class="p">),</span>
             <span class="n">replicas</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -702,7 +701,8 @@
         <span class="n">deployment_args</span><span class="p">,</span> <span class="n">uses</span><span class="p">,</span> <span class="n">uses_metas</span><span class="p">,</span> <span class="n">uses_with_string</span>
     <span class="p">):</span>
         <span class="n">container_args</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'["pea", '</span>
+            <span class="sa">f</span><span class="s1">'["executor", '</span>
+            <span class="sa">f</span><span class="s1">'"--native", '</span>
             <span class="sa">f</span><span class="s1">'"--uses", "</span><span class="si">{</span><span class="n">uses</span><span class="si">}</span><span class="s1">", '</span>
             <span class="sa">f</span><span class="s1">'"--grpc-data-requests", '</span>
             <span class="sa">f</span><span class="s1">'"--runtime-cls", "GRPCDataRuntime", '</span>
@@ -865,7 +865,7 @@
                 <div class="related-information">
                     Copyright &#169; Jina AI Limited. All rights reserved.
                     |
-                    Last updated on Sep 24, 2021.
+                    Last updated on Sep 25, 2021.
                 </div>
                 
             </footer>
