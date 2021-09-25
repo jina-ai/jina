@@ -33,6 +33,8 @@ jobs:
         with:
           python-version: 3.7
       - run: |
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
           python scripts/announcement.py "${{ github.event.inputs.announce_text }}" "${{ github.event.inputs.announce_url }}"
           git add -u
           git commit -m "chore: update announcement in readme and docs"
