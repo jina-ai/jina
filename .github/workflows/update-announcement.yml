@@ -35,7 +35,7 @@ jobs:
       - run: |
           python scripts/announcement.py "${{ github.event.inputs.announce_text }}" "${{ github.event.inputs.announce_url }}"
           git add -u
-          git commit -m "chore: update announcement"
+          git commit -m "chore: update announcement in readme and docs"
       - name: push to master
         uses: ad-m/github-push-action@v0.6.0
         with:
