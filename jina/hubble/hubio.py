@@ -129,14 +129,10 @@ This guide helps you to create your own Executor in 30 seconds.''',
 
         is_dockerfile = False
 
-        if (
-            eval(self.args.advance_configuration)
-            if self.args.advance_configuration
-            else Confirm.ask(
-                '[green]That\'s all we need to create an Executor![/green]\n'
-                ':grey_question: Or do you want to proceed to advanced configuration',
-                default=False,
-            )
+        if self.args.advance_configuration or Confirm.ask(
+            '[green]That\'s all we need to create an Executor![/green]\n'
+            ':grey_question: Or do you want to proceed to advanced configuration',
+            default=False,
         ):
             exec_description = (
                 self.args.description
@@ -184,13 +180,9 @@ your executor has non-trivial dependencies or must be run under certain environm
                 )
             )
 
-            is_dockerfile = (
-                eval(self.args.add_dockerfile)
-                if self.args.add_dockerfile
-                else Confirm.ask(
-                    ':grey_question: Do you need to write your own [bold]Dockerfile[/bold] instead of the auto-generated one?',
-                    default=False,
-                )
+            is_dockerfile = self.args.add_dockerfile or Confirm.ask(
+                ':grey_question: Do you need to write your own [bold]Dockerfile[/bold] instead of the auto-generated one?',
+                default=False,
             )
             print('[green]That\'s all we need to create an Executor![/green]')
 
