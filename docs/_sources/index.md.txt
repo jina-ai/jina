@@ -1,6 +1,6 @@
 # Welcome to Jina!
 
-Jina is a neural search framework that allows anyone to build SOTA & scalable deep learning search applications in minutes.
+Jina is a neural search framework that empowers anyone to build SOTA and scalable deep learning search applications in minutes.
 
 1. Make sure that you have Python 3.7+ installed on Linux/MacOS.
 2. Install Jina
@@ -92,7 +92,7 @@ Awesome Jina swag to our awesome contributors (aka you)!
 
 ## Join the community
 
-- Join our 1.3K+ members [Slack community](https://slack.jina.ai) to chat to our engineers about your use cases, questions, and
+- Join our [Slack community](https://slack.jina.ai) and chat to our engineers about your use cases, questions, and
   support queries.
 - Join our [Engineering All Hands](https://youtube.com/playlist?list=PL3UBBWOUVhFYRUa_gpYYKBqEAkO4sxmne) meet-up to discuss your use case and learn Jina's new features.
     - **When?** The second Tuesday of every month
@@ -154,19 +154,14 @@ proto/index
 ```
 
 ```{toctree}
-:caption: Support
+:caption: Link
 :hidden:
 
-Issue tracker <https://github.com/jina-ai/jina/issues>
-Slack community <https://slack.jina.ai>
-Youtube <http://youtube.com/c/jina-ai>
-Twitter @JinaAI_ <https://twitter.com/JinaAI_>
-LinkedIn <https://www.linkedin.com/company/jinaai/>
-Jina AI Company <https://jina.ai>
-
+Jina Hub <https://hub.jina.ai>
+Benchmark <https://benchmark.jina.ai>
 ```
 
 
 ---
-{ref}`genindex` {ref}`modindex`
+{ref}`genindex` | {ref}`modindex`
 
