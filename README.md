@@ -1,6 +1,6 @@
 <p align="center">
 <!--startmsg-->
-<img src="https://github.com/jina-ai/jina/blob/master/.github/images/meetup.svg?raw=true">
+
 <!--endmsg-->
 </p>
 <p align="center">

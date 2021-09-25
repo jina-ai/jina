@@ -2,9 +2,6 @@ import re
 import sys
 
 meetup_svg = '.github/images/meetup.svg'
-meetup_svg_url = (
-    f'<img src="https://github.com/jina-ai/jina/blob/master/{meetup_svg}?raw=true">'
-)
 readme_md = 'README.md'
 conf_py = 'docs/conf.py'
 
@@ -45,8 +42,11 @@ else:
         rm_announce()
     else:
         announce_url = f'''
-    "announcement": '<i class="fas fa-bullhorn"></i> <a href="{url}">{text}</a>',
+    "announcement": \'\'\'
+    <a href="{url}">{text}</a>
+    \'\'\',
         '''
+        meetup_svg_url = f'<a href="{url}"><img src="https://github.com/jina-ai/jina/blob/master/{meetup_svg}?raw=true"></a>'
 
         # update meetup_svg
         with open(meetup_svg) as fp:
