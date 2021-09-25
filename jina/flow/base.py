@@ -1222,120 +1222,18 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     @property
     def _mermaid_str(self):
         mermaid_graph = [
-            "%%{init: {'theme': 'base', "
-            "'themeVariables': { 'primaryColor': '#32C8CD', "
-            "'edgeLabelBackground':'#fff', 'clusterBkg': '#FFCC66'}}}%%",
-            'flowchart LR',
+            'flowchart LR;',
         ]
-
-        def _get_node_name(v):
-            return v.args.name + f'_{(v.args.uses)}_'
 
         # plot subgraphs
         for node, v in self._pod_nodes.items():
-            mermaid_graph.append(v._mermaid_str)
-
-        start_repl = {}
-        end_repl = {}
-        for node, v in self._pod_nodes.items():
-            if not v.is_singleton and v.role != PodRoleType.GATEWAY:
-                if v.args.replicas == 1:
-                    mermaid_graph.append(
-                        f'subgraph sub_{node} ["{node} ({v.args.parallel})"]'
-                    )
-                else:
-                    mermaid_graph.append(
-                        f'subgraph sub_{node} ["{node} ({v.args.replicas})({v.args.parallel})"]'
-                    )
-                    if v.is_head_router:
-                        head_router = node + '_HEAD'
-                        end_repl[node] = (head_router, '((fa:fa-random))')
-                    if v.is_tail_router:
-                        tail_router = node + '_TAIL'
-                        start_repl[node] = (tail_router, '((fa:fa-random))')
-
-                for i in range(v.args.replicas):
-                    if v.is_head_router:
-                        head_replica_router = node + f'_{i}_HEAD'
-                        if v.args.replicas == 1:
-                            end_repl[node] = (head_replica_router, '((fa:fa-random))')
-                    if v.is_tail_router:
-                        tail_replica_router = node + f'_{i}_TAIL'
-                        if v.args.replicas == 1:
-                            start_repl[node] = (tail_replica_router, '((fa:fa-random))')
-
-                    p_r = '((%s))'
-                    p_e = '[[%s]]'
-                    if v.args.replicas > 1:
-                        mermaid_graph.append(
-                            f'\t{head_router}{p_r % "head"}:::pea-->{head_replica_router}{p_e % "replica_head"}:::pea'
-                        )
-                        mermaid_graph.append(
-                            f'\t{tail_replica_router}{p_r % "replica_tail"}:::pea-->{tail_router}{p_e % "tail"}:::pea'
-                        )
-
-                    for j in range(v.args.parallel):
-                        r = _get_node_name(v)
-                        if v.args.replicas > 1:
-                            r += f'_{i}_{j}'
-                        elif v.args.parallel > 1:
-                            r += f'_{j}'
-
-                        if v.is_head_router:
-                            mermaid_graph.append(
-                                f'\t{head_replica_router}{p_r % "head"}:::pea-->{r}{p_e % r}:::pea'
-                            )
-                        if v.is_tail_router:
-                            mermaid_graph.append(
-                                f'\t{r}{p_e % r}:::pea-->{tail_replica_router}{p_r % "tail"}:::pea'
-                            )
-                mermaid_graph.append('end')
+            mermaid_graph.extend(v._mermaid_str)
 
         for node, v in self._pod_nodes.items():
             for need in sorted(v.needs):
+                mermaid_graph.append(f'{need} --> {node};')
 
-                _s = start_repl.get(
-                    need,
-                    (need, f'("{need}<br>({_get_node_name(self._pod_nodes[need])})")'),
-                )
-                _e = end_repl.get(node, (node, f'("{node}<br>({_get_node_name(v)})")'))
-                _s_role = self._pod_nodes[need].role
-                _e_role = self._pod_nodes[node].role
-                line_st = '-->'
-
-                if _s_role in {PodRoleType.INSPECT, PodRoleType.JOIN_INSPECT}:
-                    _s = start_repl.get(need, (need, f'{{{{{need}}}}}'))
-                elif _s_role == PodRoleType.GATEWAY:
-                    _s = start_repl.get(need, (need, f'("{need}")'))
-
-                if _e_role == PodRoleType.GATEWAY:
-                    _e = ('gateway_END', f'({node})')
-                elif _e_role in {PodRoleType.INSPECT, PodRoleType.JOIN_INSPECT}:
-                    _e = end_repl.get(node, (node, f'{{{{{node}}}}}'))
-
-                if _s_role == PodRoleType.INSPECT or _e_role == PodRoleType.INSPECT:
-                    line_st = '-.->'
-
-                mermaid_graph.append(
-                    f'{_s[0]}{_s[1]}:::{str(_s_role)} {line_st} {_e[0]}{_e[1]}:::{str(_e_role)}'
-                )
-        mermaid_graph.append(
-            f'classDef {str(PodRoleType.POD)} fill:#32C8CD,stroke:#009999'
-        )
-        mermaid_graph.append(
-            f'classDef {str(PodRoleType.INSPECT)} fill:#ff6666,color:#fff'
-        )
-        mermaid_graph.append(
-            f'classDef {str(PodRoleType.JOIN_INSPECT)} fill:#ff6666,color:#fff'
-        )
-        mermaid_graph.append(
-            f'classDef {str(PodRoleType.GATEWAY)} fill:#6E7278,color:#fff'
-        )
-        mermaid_graph.append(
-            f'classDef {str(PodRoleType.INSPECT_AUX_PASS)} fill:#fff,color:#000,stroke-dasharray: 5 5'
-        )
-        mermaid_graph.append('classDef pea fill:#009999,stroke:#1E6E73')
-        return '\n'.join(mermaid_graph)
+        return ''.join(mermaid_graph)
 
     def plot(
         self,

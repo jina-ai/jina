@@ -183,7 +183,6 @@ class K8sPod(BasePod):
         Regenerate deployment args
         """
         self.deployment_args = self._parse_args(self.args)
-        pass
 
     @property
     def is_ready(self) -> bool:
@@ -208,13 +207,6 @@ class K8sPod(BasePod):
         :return: namespace
         """
         return self.args
-
-    def is_singleton(self) -> bool:
-        """The k8s pod is always a singleton
-
-        :return: True
-        """
-        return True
 
     @property
     def num_peas(self) -> int:
@@ -278,3 +270,48 @@ class K8sPod(BasePod):
             'tail_port_out': self.fixed_tail_port_out,
             'head_zmq_identity': self.head_zmq_identity,
         }
+
+    @property
+    def _mermaid_str(self) -> List[str]:
+        """String that will be used to represent the Pod graphically when `Flow.plot()` is invoked
+
+
+        .. # noqa: DAR201
+        """
+        mermaid_graph = [f'subgraph {self.name};', f'\ndirection TB;\n']
+
+        num_replicas = getattr(self.args, 'replicas', 1)
+        num_shards = getattr(self.args, 'parallel', 1)
+        if num_shards > 1:
+            shard_names = [
+                f'{args.name}/shard-{i}'
+                for i, args in enumerate(self.deployment_args['deployments'])
+            ]
+            for shard_name in shard_names:
+                shard_mermaid_graph = [
+                    f'subgraph {shard_name.replace("/", "").replace("-", "")};'
+                ]
+                for replica_id in range(num_replicas):
+                    shard_mermaid_graph.append(f'{shard_name}/replica-{replica_id};')
+                shard_mermaid_graph.append(f'end;')
+                mermaid_graph.extend(shard_mermaid_graph)
+            # TODO: handle with different executor (uses_before, uses_after)
+            head_name = f'{self.name}/head'
+            tail_name = f'{self.name}/tail'
+            if head_name:
+                for shard_name in shard_names:
+                    mermaid_graph.append(
+                        f'{head_name} --> {shard_name.replace("/", "").replace("-", "")};'
+                    )
+
+            if tail_name:
+                for shard_name in shard_names:
+                    mermaid_graph.append(
+                        f'{shard_name} --> {shard_name.replace("/", "").replace("-", "")};'
+                    )
+        else:
+            for replica_id in range(num_replicas):
+                mermaid_graph.append(f'{self.name}/replica-{replica_id};')
+
+        mermaid_graph.append(f'end;')
+        return mermaid_graph

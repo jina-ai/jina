@@ -286,7 +286,7 @@ class BasePod:
 
     @property
     @abstractmethod
-    def _mermaid_str(self) -> str:
+    def _mermaid_str(self) -> List[str]:
         """String that will be used to represent the Pod graphically when `Flow.plot()` is invoked
 
 
@@ -349,15 +349,6 @@ class Pod(BasePod, ExitFIFO):
             self.peas_args = self.args
         else:
             self.peas_args = self._parse_args(self.args)
-
-    @property
-    def is_singleton(self) -> bool:
-        """Return if the Pod contains only a single Pea
-
-
-        .. # noqa: DAR201
-        """
-        return not (self.is_head_router or self.is_tail_router)
 
     @property
     def first_pea_args(self) -> Namespace:
@@ -681,24 +672,29 @@ class Pod(BasePod, ExitFIFO):
             args.socket_out = SocketType.ROUTER_BIND
 
     @property
-    def _mermaid_str(self) -> str:
+    def _mermaid_str(self) -> List[str]:
         """String that will be used to represent the Pod graphically when `Flow.plot()` is invoked
 
 
         .. # noqa: DAR201
         """
-        mermaid_graph = [f'\tsubgraph {self.name}\n']
+        mermaid_graph = [f'subgraph {self.name};']
 
-        names = []
-        for args in self._fifo_args:
-            names.append(args.name)
+        names = [args.name for args in self._fifo_args]
 
         if len(names) == 1:
-            mermaid_graph.append(f'\t\t{names[0]}\n')
+            if names[0] != 'gateway':
+                mermaid_graph.append(f'{names[0]}/pea-0;')
+            else:
+                mermaid_graph.append(f'{self.args.protocol};')
         else:
+            mermaid_graph.append(f'\ndirection LR;\n')
+
+            # TODO: handle with different executor (uses_before, uses_after)
             head_name = names[0]
             tail_name = names[-1]
             for name in names[1:-1]:
-                mermaid_graph.append(f'\t\t{head_name} --> {name}\n')
-                mermaid_graph.append(f'\t\t{name} --> {tail_name}\n')
-        mermaid_graph.append('end\n')
+                mermaid_graph.append(f'{head_name} --> {name};')
+                mermaid_graph.append(f'{name} --> {tail_name};')
+        mermaid_graph.append('end;')
+        return mermaid_graph
