@@ -61,6 +61,9 @@ html_theme_options = {
         "color-brand-primary": "#FBCB67",
         "color-brand-content": "#FBCB67",
     },
+    # start-announce
+
+    # end-announce
 }
 
 html_static_path = ['_static']

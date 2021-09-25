@@ -76,3 +76,17 @@ table code {
 .social-btns {
     display: inline-block;
 }
+
+.announcement {
+    background-color: var(--color-brand-primary);
+    color: var(--color-background-primary) !important;
+}
+
+.announcement a {
+    color: inherit;
+}
+
+.announcement a:hover {
+    color: inherit;
+    opacity: 0.5;
+}
