@@ -138,24 +138,30 @@
                     {%- endif %}
                 </div>
 
-                <div class="related-information">
+                <div class="related-information sd-d-inline-flex">
                     {%- if show_copyright %}
                     {%- if hasdoc('copyright') %}
                     {% trans path=pathto('copyright'), copyright=copyright|e -%}
-                    <a href="{{ path }}">Copyright</a> &#169; {{ copyright }}.
+                    <a href="{{ path }}">Copyright &#169; {{ copyright }}.</a>
                     {%- endtrans %}
                     {%- else %}
                     {% trans copyright=copyright|e -%}
-                    Copyright &#169; {{ copyright }}
+                    <a href="https://jina.ai">Copyright &#169; {{ copyright }}</a>
                     {%- endtrans %}
                     {%- endif %}
                     {%- endif %}
                     {%- if last_updated %}
-                    |
                     {% trans last_updated=last_updated|e -%}
                     Last updated on {{ last_updated }}.
                     {%- endtrans %}
                     {%- endif %}
+                    <div class="social-btns">
+                    <a class='social-btn' href="https://github.com/jina-ai/jina/" target="_blank"> <i class="fab fa-github"></i></a>
+                    <a class='social-btn' href="https://slack.jina.ai" target="_blank"> <i class="fab fa-slack"></i></a>
+                    <a class='social-btn' href="https://youtube.com/c/jina-ai" target="_blank"> <i class="fab fa-youtube"></i></a>
+                    <a class='social-btn' href="https://twitter.com/JinaAI_" target="_blank"> <i class="fab fa-twitter"></i></a>
+                    <a class='social-btn' href="https://www.linkedin.com/company/jinaai/" target="_blank"> <i class="fab fa-linkedin"></i></a>
+                    </div>
                 </div>
                 {% endblock footer %}
             </footer>

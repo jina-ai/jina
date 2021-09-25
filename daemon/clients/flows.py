@@ -67,6 +67,9 @@ class AsyncFlowClient(AsyncBaseClient):
                     f'{self._kind.title()} creation failed as: {error_msg}'
                 )
                 return error_msg
+            self._logger.success(
+                f'Remote Flow created successfully with id {response_json}'
+            )
             return response_json
 
     @if_alive
