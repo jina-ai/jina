@@ -4,7 +4,7 @@ import time
 import numpy as np
 import pytest
 
-from jina import Document, Flow
+from jina import Document, Flow, Executor, requests
 from jina.flow.asyncio import AsyncFlow
 from jina.logging.profile import TimeContext
 from jina.types.document.generators import from_ndarray
@@ -77,16 +77,15 @@ async def test_run_async_flow_async_input(inputs, mocker):
     validate_callback(r_val, validate)
 
 
+class Wait5s(Executor):
+    # sleeps 5s makes total roundtrip ~5s
+    @requests
+    def foo(self, **kwargs):
+        print('im called!')
+        time.sleep(5)
+
+
 async def run_async_flow_5s(protocol):
-    # WaitDriver pause 5s makes total roundtrip ~5s
-    from jina import Executor, requests
-
-    class Wait5s(Executor):
-        @requests
-        def foo(self, **kwargs):
-            print('im called!')
-            time.sleep(5)
-
     with Flow(protocol=protocol, asyncio=True).add(uses=Wait5s) as f:
         async for r in f.index(
             from_ndarray(np.random.random([num_docs, 4])),
@@ -163,16 +162,15 @@ async def test_return_results_async_flow_crud(
             assert isinstance(r, Response)
 
 
+class MyExec(Executor):
+    @requests
+    def foo(self, parameters, **kwargs):
+        assert parameters['hello'] == 'world'
+
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize('flow_cls', [Flow, AsyncFlow])
 async def test_async_flow_empty_data(flow_cls):
-    from jina import Executor, requests
-
-    class MyExec(Executor):
-        @requests
-        def foo(self, parameters, **kwargs):
-            assert parameters['hello'] == 'world'
-
     with flow_cls(asyncio=True).add(uses=MyExec) as f:
         async for r in f.post('/hello', parameters={'hello': 'world'}):
             assert isinstance(r, Response)

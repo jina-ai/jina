@@ -28,7 +28,7 @@ def test_bad_flow_skip_handle(mocker, protocol):
 
     f = (
         Flow(protocol=protocol, on_error_strategy=OnErrorStrategy.SKIP_HANDLE)
-        .add(name='r1', uses='!DummyCrafterSkip')
+        .add(name='r1', uses=DummyCrafterSkip)
         .add(name='r2')
         .add(name='r3')
     )

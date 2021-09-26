@@ -6,7 +6,7 @@ import pytest
 import scipy.sparse as sp
 from scipy.spatial.distance import cdist as scipy_cdist
 
-from jina import Document, DocumentArray
+from jina import Document, DocumentArray, __windows__
 from jina.math.dimensionality_reduction import PCA
 from jina.types.arrays.memmap import DocumentArrayMemmap
 

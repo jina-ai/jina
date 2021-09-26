@@ -63,7 +63,7 @@ def run(
     def _unset_envs():
         if envs and args.runtime_backend != RuntimeBackendType.THREAD:
             for k in envs.keys():
-                os.unsetenv(k)
+                os.environ.pop(k, None)
 
     def _set_envs():
         if args.env:

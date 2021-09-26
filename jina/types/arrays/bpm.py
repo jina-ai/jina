@@ -1,7 +1,7 @@
 from collections import OrderedDict
-from typing import Tuple, Optional, List
+from typing import Tuple, Optional, List, TYPE_CHECKING
 
-if False:
+if TYPE_CHECKING:
     from ... import Document
 
 

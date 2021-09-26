@@ -17,6 +17,8 @@ from typing import (
 
 import numpy as np
 
+from ... import __windows__
+
 from .abstract import AbstractDocumentArray
 from .bpm import BufferPoolManager
 from .document import DocumentArray, DocumentArrayGetAttrMixin
@@ -279,9 +281,13 @@ class DocumentArrayMemmap(
     @property
     def _mmap(self) -> 'mmap':
         if self._last_mmap is None:
-            self._last_mmap = mmap.mmap(
-                self._body_fileno, length=0, prot=mmap.PROT_READ
+            self._last_mmap = (
+                mmap.mmap(self._body_fileno, length=0)
+                if __windows__
+                else mmap.mmap(self._body_fileno, length=0, prot=mmap.PROT_READ)
             )
+        if __windows__:
+            self._body.seek(self._start)
         return self._last_mmap
 
     def get_doc_by_key(self, key: str):
@@ -429,7 +435,11 @@ class DocumentArrayMemmap(
         dam = DocumentArrayMemmap(tdir, key_length=self._key_length)
         dam.extend(self)
         dam.reload()
+        if hasattr(self, '_body'):
+            self._body.close()
         os.remove(self._body_path)
+        if hasattr(self, '_header'):
+            self._header.close()
         os.remove(self._header_path)
         shutil.copy(os.path.join(tdir, 'header.bin'), self._header_path)
         shutil.copy(os.path.join(tdir, 'body.bin'), self._body_path)

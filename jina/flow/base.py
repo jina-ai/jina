@@ -348,12 +348,12 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             args, _flow_parser
         )  #: for yaml dump
 
-        base_cls = self.__class__
-        base_cls_name = self.__class__.__name__
         if self._common_kwargs.get('asyncio', False) and not isinstance(
             self, AsyncPostMixin
         ):
-            self.__class__ = type(base_cls_name, (AsyncPostMixin, base_cls), {})
+            from .asyncio import AsyncFlow
+
+            self.__class__ = AsyncFlow
 
     @staticmethod
     def _parse_endpoints(op_flow, pod_name, endpoint, connect_to_last_pod=False) -> Set:
@@ -1036,7 +1036,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         # unset all envs to avoid any side-effect
         if self.args.env:
             for k in self.args.env.keys():
-                os.unsetenv(k)
+                os.environ.pop(k, None)
         if GATEWAY_NAME in self._pod_nodes:
             self._pod_nodes.pop(GATEWAY_NAME)
         self._build_level = FlowBuildLevel.EMPTY
