@@ -1712,14 +1712,17 @@
 
         <span class="c1"># kick off ip getter thread</span>
         <span class="n">addr_table</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">t_ip</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
-            <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_address_table</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">addr_table</span><span class="p">,),</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span>
-        <span class="p">)</span>
-        <span class="n">t_ip</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="n">t_ip</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">infrastructure</span> <span class="o">!=</span> <span class="n">InfrastructureType</span><span class="o">.</span><span class="n">K8S</span><span class="p">:</span>
+            <span class="n">t_ip</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
+                <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_address_table</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">addr_table</span><span class="p">,),</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="n">t_ip</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">threads</span><span class="p">:</span>
             <span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
-        <span class="n">t_ip</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">t_ip</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">t_ip</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
         <span class="n">t_m</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
 
         <span class="n">error_pods</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="o">!=</span> <span class="s1">'done'</span><span class="p">]</span>
