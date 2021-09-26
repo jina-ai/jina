@@ -857,17 +857,34 @@
         <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="n">call_hash</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">(</span><span class="si">{</span><span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">args</span><span class="p">))</span><span class="si">}</span><span class="s1">)'</span>
-            <span class="k">with</span> <span class="n">shelve</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">cache_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">cache_db</span><span class="p">:</span>
+
+            <span class="n">pickle_protocol</span> <span class="o">=</span> <span class="mi">4</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">cache_db</span> <span class="o">=</span> <span class="n">shelve</span><span class="o">.</span><span class="n">open</span><span class="p">(</span>
+                    <span class="n">cache_file</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">pickle_protocol</span><span class="p">,</span> <span class="n">writeback</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cache_file</span><span class="p">):</span>
+                    <span class="c1"># cache is in an unsupported format, reset the cache</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">cache_file</span><span class="p">)</span>
+                    <span class="n">cache_db</span> <span class="o">=</span> <span class="n">shelve</span><span class="o">.</span><span class="n">open</span><span class="p">(</span>
+                        <span class="n">cache_file</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">pickle_protocol</span><span class="p">,</span> <span class="n">writeback</span><span class="o">=</span><span class="kc">True</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span>
+
+            <span class="k">with</span> <span class="n">cache_db</span> <span class="k">as</span> <span class="n">dict_db</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">call_hash</span> <span class="ow">in</span> <span class="n">cache_db</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'force'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-                        <span class="k">return</span> <span class="n">cache_db</span><span class="p">[</span><span class="n">call_hash</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">call_hash</span> <span class="ow">in</span> <span class="n">dict_db</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'force'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="n">dict_db</span><span class="p">[</span><span class="n">call_hash</span><span class="p">]</span>
 
                     <span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-                    <span class="n">cache_db</span><span class="p">[</span><span class="n">call_hash</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
+                    <span class="n">dict_db</span><span class="p">[</span><span class="n">call_hash</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
                 <span class="k">except</span> <span class="n">urllib</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">URLError</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">call_hash</span> <span class="ow">in</span> <span class="n">cache_db</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">call_hash</span> <span class="ow">in</span> <span class="n">dict_db</span><span class="p">:</span>
                         <span class="n">default_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">func_name</span><span class="o">=</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
-                        <span class="k">return</span> <span class="n">cache_db</span><span class="p">[</span><span class="n">call_hash</span><span class="p">]</span>
+                        <span class="k">return</span> <span class="n">dict_db</span><span class="p">[</span><span class="n">call_hash</span><span class="p">]</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">raise</span>
             <span class="k">return</span> <span class="n">result</span>
