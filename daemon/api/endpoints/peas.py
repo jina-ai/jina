@@ -62,7 +62,7 @@ async def _delete(id: DaemonID, workspace: bool = False):
     try:
         await store.delete(id=id, workspace=workspace)
     except KeyError:
-        raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
+        raise HTTPException(status_code=404, detail=f'{id} not found in store')
 
 
 @router.get(
