@@ -687,6 +687,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="p">:</span> <span class="n">Flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="n">yaml_source</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">workspace_id</span> <span class="o">=</span> <span class="n">jinad_args</span><span class="o">.</span><span class="n">workspace_id</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">workspace</span> <span class="o">=</span> <span class="n">__partial_workspace__</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">env</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'HOME'</span><span class="p">:</span> <span class="n">__partial_workspace__</span><span class="p">}</span>
+            <span class="c1"># TODO(Deepankar): pass envs from main daemon process to partial-daemon so that</span>
+            <span class="c1"># Pods/Peas/Runtimes/Executors can inherit these env vars</span>
 
             <span class="k">for</span> <span class="n">pod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="n">runtime_cls</span> <span class="o">=</span> <span class="n">update_runtime_cls</span><span class="p">(</span><span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">runtime_cls</span>
@@ -796,7 +799,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Sep 25, 2021.
+                    Last updated on Sep 26, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" target="_blank"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" target="_blank"> <i class="fab fa-slack"></i></a>
