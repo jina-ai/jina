@@ -683,9 +683,9 @@ class Pod(BasePod, ExitFIFO):
             mermaid_graph = [f'subgraph {self.name};']
 
             names = [args.name for args in self._fifo_args]
-
+            uses = self.args.uses
             if len(names) == 1:
-                mermaid_graph.append(f'{names[0]}/pea-0:::pea;')
+                mermaid_graph.append(f'{names[0]}/pea-0[{uses}]:::pea;')
             else:
                 mermaid_graph.append(f'\ndirection LR;\n')
 
@@ -693,7 +693,7 @@ class Pod(BasePod, ExitFIFO):
                 head_name = names[0]
                 tail_name = names[-1]
                 for name in names[1:-1]:
-                    mermaid_graph.append(f'{head_name}:::pea --> {name}:::pea;')
-                    mermaid_graph.append(f'{name}:::pea --> {tail_name}:::pea;')
+                    mermaid_graph.append(f'{head_name}:::pea --> {name}[{uses}]:::pea;')
+                    mermaid_graph.append(f'{name}[{uses}]:::pea --> {tail_name}:::pea;')
             mermaid_graph.append('end;')
         return mermaid_graph

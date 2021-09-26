@@ -284,6 +284,7 @@ class K8sPod(BasePod):
 
             num_replicas = getattr(self.args, 'replicas', 1)
             num_shards = getattr(self.args, 'parallel', 1)
+            uses = self.args.uses
             if num_shards > 1:
                 shard_names = [
                     f'{args.name}/shard-{i}'
@@ -296,7 +297,7 @@ class K8sPod(BasePod):
                     ]
                     for replica_id in range(num_replicas):
                         shard_mermaid_graph.append(
-                            f'{shard_name}/replica-{replica_id}\n'
+                            f'{shard_name}/replica-{replica_id}[{uses}]\n'
                         )
                     shard_mermaid_graph.append(f'end\n')
                     mermaid_graph.extend(shard_mermaid_graph)
@@ -305,14 +306,14 @@ class K8sPod(BasePod):
                 tail_name = f'{self.name}/tail'
                 if head_name:
                     for shard_name in shard_names:
-                        mermaid_graph.append(f'{head_name} --> {shard_name};')
+                        mermaid_graph.append(f'{head_name} --> {shard_name}[{uses}];')
 
                 if tail_name:
                     for shard_name in shard_names:
-                        mermaid_graph.append(f'{shard_name} --> {tail_name};')
+                        mermaid_graph.append(f'{shard_name}[{uses}] --> {tail_name};')
             else:
                 for replica_id in range(num_replicas):
-                    mermaid_graph.append(f'{self.name}/replica-{replica_id};')
+                    mermaid_graph.append(f'{self.name}/replica-{replica_id}[{uses}];')
 
             mermaid_graph.append(f'end;')
         return mermaid_graph
