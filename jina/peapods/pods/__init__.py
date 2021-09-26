@@ -688,12 +688,20 @@ class Pod(BasePod, ExitFIFO):
                 mermaid_graph.append(f'{names[0]}/pea-0[{uses}]:::pea;')
             else:
                 mermaid_graph.append(f'\ndirection LR;\n')
-
-                # TODO: handle with different executor (uses_before, uses_after)
                 head_name = names[0]
                 tail_name = names[-1]
+                head_to_show = self.args.uses_before
+                if head_to_show is None or head_to_show == __default_executor__:
+                    head_to_show = head_name
+                tail_to_show = self.args.uses_after
+                if tail_to_show is None or tail_to_show == __default_executor__:
+                    tail_to_show = tail_name
                 for name in names[1:-1]:
-                    mermaid_graph.append(f'{head_name}:::pea --> {name}[{uses}]:::pea;')
-                    mermaid_graph.append(f'{name}[{uses}]:::pea --> {tail_name}:::pea;')
+                    mermaid_graph.append(
+                        f'{head_name}[{head_to_show}]:::pea --> {name}[{uses}]:::pea;'
+                    )
+                    mermaid_graph.append(
+                        f'{name}[{uses}]:::pea --> {tail_name}[{tail_to_show}]:::pea;'
+                    )
             mermaid_graph.append('end;')
         return mermaid_graph

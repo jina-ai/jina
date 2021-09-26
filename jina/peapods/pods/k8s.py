@@ -301,16 +301,25 @@ class K8sPod(BasePod):
                         )
                     shard_mermaid_graph.append(f'end\n')
                     mermaid_graph.extend(shard_mermaid_graph)
-                # TODO: handle with different executor (uses_before, uses_after)
                 head_name = f'{self.name}/head'
                 tail_name = f'{self.name}/tail'
+                head_to_show = self.args.uses_before
+                if head_to_show is None or head_to_show == __default_executor__:
+                    head_to_show = head_name
+                tail_to_show = self.args.uses_after
+                if tail_to_show is None or tail_to_show == __default_executor__:
+                    tail_to_show = tail_name
                 if head_name:
                     for shard_name in shard_names:
-                        mermaid_graph.append(f'{head_name} --> {shard_name}[{uses}];')
+                        mermaid_graph.append(
+                            f'{head_name}[{head_to_show}] --> {shard_name}[{uses}];'
+                        )
 
                 if tail_name:
                     for shard_name in shard_names:
-                        mermaid_graph.append(f'{shard_name}[{uses}] --> {tail_name};')
+                        mermaid_graph.append(
+                            f'{shard_name}[{uses}] --> {tail_name}[{tail_to_show}];'
+                        )
             else:
                 for replica_id in range(num_replicas):
                     mermaid_graph.append(f'{self.name}/replica-{replica_id}[{uses}];')
