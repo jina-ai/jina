@@ -3,7 +3,7 @@ import os
 import pytest
 import numpy as np
 
-from jina import Document, DocumentArray
+from jina import Document, DocumentArray, __windows__
 from jina.types.arrays.memmap import DocumentArrayMemmap
 from tests import random_docs
 
@@ -116,6 +116,7 @@ def test_error(tmpdir):
         del dam['12']
 
 
+@pytest.mark.xfail(__windows__, reason='broken on Windows')
 def test_persist(tmpdir):
     dam = DocumentArrayMemmap(tmpdir)
     docs = list(random_docs(100))
@@ -439,6 +440,7 @@ def test_memmap_persisted(tmpdir):
         assert doc.id == str(i)
 
 
+@pytest.mark.xfail(__windows__, reason='broken on Windows')
 def test_memmap_mutate(tmpdir):
     da = DocumentArrayMemmap(tmpdir)
     d0 = Document(text='hello')

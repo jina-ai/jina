@@ -1,0 +1,7 @@
+jtype: Flow
+version: 1
+with:
+  port_expose: 9000
+executors:
+  - uses: CacheValidator
+    py_module: cache_validator.py

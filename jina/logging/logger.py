@@ -6,7 +6,7 @@ import sys
 from typing import Optional
 
 from . import formatter
-from .. import __uptime__, __resources_path__
+from .. import __uptime__, __resources_path__, __windows__
 from ..enums import LogVerbosity
 from ..jaml import JAML
 
@@ -141,7 +141,7 @@ class JinaLogger:
             if h == 'StreamHandler':
                 handler = logging.StreamHandler(sys.stdout)
                 handler.setFormatter(fmt(cfg['format'].format_map(kwargs)))
-            elif h == 'SysLogHandler':
+            elif h == 'SysLogHandler' and not __windows__:
                 if cfg['host'] and cfg['port']:
                     handler = SysLogHandlerWrapper(address=(cfg['host'], cfg['port']))
                 else:
@@ -160,9 +160,11 @@ class JinaLogger:
                     handler = None
                     pass
             elif h == 'FileHandler':
-                handler = logging.FileHandler(
-                    cfg['output'].format_map(kwargs), delay=True
-                )
+                filename = cfg['output'].format_map(kwargs)
+                if __windows__:
+                    # colons are not allowed in filenames
+                    filename = filename.replace(':', '.')
+                handler = logging.FileHandler(filename, delay=True)
                 handler.setFormatter(fmt(cfg['format'].format_map(kwargs)))
             elif h == 'FluentHandler':
                 from ..importer import ImportExtensions

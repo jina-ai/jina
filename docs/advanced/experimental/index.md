@@ -15,6 +15,7 @@ That said, have fun!
 ```{toctree}
 :hidden:
 
+windows
 kubernetes
 indexers
 compound-executor

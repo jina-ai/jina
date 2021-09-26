@@ -17,14 +17,15 @@ def test_flow(protocol):
         assert f.num_peas == 2
 
 
+class MyExec(Executor):
+    @requests
+    def foo(self, **kwargs):
+        pass
+
+
 @pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_flow_before(protocol):
-    class MyExec(Executor):
-        @requests
-        def foo(self, **kwargs):
-            pass
-
     docs = random_docs(10)
     f = Flow(protocol=protocol).add(uses_before=MyExec, name='p1')
 
@@ -38,11 +39,6 @@ def test_flow_before(protocol):
 @pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_flow_after(protocol):
-    class MyExec(Executor):
-        @requests
-        def foo(self, **kwargs):
-            pass
-
     docs = random_docs(10)
     f = Flow(protocol=protocol).add(uses_after=MyExec, name='p1')
 
@@ -71,11 +67,6 @@ def test_flow_default_before_after_is_ignored(protocol):
 @pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_flow_before_after(protocol):
-    class MyExec(Executor):
-        @requests
-        def foo(self, **kwargs):
-            pass
-
     docs = random_docs(10)
     f = Flow(protocol=protocol).add(uses_before=MyExec, uses_after=MyExec, name='p1')
 

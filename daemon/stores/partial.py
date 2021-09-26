@@ -109,6 +109,9 @@ class PartialFlowStore(PartialStore):
             self.object: Flow = Flow.load_config(yaml_source).build()
             self.object.workspace_id = jinad_args.workspace_id
             self.object.workspace = __partial_workspace__
+            self.object.env = {'HOME': __partial_workspace__}
+            # TODO(Deepankar): pass envs from main daemon process to partial-daemon so that
+            # Pods/Peas/Runtimes/Executors can inherit these env vars
 
             for pod in self.object._pod_nodes.values():
                 runtime_cls = update_runtime_cls(pod.args, copy=True).runtime_cls

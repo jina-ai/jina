@@ -6,7 +6,7 @@ import os
 import numpy as np
 import pytest
 
-from jina import Flow, Document
+from jina import Flow, Document, Executor, requests, __windows__
 from jina.enums import InfrastructureType, SocketType, FlowBuildLevel
 from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
@@ -395,17 +395,16 @@ def datauri_workspace(tmpdir):
     del os.environ['TEST_DATAURIINDEX_WORKSPACE']
 
 
+class DummyOneHotTextEncoder(Executor):
+    @requests
+    def foo(self, docs, **kwargs):
+        for d in docs:
+            d.embedding = np.array([1, 2, 3])
+
+
 @pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_flow_with_publish_driver(mocker, protocol):
-    from jina import Executor, requests
-
-    class DummyOneHotTextEncoder(Executor):
-        @requests
-        def foo(self, docs, **kwargs):
-            for d in docs:
-                d.embedding = np.array([1, 2, 3])
-
     def validate(req):
         for d in req.docs:
             assert d.embedding is not None
@@ -482,31 +481,32 @@ def test_flow_needs_all(protocol):
         f.index(from_ndarray(np.random.random([10, 10])))
 
 
+class EnvChecker1(BaseExecutor):
+    """Class used in Flow YAML"""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # pea/pod-specific
+        assert os.environ['key1'] == 'value1'
+        assert os.environ['key2'] == 'value2'
+        # inherit from parent process
+        assert os.environ['key_parent'] == 'value3'
+
+
+class EnvChecker2(BaseExecutor):
+    """Class used in Flow YAML"""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # pea/pod-specific
+        assert 'key1' not in os.environ
+        assert 'key2' not in os.environ
+        # inherit from parent process
+        assert os.environ['key_parent'] == 'value3'
+
+
 def test_flow_with_pod_envs():
     f = Flow.load_config(os.path.join(cur_dir, 'yaml/flow-with-envs.yml'))
-
-    class EnvChecker1(BaseExecutor):
-        """Class used in Flow YAML"""
-
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            # pea/pod-specific
-            assert os.environ['key1'] == 'value1'
-            assert os.environ['key2'] == 'value2'
-            # inherit from parent process
-            assert os.environ['key_parent'] == 'value3'
-
-    class EnvChecker2(BaseExecutor):
-        """Class used in Flow YAML"""
-
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            # pea/pod-specific
-            assert 'key1' not in os.environ
-            assert 'key2' not in os.environ
-            # inherit from parent process
-            assert os.environ['key_parent'] == 'value3'
-
     with f:
         pass
 
@@ -700,10 +700,11 @@ def test_flow_get_item():
     assert isinstance(f1['executor0'], BasePod)
 
 
-def test_flow_add_class():
-    class CustomizedExecutor(BaseExecutor):
-        pass
+class CustomizedExecutor(BaseExecutor):
+    pass
 
+
+def test_flow_add_class():
     f = Flow().add(uses=BaseExecutor).add(uses=CustomizedExecutor)
 
     with f:
@@ -712,11 +713,6 @@ def test_flow_add_class():
 
 @pytest.mark.slow
 def test_flow_allinone_yaml():
-    from jina import Executor
-
-    class CustomizedEncoder(Executor):
-        pass
-
     f = Flow.load_config(os.path.join(cur_dir, 'yaml/flow-allinone.yml'))
     with f:
         pass
@@ -726,14 +722,13 @@ def test_flow_allinone_yaml():
         pass
 
 
+class MyExec(Executor):
+    @requests
+    def foo(self, parameters, **kwargs):
+        assert parameters['hello'] == 'world'
+
+
 def test_flow_empty_data_request(mocker):
-    from jina import Executor, requests
-
-    class MyExec(Executor):
-        @requests
-        def foo(self, parameters, **kwargs):
-            assert parameters['hello'] == 'world'
-
     f = Flow().add(uses=MyExec)
 
     mock = mocker.Mock()
@@ -771,6 +766,7 @@ async def delayed_send_message_via(self, socket, msg):
         self.logger.error(f'sending message error: {ex!r}, gateway cancelled?')
 
 
+@pytest.mark.skipif(__windows__, reason='timing comparison is broken for 2nd Flow')
 def test_flow_routes_list(monkeypatch):
     def _time(time: str):
         return datetime.datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.%fZ')

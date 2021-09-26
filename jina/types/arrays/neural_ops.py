@@ -1,4 +1,4 @@
-from typing import Optional, Union, Callable, Tuple, Sequence
+from typing import Optional, Union, Callable, Tuple, Sequence, TYPE_CHECKING
 
 import numpy as np
 
@@ -6,7 +6,7 @@ from ... import Document
 from ...importer import ImportExtensions
 from ...math.helper import top_k, minmax_normalize, update_rows_x_mat_best
 
-if False:
+if TYPE_CHECKING:
     from .document import DocumentArray
     from .memmap import DocumentArrayMemmap
 

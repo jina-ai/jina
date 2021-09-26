@@ -4,6 +4,7 @@ import time
 import pytest
 from google.protobuf import json_format
 
+from jina import __default_host__
 from jina.logging.logger import JinaLogger
 from jina.helper import random_identity
 from jina.parsers import set_pea_parser
@@ -18,9 +19,9 @@ def get_args():
     return set_pea_parser().parse_args(
         [
             '--host-in',
-            '0.0.0.0',
+            __default_host__,
             '--host-out',
-            '0.0.0.0',
+            __default_host__,
             '--socket-in',
             'ROUTER_BIND',
             '--socket-out',
@@ -56,13 +57,13 @@ def test_simple_dynamic_routing_zmqlet():
             'active_pod': 'executor1',
             'pods': {
                 'executor1': {
-                    'host': '0.0.0.0',
+                    'host': __default_host__,
                     'port': args1.port_in,
                     'expected_parts': 0,
                     'out_edges': [{'pod': 'executor2'}],
                 },
                 'executor2': {
-                    'host': '0.0.0.0',
+                    'host': __default_host__,
                     'port': args2.port_in,
                     'expected_parts': 1,
                     'out_edges': [],
@@ -106,19 +107,19 @@ def test_double_dynamic_routing_zmqlet():
             'active_pod': 'executor1',
             'pods': {
                 'executor1': {
-                    'host': '0.0.0.0',
+                    'host': __default_host__,
                     'port': args1.port_in,
                     'expected_parts': 0,
                     'out_edges': [{'pod': 'executor2'}, {'pod': 'executor3'}],
                 },
                 'executor2': {
-                    'host': '0.0.0.0',
+                    'host': __default_host__,
                     'port': args2.port_in,
                     'expected_parts': 1,
                     'out_edges': [],
                 },
                 'executor3': {
-                    'host': '0.0.0.0',
+                    'host': __default_host__,
                     'port': args3.port_in,
                     'expected_parts': 1,
                     'out_edges': [],
@@ -173,19 +174,19 @@ async def test_double_dynamic_routing_async_zmqlet():
             'active_pod': 'executor1',
             'pods': {
                 'executor1': {
-                    'host': '0.0.0.0',
+                    'host': __default_host__,
                     'port': args1.port_in,
                     'expected_parts': 0,
                     'out_edges': [{'pod': 'executor2'}, {'pod': 'executor3'}],
                 },
                 'executor2': {
-                    'host': '0.0.0.0',
+                    'host': __default_host__,
                     'port': args2.port_in,
                     'expected_parts': 1,
                     'out_edges': [],
                 },
                 'executor3': {
-                    'host': '0.0.0.0',
+                    'host': __default_host__,
                     'port': args3.port_in,
                     'expected_parts': 1,
                     'out_edges': [],
@@ -231,19 +232,19 @@ def test_double_dynamic_routing_zmqstreamlet():
             'active_pod': 'executor1',
             'pods': {
                 'executor1': {
-                    'host': '0.0.0.0',
+                    'host': __default_host__,
                     'port': args1.port_in,
                     'expected_parts': 0,
                     'out_edges': [{'pod': 'executor2'}, {'pod': 'executor3'}],
                 },
                 'executor2': {
-                    'host': '0.0.0.0',
+                    'host': __default_host__,
                     'port': args2.port_in,
                     'expected_parts': 1,
                     'out_edges': [],
                 },
                 'executor3': {
-                    'host': '0.0.0.0',
+                    'host': __default_host__,
                     'port': args3.port_in,
                     'expected_parts': 1,
                     'out_edges': [],
@@ -294,13 +295,13 @@ def test_remote_local_dynamic_routing_zmqlet():
             'active_pod': 'executor1',
             'pods': {
                 'executor1': {
-                    'host': '0.0.0.0',
+                    'host': __default_host__,
                     'port': args1.port_in,
                     'expected_parts': 0,
                     'out_edges': [{'pod': 'executor2', 'send_as_bind': True}],
                 },
                 'executor2': {
-                    'host': '0.0.0.0',
+                    'host': __default_host__,
                     'port': args2.port_in,
                     'expected_parts': 1,
                     'out_edges': [],

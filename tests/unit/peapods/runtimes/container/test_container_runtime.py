@@ -8,13 +8,17 @@ import pytest
 from jina.checker import NetworkChecker
 from jina.executors import BaseExecutor
 from jina.executors.decorators import requests
-from jina import Flow
+from jina import Flow, __windows__
 from jina.helper import random_name
 from jina.parsers import set_pea_parser
 from jina.parsers.ping import set_ping_parser
 from jina.peapods import Pea
 from jina.peapods.runtimes.container import ContainerRuntime
 from tests import random_docs, validate_callback
+
+if __windows__:
+    pytest.skip(msg='Windows containers are not supported yet', allow_module_level=True)
+
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 

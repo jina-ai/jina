@@ -4,11 +4,11 @@ import itertools
 import json
 import os
 import random
-from typing import Optional, Generator, Union, List, Iterable, Dict
+from typing import Optional, Generator, Union, List, Iterable, Dict, TYPE_CHECKING
 
 import numpy as np
 
-if False:
+if TYPE_CHECKING:
     from . import Document
 
 

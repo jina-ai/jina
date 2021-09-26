@@ -25,7 +25,9 @@ def test_install_local(test_envs, executor_zip_file, test_executor, install_deps
     hubapi.install_local(executor_zip_file, test_executor, install_deps=install_deps)
     assert hubapi.exist_local(test_executor.uuid, test_executor.tag)
     assert any(
-        str(path).endswith(f'{test_executor.uuid}/{test_executor.tag}.dist-info')
+        str(path).endswith(
+            f'{os.path.join(test_executor.uuid, test_executor.tag)}.dist-info'
+        )
         for path in list_local()
     )
 
