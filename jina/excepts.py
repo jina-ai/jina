@@ -134,3 +134,7 @@ class RuntimeRunForeverEarlyError(Exception):
 
 class DockerVersionError(SystemError):
     """Raised when the docker version is incompatible"""
+
+
+class DaemonInvalidDockerfile(FileNotFoundError):
+    """Raised when invalid dockerfile is passed to JinaD"""

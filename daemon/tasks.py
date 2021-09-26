@@ -10,7 +10,7 @@ from jina.logging.logger import JinaLogger
 from . import __task_queue__, daemon_logger, jinad_args
 from .dockerize import Dockerizer
 from .excepts import DockerImageException, DockerNetworkException
-from .files import DaemonFile, workspace_files
+from .files import DaemonFile, store_files_in_workspace
 from .helper import id_cleaner, get_workspace_path
 from .models.id import DaemonID
 from .models.workspaces import WorkspaceArguments, WorkspaceItem, WorkspaceMetadata
@@ -42,7 +42,6 @@ class DaemonWorker(Thread):
             _args.files.extend([f.filename for f in self.files] if self.files else [])
             _args.jinad.update(
                 {
-                    'build': self.daemon_file.build,
                     'dockerfile': self.daemon_file.dockerfile,
                 }
             )
@@ -51,7 +50,6 @@ class DaemonWorker(Thread):
             _args = WorkspaceArguments(
                 files=[f.filename for f in self.files] if self.files else [],
                 jinad={
-                    'build': self.daemon_file.build,
                     'dockerfile': self.daemon_file.dockerfile,
                 },
                 requirements=self.daemon_file.requirements,
@@ -152,7 +150,9 @@ class DaemonWorker(Thread):
                 if store[self.id].arguments
                 else RemoteWorkspaceState.CREATING,
             )
-            workspace_files(workspace_id=self.id, files=self.files, logger=self._logger)
+            store_files_in_workspace(
+                workspace_id=self.id, files=self.files, logger=self._logger
+            )
             store.update(
                 id=self.id,
                 value=WorkspaceItem(

@@ -240,7 +240,7 @@ jobs:
     needs: prep-testbed
     runs-on: ubuntu-latest
     env:
-      JINA_DAEMON_BUILD: DEVEL
+      JINA_DAEMON_DOCKERFILE: DEVEL
     strategy:
       fail-fast: false
       matrix:
