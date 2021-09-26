@@ -678,23 +678,22 @@ class Pod(BasePod, ExitFIFO):
 
         .. # noqa: DAR201
         """
-        mermaid_graph = [f'subgraph {self.name};']
+        mermaid_graph = []
+        if self.role != PodRoleType.GATEWAY:
+            mermaid_graph = [f'subgraph {self.name};']
 
-        names = [args.name for args in self._fifo_args]
+            names = [args.name for args in self._fifo_args]
 
-        if len(names) == 1:
-            if names[0] != 'gateway':
-                mermaid_graph.append(f'{names[0]}/pea-0;')
+            if len(names) == 1:
+                mermaid_graph.append(f'{names[0]}/pea-0:::pea;')
             else:
-                mermaid_graph.append(f'{self.args.protocol};')
-        else:
-            mermaid_graph.append(f'\ndirection LR;\n')
+                mermaid_graph.append(f'\ndirection LR;\n')
 
-            # TODO: handle with different executor (uses_before, uses_after)
-            head_name = names[0]
-            tail_name = names[-1]
-            for name in names[1:-1]:
-                mermaid_graph.append(f'{head_name} --> {name};')
-                mermaid_graph.append(f'{name} --> {tail_name};')
-        mermaid_graph.append('end;')
+                # TODO: handle with different executor (uses_before, uses_after)
+                head_name = names[0]
+                tail_name = names[-1]
+                for name in names[1:-1]:
+                    mermaid_graph.append(f'{head_name}:::pea --> {name}:::pea;')
+                    mermaid_graph.append(f'{name}:::pea --> {tail_name}:::pea;')
+            mermaid_graph.append('end;')
         return mermaid_graph

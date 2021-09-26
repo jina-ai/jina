@@ -1225,14 +1225,35 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             'flowchart LR;',
         ]
 
+        PEA_STYLE = 'fill:#009999,stroke:#1E6E73'
+        POD_STYLE = 'fill:#32C8CD,stroke:#009999'
+        GATEWAY_STYLE = 'fill:#6E7278,color:#fff'
+
+        pod_nodes = []
+
         # plot subgraphs
         for node, v in self._pod_nodes.items():
+            pod_nodes.append(v.name)
             mermaid_graph.extend(v._mermaid_str)
 
         for node, v in self._pod_nodes.items():
             for need in sorted(v.needs):
-                mermaid_graph.append(f'{need} --> {node};')
+                need_print = need
+                if need == 'gateway':
+                    need_print = 'gatewaystart[gateway]'
+                node_print = node
+                if node == 'gateway':
+                    node_print = 'gatewayend[gateway]'
 
+                mermaid_graph.append(f'{need_print} --> {node_print};')
+
+        mermaid_graph.append(f'\nclassDef pea {PEA_STYLE}')
+
+        for node in pod_nodes:
+            if node != 'gateway':
+                mermaid_graph.append(f'\nstyle {node} {POD_STYLE}')
+        mermaid_graph.append(f'\nstyle gatewaystart {GATEWAY_STYLE}')
+        mermaid_graph.append(f'\nstyle gatewayend {GATEWAY_STYLE}')
         return ''.join(mermaid_graph)
 
     def plot(
