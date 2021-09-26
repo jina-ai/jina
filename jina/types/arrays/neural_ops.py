@@ -63,7 +63,7 @@ class DocumentArrayNeuralOpsMixin:
         """
 
         lhv = self
-        if traversal_ldarray:
+        if traversal_ldarray and traversal_ldarray != ['r']:
             lhv = self.traverse_flat(traversal_ldarray)
 
             from .document import DocumentArray
@@ -72,7 +72,7 @@ class DocumentArrayNeuralOpsMixin:
                 lhv = DocumentArray(lhv)
 
         rhv = darray
-        if traversal_rdarray:
+        if traversal_rdarray and traversal_rdarray != ['r']:
             rhv = darray.traverse_flat(traversal_rdarray)
 
             from .document import DocumentArray
