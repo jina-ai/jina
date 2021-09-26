@@ -250,6 +250,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../advanced/experimental/"><svg aria-hidden="true" class="sd-octicon sd-octicon-beaker" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M5 5.782V2.5h-.25a.75.75 0 010-1.5h6.5a.75.75 0 010 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458L5 5.782zM9.5 2.5h-3V6a.75.75 0 01-.117.403L4.73 9h6.54L9.617 6.403A.75.75 0 019.5 6V2.5zm-6.9 9.847L3.775 10.5h8.45l1.175 1.847a.75.75 0 01-.633 1.153H3.233a.75.75 0 01-.633-1.153z" fill-rule="evenodd"></path></svg> Experimental Features</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../advanced/experimental/windows/">Jina on Windows</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../advanced/experimental/kubernetes/">Jina on Kubernetes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../advanced/experimental/indexers/">Indexers on Jina Hub</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../advanced/experimental/compound-executor/">Compound Executors</a></li>
@@ -595,6 +596,8 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
+<span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">__windows__</span>
+
 <span class="kn">from</span> <span class="nn">.abstract</span> <span class="kn">import</span> <span class="n">AbstractDocumentArray</span>
 <span class="kn">from</span> <span class="nn">.bpm</span> <span class="kn">import</span> <span class="n">BufferPoolManager</span>
 <span class="kn">from</span> <span class="nn">.document</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">DocumentArrayGetAttrMixin</span>
@@ -857,9 +860,13 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_mmap</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'mmap'</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_mmap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_last_mmap</span> <span class="o">=</span> <span class="n">mmap</span><span class="o">.</span><span class="n">mmap</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_body_fileno</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">prot</span><span class="o">=</span><span class="n">mmap</span><span class="o">.</span><span class="n">PROT_READ</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_mmap</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">mmap</span><span class="o">.</span><span class="n">mmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_body_fileno</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">__windows__</span>
+                <span class="k">else</span> <span class="n">mmap</span><span class="o">.</span><span class="n">mmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_body_fileno</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">prot</span><span class="o">=</span><span class="n">mmap</span><span class="o">.</span><span class="n">PROT_READ</span><span class="p">)</span>
             <span class="p">)</span>
+        <span class="k">if</span> <span class="n">__windows__</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_body</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_start</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_mmap</span>
 
 <div class="viewcode-block" id="DocumentArrayMemmap.get_doc_by_key"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.memmap/#jina.DocumentArrayMemmap.get_doc_by_key">[docs]</a>    <span class="k">def</span> <span class="nf">get_doc_by_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -1007,7 +1014,11 @@
         <span class="n">dam</span> <span class="o">=</span> <span class="n">DocumentArrayMemmap</span><span class="p">(</span><span class="n">tdir</span><span class="p">,</span> <span class="n">key_length</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_key_length</span><span class="p">)</span>
         <span class="n">dam</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">dam</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'_body'</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_body</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_body_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'_header'</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_header_path</span><span class="p">)</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tdir</span><span class="p">,</span> <span class="s1">'header.bin'</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header_path</span><span class="p">)</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tdir</span><span class="p">,</span> <span class="s1">'body.bin'</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_body_path</span><span class="p">)</span>

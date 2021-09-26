@@ -250,6 +250,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../advanced/experimental/"><svg aria-hidden="true" class="sd-octicon sd-octicon-beaker" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M5 5.782V2.5h-.25a.75.75 0 010-1.5h6.5a.75.75 0 010 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458L5 5.782zM9.5 2.5h-3V6a.75.75 0 01-.117.403L4.73 9h6.54L9.617 6.403A.75.75 0 019.5 6V2.5zm-6.9 9.847L3.775 10.5h8.45l1.175 1.847a.75.75 0 01-.633 1.153H3.233a.75.75 0 01-.633-1.153z" fill-rule="evenodd"></path></svg> Experimental Features</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../advanced/experimental/windows/">Jina on Windows</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../advanced/experimental/kubernetes/">Jina on Kubernetes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../advanced/experimental/indexers/">Indexers on Jina Hub</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../advanced/experimental/compound-executor/">Compound Executors</a></li>
@@ -926,12 +927,12 @@
             <span class="n">args</span><span class="p">,</span> <span class="n">_flow_parser</span>
         <span class="p">)</span>  <span class="c1">#: for yaml dump</span>
 
-        <span class="n">base_cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
-        <span class="n">base_cls_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'asyncio'</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">AsyncPostMixin</span>
         <span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">base_cls_name</span><span class="p">,</span> <span class="p">(</span><span class="n">AsyncPostMixin</span><span class="p">,</span> <span class="n">base_cls</span><span class="p">),</span> <span class="p">{})</span>
+            <span class="kn">from</span> <span class="nn">.asyncio</span> <span class="kn">import</span> <span class="n">AsyncFlow</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">AsyncFlow</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_parse_endpoints</span><span class="p">(</span><span class="n">op_flow</span><span class="p">,</span> <span class="n">pod_name</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">connect_to_last_pod</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">:</span>
@@ -1614,7 +1615,7 @@
         <span class="c1"># unset all envs to avoid any side-effect</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">env</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">unsetenv</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">GATEWAY_NAME</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">GATEWAY_NAME</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span>

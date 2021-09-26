@@ -250,6 +250,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../advanced/experimental/"><svg aria-hidden="true" class="sd-octicon sd-octicon-beaker" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M5 5.782V2.5h-.25a.75.75 0 010-1.5h6.5a.75.75 0 010 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458L5 5.782zM9.5 2.5h-3V6a.75.75 0 01-.117.403L4.73 9h6.54L9.617 6.403A.75.75 0 019.5 6V2.5zm-6.9 9.847L3.775 10.5h8.45l1.175 1.847a.75.75 0 01-.633 1.153H3.233a.75.75 0 01-.633-1.153z" fill-rule="evenodd"></path></svg> Experimental Features</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../advanced/experimental/windows/">Jina on Windows</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../advanced/experimental/kubernetes/">Jina on Kubernetes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../advanced/experimental/indexers/">Indexers on Jina Hub</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../advanced/experimental/compound-executor/">Compound Executors</a></li>
@@ -639,7 +640,7 @@
                 <span class="n">req_msg</span> <span class="o">=</span> <span class="n">colored</span><span class="p">(</span><span class="s1">'fallback to default behavior'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'yellow'</span><span class="p">)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_required</span><span class="p">:</span>
                     <span class="n">req_msg</span> <span class="o">=</span> <span class="n">colored</span><span class="p">(</span><span class="s1">'and it is required'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">)</span>
-                <span class="n">err_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'''Python package "</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">missing_module</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s1">'bold'</span><span class="p">)</span><span class="si">}</span><span class="s1">" is not installed, </span><span class="si">{</span><span class="n">req_msg</span><span class="si">}</span><span class="s1">. </span>
+                <span class="n">err_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'''Python package "</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">missing_module</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s1">'bold'</span><span class="p">)</span><span class="si">}</span><span class="s1">" is not installed, </span><span class="si">{</span><span class="n">req_msg</span><span class="si">}</span><span class="s1">.</span>
 <span class="s1">                    You are trying to use a feature not enabled by your current Jina installation.'''</span>
 
                 <span class="n">avail_tags</span> <span class="o">=</span> <span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
@@ -690,9 +691,9 @@
                 <span class="sa">f</span><span class="s1">'''</span>
 <span class="s1">            </span><span class="si">{</span><span class="n">user_module_name</span><span class="si">}</span><span class="s1"> shadows one of built-in Python module name.</span>
 <span class="s1">            It is imported as `</span><span class="si">{</span><span class="n">default_spec_name</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">user_module_name</span><span class="si">}</span><span class="s1">`</span>
-<span class="s1">            </span>
+
 <span class="s1">            Affects:</span>
-<span class="s1">            - Either, change your code from using `from </span><span class="si">{</span><span class="n">user_module_name</span><span class="si">}</span><span class="s1"> import ...` </span>
+<span class="s1">            - Either, change your code from using `from </span><span class="si">{</span><span class="n">user_module_name</span><span class="si">}</span><span class="s1"> import ...`</span>
 <span class="s1">              to `from </span><span class="si">{</span><span class="n">default_spec_name</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">user_module_name</span><span class="si">}</span><span class="s1"> import ...`</span>
 <span class="s1">            - Or, rename </span><span class="si">{</span><span class="n">user_module_name</span><span class="si">}</span><span class="s1"> to another name</span>
 <span class="s1">            '''</span>
