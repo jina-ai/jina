@@ -267,8 +267,7 @@ class CompoundPod(BasePod, ExitStack):
 
         .. # noqa: DAR201
         """
-        mermaid_graph = [f'subgraph {self.name};\n']
-        mermaid_graph.append(f'\ndirection LR;\n')
+        mermaid_graph = [f'subgraph {self.name};\n', f'direction LR;\n']
         head_name = self.head_args.name
         tail_name = self.tail_args.name
         pod_names = []
