@@ -6,7 +6,7 @@ from jina.helper import get_internal_ip
 from jina.parsers import set_gateway_parser
 from jina.parsers import set_pod_parser
 from jina.peapods import Pod
-from jina import __default_executor__
+from jina import __default_executor__, __default_host__
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -19,7 +19,7 @@ def pod_args():
         '--parallel',
         '2',
         '--host',
-        '0.0.0.0',
+        __default_host__,
     ]
     return set_pod_parser().parse_args(args)
 
@@ -34,7 +34,7 @@ def pod_args_singleton():
         '--parallel',
         '1',
         '--host',
-        '0.0.0.0',
+        __default_host__,
     ]
     return set_pod_parser().parse_args(args)
 
@@ -46,8 +46,8 @@ def test_name(pod_args):
 
 def test_host(pod_args):
     with Pod(pod_args) as pod:
-        assert pod.host == '0.0.0.0'
-        assert pod.head_host == '0.0.0.0'
+        assert pod.host == __default_host__
+        assert pod.head_host == __default_host__
 
 
 def test_is_ready(pod_args):
@@ -207,9 +207,9 @@ def test_pod_remote_pea_without_parallel():
 @pytest.mark.parametrize(
     'pod_host, pea1_host, expected_host_in, expected_host_out',
     [
-        ('0.0.0.0', '0.0.0.1', get_internal_ip(), get_internal_ip()),
+        (__default_host__, '0.0.0.1', get_internal_ip(), get_internal_ip()),
         ('0.0.0.1', '0.0.0.2', '0.0.0.1', '0.0.0.1'),
-        ('0.0.0.1', '0.0.0.0', '0.0.0.1', '0.0.0.1'),
+        ('0.0.0.1', __default_host__, '0.0.0.1', '0.0.0.1'),
     ],
 )
 def test_pod_remote_pea_parallel_pea_host_set_partially(
@@ -234,16 +234,21 @@ def test_pod_remote_pea_parallel_pea_host_set_partially(
                     assert pea_arg.host_out == expected_host_out
                 else:
                     assert pea_arg.host == args.host
-                    assert pea_arg.host_in == '0.0.0.0'
-                    assert pea_arg.host_out == '0.0.0.0'
+                    assert pea_arg.host_in == __default_host__
+                    assert pea_arg.host_out == __default_host__
 
 
 @pytest.mark.parametrize(
     'pod_host, peas_hosts, expected_host_in, expected_host_out',
     [
-        ('0.0.0.0', ['0.0.0.1', '0.0.0.2'], get_internal_ip(), get_internal_ip()),
+        (
+            __default_host__,
+            ['0.0.0.1', '0.0.0.2'],
+            get_internal_ip(),
+            get_internal_ip(),
+        ),
         ('0.0.0.1', ['0.0.0.2', '0.0.0.3'], '0.0.0.1', '0.0.0.1'),
-        ('0.0.0.1', ['0.0.0.0', '0.0.0.2'], '0.0.0.1', '0.0.0.1'),
+        ('0.0.0.1', [__default_host__, '0.0.0.2'], '0.0.0.1', '0.0.0.1'),
     ],
 )
 def test_pod_remote_pea_parallel_pea_host_set_completely(

@@ -84,9 +84,10 @@ table code {
 
 .announcement a {
     color: inherit;
+    text-decoration: none;
 }
 
 .announcement a:hover {
     color: inherit;
-    opacity: 0.5;
+    text-decoration: underline;
 }

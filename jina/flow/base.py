@@ -348,12 +348,12 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             args, _flow_parser
         )  #: for yaml dump
 
-        base_cls = self.__class__
-        base_cls_name = self.__class__.__name__
         if self._common_kwargs.get('asyncio', False) and not isinstance(
             self, AsyncPostMixin
         ):
-            self.__class__ = type(base_cls_name, (AsyncPostMixin, base_cls), {})
+            from .asyncio import AsyncFlow
+
+            self.__class__ = AsyncFlow
 
     @staticmethod
     def _parse_endpoints(op_flow, pod_name, endpoint, connect_to_last_pod=False) -> Set:
@@ -1038,7 +1038,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         # unset all envs to avoid any side-effect
         if self.args.env:
             for k in self.args.env.keys():
-                os.unsetenv(k)
+                os.environ.pop(k, None)
         if GATEWAY_NAME in self._pod_nodes:
             self._pod_nodes.pop(GATEWAY_NAME)
         self._build_level = FlowBuildLevel.EMPTY
@@ -1135,14 +1135,17 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         # kick off ip getter thread
         addr_table = []
-        t_ip = threading.Thread(
-            target=self._get_address_table, args=(addr_table,), daemon=True
-        )
-        t_ip.start()
+        t_ip = None
+        if self.args.infrastructure != InfrastructureType.K8S:
+            t_ip = threading.Thread(
+                target=self._get_address_table, args=(addr_table,), daemon=True
+            )
+            t_ip.start()
 
         for t in threads:
             t.join()
-        t_ip.join()
+        if t_ip is not None:
+            t_ip.join()
         t_m.join()
 
         error_pods = [k for k, v in results.items() if v != 'done']
@@ -1587,6 +1590,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
     @workspace.setter
     def workspace(self, value: str):
+        """set workspace dir for flow & all pods
+
+        :param value: workspace to be set
+        """
         self.args.workspace = value
         for k, p in self:
             p.args.workspace = value
@@ -1627,6 +1634,25 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     if v and isinstance(v, List):
                         for i in v:
                             i.workspace_id = value
+
+    @property
+    def env(self) -> Optional[Dict]:
+        """Get all envs to be set in the Flow
+
+        :return: envs as dict
+        """
+        return self.args.env
+
+    @env.setter
+    def env(self, value: Dict[str, str]):
+        """set env vars for flow & all pods.
+        This can be used by jinad to set envs for Flow and all child objects
+
+        :param value: value to be set
+        """
+        self.args.env = value
+        for k, v in self:
+            v.args.env = value
 
     @property
     def identity(self) -> Dict[str, str]:

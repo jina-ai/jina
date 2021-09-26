@@ -2,7 +2,7 @@
 
 Jina is a neural search framework that empowers anyone to build SOTA and scalable deep learning search applications in minutes.
 
-1. Make sure that you have Python 3.7+ installed on Linux/MacOS.
+1. Make sure that you have Python 3.7+ installed on Linux/MacOS/{ref}`Windows <jina-on-windows>`.
 2. Install Jina
 
     ````{tab} via PyPI

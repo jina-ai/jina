@@ -3,11 +3,12 @@ import asyncio
 from abc import ABC
 import signal
 
-from typing import Union, Optional
+from typing import Union, Optional, TYPE_CHECKING
 
+from .... import __windows__
 from ..zmq.base import ZMQRuntime
 
-if False:
+if TYPE_CHECKING:
     import multiprocessing
     import threading
 
@@ -70,17 +71,19 @@ class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
         self._loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._loop)
 
-        try:
-            for signame in {'SIGINT', 'SIGTERM'}:
-                self._loop.add_signal_handler(
-                    getattr(signal, signame),
-                    lambda *args, **kwargs: self.is_cancel.set(),
+        if not __windows__:
+            # TODO: windows event loops don't support signal handlers
+            try:
+                for signame in {'SIGINT', 'SIGTERM'}:
+                    self._loop.add_signal_handler(
+                        getattr(signal, signame),
+                        lambda *args, **kwargs: self.is_cancel.set(),
+                    )
+            except (ValueError, RuntimeError) as exc:
+                self.logger.warning(
+                    f' The runtime {self.__class__.__name__} will not be able to handle termination signals. '
+                    f' {repr(exc)}'
                 )
-        except (ValueError, RuntimeError) as exc:
-            self.logger.warning(
-                f' The runtime {self.__class__.__name__} will not be able to handle termination signals. '
-                f' {repr(exc)}'
-            )
 
         self._loop.run_until_complete(self.async_setup())
 

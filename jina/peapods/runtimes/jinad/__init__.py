@@ -2,7 +2,7 @@ import os
 import copy
 import asyncio
 import argparse
-from typing import Union
+from typing import TYPE_CHECKING, Union
 
 from ....enums import SocketType
 
@@ -17,7 +17,7 @@ from ....excepts import (
     DaemonWorkspaceCreationFailed,
 )
 
-if False:
+if TYPE_CHECKING:
     import multiprocessing
     import threading
     from ....logging.logger import JinaLogger
@@ -98,8 +98,9 @@ class JinadRuntime(AsyncNewLoopRuntime):
         """Cancels the logstream task, removes the remote Pea & Workspace"""
         self.logstream.cancel()
         await self.client.peas.delete(id=self.pea_id)
-        # NOTE: don't fail if workspace deletion fails here
-        await self.client.workspaces.delete(id=self.workspace_id)
+        # Don't delete workspace here, as other Executors might use them.
+        # TODO(Deepankar): probably enable an arg here?
+        # await self.client.workspaces.delete(id=self.workspace_id)
 
     async def _sleep_forever(self):
         """Sleep forever, no prince will come."""
