@@ -6,7 +6,7 @@ You can install and use Jina on Windows.
 However, as Jina is built keeping *nix-based platforms in mind, and the upstream libraries that Jina depends on also follow the similar ideology. Hence, there are some caveats when running Jina on Windows. [If you face additional issues, please let us know.](https://github.com/jina-ai/jina/issues/)
 
 ```{caution}
-There can be a significant performance impact while running Jina on Windows. You may want to use it in production system.
+There can be a significant performance impact while running Jina on Windows. You may not want to use it in production.
 ```
 
 ## Known issues

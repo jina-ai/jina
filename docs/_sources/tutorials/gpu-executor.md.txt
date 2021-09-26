@@ -1,5 +1,13 @@
 # Run Executors on GPU
 
+```{article-info}
+:avatar: avatars/tadej.jpg
+:avatar-link: https://jobs.jina.ai
+:avatar-outline: muted
+:author: Tadej @ Jina AI
+:date: Sept. 1, 2021
+```
+
 This tutorial will show you how to use an Executor on a GPU, both locally and in a
 Docker container. You will also learn how to use GPU with pre-built Hub executors.
 
