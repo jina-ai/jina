@@ -41,10 +41,10 @@ def executor_native(args: 'Namespace'):
     from jina.peapods.runtimes.zmq.zed import ZEDRuntime
     from jina.peapods.runtimes.grpc import GRPCDataRuntime
 
-    if args.runtime_cls == 'ZEDRuntime':
-        runtime_cls = ZEDRuntime
-    elif args.runtime_cls == 'GRPCDataRuntime':
+    if args.runtime_cls == 'GRPCDataRuntime' or args.grpc_data_requests:
         runtime_cls = GRPCDataRuntime
+    elif args.runtime_cls == 'ZEDRuntime':
+        runtime_cls = ZEDRuntime
     else:
         raise RuntimeError(
             f' runtime_cls {args.runtime_cls} is not supported with `--native` argument. `ZEDRuntime` and `GRPCDataRuntime` are supported'

@@ -99,15 +99,15 @@ def _create_msg(args):
     msg = ControlMessage('STATUS')
     routing_pb = jina_pb2.RoutingTableProto()
     routing_table = {
-        'active_pod': 'pod1',
+        'active_pod': 'executor1',
         'pods': {
-            'pod1': {
+            'executor1': {
                 'host': __default_host__,
                 'port': args.port_in,
                 'expected_parts': 1,
-                'out_edges': [{'pod': 'pod2'}],
+                'out_edges': [{'pod': 'executor2'}],
             },
-            'pod2': {
+            'executor2': {
                 'host': __default_host__,
                 'port': args.port_in,
                 'expected_parts': 1,

@@ -5,6 +5,6 @@ with:
     JINA_DUMMYCRAFTER_PARAM1_VAR: ${{JINA_DUMMYCRAFTER_PARAM1}}
     JINA_DUMMYCRAFTER_PARAM2_VAR: ${{JINA_DUMMYCRAFTER_PARAM2}}
     JINA_DUMMYCRAFTER_PARAM3_VAR: ${{JINA_DUMMYCRAFTER_PARAM3}}
-pods:
+executors:
   - uses: pods/craft.yml
   - uses: pods/evaluate.yml

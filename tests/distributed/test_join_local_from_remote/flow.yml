@@ -4,15 +4,15 @@ with:
   port_expose: 45678
   show_exc_info: true
   host: flow
-pods:
-  - name: pod1
+executors:
+  - name: executor1
     host: host.docker.internal
     port_jinad: 8001
-  - name: pod2
+  - name: executor2
     parallel: 2
     host: host.docker.internal
     port_jinad: 8002
-  - name: pod3
+  - name: executor3
     parallel: 2
     host: host.docker.internal
     port_jinad: 8003
@@ -21,4 +21,4 @@ pods:
     method: needs
     host: flow
     uses: merge.yml
-    needs: [pod2, pod3]
+    needs: [executor2, executor3]

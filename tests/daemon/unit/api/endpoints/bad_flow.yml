@@ -1,4 +1,4 @@
 !Flow
 version: '1.0'
-pods:
+executors:
   - uses: BADFLow

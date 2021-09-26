@@ -43,10 +43,10 @@ def test_load_legacy_and_v1():
 def test_add_needs_inspect(tmpdir):
     f1 = (
         Flow()
-        .add(name='pod0', needs='gateway')
-        .add(name='pod1', needs='gateway')
+        .add(name='executor0', needs='gateway')
+        .add(name='executor1', needs='gateway')
         .inspect()
-        .needs(['pod0', 'pod1'])
+        .needs(['executor0', 'executor1'])
     )
     with f1:
         f1.index(from_ndarray(np.random.random([5, 5])), on_done=print)

@@ -690,7 +690,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             pod_name = new_name
 
         if not pod_name:
-            pod_name = f'pod{len(op_flow._pod_nodes)}'
+            pod_name = f'executor{len(op_flow._pod_nodes)}'
 
         if not pod_name.isidentifier():
             # hyphen - can not be used in the name
@@ -1583,6 +1583,12 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         .. # noqa: DAR201"""
         return os.path.abspath(self.args.workspace or './')
+
+    @workspace.setter
+    def workspace(self, value: str):
+        self.args.workspace = value
+        for k, p in self:
+            p.args.workspace = value
 
     @property
     def workspace_id(self) -> Dict[str, str]:

@@ -135,7 +135,15 @@
     color: var(--color-background-primary);
 }
 
-.answer-reference {
+.thumb-answer {
+    color: var(--color-background-border);
+}
+
+.thumb-answer:hover {
+    color: var(--color-brand-primary);
+}
+
+.feedback-tooltip {
     bottom: -20px;
     position: absolute;
     left: 20px;

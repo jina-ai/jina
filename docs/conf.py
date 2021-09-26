@@ -61,13 +61,21 @@ html_theme_options = {
         "color-brand-primary": "#FBCB67",
         "color-brand-content": "#FBCB67",
     },
+    # start-announce
+
+    "announcement": '''
+    <a href="https://jina-ai.zoom.us/webinar/register/WN_US7_9uQMRXiYaKBXJw4vYA">📢 28 Sep 2021: We're revealing big news at our <strong>exclusive community webinar</strong>. Join us on Zoom! 🔍</a>
+    ''',
+        
+    # end-announce
 }
 
 html_static_path = ['_static']
 html_extra_path = ['html_extra']
 html_css_files = [
     'main.css',
-    'docbot.css'
+    'docbot.css',
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css'
 ]
 html_js_files = [
     'https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js',
@@ -75,7 +83,6 @@ html_js_files = [
 ]
 htmlhelp_basename = slug
 html_show_sourcelink = False
-html_title = 'Jina Documentation'
 html_favicon = '_static/favicon.ico'
 
 latex_documents = [(master_doc, f'{slug}.tex', project, author, 'manual')]
@@ -117,9 +124,8 @@ notfound_context = {
     'body': '''
 <h1>Page Not Found</h1>
 <p>Oops, we couldn't find that page. </p>
-<p>You can try using the search box or check our menu on the left hand side of this page.</p>
-
-<p>If neither of those options work, please create a Github issue ticket <a href="https://github.com/jina-ai/jina/">here</a>, and one of our team will respond.</p>
+<p>You can try "asking our docs" on the right corner of the page to find answer.</p>
+<p>Otherwise, <a href="https://github.com/jina-ai/jina/">please create a Github issue</a> and one of our team will respond.</p>
 
 ''',
 }

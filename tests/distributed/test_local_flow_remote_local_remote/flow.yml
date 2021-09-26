@@ -3,7 +3,7 @@ version: '1'
 with:
   read_only: true
   host: $JINA_INTERNAL_HOST
-pods:
+executors:
   - name: crafter
     # for now all the uploaded files are stored in the same folder, so no subpaths allowed in remote
     host: $JINA_CRAFTER_HOST
