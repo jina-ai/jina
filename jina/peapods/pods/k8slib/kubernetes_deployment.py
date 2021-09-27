@@ -55,9 +55,7 @@ def deploy_service(
     port_out = 8082
     port_ctrl = 8083
 
-    logger.info(
-        f'🔋\tCreate Service for "{name}" with image "{name}" pulling from "{image_name}"'
-    )
+    logger.info(f'🔋\tCreate Service for "{name}" with exposed port "{port_expose}"')
     kubernetes_tools.create(
         'service',
         {
@@ -75,7 +73,7 @@ def deploy_service(
     )
 
     logger.info(
-        f'🐳\tCreate Deployment for "{image_name}" with replicas {replicas} and init_container {init_container is not None}'
+        f'🐳\tCreate Deployment for "{name}" with image "{image_name}", replicas {replicas} and init_container {init_container is not None}'
     )
 
     if init_container:
