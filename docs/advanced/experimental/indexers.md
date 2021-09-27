@@ -39,7 +39,7 @@ Besides, there are two types of special indexer,
 
 ```
 
-## CRUD operations and the Executor Endpoints
+## CRUD operations and the Executor endpoints
 
 The Executors implemented and provided by Jina implement a CRUD interface as follows:
 
