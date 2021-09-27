@@ -1,4 +1,4 @@
-from contextlib import nullcontext
+from contextlib import nullcontext, ExitStack
 from functools import partialmethod
 from typing import Optional, Dict, List, AsyncGenerator
 
@@ -60,18 +60,19 @@ class PostMixin:
             if return_results:
                 return result
 
-        if self.args.infrastructure == InfrastructureType.K8S:
-            context = kubernetes_tools.get_port_forward_contextmanager(
-                self.args.name, self.port_expose
-            )
-        elif self.args.infrastructure == InfrastructureType.JINA:
-            context = nullcontext
-        else:
-            raise NotImplemented(
-                f'Infrastructure type {self.args.infrastructure} unknown.'
-            )
-
-        with context:
+        with ExitStack() as stack:
+            if self.args.infrastructure == InfrastructureType.K8S:
+                stack.enter_context(
+                    kubernetes_tools.get_port_forward_contextmanager(
+                        self.args.name, self.port_expose
+                    )
+                )
+            elif self.args.infrastructure == InfrastructureType.JINA:
+                pass
+            else:
+                raise NotImplemented(
+                    f'Infrastructure type {self.args.infrastructure} unknown.'
+                )
             return run_async(
                 _get_results,
                 inputs=inputs,
