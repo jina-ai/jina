@@ -1,0 +1,65 @@
+jtype: Flow
+version: '1'
+with:
+  cors: True
+executors:
+  - name: craftText
+    uses:
+      jtype: TextCrafter
+      metas:
+        py_modules:
+          - $PY_MODULE
+  - name: encodeText
+    uses:
+      jtype: TextEncoder
+      metas:
+        py_modules:
+          - $PY_MODULE 
+  - name: textIndexer
+    uses:
+      jtype: DocVectorIndexer
+      with:
+        index_file_name: "text.json"
+      metas:
+        workspace: $HW_WORKDIR
+        py_modules:
+          - $PY_MODULE
+  - name: craftImage
+    uses:
+      jtype: ImageCrafter
+      metas:
+        workspace: $HW_WORKDIR
+        py_modules:
+          - $PY_MODULE
+    needs: gateway
+  - name: encodeImage
+    uses:
+      jtype: ImageEncoder
+      metas:
+        py_modules:
+          - $PY_MODULE
+  - name: imageIndexer
+    uses:
+      jtype: DocVectorIndexer
+      with:
+        index_file_name: "image.json"
+      metas:
+        workspace: $HW_WORKDIR
+        py_modules:
+          - $PY_MODULE
+  - name: weightedRanker
+    uses:
+      jtype: WeightedRanker
+      metas:
+        workspace: $HW_WORKDIR
+        py_modules:
+          - $PY_MODULE
+    needs: [ textIndexer, imageIndexer ]
+  - name: keyvalueIndexer
+    uses:
+      jtype: KeyValueIndexer
+      metas:
+        workspace: $HW_WORKDIR
+        py_modules:
+          - $PY_MODULE
+    needs: weightedRanker

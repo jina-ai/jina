@@ -1,0 +1,73 @@
+name: Autocommit
+
+on:
+  schedule:
+    - cron: "0 23 * * *"
+  workflow_dispatch:
+
+
+jobs:
+  autocommit:
+    if: |
+      !startsWith(github.event.head_commit.message, 'chore') &&
+      !startsWith(github.event.head_commit.message, 'build: hotfix') &&
+      !endsWith(github.event.head_commit.message, 'reformatted by jina-dev-bot')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.JINA_DEV_BOT }}
+          ref: ${{ github.event.pull_request.head.sha }}
+      - run: |
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Checkout wall-of-honor
+        uses: actions/checkout@v2
+        with:
+          repository: jina-ai/wall-of-honor
+          path: wall
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - name: Run contributor generation
+        run: |
+          cd wall
+          npm i -D all-contributors-cli@6.17.1
+          npm list all-contributors-cli
+          cp patch.js ./node_modules/all-contributors-cli/dist/generate/index.js
+          cp ../README.md README.md
+          pip install -r requirements.txt
+          python app.py config.yml export.yml
+          cp README.md ../README.md
+          cd ..
+          rm -rf wall
+          git add README.md &> /dev/null || true
+          git commit -m 'chore(contributor): update contributors' &> /dev/null || true
+          git status
+        env:
+          PRIVATE_TOKEN: ${{ secrets.JINA_DEV_BOT }}
+      - name: Generate TOC
+        uses: technote-space/toc-generator@v3
+        with:
+          MAX_HEADER_LEVEL: 2
+          GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
+          COMMIT_NAME: Jina Dev Bot
+          COMMIT_EMAIL: dev-bot@jina.ai
+          TOC_TITLE: ''
+          TARGET_PATHS: 'CHANGELOG.md,CONTRIBUTING.md,RELEASE.md'
+          CHECK_ONLY_DEFAULT_BRANCH: true
+      - name: Generate TOC
+        uses: technote-space/toc-generator@v3
+        with:
+          MAX_HEADER_LEVEL: 4
+          GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
+          COMMIT_NAME: Jina Dev Bot
+          COMMIT_EMAIL: dev-bot@jina.ai
+          TOC_TITLE: 'Table of Contents'
+          TARGET_PATHS: '.github/2.0/cookbooks/*.md'
+          CHECK_ONLY_DEFAULT_BRANCH: true
+      - uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.JINA_DEV_BOT }}
+          branch: master

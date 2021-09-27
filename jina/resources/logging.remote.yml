@@ -1,0 +1,30 @@
+handlers:
+  - StreamHandler
+  - SysLogHandler
+  - FluentHandler
+level: INFO
+configs:
+  FileHandler:
+    format: '%(asctime)s:{name:>15}@%(process)2d[%(levelname).1s]:%(message)s'
+    output: 'jina-%(uptime)s.log'
+    formatter: JsonFormatter
+  StreamHandler:
+    format: '🌏 %(message)s'
+    formatter: ColorFormatter
+  SysLogHandler:
+    format: '{name:>15}@%(process)2d[%(levelname).1s]:%(message)s'
+    host: # when not given then record it locally
+    port: # when not given then record it locally
+    formatter: PlainFormatter
+  FluentHandler:
+    # this configuration describes where is the fluentD daemon running and waiting for logs to be emitted.
+    # FluentD then will have its own configuration to forward the messages according to its own syntax
+    # prefix will help fluentD filter data. This will be prepended for FluentD to easily filter incoming messages
+    tag: jina
+    host: 0.0.0.0
+    port: 24224
+    format:
+      host: '%(hostname)s'
+      process: '%(process)s'
+      type: '%(levelname)s'
+

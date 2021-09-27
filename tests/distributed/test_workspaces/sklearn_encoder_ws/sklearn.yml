@@ -1,0 +1,4 @@
+jtype: Encoder
+metas:
+  name: sklearn-encoder
+  py_modules: encoder.py

@@ -1,0 +1,16 @@
+!Flow
+version: '1'
+metas:
+  prefetch: 10
+executors:
+  - name: crafter
+    parallel: 4
+  - name: encoder
+    parallel: 4
+  - name: faiss_indexer
+    parallel: 1
+  - name: doc_indexer
+    needs: crafter
+  - name: join_all
+    needs: [doc_indexer, faiss_indexer]
+    read_only: true

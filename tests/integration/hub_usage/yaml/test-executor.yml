@@ -1,0 +1,4 @@
+jtype: TestExecutor
+metas:
+  py_modules:
+    - test_executor.py

@@ -1,0 +1,7 @@
+quote_dict: { }
+quote_string: '{$PATH}'
+nest:
+  quote_dict: { }
+  quote_string: '{$PATH}'
+exist_env: $PATH
+non_exist_env: $JINA_WHATEVER_ENV

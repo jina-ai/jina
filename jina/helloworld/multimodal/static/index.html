@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>
+        Jina Multimodal Hello World!
+    </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+</head>
+<body>
+<div class="container-fluid" id="app">
+    <nav class="navbar navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="https://api.jina.ai/logo/logo-product/jina-core/logo-only/colored/Product%20logo_Core_Colorful%401x.png"
+                     width="32px" class="d-inline-block align-top">
+                Jina Multimodal Hello-World
+            </a>
+            <form class="form-inline my-2 my-lg-0">
+                <input v-model="serverAddress" class="form-control mr-sm-2" type="search" placeholder="server address"
+                       aria-label="Search">
+            </form>
+        </div>
+    </nav>
+    <br>
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="card border-primary">
+                <div class="card-header">
+                    A multimodal document as query <span style="font-size: small">(Refresh for new image)</span>
+                </div>
+                <div class="card-body">
+                    <div class="card">
+                        <img :src="query.uri" class="card-img-top"
+                             style="max-height: 200px; object-fit: contain;"  v-bind:style="{opacity: imageWeight}">
+                        <div class="card-body">
+                            <textarea v-model="query.text" class="form-control"
+                                      rows="3" v-bind:style="{opacity: textWeight}"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Results rely more on</p>
+                    <div style="display: flex;align-items: center;justify-content: center;">
+                        <div style="display: grid"><span>Text</span> <span>{{textWeight}}</span></div>
+                        <div class="slidecontainer" style="width: 70%; margin: 1em">
+                            <input style="width: 100%" type="range" min="0" max="100" class="slider" id="myRange"
+                                   v-model.number="modalWeight">
+                        </div>
+                        <div style="display: grid"><span>Image</span> <span>{{imageWeight}}</span></div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <button id="search-button" type="button" v-on:click="callJina()" class="btn btn-primary">Search!</button>
+                </div>
+            </div>
+            <br>
+            <div class="card">
+                <div class="card-header">
+                    REST Payload
+                </div>
+                <div class="card-body">
+                    <pre>
+                        <code>
+{{payload}}
+                        </code>
+                    </pre>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-9">
+            <div style="
+                display: none;
+                justify-content: center;
+                height: 100vh;
+                align-items: center;
+            "
+                id="search-animation"
+            >
+                <img src="https://github.com/jina-ai/jina/blob/master/.github/logo-only.gif?raw=true"/>
+            </div>
+            <div style="width:100%; grid-template-columns: auto auto auto auto auto;display: grid;">
+                <div class="card" v-for="item in results">
+                    <img :src="item.uri" class="card-img-top"
+                         style="max-height: 200px; object-fit: contain;">
+                    <div class="card-body">
+                        {{item.tags.caption}}
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">score: {{item.scores.relevance.value}}</li>
+                        <li class="list-group-item">filename: {{item.tags.image}}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
+        crossorigin="anonymous"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script>
+    function uuidv4() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+    const urlParams = new URLSearchParams(window.location.search);
+    const port = urlParams.get('port') ?? 8080;
+    var app = new Vue({
+        el: '#app',
+        data: {
+            modalWeight: 50,
+            query: null,
+            results: [],
+            serverAddress: `http://localhost:${port}`
+        },
+        mounted: function () {
+            this.$nextTick(function () {
+                $.getJSON("https://static.jina.ai/multimodal/sample.json", function (json) {
+                    app.query = json[[Math.floor(Math.random() * json.length)]]
+                });
+            })
+        },
+        computed: {
+            // get only
+            imageWeight: function () {
+                return Number((this.modalWeight / 100).toFixed(2))
+            },
+            textWeight: function () {
+                return Number((1 - this.modalWeight / 100).toFixed(2))
+            },
+            payload: function () {
+                p_id = uuidv4()
+                t_id = uuidv4()
+                i_id = uuidv4()
+                return {
+                    data: [{
+                        id: p_id,
+                        chunks: [
+                            {
+                                id: t_id,
+                                weight: this.textWeight,
+                                mimeType: "text/plain",
+                                text: this.query.text,
+                                granularity: 1,
+                                parentId: p_id
+                            },
+                            {
+                                id: i_id,
+                                weight: this.imageWeight,
+                                mimeType: "image/jpeg",
+                                uri: this.query.uri,
+                                granularity: 1,
+                                parentId: p_id
+                            }
+                        ]
+                    }],
+                    exec_endpoint: '/search',
+                    parameters: {top_k: 20}
+                }
+            }
+        },
+        methods: {
+            callJina: function () {
+                document.getElementById("search-button").disabled = true;
+                document.getElementById("search-animation").style.display = 'flex';
+                $.ajax({
+                    type: "POST",
+                    url: this.serverAddress + "/search",
+                    data: JSON.stringify(this.payload),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                }).success(function (data, textStatus, jqXHR) {
+                    document.getElementById("search-animation").style.display = 'none';
+                    document.getElementById("search-button").disabled = false;
+                    console.log(data)
+                    app.results = data['data']['docs'][0]['matches']
+                }).fail(function () {
+                    console.error("bad connection!")
+                });
+            }
+        }
+    })
+</script>
+</html>

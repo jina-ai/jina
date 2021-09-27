@@ -1,0 +1,16 @@
+name: Close stale issues
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v1
+        with:
+          repo-token: ${{ secrets.JINA_DEV_BOT }}
+          stale-issue-message: '@jina-ai/product This issue is stale because it has been open 90 days with no activity. Remove stale label or comment or this will be closed in 14 days'
+          days-before-stale: 90
+          days-before-close: 14

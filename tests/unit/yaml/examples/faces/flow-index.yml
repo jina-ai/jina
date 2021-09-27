@@ -1,0 +1,25 @@
+!Flow
+version: '1'
+metas:
+  prefetch: 10
+executors:
+  - name: loader
+    parallel: 4
+    read_only: true
+  - name: flipper
+    parallel: 4
+    read_only: true
+  - name: normalizer
+    parallel: 4
+    read_only: true
+  - name: encoder
+    parallel: 4
+    timeout_ready: 600000
+    read_only: true
+  - name: chunk_indexer
+    parallel: 1
+  - name: doc_indexer
+    needs: loader
+  - name: join_all
+    needs: [doc_indexer, chunk_indexer]
+    read_only: true

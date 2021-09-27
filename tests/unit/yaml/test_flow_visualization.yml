@@ -1,0 +1,24 @@
+!Flow
+version: '1'
+executors:
+  - name: loader
+    read_only: true
+  - name: normalizer
+    read_only: true
+  - name: image_encoder
+    read_only: true
+    parallel: 4
+  - name: image_vector_indexer
+    read_only: true
+  - name: image_kv_indexer
+    needs: [gateway]
+  - name: text_encoder
+    timeout_ready: 600000
+    read_only: true
+    parallel: 4
+    needs: [gateway]
+  - name: text_indexer
+    read_only: true
+  - name: join_all
+    needs: [image_vector_indexer, image_kv_indexer, text_indexer]
+    read_only: true

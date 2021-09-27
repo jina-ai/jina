@@ -1,0 +1,10 @@
+!Flow
+version: '1'
+with:
+  protocol: http
+  port_expose: 45678
+executors:
+  - name: executor1
+    uses: docker://hubpod:test
+  - name: executor2
+    uses: docker://hubpod:test

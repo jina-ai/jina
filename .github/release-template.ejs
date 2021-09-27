@@ -1,0 +1,173 @@
+<% var groupCommits = [
+{
+    name: 'breaking',
+    show: true,
+    list: []
+}, {
+    name: 'feat',
+    show: true,
+    list: []
+}, {
+    name: 'perf',
+    show: true,
+    list: []
+}, {
+    name: 'fix',
+    show: true,
+    list: []
+}, {
+    name: 'refactor',
+    show: true,
+    list: []
+}, {
+    name: 'docs',
+    show: true,
+    list: []
+},  {
+    name: 'test',
+    show: true,
+    list: []
+}, {
+    name: 'other',
+    show: true,
+    list: []
+}
+]
+
+var all_titles = {};
+var all_commiters = {};
+var commitHref = "https://github.com/jina-ai/jina/commit/"
+
+commits.forEach(function (commit) {
+
+    var result = (commit.title).match(/^(\w*)(\((.*)\))?\: (.*)$/);
+
+    var type = result && result[1];
+    var scope = result && result[3];
+    var title = result && result[4];
+    var committer = commit.authorName
+
+    if (!(committer in all_commiters)) {
+        all_commiters[committer] = 1
+    }
+
+    if (!(title in all_titles)) {
+        all_titles[title] = 1
+        if( title != null && (title.indexOf('💥')>-1 || title.indexOf(':boom:')>-1) ){
+            groupCommits.find(item => item.name === 'breaking').list.push({
+                type: type,
+                scope: scope,
+                title: title,
+                commit: commit
+            })
+        } else if(type == 'fix' || type == 'fixed'){
+            groupCommits.find(item => item.name === 'fix').list.push({
+                type: type,
+                scope: scope,
+                title: title,
+                commit: commit
+            })
+        } else if(type == 'perf' || type == 'performance'){
+            groupCommits.find(item => item.name === 'perf').list.push({
+                type: type,
+                scope: scope,
+                title: title,
+                commit: commit
+            })
+        } else if(type == 'feat' || type == 'feature'){
+            groupCommits.find(item => item.name === 'feat').list.push({
+                type: type,
+                scope: scope,
+                title: title,
+                commit: commit
+            })
+        } else if(type == 'refactor'){
+            groupCommits.find(item => item.name === 'refactor').list.push({
+                type: type,
+                scope: scope,
+                title: title,
+                commit: commit
+            })
+        } else if(type == 'docs' || type == 'doc'){
+            groupCommits.find(item => item.name === 'docs').list.push({
+                type: type,
+                scope: scope,
+                title: title,
+                commit: commit
+            })
+        } else if(type == 'test' || type == 'tests' || type == 'ci'){
+            groupCommits.find(item => item.name === 'test').list.push({
+                type: type,
+                scope: scope,
+                title: title,
+                commit: commit
+            })
+        } else {
+            groupCommits.find(item => item.name === 'other').list.push({
+                type: type,
+                scope: scope,
+                title: title,
+                commit: commit
+            })
+        }
+    }
+
+
+});
+
+
+var listCommits = function(list, key){
+
+list.forEach(function (ct) {
+
+    var type = ct.type;
+    var scope = ct.scope;
+    var title = '';
+    var commit = ct.commit;
+
+    if(type){
+        if(key != 'other'){
+            title = (scope? '__'+scope+'__: ':'') + ct.title;
+        }else{
+            title = '__' + type + (scope? '('+scope+')':'') + '__ : ' + ct.title;
+        }
+    }else{
+        title = commit.title;
+    }
+%> - <% if(typeof commitHref === 'undefined' || commitHref === '') { %>[```<%=commit.sha1.slice(0,8)%>```]<% } else { %>[[```<%=commit.sha1.slice(0,8)%>```](<%=commitHref%><%=commit.sha1%>)]<%}%> __-__ <%=title%> (*<%= commit.authorName %>*)
+<% })} %>
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+<%  Object.keys(all_commiters).forEach(function (key) { %> <%= key %>, <% }) %> 🙇
+
+<%
+        for(var i of groupCommits){
+    if(i.list.length == 0) continue;
+
+if (i.name === 'breaking' && i.show) { %>
+### 💥 Breaking changes
+
+<%	} else if (i.name === 'fix' && i.show) { %>
+### 🐞 Bug fixes
+
+<%	} else if( i.name === 'feat' && i.show) { %>
+### 🆕 New Features
+
+<%	} else if(i.name === 'perf' && i.show) { %>
+### ⚡ Performance Improvements
+
+<%	} else if(i.name === 'refactor' && i.show) { %>
+### 🧼 Code Refactoring
+
+<%	} else if(i.name === 'docs' && i.show) { %>
+### 📗 Documentation
+
+<%	} else if(i.name === 'test' && i.show) { %>
+### 🏁 Unit Test and CICD
+
+<%	} else if (i.name === 'other' && i.show) { %>
+### 🍹 Other Improvements
+
+<%	}
+    i.show && listCommits(i.list, i);
+} %>

@@ -1,0 +1,6 @@
+!Flow
+version: '1.0'
+with:
+  port_expose: 12345
+executors:
+  - name: executor1

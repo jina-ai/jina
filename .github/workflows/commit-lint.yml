@@ -1,0 +1,53 @@
+# commit-lint needs "pull_request_target" access,
+# therefore separate from main ci.yml
+name: PR
+
+on:
+  push:
+    branches-ignore:
+      - '**'  # temporally ignore all, as https://github.com/wagoid/commitlint-github-action/issues/66
+
+jobs:
+  commit-lint-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: find the prev warning if exist
+        uses: peter-evans/find-comment@v1
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: 'bad commit message'
+      - name: Delete comment if exist
+        if: ${{ steps.fc.outputs.comment-id != 0 }}
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.issues.deleteComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: ${{ steps.fc.outputs.comment-id }},
+            })
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - run: "echo \"module.exports = {extends: ['@commitlint/config-conventional']}\" > commitlint.config.js"
+      - uses: wagoid/commitlint-github-action@v1
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      - name: if lint failed
+        if: ${{ failure() }}
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            Thanks for your contribution :heart:
+            :broken_heart: Unfortunately, this PR has one ore more **bad commit messages**, it can not be merged. To fix this problem, please refer to:
+            - [Commit Message Guideline for the First Time Contributor](https://github.com/jina-ai/jina/issues/553)
+            - [Contributing Guideline](https://github.com/jina-ai/jina/blob/master/CONTRIBUTING.md)
+
+            Note, other CI tests will *not* *start* until the commit messages get fixed.
+
+            This message will be deleted automatically when the commit messages get fixed.
+          reaction-type: "eyes"

@@ -1,0 +1,12 @@
+# ignore everything
+**
+.*
+
+# Allow files and directories
+!jina/**
+!setup.py
+!*requirements.txt
+!README.md
+!MANIFEST.in
+!cli/**
+!daemon/**

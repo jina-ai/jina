@@ -1,0 +1,8 @@
+handlers:
+  - SysLogHandler
+level: DEBUG
+configs:
+  SysLogHandler:
+    format: '{name:>15}@%(process)2d[%(levelname).1s]:%(message)s'
+    host: # when not given then record it locally
+    port: # when not given then record it locally

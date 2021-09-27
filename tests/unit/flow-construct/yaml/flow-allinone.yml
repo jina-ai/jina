@@ -1,0 +1,10 @@
+jtype: Flow
+version: '1'
+executors:
+  - uses:
+    jtype: CustomizedEncoder
+  - uses:
+    jtype: BaseExecutor
+    metas:
+      name: test_indexer
+      workspace: ./indexed

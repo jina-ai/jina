@@ -1,0 +1,65 @@
+name: Manual Docs Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_token:
+        description: 'Your release token'
+        required: true
+      triggered_by:
+        description: 'CD | TAG | MANUAL'
+        required: false
+        default: MANUAL
+
+jobs:
+  token-check:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "success!"
+        if: "${{ github.event.inputs.release_token }} == ${{ env.release_token }}"
+        env:
+          release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}
+
+  regular-release:
+    needs: token-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Build doc and push to gh-pages
+        run: |
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
+          pip install .[devel]
+          mkdir gen-html
+          cd docs
+          pip install -r requirements.txt
+          pip install --pre -U furo
+          docker run --rm \
+            -v $(pwd)/proto:/out \
+            -v $(pwd)/../jina/proto:/protos \
+            pseudomuto/protoc-gen-doc --doc_opt=markdown,docs.md
+          make dirhtml
+          cd ./_build/dirhtml/
+          cp -r ./ ../../../gen-html
+          cd -  # back to ./docs
+          cd ..
+          git checkout -f gh-pages
+          git rm -rf ./docs
+          mkdir -p docs
+          cd gen-html
+          cp -r ./ ../docs
+          cd ../docs
+          ls -la
+          touch .nojekyll
+          cp 404/index.html 404.html
+          sed -i 's/href="\.\./href="/' 404.html # fix asset urls that needs to be updated in 404.html
+          echo docs.jina.ai > CNAME
+          cd ..
+          git status
+          git add docs && git commit -m "chore(docs): update docs due to ${{github.event_name}} on ${{github.repository}}"
+          git push --force origin gh-pages

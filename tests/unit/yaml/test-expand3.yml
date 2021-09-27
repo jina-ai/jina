@@ -1,0 +1,9 @@
+is_updated: false
+batch_size:
+workspace: $PWD
+name: 2312
+on_gpu: false
+warn_unamed: false
+max_snapshot: 0
+py_modules:
+pea_id: 1

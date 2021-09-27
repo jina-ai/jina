@@ -1,0 +1,23 @@
+name: issue-hf2020
+
+#on:
+#  issues:
+#    types: [opened]
+#  pull_request_target:
+#    types: [opened]
+
+on:
+  push:
+    branches-ignore:
+      - '**'  # temporally ignore all
+
+
+jobs:
+  automate-issues-labels:
+    runs-on: ubuntu-latest
+    steps:
+      - name: hacktoberfest
+        uses: andymckay/labeler@master
+        with:
+          add-labels: "hacktoberfest, hacktoberfest2020"
+          repo-token: "${{ secrets.JINA_DEV_BOT }}"

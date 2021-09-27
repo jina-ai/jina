@@ -1,0 +1,24 @@
+jtype: Flow
+version: '1'
+with:
+  port_expose: 45678
+  show_exc_info: true
+  host: flow
+executors:
+  - name: executor1
+    host: host.docker.internal
+    port_jinad: 8001
+  - name: executor2
+    parallel: 2
+    host: host.docker.internal
+    port_jinad: 8002
+  - name: executor3
+    parallel: 2
+    host: host.docker.internal
+    port_jinad: 8003
+    needs: [gateway]
+  - name: join_all
+    method: needs
+    host: flow
+    uses: merge.yml
+    needs: [executor2, executor3]
