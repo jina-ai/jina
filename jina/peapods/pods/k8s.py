@@ -65,8 +65,12 @@ class K8sPod(BasePod):
 
     @property
     def host(self) -> str:
-        """Not implemented"""
-        raise NotImplementedError
+        """Currently, when deploying on Kubernetes, Jina does not expose a public host.
+        Instead Jina sends requests via port-forward and runs the requests against localhost.
+
+        :return: localhost
+        """
+        return 'localhost'
 
     def _deploy_gateway(self):
         kubernetes_deployment.deploy_service(

@@ -1,7 +1,10 @@
+import json
 import os
 import tempfile
-import json
+from time import time, sleep
 from typing import Dict, Optional
+
+import portforward
 
 from jina.logging.logger import JinaLogger
 from jina.logging.predefined import default_logger
@@ -10,6 +13,9 @@ cur_dir = os.path.dirname(__file__)
 DEFAULT_RESOURCE_DIR = os.path.join(
     cur_dir, '..', '..', '..', 'resources', 'k8s', 'template'
 )
+
+if False:
+    from contextlib import GeneratorContextManager
 
 
 class K8SClients:
@@ -138,3 +144,47 @@ def _get_yaml(template: str, params: Dict, custom_resource_dir: Optional[str] = 
         for k, v in params.items():
             content = content.replace(f'{{{k}}}', str(v))
     return content
+
+
+def _get_gateway_pod_name(namespace):
+    gateway_pod = __k8s_clients.v1.list_namespaced_pod(
+        namespace=namespace, label_selector='app=gateway'
+    )
+    return gateway_pod.items[0].metadata.name
+
+
+def get_port_forward_contextmanager(
+    namespace: str,
+    port_expose: int,
+    timeout: int = 60,
+    config_path: str = None,
+) -> 'GeneratorContextManager':
+    """Forward local requests to the gateway which is running in the Kubernetes cluster.
+    :param namespace: namespace of the gateway
+    :param port_expose: exposed port of the gateway
+    :param timeout: time in seconds to wait for the gateway to start
+    :param config_path: path to the Kubernetes config file
+
+    :return: context manager which sets up and terminates the port-forward
+    """
+    _wait_for_gateway(namespace, timeout)
+    gateway_pod_name = _get_gateway_pod_name(namespace)
+    if config_path is None and 'KUBECONFIG' in os.environ:
+        config_path = os.environ['KUBECONFIG']
+    return portforward.forward(
+        namespace, gateway_pod_name, port_expose, port_expose, config_path
+    )
+
+
+def _wait_for_gateway(namespace: str, timeout: int):
+    start = time()
+    while time() - start < timeout:
+        try:
+            pods = __k8s_clients.v1.list_namespaced_pod(namespace=namespace)
+            statuses = [item.status.phase == 'Running' for item in pods.items]
+            if len(statuses) > 1 and all(statuses):
+                return
+        except:
+            pass
+        sleep(1)
+    raise Exception(f'Gateway did not start after {timeout} seconds.')
