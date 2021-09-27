@@ -9,6 +9,7 @@ import docker
 from jina import __docker_host__
 from jina.helper import colored
 from jina.logging.logger import JinaLogger
+from jina.peapods.runtimes.container import ContainerRuntime
 from . import (
     jinad_args,
     __root_workspace__,
@@ -193,7 +194,6 @@ class Dockerizer:
         return cls.run(
             workspace_id=workspace_id,
             container_id=workspace_id,
-            command=None,
             ports={f'{port}/tcp': port for port in daemon_file.ports},
             entrypoint=daemon_file.run,
         )
@@ -203,10 +203,9 @@ class Dockerizer:
         cls,
         workspace_id: DaemonID,
         container_id: DaemonID,
-        command: str,
+        entrypoint: str,
         ports: Dict,
         envs: Dict = {},
-        entrypoint: Optional[str] = None,
     ) -> Tuple['Container', str, Dict]:
         """
         Runs a container using an existing image (tagged with `workspace_id`).
@@ -215,7 +214,6 @@ class Dockerizer:
             This uses the default entrypoint (mini-jinad) & appends `command` for execution.
         :param workspace_id: workspace id
         :param container_id: name of the container
-        :param command: command to be appended to default entrypoint
         :param ports: ports to be mapped with local
         :param envs: dict of env vars to be set in the container
         :param entrypoint: custom entrypoint
@@ -246,8 +244,8 @@ class Dockerizer:
                 network=network,
                 ports=ports,
                 detach=True,
-                command=command,
                 entrypoint=entrypoint,
+                working_dir=__partial_workspace__,
                 extra_hosts={__docker_host__: 'host-gateway'},
             )
         except docker.errors.NotFound as e:

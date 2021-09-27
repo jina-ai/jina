@@ -51,7 +51,7 @@ def _create_flow():
             rest_api_uri='',
             uri="",
         ),
-        arguments=ContainerArguments(command='command', object=Flow()),
+        arguments=ContainerArguments(entrypoint='entrypoint', object=Flow()),
         workspace_id=workspace_id,
     )
 

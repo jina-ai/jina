@@ -11,4 +11,4 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
-      - JINA_DAEMON_BUILD=DEVEL
+      - JINA_DAEMON_DOCKERFILE=DEVEL # only used in devel mode

@@ -120,17 +120,18 @@ class ContainerStore(BaseStore):
         else:
             return f'http://{__docker_host__}:{port}'
 
-    def _command(self, port: int, workspace_id: DaemonID) -> str:
-        """Returns command for partial-daemon container to be appended to default entrypoint
+    def _entrypoint(self, port: int, workspace_id: DaemonID) -> str:
+        """Returns entrypoint for partial-daemon container to be appended to default entrypoint
 
-        NOTE: `command` is appended to already existing entrypoint, hence removed the prefix `jinad`
         NOTE: Important to set `workspace_id` here as this gets set in jina objects in the container
 
         :param port: partial-daemon port
         :param workspace_id: workspace id
         :return: command for partial-daemon container
         """
-        return f'--port {port} --mode {self._kind} --workspace-id {workspace_id.jid}'
+        return (
+            f'jinad --port {port} --mode {self._kind} --workspace-id {workspace_id.jid}'
+        )
 
     @BaseStore.dump
     async def add(
@@ -170,7 +171,7 @@ class ContainerStore(BaseStore):
             )
             dockerports.update({f'{partiald_port}/tcp': partiald_port})
             uri = self._uri(partiald_port)
-            command = self._command(partiald_port, workspace_id)
+            entrypoint = self._entrypoint(partiald_port, workspace_id)
             params = params.dict(exclude={'log_config'})
 
             self._logger.debug(
@@ -180,7 +181,7 @@ class ContainerStore(BaseStore):
                         '{:15s} -> {:15s}'.format('id', id),
                         '{:15s} -> {:15s}'.format('workspace', workspace_id),
                         '{:15s} -> {:15s}'.format('dockerports', str(dockerports)),
-                        '{:15s} -> {:15s}'.format('command', command),
+                        '{:15s} -> {:15s}'.format('entrypoint', entrypoint),
                     ]
                 )
             )
@@ -188,7 +189,7 @@ class ContainerStore(BaseStore):
             container, network, dockerports = Dockerizer.run(
                 workspace_id=workspace_id,
                 container_id=id,
-                command=command,
+                entrypoint=entrypoint,
                 ports=dockerports,
                 envs=envs,
             )
@@ -228,7 +229,7 @@ class ContainerStore(BaseStore):
                     uri=uri,
                 ),
                 arguments=ContainerArguments(
-                    command=f'jinad {command}',
+                    entrypoint=entrypoint,
                     object=object,
                 ),
                 workspace_id=workspace_id,
