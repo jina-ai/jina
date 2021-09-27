@@ -186,7 +186,7 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
     def __init__(
         self,
         namespace: str,
-        client: kubernetes.client.CoreV1Api,
+        client: 'kubernetes.client.CoreV1Api',
         logger: JinaLogger = None,
     ):
         super().__init__(logger=logger, on_demand_connection=False)
