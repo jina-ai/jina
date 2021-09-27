@@ -641,6 +641,45 @@
 <li><p><a class="reference external" href="https://hub.jina.ai/executor/mruax3k7">MatchMerger</a>. It is used for merging the results retrieved from sharding. It merges the results of shards by aggregating all matches by the corresponding Document in the original search request.</p></li>
 </ul>
 </div>
+<section id="crud-operations-and-the-executor-endpoints">
+<h2>CRUD operations and the Executor endpoints<a class="headerlink" href="#crud-operations-and-the-executor-endpoints" title="Permalink to this headline">¶</a></h2>
+<p>The Executors implemented and provided by Jina implement a CRUD interface as follows:</p>
+<div class="table-wrapper"><table border="1" class="docutils">
+<thead>
+<tr>
+<th>Operation</th>
+<th>Endpoint</th>
+<th>Implemented in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>C</strong>reate</td>
+<td><code>/index</code></td>
+<td>Storage</td>
+</tr>
+<tr>
+<td><strong>R</strong>ead</td>
+<td><code>/search</code></td>
+<td>Searcher</td>
+</tr>
+<tr>
+<td><strong>U</strong>pdate</td>
+<td><code>/update</code></td>
+<td>Storage</td>
+</tr>
+<tr>
+<td><strong>D</strong>elete</td>
+<td><code>/delete</code></td>
+<td>Storage</td>
+</tr>
+</tbody>
+</table></div>
+<p>The Create, Update, Delete are implemented by the Storage Indexers, while the Read operation is implemented in the <code class="docutils literal notranslate"><span class="pre">/search</span></code> endpoints in the Search Indexers.
+The <code class="docutils literal notranslate"><span class="pre">/search</span></code> endpoints do not correspond perfectly with the Read operation, as it <em>searches</em> for similar results, and not return a specific Document by id.
+Some Storage Indexers do implement a <code class="docutils literal notranslate"><span class="pre">/fill_embedding</span></code> endpoint, which function as a Read by id.
+Please refer to the specific documentation or implementation of the Executor for details.</p>
+</section>
 <section id="indexing-vs-searching-operations">
 <h2>Indexing vs Searching Operations<a class="headerlink" href="#indexing-vs-searching-operations" title="Permalink to this headline">¶</a></h2>
 <p>The recommended usage of these Executors is to split them into Indexing vs Search Flows.
@@ -833,6 +872,7 @@ Jina provides this via the <a class="reference external" href="https://hub.jina.
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">Indexers on Jina Hub</a><ul>
+<li><a class="reference internal" href="#crud-operations-and-the-executor-endpoints">CRUD operations and the Executor endpoints</a></li>
 <li><a class="reference internal" href="#indexing-vs-searching-operations">Indexing vs Searching Operations</a></li>
 <li><a class="reference internal" href="#dump-and-rolling-update">Dump and Rolling Update</a></li>
 <li><a class="reference internal" href="#indexer-cheat-sheet">Indexer Cheat Sheet</a><ul>
