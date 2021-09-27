@@ -19,7 +19,7 @@ jina hub push [--public/--private] <path_to_executor_folder>
 ```
 
 
-It will return `UUID` & `SECRET`, which you will need when using (if private) or update the Executor later. **Please keep them carefully.**
+It will return `NAME` & `SECRET`, which you will need when using (if private) or update the Executor later. **Please keep them carefully.**
 
 You can then visit [the Hub portal](https://hub.jina.ai), click on the "Recent" tab and see your published Executor.
 
@@ -36,10 +36,10 @@ Anyone can use any public Executor, but to use a private Executor one must know 
 
 ## Update published Executors
 
-To override or update a published Executor, you must have both `UUID` and `SECRET`.
+To override or update a published Executor, you must have both `Name` and `SECRET`.
 
 ```bash
-jina hub push [--public/--private] --force <UUID> --secret <SECRET> <path_to_executor_folder>
+jina hub push [--public/--private] --force <NAME> --secret <SECRET> <path_to_executor_folder>
 ```
 
 (hub_tags)=
@@ -64,5 +64,5 @@ jina hub push . -t v1.0.0 -t latest # Result in two tags: v1.0.0, latest
 If you want to create a new tag for an existing Executor, you can also add the `-t` option here:
 
 ```bash
-jina hub push [--public/--private] --force <UUID> --secret <SECRET> -t TAG <path_to_executor_folder>
+jina hub push [--public/--private] --force <NAME> --secret <SECRET> -t TAG <path_to_executor_folder>
 ```
