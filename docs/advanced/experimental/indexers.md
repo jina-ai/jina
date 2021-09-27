@@ -39,6 +39,22 @@ Besides, there are two types of special indexer,
 
 ```
 
+## CRUD operations and the Executor Endpoints
+
+The Executors implemented and provided by Jina implement a CRUD interface as follows:
+
+| Operation  | Endpoint  | Implemented in |
+|------------|-----------|----------------|
+| **C**reate | `/index`  | Storage        |
+| **R**ead   | `/search` | Searcher       |
+| **U**pdate | `/update` | Storage        |
+| **D**elete | `/delete` | Storage        |
+
+The Create, Update, Delete are implemented by the Storage Indexers, while the Read operation is implemented in the `/search` endpoints in the Search Indexers. 
+The `/search` endpoints do not correspond perfectly with the Read operation, as it _searches_ for similar results, and not return a specific Document by id.
+Some Storage Indexers do implement a `/fill_embedding` endpoint, which function as a Read by id.
+Please refer to the specific documentation or implementation of the Executor for details.
+
 ## Indexing vs Searching Operations
 
 The recommended usage of these Executors is to split them into Indexing vs Search Flows.
