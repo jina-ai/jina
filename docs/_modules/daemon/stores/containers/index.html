@@ -699,17 +699,18 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s1">'http://</span><span class="si">{</span><span class="n">__docker_host__</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
 
-    <span class="k">def</span> <span class="nf">_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">workspace_id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">"""Returns command for partial-daemon container to be appended to default entrypoint</span>
+    <span class="k">def</span> <span class="nf">_entrypoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">workspace_id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">"""Returns entrypoint for partial-daemon container to be appended to default entrypoint</span>
 
-<span class="sd">        NOTE: `command` is appended to already existing entrypoint, hence removed the prefix `jinad`</span>
 <span class="sd">        NOTE: Important to set `workspace_id` here as this gets set in jina objects in the container</span>
 
 <span class="sd">        :param port: partial-daemon port</span>
 <span class="sd">        :param workspace_id: workspace id</span>
 <span class="sd">        :return: command for partial-daemon container</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">'--port </span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1"> --mode </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1"> --workspace-id </span><span class="si">{</span><span class="n">workspace_id</span><span class="o">.</span><span class="n">jid</span><span class="si">}</span><span class="s1">'</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s1">'jinad --port </span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1"> --mode </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1"> --workspace-id </span><span class="si">{</span><span class="n">workspace_id</span><span class="o">.</span><span class="n">jid</span><span class="si">}</span><span class="s1">'</span>
+        <span class="p">)</span>
 
     <span class="nd">@BaseStore</span><span class="o">.</span><span class="n">dump</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
@@ -749,7 +750,7 @@
             <span class="p">)</span>
             <span class="n">dockerports</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">partiald_port</span><span class="si">}</span><span class="s1">/tcp'</span><span class="p">:</span> <span class="n">partiald_port</span><span class="p">})</span>
             <span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uri</span><span class="p">(</span><span class="n">partiald_port</span><span class="p">)</span>
-            <span class="n">command</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command</span><span class="p">(</span><span class="n">partiald_port</span><span class="p">,</span> <span class="n">workspace_id</span><span class="p">)</span>
+            <span class="n">entrypoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entrypoint</span><span class="p">(</span><span class="n">partiald_port</span><span class="p">,</span> <span class="n">workspace_id</span><span class="p">)</span>
             <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s1">'log_config'</span><span class="p">})</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
@@ -759,7 +760,7 @@
                         <span class="s1">'</span><span class="si">{:15s}</span><span class="s1"> -&gt; </span><span class="si">{:15s}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'id'</span><span class="p">,</span> <span class="nb">id</span><span class="p">),</span>
                         <span class="s1">'</span><span class="si">{:15s}</span><span class="s1"> -&gt; </span><span class="si">{:15s}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'workspace'</span><span class="p">,</span> <span class="n">workspace_id</span><span class="p">),</span>
                         <span class="s1">'</span><span class="si">{:15s}</span><span class="s1"> -&gt; </span><span class="si">{:15s}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'dockerports'</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">dockerports</span><span class="p">)),</span>
-                        <span class="s1">'</span><span class="si">{:15s}</span><span class="s1"> -&gt; </span><span class="si">{:15s}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'command'</span><span class="p">,</span> <span class="n">command</span><span class="p">),</span>
+                        <span class="s1">'</span><span class="si">{:15s}</span><span class="s1"> -&gt; </span><span class="si">{:15s}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'entrypoint'</span><span class="p">,</span> <span class="n">entrypoint</span><span class="p">),</span>
                     <span class="p">]</span>
                 <span class="p">)</span>
             <span class="p">)</span>
@@ -767,7 +768,7 @@
             <span class="n">container</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">dockerports</span> <span class="o">=</span> <span class="n">Dockerizer</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
                 <span class="n">workspace_id</span><span class="o">=</span><span class="n">workspace_id</span><span class="p">,</span>
                 <span class="n">container_id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span>
-                <span class="n">command</span><span class="o">=</span><span class="n">command</span><span class="p">,</span>
+                <span class="n">entrypoint</span><span class="o">=</span><span class="n">entrypoint</span><span class="p">,</span>
                 <span class="n">ports</span><span class="o">=</span><span class="n">dockerports</span><span class="p">,</span>
                 <span class="n">envs</span><span class="o">=</span><span class="n">envs</span><span class="p">,</span>
             <span class="p">)</span>
@@ -807,7 +808,7 @@
                     <span class="n">uri</span><span class="o">=</span><span class="n">uri</span><span class="p">,</span>
                 <span class="p">),</span>
                 <span class="n">arguments</span><span class="o">=</span><span class="n">ContainerArguments</span><span class="p">(</span>
-                    <span class="n">command</span><span class="o">=</span><span class="sa">f</span><span class="s1">'jinad </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                    <span class="n">entrypoint</span><span class="o">=</span><span class="n">entrypoint</span><span class="p">,</span>
                     <span class="nb">object</span><span class="o">=</span><span class="nb">object</span><span class="p">,</span>
                 <span class="p">),</span>
                 <span class="n">workspace_id</span><span class="o">=</span><span class="n">workspace_id</span><span class="p">,</span>

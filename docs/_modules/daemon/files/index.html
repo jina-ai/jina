@@ -577,24 +577,24 @@
                     </label>
                 </div>
                 <h1>Source code for daemon.files</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">glob</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">UploadFile</span>
 
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">cached_property</span>
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">DaemonInvalidDockerfile</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">__rootdir__</span><span class="p">,</span> <span class="n">__dockerfiles__</span><span class="p">,</span> <span class="n">jinad_args</span>
 <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">get_workspace_path</span>
 <span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">DaemonID</span>
-<span class="kn">from</span> <span class="nn">.models.enums</span> <span class="kn">import</span> <span class="n">DaemonBuild</span><span class="p">,</span> <span class="n">PythonVersion</span>
+<span class="kn">from</span> <span class="nn">.models.enums</span> <span class="kn">import</span> <span class="n">DaemonDockerfile</span><span class="p">,</span> <span class="n">PythonVersion</span>
 
 
-<div class="viewcode-block" id="workspace_files"><a class="viewcode-back" href="../../../api/daemon.files/#daemon.files.workspace_files">[docs]</a><span class="k">def</span> <span class="nf">workspace_files</span><span class="p">(</span>
-    <span class="n">workspace_id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span> <span class="n">files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">],</span> <span class="n">logger</span><span class="p">:</span> <span class="s1">'JinaLogger'</span>
+<div class="viewcode-block" id="store_files_in_workspace"><a class="viewcode-back" href="../../../api/daemon.files/#daemon.files.store_files_in_workspace">[docs]</a><span class="k">def</span> <span class="nf">store_files_in_workspace</span><span class="p">(</span>
+    <span class="n">workspace_id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span> <span class="n">files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">],</span> <span class="n">logger</span><span class="p">:</span> <span class="s2">"JinaLogger"</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">"""Store the uploaded files in local disk</span>
 
@@ -610,9 +610,6 @@
     <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
         <span class="n">dest</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">workdir</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">dest</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">filename</span> <span class="o">==</span> <span class="s1">'requirements.txt'</span><span class="p">:</span>
-                <span class="n">_merge_requirement_file</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
-                <span class="k">continue</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'file </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s1"> already exists in workspace </span><span class="si">{</span><span class="n">workspace_id</span><span class="si">}</span><span class="s1">, will be replaced'</span>
             <span class="p">)</span>
@@ -622,33 +619,13 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'saved uploads to </span><span class="si">{</span><span class="n">dest</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">_merge_requirement_file</span><span class="p">(</span><span class="n">dest</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="n">UploadFile</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">"""Merge requirement files</span>
+<div class="viewcode-block" id="is_requirements_txt"><a class="viewcode-back" href="../../../api/daemon.files/#daemon.files.is_requirements_txt">[docs]</a><span class="k">def</span> <span class="nf">is_requirements_txt</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">"""Check if filename is of requirements.txt format</span>
 
-<span class="sd">    :param dest: existing requirements file location</span>
-<span class="sd">    :param f: file obj for the new requirements file</span>
+<span class="sd">    :param filename: filename</span>
+<span class="sd">    :return: True if filename is in requirements.txt format</span>
 <span class="sd">    """</span>
-    <span class="c1"># Open existing requirements in binary mode</span>
-    <span class="c1"># UploadFile is also in binary mode</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s2">"rb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">existing_requirements_file</span><span class="p">:</span>
-        <span class="n">old_requirements</span> <span class="o">=</span> <span class="n">_read_requirements_file</span><span class="p">(</span><span class="n">existing_requirements_file</span><span class="p">)</span>
-    <span class="n">old_requirements</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_read_requirements_file</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">file</span><span class="p">))</span>
-    <span class="c1"># Store merged requirements</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">req_file</span><span class="p">:</span>
-        <span class="n">req_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">old_requirements</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
-
-
-<span class="k">def</span> <span class="nf">_read_requirements_file</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-    <span class="sd">"""Read requirement.txt file</span>
-
-<span class="sd">    :param f: req file object</span>
-<span class="sd">    :return: dict representing pip requirements</span>
-<span class="sd">    """</span>
-    <span class="n">requirements</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
-        <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
-        <span class="n">requirements</span><span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'='</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">requirements</span>
+    <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">'.*requirements.*\.txt$'</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span> <span class="k">else</span> <span class="kc">False</span></div>
 
 
 <div class="viewcode-block" id="DaemonFile"><a class="viewcode-back" href="../../../api/daemon.files/#daemon.files.DaemonFile">[docs]</a><span class="k">class</span> <span class="nc">DaemonFile</span><span class="p">:</span>
@@ -666,7 +643,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">'analysing </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">extension</span><span class="si">}</span><span class="s1"> files in workdir: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_workdir</span><span class="si">}</span><span class="s1">'</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_build</span> <span class="o">=</span> <span class="n">DaemonBuild</span><span class="o">.</span><span class="n">default</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build</span> <span class="o">=</span> <span class="n">DaemonDockerfile</span><span class="o">.</span><span class="n">default</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dockerfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">__dockerfiles__</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">DaemonDockerfile</span><span class="o">.</span><span class="n">default</span><span class="si">}</span><span class="s1">.Dockerfile'</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_python</span> <span class="o">=</span> <span class="n">PythonVersion</span><span class="o">.</span><span class="n">default</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_jina</span> <span class="o">=</span> <span class="s1">'master'</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_run</span> <span class="o">=</span> <span class="s1">''</span>
@@ -674,26 +654,36 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">process_file</span><span class="p">()</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">"""Property representing build value</span>
+    <span class="k">def</span> <span class="nf">dockerfile</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">"""Property representing dockerfile value</span>
 
-<span class="sd">        :return: daemon build in the daemonfile</span>
+<span class="sd">        :return: daemon dockerfile in the daemonfile</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dockerfile</span>
 
-    <span class="nd">@build</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">build</span><span class="p">:</span> <span class="n">DaemonBuild</span><span class="p">):</span>
-        <span class="sd">"""Property setter for build</span>
+    <span class="nd">@dockerfile</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">dockerfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DaemonDockerfile</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
+        <span class="sd">"""Property setter for dockerfile</span>
 
-<span class="sd">        :param build: allowed values in DaemonBuild</span>
+<span class="sd">        :param value: allowed values in DaemonDockerfile</span>
 <span class="sd">        """</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_build</span> <span class="o">=</span> <span class="n">DaemonBuild</span><span class="p">(</span><span class="n">build</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'invalid value `</span><span class="si">{</span><span class="n">build</span><span class="si">}</span><span class="s1">` passed for </span><span class="se">\'</span><span class="s1">build</span><span class="se">\'</span><span class="s1">. allowed values: </span><span class="si">{</span><span class="n">DaemonBuild</span><span class="o">.</span><span class="n">values</span><span class="si">}</span><span class="s1">. '</span>
-                <span class="sa">f</span><span class="s1">'picking default build: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="si">}</span><span class="s1">'</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dockerfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">__dockerfiles__</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">DaemonDockerfile</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s1">.Dockerfile'</span>
             <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_build</span> <span class="o">=</span> <span class="n">DaemonDockerfile</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'value passed for `dockerfile` not in default list of values: </span><span class="si">{</span><span class="n">DaemonDockerfile</span><span class="o">.</span><span class="n">values</span><span class="si">}</span><span class="s1">.'</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_workdir</span><span class="p">,</span> <span class="n">value</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dockerfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_workdir</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_build</span> <span class="o">=</span> <span class="n">DaemonDockerfile</span><span class="o">.</span><span class="n">OTHERS</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'unable to find dockerfile passed at </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">, cannot proceed with the build'</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="n">DaemonInvalidDockerfile</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">python</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -767,38 +757,33 @@
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'invalid value `</span><span class="si">{</span><span class="n">ports</span><span class="si">}</span><span class="s1">` passed for </span><span class="se">\'</span><span class="s1">ports</span><span class="se">\'</span><span class="s1">'</span><span class="p">)</span>
 
-    <span class="nd">@cached_property</span>
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">requirements</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""pip packages mentioned in requirements.txt</span>
 
 <span class="sd">        :return: space separated values</span>
 <span class="sd">        """</span>
-        <span class="c1"># TODO: merge this with _read_requirements_file()</span>
-        <span class="n">_req</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_workdir</span><span class="si">}</span><span class="s1">/requirements.txt'</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">_req</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+        <span class="n">requirements</span> <span class="o">=</span> <span class="s1">''</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_workdir</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">is_requirements_txt</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_workdir</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">requirements</span> <span class="o">+=</span> <span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">())</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">requirements</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="s1">'please add a requirements.txt file to manage python dependencies in the workspace'</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="s1">''</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">_req</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">requirements</span>
 
-    <span class="nd">@cached_property</span>
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">dockercontext</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""directory for docker context during docker build</span>
 
 <span class="sd">        :return: docker context directory"""</span>
-        <span class="k">return</span> <span class="n">__rootdir__</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">build</span> <span class="o">==</span> <span class="n">DaemonBuild</span><span class="o">.</span><span class="n">DEVEL</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workdir</span>
+        <span class="k">return</span> <span class="n">__rootdir__</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span> <span class="o">==</span> <span class="n">DaemonDockerfile</span><span class="o">.</span><span class="n">DEVEL</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workdir</span>
 
-    <span class="nd">@cached_property</span>
-    <span class="k">def</span> <span class="nf">dockerfile</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">"""location of dockerfile</span>
-
-<span class="sd">        :return: location of dockerfile in local directory</span>
-<span class="sd">        """</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">__dockerfiles__</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">build</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s1">.Dockerfile'</span>
-
-    <span class="nd">@cached_property</span>
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">dockerargs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
         <span class="sd">"""dict of args to be passed during docker build</span>
 
@@ -812,7 +797,7 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="p">{</span><span class="s1">'PIP_REQUIREMENTS'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">requirements</span><span class="p">}</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">build</span> <span class="o">==</span> <span class="n">DaemonBuild</span><span class="o">.</span><span class="n">DEVEL</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span> <span class="o">==</span> <span class="n">DaemonDockerfile</span><span class="o">.</span><span class="n">DEVEL</span>
             <span class="k">else</span> <span class="p">{</span>
                 <span class="s1">'PIP_REQUIREMENTS'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">requirements</span><span class="p">,</span>
                 <span class="s1">'PY_VERSION'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">python</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
@@ -843,14 +828,14 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
             <span class="n">config</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">chain</span><span class="p">([</span><span class="sa">f</span><span class="s1">'[</span><span class="si">{</span><span class="n">DEFAULTSECT</span><span class="si">}</span><span class="s1">]'</span><span class="p">],</span> <span class="n">fp</span><span class="p">))</span>
             <span class="n">params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">DEFAULTSECT</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">build</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'build'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dockerfile</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'dockerfile'</span><span class="p">,</span> <span class="n">DaemonDockerfile</span><span class="o">.</span><span class="n">default</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">python</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'python'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">run</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'run'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ports</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'ports'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'DaemonFile(build=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">build</span><span class="si">}</span><span class="s1">, python=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">python</span><span class="si">}</span><span class="s1">, jina=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">jinav</span><span class="si">}</span><span class="s1">, '</span>
+            <span class="sa">f</span><span class="s1">'DaemonFile(dockerfile=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dockerfile</span><span class="si">}</span><span class="s1">, python=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">python</span><span class="si">}</span><span class="s1">, jina=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">jinav</span><span class="si">}</span><span class="s1">, '</span>
             <span class="sa">f</span><span class="s1">'run=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="si">}</span><span class="s1">, context=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dockercontext</span><span class="si">}</span><span class="s1">, args=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dockerargs</span><span class="si">}</span><span class="s1">), '</span>
             <span class="sa">f</span><span class="s1">'ports=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ports</span><span class="si">}</span><span class="s1">)'</span>
         <span class="p">)</span></div>

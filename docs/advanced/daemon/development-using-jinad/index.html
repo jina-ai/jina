@@ -8,7 +8,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/advanced/daemon/development-using-jinad.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="Build: docker build -f Dockerfiles/debianx.Dockerfile --build-arg PIP_TAG=daemon -t jinaai/jina:test-daemon . Run: docker run --add-host host.docker.internal:host-gateway \ --name jinad \ -e JINA_DAEMON_BUILD=DEVEL \ -e JINA_LOG_LEVEL=DEBUG \ -v /var/run/docker.sock:/var/run/docker.sock \ -v /tmp..." />
+  <meta property="og:description" content="Build: docker build -f Dockerfiles/debianx.Dockerfile --build-arg PIP_TAG=daemon -t jinaai/jina:test-daemon . Run: docker run --add-host host.docker.internal:host-gateway \ --name jinad \ -e JINA_DAEMON_DOCKERFILE=DEVEL \ -e JINA_LOG_LEVEL=DEBUG \ -v /var/run/docker.sock:/var/run/docker.sock \ -v..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -612,7 +612,7 @@
 <h2>Run<a class="headerlink" href="#run" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker run --add-host host.docker.internal:host-gateway <span class="se">\</span>
            --name jinad <span class="se">\</span>
-           -e <span class="nv">JINA_DAEMON_BUILD</span><span class="o">=</span>DEVEL <span class="se">\</span>
+           -e <span class="nv">JINA_DAEMON_DOCKERFILE</span><span class="o">=</span>DEVEL <span class="se">\</span>
            -e <span class="nv">JINA_LOG_LEVEL</span><span class="o">=</span>DEBUG <span class="se">\</span>
            -v /var/run/docker.sock:/var/run/docker.sock <span class="se">\</span>
            -v /tmp/jinad:/tmp/jinad <span class="se">\</span>
@@ -627,7 +627,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">jinaai/jina:test-daemon</span></code> ?</p>
 <p>All images created by JinaD during local tests use image with this name (hard-coded).</p>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--env</span> <span class="pre">JINA_DAEMON_BUILD=DEVEL</span></code> ?</p>
+<li><p><code class="docutils literal notranslate"><span class="pre">--env</span> <span class="pre">JINA_DAEMON_DOCKERFILE=DEVEL</span></code> ?</p>
 <p>This makes sure default build for JinaD is <code class="docutils literal notranslate"><span class="pre">DEVEL</span></code>. This should be passed only during development, CICD etc and must not be used when using the official image.</p>
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--add-host</span></code> ?</p>

@@ -589,7 +589,7 @@
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">__task_queue__</span><span class="p">,</span> <span class="n">daemon_logger</span><span class="p">,</span> <span class="n">jinad_args</span>
 <span class="kn">from</span> <span class="nn">.dockerize</span> <span class="kn">import</span> <span class="n">Dockerizer</span>
 <span class="kn">from</span> <span class="nn">.excepts</span> <span class="kn">import</span> <span class="n">DockerImageException</span><span class="p">,</span> <span class="n">DockerNetworkException</span>
-<span class="kn">from</span> <span class="nn">.files</span> <span class="kn">import</span> <span class="n">DaemonFile</span><span class="p">,</span> <span class="n">workspace_files</span>
+<span class="kn">from</span> <span class="nn">.files</span> <span class="kn">import</span> <span class="n">DaemonFile</span><span class="p">,</span> <span class="n">store_files_in_workspace</span>
 <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">id_cleaner</span><span class="p">,</span> <span class="n">get_workspace_path</span>
 <span class="kn">from</span> <span class="nn">.models.id</span> <span class="kn">import</span> <span class="n">DaemonID</span>
 <span class="kn">from</span> <span class="nn">.models.workspaces</span> <span class="kn">import</span> <span class="n">WorkspaceArguments</span><span class="p">,</span> <span class="n">WorkspaceItem</span><span class="p">,</span> <span class="n">WorkspaceMetadata</span>
@@ -621,7 +621,6 @@
             <span class="n">_args</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">f</span><span class="o">.</span><span class="n">filename</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span> <span class="k">else</span> <span class="p">[])</span>
             <span class="n">_args</span><span class="o">.</span><span class="n">jinad</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                 <span class="p">{</span>
-                    <span class="s1">'build'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">daemon_file</span><span class="o">.</span><span class="n">build</span><span class="p">,</span>
                     <span class="s1">'dockerfile'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">daemon_file</span><span class="o">.</span><span class="n">dockerfile</span><span class="p">,</span>
                 <span class="p">}</span>
             <span class="p">)</span>
@@ -630,7 +629,6 @@
             <span class="n">_args</span> <span class="o">=</span> <span class="n">WorkspaceArguments</span><span class="p">(</span>
                 <span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">filename</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span> <span class="k">else</span> <span class="p">[],</span>
                 <span class="n">jinad</span><span class="o">=</span><span class="p">{</span>
-                    <span class="s1">'build'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">daemon_file</span><span class="o">.</span><span class="n">build</span><span class="p">,</span>
                     <span class="s1">'dockerfile'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">daemon_file</span><span class="o">.</span><span class="n">dockerfile</span><span class="p">,</span>
                 <span class="p">},</span>
                 <span class="n">requirements</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">daemon_file</span><span class="o">.</span><span class="n">requirements</span><span class="p">,</span>
@@ -731,7 +729,9 @@
                 <span class="k">if</span> <span class="n">store</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">]</span><span class="o">.</span><span class="n">arguments</span>
                 <span class="k">else</span> <span class="n">RemoteWorkspaceState</span><span class="o">.</span><span class="n">CREATING</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">workspace_files</span><span class="p">(</span><span class="n">workspace_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">)</span>
+            <span class="n">store_files_in_workspace</span><span class="p">(</span>
+                <span class="n">workspace_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_logger</span>
+            <span class="p">)</span>
             <span class="n">store</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                 <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
                 <span class="n">value</span><span class="o">=</span><span class="n">WorkspaceItem</span><span class="p">(</span>

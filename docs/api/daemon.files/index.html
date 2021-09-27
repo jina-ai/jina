@@ -602,8 +602,8 @@
                 <section id="module-daemon.files">
 <span id="daemon-files-module"></span><h1>daemon.files module<a class="headerlink" href="#module-daemon.files" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="daemon.files.workspace_files">
-<span class="sig-prename descclassname"><span class="pre">daemon.files.</span></span><span class="sig-name descname"><span class="pre">workspace_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/files/#workspace_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.files.workspace_files" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="daemon.files.store_files_in_workspace">
+<span class="sig-prename descclassname"><span class="pre">daemon.files.</span></span><span class="sig-name descname"><span class="pre">store_files_in_workspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/files/#store_files_in_workspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.files.store_files_in_workspace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Store the uploaded files in local disk</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -618,6 +618,22 @@
 </dd>
 </dl>
 </dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="daemon.files.is_requirements_txt">
+<span class="sig-prename descclassname"><span class="pre">daemon.files.</span></span><span class="sig-name descname"><span class="pre">is_requirements_txt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/files/#is_requirements_txt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.files.is_requirements_txt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if filename is of requirements.txt format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> – filename</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if filename is in requirements.txt format</p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="daemon.files.DaemonFile">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">daemon.files.</span></span><span class="sig-name descname"><span class="pre">DaemonFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workdir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/files/#DaemonFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.files.DaemonFile" title="Permalink to this definition">¶</a></dt>
@@ -628,15 +644,15 @@
 <span class="sig-name descname"><span class="pre">extension</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'.jinad'</span></em><a class="headerlink" href="#daemon.files.DaemonFile.extension" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py property">
-<dt class="sig sig-object py" id="daemon.files.DaemonFile.build">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">build</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#daemon.files.DaemonFile.build" title="Permalink to this definition">¶</a></dt>
-<dd><p>Property representing build value</p>
+<dt class="sig sig-object py" id="daemon.files.DaemonFile.dockerfile">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">dockerfile</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#daemon.files.DaemonFile.dockerfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property representing dockerfile value</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>daemon build in the daemonfile</p>
+<dd class="field-even"><p>daemon dockerfile in the daemonfile</p>
 </dd>
 </dl>
 </dd></dl>
@@ -686,25 +702,51 @@
 </dd>
 </dl>
 </dd></dl>
-<dl class="py attribute">
+<dl class="py property">
 <dt class="sig sig-object py" id="daemon.files.DaemonFile.requirements">
-<span class="sig-name descname"><span class="pre">requirements</span></span><a class="headerlink" href="#daemon.files.DaemonFile.requirements" title="Permalink to this definition">¶</a></dt>
-<dd><p>The decorator to cache property of a class.</p>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">requirements</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#daemon.files.DaemonFile.requirements" title="Permalink to this definition">¶</a></dt>
+<dd><p>pip packages mentioned in requirements.txt</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>space separated values</p>
+</dd>
+</dl>
 </dd></dl>
-<dl class="py attribute">
+<dl class="py property">
 <dt class="sig sig-object py" id="daemon.files.DaemonFile.dockercontext">
-<span class="sig-name descname"><span class="pre">dockercontext</span></span><a class="headerlink" href="#daemon.files.DaemonFile.dockercontext" title="Permalink to this definition">¶</a></dt>
-<dd><p>The decorator to cache property of a class.</p>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">dockercontext</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#daemon.files.DaemonFile.dockercontext" title="Permalink to this definition">¶</a></dt>
+<dd><p>directory for docker context during docker build</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>docker context directory</p>
+</dd>
+</dl>
 </dd></dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="daemon.files.DaemonFile.dockerfile">
-<span class="sig-name descname"><span class="pre">dockerfile</span></span><a class="headerlink" href="#daemon.files.DaemonFile.dockerfile" title="Permalink to this definition">¶</a></dt>
-<dd><p>The decorator to cache property of a class.</p>
-</dd></dl>
-<dl class="py attribute">
+<dl class="py property">
 <dt class="sig sig-object py" id="daemon.files.DaemonFile.dockerargs">
-<span class="sig-name descname"><span class="pre">dockerargs</span></span><a class="headerlink" href="#daemon.files.DaemonFile.dockerargs" title="Permalink to this definition">¶</a></dt>
-<dd><p>The decorator to cache property of a class.</p>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">dockerargs</span></span><em class="property"><span class="pre">:</span> <span class="pre">Dict</span></em><a class="headerlink" href="#daemon.files.DaemonFile.dockerargs" title="Permalink to this definition">¶</a></dt>
+<dd><p>dict of args to be passed during docker build</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For DEVEL, we expect an already built jina image to be available locally.
+We only pass the pip requirements as arguments.
+For DEFAULT (cpu), we pass the python version, jina version used to pull the
+image from docker hub in addition to the requirements.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dict of args to be passed during docker build</p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="daemon.files.DaemonFile.process_file">

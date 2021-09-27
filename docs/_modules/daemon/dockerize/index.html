@@ -588,6 +588,7 @@
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__docker_host__</span>
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">colored</span>
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">jina.peapods.runtimes.container</span> <span class="kn">import</span> <span class="n">ContainerRuntime</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">jinad_args</span><span class="p">,</span>
     <span class="n">__root_workspace__</span><span class="p">,</span>
@@ -772,7 +773,6 @@
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
             <span class="n">workspace_id</span><span class="o">=</span><span class="n">workspace_id</span><span class="p">,</span>
             <span class="n">container_id</span><span class="o">=</span><span class="n">workspace_id</span><span class="p">,</span>
-            <span class="n">command</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">ports</span><span class="o">=</span><span class="p">{</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">/tcp'</span><span class="p">:</span> <span class="n">port</span> <span class="k">for</span> <span class="n">port</span> <span class="ow">in</span> <span class="n">daemon_file</span><span class="o">.</span><span class="n">ports</span><span class="p">},</span>
             <span class="n">entrypoint</span><span class="o">=</span><span class="n">daemon_file</span><span class="o">.</span><span class="n">run</span><span class="p">,</span>
         <span class="p">)</span></div>
@@ -782,10 +782,9 @@
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">workspace_id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span>
         <span class="n">container_id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span>
-        <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">entrypoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">ports</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
         <span class="n">envs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
-        <span class="n">entrypoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="s1">'Container'</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]:</span>
         <span class="sd">"""</span>
 <span class="sd">        Runs a container using an existing image (tagged with `workspace_id`).</span>
@@ -794,7 +793,6 @@
 <span class="sd">            This uses the default entrypoint (mini-jinad) &amp; appends `command` for execution.</span>
 <span class="sd">        :param workspace_id: workspace id</span>
 <span class="sd">        :param container_id: name of the container</span>
-<span class="sd">        :param command: command to be appended to default entrypoint</span>
 <span class="sd">        :param ports: ports to be mapped with local</span>
 <span class="sd">        :param envs: dict of env vars to be set in the container</span>
 <span class="sd">        :param entrypoint: custom entrypoint</span>
@@ -825,8 +823,8 @@
                 <span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span>
                 <span class="n">ports</span><span class="o">=</span><span class="n">ports</span><span class="p">,</span>
                 <span class="n">detach</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">command</span><span class="o">=</span><span class="n">command</span><span class="p">,</span>
                 <span class="n">entrypoint</span><span class="o">=</span><span class="n">entrypoint</span><span class="p">,</span>
+                <span class="n">working_dir</span><span class="o">=</span><span class="n">__partial_workspace__</span><span class="p">,</span>
                 <span class="n">extra_hosts</span><span class="o">=</span><span class="p">{</span><span class="n">__docker_host__</span><span class="p">:</span> <span class="s1">'host-gateway'</span><span class="p">},</span>
             <span class="p">)</span>
         <span class="k">except</span> <span class="n">docker</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">NotFound</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
