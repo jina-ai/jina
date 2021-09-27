@@ -15,6 +15,9 @@ from jina.types.message import Message
 from .. import __default_host__, __docker_host__
 from ..helper import get_public_ip, get_internal_ip, get_or_reuse_loop
 
+if False:
+    import kubernetes
+
 
 class ConnectionList:
     """
@@ -179,8 +182,6 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
     :param client: K8s client
     :param logger: the logger to use
     """
-
-    import kubernetes
 
     def __init__(
         self,
