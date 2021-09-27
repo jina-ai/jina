@@ -76,7 +76,7 @@ FALLBACK_PARSERS = [
 
 
 class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
-    """Flow is how Jina streamlines and distributes Executors. """
+    """Flow is how Jina streamlines and distributes Executors."""
 
     # overload_inject_start_client_flow
     @overload
@@ -685,7 +685,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if pod_name in op_flow._pod_nodes:
             new_name = f'{pod_name}{len(op_flow._pod_nodes)}'
             self.logger.debug(
-                f'"{pod_name}" is used in this Flow already! renamed it to "{new_name}"'
+                f'"{pod_name}" is used in this Flow already!  renamed it to "{new_name}"'
             )
             pod_name = new_name
 
