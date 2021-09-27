@@ -91,7 +91,7 @@ class ConnectionPool:
     :param on_demand_connection: Flag to indicate if connections should be created on demand
     """
 
-    def __init__(self, logger: JinaLogger = None, on_demand_connection=True):
+    def __init__(self, logger: Optional[JinaLogger] = None, on_demand_connection=True):
         self._connections = {}
         self._on_demand_connection = on_demand_connection
 
