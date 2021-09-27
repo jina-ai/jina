@@ -247,7 +247,6 @@ class Dockerizer:
                 entrypoint=entrypoint,
                 working_dir=__partial_workspace__,
                 extra_hosts={__docker_host__: 'host-gateway'},
-                device_requests=ContainerRuntime._get_gpu_device_requests('all'),
             )
         except docker.errors.NotFound as e:
             cls.logger.critical(

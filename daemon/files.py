@@ -86,7 +86,7 @@ class DaemonFile:
     def dockerfile(self, value: Union[DaemonDockerfile, str]):
         """Property setter for dockerfile
 
-        :param dockerfile: allowed values in DaemonDockerfile
+        :param value: allowed values in DaemonDockerfile
         """
         try:
             self._dockerfile = os.path.join(
