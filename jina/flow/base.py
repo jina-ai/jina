@@ -1228,10 +1228,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             'flowchart LR;',
         ]
 
-        PEA_STYLE = 'fill:#009999,stroke:#1E6E73'
-        POD_STYLE = 'fill:#32C8CD,stroke:#009999'
-        GATEWAY_STYLE = 'fill:#6E7278,color:#fff'
-
         pod_nodes = []
 
         # plot subgraphs
@@ -1248,15 +1244,41 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 if node == 'gateway':
                     node_print = 'gatewayend[gateway]'
 
-                mermaid_graph.append(f'{need_print} --> {node_print};')
+                _s_role = self._pod_nodes[need].role
+                _e_role = self._pod_nodes[node].role
+                if getattr(self._pod_nodes[need].args, 'external', False):
+                    _s_role = 'external'
+                if getattr(self._pod_nodes[node].args, 'external', False):
+                    _e_role = 'external'
+                line_st = '-->'
+                if _s_role == PodRoleType.INSPECT or _e_role == PodRoleType.INSPECT:
+                    line_st = '-.->'
+                mermaid_graph.append(
+                    f'{need_print}:::{str(_s_role)} {line_st} {node_print}:::{str(_e_role)};'
+                )
 
-        mermaid_graph.append(f'\nclassDef pea {PEA_STYLE}')
+        mermaid_graph.append(f'\nclassDef pea fill:#009999,stroke:#1E6E73')
+        mermaid_graph.append(
+            f'\nclassDef {str(PodRoleType.POD)} fill:#32C8CD,stroke:#009999'
+        )
+        mermaid_graph.append(
+            f'\nclassDef {str(PodRoleType.INSPECT)} fill:#ff6666,color:#fff'
+        )
+        mermaid_graph.append(
+            f'\nclassDef {str(PodRoleType.JOIN_INSPECT)} fill:#ff6666,color:#fff'
+        )
+        mermaid_graph.append(
+            f'\nclassDef {str(PodRoleType.GATEWAY)} fill:#6E7278,color:#fff'
+        )
+        mermaid_graph.append(
+            f'\nclassDef {str(PodRoleType.GATEWAY)} fill:#6E7278,color:#fff'
+        )
+        mermaid_graph.append(
+            f'\nclassDef {str(PodRoleType.INSPECT_AUX_PASS)} fill:#fff,color:#000,stroke-dasharray: 5 5'
+        )
 
-        for node in pod_nodes:
-            if node != 'gateway':
-                mermaid_graph.append(f'\nstyle {node} {POD_STYLE}')
-        mermaid_graph.append(f'\nstyle gatewaystart {GATEWAY_STYLE}')
-        mermaid_graph.append(f'\nstyle gatewayend {GATEWAY_STYLE}')
+        mermaid_graph.append(f'\nclassDef external fill:#00ff00,color:#000')
+
         return ''.join(mermaid_graph)
 
     def plot(

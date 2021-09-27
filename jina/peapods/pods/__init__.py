@@ -679,7 +679,9 @@ class Pod(BasePod, ExitFIFO):
         .. # noqa: DAR201
         """
         mermaid_graph = []
-        if self.role != PodRoleType.GATEWAY:
+        if self.role != PodRoleType.GATEWAY and not getattr(
+            self.args, 'external', False
+        ):
             mermaid_graph = [f'subgraph {self.name};']
 
             names = [args.name for args in self._fifo_args]
