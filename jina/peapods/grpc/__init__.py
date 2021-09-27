@@ -1,11 +1,12 @@
 import argparse
 import asyncio
-from typing import Optional, Callable, Type
+from typing import Optional, Callable
 
 import grpc
 from google.protobuf import struct_pb2
 
 from jina.logging.logger import JinaLogger
+from jina.peapods.networking import create_connection_pool
 
 from jina.proto import jina_pb2_grpc, jina_pb2
 from jina.types.message import Message
@@ -27,8 +28,6 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         message_callback: Callable[['Message'], None],
         logger: Optional['JinaLogger'] = None,
     ):
-        from jina.peapods.networking import create_connection_pool
-
         self.args = args
         self._logger = logger or JinaLogger(self.__class__.__name__)
         self.callback = message_callback

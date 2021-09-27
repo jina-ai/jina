@@ -5,6 +5,7 @@ import socket
 from abc import abstractmethod
 from argparse import Namespace
 from threading import Thread
+from typing import Optional
 
 import grpc
 
@@ -49,7 +50,7 @@ class ConnectionList:
 
         return None
 
-    def get_connection(self):
+    def get_next_connection(self):
         """
         Returns a connection from the list. Strategy is round robin
         :returns: A connection from the pool
@@ -105,12 +106,12 @@ class ConnectionPool:
         :return: result of the actual send method
         """
         if target_address in self._connections:
-            pooled_connection = self._connections[target_address].get_connection()
+            pooled_connection = self._connections[target_address].get_next_connection()
             return self._send_message(msg, pooled_connection)
         elif self._on_demand_connection:
             # If the pool is disabled and an unknown connection is requested: create it
             connection_pool = self._create_connection_pool(target_address)
-            return self._send_message(msg, connection_pool.get_connection())
+            return self._send_message(msg, connection_pool.get_next_connection())
         else:
             raise ValueError(f'Unknown address {target_address}')
 
@@ -179,10 +180,12 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
     :param logger: the logger to use
     """
 
+    import kubernetes
+
     def __init__(
         self,
         namespace: str,
-        client,
+        client: kubernetes.client.CoreV1Api,
         logger: JinaLogger = None,
     ):
         super().__init__(logger=logger, on_demand_connection=False)
@@ -241,7 +244,7 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         Closes the connection pool
         """
         self.enabled = False
-        self._process_events_task.cancel('Close connection pool')
+        self._process_events_task.cancel()
         self._api_watch.stop()
         super().close()
 
