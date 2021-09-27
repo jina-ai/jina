@@ -4,8 +4,6 @@ import tempfile
 from time import time, sleep
 from typing import Dict, Optional
 
-import portforward
-
 from jina.logging.logger import JinaLogger
 from jina.logging.predefined import default_logger
 
@@ -167,7 +165,9 @@ def get_port_forward_contextmanager(
 
     :return: context manager which sets up and terminates the port-forward
     """
-    _wait_for_gateway(namespace, timeout)
+    import portforward
+
+    _wait_for_flow_ready(namespace, timeout)
     gateway_pod_name = _get_gateway_pod_name(namespace)
     if config_path is None and 'KUBECONFIG' in os.environ:
         config_path = os.environ['KUBECONFIG']
@@ -176,13 +176,16 @@ def get_port_forward_contextmanager(
     )
 
 
-def _wait_for_gateway(namespace: str, timeout: int):
+def _wait_for_flow_ready(namespace: str, timeout: int):
     start = time()
     while time() - start < timeout:
         try:
             pods = __k8s_clients.v1.list_namespaced_pod(namespace=namespace)
+            print('# pods.items', pods.items)
             statuses = [item.status.phase == 'Running' for item in pods.items]
+            print('# statuses', statuses)
             if len(statuses) > 1 and all(statuses):
+                print('# return ')
                 return
         except:
             pass
