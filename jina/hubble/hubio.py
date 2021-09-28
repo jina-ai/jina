@@ -544,6 +544,10 @@ with f:
         :param force: if set to True, access to fetch_meta will always pull latest Executor metas, otherwise, default
             to local cache
         :return: meta of executor
+
+        .. note::
+            The `name` and `tag` should be passed via ``args`` and `force` and `secret` as ``kwargs``, otherwise,
+            cache does not work.
         """
 
         with ImportExtensions(required=True):
