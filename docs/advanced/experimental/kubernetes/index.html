@@ -813,19 +813,6 @@ created.</p>
 <ul class="simple">
 <li><p>each <code class="docutils literal notranslate"><span class="pre">Executor</span></code> has to be containerized</p></li>
 <li><p>only stateless executors are supported when using replicas &gt; 1</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Kubernetes</span></code> is doing <code class="docutils literal notranslate"><span class="pre">L4</span></code> (Network Layer) loadbalancing.
-Means, each new connection is loadbalanced to one of the replicas.
-However, <code class="docutils literal notranslate"><span class="pre">Executors</span></code> are using long-living TCP connections set up by <code class="docutils literal notranslate"><span class="pre">gRPC</span></code>
-and send multiple requests over the same connection.
-Since <code class="docutils literal notranslate"><span class="pre">Kubernetes</span></code> can only loadbalance requests when new connections are established,
-all requests are sent to the same replica.
-This problem can be fixed by injecting a proxy into all <code class="docutils literal notranslate"><span class="pre">Kubernetes</span></code> pods.
-We recommend using <code class="docutils literal notranslate"><span class="pre">envoy</span></code>. It captures all in-going and out-going network traffic and
-maintains long-living TCP connections to all replicas.
-It loadbalances out-going requests to make sure the workload is evenly distributed among all replicas.
-Therefore, it allows loadbalancing on <code class="docutils literal notranslate"><span class="pre">L7</span></code> (Application Layer).
-Please inject the <code class="docutils literal notranslate"><span class="pre">envoy</span></code> proxy yourself for now.
-You can use the service mesh <code class="docutils literal notranslate"><span class="pre">Istio</span></code> to automatically inject <code class="docutils literal notranslate"><span class="pre">envoy</span></code> proxies into the <code class="docutils literal notranslate"><span class="pre">Executor</span></code> <code class="docutils literal notranslate"><span class="pre">Pods</span></code> as sidecar.</p></li>
 </ul>
 </div>
 </section>

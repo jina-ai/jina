@@ -601,6 +601,146 @@
                 </div>
                 <section id="module-jina.peapods.networking">
 <span id="jina-peapods-networking-module"></span><h1>jina.peapods.networking module<a class="headerlink" href="#module-jina.peapods.networking" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.peapods.networking.ConnectionList">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.peapods.networking.</span></span><span class="sig-name descname"><span class="pre">ConnectionList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">port</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/networking/#ConnectionList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.networking.ConnectionList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Maintains a list of connections and uses round roubin for selecting a connection</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>port</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – port to use for the connections</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.networking.ConnectionList.add_connection">
+<span class="sig-name descname"><span class="pre">add_connection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/networking/#ConnectionList.add_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.networking.ConnectionList.add_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add connection with ip to the connection list
+:type address: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param address: Target address of this connection
+:param connection: The connection to add</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.networking.ConnectionList.remove_connection">
+<span class="sig-name descname"><span class="pre">remove_connection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/networking/#ConnectionList.remove_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.networking.ConnectionList.remove_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove connection with ip from the connection list
+:type address: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param address: Remove connection for this address
+:returns: The removed connection or None if there was not any for the given ip</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.networking.ConnectionList.get_next_connection">
+<span class="sig-name descname"><span class="pre">get_next_connection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/networking/#ConnectionList.get_next_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.networking.ConnectionList.get_next_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a connection from the list. Strategy is round robin
+:returns: A connection from the pool</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.networking.ConnectionList.pop_connection">
+<span class="sig-name descname"><span class="pre">pop_connection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/networking/#ConnectionList.pop_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.networking.ConnectionList.pop_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes and returns a connection from the list. Strategy is round robin
+:returns: The connection removed from the pool</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.networking.ConnectionList.has_connection">
+<span class="sig-name descname"><span class="pre">has_connection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/networking/#ConnectionList.has_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.networking.ConnectionList.has_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if a connection for ip exists in the list
+:type address: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param address: The address to check
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:returns: True if a connection for the ip exists in the list</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.peapods.networking.ConnectionPool">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.peapods.networking.</span></span><span class="sig-name descname"><span class="pre">ConnectionPool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_demand_connection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/networking/#ConnectionPool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.networking.ConnectionPool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Manages a list of connections.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>logger</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="../jina.logging.logger/#jina.logging.logger.JinaLogger" title="jina.logging.logger.JinaLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">JinaLogger</span></code></a>]) – the logger to use</p></li>
+<li><p><strong>on_demand_connection</strong> – Flag to indicate if connections should be created on demand</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.networking.ConnectionPool.send_message">
+<span class="sig-name descname"><span class="pre">send_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_address</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/networking/#ConnectionPool.send_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.networking.ConnectionPool.send_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send msg to target_address via one of the pooled connections</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<a class="reference internal" href="../jina.types.message/#jina.types.message.Message" title="jina.types.message.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – message to send</p></li>
+<li><p><strong>target_address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – address to send to, should include the port like 1.1.1.1:53</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>result of the actual send method</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.networking.ConnectionPool.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/networking/#ConnectionPool.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.networking.ConnectionPool.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts the connection pool</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.networking.ConnectionPool.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/networking/#ConnectionPool.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.networking.ConnectionPool.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes the connection pool</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.peapods.networking.GrpcConnectionPool">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.peapods.networking.</span></span><span class="sig-name descname"><span class="pre">GrpcConnectionPool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_demand_connection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/networking/#GrpcConnectionPool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.networking.GrpcConnectionPool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.peapods.networking.ConnectionPool" title="jina.peapods.networking.ConnectionPool"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.networking.ConnectionPool</span></code></a></p>
+<p>GrpcConnectionPool which uses gRPC as the communication mechanism</p>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.peapods.networking.K8sGrpcConnectionPool">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.peapods.networking.</span></span><span class="sig-name descname"><span class="pre">K8sGrpcConnectionPool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/networking/#K8sGrpcConnectionPool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.networking.K8sGrpcConnectionPool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.peapods.networking.GrpcConnectionPool" title="jina.peapods.networking.GrpcConnectionPool"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.networking.GrpcConnectionPool</span></code></a></p>
+<p>Manages grpc connections to replicas in a K8s deployment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>namespace</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – K8s namespace to operate in</p></li>
+<li><p><strong>client</strong> (<em>kubernetes.client.CoreV1Api</em>) – K8s client</p></li>
+<li><p><strong>logger</strong> (<a class="reference internal" href="../jina.logging.logger/#jina.logging.logger.JinaLogger" title="jina.logging.logger.JinaLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">JinaLogger</span></code></a>) – the logger to use</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.networking.K8sGrpcConnectionPool.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/networking/#K8sGrpcConnectionPool.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.networking.K8sGrpcConnectionPool.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subscribe to the K8s API and watch for changes in Pods</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.networking.K8sGrpcConnectionPool.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/networking/#K8sGrpcConnectionPool.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.networking.K8sGrpcConnectionPool.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subscribes on MODIFIED events from list_namespaced_pod AK8s PI</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.networking.K8sGrpcConnectionPool.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/networking/#K8sGrpcConnectionPool.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.networking.K8sGrpcConnectionPool.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes the connection pool</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.networking.K8sGrpcConnectionPool.send_message">
+<span class="sig-name descname"><span class="pre">send_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_address</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/networking/#K8sGrpcConnectionPool.send_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.networking.K8sGrpcConnectionPool.send_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send msg to target_address via one of the pooled connections.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<a class="reference internal" href="../jina.types.message/#jina.types.message.Message" title="jina.types.message.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – message to send</p></li>
+<li><p><strong>target_address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – address to send to, should include the port like 1.1.1.1:53</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>result of the actual send method</p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.peapods.networking.is_remote_local_connection">
 <span class="sig-prename descclassname"><span class="pre">jina.peapods.networking.</span></span><span class="sig-name descname"><span class="pre">is_remote_local_connection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">first</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">second</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/networking/#is_remote_local_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.networking.is_remote_local_connection" title="Permalink to this definition">¶</a></dt>
@@ -636,6 +776,15 @@
 <dd class="field-odd"><p>host ip</p>
 </dd>
 </dl>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.peapods.networking.create_connection_pool">
+<span class="sig-prename descclassname"><span class="pre">jina.peapods.networking.</span></span><span class="sig-name descname"><span class="pre">create_connection_pool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/networking/#create_connection_pool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.networking.create_connection_pool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the appropriate connection pool based on args
+:type args: <code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>
+:param args: Arguments for this pod
+:rtype: <a class="reference internal" href="#jina.peapods.networking.ConnectionPool" title="jina.peapods.networking.ConnectionPool"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionPool</span></code></a>
+:return: A connection pool object</p>
 </dd></dl>
 </section>
 

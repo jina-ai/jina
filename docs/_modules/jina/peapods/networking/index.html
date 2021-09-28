@@ -577,11 +577,348 @@
                     </label>
                 </div>
                 <h1>Source code for jina.peapods.networking</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
+<span></span><span class="kn">import</span> <span class="nn">ast</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">ipaddress</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Thread</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
+<span class="kn">import</span> <span class="nn">grpc</span>
+
+<span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2_grpc</span>
+<span class="kn">from</span> <span class="nn">jina.types.message</span> <span class="kn">import</span> <span class="n">Message</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">__docker_host__</span>
-<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">get_public_ip</span><span class="p">,</span> <span class="n">get_internal_ip</span>
+<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">get_public_ip</span><span class="p">,</span> <span class="n">get_internal_ip</span><span class="p">,</span> <span class="n">get_or_reuse_loop</span>
+
+<span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">kubernetes</span>
+
+
+<div class="viewcode-block" id="ConnectionList"><a class="viewcode-back" href="../../../../api/jina.peapods.networking/#jina.peapods.networking.ConnectionList">[docs]</a><span class="k">class</span> <span class="nc">ConnectionList</span><span class="p">:</span>
+    <span class="sd">"""</span>
+<span class="sd">    Maintains a list of connections and uses round roubin for selecting a connection</span>
+
+<span class="sd">    :param port: port to use for the connections</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_connection_idx</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rr_counter</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="ConnectionList.add_connection"><a class="viewcode-back" href="../../../../api/jina.peapods.networking/#jina.peapods.networking.ConnectionList.add_connection">[docs]</a>    <span class="k">def</span> <span class="nf">add_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">connection</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Add connection with ip to the connection list</span>
+<span class="sd">        :param address: Target address of this connection</span>
+<span class="sd">        :param connection: The connection to add</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">address</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_connection_idx</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_connection_idx</span><span class="p">[</span><span class="n">address</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ConnectionList.remove_connection"><a class="viewcode-back" href="../../../../api/jina.peapods.networking/#jina.peapods.networking.ConnectionList.remove_connection">[docs]</a>    <span class="k">def</span> <span class="nf">remove_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Remove connection with ip from the connection list</span>
+<span class="sd">        :param address: Remove connection for this address</span>
+<span class="sd">        :returns: The removed connection or None if there was not any for the given ip</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">address</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_connection_idx</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_address_to_connection_idx</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">address</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="ConnectionList.get_next_connection"><a class="viewcode-back" href="../../../../api/jina.peapods.networking/#jina.peapods.networking.ConnectionList.get_next_connection">[docs]</a>    <span class="k">def</span> <span class="nf">get_next_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Returns a connection from the list. Strategy is round robin</span>
+<span class="sd">        :returns: A connection from the pool</span>
+<span class="sd">        """</span>
+        <span class="n">connection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_rr_counter</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rr_counter</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rr_counter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">connection</span></div>
+
+<div class="viewcode-block" id="ConnectionList.pop_connection"><a class="viewcode-back" href="../../../../api/jina.peapods.networking/#jina.peapods.networking.ConnectionList.pop_connection">[docs]</a>    <span class="k">def</span> <span class="nf">pop_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Removes and returns a connection from the list. Strategy is round robin</span>
+<span class="sd">        :returns: The connection removed from the pool</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">:</span>
+            <span class="n">connection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rr_counter</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rr_counter</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rr_counter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">)</span>
+                <span class="k">else</span> <span class="mi">0</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">connection</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="ConnectionList.has_connection"><a class="viewcode-back" href="../../../../api/jina.peapods.networking/#jina.peapods.networking.ConnectionList.has_connection">[docs]</a>    <span class="k">def</span> <span class="nf">has_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Checks if a connection for ip exists in the list</span>
+<span class="sd">        :param address: The address to check</span>
+<span class="sd">        :returns: True if a connection for the ip exists in the list</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">address</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_connection_idx</span></div></div>
+
+
+<div class="viewcode-block" id="ConnectionPool"><a class="viewcode-back" href="../../../../api/jina.peapods.networking/#jina.peapods.networking.ConnectionPool">[docs]</a><span class="k">class</span> <span class="nc">ConnectionPool</span><span class="p">:</span>
+    <span class="sd">"""</span>
+<span class="sd">    Manages a list of connections.</span>
+
+<span class="sd">    :param logger: the logger to use</span>
+<span class="sd">    :param on_demand_connection: Flag to indicate if connections should be created on demand</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">JinaLogger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">on_demand_connection</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_on_demand_connection</span> <span class="o">=</span> <span class="n">on_demand_connection</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logger</span> <span class="ow">or</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ConnectionPool.send_message"><a class="viewcode-back" href="../../../../api/jina.peapods.networking/#jina.peapods.networking.ConnectionPool.send_message">[docs]</a>    <span class="k">def</span> <span class="nf">send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="n">Message</span><span class="p">,</span> <span class="n">target_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">"""Send msg to target_address via one of the pooled connections</span>
+
+<span class="sd">        :param msg: message to send</span>
+<span class="sd">        :param target_address: address to send to, should include the port like 1.1.1.1:53</span>
+<span class="sd">        :return: result of the actual send method</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">target_address</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">:</span>
+            <span class="n">pooled_connection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">[</span><span class="n">target_address</span><span class="p">]</span><span class="o">.</span><span class="n">get_next_connection</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">pooled_connection</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_demand_connection</span><span class="p">:</span>
+            <span class="c1"># If the pool is disabled and an unknown connection is requested: create it</span>
+            <span class="n">connection_pool</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_connection_pool</span><span class="p">(</span><span class="n">target_address</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">connection_pool</span><span class="o">.</span><span class="n">get_next_connection</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Unknown address </span><span class="si">{</span><span class="n">target_address</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_create_connection_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_address</span><span class="p">):</span>
+        <span class="n">port</span> <span class="o">=</span> <span class="n">target_address</span><span class="p">[</span><span class="n">target_address</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">':'</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
+        <span class="n">connection_pool</span> <span class="o">=</span> <span class="n">ConnectionList</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
+        <span class="n">connection_pool</span><span class="o">.</span><span class="n">add_connection</span><span class="p">(</span>
+            <span class="n">target_address</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_connection</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">target_address</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">[</span><span class="n">target_address</span><span class="p">]</span> <span class="o">=</span> <span class="n">connection_pool</span>
+        <span class="k">return</span> <span class="n">connection_pool</span>
+
+<div class="viewcode-block" id="ConnectionPool.start"><a class="viewcode-back" href="../../../../api/jina.peapods.networking/#jina.peapods.networking.ConnectionPool.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Starts the connection pool</span>
+<span class="sd">        """</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="ConnectionPool.close"><a class="viewcode-back" href="../../../../api/jina.peapods.networking/#jina.peapods.networking.ConnectionPool.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Closes the connection pool</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="n">Message</span><span class="p">,</span> <span class="n">connection</span><span class="p">):</span>
+        <span class="o">...</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_create_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="GrpcConnectionPool"><a class="viewcode-back" href="../../../../api/jina.peapods.networking/#jina.peapods.networking.GrpcConnectionPool">[docs]</a><span class="k">class</span> <span class="nc">GrpcConnectionPool</span><span class="p">(</span><span class="n">ConnectionPool</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    GrpcConnectionPool which uses gRPC as the communication mechanism</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="nf">_send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="n">Message</span><span class="p">,</span> <span class="n">connection</span><span class="p">):</span>
+        <span class="c1"># this wraps the awaitable object from grpc as a coroutine so it can be used as a task</span>
+        <span class="c1"># the grpc call function is not a coroutine but some _AioCall</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">task_wrapper</span><span class="p">(</span><span class="n">new_message</span><span class="p">,</span> <span class="n">stub</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">stub</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span><span class="n">new_message</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">task_wrapper</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">connection</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_create_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'create connection to </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">insecure_channel</span><span class="p">(</span>
+            <span class="n">target</span><span class="p">,</span>
+            <span class="n">options</span><span class="o">=</span><span class="p">[</span>
+                <span class="p">(</span><span class="s1">'grpc.max_send_message_length'</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">'grpc.max_receive_message_length'</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+            <span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaDataRequestRPCStub</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="K8sGrpcConnectionPool"><a class="viewcode-back" href="../../../../api/jina.peapods.networking/#jina.peapods.networking.K8sGrpcConnectionPool">[docs]</a><span class="k">class</span> <span class="nc">K8sGrpcConnectionPool</span><span class="p">(</span><span class="n">GrpcConnectionPool</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Manages grpc connections to replicas in a K8s deployment.</span>
+
+<span class="sd">    :param namespace: K8s namespace to operate in</span>
+<span class="sd">    :param client: K8s client</span>
+<span class="sd">    :param logger: the logger to use</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">client</span><span class="p">:</span> <span class="s1">'kubernetes.client.CoreV1Api'</span><span class="p">,</span>
+        <span class="n">logger</span><span class="p">:</span> <span class="n">JinaLogger</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span> <span class="n">on_demand_connection</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_namespace</span> <span class="o">=</span> <span class="n">namespace</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_clusteraddresses</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_k8s_client</span> <span class="o">=</span> <span class="n">client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_k8s_event_queue</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_initial_state</span><span class="p">()</span>
+
+        <span class="kn">from</span> <span class="nn">kubernetes</span> <span class="kn">import</span> <span class="n">watch</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_api_watch</span> <span class="o">=</span> <span class="n">watch</span><span class="o">.</span><span class="n">Watch</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_thread</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_fetch_initial_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">namespaced_pods</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_k8s_client</span><span class="o">.</span><span class="n">list_namespaced_pod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_namespace</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">namespaced_pods</span><span class="o">.</span><span class="n">items</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_process_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+<div class="viewcode-block" id="K8sGrpcConnectionPool.start"><a class="viewcode-back" href="../../../../api/jina.peapods.networking/#jina.peapods.networking.K8sGrpcConnectionPool.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Subscribe to the K8s API and watch for changes in Pods</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span> <span class="o">=</span> <span class="n">get_or_reuse_loop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_process_events_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process_events</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_process_events</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span>
+            <span class="n">event</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_k8s_event_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_process_item</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+<div class="viewcode-block" id="K8sGrpcConnectionPool.run"><a class="viewcode-back" href="../../../../api/jina.peapods.networking/#jina.peapods.networking.K8sGrpcConnectionPool.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Subscribes on MODIFIED events from list_namespaced_pod AK8s PI</span>
+<span class="sd">        """</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_watch</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_k8s_client</span><span class="o">.</span><span class="n">list_namespaced_pod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_namespace</span>
+            <span class="p">):</span>
+                <span class="k">if</span> <span class="n">event</span><span class="p">[</span><span class="s1">'type'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'MODIFIED'</span><span class="p">:</span>
+                    <span class="n">asyncio</span><span class="o">.</span><span class="n">run_coroutine_threadsafe</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_k8s_event_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s1">'object'</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span>
+                    <span class="k">break</span></div>
+
+<div class="viewcode-block" id="K8sGrpcConnectionPool.close"><a class="viewcode-back" href="../../../../api/jina.peapods.networking/#jina.peapods.networking.K8sGrpcConnectionPool.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Closes the connection pool</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_process_events_task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_api_watch</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="K8sGrpcConnectionPool.send_message"><a class="viewcode-back" href="../../../../api/jina.peapods.networking/#jina.peapods.networking.K8sGrpcConnectionPool.send_message">[docs]</a>    <span class="k">def</span> <span class="nf">send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="n">Message</span><span class="p">,</span> <span class="n">target_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Send msg to target_address via one of the pooled connections.</span>
+
+<span class="sd">        :param msg: message to send</span>
+<span class="sd">        :param target_address: address to send to, should include the port like 1.1.1.1:53</span>
+<span class="sd">        :return: result of the actual send method</span>
+<span class="sd">        """</span>
+        <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">target_address</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">':'</span><span class="p">)</span>
+        <span class="c1"># host can be a domain instead of IP Address, resolve it to IP Address</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">socket</span><span class="o">.</span><span class="n">gethostbyname</span><span class="p">(</span><span class="n">host</span><span class="p">)</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_pod_is_up</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">pod_ip</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">phase</span> <span class="o">==</span> <span class="s1">'Running'</span>
+
+    <span class="k">def</span> <span class="nf">_process_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="n">deployment_name</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="s2">"app"</span><span class="p">]</span>
+        <span class="n">is_deleted</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">deletion_timestamp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_deleted</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_is_up</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">deployment_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_clusteraddresses</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_add_pod_connection</span><span class="p">(</span><span class="n">deployment_name</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cluster_ip</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_cluster_ip</span><span class="p">(</span><span class="n">deployment_name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">cluster_ip</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_clusteraddresses</span><span class="p">[</span>
+                        <span class="n">deployment_name</span>
+                    <span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">cluster_ip</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">[</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">cluster_ip</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">ConnectionList</span><span class="p">(</span><span class="n">port</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_add_pod_connection</span><span class="p">(</span><span class="n">deployment_name</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">'Observed state change in unknown deployment </span><span class="si">{</span><span class="n">deployment_name</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="n">is_deleted</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_is_up</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">deployment_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_clusteraddresses</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_remove_pod_connection</span><span class="p">(</span><span class="n">deployment_name</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_remove_pod_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deployment_name</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">pod_ip</span>
+        <span class="n">connection_pool</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_clusteraddresses</span><span class="p">[</span><span class="n">deployment_name</span><span class="p">]</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="n">connection_pool</span><span class="o">.</span><span class="n">has_connection</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'Removing connection to </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1"> for deployment </span><span class="si">{</span><span class="n">deployment_name</span><span class="si">}</span><span class="s1"> at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_deployment_clusteraddresses</span><span class="p">[</span><span class="n">deployment_name</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_clusteraddresses</span><span class="p">[</span><span class="n">deployment_name</span><span class="p">]</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">remove_connection</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_pod_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deployment_name</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">pod_ip</span>
+        <span class="n">connection_pool</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_clusteraddresses</span><span class="p">[</span><span class="n">deployment_name</span><span class="p">]</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">connection_pool</span><span class="o">.</span><span class="n">has_connection</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'Adding connection to </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1"> for deployment </span><span class="si">{</span><span class="n">deployment_name</span><span class="si">}</span><span class="s1"> at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_deployment_clusteraddresses</span><span class="p">[</span><span class="n">deployment_name</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span>
+            <span class="p">)</span>
+
+            <span class="n">connection_pool</span><span class="o">.</span><span class="n">add_connection</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_create_connection</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span><span class="p">),</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_extract_app</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_item</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">service_item</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">annotations</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span>
+                <span class="nb">list</span><span class="p">(</span><span class="n">service_item</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">)[</span><span class="s1">'spec'</span><span class="p">][</span><span class="s1">'selector'</span><span class="p">][</span><span class="s1">'app'</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">service_item</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">labels</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">service_item</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="s1">'app'</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_find_cluster_ip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deployment_name</span><span class="p">):</span>
+        <span class="n">service_resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_k8s_client</span><span class="o">.</span><span class="n">list_namespaced_service</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_namespace</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">service_resp</span><span class="o">.</span><span class="n">items</span><span class="p">:</span>
+            <span class="n">app</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_app</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">app</span> <span class="ow">and</span> <span class="n">deployment_name</span> <span class="o">==</span> <span class="n">app</span> <span class="ow">and</span> <span class="n">s</span><span class="o">.</span><span class="n">spec</span><span class="o">.</span><span class="n">cluster_ip</span><span class="p">:</span>
+                <span class="c1"># find the port-in for this deployment</span>
+                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">spec</span><span class="o">.</span><span class="n">ports</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'port-in'</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">spec</span><span class="o">.</span><span class="n">cluster_ip</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">port</span>
+
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="is_remote_local_connection"><a class="viewcode-back" href="../../../../api/jina.peapods.networking/#jina.peapods.networking.is_remote_local_connection">[docs]</a><span class="k">def</span> <span class="nf">is_remote_local_connection</span><span class="p">(</span><span class="n">first</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">second</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -672,6 +1009,24 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># in this case we (at local) need to know about remote the BIND address</span>
         <span class="k">return</span> <span class="n">bind_host</span></div>
+
+
+<div class="viewcode-block" id="create_connection_pool"><a class="viewcode-back" href="../../../../api/jina.peapods.networking/#jina.peapods.networking.create_connection_pool">[docs]</a><span class="k">def</span> <span class="nf">create_connection_pool</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="s1">'Namespace'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ConnectionPool</span><span class="p">:</span>
+    <span class="sd">"""</span>
+<span class="sd">    Creates the appropriate connection pool based on args</span>
+<span class="sd">    :param args: Arguments for this pod</span>
+<span class="sd">    :return: A connection pool object</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">k8s_namespace</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">k8s_connection_pool</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">jina.peapods.pods.k8slib.kubernetes_tools</span> <span class="kn">import</span> <span class="n">K8SClients</span>
+
+        <span class="n">k8s_clients</span> <span class="o">=</span> <span class="n">K8SClients</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">K8sGrpcConnectionPool</span><span class="p">(</span>
+            <span class="n">namespace</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">k8s_namespace</span><span class="p">,</span>
+            <span class="n">client</span><span class="o">=</span><span class="n">k8s_clients</span><span class="o">.</span><span class="n">v1</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">GrpcConnectionPool</span><span class="p">()</span></div>
 </pre></div>
             </article>
             <footer>
