@@ -5,7 +5,7 @@ from typing import Dict, Optional, Tuple
 from jina.hubble.helper import parse_hub_uri
 from jina.hubble.hubio import HubIO
 from jina.logging.logger import JinaLogger
-from jina.peapods.pods.k8slib import kubernetes_tools
+from jina.peapods.pods.k8slib import kubernetes_tools, configmap
 
 
 def to_dns_name(name: str) -> str:
@@ -100,6 +100,8 @@ def deploy_service(
         logger=logger,
         custom_resource_dir=custom_resource_dir,
     )
+
+    # configmap.create_or_patch(client=client, metadata=metadata, data=data)
 
     logger.info(f'🔑\tCreate necessary permissions"')
 
