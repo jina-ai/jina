@@ -19,12 +19,12 @@ class K8SClients:
     """
 
     def __init__(self):
-        self.__k8s_client = None
-        self.__v1 = None
-        self.__beta = None
-        self.__networking_v1_beta1_api = None
+        self._k8s_client = None
+        self._v1 = None
+        self._beta = None
+        self._networking_v1_beta1_api = None
 
-    def __instantiate(self):
+    def _instantiate(self):
         # this import reads the `KUBECONFIG` env var. Lazy load to postpone the reading
         from kubernetes import config, client
 
@@ -36,11 +36,11 @@ class K8SClients:
             # this works if we are running inside k8s
             config.load_incluster_config()
 
-        self.__k8s_client = client.ApiClient()
-        self.__v1 = client.CoreV1Api(api_client=self.__k8s_client)
-        self.__beta = client.ExtensionsV1beta1Api(api_client=self.__k8s_client)
-        self.__networking_v1_beta1_api = client.NetworkingV1beta1Api(
-            api_client=self.__k8s_client
+        self._k8s_client = client.ApiClient()
+        self._v1 = client.CoreV1Api(api_client=self._k8s_client)
+        self._beta = client.ExtensionsV1beta1Api(api_client=self._k8s_client)
+        self._networking_v1_beta1_api = client.NetworkingV1beta1Api(
+            api_client=self._k8s_client
         )
 
     @property
@@ -49,9 +49,9 @@ class K8SClients:
 
         :return: k8s client
         """
-        if self.__k8s_client is None:
-            self.__instantiate()
-        return self.__k8s_client
+        if self._k8s_client is None:
+            self._instantiate()
+        return self._k8s_client
 
     @property
     def v1(self):
@@ -59,9 +59,9 @@ class K8SClients:
 
         :return: v1 client
         """
-        if self.__v1 is None:
-            self.__instantiate()
-        return self.__v1
+        if self._v1 is None:
+            self._instantiate()
+        return self._v1
 
     @property
     def beta(self):
@@ -69,9 +69,9 @@ class K8SClients:
 
         :return: beta client
         """
-        if self.__beta is None:
-            self.__instantiate()
-        return self.__beta
+        if self._beta is None:
+            self._instantiate()
+        return self._beta
 
     @property
     def networking_v1_beta1_api(self):
@@ -79,12 +79,12 @@ class K8SClients:
 
         :return: networking client
         """
-        if self.__networking_v1_beta1_api is None:
-            self.__instantiate()
-        return self.__networking_v1_beta1_api
+        if self._networking_v1_beta1_api is None:
+            self._instantiate()
+        return self._networking_v1_beta1_api
 
 
-__k8s_clients = K8SClients()
+_k8s_clients = K8SClients()
 
 
 def create(
@@ -111,7 +111,7 @@ def create(
         with os.fdopen(fd, 'w') as tmp:
             tmp.write(yaml)
         try:
-            utils.create_from_yaml(__k8s_clients.k8s_client, path)
+            utils.create_from_yaml(_k8s_clients.k8s_client, path)
         except FailToCreateError as e:
             for api_exception in e.api_exceptions:
                 if api_exception.status == 409:

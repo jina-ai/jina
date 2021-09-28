@@ -6,7 +6,7 @@ import pytest
 import kubernetes
 
 from jina.peapods.pods.k8slib.kubernetes_tools import create
-from jina.peapods.pods.k8slib.kubernetes_tools import __k8s_clients
+from jina.peapods.pods.k8slib.kubernetes_tools import _k8s_clients
 
 
 def test_lazy_load_k8s_client(monkeypatch):
@@ -14,10 +14,10 @@ def test_lazy_load_k8s_client(monkeypatch):
     monkeypatch.setattr(kubernetes.config, 'load_kube_config', load_kube_config_mock)
     attributes = ['k8s_client', 'v1', 'beta', 'networking_v1_beta1_api']
     for attribute in attributes:
-        assert getattr(__k8s_clients, f'_K8SClients__{attribute}') is None
+        assert getattr(_k8s_clients, f'_{attribute}') is None
 
     for attribute in attributes:
-        assert getattr(__k8s_clients, attribute) is not None
+        assert getattr(_k8s_clients, attribute) is not None
 
 
 @pytest.mark.parametrize(

@@ -5,23 +5,23 @@ import socket
 from abc import abstractmethod
 from argparse import Namespace
 from threading import Thread
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 import grpc
 
-from jina.logging.logger import JinaLogger
-from jina.proto import jina_pb2_grpc
-from jina.types.message import Message
+from ..logging.logger import JinaLogger
+from ..proto import jina_pb2_grpc
+from ..types.message import Message
 from .. import __default_host__, __docker_host__
 from ..helper import get_public_ip, get_internal_ip, get_or_reuse_loop
 
-if False:
+if TYPE_CHECKING:
     import kubernetes
 
 
 class ConnectionList:
     """
-    Maintains a list of connections and uses round roubin for selecting a connection
+    Maintains a list of connections and uses round robin for selecting a connection
 
     :param port: port to use for the connections
     """
@@ -198,11 +198,6 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         self.enabled = False
 
         self._fetch_initial_state()
-
-        from kubernetes import watch
-
-        self._api_watch = watch.Watch()
-
         self.update_thread = Thread(target=self.run, daemon=True)
 
     def _fetch_initial_state(self):
@@ -214,7 +209,6 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         """
         Subscribe to the K8s API and watch for changes in Pods
         """
-        self._loop = get_or_reuse_loop()
         self._process_events_task = asyncio.create_task(self._process_events())
         self.update_thread.start()
 
@@ -225,20 +219,25 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
 
     def run(self):
         """
-        Subscribes on MODIFIED events from list_namespaced_pod AK8s PI
+        Subscribes on MODIFIED events from list_namespaced_pod K8s API
         """
+        from kubernetes import watch
 
         self.enabled = True
+        api_watch = watch.Watch()
+        loop = get_or_reuse_loop()
+
         while self.enabled:
-            for event in self._api_watch.stream(
+            for event in api_watch.stream(
                 self._k8s_client.list_namespaced_pod, self._namespace
             ):
                 if event['type'] == 'MODIFIED':
                     asyncio.run_coroutine_threadsafe(
-                        self._k8s_event_queue.put(event['object']), self._loop
+                        self._k8s_event_queue.put(event['object']), loop
                     )
                 if not self.enabled:
                     break
+        api_watch.stop()
 
     def close(self):
         """
@@ -246,7 +245,6 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         """
         self.enabled = False
         self._process_events_task.cancel()
-        self._api_watch.stop()
         super().close()
 
     def send_message(self, msg: Message, target_address: str):
@@ -266,7 +264,7 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         return item.status.pod_ip is not None and item.status.phase == 'Running'
 
     def _process_item(self, item):
-        deployment_name = item.metadata.labels["app"]
+        deployment_name = item.metadata.labels['app']
         is_deleted = item.metadata.deletion_timestamp is not None
 
         if not is_deleted and self._pod_is_up(item):
@@ -439,7 +437,7 @@ def create_connection_pool(args: 'Namespace') -> ConnectionPool:
     :return: A connection pool object
     """
     if args.k8s_namespace and args.k8s_connection_pool:
-        from jina.peapods.pods.k8slib.kubernetes_tools import K8SClients
+        from ..peapods.pods.k8slib.kubernetes_tools import K8SClients
 
         k8s_clients = K8SClients()
         return K8sGrpcConnectionPool(
