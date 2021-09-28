@@ -172,13 +172,19 @@ def test_fetch(mocker, monkeypatch):
     monkeypatch.setattr(requests, 'get', _mock_get)
     args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
 
-    executor = HubIO(args).fetch_meta('dummy_mwu_encoder')
+    executor = HubIO(args).fetch_meta('dummy_mwu_encoder', None)
 
     assert executor.uuid == 'dummy_mwu_encoder'
     assert executor.name == 'alias_dummy'
     assert executor.tag == 'v0'
     assert executor.image_name == 'jinahub/pod.dummy_mwu_encoder'
     assert executor.md5sum == 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f'
+
+    executor = HubIO(args).fetch_meta('dummy_mwu_encoder', '')
+    assert executor.tag == 'v0'
+
+    executor = HubIO(args).fetch_meta('dummy_mwu_encoder', 'v0.1')
+    assert executor.tag == 'v0.1'
 
 
 class DownloadMockResponse:

@@ -548,17 +548,21 @@ with f:
     @disk_cache_offline(cache_file=str(_cache_file))
     def fetch_meta(
         name: str,
-        tag: Optional[str] = None,
+        tag: str,
         secret: Optional[str] = None,
         force: bool = False,
     ) -> HubExecutor:
         """Fetch the executor meta info from Jina Hub.
         :param name: the UUID/Name of the executor
-        :param tag: the version tag of the executor
+        :param tag: the tag of the executor if available, otherwise, use `None` as the value
         :param secret: the access secret of the executor
         :param force: if set to True, access to fetch_meta will always pull latest Executor metas, otherwise, default
             to local cache
         :return: meta of executor
+
+        .. note::
+            The `name` and `tag` should be passed via ``args`` and `force` and `secret` as ``kwargs``, otherwise,
+            cache does not work.
         """
 
         with ImportExtensions(required=True):
@@ -585,7 +589,7 @@ with f:
             uuid=resp['id'],
             name=resp.get('name', None),
             sn=resp.get('sn', None),
-            tag=resp['tag'],
+            tag=tag or resp['tag'],
             visibility=resp['visibility'],
             image_name=resp['image'],
             archive_url=resp['package']['download'],
@@ -671,9 +675,8 @@ with f:
                 scheme, name, tag, secret = parse_hub_uri(self.args.uri)
 
                 st.update(f'Fetching [bold]{name}[/bold] from Jina Hub ...')
-                executor = HubIO.fetch_meta(
-                    name, tag=tag, secret=secret, force=need_pull
-                )
+                executor = HubIO.fetch_meta(name, tag, secret=secret, force=need_pull)
+
                 presented_id = getattr(executor, 'name', executor.uuid)
                 executor_name = (
                     f'{presented_id}'
