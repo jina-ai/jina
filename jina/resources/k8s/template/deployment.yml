@@ -25,6 +25,13 @@ spec:
           - containerPort: {port_in}
           - containerPort: {port_out}
           - containerPort: {port_ctrl}
+        livenessProbe:
+          exec:
+            command:
+              - python
+              - from jina.peapods.runtimes.grpc.GRPCDataRuntime import GRPCDataRuntime; GRPCDataRuntime.is_ready(ctrl_address=0.0.0.0:port_ctrl)
+          initialDelaySeconds: 1
+          periodSeconds: 5
         env:
         - name: JINA_LOG_LEVEL
           value: debug

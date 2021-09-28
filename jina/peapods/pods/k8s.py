@@ -168,15 +168,34 @@ class K8sPod(BasePod):
 
     def wait_start_success(self):
         """Not implemented. It should wait until the deployment is up and running"""
-        pass
+        deployment_args = (
+            self.deployment_args['deployments']
+            + self.deployment_args['head_deployment']
+            + self.deployment_args['tail_deployment']
+        )
+        for deployment in deployment_args:
+            # extract info to check with K8s_tools the readiness of a Pod
+            pass
 
     def close(self):
         """Not implemented. It should delete the namespace of the flow"""
-        pass
+        deployment_args = self.deployment_args['head_deployment']
+        deployment_args.extend(self.deployment_args['deployments'])
+        deployment_args.append(self.deployment_args['tail_deployment'])
+        for deployment in deployment_args:
+            # extract info to do destroy call to K8s
+            pass
 
     def join(self):
         """Not implemented. It should wait to make sure deployments are properly killed."""
-        pass
+        deployment_args = (
+            self.deployment_args['deployments']
+            + self.deployment_args['head_deployment']
+            + self.deployment_args['tail_deployment']
+        )
+        for deployment in deployment_args:
+            # extract info to make sure they are destroyed
+            pass
 
     def update_pea_args(self):
         """
