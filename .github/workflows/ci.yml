@@ -105,6 +105,7 @@ jobs:
 
   code-injection:
     runs-on: ubuntu-latest
+    if: ${{ !github.event.pull_request.head.repo.fork }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -130,14 +131,13 @@ jobs:
             echo '::set-output name=IS_CHANGED::YES'
           fi
       - name: Push changes to head ref
-        if: ${{ !github.event.pull_request.head.repo.fork }}
         uses: ad-m/github-push-action@v0.6.0
         with:
           github_token: ${{ secrets.JINA_DEV_BOT }}
           branch: ${{ github.head_ref }}
       - name: Fail this pipelint
         if: steps.styling.outputs.IS_CHANGED == 'YES'
-        run: exit(1)
+        run: exit 1
 
   docker-image-test:
     needs: [commit-lint, code-injection]
