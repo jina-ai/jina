@@ -1,0 +1,9 @@
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: {namespace}
+  name: connection-pool
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services"]
+  verbs: ["list", "watch"]

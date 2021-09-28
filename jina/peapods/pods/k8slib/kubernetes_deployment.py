@@ -100,6 +100,23 @@ def deploy_service(
         logger=logger,
         custom_resource_dir=custom_resource_dir,
     )
+
+    logger.info(f'🔑\tCreate necessary permissions"')
+
+    kubernetes_tools.create(
+        'connection-pool-role',
+        {
+            'namespace': namespace,
+        },
+    )
+
+    kubernetes_tools.create(
+        'connection-pool-role-binding',
+        {
+            'namespace': namespace,
+        },
+    )
+
     return f'{name}.{namespace}.svc'
 
 
@@ -121,7 +138,6 @@ def get_cli_params(arguments: Namespace, skip_list: Tuple[str] = ()) -> str:
         'dynamic_routing',
         'hosts_in_connect',
         'polling_type',
-        'k8s_namespace',
         'uses_after',
         'uses_before',
         'replicas',
