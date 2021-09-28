@@ -37,9 +37,13 @@ spec:
           - containerPort: {port_in}
           - containerPort: {port_out}
           - containerPort: {port_ctrl}
-        envFrom:
-          - configMapRef:
-              name: config-map
+        env:
+        - name: JINA_LOG_LEVEL
+          value: debug
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        - name: WORKER_CLASS
+          value: "uvicorn.workers.UvicornH11Worker"
         volumeMounts:
           - name: shared
             mountPath: {mount-path}

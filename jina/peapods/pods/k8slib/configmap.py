@@ -74,3 +74,30 @@ def patch(client: 'ApiClient', namespace: str, name: str, data: Dict) -> int:
         name=name, namespace=namespace, body=body
     )
     return status_code
+
+
+def create_or_patch(
+    client: 'ApiClient', namespace: str, metadata: Dict, data: Dict
+) -> int:
+    """Check if the config map exist, if so patch, otherwise create.
+
+    :param client: k8s client instance.
+    :param namespace: the namespace of the config map.
+    :param metadata: config map metadata, should follow the :class:`V1ObjectMeta` schema.
+    :param data: the environment variables represented as dict.
+    :return status_code: the status code of the http request.
+    """
+    from kubernetes.client.api import core_v1_api
+
+    api = core_v1_api.CoreV1Api(client)
+    resp = api.list_namespaced_config_map(namespace)
+    name = metadata.get('name')
+    if not name:
+        raise ValueError('Please assign a name to the metadata, got None.')
+    if name in resp.items():
+        status_code = patch(client=client, namespace=namespace, name=name, data=data)
+    else:
+        status_code = create(
+            client=client, namespace=namespace, metadata=metadata, data=data
+        )
+    return status_code
