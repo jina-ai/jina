@@ -14,6 +14,7 @@ from jina.parsers import set_pea_parser
 from jina.parsers.ping import set_ping_parser
 from jina.peapods import Pea
 from jina.peapods.runtimes.container import ContainerRuntime
+from jina.peapods.runtimes.container.helper import get_gpu_device_requests
 from tests import random_docs, validate_callback
 
 if __windows__:
@@ -387,7 +388,7 @@ def test_gpu_container(
         ['--uses', f'docker://{img_name}', '--gpus', gpus_value]
     )
 
-    device_requests = ContainerRuntime._get_gpu_device_requests(args.gpus)
+    device_requests = get_gpu_device_requests(args.gpus)
     assert device_requests[0]['Count'] == expected_count
     assert device_requests[0]['DeviceIDs'] == expected_device
     assert device_requests[0]['Driver'] == expected_driver

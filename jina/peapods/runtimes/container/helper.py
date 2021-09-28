@@ -38,3 +38,40 @@ def get_docker_network(client) -> Optional[str]:
             return None
     except Exception:
         return None
+
+
+def get_gpu_device_requests(gpu_args):
+    """Get docker device requests from gpu args
+
+    :param gpu_args: gpu args fr
+    :return: docker device requests
+    """
+    import docker
+
+    _gpus = {
+        'count': 0,
+        'capabilities': ['gpu'],
+        'device': [],
+        'driver': '',
+    }
+    for gpu_arg in gpu_args.split(','):
+        if gpu_arg == 'all':
+            _gpus['count'] = -1
+        if gpu_arg.isdigit():
+            _gpus['count'] = int(gpu_arg)
+        if '=' in gpu_arg:
+            gpu_arg_key, gpu_arg_value = gpu_arg.split('=')
+            if gpu_arg_key in _gpus.keys():
+                if isinstance(_gpus[gpu_arg_key], list):
+                    _gpus[gpu_arg_key].append(gpu_arg_value)
+                else:
+                    _gpus[gpu_arg_key] = gpu_arg_value
+    device_requests = [
+        docker.types.DeviceRequest(
+            count=_gpus['count'],
+            driver=_gpus['driver'],
+            device_ids=_gpus['device'],
+            capabilities=[_gpus['capabilities']],
+        )
+    ]
+    return device_requests

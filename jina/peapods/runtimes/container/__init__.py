@@ -10,7 +10,7 @@ from platform import uname
 from ..zmq.base import ZMQRuntime
 from ...zmq import Zmqlet
 from .... import __docker_host__
-from .helper import get_docker_network
+from .helper import get_docker_network, get_gpu_device_requests
 from ....excepts import BadImageNameError, DockerVersionError
 from ...zmq import send_ctrl_message
 from ....helper import ArgNamespace, slugify
@@ -91,38 +91,6 @@ class ContainerRuntime(ZMQRuntime):
                     f' Control address set to {self.ctrl_addr}'
                 )
         client.close()
-
-    @staticmethod
-    def _get_gpu_device_requests(gpu_args):
-        import docker
-
-        _gpus = {
-            'count': 0,
-            'capabilities': ['gpu'],
-            'device': [],
-            'driver': '',
-        }
-        for gpu_arg in gpu_args.split(','):
-            if gpu_arg == 'all':
-                _gpus['count'] = -1
-            if gpu_arg.isdigit():
-                _gpus['count'] = int(gpu_arg)
-            if '=' in gpu_arg:
-                gpu_arg_key, gpu_arg_value = gpu_arg.split('=')
-                if gpu_arg_key in _gpus.keys():
-                    if isinstance(_gpus[gpu_arg_key], list):
-                        _gpus[gpu_arg_key].append(gpu_arg_value)
-                    else:
-                        _gpus[gpu_arg_key] = gpu_arg_value
-        device_requests = [
-            docker.types.DeviceRequest(
-                count=_gpus['count'],
-                driver=_gpus['driver'],
-                device_ids=_gpus['device'],
-                capabilities=[_gpus['capabilities']],
-            )
-        ]
-        return device_requests
 
     def _docker_run(self, replay: bool = False):
         # important to notice, that client is not assigned as instance member to avoid potential
@@ -216,7 +184,7 @@ class ContainerRuntime(ZMQRuntime):
 
         device_requests = []
         if self.args.gpus:
-            device_requests = self._get_gpu_device_requests(self.args.gpus)
+            device_requests = get_gpu_device_requests(self.args.gpus)
             del self.args.gpus
 
         _expose_port = [self.args.port_ctrl]

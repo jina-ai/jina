@@ -81,7 +81,6 @@ class JinadRuntime(AsyncNewLoopRuntime):
         while not self.is_cancel.is_set():
             await asyncio.sleep(0.1)
 
-        await self.async_cancel()
         send_ctrl_message(self.ctrl_addr, 'TERMINATE', self.timeout_ctrl)
 
     async def async_run_forever(self):
@@ -95,12 +94,12 @@ class JinadRuntime(AsyncNewLoopRuntime):
         )
 
     async def async_cancel(self):
-        """Cancels the logstream task, removes the remote Pea & Workspace"""
+        """Cancels the logstream task, removes the remote Pea"""
         self.logstream.cancel()
-        await self.client.peas.delete(id=self.pea_id)
+        if await self.client.peas.delete(id=self.pea_id):
+            self.logger.success(f'Successfully terminated remote Pea {self.pea_id}')
         # Don't delete workspace here, as other Executors might use them.
         # TODO(Deepankar): probably enable an arg here?
-        # await self.client.workspaces.delete(id=self.workspace_id)
 
     async def _sleep_forever(self):
         """Sleep forever, no prince will come."""
