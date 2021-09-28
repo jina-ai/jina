@@ -539,7 +539,7 @@ with f:
     ) -> HubExecutor:
         """Fetch the executor meta info from Jina Hub.
         :param name: the UUID/Name of the executor
-        :param tag: the version tag of the executor
+        :param tag: the tag of the executor if available, otherwise, use `None` as the value
         :param secret: the access secret of the executor
         :param force: if set to True, access to fetch_meta will always pull latest Executor metas, otherwise, default
             to local cache
