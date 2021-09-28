@@ -105,18 +105,20 @@ jobs:
 
   code-injection:
     runs-on: ubuntu-latest
-    if: ${{ !github.event.pull_request.head.repo.fork }}
     steps:
       - uses: actions/checkout@v2
+        if: ${{ !github.event.pull_request.head.repo.fork }}
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Set up Python 3.7
         uses: actions/setup-python@v2
+        if: ${{ !github.event.pull_request.head.repo.fork }}
         with:
           python-version: 3.7
       - name: Styling
         id: styling
+        if: ${{ !github.event.pull_request.head.repo.fork }}
         run: |
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
@@ -132,11 +134,12 @@ jobs:
           fi
       - name: Push changes to head ref
         uses: ad-m/github-push-action@v0.6.0
+        if: ${{ !github.event.pull_request.head.repo.fork }}
         with:
           github_token: ${{ secrets.JINA_DEV_BOT }}
           branch: ${{ github.head_ref }}
       - name: Fail this pipelint
-        if: steps.styling.outputs.IS_CHANGED == 'YES'
+        if: ${{ steps.styling.outputs.IS_CHANGED == 'YES' && !github.event.pull_request.head.repo.fork }}
         run: exit 1
 
   docker-image-test:
