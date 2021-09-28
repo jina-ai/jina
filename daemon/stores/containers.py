@@ -4,7 +4,7 @@ import asyncio
 from copy import deepcopy
 from platform import uname
 from http import HTTPStatus
-from typing import Dict, TYPE_CHECKING, Union
+from typing import Dict, TYPE_CHECKING, List, Optional, Union
 
 import aiohttp
 
@@ -140,7 +140,8 @@ class ContainerStore(BaseStore):
         workspace_id: DaemonID,
         params: 'BaseModel',
         ports: Union[Dict, PortMappings],
-        envs: Dict[str, str] = {},
+        envs: Optional[Dict[str, str]] = {},
+        device_requests: Optional[List] = None,
         **kwargs,
     ) -> DaemonID:
         """Add a container to the store
@@ -150,6 +151,7 @@ class ContainerStore(BaseStore):
         :param params: pydantic model representing the args for the container
         :param ports: ports to be mapped to local
         :param envs: dict of env vars to be passed
+        :param device_requests: docker device requests
         :param kwargs: keyword args
         :raises KeyError: if workspace_id doesn't exist in the store or not ACTIVE
         :raises PartialDaemonConnectionException: if jinad cannot connect to partial
@@ -192,6 +194,7 @@ class ContainerStore(BaseStore):
                 entrypoint=entrypoint,
                 ports=dockerports,
                 envs=envs,
+                device_requests=device_requests,
             )
             if not await self.ready(uri):
                 raise PartialDaemonConnectionException(
