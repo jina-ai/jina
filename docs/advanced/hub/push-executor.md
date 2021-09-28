@@ -36,7 +36,7 @@ Anyone can use any public Executor, but to use a private Executor one must know 
 
 ## Update published Executors
 
-To override or update a published Executor, you must have both `Name` and `SECRET`.
+To override or update a published Executor, you must have both `NAME` and `SECRET`.
 
 ```bash
 jina hub push [--public/--private] --force <NAME> --secret <SECRET> <path_to_executor_folder>
