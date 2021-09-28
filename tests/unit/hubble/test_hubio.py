@@ -175,6 +175,12 @@ def test_fetch(mocker, monkeypatch):
     assert executor.image_name == 'jinahub/pod.dummy_mwu_encoder'
     assert executor.md5sum == 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f'
 
+    executor = HubIO(args).fetch_meta('dummy_mwu_encoder', '')
+    assert executor.tag == 'v0'
+
+    executor = HubIO(args).fetch_meta('dummy_mwu_encoder', 'v0.1')
+    assert executor.tag == 'v0.1'
+
 
 class DownloadMockResponse:
     def __init__(self, response_code: int = 200):
