@@ -675,9 +675,9 @@
 </tr>
 </tbody>
 </table></div>
-<p>The Create, Update, Delete are implemented by the Storage Indexers, while the Read operation is implemented in the <code class="docutils literal notranslate"><span class="pre">/search</span></code> endpoints in the Search Indexers.
-The <code class="docutils literal notranslate"><span class="pre">/search</span></code> endpoints do not correspond perfectly with the Read operation, as it <em>searches</em> for similar results, and not return a specific Document by id.
-Some Storage Indexers do implement a <code class="docutils literal notranslate"><span class="pre">/fill_embedding</span></code> endpoint, which function as a Read by id.
+<p>The Create, Update, Delete operations are implemented by the Storage Indexers, while the Read operation is implemented in the <code class="docutils literal notranslate"><span class="pre">/search</span></code> endpoints in the Search Indexers.
+The <code class="docutils literal notranslate"><span class="pre">/search</span></code> endpoints do not correspond perfectly with the Read operation, as it <em>searches</em> for similar results, and does not return a specific Document by id.
+Some Storage Indexers do implement a <code class="docutils literal notranslate"><span class="pre">/fill_embedding</span></code> endpoint, which functions as a Read by id.
 Please refer to the specific documentation or implementation of the Executor for details.</p>
 </section>
 <section id="indexing-vs-searching-operations">
