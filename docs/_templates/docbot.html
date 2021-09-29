@@ -21,7 +21,7 @@
             </svg>
         </div>
     </summary>
-    <div class="sd-summary-content sd-card-body docutils">
+    <div class="sd-summary-content docutils">
         <div class="jina-doc-answer">
             <div class="jina-doc-answer-hint" v-if="qa_pairs.length===0">
                 <p class="jina-doc-bot-help-text sd-font-weight-bold">You can ask questions about our docs. Try:</p>
@@ -32,7 +32,7 @@
                 </ul>
             </div>
             <div class="jina-doc-answer-dialog" v-else>
-                <div v-for="qa in qa_pairs" style="padding-top: 20px;">
+                <div v-for="qa in qa_pairs" class="qa-container">
                     <div v-if="qa.question" class="sd-text-right">
                         <div class="talk-bubble question-bubble">
                             <div class="talktext">
@@ -84,6 +84,7 @@
                       id="bot-input-question"
                       style="width: 100%"
                       placeholder="Type your question here"
+                      v-on:keyup.enter="submit_q"
                       :readonly="is_busy" autofocus></textarea>
             <button class="sd-sphinx-override sd-btn sd-text-wrap sd-btn-outline-primary sd-rounded-0"
                     v-on:click="submit_q" v-show="cur_question.length>0 && !is_busy" id="bot-input-btn">
@@ -94,6 +95,7 @@
                 </svg>
             </button>
         </div>
-        <p class="sd-text-uppercase sd-font-weight-bolder poweredby">Powered by Jina AI</p>
+        <div class="powered-by">
+        </div>
     </div>
 </details>
