@@ -603,11 +603,14 @@
 <p>Abstract class that defines the public interface of DocumentArray classes</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.arrays.abstract.AbstractDocumentArray.get_attributes">
-<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">get_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fields</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/abstract/#AbstractDocumentArray.get_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.abstract.AbstractDocumentArray.get_attributes" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">get_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/abstract/#AbstractDocumentArray.get_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.abstract.AbstractDocumentArray.get_attributes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return all nonempty values of the fields from all docs this array contains</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fields</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Variable length argument with the name of the fields to extract</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> – arguments</p></li>
+<li><p><strong>kwargs</strong> – keyword arguments</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>]]</p>
@@ -616,11 +619,14 @@
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.arrays.abstract.AbstractDocumentArray.get_attributes_with_docs">
-<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">get_attributes_with_docs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fields</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/abstract/#AbstractDocumentArray.get_attributes_with_docs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.abstract.AbstractDocumentArray.get_attributes_with_docs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return all nonempty values of the fields together with their nonempty docs</p>
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">get_attributes_with_docs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/abstract/#AbstractDocumentArray.get_attributes_with_docs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.abstract.AbstractDocumentArray.get_attributes_with_docs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns all nonempty values of the fields together with their nonempty docs</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fields</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Variable length argument with the name of the fields to extract</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> – arguments</p></li>
+<li><p><strong>kwargs</strong> – keyword arguments</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>]], <a class="reference internal" href="../jina.types.arrays.document/#jina.types.arrays.document.DocumentArray" title="jina.types.arrays.document.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>]</p>
@@ -629,12 +635,15 @@
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.arrays.abstract.AbstractDocumentArray.traverse">
-<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">traverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traversal_paths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/abstract/#AbstractDocumentArray.traverse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.abstract.AbstractDocumentArray.traverse" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an Iterator of :class:<code class="docutils literal notranslate"><span class="pre">TraversableSequence</span></code> of the leaves when applying the traversal_paths.
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">traverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/abstract/#AbstractDocumentArray.traverse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.abstract.AbstractDocumentArray.traverse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an Iterator of :class:<code class="docutils literal notranslate"><span class="pre">TraversableSequence</span></code> of the leaves when applying the traversal_paths.
 Each :class:<code class="docutils literal notranslate"><span class="pre">TraversableSequence</span></code> is either the root Documents, a ChunkArray or a MatchArray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>traversal_paths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – a list of string that represents the traversal path</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> – arguments</p></li>
+<li><p><strong>kwargs</strong> – keyword arguments</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]</p>
@@ -643,12 +652,14 @@ Each :class:<code class="docutils literal notranslate"><span class="pre">Travers
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.arrays.abstract.AbstractDocumentArray.traverse_flat_per_path">
-<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">traverse_flat_per_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traversal_paths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/abstract/#AbstractDocumentArray.traverse_flat_per_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.abstract.AbstractDocumentArray.traverse_flat_per_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a flattened :class:<code class="docutils literal notranslate"><span class="pre">TraversableSequence</span></code> per path in :param:<code class="docutils literal notranslate"><span class="pre">traversal_paths</span></code>
-with all Documents, that are reached by the path.</p>
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">traverse_flat_per_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/abstract/#AbstractDocumentArray.traverse_flat_per_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.abstract.AbstractDocumentArray.traverse_flat_per_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a flattened :class:<code class="docutils literal notranslate"><span class="pre">TraversableSequence</span></code> per path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>traversal_paths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – a list of string that represents the traversal path</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> – arguments</p></li>
+<li><p><strong>kwargs</strong> – keyword arguments</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]</p>
@@ -657,18 +668,15 @@ with all Documents, that are reached by the path.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.arrays.abstract.AbstractDocumentArray.traverse_flat">
-<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">traverse_flat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traversal_paths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/abstract/#AbstractDocumentArray.traverse_flat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.abstract.AbstractDocumentArray.traverse_flat" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a single flattened :class:<code class="docutils literal notranslate"><span class="pre">TraversableSequence</span></code> with all Documents, that are reached
-via the :param:<code class="docutils literal notranslate"><span class="pre">traversal_paths</span></code>.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>When defining the :param:<code class="docutils literal notranslate"><span class="pre">traversal_paths</span></code> with multiple paths, the returned
-:class:<code class="docutils literal notranslate"><span class="pre">Documents</span></code> are determined at once and not on the fly. This is a different
-behavior then in :method:<code class="docutils literal notranslate"><span class="pre">traverse</span></code> and :method:<code class="docutils literal notranslate"><span class="pre">traverse_flattened_per_path</span></code>!</p>
-</div>
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">traverse_flat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/abstract/#AbstractDocumentArray.traverse_flat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.abstract.AbstractDocumentArray.traverse_flat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a single flattened :class:<code class="docutils literal notranslate"><span class="pre">TraversableSequence</span></code> with all Documents, that are reachable by traversal
+paths.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>traversal_paths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – a list of string that represents the traversal path</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> – arguments</p></li>
+<li><p><strong>kwargs</strong> – keyword arguments</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference internal" href="../jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence" title="jina.types.arrays.traversable.TraversableSequence">TraversableSequence</a></p>
@@ -677,38 +685,14 @@ behavior then in :method:<code class="docutils literal notranslate"><span class=
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.arrays.abstract.AbstractDocumentArray.match">
-<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">darray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_scipy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/abstract/#AbstractDocumentArray.match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.abstract.AbstractDocumentArray.match" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute embedding based nearest neighbour in <cite>another</cite> for each Document in <cite>self</cite>,
-and store results in <cite>matches</cite>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>‘cosine’, ‘euclidean’, ‘sqeuclidean’ are supported natively without extra dependency.</p>
-<p>You can use other distance metric provided by <code class="docutils literal notranslate"><span class="pre">scipy</span></code>, such as ‘braycurtis’, ‘canberra’, ‘chebyshev’,
-‘cityblock’, ‘correlation’, ‘cosine’, ‘dice’, ‘euclidean’, ‘hamming’, ‘jaccard’, ‘jensenshannon’,
-‘kulsinski’, ‘mahalanobis’, ‘matching’, ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
-‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘wminkowski’, ‘yule’.</p>
-<p>To use scipy metric, please set <code class="docutils literal notranslate"><span class="pre">use_scipy=True</span></code>.</p>
-</div>
-<ul class="simple">
-<li><p>To make all matches values in [0, 1], use <code class="docutils literal notranslate"><span class="pre">dA.match(dB,</span> <span class="pre">normalization=(0,</span> <span class="pre">1))</span></code></p></li>
-<li><dl class="simple">
-<dt>To invert the distance as score and make all values in range [0, 1],</dt><dd><p>use <code class="docutils literal notranslate"><span class="pre">dA.match(dB,</span> <span class="pre">normalization=(1,</span> <span class="pre">0))</span></code>. Note, how <code class="docutils literal notranslate"><span class="pre">normalization</span></code> differs from the previous.</p>
-</dd>
-</dl>
-</li>
-</ul>
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/abstract/#AbstractDocumentArray.match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.abstract.AbstractDocumentArray.match" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes embedding-based nearest neighbour in another document array for each Document in <cite>self</cite>,
+and store results in the <cite>matches</cite> attribute of each Document.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>darray</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]) – the other DocumentArray or DocumentArrayMemmap to match against</p></li>
-<li><p><strong>metric</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]]) – the distance metric</p></li>
-<li><p><strong>limit</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – the maximum number of matches, when not given
-all Documents in <cite>another</cite> are considered as matches</p></li>
-<li><p><strong>normalization</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]]) – a tuple [a, b] to be used with min-max normalization,
-the min distance will be rescaled to <cite>a</cite>, the max distance will be rescaled to <cite>b</cite>
-all values will be rescaled into range <cite>[a, b]</cite>.</p></li>
-<li><p><strong>use_scipy</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – use Scipy as the computation backend</p></li>
-<li><p><strong>metric_name</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – if provided, then match result will be marked with this string.</p></li>
+<li><p><strong>args</strong> – arguments</p></li>
+<li><p><strong>kwargs</strong> – keyword arguments</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -718,35 +702,27 @@ all values will be rescaled into range <cite>[a, b]</cite>.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.arrays.abstract.AbstractDocumentArray.visualize">
-<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">visualize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colored_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colormap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rainbow'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pca'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/abstract/#AbstractDocumentArray.visualize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.abstract.AbstractDocumentArray.visualize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Visualize embeddings in a 2D projection with the PCA algorithm. This function requires <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> installed.</p>
-<p>If <cite>tag_name</cite> is provided the plot uses a distinct color for each unique tag value in the
-documents of the DocumentArray.</p>
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">visualize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/abstract/#AbstractDocumentArray.visualize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.abstract.AbstractDocumentArray.visualize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Visualizes embeddings in a 2D projection with the PCA algorithm. This function requires <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>
+installed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>output</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Optional path to store the visualization. If not given, show in UI</p></li>
-<li><p><strong>title</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Optional title of the plot. When not given, the default title is used.</p></li>
-<li><p><strong>colored_tag</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Optional str that specifies tag used to color the plot</p></li>
-<li><p><strong>colormap</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the colormap string supported by matplotlib.</p></li>
-<li><p><strong>method</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the visualization method, available <cite>pca</cite>, <cite>tsne</cite>. <cite>pca</cite> is fast but may not well represent
-nonlinear relationship of high-dimensional data. <cite>tsne</cite> requires scikit-learn to be installed and is
-much slower.</p></li>
-<li><p><strong>show_axis</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If set, axis and bounding box of the plot will be printed.</p></li>
+<li><p><strong>args</strong> – arguments</p></li>
+<li><p><strong>kwargs</strong> – keyword arguments</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.arrays.abstract.AbstractDocumentArray.sample">
-<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/abstract/#AbstractDocumentArray.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.abstract.AbstractDocumentArray.sample" title="Permalink to this definition">¶</a></dt>
-<dd><p>random sample k elements from <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code> without replacement.</p>
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/abstract/#AbstractDocumentArray.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.abstract.AbstractDocumentArray.sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Randomly sample k elements from  the document array without replacement.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>k</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of elements to sample from the document array.</p></li>
-<li><p><strong>seed</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – initialize the random number generator, by default is None. If set will
-save the state of the random function to produce certain outputs.</p></li>
+<li><p><strong>args</strong> – arguments</p></li>
+<li><p><strong>kwargs</strong> – keyword arguments</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -756,12 +732,14 @@ save the state of the random function to produce certain outputs.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.arrays.abstract.AbstractDocumentArray.shuffle">
-<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">shuffle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/abstract/#AbstractDocumentArray.shuffle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.abstract.AbstractDocumentArray.shuffle" title="Permalink to this definition">¶</a></dt>
-<dd><p>Randomly shuffle documents within the <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code>.</p>
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">shuffle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/abstract/#AbstractDocumentArray.shuffle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.abstract.AbstractDocumentArray.shuffle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Randomly shuffle documents within the document array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>seed</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – initialize the random number generator, by default is None. If set will
-save the state of the random function to produce certain outputs.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> – arguments</p></li>
+<li><p><strong>kwargs</strong> – keyword arguments</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference internal" href="../jina/#jina.DocumentArray" title="jina.DocumentArray">DocumentArray</a></p>
@@ -770,11 +748,14 @@ save the state of the random function to produce certain outputs.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.arrays.abstract.AbstractDocumentArray.extend">
-<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/abstract/#AbstractDocumentArray.extend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.abstract.AbstractDocumentArray.extend" title="Permalink to this definition">¶</a></dt>
-<dd><p>Extend the <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> by appending all the items from the iterable.</p>
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/abstract/#AbstractDocumentArray.extend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.abstract.AbstractDocumentArray.extend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extend the document array by appending all the items from the iterable.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>iterable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>]) – the iterable of Documents to extend this array with</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> – arguments</p></li>
+<li><p><strong>kwargs</strong> – keyword arguments</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -783,13 +764,13 @@ save the state of the random function to produce certain outputs.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.arrays.abstract.AbstractDocumentArray.append">
-<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/abstract/#AbstractDocumentArray.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.abstract.AbstractDocumentArray.append" title="Permalink to this definition">¶</a></dt>
-<dd><p>Append <a href="#id1"><span class="problematic" id="id2">:param:`doc`</span></a> in <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code>.</p>
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/abstract/#AbstractDocumentArray.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.abstract.AbstractDocumentArray.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append the Document to the document array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>doc</strong> (<a class="reference internal" href="../jina/#jina.Document" title="jina.Document"><em>Document</em></a>) – The doc needs to be appended.</p></li>
-<li><p><strong>kwargs</strong> – keyword args</p></li>
+<li><p><strong>args</strong> – arguments</p></li>
+<li><p><strong>kwargs</strong> – keyword arguments</p></li>
 </ul>
 </dd>
 </dl>

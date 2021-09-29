@@ -656,7 +656,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “1fcf9ee1-e797-4b45-b159-435908a518bf”</p>
+<p>Default: “24a56a51-83d3-47bb-b37d-596a64f09d1c”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -727,7 +727,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “2ef5a4ed-3360-4449-8698-84380f4cad38”</p>
+<p>Default: “3fe21000-209d-4585-b1a3-5d56e4c87c42”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -760,7 +760,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “b3a113c8-a945-4384-bbed-4c690fa3cc72”</p>
+<p>Default: “4df8fed9-e7fc-421a-bab1-09b41af41a0b”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -855,7 +855,7 @@
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 43063</p>
+<p>Default: 35847</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -917,11 +917,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 49527</p>
+<p>Default: 42117</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 46759</p>
+<p>Default: 32885</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1259,7 +1259,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 50431</p>
+<p>Default: 39349</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1321,11 +1321,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 42823</p>
+<p>Default: 35041</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 51491</p>
+<p>Default: 36937</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1463,7 +1463,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port that the gateway exposes for clients for GRPC connections.</p>
-<p>Default: 53837</p>
+<p>Default: 47013</p>
 </dd>
 </dl>
 </section>
@@ -1521,30 +1521,30 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
              <span class="p">[</span><span class="o">--</span><span class="n">keywords</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">url</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">dockerfile</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="New arguments">
-<h6>New arguments<a class="headerlink" href="#New arguments" title="Permalink to this headline">¶</a></h6>
+<section id="Create Executor arguments">
+<h6>Create Executor arguments<a class="headerlink" href="#Create Executor arguments" title="Permalink to this headline">¶</a></h6>
 <dl class="option-list">
 <dt><kbd>--name</kbd></dt>
-<dd><p>Setup name of the executor</p>
+<dd><p>the name of the Executor</p>
 </dd>
 <dt><kbd>--path</kbd></dt>
-<dd><p>Path to store an executor</p>
+<dd><p>the path to store the Executor</p>
 </dd>
 <dt><kbd>--advance-configuration</kbd></dt>
 <dd><p>If set, always set up advance configuration like description, keywords and url</p>
 <p>Default: False</p>
 </dd>
 <dt><kbd>--description</kbd></dt>
-<dd><p>Give a short description of your executor</p>
+<dd><p>the short description of the Executor</p>
 </dd>
 <dt><kbd>--keywords</kbd></dt>
-<dd><p>Give some keywords to help people search your executor(separated by space)</p>
+<dd><p>some keywords to help people search your Executor (separated by space)</p>
 </dd>
 <dt><kbd>--url</kbd></dt>
-<dd><p>URL of your GitHub repo</p>
+<dd><p>the URL of your GitHub repo</p>
 </dd>
 <dt><kbd>--add-dockerfile</kbd></dt>
-<dd><p>If set, always creates your own docker file</p>
+<dd><p>If set, add a Dockerfile to the created Executor bundle</p>
 <p>Default: False</p>
 </dd>
 </dl>
@@ -1719,7 +1719,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 40781</p>
+<p>Default: 56833</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1781,11 +1781,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 42173</p>
+<p>Default: 43039</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 32849</p>
+<p>Default: 48735</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -2027,7 +2027,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 52151</p>
+<p>Default: 56981</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -2089,11 +2089,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 34715</p>
+<p>Default: 39885</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 54827</p>
+<p>Default: 37051</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -2328,7 +2328,7 @@ peas are running on host provided by the argument <code class="docutils literal 
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port of the Gateway, which the client should connect to.</p>
-<p>Default: 58685</p>
+<p>Default: 39041</p>
 </dd>
 <dt><kbd>--https</kbd></dt>
 <dd><p>If set, connect to gateway using https</p>
@@ -2488,7 +2488,7 @@ peas are running on host provided by the argument <code class="docutils literal 
 <li><a class="reference internal" href="#subcommands_repeat2">subcommands</a></li>
 <li><a class="reference internal" href="#Sub-commands:_repeat2">Sub-commands:</a><ul>
 <li><a class="reference internal" href="#new">new</a><ul>
-<li><a class="reference internal" href="#New arguments">New arguments</a></li>
+<li><a class="reference internal" href="#Create Executor arguments">Create Executor arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#push">push</a><ul>

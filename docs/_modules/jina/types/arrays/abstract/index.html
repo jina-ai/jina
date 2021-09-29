@@ -572,16 +572,12 @@
                     </label>
                 </div>
                 <h1>Source code for jina.types.arrays.abstract</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">inf</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterator</span>
+<span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Iterator</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">.document</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
-    <span class="kn">from</span> <span class="nn">.memmap</span> <span class="kn">import</span> <span class="n">DocumentArrayMemmap</span>
     <span class="kn">from</span> <span class="nn">.traversable</span> <span class="kn">import</span> <span class="n">TraversableSequence</span>
     <span class="kn">from</span> <span class="nn">..document</span> <span class="kn">import</span> <span class="n">Document</span>
 
@@ -590,152 +586,103 @@
     <span class="sd">""" Abstract class that defines the public interface of DocumentArray classes """</span>
 
 <div class="viewcode-block" id="AbstractDocumentArray.get_attributes"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.get_attributes">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">get_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">fields</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">]]:</span>
-        <span class="sd">"""Return all nonempty values of the fields from all docs this array contains</span>
+    <span class="k">def</span> <span class="nf">get_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">]]:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Return all nonempty values of the fields from all docs this array contains</span>
 
-<span class="sd">        :param fields: Variable length argument with the name of the fields to extract</span>
+<span class="sd">        :param args: arguments</span>
+<span class="sd">        :param kwargs: keyword arguments</span>
 <span class="sd">        """</span>
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="AbstractDocumentArray.get_attributes_with_docs"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.get_attributes_with_docs">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_attributes_with_docs</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="o">*</span><span class="n">fields</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">]],</span> <span class="s1">'DocumentArray'</span><span class="p">]:</span>
-        <span class="sd">"""Return all nonempty values of the fields together with their nonempty docs</span>
+        <span class="sd">"""</span>
+<span class="sd">        Returns all nonempty values of the fields together with their nonempty docs</span>
 
-<span class="sd">        :param fields: Variable length argument with the name of the fields to extract</span>
+<span class="sd">        :param args: arguments</span>
+<span class="sd">        :param kwargs: keyword arguments</span>
 <span class="sd">        """</span>
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="AbstractDocumentArray.traverse"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.traverse">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">traverse</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">traversal_paths</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="s1">'TraversableSequence'</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="s1">'TraversableSequence'</span><span class="p">]:</span>
         <span class="sd">"""</span>
-<span class="sd">        Return an Iterator of :class:``TraversableSequence`` of the leaves when applying the traversal_paths.</span>
+<span class="sd">        Returns an Iterator of :class:``TraversableSequence`` of the leaves when applying the traversal_paths.</span>
 <span class="sd">        Each :class:``TraversableSequence`` is either the root Documents, a ChunkArray or a MatchArray.</span>
 
-<span class="sd">        :param traversal_paths: a list of string that represents the traversal path</span>
+<span class="sd">        :param args: arguments</span>
+<span class="sd">        :param kwargs: keyword arguments</span>
 <span class="sd">        """</span>
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="AbstractDocumentArray.traverse_flat_per_path"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.traverse_flat_per_path">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">traverse_flat_per_path</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">traversal_paths</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="s1">'TraversableSequence'</span><span class="p">]:</span>
         <span class="sd">"""</span>
-<span class="sd">        Returns a flattened :class:``TraversableSequence`` per path in :param:``traversal_paths``</span>
-<span class="sd">        with all Documents, that are reached by the path.</span>
+<span class="sd">        Returns a flattened :class:``TraversableSequence`` per path.</span>
 
-<span class="sd">        :param traversal_paths: a list of string that represents the traversal path</span>
+<span class="sd">        :param args: arguments</span>
+<span class="sd">        :param kwargs: keyword arguments</span>
 <span class="sd">        """</span>
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="AbstractDocumentArray.traverse_flat"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.traverse_flat">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">traverse_flat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversal_paths</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">'TraversableSequence'</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">traverse_flat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'TraversableSequence'</span><span class="p">:</span>
         <span class="sd">"""</span>
-<span class="sd">        Returns a single flattened :class:``TraversableSequence`` with all Documents, that are reached</span>
-<span class="sd">        via the :param:``traversal_paths``.</span>
+<span class="sd">        Returns a single flattened :class:``TraversableSequence`` with all Documents, that are reachable by traversal</span>
+<span class="sd">        paths.</span>
 
-<span class="sd">        .. warning::</span>
-<span class="sd">            When defining the :param:``traversal_paths`` with multiple paths, the returned</span>
-<span class="sd">            :class:``Documents`` are determined at once and not on the fly. This is a different</span>
-<span class="sd">            behavior then in :method:``traverse`` and :method:``traverse_flattened_per_path``!</span>
-
-<span class="sd">        :param traversal_paths: a list of string that represents the traversal path</span>
+<span class="sd">        :param args: arguments</span>
+<span class="sd">        :param kwargs: keyword arguments</span>
 <span class="sd">        """</span>
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="AbstractDocumentArray.match"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.match">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">darray</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'DocumentArray'</span><span class="p">,</span> <span class="s1">'DocumentArrayMemmap'</span><span class="p">],</span>
-        <span class="n">metric</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
-            <span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="s1">'np.ndarray'</span><span class="p">,</span> <span class="s1">'np.ndarray'</span><span class="p">],</span> <span class="s1">'np.ndarray'</span><span class="p">]</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="s1">'cosine'</span><span class="p">,</span>
-        <span class="n">limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">inf</span><span class="p">,</span>
-        <span class="n">normalization</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">use_scipy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">metric_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">"""Compute embedding based nearest neighbour in `another` for each Document in `self`,</span>
-<span class="sd">        and store results in `matches`.</span>
+    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Computes embedding-based nearest neighbour in another document array for each Document in `self`,</span>
+<span class="sd">        and store results in the `matches` attribute of each Document.</span>
 
-<span class="sd">        .. note::</span>
-<span class="sd">            'cosine', 'euclidean', 'sqeuclidean' are supported natively without extra dependency.</span>
-
-<span class="sd">            You can use other distance metric provided by ``scipy``, such as ‘braycurtis’, ‘canberra’, ‘chebyshev’,</span>
-<span class="sd">            ‘cityblock’, ‘correlation’, ‘cosine’, ‘dice’, ‘euclidean’, ‘hamming’, ‘jaccard’, ‘jensenshannon’,</span>
-<span class="sd">            ‘kulsinski’, ‘mahalanobis’, ‘matching’, ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,</span>
-<span class="sd">            ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘wminkowski’, ‘yule’.</span>
-
-<span class="sd">            To use scipy metric, please set ``use_scipy=True``.</span>
-
-<span class="sd">        - To make all matches values in [0, 1], use ``dA.match(dB, normalization=(0, 1))``</span>
-<span class="sd">        - To invert the distance as score and make all values in range [0, 1],</span>
-<span class="sd">            use ``dA.match(dB, normalization=(1, 0))``. Note, how ``normalization`` differs from the previous.</span>
-
-<span class="sd">        :param darray: the other DocumentArray or DocumentArrayMemmap to match against</span>
-<span class="sd">        :param metric: the distance metric</span>
-<span class="sd">        :param limit: the maximum number of matches, when not given</span>
-<span class="sd">                      all Documents in `another` are considered as matches</span>
-<span class="sd">        :param normalization: a tuple [a, b] to be used with min-max normalization,</span>
-<span class="sd">                                the min distance will be rescaled to `a`, the max distance will be rescaled to `b`</span>
-<span class="sd">                                all values will be rescaled into range `[a, b]`.</span>
-<span class="sd">        :param use_scipy: use Scipy as the computation backend</span>
-<span class="sd">        :param metric_name: if provided, then match result will be marked with this string.</span>
+<span class="sd">        :param args: arguments</span>
+<span class="sd">        :param kwargs: keyword arguments</span>
 <span class="sd">        """</span>
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="AbstractDocumentArray.visualize"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.visualize">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">visualize</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">colored_tag</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">colormap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'rainbow'</span><span class="p">,</span>
-        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'pca'</span><span class="p">,</span>
-        <span class="n">show_axis</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="sd">"""Visualize embeddings in a 2D projection with the PCA algorithm. This function requires ``matplotlib`` installed.</span>
+    <span class="k">def</span> <span class="nf">visualize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""Visualizes embeddings in a 2D projection with the PCA algorithm. This function requires ``matplotlib``</span>
+<span class="sd">        installed.</span>
 
-<span class="sd">        If `tag_name` is provided the plot uses a distinct color for each unique tag value in the</span>
-<span class="sd">        documents of the DocumentArray.</span>
-
-<span class="sd">        :param output: Optional path to store the visualization. If not given, show in UI</span>
-<span class="sd">        :param title: Optional title of the plot. When not given, the default title is used.</span>
-<span class="sd">        :param colored_tag: Optional str that specifies tag used to color the plot</span>
-<span class="sd">        :param colormap: the colormap string supported by matplotlib.</span>
-<span class="sd">        :param method: the visualization method, available `pca`, `tsne`. `pca` is fast but may not well represent</span>
-<span class="sd">                nonlinear relationship of high-dimensional data. `tsne` requires scikit-learn to be installed and is</span>
-<span class="sd">                much slower.</span>
-<span class="sd">        :param show_axis: If set, axis and bounding box of the plot will be printed.</span>
-
+<span class="sd">        :param args: arguments</span>
+<span class="sd">        :param kwargs: keyword arguments</span>
 <span class="sd">        """</span>
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="AbstractDocumentArray.sample"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.sample">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'DocumentArray'</span><span class="p">:</span>
-        <span class="sd">"""random sample k elements from :class:`DocumentArray` without replacement.</span>
+    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'DocumentArray'</span><span class="p">:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Randomly sample k elements from  the document array without replacement.</span>
 
-<span class="sd">        :param k: Number of elements to sample from the document array.</span>
-<span class="sd">        :param seed: initialize the random number generator, by default is None. If set will</span>
-<span class="sd">            save the state of the random function to produce certain outputs.</span>
+<span class="sd">        :param args: arguments</span>
+<span class="sd">        :param kwargs: keyword arguments</span>
 <span class="sd">        """</span>
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="AbstractDocumentArray.shuffle"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.shuffle">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'DocumentArray'</span><span class="p">:</span>
-        <span class="sd">"""Randomly shuffle documents within the :class:`DocumentArray`.</span>
+    <span class="k">def</span> <span class="nf">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'DocumentArray'</span><span class="p">:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Randomly shuffle documents within the document array.</span>
 
-<span class="sd">        :param seed: initialize the random number generator, by default is None. If set will</span>
-<span class="sd">            save the state of the random function to produce certain outputs.</span>
+<span class="sd">        :param args: arguments</span>
+<span class="sd">        :param kwargs: keyword arguments</span>
 <span class="sd">        """</span>
         <span class="o">...</span></div>
 
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="o">...</span>
 
     <span class="nd">@abstractmethod</span>
@@ -747,7 +694,7 @@
         <span class="o">...</span>
 
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="o">...</span>
 
     <span class="nd">@abstractmethod</span>
@@ -763,20 +710,22 @@
         <span class="o">...</span>
 
 <div class="viewcode-block" id="AbstractDocumentArray.extend"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.extend">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">"""Extend the :class:`DocumentArrayMemmap` by appending all the items from the iterable.</span>
+    <span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Extend the document array by appending all the items from the iterable.</span>
 
-<span class="sd">        :param iterable: the iterable of Documents to extend this array with</span>
+<span class="sd">        :param args: arguments</span>
+<span class="sd">        :param kwargs: keyword arguments</span>
 <span class="sd">        """</span>
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="AbstractDocumentArray.append"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.append">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""</span>
-<span class="sd">        Append :param:`doc` in :class:`DocumentArrayMemmap`.</span>
+<span class="sd">        Append the Document to the document array.</span>
 
-<span class="sd">        :param doc: The doc needs to be appended.</span>
-<span class="sd">        :param kwargs: keyword args</span>
+<span class="sd">        :param args: arguments</span>
+<span class="sd">        :param kwargs: keyword arguments</span>
 <span class="sd">        """</span>
         <span class="o">...</span></div></div>
 </pre></div>

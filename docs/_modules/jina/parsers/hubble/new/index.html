@@ -574,8 +574,6 @@
                 <h1>Source code for jina.parsers.hubble.new</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Argparser module for hub new"""</span>
 
-<span class="kn">import</span> <span class="nn">argparse</span>
-
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">add_arg_group</span>
 
 
@@ -583,19 +581,17 @@
     <span class="sd">"""Add the arguments for hub new to the parser</span>
 <span class="sd">    :param parser: the parser configure</span>
 <span class="sd">    """</span>
-    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'New'</span><span class="p">)</span>
+    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Create Executor'</span><span class="p">)</span>
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--name'</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'Setup name of the executor'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'the name of the Executor'</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--path'</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'Path to store an executor'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'the path to store the Executor'</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -606,28 +602,25 @@
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--description'</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'Give a short description of your executor'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'the short description of the Executor'</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--keywords'</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'Give some keywords to help people search your executor(separated by space)'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'some keywords to help people search your Executor (separated by space)'</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--url'</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'URL of your GitHub repo'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'the URL of your GitHub repo'</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--add-dockerfile'</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'If set, always creates your own docker file'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'If set, add a Dockerfile to the created Executor bundle'</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
     <span class="p">)</span></div>
 </pre></div>
