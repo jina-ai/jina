@@ -278,7 +278,7 @@ class K8sPod(BasePod):
 
         .. # noqa: DAR201
         """
-        mermaid_graph = []
+        mermaid_graph = []  # test
         if self.name != 'gateway':
             mermaid_graph = [f'subgraph {self.name};\n', f'direction LR;\n']
 
