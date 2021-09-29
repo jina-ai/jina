@@ -58,8 +58,8 @@ def png_to_buffer(
     Convert png to buffer bytes.
 
     :param arr: Data representations of the png.
-    :param width: the width of the blob, default None, interpret from :attr:`blob`.
-    :param height: the height of the blob, default None, interpret from :attr:`blob`.
+    :param width: the width of the blob, if None, interpret from :attr:`blob` shape.
+    :param height: the height of the blob, if None, interpret from :attr:`blob`.
     :param resize_method: Resize methods (e.g. `NEAREST`, `BILINEAR`, `BICUBIC`, and `LANCZOS`).
     :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
     :return: Png in buffer bytes.

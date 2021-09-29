@@ -1014,8 +1014,8 @@ class Document(ProtoTypeMixin, VersionedMixin):
         color_axis: int = -1,
     ):
         """Assuming :attr:`blob` is a _valid_ image, set :attr:`uri` accordingly
-        :param width: the width of the blob, default None, interpret from :attr:`blob`.
-        :param height: the height of the blob, default None, interpret from :attr:`blob`.
+        :param width: the width of the blob, if None, interpret from :attr:`blob` shape.
+        :param height: the height of the blob, if None, interpret from :attr:`blob` shape.
         :param resize_method: the resize method name
         :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
 
