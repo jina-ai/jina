@@ -1,7 +1,5 @@
 """Argparser module for hub new"""
 
-import argparse
-
 from ..helper import add_arg_group
 
 
@@ -9,19 +7,17 @@ def mixin_hub_new_parser(parser):
     """Add the arguments for hub new to the parser
     :param parser: the parser configure
     """
-    gp = add_arg_group(parser, title='New')
+    gp = add_arg_group(parser, title='Create Executor')
     gp.add_argument(
         '--name',
-        help='Setup name of the executor',
+        help='the name of the Executor',
         type=str,
-        default=None,
     )
 
     gp.add_argument(
         '--path',
-        help='Path to store an executor',
+        help='the path to store the Executor',
         type=str,
-        default=None,
     )
 
     gp.add_argument(
@@ -32,27 +28,24 @@ def mixin_hub_new_parser(parser):
 
     gp.add_argument(
         '--description',
-        help='Give a short description of your executor',
+        help='the short description of the Executor',
         type=str,
-        default=None,
     )
 
     gp.add_argument(
         '--keywords',
-        help='Give some keywords to help people search your executor(separated by space)',
+        help='some keywords to help people search your Executor (separated by space)',
         type=str,
-        default=None,
     )
 
     gp.add_argument(
         '--url',
-        help='URL of your GitHub repo',
+        help='the URL of your GitHub repo',
         type=str,
-        default=None,
     )
 
     gp.add_argument(
         '--add-dockerfile',
-        help='If set, always creates your own docker file',
+        help='If set, add a Dockerfile to the created Executor bundle',
         action='store_true',
     )
