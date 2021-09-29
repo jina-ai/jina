@@ -265,10 +265,28 @@ class CompoundPod(BasePod, ExitStack):
             raise
 
     @property
-    def is_singleton(self) -> bool:
-        """Return if the Pod contains only a single Pea
+    def _mermaid_str(self) -> List[str]:
+        """String that will be used to represent the Pod graphically when `Flow.plot()` is invoked
 
 
         .. # noqa: DAR201
         """
-        return False
+        mermaid_graph = [f'subgraph {self.name};\n', f'direction LR;\n']
+        head_name = self.head_args.name
+        tail_name = self.tail_args.name
+        pod_names = []
+        for replica in self.replicas:
+            pod_names.append(replica.name)
+            replica_mermaid_graph = replica._mermaid_str
+            replica_mermaid_graph = [
+                node.replace(';', '\n') for node in replica_mermaid_graph
+            ]
+            mermaid_graph.extend(replica_mermaid_graph)
+            mermaid_graph.append('\n')
+
+        for name in pod_names:
+            mermaid_graph.append(f'{head_name}:::HEADTAIL --> {name};')
+            mermaid_graph.append(f'{name} --> {tail_name}:::HEADTAIL;')
+        mermaid_graph.append('end;')
+
+        return mermaid_graph
