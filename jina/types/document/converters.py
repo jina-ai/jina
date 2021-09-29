@@ -58,8 +58,8 @@ def png_to_buffer(
     Convert png to buffer bytes.
 
     :param arr: Data representations of the png.
-    :param width: the width of the blob, if None, interpret from :attr:`blob` shape.
-    :param height: the height of the blob, if None, interpret from :attr:`blob`.
+    :param width: the width of the :attr:`arr`, if None, interpret from :attr:`arr` shape.
+    :param height: the height of the :attr:`arr`, if None, interpret from :attr:`arr` shape.
     :param resize_method: Resize methods (e.g. `NEAREST`, `BILINEAR`, `BICUBIC`, and `LANCZOS`).
     :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
     :return: Png in buffer bytes.
@@ -77,9 +77,6 @@ def png_to_buffer(
         png_bytes = _png_to_buffer_1d(arr, width, height)
     elif arr.ndim == 2:
         from PIL import Image
-
-        print("============")
-        print(resize_method)
 
         if not is_height_width_set:
             height, width = arr.shape
