@@ -35,13 +35,17 @@ class CompoundPod(BasePod, ExitStack):
         self.needs = (
             needs or set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
-        self.replicas = []  # type: List['Pod']
         # we will see how to have `CompoundPods` in remote later when we add tests for it
         self.is_head_router = True
         self.is_tail_router = True
         self.head_args = BasePod._copy_to_head_args(args, PollingType.ANY)
         self.tail_args = BasePod._copy_to_tail_args(args, PollingType.ANY)
-        cargs = copy.copy(args)
+        self.assign_replicas()
+
+    def assign_replicas(self):
+        """Assign replicas to the CompoundPod"""
+        cargs = copy.copy(self.args)
+        self.replicas = []  # type: List['Pod']
         self.replicas_args = self._set_replica_args(
             cargs, self.head_args, self.tail_args
         )

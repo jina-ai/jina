@@ -151,9 +151,7 @@ class PartialFlowStore(PartialStore):
                                                 ),
                                             )
                             # Update replica_args according to updated head & tail args
-                            pod.replicas_args = CompoundPod._set_replica_args(
-                                pod.args, pod.head_args, pod.tail_args
-                            )
+                            pod.assign_replicas()
                 else:
                     # avoid setting runs_in_docker for Pods with parallel > 1 and using `ZEDRuntime`
                     # else, replica-peas would try connecting to head/tail-pea via __docker_host__
