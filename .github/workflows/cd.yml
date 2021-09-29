@@ -215,7 +215,6 @@ jobs:
           fail_ci_if_error: false
 
   docker-image-test:
-    needs: [commit-lint, code-injection]
     runs-on: ubuntu-latest
     services:
       registry:
@@ -255,7 +254,6 @@ jobs:
 
   hub-test:
     runs-on: ubuntu-latest
-    needs: [commit-lint, lint-flake-8, code-injection]
     if: ${{ !github.event.pull_request.head.repo.fork }}
     steps:
       #      - name: Cancel Previous Runs
