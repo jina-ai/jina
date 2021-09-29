@@ -123,13 +123,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement">
-    <aside class="announcement-content">
-         
-    <a href="https://jina-ai.zoom.us/webinar/register/WN_US7_9uQMRXiYaKBXJw4vYA">📢 28 Sep 2021: We're revealing big news at our <strong>exclusive community webinar</strong>. Join us on Zoom! 🔍</a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header">
@@ -367,6 +361,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../api/jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../api/jina.parsers.hubble/">jina.parsers.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.parsers.hubble.new/">jina.parsers.hubble.new module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.parsers.hubble.pull/">jina.parsers.hubble.pull module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.parsers.hubble.push/">jina.parsers.hubble.push module</a></li>
 </ul>
@@ -660,7 +655,6 @@
         <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
 
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_cancel</span><span class="p">()</span>
         <span class="n">send_ctrl_message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctrl_addr</span><span class="p">,</span> <span class="s1">'TERMINATE'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout_ctrl</span><span class="p">)</span>
 
 <div class="viewcode-block" id="JinadRuntime.async_run_forever"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.async_run_forever">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -674,12 +668,12 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="JinadRuntime.async_cancel"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.async_cancel">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Cancels the logstream task, removes the remote Pea &amp; Workspace"""</span>
+        <span class="sd">"""Cancels the logstream task, removes the remote Pea"""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logstream</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">peas</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pea_id</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">peas</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pea_id</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Successfully terminated remote Pea </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pea_id</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span></div>
         <span class="c1"># Don't delete workspace here, as other Executors might use them.</span>
         <span class="c1"># TODO(Deepankar): probably enable an arg here?</span>
-        <span class="c1"># await self.client.workspaces.delete(id=self.workspace_id)</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_sleep_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Sleep forever, no prince will come."""</span>
@@ -825,7 +819,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Sep 28, 2021.
+                    Last updated on Sep 29, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" target="_blank"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" target="_blank"> <i class="fab fa-slack"></i></a>

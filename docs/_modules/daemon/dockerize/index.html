@@ -123,13 +123,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement">
-    <aside class="announcement-content">
-         
-    <a href="https://jina-ai.zoom.us/webinar/register/WN_US7_9uQMRXiYaKBXJw4vYA">📢 28 Sep 2021: We're revealing big news at our <strong>exclusive community webinar</strong>. Join us on Zoom! 🔍</a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header">
@@ -367,6 +361,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.parsers.hubble/">jina.parsers.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.parsers.hubble.new/">jina.parsers.hubble.new module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.parsers.hubble.pull/">jina.parsers.hubble.pull module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.parsers.hubble.push/">jina.parsers.hubble.push module</a></li>
 </ul>
@@ -588,7 +583,7 @@
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__docker_host__</span>
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">colored</span>
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
-<span class="kn">from</span> <span class="nn">jina.peapods.runtimes.container</span> <span class="kn">import</span> <span class="n">ContainerRuntime</span>
+<span class="kn">from</span> <span class="nn">jina.peapods.runtimes.container.helper</span> <span class="kn">import</span> <span class="n">get_gpu_device_requests</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">jinad_args</span><span class="p">,</span>
     <span class="n">__root_workspace__</span><span class="p">,</span>
@@ -784,7 +779,8 @@
         <span class="n">container_id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span>
         <span class="n">entrypoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">ports</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
-        <span class="n">envs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">envs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">device_requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="s1">'Container'</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]:</span>
         <span class="sd">"""</span>
 <span class="sd">        Runs a container using an existing image (tagged with `workspace_id`).</span>
@@ -793,13 +789,25 @@
 <span class="sd">            This uses the default entrypoint (mini-jinad) &amp; appends `command` for execution.</span>
 <span class="sd">        :param workspace_id: workspace id</span>
 <span class="sd">        :param container_id: name of the container</span>
+<span class="sd">        :param entrypoint: entrypoint for the container</span>
 <span class="sd">        :param ports: ports to be mapped with local</span>
 <span class="sd">        :param envs: dict of env vars to be set in the container</span>
-<span class="sd">        :param entrypoint: custom entrypoint</span>
+<span class="sd">        :param device_requests: docker device requests</span>
 <span class="sd">        :raises DockerImageException: if image is not found locally</span>
 <span class="sd">        :raises DockerContainerException: if container creation fails</span>
 <span class="sd">        :return: tuple of container object, network id &amp; ports</span>
 <span class="sd">        """</span>
+
+        <span class="k">def</span> <span class="nf">_validate_port_conflict</span><span class="p">(</span><span class="n">error</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">""</span>
+            <span class="k">if</span> <span class="s1">'port is already allocated'</span> <span class="ow">in</span> <span class="n">error</span><span class="p">:</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">PORT_REGEX</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">match</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">match</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'port conflict: </span><span class="si">{</span><span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span>
+            <span class="k">return</span> <span class="n">msg</span>
+
+        <span class="k">def</span> <span class="nf">_validate_device_request</span><span class="p">(</span><span class="n">error</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="s1">'could not select device driver'</span> <span class="ow">in</span> <span class="n">error</span> <span class="k">else</span> <span class="kc">False</span>
 
         <span class="kn">from</span> <span class="nn">.stores</span> <span class="kn">import</span> <span class="n">workspace_store</span>
 
@@ -815,7 +823,7 @@
             <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="s2">"cyan"</span><span class="p">)</span><span class="si">}</span><span class="s1"> and ports </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">ports</span><span class="p">,</span> <span class="s2">"cyan"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
         <span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">container</span><span class="p">:</span> <span class="s1">'Container'</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">containers</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="n">run_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
                 <span class="n">image</span><span class="o">=</span><span class="n">image</span><span class="p">,</span>
                 <span class="n">name</span><span class="o">=</span><span class="n">container_id</span><span class="p">,</span>
                 <span class="n">volumes</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">volume</span><span class="p">(</span><span class="n">workspace_id</span><span class="p">),</span>
@@ -824,9 +832,11 @@
                 <span class="n">ports</span><span class="o">=</span><span class="n">ports</span><span class="p">,</span>
                 <span class="n">detach</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">entrypoint</span><span class="o">=</span><span class="n">entrypoint</span><span class="p">,</span>
+                <span class="n">device_requests</span><span class="o">=</span><span class="n">device_requests</span> <span class="ow">or</span> <span class="p">[],</span>
                 <span class="n">working_dir</span><span class="o">=</span><span class="n">__partial_workspace__</span><span class="p">,</span>
                 <span class="n">extra_hosts</span><span class="o">=</span><span class="p">{</span><span class="n">__docker_host__</span><span class="p">:</span> <span class="s1">'host-gateway'</span><span class="p">},</span>
             <span class="p">)</span>
+            <span class="n">container</span><span class="p">:</span> <span class="s1">'Container'</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">containers</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="o">**</span><span class="n">run_kwargs</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">docker</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">NotFound</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'Image </span><span class="si">{</span><span class="n">image</span><span class="si">}</span><span class="s1"> or Network </span><span class="si">{</span><span class="n">network</span><span class="si">}</span><span class="s1"> not found locally </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">'</span>
@@ -837,11 +847,27 @@
             <span class="p">)</span>
         <span class="k">except</span> <span class="n">docker</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">APIError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'API Error while starting the docker container</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span>
-            <span class="k">if</span> <span class="s1">'port is already allocated'</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
-                <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">PORT_REGEX</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
-                <span class="k">if</span> <span class="n">match</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">match</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'port conflict: </span><span class="si">{</span><span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span>
-            <span class="bp">cls</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">_validate_device_request</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)):</span>
+                <span class="c1"># It might not be possible for local to know remote machine's gpu status.</span>
+                <span class="c1"># For few cases (Flow creation), we always set `gpus='all'`, which might fail</span>
+                <span class="c1"># if dockerd cannot find the device. In that case, run again without device requests</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'couldn</span><span class="se">\'</span><span class="s1">t start the container with following device request. '</span>
+                    <span class="sa">f</span><span class="s1">'restarting after resetting device: </span><span class="si">{</span><span class="n">run_kwargs</span><span class="p">[</span><span class="s2">"device_requests"</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span>
+                <span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># This leaves the old container in a "created" state and conflicts the name.</span>
+                    <span class="bp">cls</span><span class="o">.</span><span class="n">rm_container</span><span class="p">(</span><span class="n">container_id</span><span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="n">run_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'device_requests'</span><span class="p">)</span>
+                <span class="n">container</span><span class="p">:</span> <span class="s1">'Container'</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">containers</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="o">**</span><span class="n">run_kwargs</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">+=</span> <span class="n">_validate_port_conflict</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                <span class="k">raise</span> <span class="n">DockerContainerException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">docker</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">APIError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'API Error while starting the docker container</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="n">_validate_port_conflict</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
             <span class="k">raise</span> <span class="n">DockerContainerException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="c1"># TODO: network &amp; ports return can be avoided?</span>
         <span class="k">return</span> <span class="n">container</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">ports</span></div>
@@ -1034,7 +1060,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Sep 28, 2021.
+                    Last updated on Sep 29, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" target="_blank"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" target="_blank"> <i class="fab fa-slack"></i></a>

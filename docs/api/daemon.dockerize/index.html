@@ -146,13 +146,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement">
-    <aside class="announcement-content">
-         
-    <a href="https://jina-ai.zoom.us/webinar/register/WN_US7_9uQMRXiYaKBXJw4vYA">📢 28 Sep 2021: We're revealing big news at our <strong>exclusive community webinar</strong>. Join us on Zoom! 🔍</a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header">
@@ -390,6 +384,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../jina.parsers.hubble/">jina.parsers.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.hubble.new/">jina.parsers.hubble.new module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.parsers.hubble.pull/">jina.parsers.hubble.pull module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.parsers.hubble.push/">jina.parsers.hubble.push module</a></li>
 </ul>
@@ -681,7 +676,7 @@ mentioned in the .jinad file (`run` section)
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="daemon.dockerize.Dockerizer.run">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">container_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entrypoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ports</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">envs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/dockerize/#Dockerizer.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.dockerize.Dockerizer.run" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">container_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entrypoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ports</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">envs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_requests</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/dockerize/#Dockerizer.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.dockerize.Dockerizer.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs a container using an existing image (tagged with <cite>workspace_id</cite>).
 Maps <cite>ports</cite> to local dockerhost &amp; tags the container with name <cite>container_id</cite>
 .. note:</p>
@@ -693,9 +688,10 @@ Maps <cite>ports</cite> to local dockerhost &amp; tags the container with name <
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>workspace_id</strong> (<a class="reference internal" href="../daemon.models.id/#daemon.models.id.DaemonID" title="daemon.models.id.DaemonID"><code class="xref py py-class docutils literal notranslate"><span class="pre">DaemonID</span></code></a>) – workspace id</p></li>
 <li><p><strong>container_id</strong> (<a class="reference internal" href="../daemon.models.id/#daemon.models.id.DaemonID" title="daemon.models.id.DaemonID"><code class="xref py py-class docutils literal notranslate"><span class="pre">DaemonID</span></code></a>) – name of the container</p></li>
+<li><p><strong>entrypoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – entrypoint for the container</p></li>
 <li><p><strong>ports</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>) – ports to be mapped with local</p></li>
-<li><p><strong>envs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>) – dict of env vars to be set in the container</p></li>
-<li><p><strong>entrypoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – custom entrypoint</p></li>
+<li><p><strong>envs</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – dict of env vars to be set in the container</p></li>
+<li><p><strong>device_requests</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>]) – docker device requests</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises</dt>
@@ -825,7 +821,7 @@ Maps <cite>ports</cite> to local dockerhost &amp; tags the container with name <
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Sep 28, 2021.
+                    Last updated on Sep 29, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" target="_blank"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" target="_blank"> <i class="fab fa-slack"></i></a>

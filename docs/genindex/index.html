@@ -122,13 +122,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement">
-    <aside class="announcement-content">
-         
-    <a href="https://jina-ai.zoom.us/webinar/register/WN_US7_9uQMRXiYaKBXJw4vYA">📢 28 Sep 2021: We're revealing big news at our <strong>exclusive community webinar</strong>. Join us on Zoom! 🔍</a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header">
@@ -366,6 +360,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.parsers.hubble/">jina.parsers.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.parsers.hubble.new/">jina.parsers.hubble.new module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.parsers.hubble.pull/">jina.parsers.hubble.pull module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.parsers.hubble.push/">jina.parsers.hubble.push module</a></li>
 </ul>
@@ -2241,6 +2236,8 @@
         </ul></li>
         <li><a href="../api/jina.schemas/#jina.schemas.get_full_schema">get_full_schema() (in module jina.schemas)</a>
 </li>
+        <li><a href="../api/jina.peapods.runtimes.container.helper/#jina.peapods.runtimes.container.helper.get_gpu_device_requests">get_gpu_device_requests() (in module jina.peapods.runtimes.container.helper)</a>
+</li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaConstructor.get_hashable_key">get_hashable_key() (jina.jaml.helper.JinaConstructor method)</a>
 </li>
         <li><a href="../api/jina.hubble.helper/#jina.hubble.helper.get_hubble_url">get_hubble_url() (in module jina.hubble.helper)</a>
@@ -3139,6 +3136,13 @@
 
         <ul>
           <li><a href="../api/jina.parsers.hubble/#module-jina.parsers.hubble">module</a>
+</li>
+        </ul></li>
+        <li>
+    jina.parsers.hubble.new
+
+        <ul>
+          <li><a href="../api/jina.parsers.hubble.new/#module-jina.parsers.hubble.new">module</a>
 </li>
         </ul></li>
         <li>
@@ -4128,6 +4132,8 @@
 </li>
         <li><a href="../api/jina.parsers.peapods.runtimes.remote/#jina.parsers.peapods.runtimes.remote.mixin_http_gateway_parser">mixin_http_gateway_parser() (in module jina.parsers.peapods.runtimes.remote)</a>
 </li>
+        <li><a href="../api/jina.parsers.hubble.new/#jina.parsers.hubble.new.mixin_hub_new_parser">mixin_hub_new_parser() (in module jina.parsers.hubble.new)</a>
+</li>
         <li><a href="../api/jina.parsers.hubble.pull/#jina.parsers.hubble.pull.mixin_hub_pull_options_parser">mixin_hub_pull_options_parser() (in module jina.parsers.hubble.pull)</a>
 </li>
         <li><a href="../api/jina.parsers.hubble.pull/#jina.parsers.hubble.pull.mixin_hub_pull_parser">mixin_hub_pull_parser() (in module jina.parsers.hubble.pull)</a>
@@ -4407,6 +4413,8 @@
           <li><a href="../api/jina.parsers.helper/#module-jina.parsers.helper">jina.parsers.helper</a>
 </li>
           <li><a href="../api/jina.parsers.hubble/#module-jina.parsers.hubble">jina.parsers.hubble</a>
+</li>
+          <li><a href="../api/jina.parsers.hubble.new/#module-jina.parsers.hubble.new">jina.parsers.hubble.new</a>
 </li>
           <li><a href="../api/jina.parsers.hubble.pull/#module-jina.parsers.hubble.pull">jina.parsers.hubble.pull</a>
 </li>
@@ -5463,6 +5471,8 @@
 </li>
         <li><a href="../api/jina.parsers/#jina.parsers.set_help_parser">set_help_parser() (in module jina.parsers)</a>
 </li>
+        <li><a href="../api/jina.parsers.hubble/#jina.parsers.hubble.set_hub_new_parser">set_hub_new_parser() (in module jina.parsers.hubble)</a>
+</li>
         <li><a href="../api/jina.parsers.hubble/#jina.parsers.hubble.set_hub_parser">set_hub_parser() (in module jina.parsers.hubble)</a>
 </li>
         <li><a href="../api/jina.parsers.hubble/#jina.parsers.hubble.set_hub_pull_parser">set_hub_pull_parser() (in module jina.parsers.hubble)</a>
@@ -5485,10 +5495,10 @@
 </li>
         <li><a href="../api/jina.parsers/#jina.parsers.set_pod_parser">set_pod_parser() (in module jina.parsers)</a>
 </li>
-        <li><a href="../api/daemon/#daemon.setup">setup() (in module daemon)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/daemon/#daemon.setup">setup() (in module daemon)</a>
+</li>
         <li><a href="../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.shuffle">shuffle() (jina.types.arrays.abstract.AbstractDocumentArray method)</a>
 
         <ul>
@@ -6092,7 +6102,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Sep 28, 2021.
+                    Last updated on Sep 29, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" target="_blank"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" target="_blank"> <i class="fab fa-slack"></i></a>

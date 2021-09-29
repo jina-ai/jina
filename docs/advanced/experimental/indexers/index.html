@@ -147,13 +147,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement">
-    <aside class="announcement-content">
-         
-    <a href="https://jina-ai.zoom.us/webinar/register/WN_US7_9uQMRXiYaKBXJw4vYA">📢 28 Sep 2021: We're revealing big news at our <strong>exclusive community webinar</strong>. Join us on Zoom! 🔍</a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header">
@@ -391,6 +385,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.parsers.hubble/">jina.parsers.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.parsers.hubble.new/">jina.parsers.hubble.new module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.parsers.hubble.pull/">jina.parsers.hubble.pull module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.parsers.hubble.push/">jina.parsers.hubble.push module</a></li>
 </ul>
@@ -677,7 +672,7 @@
 </table></div>
 <p>The Create, Update, Delete operations are implemented by the Storage Indexers, while the Read operation is implemented in the <code class="docutils literal notranslate"><span class="pre">/search</span></code> endpoints in the Search Indexers.
 The <code class="docutils literal notranslate"><span class="pre">/search</span></code> endpoints do not correspond perfectly with the Read operation, as it <em>searches</em> for similar results, and does not return a specific Document by id.
-Some Storage Indexers do implement a <code class="docutils literal notranslate"><span class="pre">/fill_embedding</span></code> endpoint, which functions as a Read by id.
+Some Indexers do implement a <code class="docutils literal notranslate"><span class="pre">/fill_embedding</span></code> endpoint, which functions as a Read by id.
 Please refer to the specific documentation or implementation of the Executor for details.</p>
 </section>
 <section id="indexing-vs-searching-operations">
@@ -846,7 +841,7 @@ Jina provides this via the <a class="reference external" href="https://hub.jina.
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Sep 28, 2021.
+                    Last updated on Sep 29, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" target="_blank"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" target="_blank"> <i class="fab fa-slack"></i></a>

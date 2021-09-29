@@ -123,13 +123,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement">
-    <aside class="announcement-content">
-         
-    <a href="https://jina-ai.zoom.us/webinar/register/WN_US7_9uQMRXiYaKBXJw4vYA">📢 28 Sep 2021: We're revealing big news at our <strong>exclusive community webinar</strong>. Join us on Zoom! 🔍</a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header">
@@ -367,6 +361,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../api/jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../api/jina.parsers.hubble/">jina.parsers.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.parsers.hubble.new/">jina.parsers.hubble.new module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.parsers.hubble.pull/">jina.parsers.hubble.pull module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.parsers.hubble.push/">jina.parsers.hubble.push module</a></li>
 </ul>
@@ -589,7 +584,7 @@
 <span class="kn">from</span> <span class="nn">..zmq.base</span> <span class="kn">import</span> <span class="n">ZMQRuntime</span>
 <span class="kn">from</span> <span class="nn">...zmq</span> <span class="kn">import</span> <span class="n">Zmqlet</span>
 <span class="kn">from</span> <span class="nn">....</span> <span class="kn">import</span> <span class="n">__docker_host__</span>
-<span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">get_docker_network</span>
+<span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">get_docker_network</span><span class="p">,</span> <span class="n">get_gpu_device_requests</span>
 <span class="kn">from</span> <span class="nn">....excepts</span> <span class="kn">import</span> <span class="n">BadImageNameError</span><span class="p">,</span> <span class="n">DockerVersionError</span>
 <span class="kn">from</span> <span class="nn">...zmq</span> <span class="kn">import</span> <span class="n">send_ctrl_message</span>
 <span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">ArgNamespace</span><span class="p">,</span> <span class="n">slugify</span>
@@ -670,38 +665,6 @@
                     <span class="sa">f</span><span class="s1">' Control address set to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ctrl_addr</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
         <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_gpu_device_requests</span><span class="p">(</span><span class="n">gpu_args</span><span class="p">):</span>
-        <span class="kn">import</span> <span class="nn">docker</span>
-
-        <span class="n">_gpus</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">'count'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="s1">'capabilities'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'gpu'</span><span class="p">],</span>
-            <span class="s1">'device'</span><span class="p">:</span> <span class="p">[],</span>
-            <span class="s1">'driver'</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
-        <span class="p">}</span>
-        <span class="k">for</span> <span class="n">gpu_arg</span> <span class="ow">in</span> <span class="n">gpu_args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">','</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">gpu_arg</span> <span class="o">==</span> <span class="s1">'all'</span><span class="p">:</span>
-                <span class="n">_gpus</span><span class="p">[</span><span class="s1">'count'</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-            <span class="k">if</span> <span class="n">gpu_arg</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
-                <span class="n">_gpus</span><span class="p">[</span><span class="s1">'count'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">gpu_arg</span><span class="p">)</span>
-            <span class="k">if</span> <span class="s1">'='</span> <span class="ow">in</span> <span class="n">gpu_arg</span><span class="p">:</span>
-                <span class="n">gpu_arg_key</span><span class="p">,</span> <span class="n">gpu_arg_value</span> <span class="o">=</span> <span class="n">gpu_arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'='</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">gpu_arg_key</span> <span class="ow">in</span> <span class="n">_gpus</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_gpus</span><span class="p">[</span><span class="n">gpu_arg_key</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
-                        <span class="n">_gpus</span><span class="p">[</span><span class="n">gpu_arg_key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gpu_arg_value</span><span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">_gpus</span><span class="p">[</span><span class="n">gpu_arg_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">gpu_arg_value</span>
-        <span class="n">device_requests</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">docker</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">DeviceRequest</span><span class="p">(</span>
-                <span class="n">count</span><span class="o">=</span><span class="n">_gpus</span><span class="p">[</span><span class="s1">'count'</span><span class="p">],</span>
-                <span class="n">driver</span><span class="o">=</span><span class="n">_gpus</span><span class="p">[</span><span class="s1">'driver'</span><span class="p">],</span>
-                <span class="n">device_ids</span><span class="o">=</span><span class="n">_gpus</span><span class="p">[</span><span class="s1">'device'</span><span class="p">],</span>
-                <span class="n">capabilities</span><span class="o">=</span><span class="p">[</span><span class="n">_gpus</span><span class="p">[</span><span class="s1">'capabilities'</span><span class="p">]],</span>
-            <span class="p">)</span>
-        <span class="p">]</span>
-        <span class="k">return</span> <span class="n">device_requests</span>
 
     <span class="k">def</span> <span class="nf">_docker_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replay</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="c1"># important to notice, that client is not assigned as instance member to avoid potential</span>
@@ -795,7 +758,7 @@
 
         <span class="n">device_requests</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">gpus</span><span class="p">:</span>
-            <span class="n">device_requests</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_gpu_device_requests</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">gpus</span><span class="p">)</span>
+            <span class="n">device_requests</span> <span class="o">=</span> <span class="n">get_gpu_device_requests</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">gpus</span><span class="p">)</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">gpus</span>
 
         <span class="n">_expose_port</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_ctrl</span><span class="p">]</span>
@@ -1016,7 +979,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Sep 28, 2021.
+                    Last updated on Sep 29, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" target="_blank"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" target="_blank"> <i class="fab fa-slack"></i></a>
