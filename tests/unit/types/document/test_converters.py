@@ -103,7 +103,13 @@ def test_convert_text_to_uri(converter):
 @pytest.mark.parametrize(
     'uri, mimetype',
     [
-        (__file__, 'text/x-python'),
+        pytest.param(
+            __file__,
+            'text/x-python',
+            marks=pytest.mark.xfail(
+                condition=__windows__, reason='x-python is not detected on windows CI'
+            ),
+        ),
         ('http://google.com/index.html', 'text/html'),
         ('https://google.com/index.html', 'text/html'),
     ],
