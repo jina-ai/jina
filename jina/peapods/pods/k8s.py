@@ -328,13 +328,6 @@ class K8sPod(BasePod, ExitFIFO):
         """
         return self.args
 
-    def is_singleton(self) -> bool:
-        """The k8s pod is always a singleton
-
-        :return: True
-        """
-        return True
-
     @property
     def num_peas(self) -> int:
         """Number of peas. Currently unused.
@@ -379,3 +372,59 @@ class K8sPod(BasePod, ExitFIFO):
             return jina.__version__
         else:
             return 'master'
+
+    @property
+    def _mermaid_str(self) -> List[str]:
+        """String that will be used to represent the Pod graphically when `Flow.plot()` is invoked
+
+
+        .. # noqa: DAR201
+        """
+        mermaid_graph = []
+        if self.name != 'gateway':
+            mermaid_graph = [f'subgraph {self.name};\n', f'direction LR;\n']
+
+            num_replicas = getattr(self.args, 'replicas', 1)
+            num_shards = getattr(self.args, 'parallel', 1)
+            uses = self.args.uses
+            if num_shards > 1:
+                shard_names = [
+                    f'{args.name}/shard-{i}'
+                    for i, args in enumerate(self.deployment_args['deployments'])
+                ]
+                for shard_name in shard_names:
+                    shard_mermaid_graph = [
+                        f'subgraph {shard_name}\n',
+                        f'direction TB;\n',
+                    ]
+                    for replica_id in range(num_replicas):
+                        shard_mermaid_graph.append(
+                            f'{shard_name}/replica-{replica_id}[{uses}]\n'
+                        )
+                    shard_mermaid_graph.append(f'end\n')
+                    mermaid_graph.extend(shard_mermaid_graph)
+                head_name = f'{self.name}/head'
+                tail_name = f'{self.name}/tail'
+                head_to_show = self.args.uses_before
+                if head_to_show is None or head_to_show == __default_executor__:
+                    head_to_show = head_name
+                tail_to_show = self.args.uses_after
+                if tail_to_show is None or tail_to_show == __default_executor__:
+                    tail_to_show = tail_name
+                if head_name:
+                    for shard_name in shard_names:
+                        mermaid_graph.append(
+                            f'{head_name}[{head_to_show}]:::HEADTAIL --> {shard_name}[{uses}];'
+                        )
+
+                if tail_name:
+                    for shard_name in shard_names:
+                        mermaid_graph.append(
+                            f'{shard_name}[{uses}] --> {tail_name}[{tail_to_show}]:::HEADTAIL;'
+                        )
+            else:
+                for replica_id in range(num_replicas):
+                    mermaid_graph.append(f'{self.name}/replica-{replica_id}[{uses}];')
+
+            mermaid_graph.append(f'end;')
+        return mermaid_graph
