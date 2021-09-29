@@ -609,16 +609,24 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">needs</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">needs</span> <span class="ow">or</span> <span class="nb">set</span><span class="p">()</span>
         <span class="p">)</span>  <span class="c1">#: used in the :class:`jina.flow.Flow` to build the graph</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">replicas</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: List['Pod']</span>
         <span class="c1"># we will see how to have `CompoundPods` in remote later when we add tests for it</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_head_router</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_tail_router</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span> <span class="o">=</span> <span class="n">BasePod</span><span class="o">.</span><span class="n">_copy_to_head_args</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">ANY</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tail_args</span> <span class="o">=</span> <span class="n">BasePod</span><span class="o">.</span><span class="n">_copy_to_tail_args</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">ANY</span><span class="p">)</span>
-        <span class="n">cargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assign_replicas</span><span class="p">()</span>
+
+<div class="viewcode-block" id="CompoundPod.assign_replicas"><a class="viewcode-back" href="../../../../../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod.assign_replicas">[docs]</a>    <span class="k">def</span> <span class="nf">assign_replicas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Assign replicas to the CompoundPod"""</span>
+        <span class="n">cargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">replicas</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: List['Pod']</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">replicas_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_replica_args</span><span class="p">(</span>
             <span class="n">cargs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail_args</span>
         <span class="p">)</span>
+        <span class="k">for</span> <span class="n">_args</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">replicas_args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'noblock_on_start'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">replicas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Pod</span><span class="p">(</span><span class="n">_args</span><span class="p">))</span></div>
 
     <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span>
@@ -677,22 +685,19 @@
             <span class="n">head_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">head_pea</span> <span class="o">=</span> <span class="n">Pea</span><span class="p">(</span><span class="n">head_args</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_enter_pea</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pea</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">_args</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">replicas_args</span><span class="p">:</span>
-                <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_enter_replica</span><span class="p">(</span><span class="n">Pod</span><span class="p">(</span><span class="n">_args</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">replica</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">replicas</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_enter_replica</span><span class="p">(</span><span class="n">replica</span><span class="p">)</span>
             <span class="n">tail_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail_args</span>
             <span class="n">tail_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tail_pea</span> <span class="o">=</span> <span class="n">Pea</span><span class="p">(</span><span class="n">tail_args</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_enter_pea</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tail_pea</span><span class="p">)</span>
-            <span class="c1"># now rely on higher level to call `wait_start_success`</span>
-            <span class="k">return</span> <span class="bp">self</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">head_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">head_pea</span> <span class="o">=</span> <span class="n">Pea</span><span class="p">(</span><span class="n">head_args</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_enter_pea</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pea</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">_args</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">replicas_args</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_enter_replica</span><span class="p">(</span><span class="n">Pod</span><span class="p">(</span><span class="n">_args</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">replica</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">replicas</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_enter_replica</span><span class="p">(</span><span class="n">replica</span><span class="p">)</span>
                 <span class="n">tail_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail_args</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">tail_pea</span> <span class="o">=</span> <span class="n">Pea</span><span class="p">(</span><span class="n">tail_args</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_enter_pea</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tail_pea</span><span class="p">)</span>
@@ -722,7 +727,6 @@
             <span class="k">raise</span></div>
 
     <span class="k">def</span> <span class="nf">_enter_replica</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replica</span><span class="p">:</span> <span class="s1">'Pod'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">replicas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">replica</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">replica</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CompoundPod.join"><a class="viewcode-back" href="../../../../../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod.join">[docs]</a>    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

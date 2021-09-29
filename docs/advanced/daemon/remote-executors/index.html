@@ -747,6 +747,30 @@ f = (Flow()
 </div>
 </div>
 </div>
+</section>
+<section id="using-gpu-with-any-remote-executor">
+<h2>Using GPU with any remote Executor<a class="headerlink" href="#using-gpu-with-any-remote-executor" title="Permalink to this headline">¶</a></h2>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--5-input--1" name="tab-set--5" type="radio"/><label class="tab-label" for="tab-set--5-input--1">Without GPU</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">TFExecutor</span><span class="p">,</span>
+               <span class="n">host</span><span class="o">=</span><span class="s1">'1.2.3.4'</span><span class="p">,</span>
+               <span class="n">port_jinad</span><span class="o">=</span><span class="mi">8000</span><span class="p">,</span>
+               <span class="n">py_modules</span><span class="o">=</span><span class="p">[</span><span class="s1">'path/to/this/file.py'</span><span class="p">],</span>
+               <span class="n">upload_files</span><span class="o">=</span><span class="p">[</span><span class="s1">'requirements.txt'</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--5-input--2" name="tab-set--5" type="radio"/><label class="tab-label" for="tab-set--5-input--2">With GPU</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">TFExecutor</span><span class="p">,</span>
+               <span class="n">host</span><span class="o">=</span><span class="s1">'1.2.3.4'</span><span class="p">,</span>
+               <span class="n">port_jinad</span><span class="o">=</span><span class="mi">8000</span><span class="p">,</span>
+               <span class="n">py_modules</span><span class="o">=</span><span class="p">[</span><span class="s1">'path/to/this/file.py'</span><span class="p">],</span>
+               <span class="n">upload_files</span><span class="o">=</span><span class="p">[</span><span class="s1">'requirements.txt'</span><span class="p">],</span>
+<span class="hll">               <span class="n">gpus</span><span class="o">=</span><span class="s1">'all'</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+</div>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
 <p><a class="reference internal" href="../../../fundamentals/executor/repository-structure/"><span class="doc std std-doc">Directory structure for Executors</span></a> is not supported in JinaD yet.</p>
@@ -817,6 +841,7 @@ f = (Flow()
 <li><a class="reference internal" href="#executors-on-different-hosts">Executors on different hosts</a></li>
 <li><a class="reference internal" href="#executor-using-class">Executor using class</a></li>
 <li><a class="reference internal" href="#executor-using-class-pip-dependency">Executor using class + pip dependency</a></li>
+<li><a class="reference internal" href="#using-gpu-with-any-remote-executor">Using GPU with any remote Executor</a></li>
 </ul>
 </li>
 </ul>

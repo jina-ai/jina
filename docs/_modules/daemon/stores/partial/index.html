@@ -725,9 +725,7 @@
                                                 <span class="p">),</span>
                                             <span class="p">)</span>
                             <span class="c1"># Update replica_args according to updated head &amp; tail args</span>
-                            <span class="n">pod</span><span class="o">.</span><span class="n">replicas_args</span> <span class="o">=</span> <span class="n">CompoundPod</span><span class="o">.</span><span class="n">_set_replica_args</span><span class="p">(</span>
-                                <span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">pod</span><span class="o">.</span><span class="n">head_args</span><span class="p">,</span> <span class="n">pod</span><span class="o">.</span><span class="n">tail_args</span>
-                            <span class="p">)</span>
+                            <span class="n">pod</span><span class="o">.</span><span class="n">assign_replicas</span><span class="p">()</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># avoid setting runs_in_docker for Pods with parallel &gt; 1 and using `ZEDRuntime`</span>
                     <span class="c1"># else, replica-peas would try connecting to head/tail-pea via __docker_host__</span>
