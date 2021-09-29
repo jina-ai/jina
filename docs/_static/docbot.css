@@ -36,6 +36,7 @@
 
 .jina-doc-answer-hint {
     height: 25vh;
+    padding: 1rem;
     overflow-y: scroll;
     scroll-behavior: smooth;
 }
@@ -160,9 +161,19 @@
     color: var(--color-sidebar-link-text);
 }
 
-.poweredby {
-    color: var(--color-foreground-muted);
-    font-size: .1em;
-    padding: 3px;
-    margin: 0;
+.powered-by {
+    background: url(./Powered-by-Jina-Large-Basic.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    height: 2.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+    .powered-by {
+        background: url(./Powered-by-Jina-Large-Basic.svg);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+    }
 }
