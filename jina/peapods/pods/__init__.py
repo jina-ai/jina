@@ -501,14 +501,11 @@ class Pod(BasePod, ExitFIFO):
             If one of the :class:`BasePea` fails to start, make sure that all of them
             are properly closed.
         """
-        if getattr(self.args, 'noblock_on_start', False):
-            for _args in self._fifo_args:
+        for _args in self._fifo_args:
+            if getattr(self.args, 'noblock_on_start', False):
                 _args.noblock_on_start = True
-                self._enter_pea(BasePea(_args))
-        else:
-            for _args in self._fifo_args:
-                self._enter_pea(BasePea(_args))
-
+            self._enter_pea(BasePea(_args))
+        if not getattr(self.args, 'noblock_on_start', False):
             self._activate()
         return self
 
@@ -517,12 +514,10 @@ class Pod(BasePod, ExitFIFO):
 
         If not successful, it will raise an error hoping the outer function to catch it
         """
-
         if not self.args.noblock_on_start:
             raise ValueError(
                 f'{self.wait_start_success!r} should only be called when `noblock_on_start` is set to True'
             )
-
         try:
             for p in self.peas:
                 p.wait_start_success()

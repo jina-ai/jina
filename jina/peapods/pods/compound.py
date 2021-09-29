@@ -35,16 +35,24 @@ class CompoundPod(BasePod, ExitStack):
         self.needs = (
             needs or set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
-        self.replicas = []  # type: List['Pod']
         # we will see how to have `CompoundPods` in remote later when we add tests for it
         self.is_head_router = True
         self.is_tail_router = True
         self.head_args = BasePod._copy_to_head_args(args, PollingType.ANY)
         self.tail_args = BasePod._copy_to_tail_args(args, PollingType.ANY)
-        cargs = copy.copy(args)
+        self.assign_replicas()
+
+    def assign_replicas(self):
+        """Assign replicas to the CompoundPod"""
+        cargs = copy.copy(self.args)
+        self.replicas = []  # type: List['Pod']
         self.replicas_args = self._set_replica_args(
             cargs, self.head_args, self.tail_args
         )
+        for _args in self.replicas_args:
+            if getattr(self.args, 'noblock_on_start', False):
+                _args.noblock_on_start = True
+            self.replicas.append(Pod(_args))
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
@@ -103,22 +111,19 @@ class CompoundPod(BasePod, ExitStack):
             head_args.noblock_on_start = True
             self.head_pea = Pea(head_args)
             self._enter_pea(self.head_pea)
-            for _args in self.replicas_args:
-                _args.noblock_on_start = True
-                self._enter_replica(Pod(_args))
+            for replica in self.replicas:
+                self._enter_replica(replica)
             tail_args = self.tail_args
             tail_args.noblock_on_start = True
             self.tail_pea = Pea(tail_args)
             self._enter_pea(self.tail_pea)
-            # now rely on higher level to call `wait_start_success`
-            return self
         else:
             try:
                 head_args = self.head_args
                 self.head_pea = Pea(head_args)
                 self._enter_pea(self.head_pea)
-                for _args in self.replicas_args:
-                    self._enter_replica(Pod(_args))
+                for replica in self.replicas:
+                    self._enter_replica(replica)
                 tail_args = self.tail_args
                 self.tail_pea = Pea(tail_args)
                 self._enter_pea(self.tail_pea)
@@ -148,7 +153,6 @@ class CompoundPod(BasePod, ExitStack):
             raise
 
     def _enter_replica(self, replica: 'Pod') -> None:
-        self.replicas.append(replica)
         self.enter_context(replica)
 
     def join(self):
