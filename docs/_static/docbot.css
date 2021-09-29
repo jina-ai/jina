@@ -167,14 +167,11 @@
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
-    height: 2.5rem;
+    height: 1rem;
 }
 
 @media (prefers-color-scheme: dark) {
     .powered-by {
         background: url(./Powered-by-Jina-Large-Basic.svg);
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: contain;
     }
 }
