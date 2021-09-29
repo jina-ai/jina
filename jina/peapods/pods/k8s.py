@@ -105,29 +105,29 @@ class K8sPod(BasePod, ExitFIFO):
             )
 
         def wait_start_success(self):
-            client = kubernetes_tools.K8sClients().core_v1
+            client = kubernetes_tools.K8sClients().apps_v1
+
             with JinaLogger(f'waiting_for_{self.name}') as logger:
                 logger.info(
                     f'🏝️\t\tWaiting for "{self.name}" to be ready, with {self.num_replicas} replicas'
                 )
-                pod_ips = set()
                 while True:
-                    for pod_info in client.list_namespaced_pod(
-                        self.k8s_namespace,
-                    ).items:
-                        # filter if this pod_info corresponds to me to take care.
-                        if (
-                            pod_info.metadata.labels['app'] == self.name
-                            and pod_info.status.phase == 'Running'
-                        ):
-                            len_before = len(pod_ips)
-                            pod_ips.add(pod_info.status.pod_ip)
-                            len_after = len(pod_ips)
-                            if len_after > len_before:
-                                logger.info(f'\t\t {len_after} replicas are ready')
-                            if len(pod_ips) == self.num_replicas:
-                                return
-                    time.sleep(0.1)
+                    api_response = client.read_namespaced_deployment(
+                        name=self.name, namespace=self.k8s_namespace
+                    )
+                    assert api_response.status.replicas == self.num_replicas
+                    if (
+                        api_response.status.available_replicas is not None
+                        and api_response.status.available_replicas == self.num_replicas
+                    ):
+                        logger.success(f' {self.name} has all its replicas ready!!')
+                        return
+                    else:
+                        available_replicas = api_response.status.available_replicas or 0
+                        logger.info(
+                            f'Number of replicas available {available_replicas}, waiting for {self.num_replicas - available_replicas} replicas to be available'
+                        )
+                        time.sleep(0.2)
 
         def start(self):
             with JinaLogger(f'start_{self.name}') as logger:
@@ -225,7 +225,7 @@ class K8sPod(BasePod, ExitFIFO):
                     tail_port_out=self.fixed_tail_port_out,
                     head_zmq_identity=self.head_zmq_identity,
                     version=self.version,
-                    shard_id=None,
+                    shard_id=i,
                     common_args=self.args,
                     deployment_args=args,
                 )
