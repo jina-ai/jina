@@ -1007,13 +1007,23 @@ class Document(ProtoTypeMixin, VersionedMixin):
         self.blob = to_image_blob(io.BytesIO(self.buffer), color_axis)
 
     def convert_image_blob_to_uri(
-        self, resize_method: str = 'BILINEAR', color_axis: int = -1
+        self,
+        width: Optional[int] = None,
+        height: Optional[int] = None,
+        resize_method: str = 'BILINEAR',
+        color_axis: int = -1,
     ):
         """Assuming :attr:`blob` is a _valid_ image, set :attr:`uri` accordingly
+        :param width: the width of the blob, default None, interpret from :attr:`blob`.
+        :param height: the height of the blob, default None, interpret from :attr:`blob`.
         :param resize_method: the resize method name
         :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+
+        ..note::
+            if both :attr:`width` and :attr:`height` were provided, will not resize. Otherwise, will get image size
+            by :attr:`self.blob` shape and apply resize method :attr:`resize_method`.
         """
-        png_bytes = png_to_buffer(self.blob, resize_method, color_axis)
+        png_bytes = png_to_buffer(self.blob, width, height, resize_method, color_axis)
         self.uri = 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
 
     def convert_image_uri_to_blob(

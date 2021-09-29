@@ -66,7 +66,7 @@ class MyEncoder(Executor):
         for doc, embed, cont in zip(docs, embeds, content):
             doc.embedding = embed
             doc.content = cont
-            doc.convert_image_blob_to_uri()
+            doc.convert_image_blob_to_uri(width=28, height=28)
             doc.pop('blob')
 
 
