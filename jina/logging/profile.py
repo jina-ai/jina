@@ -227,6 +227,7 @@ class ProgressBar(TimeContext):
         self._num_update_called = 0
         self._on_done = message_on_done
         self._stop_event = threading.Event()
+        print()
 
     def update(
         self,

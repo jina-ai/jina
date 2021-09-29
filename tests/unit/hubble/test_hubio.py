@@ -1,18 +1,23 @@
 import argparse
-import os
+import itertools
 import json
-import urllib
+import os
 import shutil
+import urllib
+from pathlib import Path
+
 import docker
 import pytest
 import requests
-import itertools
-from pathlib import Path
+import yaml
 
 from jina.hubble.helper import disk_cache_offline
-from jina.hubble.hubio import HubIO, HubExecutor
-from jina.parsers.hubble import set_hub_push_parser
-from jina.parsers.hubble import set_hub_pull_parser
+from jina.hubble.hubio import HubExecutor, HubIO
+from jina.parsers.hubble import (
+    set_hub_new_parser,
+    set_hub_pull_parser,
+    set_hub_push_parser,
+)
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -167,13 +172,19 @@ def test_fetch(mocker, monkeypatch):
     monkeypatch.setattr(requests, 'get', _mock_get)
     args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
 
-    executor = HubIO(args).fetch_meta('dummy_mwu_encoder')
+    executor = HubIO(args).fetch_meta('dummy_mwu_encoder', None)
 
     assert executor.uuid == 'dummy_mwu_encoder'
     assert executor.name == 'alias_dummy'
     assert executor.tag == 'v0'
     assert executor.image_name == 'jinahub/pod.dummy_mwu_encoder'
     assert executor.md5sum == 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f'
+
+    executor = HubIO(args).fetch_meta('dummy_mwu_encoder', '')
+    assert executor.tag == 'v0'
+
+    executor = HubIO(args).fetch_meta('dummy_mwu_encoder', 'v0.1')
+    assert executor.tag == 'v0.1'
 
 
 class DownloadMockResponse:
@@ -273,9 +284,7 @@ def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
         ['--force', 'jinahub+docker://dummy_mwu_encoder']
     )
     monkeypatch.setattr(
-        HubIO,
-        '_load_docker_client',
-        _gen_load_docker_client(fail_pull=True),
+        HubIO, '_load_docker_client', _gen_load_docker_client(fail_pull=True)
     )
     monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
 
@@ -290,9 +299,7 @@ def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
 
     # expect successful pull
     monkeypatch.setattr(
-        HubIO,
-        '_load_docker_client',
-        _gen_load_docker_client(fail_pull=False),
+        HubIO, '_load_docker_client', _gen_load_docker_client(fail_pull=False)
     )
     assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder:v0'
 
@@ -303,9 +310,7 @@ def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
     # expect successful pull using cached fetch_meta response and saved image
     fail_meta_fetch = True
     monkeypatch.setattr(
-        HubIO,
-        '_load_docker_client',
-        _gen_load_docker_client(fail_pull=False),
+        HubIO, '_load_docker_client', _gen_load_docker_client(fail_pull=False)
     )
     assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder:v1'
 
@@ -334,7 +339,7 @@ def test_pull_with_progress():
 
 
 @pytest.mark.parametrize('add_dockerfile', [True, False])
-def test_new(monkeypatch, tmpdir, add_dockerfile):
+def test_new_without_arguments(monkeypatch, tmpdir, add_dockerfile):
     from rich.prompt import Prompt, Confirm
 
     prompts = iter(
@@ -344,7 +349,6 @@ def test_new(monkeypatch, tmpdir, add_dockerfile):
             'dummy description',
             'dummy author',
             'dummy tags',
-            'dummy docs',
         ]
     )
 
@@ -359,7 +363,7 @@ def test_new(monkeypatch, tmpdir, add_dockerfile):
     monkeypatch.setattr(Prompt, 'ask', _mock_prompt_ask)
     monkeypatch.setattr(Confirm, 'ask', _mock_confirm_ask)
 
-    args = argparse.Namespace(hub='new')
+    args = set_hub_new_parser().parse_args([])
     HubIO(args).new()
     path = tmpdir / 'DummyExecutor'
 
@@ -384,3 +388,82 @@ def test_new(monkeypatch, tmpdir, add_dockerfile):
     ]:
         with open(path / file, 'r') as fp:
             assert 'DummyExecutor' in fp.read()
+
+
+@pytest.mark.parametrize('add_dockerfile', [True, False])
+@pytest.mark.parametrize('advance_configuration', [True, False])
+@pytest.mark.parametrize('confirm_advance_configuration', [True, False])
+@pytest.mark.parametrize('confirm_add_docker', [True, False])
+def test_new_with_arguments(
+    monkeypatch,
+    tmpdir,
+    add_dockerfile,
+    advance_configuration,
+    confirm_advance_configuration,
+    confirm_add_docker,
+):
+    from rich.prompt import Confirm
+
+    path = os.path.join(tmpdir, 'DummyExecutor')
+
+    _args_list = [
+        '--name',
+        'argsExecutor',
+        '--description',
+        'args description',
+        '--keywords',
+        'args keywords',
+        '--url',
+        'args url',
+    ]
+    temp = []
+    _args_list.extend(['--path', path])
+    if advance_configuration:
+        _args_list.append('--advance-configuration')
+    else:
+        temp.append(confirm_advance_configuration)
+
+    if add_dockerfile:
+        _args_list.append('--add-dockerfile')
+    else:
+        temp.append(confirm_add_docker)
+
+    confirms = iter(temp)
+
+    def _mock_confirm_ask(*args, **kwargs):
+        return next(confirms)
+
+    monkeypatch.setattr(Confirm, 'ask', _mock_confirm_ask)
+
+    args = set_hub_new_parser().parse_args(_args_list)
+
+    HubIO(args).new()
+    # path = tmpdir / 'argsExecutor'
+
+    pkg_files = [
+        'executor.py',
+        'manifest.yml',
+        'README.md',
+        'requirements.txt',
+        'config.yml',
+    ]
+
+    path = tmpdir / 'DummyExecutor'
+    if (advance_configuration or confirm_advance_configuration) and (
+        add_dockerfile or confirm_add_docker
+    ):
+        pkg_files.append('Dockerfile')
+
+    for file in pkg_files:
+        assert (path / file).exists()
+
+    for file in ['executor.py', 'manifest.yml', 'README.md', 'config.yml']:
+        with open(path / file, 'r') as fp:
+            assert 'argsExecutor' in fp.read()
+    if advance_configuration or confirm_advance_configuration:
+        with open(path / 'manifest.yml') as fp:
+            temp = yaml.load(fp)
+            assert temp['name'] == 'argsExecutor'
+            assert temp['description'] == 'args description'
+            assert temp['keywords'] == 'args keywords'
+            assert temp['url'] == 'args url'

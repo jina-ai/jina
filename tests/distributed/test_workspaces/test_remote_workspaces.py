@@ -40,7 +40,7 @@ def test_upload_via_pymodule(parallels, mocker):
             uses_with={'greetings': 'hi'},
             host=CLOUD_HOST,
             parallel=parallels,
-            py_modules=['mwu_encoder.py'],
+            py_modules=[os.path.join(cur_dir, 'mwu_encoder.py')],
         )
         .add()
     )
@@ -59,10 +59,10 @@ def test_upload_via_yaml(parallels, mocker):
         Flow()
         .add()
         .add(
-            uses='mwu_encoder.yml',
+            uses=[os.path.join(cur_dir, 'mwu_encoder.yml')],
             host=CLOUD_HOST,
             parallel=parallels,
-            upload_files=['mwu_encoder.py'],
+            upload_files=[os.path.join(cur_dir, 'mwu_encoder.py')],
         )
         .add()
     )
@@ -224,9 +224,9 @@ def test_upload_simple_non_standard_rootworkspace(docker_compose, mocker):
         Flow()
         .add()
         .add(
-            uses='mwu_encoder.yml',
+            uses=[os.path.join(cur_dir, 'mwu_encoder.yml')],
             host='localhost:9000',
-            upload_files=['mwu_encoder.py'],
+            upload_files=[os.path.join(cur_dir, 'mwu_encoder.py')],
         )
         .add()
     )

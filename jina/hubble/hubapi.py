@@ -139,6 +139,10 @@ def install_local(
 
     pkg_path, pkg_dist_path = get_dist_path(executor.uuid, executor.tag)
 
+    # clean the existed dist_path
+    for dist in pkg_path.glob(f'*.dist-info'):
+        shutil.rmtree(dist)
+
     # unpack the zip package to the root pkg_path
     unpack_package(zip_package, pkg_path)
 
