@@ -203,7 +203,16 @@ ac_table = {
             '--k8s-custom-resource-dir',
             '--dynamic-routing',
         ],
-        'hub new': ['--help'],
+        'hub new': [
+            '--help',
+            '--name',
+            '--path',
+            '--advance-configuration',
+            '--description',
+            '--keywords',
+            '--url',
+            '--add-dockerfile',
+        ],
         'hub push': [
             '--help',
             '--no-usage',
