@@ -312,13 +312,13 @@ class K8sPod(BasePod):
                 if head_name:
                     for shard_name in shard_names:
                         mermaid_graph.append(
-                            f'{head_name}[{head_to_show}] --> {shard_name}[{uses}];'
+                            f'{head_name}[{head_to_show}]:::HEADTAIL --> {shard_name}[{uses}];'
                         )
 
                 if tail_name:
                     for shard_name in shard_names:
                         mermaid_graph.append(
-                            f'{shard_name}[{uses}] --> {tail_name}[{tail_to_show}];'
+                            f'{shard_name}[{uses}] --> {tail_name}[{tail_to_show}]:::HEADTAIL;'
                         )
             else:
                 for replica_id in range(num_replicas):

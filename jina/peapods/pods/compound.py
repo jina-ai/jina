@@ -285,8 +285,8 @@ class CompoundPod(BasePod, ExitStack):
             mermaid_graph.append('\n')
 
         for name in pod_names:
-            mermaid_graph.append(f'{head_name} --> {name};')
-            mermaid_graph.append(f'{name} --> {tail_name};')
+            mermaid_graph.append(f'{head_name}:::HEADTAIL --> {name};')
+            mermaid_graph.append(f'{name} --> {tail_name}:::HEADTAIL;')
         mermaid_graph.append('end;')
 
         return mermaid_graph
