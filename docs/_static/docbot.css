@@ -1,8 +1,8 @@
 
 .jina-doc-bot {
-    position: absolute !important;
+    position: fixed !important;
     bottom: 0;
-    width: 100%;
+    width: 16rem;
     background: var(--color-background-primary);;
 }
 
@@ -26,17 +26,19 @@
     font-size: .7em;
     background: inherit;
     color: inherit;
+    padding: .5rem;
 }
 
 .jina-doc-answer-dialog {
     height: 25vh;
-    overflow: scroll;
+    overflow-y: scroll;
     scroll-behavior: smooth;
 }
 
 .jina-doc-answer-hint {
     height: 25vh;
-    overflow: scroll;
+    padding: 1rem;
+    overflow-y: scroll;
     scroll-behavior: smooth;
 }
 
@@ -44,7 +46,7 @@
     border-color: var(--color-brand-primary) !important;
     border-radius: .25rem;
     overflow: hidden;
-
+    margin: 0 1rem;
 }
 
 #bot-input-btn {
@@ -62,6 +64,10 @@
     margin-bottom: 20px;
     border-radius: 5px;
     max-width: 80%;
+}
+
+.qa-container {
+    padding: 1rem;
 }
 
 .question-bubble {
@@ -156,9 +162,19 @@
     color: var(--color-sidebar-link-text);
 }
 
-.poweredby {
-    color: var(--color-foreground-muted);
-    font-size: .1em;
-    padding: 3px;
-    margin: 0;
+.powered-by {
+    background: url(./Powered-by-Jina-Large-Basic.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    height: 2.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+    .powered-by {
+        background: url(./Powered-by-Jina-Large-Basic.svg);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+    }
 }
