@@ -3,7 +3,7 @@ services:
   jinad:
     image: jinaai/jina:test-daemon
     environment:
-      JINA_DAEMON_BUILD: DEVEL
+      JINA_DAEMON_DOCKERFILE: DEVEL # # only used in devel mode
       JINA_LOG_LEVEL: DEBUG
     container_name: test_remote_flow_dump_reload
     ports:

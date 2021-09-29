@@ -36,6 +36,7 @@ async def _create(pod: PodDepends = Depends(PodDepends)):
             params=pod.params,
             ports=pod.ports,
             envs=pod.envs,
+            device_requests=pod.device_requests,
         )
     except Exception as ex:
         raise Runtime400Exception from ex

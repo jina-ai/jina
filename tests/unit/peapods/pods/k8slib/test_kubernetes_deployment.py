@@ -52,7 +52,7 @@ def test_deploy_service(init_container: Dict, custom_resource: str, monkeypatch)
         custom_resource_dir=custom_resource,
     )
 
-    assert mock_create.call_count == 2
+    assert mock_create.call_count == 4
 
     service_call_args = mock_create.call_args_list[0][0]
     service_call_kwargs = mock_create.call_args_list[0][1]

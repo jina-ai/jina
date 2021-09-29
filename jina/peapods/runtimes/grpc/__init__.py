@@ -53,7 +53,10 @@ class GRPCDataRuntime(BaseRuntime, ABC):
     def run_forever(self):
         """Start the `Grpclet`."""
         self._grpclet_task = self._loop.create_task(self._grpclet.start())
-        self._loop.run_until_complete(self._grpclet_task)
+        try:
+            self._loop.run_until_complete(self._grpclet_task)
+        except asyncio.CancelledError:
+            self.logger.warning('Grpclet task was cancelled')
 
     def teardown(self):
         """Close the `Grpclet` and `DataRequestHandler`."""
