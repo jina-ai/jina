@@ -26,6 +26,7 @@
     font-size: .7em;
     background: inherit;
     color: inherit;
+    padding: .5rem;
 }
 
 .jina-doc-answer-dialog {
