@@ -858,14 +858,15 @@
         <span class="sd">"""Wait until all pods and peas exit."""</span>
         <span class="o">...</span></div>
 
-<div class="viewcode-block" id="BasePod.is_singleton"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.BasePod.is_singleton">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">is_singleton</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">"""Return if the Pod contains only a single Pea</span>
+    <span class="nd">@property</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_mermaid_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">"""String that will be used to represent the Pod graphically when `Flow.plot()` is invoked</span>
 
 
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        """</span>
-        <span class="o">...</span></div>
+        <span class="o">...</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">deployments</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
@@ -922,15 +923,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span></div>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_singleton</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">"""Return if the Pod contains only a single Pea</span>
-
-
-<span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        """</span>
-        <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_head_router</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_tail_router</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">first_pea_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
@@ -1251,7 +1243,44 @@
     <span class="k">def</span> <span class="nf">_set_dynamic_routing_out</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">dynamic_routing</span><span class="p">:</span>
             <span class="n">args</span><span class="o">.</span><span class="n">dynamic_routing_out</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">args</span><span class="o">.</span><span class="n">socket_out</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">ROUTER_BIND</span></div>
+            <span class="n">args</span><span class="o">.</span><span class="n">socket_out</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">ROUTER_BIND</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_mermaid_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">"""String that will be used to represent the Pod graphically when `Flow.plot()` is invoked</span>
+
+
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="n">mermaid_graph</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">role</span> <span class="o">!=</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">GATEWAY</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'external'</span><span class="p">,</span> <span class="kc">False</span>
+        <span class="p">):</span>
+            <span class="n">mermaid_graph</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">'subgraph </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">;'</span><span class="p">]</span>
+
+            <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">args</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">args</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fifo_args</span><span class="p">]</span>
+            <span class="n">uses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">/pea-0[</span><span class="si">{</span><span class="n">uses</span><span class="si">}</span><span class="s1">]:::PEA;'</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1">direction LR;</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+                <span class="n">head_name</span> <span class="o">=</span> <span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">tail_name</span> <span class="o">=</span> <span class="n">names</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">head_to_show</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses_before</span>
+                <span class="k">if</span> <span class="n">head_to_show</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">head_to_show</span> <span class="o">==</span> <span class="n">__default_executor__</span><span class="p">:</span>
+                    <span class="n">head_to_show</span> <span class="o">=</span> <span class="n">head_name</span>
+                <span class="n">tail_to_show</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses_after</span>
+                <span class="k">if</span> <span class="n">tail_to_show</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">tail_to_show</span> <span class="o">==</span> <span class="n">__default_executor__</span><span class="p">:</span>
+                    <span class="n">tail_to_show</span> <span class="o">=</span> <span class="n">tail_name</span>
+                <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">head_name</span><span class="si">}</span><span class="s1">[</span><span class="si">{</span><span class="n">head_to_show</span><span class="si">}</span><span class="s1">]:::HEADTAIL --&gt; </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">[</span><span class="si">{</span><span class="n">uses</span><span class="si">}</span><span class="s1">]:::PEA;'</span>
+                    <span class="p">)</span>
+                    <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">[</span><span class="si">{</span><span class="n">uses</span><span class="si">}</span><span class="s1">]:::PEA --&gt; </span><span class="si">{</span><span class="n">tail_name</span><span class="si">}</span><span class="s1">[</span><span class="si">{</span><span class="n">tail_to_show</span><span class="si">}</span><span class="s1">]:::HEADTAIL;'</span>
+                    <span class="p">)</span>
+            <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'end;'</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mermaid_graph</span></div>
 </pre></div>
             </article>
             <footer>

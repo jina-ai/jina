@@ -602,6 +602,7 @@
 <span class="kn">from</span> <span class="nn">..struct</span> <span class="kn">import</span> <span class="n">StructView</span>
 <span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">typename</span>
 <span class="kn">from</span> <span class="nn">...proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
+<span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">__windows__</span>
 <span class="kn">import</span> <span class="nn">csv</span>
 
 <span class="k">try</span><span class="p">:</span>
@@ -1063,7 +1064,10 @@
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">'write'</span><span class="p">):</span>
             <span class="n">file_ctx</span> <span class="o">=</span> <span class="n">nullcontext</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">file_ctx</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">'wb'</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">__windows__</span><span class="p">:</span>
+                <span class="n">file_ctx</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">'wb'</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">file_ctx</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">'wb'</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="n">file_ctx</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
             <span class="n">dap</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DocumentArrayProto</span><span class="p">()</span>

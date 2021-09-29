@@ -1434,7 +1434,8 @@
             <span class="p">},</span>
         <span class="p">)</span>
 
-    <span class="c1"># TODO needs to be refactored - deployment should not be a dictionary. Related Ticket: https://github.com/jina-ai/jina/issues/3280</span>
+    <span class="c1"># TODO needs to be refactored - deployment should not be a dictionary. Related Ticket:</span>
+    <span class="c1">#  https://github.com/jina-ai/jina/issues/3280</span>
     <span class="k">def</span> <span class="nf">_get_routing_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RoutingTable</span><span class="p">:</span>
         <span class="n">graph</span> <span class="o">=</span> <span class="n">RoutingTable</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">pod_id</span><span class="p">,</span> <span class="n">pod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -1798,111 +1799,67 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_mermaid_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">mermaid_graph</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">"</span><span class="si">%%</span><span class="s2">{init: {'theme': 'base', "</span>
-            <span class="s2">"'themeVariables': { 'primaryColor': '#32C8CD', "</span>
-            <span class="s2">"'edgeLabelBackground':'#fff', 'clusterBkg': '#FFCC66'}}}</span><span class="si">%%</span><span class="s2">"</span><span class="p">,</span>
-            <span class="s1">'graph LR'</span><span class="p">,</span>
+            <span class="sd">'''</span>
+<span class="sd">            %%{init:{</span>
+<span class="sd">  "theme": "base",</span>
+<span class="sd">  "themeVariables": {</span>
+<span class="sd">      "primaryColor": "#fff",</span>
+<span class="sd">      "primaryBorderColor": "#fff",</span>
+<span class="sd">      "mainBkg": "#32C8CD",</span>
+<span class="sd">      "clusterBkg": "#EEEDE78C",</span>
+<span class="sd">      "secondaryBorderColor": "none",</span>
+<span class="sd">      "tertiaryBorderColor": "none",</span>
+<span class="sd">      "lineColor": "#a6d8da"</span>
+<span class="sd">      }</span>
+<span class="sd">}}%%</span>
+<span class="sd">            '''</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">,</span> <span class="s1">''</span>
+            <span class="p">),</span>
+            <span class="s1">'flowchart LR;'</span><span class="p">,</span>
         <span class="p">]</span>
 
-        <span class="n">start_repl</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">end_repl</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">pod_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># plot subgraphs</span>
         <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="o">.</span><span class="n">is_singleton</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">role</span> <span class="o">!=</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">replicas</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">'subgraph sub_</span><span class="si">{</span><span class="n">node</span><span class="si">}</span><span class="s1"> ["</span><span class="si">{</span><span class="n">node</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">parallel</span><span class="si">}</span><span class="s1">)"]'</span>
-                    <span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">'subgraph sub_</span><span class="si">{</span><span class="n">node</span><span class="si">}</span><span class="s1"> ["</span><span class="si">{</span><span class="n">node</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">replicas</span><span class="si">}</span><span class="s1">)(</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">parallel</span><span class="si">}</span><span class="s1">)"]'</span>
-                    <span class="p">)</span>
-                    <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">is_head_router</span><span class="p">:</span>
-                        <span class="n">head_router</span> <span class="o">=</span> <span class="n">node</span> <span class="o">+</span> <span class="s1">'_HEAD'</span>
-                        <span class="n">end_repl</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">head_router</span><span class="p">,</span> <span class="s1">'((fa:fa-random))'</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">is_tail_router</span><span class="p">:</span>
-                        <span class="n">tail_router</span> <span class="o">=</span> <span class="n">node</span> <span class="o">+</span> <span class="s1">'_TAIL'</span>
-                        <span class="n">start_repl</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">tail_router</span><span class="p">,</span> <span class="s1">'((fa:fa-random))'</span><span class="p">)</span>
-
-                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">replicas</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">is_head_router</span><span class="p">:</span>
-                        <span class="n">head_replica_router</span> <span class="o">=</span> <span class="n">node</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">'_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">_HEAD'</span>
-                        <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">replicas</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                            <span class="n">end_repl</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">head_replica_router</span><span class="p">,</span> <span class="s1">'((fa:fa-random))'</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">is_tail_router</span><span class="p">:</span>
-                        <span class="n">tail_replica_router</span> <span class="o">=</span> <span class="n">node</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">'_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">_TAIL'</span>
-                        <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">replicas</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                            <span class="n">start_repl</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">tail_replica_router</span><span class="p">,</span> <span class="s1">'((fa:fa-random))'</span><span class="p">)</span>
-
-                    <span class="n">p_r</span> <span class="o">=</span> <span class="s1">'((</span><span class="si">%s</span><span class="s1">))'</span>
-                    <span class="n">p_e</span> <span class="o">=</span> <span class="s1">'[[</span><span class="si">%s</span><span class="s1">]]'</span>
-                    <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">replicas</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                        <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="si">{</span><span class="n">head_router</span><span class="si">}{</span><span class="n">p_r</span> <span class="o">%</span> <span class="s2">"head"</span><span class="si">}</span><span class="s1">:::pea--&gt;</span><span class="si">{</span><span class="n">head_replica_router</span><span class="si">}{</span><span class="n">p_e</span> <span class="o">%</span> <span class="s2">"replica_head"</span><span class="si">}</span><span class="s1">:::pea'</span>
-                        <span class="p">)</span>
-                        <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="si">{</span><span class="n">tail_replica_router</span><span class="si">}{</span><span class="n">p_r</span> <span class="o">%</span> <span class="s2">"replica_tail"</span><span class="si">}</span><span class="s1">:::pea--&gt;</span><span class="si">{</span><span class="n">tail_router</span><span class="si">}{</span><span class="n">p_e</span> <span class="o">%</span> <span class="s2">"tail"</span><span class="si">}</span><span class="s1">:::pea'</span>
-                        <span class="p">)</span>
-
-                    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">parallel</span><span class="p">):</span>
-                        <span class="n">r</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span>
-                        <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">replicas</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                            <span class="n">r</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">'_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s1">'</span>
-                        <span class="k">elif</span> <span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">parallel</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                            <span class="n">r</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">'_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s1">'</span>
-
-                        <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">is_head_router</span><span class="p">:</span>
-                            <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                                <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="si">{</span><span class="n">head_replica_router</span><span class="si">}{</span><span class="n">p_r</span> <span class="o">%</span> <span class="s2">"head"</span><span class="si">}</span><span class="s1">:::pea--&gt;</span><span class="si">{</span><span class="n">r</span><span class="si">}{</span><span class="n">p_e</span> <span class="o">%</span> <span class="n">r</span><span class="si">}</span><span class="s1">:::pea'</span>
-                            <span class="p">)</span>
-                        <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">is_tail_router</span><span class="p">:</span>
-                            <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                                <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="si">{</span><span class="n">r</span><span class="si">}{</span><span class="n">p_e</span> <span class="o">%</span> <span class="n">r</span><span class="si">}</span><span class="s1">:::pea--&gt;</span><span class="si">{</span><span class="n">tail_replica_router</span><span class="si">}{</span><span class="n">p_r</span> <span class="o">%</span> <span class="s2">"tail"</span><span class="si">}</span><span class="s1">:::pea'</span>
-                            <span class="p">)</span>
-                <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'end'</span><span class="p">)</span>
+            <span class="n">pod_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">_mermaid_str</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">need</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">needs</span><span class="p">):</span>
+                <span class="n">need_print</span> <span class="o">=</span> <span class="n">need</span>
+                <span class="k">if</span> <span class="n">need</span> <span class="o">==</span> <span class="s1">'gateway'</span><span class="p">:</span>
+                    <span class="n">need_print</span> <span class="o">=</span> <span class="s1">'gatewaystart[gateway]'</span>
+                <span class="n">node_print</span> <span class="o">=</span> <span class="n">node</span>
+                <span class="k">if</span> <span class="n">node</span> <span class="o">==</span> <span class="s1">'gateway'</span><span class="p">:</span>
+                    <span class="n">node_print</span> <span class="o">=</span> <span class="s1">'gatewayend[gateway]'</span>
 
-                <span class="n">_s</span> <span class="o">=</span> <span class="n">start_repl</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                    <span class="n">need</span><span class="p">,</span> <span class="p">(</span><span class="n">need</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'("</span><span class="si">{</span><span class="n">need</span><span class="si">}</span><span class="s1">&lt;br&gt;(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="n">need</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="si">}</span><span class="s1">)")'</span><span class="p">)</span>
-                <span class="p">)</span>
-                <span class="n">_e</span> <span class="o">=</span> <span class="n">end_repl</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'("</span><span class="si">{</span><span class="n">node</span><span class="si">}</span><span class="s1">&lt;br&gt;(</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="si">}</span><span class="s1">)")'</span><span class="p">))</span>
                 <span class="n">_s_role</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="n">need</span><span class="p">]</span><span class="o">.</span><span class="n">role</span>
                 <span class="n">_e_role</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">role</span>
+                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="n">need</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'external'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                    <span class="n">_s_role</span> <span class="o">=</span> <span class="s1">'EXTERNAL'</span>
+                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'external'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                    <span class="n">_e_role</span> <span class="o">=</span> <span class="s1">'EXTERNAL'</span>
                 <span class="n">line_st</span> <span class="o">=</span> <span class="s1">'--&gt;'</span>
-
-                <span class="k">if</span> <span class="n">_s_role</span> <span class="ow">in</span> <span class="p">{</span><span class="n">PodRoleType</span><span class="o">.</span><span class="n">INSPECT</span><span class="p">,</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">JOIN_INSPECT</span><span class="p">}:</span>
-                    <span class="n">_s</span> <span class="o">=</span> <span class="n">start_repl</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">need</span><span class="p">,</span> <span class="p">(</span><span class="n">need</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="se">{{{{</span><span class="si">{</span><span class="n">need</span><span class="si">}</span><span class="se">}}}}</span><span class="s1">'</span><span class="p">))</span>
-                <span class="k">elif</span> <span class="n">_s_role</span> <span class="o">==</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">:</span>
-                    <span class="n">_s</span> <span class="o">=</span> <span class="n">start_repl</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">need</span><span class="p">,</span> <span class="p">(</span><span class="n">need</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'("</span><span class="si">{</span><span class="n">need</span><span class="si">}</span><span class="s1">")'</span><span class="p">))</span>
-
-                <span class="k">if</span> <span class="n">_e_role</span> <span class="o">==</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">:</span>
-                    <span class="n">_e</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'gateway_END'</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'(</span><span class="si">{</span><span class="n">node</span><span class="si">}</span><span class="s1">)'</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">_e_role</span> <span class="ow">in</span> <span class="p">{</span><span class="n">PodRoleType</span><span class="o">.</span><span class="n">INSPECT</span><span class="p">,</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">JOIN_INSPECT</span><span class="p">}:</span>
-                    <span class="n">_e</span> <span class="o">=</span> <span class="n">end_repl</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="se">{{{{</span><span class="si">{</span><span class="n">node</span><span class="si">}</span><span class="se">}}}}</span><span class="s1">'</span><span class="p">))</span>
-
                 <span class="k">if</span> <span class="n">_s_role</span> <span class="o">==</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">INSPECT</span> <span class="ow">or</span> <span class="n">_e_role</span> <span class="o">==</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">INSPECT</span><span class="p">:</span>
                     <span class="n">line_st</span> <span class="o">=</span> <span class="s1">'-.-&gt;'</span>
-
                 <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">_s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}{</span><span class="n">_s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">:::</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">_s_role</span><span class="p">)</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">line_st</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">_e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}{</span><span class="n">_e</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">:::</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">_e_role</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">need_print</span><span class="si">}</span><span class="s1">:::</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">_s_role</span><span class="p">)</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">line_st</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">node_print</span><span class="si">}</span><span class="s1">:::</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">_e_role</span><span class="p">)</span><span class="si">}</span><span class="s1">;'</span>
                 <span class="p">)</span>
+
+        <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'classDef </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">PodRoleType</span><span class="o">.</span><span class="n">INSPECT</span><span class="p">)</span><span class="si">}</span><span class="s1"> stroke:#F29C9F'</span><span class="p">)</span>
+
+        <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'classDef </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">PodRoleType</span><span class="o">.</span><span class="n">JOIN_INSPECT</span><span class="p">)</span><span class="si">}</span><span class="s1"> stroke:#F29C9F'</span><span class="p">)</span>
         <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'classDef </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">PodRoleType</span><span class="o">.</span><span class="n">POD</span><span class="p">)</span><span class="si">}</span><span class="s1"> fill:#32C8CD,stroke:#009999'</span>
+            <span class="sa">f</span><span class="s1">'classDef </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">PodRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">)</span><span class="si">}</span><span class="s1"> fill:none,color:#000,stroke:none'</span>
         <span class="p">)</span>
         <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'classDef </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">PodRoleType</span><span class="o">.</span><span class="n">INSPECT</span><span class="p">)</span><span class="si">}</span><span class="s1"> fill:#ff6666,color:#fff'</span>
+            <span class="sa">f</span><span class="s1">'classDef </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">PodRoleType</span><span class="o">.</span><span class="n">INSPECT_AUX_PASS</span><span class="p">)</span><span class="si">}</span><span class="s1"> stroke-dasharray: 2 2'</span>
         <span class="p">)</span>
-        <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'classDef </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">PodRoleType</span><span class="o">.</span><span class="n">JOIN_INSPECT</span><span class="p">)</span><span class="si">}</span><span class="s1"> fill:#ff6666,color:#fff'</span>
-        <span class="p">)</span>
-        <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'classDef </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">PodRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">)</span><span class="si">}</span><span class="s1"> fill:#6E7278,color:#fff'</span>
-        <span class="p">)</span>
-        <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'classDef </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">PodRoleType</span><span class="o">.</span><span class="n">INSPECT_AUX_PASS</span><span class="p">)</span><span class="si">}</span><span class="s1"> fill:#fff,color:#000,stroke-dasharray: 5 5'</span>
-        <span class="p">)</span>
-        <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'classDef pea fill:#009999,stroke:#1E6E73'</span><span class="p">)</span>
+        <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'classDef HEADTAIL fill:#32C8CD1D'</span><span class="p">)</span>
+
+        <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1">classDef EXTERNAL fill:#fff,stroke:#32C8CD'</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mermaid_graph</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Flow.plot"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span>

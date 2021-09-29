@@ -839,13 +839,31 @@
             <span class="k">raise</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_singleton</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">"""Return if the Pod contains only a single Pea</span>
+    <span class="k">def</span> <span class="nf">_mermaid_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">"""String that will be used to represent the Pod graphically when `Flow.plot()` is invoked</span>
 
 
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="kc">False</span></div>
+        <span class="n">mermaid_graph</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">'subgraph </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">;</span><span class="se">\n</span><span class="s1">'</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'direction LR;</span><span class="se">\n</span><span class="s1">'</span><span class="p">]</span>
+        <span class="n">head_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">tail_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail_args</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">pod_names</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">replica</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">replicas</span><span class="p">:</span>
+            <span class="n">pod_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">replica</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">replica_mermaid_graph</span> <span class="o">=</span> <span class="n">replica</span><span class="o">.</span><span class="n">_mermaid_str</span>
+            <span class="n">replica_mermaid_graph</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">';'</span><span class="p">,</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">replica_mermaid_graph</span>
+            <span class="p">]</span>
+            <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">replica_mermaid_graph</span><span class="p">)</span>
+            <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">pod_names</span><span class="p">:</span>
+            <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">head_name</span><span class="si">}</span><span class="s1">:::HEADTAIL --&gt; </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">;'</span><span class="p">)</span>
+            <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> --&gt; </span><span class="si">{</span><span class="n">tail_name</span><span class="si">}</span><span class="s1">:::HEADTAIL;'</span><span class="p">)</span>
+        <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'end;'</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">mermaid_graph</span></div>
 </pre></div>
             </article>
             <footer>
