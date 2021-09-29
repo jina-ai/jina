@@ -1,6 +1,6 @@
 <p align="center">
 <!--startmsg-->
-<a href="https://jina-ai.zoom.us/webinar/register/WN_US7_9uQMRXiYaKBXJw4vYA"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/meetup.svg?raw=true"></a>
+
 <!--endmsg-->
 </p>
 <p align="center">
