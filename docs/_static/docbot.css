@@ -1,8 +1,8 @@
 
 .jina-doc-bot {
-    position: absolute !important;
+    position: fixed !important;
     bottom: 0;
-    width: 100%;
+    width: 16rem;
     background: var(--color-background-primary);;
 }
 
@@ -30,13 +30,13 @@
 
 .jina-doc-answer-dialog {
     height: 25vh;
-    overflow: scroll;
+    overflow-y: scroll;
     scroll-behavior: smooth;
 }
 
 .jina-doc-answer-hint {
     height: 25vh;
-    overflow: scroll;
+    overflow-y: scroll;
     scroll-behavior: smooth;
 }
 
@@ -44,7 +44,7 @@
     border-color: var(--color-brand-primary) !important;
     border-radius: .25rem;
     overflow: hidden;
-
+    margin: 0 1rem;
 }
 
 #bot-input-btn {
@@ -62,6 +62,10 @@
     margin-bottom: 20px;
     border-radius: 5px;
     max-width: 80%;
+}
+
+.qa-container {
+    padding: 1rem;
 }
 
 .question-bubble {
