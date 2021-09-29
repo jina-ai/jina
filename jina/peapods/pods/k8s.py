@@ -106,6 +106,7 @@ class K8sPod(BasePod, ExitFIFO):
 
         def wait_start_success(self):
             client = kubernetes_tools.K8sClients().core_v1
+            pod_ips = set()
             while True:
                 for pod_info in client.list_namespaced_pod(
                     self.k8s_namespace,
@@ -115,7 +116,9 @@ class K8sPod(BasePod, ExitFIFO):
                         pod_info.metadata.labels['app'] == self.name
                         and pod_info.status.phase == 'Running'
                     ):
-                        return
+                        pod_ips.add(pod_info.status.pod_ip)
+                        if len(pod_ips) == self.num_replicas:
+                            return
                 time.sleep(0.1)
 
         def start(self):
