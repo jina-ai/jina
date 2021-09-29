@@ -97,6 +97,9 @@ def test_convert_text_to_uri(converter):
     assert d.uri.startswith('data:text/x-python;')
 
 
+@pytest.mark.xfail(
+    condition=__windows__, reason='x-python is not detected on windows CI'
+)
 @pytest.mark.parametrize(
     'uri, mimetype',
     [
