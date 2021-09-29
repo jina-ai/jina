@@ -106,28 +106,38 @@ class K8sPod(BasePod, ExitFIFO):
 
         def wait_start_success(self):
             client = kubernetes_tools.K8sClients().core_v1
-            pod_ips = set()
-            while True:
-                for pod_info in client.list_namespaced_pod(
-                    self.k8s_namespace,
-                ).items:
-                    # filter if this pod_info corresponds to me to take care.
-                    if (
-                        pod_info.metadata.labels['app'] == self.name
-                        and pod_info.status.phase == 'Running'
-                    ):
-                        pod_ips.add(pod_info.status.pod_ip)
-                        if len(pod_ips) == self.num_replicas:
-                            return
-                time.sleep(0.1)
+            with JinaLogger(f'waiting_for_{self.name}') as logger:
+                logger.info(
+                    f'🏝️\t\tWaiting for "{self.name}" to be ready, with {self.num_replicas} replicas'
+                )
+                pod_ips = set()
+                while True:
+                    for pod_info in client.list_namespaced_pod(
+                        self.k8s_namespace,
+                    ).items:
+                        # filter if this pod_info corresponds to me to take care.
+                        if (
+                            pod_info.metadata.labels['app'] == self.name
+                            and pod_info.status.phase == 'Running'
+                        ):
+                            len_before = len(pod_ips)
+                            pod_ips.add(pod_info.status.pod_ip)
+                            len_after = len(pod_ips)
+                            if len_after > len_before:
+                                logger.info(f'\t\t {len_after} replicas are ready')
+                            if len(pod_ips) == self.num_replicas:
+                                return
+                    time.sleep(0.1)
 
         def start(self):
-            if self.name == 'gateway':
-                self._deploy_gateway()
-            else:
-                self._deploy_runtime()
-            if not self.common_args.noblock_on_start:
-                self.wait_start_success()
+            with JinaLogger(f'start_{self.name}') as logger:
+                logger.info(f'\t\tDeploying "{self.name}"')
+                if self.name == 'gateway':
+                    self._deploy_gateway()
+                else:
+                    self._deploy_runtime()
+                if not self.common_args.noblock_on_start:
+                    self.wait_start_success()
             return self
 
         def close(self):
@@ -271,15 +281,7 @@ class K8sPod(BasePod, ExitFIFO):
         :return: self
         """
         with JinaLogger(f'start_{self.name}') as logger:
-            logger.info(
-                f'🏝️\tCreate Namespace "{self.args.k8s_namespace}" for "{self.name}"'
-            )
-            kubernetes_tools.create(
-                'namespace',
-                {'name': self.args.k8s_namespace},
-                logger=logger,
-                custom_resource_dir=getattr(self.args, 'k8s_custom_resource_dir', None),
-            )
+            logger.info(f'🏝️\tCreate deployments for "{self.name}"')
             if self.k8s_head_deployment is not None:
                 self.enter_context(self.k8s_head_deployment)
             for k8s_deployment in self.k8s_deployments:

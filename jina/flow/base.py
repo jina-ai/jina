@@ -78,6 +78,38 @@ FALLBACK_PARSERS = [
 class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     """Flow is how Jina streamlines and distributes Executors. """
 
+    class _FlowK8sInfraResourcesManager:
+        def __init__(self, k8s_namespace: str, k8s_custom_resource_dir: Optional[str]):
+            self.k8s_namespace = k8s_namespace
+            self.k8s_custom_resource_dir = k8s_custom_resource_dir
+            self.namespace_created = False
+
+        def __enter__(self):
+            from ..peapods.pods.k8slib import kubernetes_tools
+
+            client = kubernetes_tools.K8sClients().core_v1
+            list_namespaces = [
+                item.metadata.name for item in client.list_namespace().items
+            ]
+            if self.k8s_namespace not in list_namespaces:
+
+                with JinaLogger(f'create_{self.k8s_namespace}') as logger:
+                    logger.info(f'🏝️\tCreate Namespace "{self.k8s_namespace}"')
+                    kubernetes_tools.create(
+                        'namespace',
+                        {'name': self.k8s_namespace},
+                        logger=logger,
+                        custom_resource_dir=self.k8s_custom_resource_dir,
+                    )
+                    self.namespace_created = True
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            from ..peapods.pods.k8slib import kubernetes_tools
+
+            if self.namespace_created:
+                client = kubernetes_tools.K8sClients().core_v1
+                client.delete_namespace(name=self.k8s_namespace)
+
     # overload_inject_start_client_flow
     @overload
     def __init__(
@@ -323,6 +355,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         ]  #: default first pod is gateway, will add when build()
         self._update_args(args, **kwargs)
 
+        self.k8s_infrastructure_manager = None
+        if self.args.infrastructure == InfrastructureType.K8S:
+            self.k8s_infrastructure_manager = self._FlowK8sInfraResourcesManager(
+                k8s_namespace=self.args.name,
+                k8s_custom_resource_dir=getattr(
+                    self.args, 'k8s_custom_resource_dir', None
+                ),
+            )
         if isinstance(self.args, argparse.Namespace):
             self.logger = JinaLogger(
                 self.__class__.__name__, **vars(self.args), **self._common_kwargs
@@ -1065,6 +1105,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
             self.build(copy_flow=False)
+
+        if self.k8s_infrastructure_manager is not None:
+            self.enter_context(self.k8s_infrastructure_manager)
 
         # set env only before the Pod get started
         if self.args.env:
