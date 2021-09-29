@@ -1230,9 +1230,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
   "theme": "base",
   "themeVariables": {
       "primaryColor": "#fff",
-      "primaryBorderColor": "none",
+      "primaryBorderColor": "#fff",
       "mainBkg": "#32C8CD",
-      "clusterBkg": "#FBCB6726",
+      "clusterBkg": "#EEEDE78C",
       "secondaryBorderColor": "none",
       "tertiaryBorderColor": "none",
       "lineColor": "#a6d8da"
