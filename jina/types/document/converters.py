@@ -46,30 +46,39 @@ def _pillow_image_to_buffer(image, image_format: str) -> bytes:
     return img_byte_arr
 
 
-def png_to_buffer(arr: 'np.ndarray', width: int, height: int, resize_method: str):
+def png_to_buffer(arr: 'np.ndarray', resize_method: str, color_axis: int = -1):
     """
     Convert png to buffer bytes.
 
     :param arr: Data representations of the png.
-    :param width: Width of the png.
-    :param height: Height of the png.
     :param resize_method: Resize methods (e.g. `NEAREST`, `BILINEAR`, `BICUBIC`, and `LANCZOS`).
+    :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
     :return: Png in buffer bytes.
     """
     arr = arr.astype(np.uint8)
 
     if arr.ndim == 1:
+        height, width = arr.shape[0], 1
         png_bytes = _png_to_buffer_1d(arr, width, height)
     elif arr.ndim == 2:
         from PIL import Image
 
+        height, width = arr.shape
         im = Image.fromarray(arr).convert('L')
         im = im.resize((width, height), getattr(Image, resize_method))
         png_bytes = _pillow_image_to_buffer(im, image_format='PNG')
     elif arr.ndim == 3:
         from PIL import Image
 
-        im = Image.fromarray(arr).convert('RGB')
+        if color_axis != -1:
+            arr = np.moveaxis(arr, color_axis, -1)
+
+        height, width, num_channels = arr.shape
+
+        if num_channels == 1:  # greyscale image
+            im = Image.fromarray((arr[0] * 255).astype(np.uint8))
+        else:
+            im = Image.fromarray(arr).convert('RGB')
         im = im.resize((width, height), getattr(Image, resize_method))
         png_bytes = _pillow_image_to_buffer(im, image_format='PNG')
     else:
