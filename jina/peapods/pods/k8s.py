@@ -1,4 +1,5 @@
 import copy
+import time
 from argparse import Namespace
 from typing import Optional, Dict, Union, Set, List
 
@@ -168,30 +169,53 @@ class K8sPod(BasePod):
 
     def wait_start_success(self):
         """Not implemented. It should wait until the deployment is up and running"""
-        deployment_args = (
-            self.deployment_args['deployments']
-            + self.deployment_args['head_deployment']
-            + self.deployment_args['tail_deployment']
-        )
-        for deployment in deployment_args:
-            # extract info to check with K8s_tools the readiness of a Pod
-            pass
+        from .k8slib.kubernetes_tools import K8SClients
+
+        k8s_clients = K8SClients().v1
+        deployment_app_names = [deployment['name'] for deployment in self.deployments]
+        while len(deployment_app_names) > 0:
+            for pod_info in k8s_clients.list_namespaced_pod(
+                self.args.k8s_namespace,
+            ).items:
+                # filter if this pod_info corresponds to me to take care.
+                if (
+                    pod_info.metadata.labels['app'] in deployment_app_names
+                    and pod_info.status.phase == 'Running'
+                ):
+                    del deployment_app_names[
+                        deployment_app_names.index(pod_info.metadata.labels['app'])
+                    ]
+            time.sleep(0.1)
 
     def close(self):
         """Not implemented. It should delete the namespace of the flow"""
-        deployment_args = self.deployment_args['head_deployment']
-        deployment_args.extend(self.deployment_args['deployments'])
-        deployment_args.append(self.deployment_args['tail_deployment'])
+        deployment_args = self.deployment_args['deployments']
+        deployment_args += (
+            [self.deployment_args['head_deployment']]
+            if self.deployment_args['head_deployment'] is not None
+            else []
+        )
+        deployment_args += (
+            [self.deployment_args['tail_deployment']]
+            if self.deployment_args['tail_deployment'] is not None
+            else []
+        )
         for deployment in deployment_args:
             # extract info to do destroy call to K8s
             pass
 
     def join(self):
         """Not implemented. It should wait to make sure deployments are properly killed."""
-        deployment_args = (
-            self.deployment_args['deployments']
-            + self.deployment_args['head_deployment']
-            + self.deployment_args['tail_deployment']
+        deployment_args = self.deployment_args['deployments']
+        deployment_args += (
+            [self.deployment_args['head_deployment']]
+            if self.deployment_args['head_deployment'] is not None
+            else []
+        )
+        deployment_args += (
+            [self.deployment_args['tail_deployment']]
+            if self.deployment_args['tail_deployment'] is not None
+            else []
         )
         for deployment in deployment_args:
             # extract info to make sure they are destroyed
@@ -288,7 +312,7 @@ class K8sPod(BasePod):
             return 'master'
 
     def _create_node(self, suffix):
-        name = f'{self.name}_{suffix}' if suffix != '' else self.name
+        name = f'{self.name}-{suffix}' if suffix != '' else self.name
         dns_name = kubernetes_deployment.to_dns_name(name)
         return {
             'name': name,
