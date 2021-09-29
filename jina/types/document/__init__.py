@@ -36,7 +36,7 @@ from ...helper import (
     random_identity,
     download_mermaid_url,
     dunder_get,
-    cached_property,
+    deprecated_parameter,
 )
 from ...importer import ImportExtensions
 from ...logging.predefined import default_logger
@@ -1006,6 +1006,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
         """
         self.blob = to_image_blob(io.BytesIO(self.buffer), color_axis)
 
+    @deprecated_parameter(params=['width', 'height'])
     def convert_image_blob_to_uri(
         self,
         width: Optional[int] = None,
