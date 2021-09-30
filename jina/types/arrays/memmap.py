@@ -357,7 +357,7 @@ class DocumentArrayMemmap(
             str_key = self._int2str_id(idx)
             self._del_doc(idx, str_key)
         elif isinstance(key, slice):
-            for idx in self._iteridx_by_slice(key):
+            for idx in reversed(self._iteridx_by_slice(key)):
                 str_key = self._int2str_id(idx)
                 self._del_doc(idx, str_key)
         else:
