@@ -68,7 +68,11 @@ def k8s_flow_with_init_container(
     test_executor_image: str, executor_merger_image: str, dummy_dumper_image: str
 ) -> Flow:
     flow = Flow(
-        name='test-flow', port_expose=8080, infrastructure='K8S', protocol='http'
+        name='test-flow',
+        port_expose=8080,
+        infrastructure='K8S',
+        protocol='http',
+        k8s_startup_time=120,
     ).add(
         name='test_executor',
         uses=test_executor_image,
