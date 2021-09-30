@@ -61,14 +61,17 @@ class PostMixin:
                 return result
 
         with ExitStack() as stack:
-            if self.args.infrastructure == InfrastructureType.K8S:
+            if (
+                not hasattr(self.args, 'infrastructure')
+                or self.args.infrastructure == InfrastructureType.JINA
+            ):
+                pass
+            elif self.args.infrastructure == InfrastructureType.K8S:
                 stack.enter_context(
                     kubernetes_tools.get_port_forward_contextmanager(
                         self.args.name, self.port_expose
                     )
                 )
-            elif self.args.infrastructure == InfrastructureType.JINA:
-                pass
             else:
                 raise NotImplemented(
                     f'Infrastructure type {self.args.infrastructure} unknown.'
