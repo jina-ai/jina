@@ -139,6 +139,8 @@ class DocumentArrayMemmap(
             if not np.array_equal((r[1], r[2], r[3]), HEADER_NONE_ENTRY):
                 self._header_map[r[0]] = (idx, r[1], r[2], r[3])
 
+        self._header_keys = list(self._header_map.keys())
+
         self._body_fileno = self._body.fileno()
         self._start = 0
         if self._header_map:
@@ -201,6 +203,7 @@ class DocumentArrayMemmap(
         if idx is None:
             self._header_map[doc.id] = (self.last_header_entry, p, r, r + l)
             self.last_header_entry = self.last_header_entry + 1
+            self._header_keys.append(doc.id)
         else:
             self._header_map[doc.id] = (idx, p, r, r + l)
             self._header.seek(0, 2)
@@ -337,7 +340,9 @@ class DocumentArrayMemmap(
         self._header.seek(0, 2)
         self._header.flush()
         self._last_mmap = None
+        pop_idx = self._header_keys.index(str_key)
         self._header_map.pop(str_key)
+        self._header_keys.pop(pop_idx)
         self.buffer_pool.delete_if_exists(str_key)
         self._invalidate_embeddings_memmap()
 
@@ -361,13 +366,8 @@ class DocumentArrayMemmap(
         return self._header_map[key][0]
 
     def _int2str_id(self, key: int) -> str:
-        p = key * self._header_entry_size
-        self._header.seek(p, 0)
-        d_id = np.frombuffer(
-            self._header.read(4 * self._key_length), dtype=(np.str_, self._key_length)
-        )
-        self._header.seek(0, 2)
-        return d_id[0]
+        # i < 0 needs to be handled
+        return self._header_keys[key]
 
     def __iter__(self) -> Iterator['Document']:
         for k in self._header_map.keys():
