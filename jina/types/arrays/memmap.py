@@ -206,6 +206,7 @@ class DocumentArrayMemmap(
             self._header_keys.append(doc.id)
         else:
             self._header_map[doc.id] = (idx, p, r, r + l)
+            self._header_keys[idx] = doc.id
             self._header.seek(0, 2)
         self._start = p + r + l
         self._body.write(value)

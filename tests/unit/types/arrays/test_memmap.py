@@ -54,7 +54,7 @@ def test_memmap_delete_clear(tmpdir, mocker, idx1, idx99):
     assert len(dam) == 100
     del dam[idx1]
     assert len(dam) == 99
-    del dam[idx99]
+    del dam[idx99 if isinstance(idx99, str) else idx99 - 1]
     assert len(dam) == 98
     for d in dam:
         assert d.id != idx1
