@@ -127,7 +127,7 @@ class K8sPod(BasePod, ExitFIFO):
                         logger.info(
                             f'Number of replicas available {available_replicas}, waiting for {self.num_replicas - available_replicas} replicas to be available'
                         )
-                        time.sleep(0.2)
+                        time.sleep(1.0)
 
         def start(self):
             with JinaLogger(f'start_{self.name}') as logger:
@@ -141,6 +141,8 @@ class K8sPod(BasePod, ExitFIFO):
             return self
 
         def close(self):
+            from kubernetes import client
+
             with JinaLogger(f'close_{self.name}') as logger:
                 try:
                     client = kubernetes_tools.K8sClients().apps_v1
@@ -155,8 +157,10 @@ class K8sPod(BasePod, ExitFIFO):
                         logger.error(
                             f' Deletion of deployment {self.name} unsuccessful with status {resp.status}'
                         )
-                except Exception as exc:
-                    logger.error(f' Error deleting deployment {self.name}: {repr(exc)}')
+                except client.ApiException as exc:
+                    logger.error(
+                        f' Error deleting deployment {self.name}: {exc.reason} '
+                    )
 
         def __enter__(self):
             return self.start()

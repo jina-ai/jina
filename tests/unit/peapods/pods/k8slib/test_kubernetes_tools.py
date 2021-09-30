@@ -12,7 +12,7 @@ from jina.peapods.pods.k8slib.kubernetes_tools import _k8s_clients
 def test_lazy_load_k8s_client(monkeypatch):
     load_kube_config_mock = Mock()
     monkeypatch.setattr(kubernetes.config, 'load_kube_config', load_kube_config_mock)
-    attributes = ['k8s_client', 'v1', 'beta', 'networking_v1_beta1_api', 'apps_v1']
+    attributes = ['k8s_client', 'core_v1', 'beta', 'networking_v1_beta1_api', 'apps_v1']
     for attribute in attributes:
         assert getattr(_k8s_clients, f'_{attribute}') is None
 
