@@ -28,6 +28,7 @@ from ..document import Document
 from ..struct import StructView
 from ...helper import typename
 from ...proto import jina_pb2
+from ... import __windows__
 import csv
 
 try:
@@ -489,7 +490,10 @@ class DocumentArray(
         if hasattr(file, 'write'):
             file_ctx = nullcontext(file)
         else:
-            file_ctx = open(file, 'wb')
+            if __windows__:
+                file_ctx = open(file, 'wb', newline='')
+            else:
+                file_ctx = open(file, 'wb')
 
         with file_ctx as fp:
             dap = jina_pb2.DocumentArrayProto()

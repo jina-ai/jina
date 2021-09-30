@@ -95,13 +95,16 @@ def k8s_flow_with_sharding(
 
 
 @pytest.mark.timeout(3600)
+@pytest.mark.parametrize('k8s_connection_pool', [True, False])
 def test_flow_with_needs(
     k8s_cluster_namespaced,
     test_executor_image,
     executor_merger_image,
     k8s_flow_with_needs: Flow,
     logger,
+    k8s_connection_pool: bool,
 ):
+    k8s_flow_with_needs.args.k8s_connection_pool = k8s_connection_pool
     resp = run_test(
         [test_executor_image, executor_merger_image],
         k8s_cluster_namespaced,

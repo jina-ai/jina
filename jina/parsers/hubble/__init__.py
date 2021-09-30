@@ -44,6 +44,20 @@ def set_hub_pull_parser(parser=None):
     return parser
 
 
+def set_hub_new_parser(parser=None):
+    """Set the parser for the hub new
+    :param parser: an optional existing parser to build upon
+    :return: the parser
+    """
+    if not parser:
+        parser = set_base_parser()
+
+    from .new import mixin_hub_new_parser
+
+    mixin_hub_new_parser(parser)
+    return parser
+
+
 def set_hub_parser(parser=None):
     """Set the parser for the hub
     :param parser: the parser configure
@@ -60,11 +74,13 @@ def set_hub_parser(parser=None):
         required=True,
     )
 
-    spp.add_parser(
-        'new',
-        help='create a new executor using the template',
-        description='Create a new executor using the template',
-        formatter_class=_chf,
+    set_hub_new_parser(
+        spp.add_parser(
+            'new',
+            help='create a new executor using the template',
+            description='Create a new executor using the template',
+            formatter_class=_chf,
+        )
     )
 
     set_hub_push_parser(

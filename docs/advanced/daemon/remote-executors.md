@@ -2,7 +2,6 @@
 
 JinaD enables deploying Executors on remote machines. We can pass the remote info using `host`and `port_jinad` arguments in the Flow syntax. Here are a few examples of using remote Executors.
 
-
 ## Executor defined in YAML
 
 ````{tab} Local
@@ -132,7 +131,6 @@ f = Flow().add(uses=MyAwesomeExecutor,
 ```
 ````
 
-
 ## Executor using class + pip dependency
 
 ````{tab} Local
@@ -177,6 +175,36 @@ f = Flow().add(uses=TFExecutor,
                port_jinad=8000,
                py_modules=['path/to/this/file.py'],
                upload_files=['requirements.txt'])
+
+```
+````
+
+## Using GPU with any remote Executor
+
+````{tab} Without GPU
+```{code-block} python
+
+f = Flow().add(uses=TFExecutor,
+               host='1.2.3.4',
+               port_jinad=8000,
+               py_modules=['path/to/this/file.py'],
+               upload_files=['requirements.txt'])
+
+```
+````
+
+````{tab} With GPU
+```{code-block} python
+---
+emphasize-lines: 6
+---
+
+f = Flow().add(uses=TFExecutor,
+               host='1.2.3.4',
+               port_jinad=8000,
+               py_modules=['path/to/this/file.py'],
+               upload_files=['requirements.txt'],
+               gpus='all')
 
 ```
 ````

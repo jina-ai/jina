@@ -100,6 +100,23 @@ def deploy_service(
         logger=logger,
         custom_resource_dir=custom_resource_dir,
     )
+
+    logger.info(f'🔑\tCreate necessary permissions"')
+
+    kubernetes_tools.create(
+        'connection-pool-role',
+        {
+            'namespace': namespace,
+        },
+    )
+
+    kubernetes_tools.create(
+        'connection-pool-role-binding',
+        {
+            'namespace': namespace,
+        },
+    )
+
     return f'{name}.{namespace}.svc'
 
 
@@ -121,7 +138,6 @@ def get_cli_params(arguments: Namespace, skip_list: Tuple[str] = ()) -> str:
         'dynamic_routing',
         'hosts_in_connect',
         'polling_type',
-        'k8s_namespace',
         'uses_after',
         'uses_before',
         'replicas',
@@ -167,7 +183,7 @@ def get_image_name(uses: str) -> str:
     """
     try:
         scheme, name, tag, secret = parse_hub_uri(uses)
-        meta_data = HubIO.fetch_meta(name)
+        meta_data = HubIO.fetch_meta(name, tag, secret=secret)
         image_name = meta_data.image_name
         return image_name
     except Exception:

@@ -5,10 +5,10 @@ on:
     inputs:
       announce_text:
         description: 'Announcement text (to delete current, leave it empty)'
-        required: true
+        required: false
       announce_url:
         description: 'Announcement URL (to delete current, leave it empty)'
-        required: true
+        required: false
       release_token:
         description: 'Your token'
         required: true

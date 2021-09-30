@@ -1,4 +1,5 @@
 import os
+import warnings
 from enum import Enum
 from typing import List
 
@@ -27,23 +28,32 @@ class IDLiterals(DaemonEnum):
     JWORKSPACE = 'jworkspace'
 
 
-class DaemonBuild(DaemonEnum):
+class DaemonDockerfile(DaemonEnum):
     """Enum representing build value passed in .jinad file"""
 
     DEVEL = 'devel'
     DEFAULT = 'default'
     CPU = 'default'
     GPU = 'gpu'
+    OTHERS = 'others'
 
     @classproperty
     def default(cls) -> str:
-        """Get default value for DaemonBuild
+        """Get default value for DaemonDockerfile
 
         .. note::
             set env var `JINA_DAEMON_BUILD` to `DEVEL` if you're working on dev mode
 
-        :return: default value for DaemonBuild"""
-        return cls.DEVEL if os.getenv('JINA_DAEMON_BUILD') == 'DEVEL' else cls.DEFAULT
+        :return: default value for DaemonDockerfile"""
+        if os.getenv('JINA_DAEMON_DOCKERFILE') == 'DEVEL':
+            return cls.DEVEL
+        elif os.getenv('JINA_DAEMON_BUILD') == 'DEVEL':
+            warnings.warn(
+                'env var `JINA_DAEMON_BUILD` is deprecated now. Please use `JINA_DAEMON_DOCKERFILE`'
+            )
+            return cls.DEVEL
+        else:
+            return cls.DEFAULT
 
 
 class PythonVersion(DaemonEnum):
