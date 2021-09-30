@@ -126,6 +126,7 @@ ac_table = {
             '--env',
             '--inspect',
             '--infrastructure',
+            '--k8s-startup-time',
         ],
         'ping': ['--help', '--timeout', '--retries', '--print-response'],
         'gateway': [

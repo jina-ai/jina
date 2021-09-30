@@ -270,6 +270,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         *,
         env: Optional[dict] = None,
         inspect: Optional[str] = 'COLLECT',
+        k8s_startup_time: Optional[int] = 60,
         log_config: Optional[str] = None,
         name: Optional[str] = None,
         quiet: Optional[bool] = False,
@@ -285,6 +286,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param inspect: The strategy on those inspect pods in the flow.
 
               If `REMOVE` is given then all inspect pods are removed when building the flow.
+        :param k8s_startup_time: Time to wait until the kubernetes flow started. In the future, we will solve this using probes.
         :param log_config: The YAML config of the logger used in this object.
         :param name: The name of this object.
 
