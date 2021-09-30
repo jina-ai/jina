@@ -181,7 +181,6 @@ def _wait_for_flow_ready(namespace: str, timeout: int):
     while time() - start < timeout:
         try:
             pods = __k8s_clients.v1.list_namespaced_pod(namespace=namespace)
-            print('# pods.items', pods.items)
             statuses = [item.status.phase == 'Running' for item in pods.items]
             print('# statuses', statuses)
             if len(statuses) > 1 and all(statuses):

@@ -1075,6 +1075,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         self._build_level = FlowBuildLevel.RUNNING
 
+        if (
+            self.args.infrastructure == InfrastructureType.K8S
+            and self.args.k8s_startup_time > 0
+        ):
+            self.logger.info(
+                f'Waiting {self.args.k8s_startup_time} seconds for the flow to start.'
+            )
+            time.sleep(int(self.args.k8s_startup_time))
         return self
 
     def _wait_until_all_ready(self) -> bool:
