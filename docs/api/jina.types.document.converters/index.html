@@ -598,19 +598,25 @@
 <span id="jina-types-document-converters-module"></span><h1>jina.types.document.converters module<a class="headerlink" href="#module-jina.types.document.converters" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.types.document.converters.png_to_buffer">
-<span class="sig-prename descclassname"><span class="pre">jina.types.document.converters.</span></span><span class="sig-name descname"><span class="pre">png_to_buffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resize_method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/converters/#png_to_buffer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.converters.png_to_buffer" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">jina.types.document.converters.</span></span><span class="sig-name descname"><span class="pre">png_to_buffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resize_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BILINEAR'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/converters/#png_to_buffer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.converters.png_to_buffer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert png to buffer bytes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – Data representations of the png.</p></li>
-<li><p><strong>width</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Width of the png.</p></li>
-<li><p><strong>height</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Height of the png.</p></li>
+<li><p><strong>width</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – the width of the <code class="xref py py-attr docutils literal notranslate"><span class="pre">arr</span></code>, if None, interpret from <code class="xref py py-attr docutils literal notranslate"><span class="pre">arr</span></code> shape.</p></li>
+<li><p><strong>height</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – the height of the <code class="xref py py-attr docutils literal notranslate"><span class="pre">arr</span></code>, if None, interpret from <code class="xref py py-attr docutils literal notranslate"><span class="pre">arr</span></code> shape.</p></li>
 <li><p><strong>resize_method</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Resize methods (e.g. <cite>NEAREST</cite>, <cite>BILINEAR</cite>, <cite>BICUBIC</cite>, and <cite>LANCZOS</cite>).</p></li>
+<li><p><strong>color_axis</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the axis id of the color channel, <code class="docutils literal notranslate"><span class="pre">-1</span></code> indicates the color channel info at the last axis</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Png in buffer bytes.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>..note::</dt><dd><p>if both <code class="xref py py-attr docutils literal notranslate"><span class="pre">width</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">height</span></code> were provided, will not resize. Otherwise, will get image size
+by <code class="xref py py-attr docutils literal notranslate"><span class="pre">arr</span></code> shape and apply resize method <code class="xref py py-attr docutils literal notranslate"><span class="pre">resize_method</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -686,7 +692,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Sep 29, 2021.
+                    Last updated on Sep 30, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" target="_blank"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" target="_blank"> <i class="fab fa-slack"></i></a>

@@ -1112,14 +1112,21 @@ assert d.tags[‘id’] == ‘external_id’ # true</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.document.Document.convert_image_blob_to_uri">
-<span class="sig-name descname"><span class="pre">convert_image_blob_to_uri</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resize_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BILINEAR'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/#Document.convert_image_blob_to_uri"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.Document.convert_image_blob_to_uri" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">convert_image_blob_to_uri</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resize_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BILINEAR'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/#Document.convert_image_blob_to_uri"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.Document.convert_image_blob_to_uri" title="Permalink to this definition">¶</a></dt>
 <dd><p>Assuming <a class="reference internal" href="#jina.types.document.Document.blob" title="jina.types.document.Document.blob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">blob</span></code></a> is a _valid_ image, set <a class="reference internal" href="#jina.types.document.Document.uri" title="jina.types.document.Document.uri"><code class="xref py py-attr docutils literal notranslate"><span class="pre">uri</span></code></a> accordingly
-:type width: <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>
-:param width: the width of the blob
-:type height: <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>
-:param height: the height of the blob
+:type width: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]
+:param width: the width of the blob, if None, interpret from <a class="reference internal" href="#jina.types.document.Document.blob" title="jina.types.document.Document.blob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">blob</span></code></a> shape.
+:type height: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]
+:param height: the height of the blob, if None, interpret from <a class="reference internal" href="#jina.types.document.Document.blob" title="jina.types.document.Document.blob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">blob</span></code></a> shape.
 :type resize_method: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param resize_method: the resize method name</p>
+:param resize_method: the resize method name
+:type color_axis: <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>
+:param color_axis: the axis id of the color channel, <code class="docutils literal notranslate"><span class="pre">-1</span></code> indicates the color channel info at the last axis</p>
+<dl class="simple">
+<dt>..note::</dt><dd><p>if both <code class="xref py py-attr docutils literal notranslate"><span class="pre">width</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">height</span></code> were provided, will not resize. Otherwise, will get image size
+by <code class="xref py py-attr docutils literal notranslate"><span class="pre">self.blob</span></code> shape and apply resize method <code class="xref py py-attr docutils literal notranslate"><span class="pre">resize_method</span></code>.</p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.document.Document.convert_image_uri_to_blob">
@@ -1369,7 +1376,7 @@ the suffix svg/jpg determines the file type of the output image</p></li>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Sep 29, 2021.
+                    Last updated on Sep 30, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" target="_blank"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" target="_blank"> <i class="fab fa-slack"></i></a>
