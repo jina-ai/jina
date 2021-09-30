@@ -4,6 +4,7 @@ import tempfile
 from time import time, sleep
 from typing import Dict, Optional
 
+from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.logging.predefined import default_logger
 
@@ -154,39 +155,25 @@ def _get_gateway_pod_name(namespace):
 def get_port_forward_contextmanager(
     namespace: str,
     port_expose: int,
-    timeout: int = 60,
     config_path: str = None,
 ) -> 'GeneratorContextManager':
     """Forward local requests to the gateway which is running in the Kubernetes cluster.
     :param namespace: namespace of the gateway
     :param port_expose: exposed port of the gateway
-    :param timeout: time in seconds to wait for the gateway to start
     :param config_path: path to the Kubernetes config file
 
     :return: context manager which sets up and terminates the port-forward
     """
-    import portforward
+    with ImportExtensions(
+        required=True,
+        help_text='sending requests to the Kubernetes cluster requires to install the portforward package, '
+        'please do `pip install jina[portforward]`',
+    ):
+        import portforward
 
-    _wait_for_flow_ready(namespace, timeout)
     gateway_pod_name = _get_gateway_pod_name(namespace)
     if config_path is None and 'KUBECONFIG' in os.environ:
         config_path = os.environ['KUBECONFIG']
     return portforward.forward(
         namespace, gateway_pod_name, port_expose, port_expose, config_path
     )
-
-
-def _wait_for_flow_ready(namespace: str, timeout: int):
-    start = time()
-    while time() - start < timeout:
-        try:
-            pods = __k8s_clients.v1.list_namespaced_pod(namespace=namespace)
-            statuses = [item.status.phase == 'Running' for item in pods.items]
-            print('# statuses', statuses)
-            if len(statuses) > 1 and all(statuses):
-                print('# return ')
-                return
-        except:
-            pass
-        sleep(1)
-    raise Exception(f'Gateway did not start after {timeout} seconds.')
