@@ -3,7 +3,6 @@ from pytest_kind import cluster
 
 # kind version has to be bumped to v0.11.1 since pytest-kind is just using v0.10.0 which does not work on ubuntu in ci
 # TODO don't use pytest-kind anymore
-
 cluster.KIND_VERSION = 'v0.11.1'
 import pytest
 
@@ -13,7 +12,13 @@ from jina import Flow, Document
 @pytest.fixture()
 def k8s_flow_with_needs(test_executor_image: str, executor_merger_image: str) -> Flow:
     flow = (
-        Flow(name='test-flow', port_expose=9090, infrastructure='K8S', protocol='http')
+        Flow(
+            name='test-flow',
+            port_expose=9090,
+            infrastructure='K8S',
+            protocol='http',
+            k8s_startup_time=120,
+        )
         .add(
             name='segmenter',
             uses=test_executor_image,
@@ -52,7 +57,6 @@ def pull_images(images, cluster, logger):
     logger.debug(f'Loading docker image into kind cluster...')
     for image in images:
         cluster.needs_docker_image(image)
-    # cluster.needs_docker_image('jinaai/jina:test-pip')
     logger.debug(f'Done loading docker image into kind cluster...')
 
 
@@ -88,7 +92,11 @@ def k8s_flow_with_sharding(
     test_executor_image: str, executor_merger_image: str, dummy_dumper_image: str
 ) -> Flow:
     flow = Flow(
-        name='test-flow', port_expose=8080, infrastructure='K8S', protocol='http'
+        name='test-flow',
+        port_expose=8080,
+        infrastructure='K8S',
+        protocol='http',
+        k8s_startup_time=120,
     ).add(
         name='test_executor',
         shards=3,
