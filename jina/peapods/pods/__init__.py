@@ -501,7 +501,7 @@ class Pod(BasePod, ExitFIFO):
             self._activate()
         return self
 
-    def wait_start_success(self) -> None:
+    async def wait_start_success(self) -> None:
         """Block until all peas starts successfully.
 
         If not successful, it will raise an error hoping the outer function to catch it
@@ -511,8 +511,9 @@ class Pod(BasePod, ExitFIFO):
                 f'{self.wait_start_success!r} should only be called when `noblock_on_start` is set to True'
             )
         try:
-            for p in self.peas:
-                p.wait_start_success()
+            import asyncio
+
+            _ = await asyncio.gather(*[pea.wait_start_success() for pea in self.peas])
             self._activate()
         except:
             self.close()

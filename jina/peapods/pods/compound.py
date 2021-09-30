@@ -132,7 +132,7 @@ class CompoundPod(BasePod, ExitStack):
                 raise
             return self
 
-    def wait_start_success(self) -> None:
+    async def wait_start_success(self) -> None:
         """
         Block until all pods and peas start successfully.
         If not successful, it will raise an error hoping the outer function to catch it
@@ -144,10 +144,14 @@ class CompoundPod(BasePod, ExitStack):
             )
 
         try:
-            self.head_pea.wait_start_success()
-            self.tail_pea.wait_start_success()
-            for p in self.replicas:
-                p.wait_start_success()
+            import asyncio
+
+            _ = await asyncio.gather(
+                *[
+                    p.wait_start_success()
+                    for p in [self.head_pea, self.tail_pea] + self.replicas
+                ]
+            )
         except:
             self.close()
             raise

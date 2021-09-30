@@ -132,7 +132,7 @@ class GRPCDataRuntime(BaseRuntime, ABC):
             pass
 
     @staticmethod
-    def wait_for_ready_or_shutdown(
+    async def wait_for_ready_or_shutdown(
         timeout: Optional[float],
         ctrl_address: str,
         shutdown_event: Union[multiprocessing.Event, threading.Event],
@@ -147,13 +147,14 @@ class GRPCDataRuntime(BaseRuntime, ABC):
         :param kwargs: extra keyword arguments
         :return: True if is ready or it needs to be shutdown
         """
+        import asyncio
+
         timeout_ns = 1000000000 * timeout if timeout else None
         now = time.time_ns()
         while timeout_ns is None or time.time_ns() - now < timeout_ns:
             if shutdown_event.is_set() or GRPCDataRuntime.is_ready(ctrl_address):
                 return True
-            time.sleep(0.1)
-
+            await asyncio.sleep(0.1)
         return False
 
     async def _callback(self, msg: Message) -> None:

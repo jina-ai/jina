@@ -145,7 +145,7 @@ class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
         return Zmqlet.get_ctrl_address(host, port, True)[0]
 
     @staticmethod
-    def wait_for_ready_or_shutdown(
+    async def wait_for_ready_or_shutdown(
         timeout: Optional[float],
         ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
         **kwargs,
@@ -159,4 +159,13 @@ class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
 
         :return: True if is ready or it needs to be shutdown
         """
-        return ready_or_shutdown_event.wait(timeout)
+        import asyncio
+        import time
+
+        timeout_ns = 1000000000 * timeout if timeout else None
+        now = time.time_ns()
+        while timeout_ns is None or time.time_ns() - now < timeout_ns:
+            if ready_or_shutdown_event.is_set():
+                return True
+            await asyncio.sleep(0.1)
+        return False

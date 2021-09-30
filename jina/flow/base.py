@@ -7,7 +7,6 @@ import os
 import re
 import sys
 import threading
-import time
 import uuid
 import warnings
 from collections import OrderedDict
@@ -39,6 +38,7 @@ from ..helper import (
     ArgNamespace,
     download_mermaid_url,
     CatchAllCleanupContextManager,
+    run_async,
 )
 from ..jaml import JAMLCompatible, JAML
 
@@ -1071,26 +1071,26 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             if not getattr(v.args, 'external', False):
                 self.enter_context(v)
 
-        self._wait_until_all_ready()
+        if not run_async(self._wait_until_all_ready):
+            raise RuntimeFailToStart
 
         self._build_level = FlowBuildLevel.RUNNING
 
         return self
 
-    def _wait_until_all_ready(self) -> bool:
+    async def _wait_until_all_ready(self) -> bool:
         results = {}
-        threads = []
 
-        def _wait_ready(_pod_name, _pod):
+        async def _wait_ready(_pod_name, _pod):
             try:
                 if not getattr(_pod.args, 'external', False):
                     results[_pod_name] = 'pending'
-                    _pod.wait_start_success()
+                    await _pod.wait_start_success()
                     results[_pod_name] = 'done'
             except Exception as ex:
                 results[_pod_name] = repr(ex)
 
-        def _polling_status():
+        async def _polling_status():
             spinner = itertools.cycle(
                 ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
             )
@@ -1115,39 +1115,17 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 if not pendings:
                     sys.stdout.write('\r{}\r'.format(' ' * 100))
                     break
-                time.sleep(0.1)
+                await asyncio.sleep(0.1)
 
         # kick off all pods wait-ready threads
-        for k, v in self:
-            t = threading.Thread(
-                target=_wait_ready,
-                args=(
-                    k,
-                    v,
-                ),
-                daemon=True,
-            )
-            threads.append(t)
-            t.start()
-
-        # kick off spinner thread
-        t_m = threading.Thread(target=_polling_status, daemon=True)
-        t_m.start()
-
-        # kick off ip getter thread
         addr_table = []
-        t_ip = None
+        coroutines = [_wait_ready(pod_name, pod) for pod_name, pod in self]
+        coroutines.append(_polling_status())
         if self.args.infrastructure != InfrastructureType.K8S:
-            t_ip = threading.Thread(
-                target=self._get_address_table, args=(addr_table,), daemon=True
-            )
-            t_ip.start()
+            coroutines.append(self._get_address_table(addr_table))
+        import asyncio
 
-        for t in threads:
-            t.join()
-        if t_ip is not None:
-            t_ip.join()
-        t_m.join()
+        _ = await asyncio.gather(*coroutines)
 
         error_pods = [k for k, v in results.items() if v != 'done']
         if error_pods:
@@ -1155,7 +1133,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 f'Flow is aborted due to {error_pods} can not be started.'
             )
             self.close()
-            raise RuntimeFailToStart
+            return False
         else:
 
             if self.args.infrastructure == InfrastructureType.K8S:
@@ -1168,6 +1146,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             self.logger.debug(
                 f'{self.num_pods} Pods (i.e. {self.num_peas} Peas) are running in this Flow'
             )
+        return True
 
     @property
     def num_pods(self) -> int:
@@ -1447,7 +1426,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def __iter__(self):
         return self._pod_nodes.items().__iter__()
 
-    def _get_address_table(self, address_table):
+    async def _get_address_table(self, address_table):
         address_table.extend(
             [
                 f'\t🔗 Protocol: \t\t{colored(self.protocol, attrs="bold")}',

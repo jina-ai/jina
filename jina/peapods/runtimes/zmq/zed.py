@@ -360,7 +360,7 @@ class ZEDRuntime(ZMQRuntime):
         return status and status.is_ready
 
     @staticmethod
-    def wait_for_ready_or_shutdown(
+    async def wait_for_ready_or_shutdown(
         timeout: Optional[float],
         ctrl_address: str,
         timeout_ctrl: int,
@@ -377,6 +377,8 @@ class ZEDRuntime(ZMQRuntime):
         :param kwargs: extra keyword arguments
         :return: True if is ready or it needs to be shutdown
         """
+        import asyncio
+
         timeout_ns = 1000000000 * timeout if timeout else None
         now = time.time_ns()
         while timeout_ns is None or time.time_ns() - now < timeout_ns:
@@ -384,7 +386,7 @@ class ZEDRuntime(ZMQRuntime):
                 ctrl_address, timeout_ctrl
             ):
                 return True
-
+            await asyncio.sleep(0.1)
         return False
 
     @staticmethod

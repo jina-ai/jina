@@ -23,7 +23,7 @@ def test_simple_zmqlet():
             '--socket-out',
             'PUSH_CONNECT',
             '--timeout-ctrl',
-            '-1',
+            '500',
         ]
     )
 
@@ -42,7 +42,7 @@ def test_simple_zmqlet():
             '--socket-out',
             'PUSH_BIND',
             '--timeout-ctrl',
-            '-1',
+            '500',
         ]
     )
 
