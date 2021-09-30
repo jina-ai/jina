@@ -57,11 +57,9 @@ def pull_images(images, cluster, logger):
     logger.debug(f'Done loading docker image into kind cluster...')
 
 
-def run_test(
-    images, cluster, flow, logger, expected_running_pods, endpoint, port_expose
-):
+def run_test(images, cluster, flow, logger, endpoint, port_expose):
     pull_images(images, cluster, logger)
-    start_flow(expected_running_pods, cluster, flow, logger)
+    start_flow(flow, logger)
     resp = send_dummy_request(endpoint, cluster, flow, logger, port_expose=port_expose)
     return resp
 
@@ -82,29 +80,10 @@ def send_dummy_request(
     return resp
 
 
-def start_flow(expected_running_pods, k8s_cluster_namespaced, flow, logger):
+def start_flow(flow, logger):
     logger.debug(f'Starting flow on kind cluster...')
     flow.start()
     logger.debug(f'Done starting flow on kind cluster...')
-    logger.debug(
-        f'Starting to wait for pods in kind cluster to reach "RUNNING" state...'
-    )
-    waiting = True
-    while waiting:
-        num_running_pods = len(
-            k8s_cluster_namespaced.list_ready_pods(namespace=flow.args.name)
-        )
-        if num_running_pods == expected_running_pods:
-            waiting = False
-        time.sleep(3)
-        logger.debug(
-            f'Still waiting for pods to reach running state '
-            f'(Current Status: {num_running_pods}/{expected_running_pods}).'
-        )
-
-        nodes_info = k8s_cluster_namespaced.get_node_info()
-        for n in nodes_info:
-            logger.debug(f'Node info {n}')
 
 
 @pytest.fixture()
@@ -155,7 +134,6 @@ def test_flow_with_needs(
         k8s_cluster_namespaced,
         k8s_flow_with_needs,
         logger,
-        expected_running_pods=7,
         endpoint='index',
         port_expose=9090,
     )
@@ -188,7 +166,6 @@ def test_flow_with_init(
         k8s_cluster_namespaced,
         k8s_flow_with_init_container,
         logger,
-        expected_running_pods=2,
         endpoint='search',
         port_expose=8080,
     )
@@ -214,7 +191,6 @@ def test_flow_with_sharding(
         k8s_cluster_namespaced,
         k8s_flow_with_sharding,
         logger,
-        expected_running_pods=9,
         endpoint='index',
         port_expose=8080,
     )
