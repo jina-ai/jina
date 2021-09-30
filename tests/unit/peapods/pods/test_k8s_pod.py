@@ -118,13 +118,13 @@ def test_parse_args_custom_executor(parallel: int):
             '2',
             [
                 {
-                    'name': 'test-pod_head',
+                    'name': 'test-pod-head',
                     'head_host': 'test-pod-head.ns.svc',
                 },
-                {'name': 'test-pod_0', 'head_host': 'test-pod-0.ns.svc'},
-                {'name': 'test-pod_1', 'head_host': 'test-pod-1.ns.svc'},
+                {'name': 'test-pod-0', 'head_host': 'test-pod-0.ns.svc'},
+                {'name': 'test-pod-1', 'head_host': 'test-pod-1.ns.svc'},
                 {
-                    'name': 'test-pod_tail',
+                    'name': 'test-pod-tail',
                     'head_host': 'test-pod-tail.ns.svc',
                 },
             ],

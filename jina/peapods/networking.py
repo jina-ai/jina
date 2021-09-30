@@ -444,7 +444,7 @@ def create_connection_pool(args: 'Namespace') -> ConnectionPool:
         k8s_clients = K8sClients()
         return K8sGrpcConnectionPool(
             namespace=args.k8s_namespace,
-            client=k8s_clients.v1,
+            client=k8s_clients.core_v1,
         )
     else:
         return GrpcConnectionPool()
