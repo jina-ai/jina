@@ -48,14 +48,31 @@ def test_convert_buffer_to_blob():
     np.testing.assert_almost_equal(doc.content.reshape([10, 10]), array)
 
 
+@pytest.mark.parametrize('resize_method', ['BILINEAR', 'NEAREST', 'BICUBIC', 'LANCZOS'])
 @pytest.mark.parametrize(
-    'arr_size,mode', [(32 * 28, 'L'), ([32, 28], 'L'), ([32, 28, 3], 'RGB')]
+    'arr_size, color_axis, height, width',
+    [
+        ((32 * 28), -1, None, None),  # single line
+        ([32, 28], -1, None, None),  # without channel info
+        ([32, 28, 3], -1, None, None),  # h, w, c (rgb)
+        ([3, 32, 28], 0, None, None),  # c, h, w  (rgb)
+        ([1, 32, 28], 0, None, None),  # c, h, w, (greyscale)
+        ([32, 28, 1], -1, None, None),  # h, w, c, (greyscale)
+        ((32 * 28), -1, 896, 1),  # single line
+        ([32, 28], -1, 32, 28),  # without channel info
+        ([32, 28, 3], -1, 32, 28),  # h, w, c (rgb)
+        ([3, 32, 28], 0, 32, 28),  # c, h, w  (rgb)
+        ([1, 32, 28], 0, 32, 28),  # c, h, w, (greyscale)
+        ([32, 28, 1], -1, 32, 28),  # h, w, c, (greyscale)
+    ],
 )
-def test_convert_blob_to_uri(arr_size, mode):
+def test_convert_image_blob_to_uri(arr_size, color_axis, width, height, resize_method):
     doc = Document(content=np.random.randint(0, 255, arr_size))
     assert doc.blob.any()
     assert not doc.uri
-    doc.convert_image_blob_to_uri(32, 28)
+    doc.convert_image_blob_to_uri(
+        color_axis=color_axis, width=width, height=height, resize_method=resize_method
+    )
     assert doc.uri.startswith('data:image/png;base64,')
     assert doc.mime_type == 'image/png'
 

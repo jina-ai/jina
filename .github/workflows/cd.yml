@@ -202,8 +202,8 @@ jobs:
           fail_ci_if_error: false
 
   docker-image-test:
-    runs-on: ubuntu-latest
     needs: update-schema
+    runs-on: ubuntu-latest
     services:
       registry:
         image: registry:2
@@ -241,8 +241,8 @@ jobs:
           docker run --platform ${{ matrix.test-arch }} localhost:5000/jina/multiarch:latest -v
 
   hub-test:
-    runs-on: ubuntu-latest
     needs: update-schema
+    runs-on: ubuntu-latest
     if: ${{ !github.event.pull_request.head.repo.fork }}
     steps:
       #      - name: Cancel Previous Runs
@@ -263,6 +263,7 @@ jobs:
           JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
 
   k8s-test:
+    needs: update-schema
     runs-on: ubuntu-latest
     needs: update-schema
     steps:
@@ -310,7 +311,7 @@ jobs:
   # just for blocking the merge until all parallel core-test are successful
   success-all-steps:
     runs-on: ubuntu-latest
-    needs: [core-test, hub-test, k8s-test, docker-image-test, benchmark-pre-release, update-doc, update-docker]
+    needs: [core-test, hub-test, k8s-test, docker-image-test, benchmark-pre-release, update-schema, update-doc, update-docker]
     if: always()
     steps:
       - uses: technote-space/workflow-conclusion-action@v2
