@@ -1,4 +1,5 @@
 import copy
+import os
 from argparse import Namespace
 from typing import Optional, Dict, Union, Set, List
 
@@ -69,10 +70,16 @@ class K8sPod(BasePod):
         raise NotImplementedError
 
     def _deploy_gateway(self):
+        test_pip = os.getenv('JINA_K8S_USE_TEST_PIP') is not None
+        image_name = (
+            f'jinaai/jina:test-pip'
+            if test_pip
+            else f'jinaai/jina:{self.version}-py38-standard'
+        )
         kubernetes_deployment.deploy_service(
             self.name,
             namespace=self.args.k8s_namespace,
-            image_name=f'jinaai/jina:{self.version}-py38-standard',
+            image_name=image_name,
             container_cmd='["jina"]',
             container_args=f'["gateway", '
             f'"--grpc-data-requests", '
@@ -100,7 +107,12 @@ class K8sPod(BasePod):
         )
         uses_with_string = f'"--uses-with", "{uses_with}", ' if uses_with else ''
         if image_name == __default_executor__:
-            image_name = f'jinaai/jina:{self.version}-py38-standard'
+            test_pip = os.getenv('JINA_K8S_USE_TEST_PIP') is not None
+            image_name = (
+                f'jinaai/jina:test-pip'
+                if test_pip
+                else f'jinaai/jina:{self.version}-py38-standard'
+            )
             uses = 'BaseExecutor'
         else:
             uses = 'config.yml'
