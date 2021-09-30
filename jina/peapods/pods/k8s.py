@@ -72,7 +72,7 @@ class K8sPod(BasePod):
     def _deploy_gateway(self):
         test_pip = os.getenv('JINA_K8S_USE_TEST_PIP') is not None
         image_name = (
-            f'jinaai/jina:test-pip'
+            'jinaai/jina:test-pip'
             if test_pip
             else f'jinaai/jina:{self.version}-py38-standard'
         )
@@ -86,7 +86,7 @@ class K8sPod(BasePod):
             f'{kubernetes_deployment.get_cli_params(self.args, ("pod_role",))}]',
             logger=JinaLogger(f'deploy_{self.name}'),
             replicas=1,
-            pull_policy='Always',
+            pull_policy='IfNotPresent',
             port_expose=self.args.port_expose,
         )
 
@@ -109,7 +109,7 @@ class K8sPod(BasePod):
         if image_name == __default_executor__:
             test_pip = os.getenv('JINA_K8S_USE_TEST_PIP') is not None
             image_name = (
-                f'jinaai/jina:test-pip'
+                'jinaai/jina:test-pip'
                 if test_pip
                 else f'jinaai/jina:{self.version}-py38-standard'
             )
