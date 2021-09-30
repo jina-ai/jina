@@ -28,7 +28,7 @@ def test_non_blocking_gateway(parallel, expected_response):
 
     data = DocumentArray([Document(text='slow'), Document(text='fast')])
 
-    f = Flow().add(uses=FastSlowExecutor, parallel=parallel)
+    f = Flow(prefetch=50).add(uses=FastSlowExecutor, parallel=parallel)
     with f:
         f.post(on='/search', inputs=data, request_size=1, on_done=fill_responses)
 
