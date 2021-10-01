@@ -1,4 +1,5 @@
 import copy
+import os
 import time
 from argparse import Namespace
 from typing import Optional, Dict, Union, Set, List
@@ -8,6 +9,7 @@ from .k8slib import kubernetes_deployment, kubernetes_tools
 from ..pods import BasePod, ExitFIFO
 from ... import __default_executor__
 from ...logging.logger import JinaLogger
+from ...excepts import RuntimeFailToStart
 
 
 class K8sPod(BasePod, ExitFIFO):
@@ -38,10 +40,16 @@ class K8sPod(BasePod, ExitFIFO):
             self.num_replicas = getattr(self.common_args, 'replicas', 1)
 
         def _deploy_gateway(self):
+            test_pip = os.getenv('JINA_K8S_USE_TEST_PIP') is not None
+            image_name = (
+                'jinaai/jina:test-pip'
+                if test_pip
+                else f'jinaai/jina:{self.version}-py38-standard'
+            )
             kubernetes_deployment.deploy_service(
                 self.name,
                 namespace=self.k8s_namespace,
-                image_name=f'jinaai/jina:{self.version}-py38-standard',
+                image_name=image_name,
                 container_cmd='["jina"]',
                 container_args=f'["gateway", '
                 f'"--grpc-data-requests", '
@@ -81,7 +89,12 @@ class K8sPod(BasePod, ExitFIFO):
             )
             uses_with_string = f'"--uses-with", "{uses_with}", ' if uses_with else ''
             if image_name == __default_executor__:
-                image_name = f'jinaai/jina:{self.version}-py38-standard'
+                test_pip = os.getenv('JINA_K8S_USE_TEST_PIP') is not None
+                image_name = (
+                    'jinaai/jina:test-pip'
+                    if test_pip
+                    else f'jinaai/jina:{self.version}-py38-standard'
+                )
                 uses = 'BaseExecutor'
             else:
                 uses = 'config.yml'
@@ -106,12 +119,19 @@ class K8sPod(BasePod, ExitFIFO):
 
         def wait_start_success(self):
             client = kubernetes_tools.K8sClients().apps_v1
+            _timeout = self.common_args.timeout_ready
+            if _timeout <= 0:
+                _timeout = None
+            else:
+                _timeout /= 1e3
 
             with JinaLogger(f'waiting_for_{self.name}') as logger:
                 logger.info(
                     f'🏝️\t\tWaiting for "{self.name}" to be ready, with {self.num_replicas} replicas'
                 )
-                while True:
+                timeout_ns = 1000000000 * _timeout if _timeout else None
+                now = time.time_ns()
+                while timeout_ns is None or time.time_ns() - now < timeout_ns:
                     api_response = client.read_namespaced_deployment(
                         name=self.name, namespace=self.k8s_namespace
                     )
@@ -128,6 +148,9 @@ class K8sPod(BasePod, ExitFIFO):
                             f'Number of replicas available {available_replicas}, waiting for {self.num_replicas - available_replicas} replicas to be available'
                         )
                         time.sleep(1.0)
+            raise RuntimeFailToStart(
+                f' Deployment {self.name} did not start with a timeout of {self.common_args.timeout_ready}'
+            )
 
         def start(self):
             with JinaLogger(f'start_{self.name}') as logger:

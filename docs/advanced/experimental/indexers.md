@@ -26,7 +26,7 @@ Compound indexer usually made up of a vector-based searcher, for computing the m
 
 Example Hub Executors:
  - [FaissLMDBSearcher](https://hub.jina.ai/executor/g57rla9l)
- - [FaissPostgresSearcher](https://hub.jina.ai/executor/nflcyqe2)
+ - [FaissPostgresIndexer](https://hub.jina.ai/executor/ugatwtp8)
  
  If you want to develop one like these, check the guide {ref}`here <compound-executor>`.
 ```
@@ -68,7 +68,7 @@ See below figure for how this would look like:
 :align: center
 ```
 
-In the above case, the Storage could be the [PostgreSQL](https://hub.jina.ai/executor/d45rawx6)-based Storage, while the Query Flow could be based on [FaissPostgresSearcher](https://hub.jina.ai/executor/nflcyqe2).
+In the above case, the Storage could be the [PostgreSQL](https://hub.jina.ai/executor/d45rawx6)-based Storage, while the Query Flow could be based on [FaissPostgresIndexer](https://hub.jina.ai/executor/ugatwtp8).
 
 ```{tip}
 For a showcase code, check our [integration tests](https://github.com/jina-ai/executors/tree/main/tests/integration/psql_dump_reload).
@@ -127,10 +127,10 @@ where
 | Index Size | RPS | Latency p95 | Best Indexer + configuration |
 | --- | --- | --- | --- |
 | fit into memory | < 20 | any | [SimpleIndexer](https://hub.jina.ai/executor/zb38xlt4) + use default |
-| any | > 20 | any | [FaissPostgresSearcher](https://hub.jina.ai/executor/nflcyqe2) + use k8s & replicas |
-| not fit into memory | any | any | [FaissPostgresSearcher](https://hub.jina.ai/executor/nflcyqe2) + use shards |
-| not fit into memory | > 20 | any | [FaissPostgresSearcher](https://hub.jina.ai/executor/nflcyqe2) + use k8s & shards & replicas|
-| any | any | small | [FaissPostgresSearcher](https://hub.jina.ai/executor/nflcyqe2) + use k8s & shards & replicas|
+| any | > 20 | any | [FaissPostgresIndexer](https://hub.jina.ai/executor/ugatwtp8) + use k8s & replicas |
+| not fit into memory | any | any | [FaissPostgresIndexer](https://hub.jina.ai/executor/ugatwtp8) + use shards |
+| not fit into memory | > 20 | any | [FaissPostgresIndexer](https://hub.jina.ai/executor/ugatwtp8) + use k8s & shards & replicas|
+| any | any | small | [FaissPostgresIndexer](https://hub.jina.ai/executor/ugatwtp8) + use k8s & shards & replicas|
 
 
 The [Jina Hub](http://hub.jina.ai) offers multiple Indexers for different use-cases.
@@ -167,6 +167,6 @@ When running any service in the cloud, an underlying machine could die at any ti
 Usually, a new machine will spawn and take over.
 Anyhow, this might take some minutes.
 If you need instant failure recovery, you need to use replicas.
-Jina provides this via the [FaissPostgresSearcher](https://hub.jina.ai/executor/nflcyqe2) in combination with {ref}`replicas <replicas>` inside {ref}`kubernetes (k8s) <kubernetes>`.
+Jina provides this via the [FaissPostgresIndexer](https://hub.jina.ai/executor/ugatwtp8) in combination with {ref}`replicas <replicas>` inside {ref}`kubernetes (k8s) <kubernetes>`.
 
 
