@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 
 KIND = 'ConfigMap'
 API_VERSION = 'v1'
@@ -94,3 +94,24 @@ def create_or_patch(client: 'ApiClient', metadata: Dict, data: Dict) -> int:
     else:
         status_code = _create(client=client, metadata=metadata, data=data)
     return status_code
+
+
+def attach(names: List[str]) -> List['V1EnvFromSource']:
+    """Attached configmaps by names.
+
+    :param names: List of configmaps to be attached to pod.
+
+    ..note::
+        It should be feed into :class:`KubernetesPodOperator`
+        with argument `env_from`.
+    """
+    from kubernetes.client import models
+
+    configmaps = []
+    for name in names:
+        configmaps.append(
+            models.V1EnvFromSource(
+                config_map_ref=models.V1ConfigMapEnvSource(name=name)
+            )
+        )
+    return configmaps

@@ -102,6 +102,7 @@ def deploy_service(
     )
 
     # configmap.create_or_patch(client=client, metadata=metadata, data=data)
+    # config_maps = configmap.attach([metadata['name']])
 
     logger.info(f'🔑\tCreate necessary permissions"')
 
