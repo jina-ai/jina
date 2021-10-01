@@ -76,9 +76,7 @@ jobs:
           cd schema
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
-          if [[ `git status --porcelain` ]]; then
-            git pull && git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}" && git push
-          fi
+          git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}" && git push
 
       - name: Pre-release (.devN)
         run: |
