@@ -105,12 +105,12 @@ outputs:
         - fastapi
         - filelock
         - grpcio >=1.33.1
-        - kubernetes >=18.20.0
         - lz4 <3.1.2
         - numpy
         - pathspec
         - protobuf >=3.13.0
         - pydantic
+        - python-kubernetes >=18.20.0
         - python-multipart
         - pyyaml >=5.3.1
         - pyzmq >=17.1.0
