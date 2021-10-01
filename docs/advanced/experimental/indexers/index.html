@@ -29,7 +29,7 @@
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Compound Executors" href="../compound-executor/" /><link rel="prev" title="Jina on Kubernetes" href="../kubernetes/" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.22"/>
-        <title>Indexers on Jina Hub - Jina 2.1.5 documentation</title>
+        <title>Indexers on Jina Hub - Jina 2.1.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=150e365fa939648e89c22f6d7d13c72a1657915a" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -163,7 +163,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 2.1.5 documentation</div>
+                <div class="brand">Jina 2.1.6 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -623,7 +623,7 @@
 <p>Example Hub Executors:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://hub.jina.ai/executor/g57rla9l">FaissLMDBSearcher</a></p></li>
-<li><p><a class="reference external" href="https://hub.jina.ai/executor/nflcyqe2">FaissPostgresSearcher</a></p></li>
+<li><p><a class="reference external" href="https://hub.jina.ai/executor/ugatwtp8">FaissPostgresIndexer</a></p></li>
 </ul>
 <p>If you want to develop one like these, check the guide <a class="reference internal" href="../compound-executor/#compound-executor"><span class="std std-ref">here</span></a>.</p>
 </div>
@@ -684,7 +684,7 @@ In order to search them, you need to start a Search Flow, dump the data from the
 <figure class="align-center">
 <a class="reference internal image-reference" href="../../../_images/replicas.png"><img alt="../../../_images/replicas.png" src="../../../_images/replicas.png" style="width: 80%;"/></a>
 </figure>
-<p>In the above case, the Storage could be the <a class="reference external" href="https://hub.jina.ai/executor/d45rawx6">PostgreSQL</a>-based Storage, while the Query Flow could be based on <a class="reference external" href="https://hub.jina.ai/executor/nflcyqe2">FaissPostgresSearcher</a>.</p>
+<p>In the above case, the Storage could be the <a class="reference external" href="https://hub.jina.ai/executor/d45rawx6">PostgreSQL</a>-based Storage, while the Query Flow could be based on <a class="reference external" href="https://hub.jina.ai/executor/ugatwtp8">FaissPostgresIndexer</a>.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>For a showcase code, check our <a class="reference external" href="https://github.com/jina-ai/executors/tree/main/tests/integration/psql_dump_reload">integration tests</a>.</p>
@@ -752,25 +752,25 @@ At the other end, the <strong>rolling update</strong> tells the search Flow to r
 <td>any</td>
 <td>&gt; 20</td>
 <td>any</td>
-<td><a href="https://hub.jina.ai/executor/nflcyqe2">FaissPostgresSearcher</a> + use k8s &amp; replicas</td>
+<td><a href="https://hub.jina.ai/executor/ugatwtp8">FaissPostgresIndexer</a> + use k8s &amp; replicas</td>
 </tr>
 <tr>
 <td>not fit into memory</td>
 <td>any</td>
 <td>any</td>
-<td><a href="https://hub.jina.ai/executor/nflcyqe2">FaissPostgresSearcher</a> + use shards</td>
+<td><a href="https://hub.jina.ai/executor/ugatwtp8">FaissPostgresIndexer</a> + use shards</td>
 </tr>
 <tr>
 <td>not fit into memory</td>
 <td>&gt; 20</td>
 <td>any</td>
-<td><a href="https://hub.jina.ai/executor/nflcyqe2">FaissPostgresSearcher</a> + use k8s &amp; shards &amp; replicas</td>
+<td><a href="https://hub.jina.ai/executor/ugatwtp8">FaissPostgresIndexer</a> + use k8s &amp; shards &amp; replicas</td>
 </tr>
 <tr>
 <td>any</td>
 <td>any</td>
 <td>small</td>
-<td><a href="https://hub.jina.ai/executor/nflcyqe2">FaissPostgresSearcher</a> + use k8s &amp; shards &amp; replicas</td>
+<td><a href="https://hub.jina.ai/executor/ugatwtp8">FaissPostgresIndexer</a> + use k8s &amp; shards &amp; replicas</td>
 </tr>
 </tbody>
 </table></div>
@@ -804,7 +804,7 @@ A high-quality Q&amp;A chatbot might be OK with having answers only after one or
 Usually, a new machine will spawn and take over.
 Anyhow, this might take some minutes.
 If you need instant failure recovery, you need to use replicas.
-Jina provides this via the <a class="reference external" href="https://hub.jina.ai/executor/nflcyqe2">FaissPostgresSearcher</a> in combination with <a class="reference internal" href="../kubernetes/#replicas"><span class="std std-ref">replicas</span></a> inside <a class="reference internal" href="../kubernetes/#kubernetes"><span class="std std-ref">kubernetes (k8s)</span></a>.</p>
+Jina provides this via the <a class="reference external" href="https://hub.jina.ai/executor/ugatwtp8">FaissPostgresIndexer</a> in combination with <a class="reference internal" href="../kubernetes/#replicas"><span class="std std-ref">replicas</span></a> inside <a class="reference internal" href="../kubernetes/#kubernetes"><span class="std std-ref">kubernetes (k8s)</span></a>.</p>
 </section>
 </section>
 </section>
@@ -841,7 +841,7 @@ Jina provides this via the <a class="reference external" href="https://hub.jina.
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Sep 30, 2021.
+                    Last updated on Oct 01, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" target="_blank"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" target="_blank"> <i class="fab fa-slack"></i></a>

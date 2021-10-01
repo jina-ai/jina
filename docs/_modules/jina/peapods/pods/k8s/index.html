@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.22"/>
-        <title>jina.peapods.pods.k8s - Jina 2.1.5 documentation</title>
+        <title>jina.peapods.pods.k8s - Jina 2.1.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=150e365fa939648e89c22f6d7d13c72a1657915a" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 2.1.5 documentation</div>
+                <div class="brand">Jina 2.1.6 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -573,6 +573,7 @@
                 </div>
                 <h1>Source code for jina.peapods.pods.k8s</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">List</span>
 
@@ -643,17 +644,23 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="k">def</span> <span class="nf">_deploy_gateway</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">test_pip</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'JINA_K8S_USE_TEST_PIP'</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">image_name</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s1">'jinaai/jina:test-pip'</span>
+            <span class="k">if</span> <span class="n">test_pip</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s1">'jinaai/jina:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s1">-py38-standard'</span>
+        <span class="p">)</span>
         <span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">deploy_service</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="n">namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">k8s_namespace</span><span class="p">,</span>
-            <span class="n">image_name</span><span class="o">=</span><span class="sa">f</span><span class="s1">'jinaai/jina:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s1">-py38-standard'</span><span class="p">,</span>
+            <span class="n">image_name</span><span class="o">=</span><span class="n">image_name</span><span class="p">,</span>
             <span class="n">container_cmd</span><span class="o">=</span><span class="s1">'["jina"]'</span><span class="p">,</span>
             <span class="n">container_args</span><span class="o">=</span><span class="sa">f</span><span class="s1">'["gateway", '</span>
             <span class="sa">f</span><span class="s1">'"--grpc-data-requests", '</span>
             <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">get_cli_params</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="p">(</span><span class="s2">"pod_role"</span><span class="p">,))</span><span class="si">}</span><span class="s1">]'</span><span class="p">,</span>
             <span class="n">logger</span><span class="o">=</span><span class="n">JinaLogger</span><span class="p">(</span><span class="sa">f</span><span class="s1">'deploy_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span><span class="p">),</span>
             <span class="n">replicas</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">pull_policy</span><span class="o">=</span><span class="s1">'Always'</span><span class="p">,</span>
+            <span class="n">pull_policy</span><span class="o">=</span><span class="s1">'IfNotPresent'</span><span class="p">,</span>
             <span class="n">port_expose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_expose</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -674,7 +681,12 @@
         <span class="p">)</span>
         <span class="n">uses_with_string</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'"--uses-with", "</span><span class="si">{</span><span class="n">uses_with</span><span class="si">}</span><span class="s1">", '</span> <span class="k">if</span> <span class="n">uses_with</span> <span class="k">else</span> <span class="s1">''</span>
         <span class="k">if</span> <span class="n">image_name</span> <span class="o">==</span> <span class="n">__default_executor__</span><span class="p">:</span>
-            <span class="n">image_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'jinaai/jina:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s1">-py38-standard'</span>
+            <span class="n">test_pip</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'JINA_K8S_USE_TEST_PIP'</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="n">image_name</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">'jinaai/jina:test-pip'</span>
+                <span class="k">if</span> <span class="n">test_pip</span>
+                <span class="k">else</span> <span class="sa">f</span><span class="s1">'jinaai/jina:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s1">-py38-standard'</span>
+            <span class="p">)</span>
             <span class="n">uses</span> <span class="o">=</span> <span class="s1">'BaseExecutor'</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">uses</span> <span class="o">=</span> <span class="s1">'config.yml'</span>
@@ -911,7 +923,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Sep 30, 2021.
+                    Last updated on Oct 01, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" target="_blank"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" target="_blank"> <i class="fab fa-slack"></i></a>
