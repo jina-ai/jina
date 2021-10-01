@@ -29,6 +29,10 @@ def get_extra_requires(path):
                     # Can not use extra requirements in conda - i.e. uvicorn[standard]
                     k[0] = re.sub(r'\[\w+\]', '', k[0])
 
+                    # The kubernetes package is python-kubernetes on conda-forge
+                    if k[0] == 'kubernetes':
+                        k[0] = 'python-kubernetes'
+
                     # The docker package is docker-py on conda-forge
                     if k[0] == 'docker':
                         k[0] = 'docker-py'

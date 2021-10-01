@@ -1,5 +1,5 @@
 {% set name = "jina" %}
-{% set version = "2.0.23" %}
+{% set version = "2.1.5" %}
 
 package:
   name: {{ name|lower }}-split
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 1050065287985d07d433f1e4926244e31ba581429aee5a8d6f2b2516565ce359
+  sha256: 3894ecbf06250ffd7e5c8dc17a636321f3f3b178281c946892826af1adaf96f2
 
 build:
   number: 0
@@ -110,6 +110,7 @@ outputs:
         - pathspec
         - protobuf >=3.13.0
         - pydantic
+        - python-kubernetes >=18.20.0
         - python-multipart
         - pyyaml >=5.3.1
         - pyzmq >=17.1.0
