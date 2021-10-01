@@ -1,5 +1,6 @@
 import argparse
 import asyncio
+import time
 from asyncio import Future
 from typing import AsyncGenerator, Dict, Union
 
@@ -60,6 +61,7 @@ class PrefetchCaller:
     def _process_message(self, message):
         if message.request_id in self._message_buffer:
             future = self._message_buffer.pop(message.request_id)
+            self.logger.debug(f'{time.time()} complete message {message}')
             future.set_result(message)
         else:
             self.logger.warning(
@@ -97,9 +99,13 @@ class PrefetchCaller:
             :param fetch_to: the task list storing requests
             :return: False if append task to :param:`fetch_to` else False
             """
-            for _ in range(num_req):
+            self.logger.debug(f'{time.time()} start prefetch_req')
+            for i in range(num_req):
                 try:
                     if hasattr(request_iterator, '__anext__'):
+                        self.logger.debug(
+                            f'{time.time()} await for next req {i} {num_req}'
+                        )
                         next_request = await request_iterator.__anext__()
                     elif hasattr(request_iterator, '__next__'):
                         next_request = next(request_iterator)
@@ -110,6 +116,7 @@ class PrefetchCaller:
 
                     future = get_or_reuse_loop().create_future()
                     self._message_buffer[next_request.request_id] = future
+                    self.logger.debug(f'{time.time()} create task to send')
                     asyncio.create_task(
                         self.iolet.send_message(
                             Message(None, next_request, 'gateway', **vars(self.args))
@@ -122,6 +129,7 @@ class PrefetchCaller:
             return False
 
         prefetch_task = []
+        self.logger.debug(f'{time.time()} prefetch_req {self.args.prefetch}')
         is_req_empty = await prefetch_req(self.args.prefetch, prefetch_task)
         if is_req_empty and not prefetch_task:
             self.logger.error(
@@ -134,6 +142,7 @@ class PrefetchCaller:
         # the total num requests < self.args.prefetch
         if is_req_empty:
             for r in asyncio.as_completed(prefetch_task):
+                self.logger.debug(f'{time.time()} yield await task')
                 yield await r
         else:
             # if there are left over (`else` clause above is unnecessary for code but for better readability)
@@ -148,7 +157,11 @@ class PrefetchCaller:
                     )
                 onrecv_task.clear()
                 for r in asyncio.as_completed(prefetch_task):
+                    self.logger.debug(
+                        f'{time.time()} await for flow to complete, yield r {r}'
+                    )
                     yield await r
+                    self.logger.debug(f'{time.time()} yielded r {r}')
                     if not is_req_empty:
                         is_req_empty = await prefetch_req(
                             self.args.prefetch_on_recv, onrecv_task
