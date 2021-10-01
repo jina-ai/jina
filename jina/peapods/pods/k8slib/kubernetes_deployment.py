@@ -29,7 +29,7 @@ def deploy_service(
     init_container: Dict = None,
     custom_resource_dir: Optional[str] = None,
     port_expose: Optional[int] = None,
-    data: Optional[List[Dict]] = None,
+    envs: Optional[List[Dict]] = None,
 ) -> str:
     """Deploy service on Kubernetes.
 
@@ -45,7 +45,7 @@ def deploy_service(
     :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.
         Defaults to the standard location jina.resources if not specified.
     :param port_expose: port which will be exposed by the deployed containers
-    :param data: environment variables to be passed into configmap.
+    :param envs: environment variables to be passed into configmap.
     :return: dns name of the created service
     """
 
@@ -114,7 +114,7 @@ def deploy_service(
             'port_in': port_in,
             'port_out': port_out,
             'port_ctrl': port_ctrl,
-            'data': data,
+            'data': envs,
             **init_container,
         },
         logger=logger,
