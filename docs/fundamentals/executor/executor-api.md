@@ -219,7 +219,7 @@ processing.
 Class method decorated by `@request` follows the signature below:
 
 ```python
-def foo(docs: Optional[DocumentArray],
+def foo(docs: DocumentArray,
         parameters: Dict,
         docs_matrix: List[DocumentArray],
         groundtruths: Optional[DocumentArray],
@@ -231,7 +231,7 @@ The Executor's method receive the following arguments in order:
 
 | Name | Type | Description  |
 | --- | --- | --- |
-| `docs`   | `Optional[DocumentArray]`  | `Request.docs`. When multiple requests are available, it is a concatenation of all `Request.docs` as one `DocumentArray`. When `DocumentArray` has zero element, then it is `None`.  |
+| `docs`   | `DocumentArray`  | `Request.docs`. When multiple requests are available, it is a concatenation of all `Request.docs` as one `DocumentArray`. When `DocumentArray` has zero element, then it is `None`.  |
 | `parameters`  | `Dict`  | `Request.parameters`, given by `Flow.post(..., parameters=)` |
 | `docs_matrix`  | `List[DocumentArray]`  | When multiple requests are available, it is a list of all `Request.docs`. On single request, it is `None` |
 | `groundtruths`   | `Optional[DocumentArray]`  | `Request.groundtruths`. Same behavior as `docs`  |
