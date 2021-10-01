@@ -591,6 +591,14 @@ class DocumentArrayMemmap(
         """
         return self.get_attributes('text')
 
+    @DocumentArrayGetAttrMixin.buffers.getter
+    def buffers(self) -> Tuple[bytes]:
+        """Get the buffer attribute of all Documents
+
+        :return: List of ``buffer`` attributes for all Documents
+        """
+        return self.get_attributes('buffer')
+
     @DocumentArrayGetAttrMixin.blobs.getter
     def blobs(self) -> np.ndarray:
         """Return a `np.ndarray` stacking all the `blob` attributes.
