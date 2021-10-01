@@ -37,7 +37,7 @@ class K8sPod(BasePod, ExitFIFO):
             self.common_args = common_args
             self.deployment_args = deployment_args
             self.k8s_namespace = self.common_args.k8s_namespace
-            self.num_replicas = getattr(self.common_args, 'replicas', 1)
+            self.num_replicas = getattr(self.deployment_args, 'replicas', 1)
 
         def _deploy_gateway(self):
             test_pip = os.getenv('JINA_K8S_USE_TEST_PIP') is not None
@@ -118,12 +118,15 @@ class K8sPod(BasePod, ExitFIFO):
             )
 
         def wait_start_success(self):
-            client = kubernetes_tools.K8sClients().apps_v1
             _timeout = self.common_args.timeout_ready
             if _timeout <= 0:
                 _timeout = None
             else:
                 _timeout /= 1e3
+
+            from kubernetes import client
+
+            k8s_client = kubernetes_tools.K8sClients().apps_v1
 
             with JinaLogger(f'waiting_for_{self.name}') as logger:
                 logger.info(
@@ -131,26 +134,35 @@ class K8sPod(BasePod, ExitFIFO):
                 )
                 timeout_ns = 1000000000 * _timeout if _timeout else None
                 now = time.time_ns()
+                exception_to_raise = None
                 while timeout_ns is None or time.time_ns() - now < timeout_ns:
-                    api_response = client.read_namespaced_deployment(
-                        name=self.name, namespace=self.k8s_namespace
-                    )
-                    assert api_response.status.replicas == self.num_replicas
-                    if (
-                        api_response.status.available_replicas is not None
-                        and api_response.status.available_replicas == self.num_replicas
-                    ):
-                        logger.success(f' {self.name} has all its replicas ready!!')
-                        return
-                    else:
-                        available_replicas = api_response.status.available_replicas or 0
-                        logger.info(
-                            f'Number of replicas available {available_replicas}, waiting for {self.num_replicas - available_replicas} replicas to be available'
+                    try:
+                        api_response = k8s_client.read_namespaced_deployment(
+                            name=self.dns_name, namespace=self.k8s_namespace
                         )
-                        time.sleep(1.0)
-            raise RuntimeFailToStart(
-                f' Deployment {self.name} did not start with a timeout of {self.common_args.timeout_ready}'
-            )
+                        assert api_response.status.replicas == self.num_replicas
+                        if (
+                            api_response.status.available_replicas is not None
+                            and api_response.status.available_replicas
+                            == self.num_replicas
+                        ):
+                            logger.success(f' {self.name} has all its replicas ready!!')
+                            return
+                        else:
+                            available_replicas = (
+                                api_response.status.available_replicas or 0
+                            )
+                            logger.info(
+                                f'Number of replicas available {available_replicas}, waiting for {self.num_replicas - available_replicas} replicas to be available'
+                            )
+                            time.sleep(1.0)
+                    except client.ApiException as ex:
+                        exception_to_raise = ex
+                        break
+            fail_msg = f' Deployment {self.name} did not start with a timeout of {self.common_args.timeout_ready}'
+            if exception_to_raise:
+                fail_msg += f': {repr(exception_to_raise)}'
+            raise RuntimeFailToStart(fail_msg)
 
         def start(self):
             with JinaLogger(f'start_{self.name}') as logger:
@@ -166,11 +178,12 @@ class K8sPod(BasePod, ExitFIFO):
         def close(self):
             from kubernetes import client
 
+            k8s_client = kubernetes_tools.K8sClients().apps_v1
+
             with JinaLogger(f'close_{self.name}') as logger:
                 try:
-                    client = kubernetes_tools.K8sClients().apps_v1
-                    resp = client.delete_namespaced_deployment(
-                        name=self.name, namespace=self.k8s_namespace
+                    resp = k8s_client.delete_namespaced_deployment(
+                        name=self.dns_name, namespace=self.k8s_namespace
                     )
                     if resp.status == 'Success':
                         logger.success(
@@ -276,11 +289,13 @@ class K8sPod(BasePod, ExitFIFO):
             # reasons to separate head and tail from peas is that they
             # can be deducted based on the previous and next pods
             parsed_args['head_deployment'] = copy.copy(args)
+            parsed_args['head_deployment'].replicas = 1
             parsed_args['head_deployment'].uses = (
                 args.uses_before or __default_executor__
             )
         if parallel > 1 or getattr(args, 'uses_after', None):
             parsed_args['tail_deployment'] = copy.copy(args)
+            parsed_args['tail_deployment'].replicas = 1
             parsed_args['tail_deployment'].uses = (
                 args.uses_after or __default_executor__
             )
@@ -366,7 +381,19 @@ class K8sPod(BasePod, ExitFIFO):
 
         :return: number of peas
         """
-        return -1
+        return sum(
+            [
+                self.k8s_head_deployment.num_replicas
+                if self.k8s_head_deployment is not None
+                else 0
+            ]
+            + [
+                self.k8s_tail_deployment.num_replicas
+                if self.k8s_tail_deployment is not None
+                else 0
+            ]
+            + [k8s_deployment.num_replicas for k8s_deployment in self.k8s_deployments]
+        )
 
     @property
     def head_zmq_identity(self) -> bytes:

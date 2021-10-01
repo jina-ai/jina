@@ -15,34 +15,46 @@ from jina import Flow
 @pytest.fixture()
 def k8s_flow_with_needs(test_executor_image: str, executor_merger_image: str) -> Flow:
     flow = (
-        Flow(name='test-flow', port_expose=9090, infrastructure='K8S', protocol='http')
+        Flow(
+            name='test-flow',
+            port_expose=9090,
+            infrastructure='K8S',
+            protocol='http',
+            timeout_ready=30000,
+        )
         .add(
             name='segmenter',
             uses=test_executor_image,
+            timeout_ready=30000,
         )
         .add(
             name='textencoder',
             uses=test_executor_image,
             needs='segmenter',
+            timeout_ready=30000,
         )
         .add(
             name='textstorage',
             uses=test_executor_image,
             needs='textencoder',
+            timeout_ready=30000,
         )
         .add(
             name='imageencoder',
             uses=test_executor_image,
             needs='segmenter',
+            timeout_ready=30000,
         )
         .add(
             name='imagestorage',
             uses=test_executor_image,
             needs='imageencoder',
+            timeout_ready=30000,
         )
         .add(
             name='merger',
             uses=executor_merger_image,
+            timeout_ready=30000,
             needs=['imagestorage', 'textstorage'],
         )
     )
@@ -92,13 +104,18 @@ def k8s_flow_with_init_container(
     test_executor_image: str, executor_merger_image: str, dummy_dumper_image: str
 ) -> Flow:
     flow = Flow(
-        name='test-flow', port_expose=8080, infrastructure='K8S', protocol='http'
+        name='test-flow',
+        port_expose=8080,
+        infrastructure='K8S',
+        protocol='http',
+        timeout_ready=30000,
     ).add(
         name='test_executor',
         uses=test_executor_image,
         k8s_init_container_command=["python", "dump.py", "/shared/test_file.txt"],
         k8s_uses_init=dummy_dumper_image,
         k8s_mount_path='/shared',
+        timeout_ready=30000,
     )
     return flow
 
@@ -108,13 +125,18 @@ def k8s_flow_with_sharding(
     test_executor_image: str, executor_merger_image: str, dummy_dumper_image: str
 ) -> Flow:
     flow = Flow(
-        name='test-flow', port_expose=8080, infrastructure='K8S', protocol='http'
+        name='test-flow',
+        port_expose=8080,
+        infrastructure='K8S',
+        protocol='http',
+        timeout_ready=30000,
     ).add(
         name='test_executor',
         shards=3,
         replicas=2,
         uses=test_executor_image,
         uses_after=executor_merger_image,
+        timeout_ready=30000,
     )
     return flow
 

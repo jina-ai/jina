@@ -10,6 +10,5 @@ fi
 pip install pytest
 pip install numpy
 export JINA_K8S_USE_TEST_PIP=True
-pytest -sv ./tests/k8s/test_k8s.py
-pytest -sv ./tests/k8s/test_custom_resource_dir.py
-
+pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=3600 ./tests/k8s/test_k8s.py
+pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=3600 ./tests/k8s/test_custom_resource_dir.py
