@@ -54,6 +54,7 @@ def pull_images(images, cluster, logger):
     logger.debug(f'Loading docker image into kind cluster...')
     for image in images:
         cluster.needs_docker_image(image)
+    cluster.needs_docker_image('jinaai/jina:test-pip')
     logger.debug(f'Done loading docker image into kind cluster...')
 
 
