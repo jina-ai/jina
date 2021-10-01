@@ -1071,7 +1071,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             if not getattr(v.args, 'external', False):
                 self.enter_context(v)
 
-        if not run_async(self._wait_until_all_ready):
+        if not run_async(self._wait_until_all_ready, any_event_loop=True):
             raise RuntimeFailToStart
 
         self._build_level = FlowBuildLevel.RUNNING

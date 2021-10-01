@@ -181,7 +181,7 @@ class BasePea:
         """
         self.worker.start()
         if not self.args.noblock_on_start:
-            run_async(self.wait_start_success)
+            run_async(self.wait_start_success, any_event_loop=True)
         return self
 
     def join(self, *args, **kwargs):
@@ -346,7 +346,9 @@ class BasePea:
             else:
                 _timeout /= 1e3
             self.logger.debug('waiting for ready or shutdown signal from runtime')
-            ready_or_shutdown = run_async(self._wait_for_ready_or_shutdown, _timeout)
+            ready_or_shutdown = run_async(
+                self._wait_for_ready_or_shutdown, _timeout, any_event_loop=True
+            )
             if ready_or_shutdown:
                 if not self.is_shutdown.is_set():
                     self._cancel_runtime(skip_deactivate=True)

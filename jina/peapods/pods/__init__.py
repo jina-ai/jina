@@ -294,6 +294,13 @@ class BasePod:
         """
         ...
 
+    async def wait_start_success(self) -> None:
+        """Block until all peas starts successfully.
+
+        If not successful, it will raise an error hoping the outer function to catch it
+        """
+        ...
+
     @property
     def deployments(self) -> List[Dict]:
         """Get deployments of the pod. The BasePod just gives one deployment.

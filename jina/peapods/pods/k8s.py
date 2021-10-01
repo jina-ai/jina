@@ -166,7 +166,7 @@ class K8sPod(BasePod):
                 self._deploy_runtime(self.deployment_args['tail_deployment'], 1, 'tail')
         return self
 
-    def wait_start_success(self):
+    async def wait_start_success(self):
         """Not implemented. It should wait until the deployment is up and running"""
         pass
 
