@@ -770,7 +770,28 @@
             <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">doc</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">texts</span><span class="p">):</span>
-            <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span></div>
+            <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">buffers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]:</span>
+        <span class="sd">"""Get the buffer attribute of all Documents"""</span>
+        <span class="o">...</span>
+
+    <span class="nd">@buffers</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">buffers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]):</span>
+        <span class="sd">"""Set the buffer attribute for all Documents</span>
+
+<span class="sd">        :param buffers: A sequence of buffer to set, should be the same length as the</span>
+<span class="sd">            number of Documents</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">buffers</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'the number of buffers in the input (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">buffers</span><span class="p">)</span><span class="si">}</span><span class="s1">), should match the'</span>
+                <span class="sa">f</span><span class="s1">'number of Documents (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s1">)'</span>
+            <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">doc</span><span class="p">,</span> <span class="n">buffer</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffers</span><span class="p">):</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="n">buffer</span></div>
 
 
 <div class="viewcode-block" id="DocumentArray"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.document/#jina.DocumentArray">[docs]</a><span class="k">class</span> <span class="nc">DocumentArray</span><span class="p">(</span>
@@ -1236,6 +1257,14 @@
 <span class="sd">        :return: List of ``text`` attributes for all Documents</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">]</span>
+
+    <span class="nd">@DocumentArrayGetAttrMixin</span><span class="o">.</span><span class="n">buffers</span><span class="o">.</span><span class="n">getter</span>
+    <span class="k">def</span> <span class="nf">buffers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]:</span>
+        <span class="sd">"""Get the buffer attribute of all Documents</span>
+
+<span class="sd">        :return: List of ``buffer`` attributes for all Documents</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">buffer</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">]</span>
 
     <span class="nd">@DocumentArrayGetAttrMixin</span><span class="o">.</span><span class="n">blobs</span><span class="o">.</span><span class="n">getter</span>
     <span class="k">def</span> <span class="nf">blobs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>

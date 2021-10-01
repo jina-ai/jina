@@ -1150,7 +1150,7 @@
             <span class="n">d</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">x</span>
 
     <span class="nd">@DocumentArrayGetAttrMixin</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">getter</span>
-    <span class="k">def</span> <span class="nf">tags</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">StructView</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">tags</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">StructView</span><span class="p">]:</span>
         <span class="sd">"""Get the tags attribute of all Documents</span>
 
 <span class="sd">        :return: List of ``tags`` attributes for all Documents</span>
@@ -1158,12 +1158,20 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'tags'</span><span class="p">)</span>
 
     <span class="nd">@DocumentArrayGetAttrMixin</span><span class="o">.</span><span class="n">texts</span><span class="o">.</span><span class="n">getter</span>
-    <span class="k">def</span> <span class="nf">texts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">texts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">"""Get the text attribute of all Documents</span>
 
 <span class="sd">        :return: List of ``text`` attributes for all Documents</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'text'</span><span class="p">)</span>
+
+    <span class="nd">@DocumentArrayGetAttrMixin</span><span class="o">.</span><span class="n">buffers</span><span class="o">.</span><span class="n">getter</span>
+    <span class="k">def</span> <span class="nf">buffers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]:</span>
+        <span class="sd">"""Get the buffer attribute of all Documents</span>
+
+<span class="sd">        :return: List of ``buffer`` attributes for all Documents</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'buffer'</span><span class="p">)</span>
 
     <span class="nd">@DocumentArrayGetAttrMixin</span><span class="o">.</span><span class="n">blobs</span><span class="o">.</span><span class="n">getter</span>
     <span class="k">def</span> <span class="nf">blobs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
