@@ -145,3 +145,13 @@ def mixin_k8s_pod_parser(parser):
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
+
+    parser.add_argument(
+        '--k8s-envs',
+        action=KVAppendAction,
+        metavar='KEY: VALUE',
+        default=None,
+        help='Environment variables to be passed into configmap. The envs will be ref to the Pod.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
