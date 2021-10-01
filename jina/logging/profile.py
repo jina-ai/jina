@@ -316,6 +316,7 @@ class ProgressBar(TimeContext):
         sys.stdout.flush()
 
     def _update_thread(self):
+        sys.stdout.flush()
         while not self._stop_event.is_set():
             self._print_bar(self._bar_info)
             time.sleep(0.1)

@@ -1,4 +1,5 @@
 import copy
+import os
 from argparse import Namespace
 from typing import Optional, Dict, Union, Set, List
 
@@ -69,17 +70,23 @@ class K8sPod(BasePod):
         raise NotImplementedError
 
     def _deploy_gateway(self):
+        test_pip = os.getenv('JINA_K8S_USE_TEST_PIP') is not None
+        image_name = (
+            'jinaai/jina:test-pip'
+            if test_pip
+            else f'jinaai/jina:{self.version}-py38-standard'
+        )
         kubernetes_deployment.deploy_service(
             self.name,
             namespace=self.args.k8s_namespace,
-            image_name=f'jinaai/jina:{self.version}-py38-standard',
+            image_name=image_name,
             container_cmd='["jina"]',
             container_args=f'["gateway", '
             f'"--grpc-data-requests", '
             f'{kubernetes_deployment.get_cli_params(self.args, ("pod_role",))}]',
             logger=JinaLogger(f'deploy_{self.name}'),
             replicas=1,
-            pull_policy='Always',
+            pull_policy='IfNotPresent',
             port_expose=self.args.port_expose,
         )
 
@@ -100,7 +107,12 @@ class K8sPod(BasePod):
         )
         uses_with_string = f'"--uses-with", "{uses_with}", ' if uses_with else ''
         if image_name == __default_executor__:
-            image_name = f'jinaai/jina:{self.version}-py38-standard'
+            test_pip = os.getenv('JINA_K8S_USE_TEST_PIP') is not None
+            image_name = (
+                'jinaai/jina:test-pip'
+                if test_pip
+                else f'jinaai/jina:{self.version}-py38-standard'
+            )
             uses = 'BaseExecutor'
         else:
             uses = 'config.yml'
@@ -183,7 +195,6 @@ class K8sPod(BasePod):
         Regenerate deployment args
         """
         self.deployment_args = self._parse_args(self.args)
-        pass
 
     @property
     def is_ready(self) -> bool:
@@ -208,13 +219,6 @@ class K8sPod(BasePod):
         :return: namespace
         """
         return self.args
-
-    def is_singleton(self) -> bool:
-        """The k8s pod is always a singleton
-
-        :return: True
-        """
-        return True
 
     @property
     def num_peas(self) -> int:
@@ -278,3 +282,59 @@ class K8sPod(BasePod):
             'tail_port_out': self.fixed_tail_port_out,
             'head_zmq_identity': self.head_zmq_identity,
         }
+
+    @property
+    def _mermaid_str(self) -> List[str]:
+        """String that will be used to represent the Pod graphically when `Flow.plot()` is invoked
+
+
+        .. # noqa: DAR201
+        """
+        mermaid_graph = []
+        if self.name != 'gateway':
+            mermaid_graph = [f'subgraph {self.name};\n', f'direction LR;\n']
+
+            num_replicas = getattr(self.args, 'replicas', 1)
+            num_shards = getattr(self.args, 'parallel', 1)
+            uses = self.args.uses
+            if num_shards > 1:
+                shard_names = [
+                    f'{args.name}/shard-{i}'
+                    for i, args in enumerate(self.deployment_args['deployments'])
+                ]
+                for shard_name in shard_names:
+                    shard_mermaid_graph = [
+                        f'subgraph {shard_name}\n',
+                        f'direction TB;\n',
+                    ]
+                    for replica_id in range(num_replicas):
+                        shard_mermaid_graph.append(
+                            f'{shard_name}/replica-{replica_id}[{uses}]\n'
+                        )
+                    shard_mermaid_graph.append(f'end\n')
+                    mermaid_graph.extend(shard_mermaid_graph)
+                head_name = f'{self.name}/head'
+                tail_name = f'{self.name}/tail'
+                head_to_show = self.args.uses_before
+                if head_to_show is None or head_to_show == __default_executor__:
+                    head_to_show = head_name
+                tail_to_show = self.args.uses_after
+                if tail_to_show is None or tail_to_show == __default_executor__:
+                    tail_to_show = tail_name
+                if head_name:
+                    for shard_name in shard_names:
+                        mermaid_graph.append(
+                            f'{head_name}[{head_to_show}]:::HEADTAIL --> {shard_name}[{uses}];'
+                        )
+
+                if tail_name:
+                    for shard_name in shard_names:
+                        mermaid_graph.append(
+                            f'{shard_name}[{uses}] --> {tail_name}[{tail_to_show}]:::HEADTAIL;'
+                        )
+            else:
+                for replica_id in range(num_replicas):
+                    mermaid_graph.append(f'{self.name}/replica-{replica_id}[{uses}];')
+
+            mermaid_graph.append(f'end;')
+        return mermaid_graph

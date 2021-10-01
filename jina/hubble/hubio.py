@@ -105,50 +105,66 @@ This guide helps you to create your own Executor in 30 seconds.''',
             )
         )
 
-        exec_name = Prompt.ask(
-            ':grey_question: What is the [bold]name[/bold] of your executor?\n'
-            '[dim]CamelCase is required[/dim]',
-            default=f'MyExecutor{random.randint(0, 100)}',
+        exec_name = (
+            self.args.name
+            if self.args.name
+            else Prompt.ask(
+                ':grey_question: What is the [bold]name[/bold] of your executor?\n'
+                '[dim]CamelCase is required[/dim]',
+                default=f'MyExecutor{random.randint(0, 100)}',
+            )
         )
 
-        exec_path = Prompt.ask(
-            ':grey_question: [bold]Which folder[/bold] to store your executor?',
-            default=os.path.join(os.getcwd(), exec_name),
+        exec_path = (
+            self.args.path
+            if self.args.path
+            else Prompt.ask(
+                ':grey_question: [bold]Which folder[/bold] to store your executor?',
+                default=os.path.join(os.getcwd(), exec_name),
+            )
         )
-
         exec_description = '{{}}'
         exec_keywords = '{{}}'
         exec_url = '{{}}'
 
         is_dockerfile = False
 
-        if Confirm.ask(
+        if self.args.advance_configuration or Confirm.ask(
             '[green]That\'s all we need to create an Executor![/green]\n'
             ':grey_question: Or do you want to proceed to advanced configuration',
             default=False,
         ):
             exec_description = (
-                Prompt.ask(
-                    ':grey_question: Please give a [bold]short description[/bold] of your executor?\n'
-                    f'[dim]Example: {exec_name} embeds images into 128-dim vectors using ResNet.[/dim]'
+                self.args.description
+                if self.args.description
+                else (
+                    Prompt.ask(
+                        ':grey_question: Please give a [bold]short description[/bold] of your executor?\n'
+                        f'[dim]Example: {exec_name} embeds images into 128-dim vectors using ResNet.[/dim]'
+                    )
                 )
-                or exec_description
             )
 
             exec_keywords = (
-                Prompt.ask(
-                    ':grey_question: Please give some [bold]keywords[/bold] to help people search your executor [dim](separated by space)[/dim]\n'
-                    f'[dim]Example: image cv embedding encoding resnet[/dim]'
+                self.args.keywords
+                if self.args.keywords
+                else (
+                    Prompt.ask(
+                        ':grey_question: Please give some [bold]keywords[/bold] to help people search your executor [dim](separated by space)[/dim]\n'
+                        f'[dim]Example: image cv embedding encoding resnet[/dim]'
+                    )
                 )
-                or exec_keywords
             )
 
             exec_url = (
-                Prompt.ask(
-                    ':grey_question: What is the [bold]URL[/bold] for GitHub repo?\n'
-                    f'[dim]Example: https://github.com/yourname/my-executor[/dim]'
+                self.args.url
+                if self.args.url
+                else (
+                    Prompt.ask(
+                        ':grey_question: What is the [bold]URL[/bold] for GitHub repo?\n'
+                        f'[dim]Example: https://github.com/yourname/my-executor[/dim]'
+                    )
                 )
-                or exec_url
             )
 
             print(
@@ -164,11 +180,10 @@ your executor has non-trivial dependencies or must be run under certain environm
                 )
             )
 
-            is_dockerfile = Confirm.ask(
+            is_dockerfile = self.args.add_dockerfile or Confirm.ask(
                 ':grey_question: Do you need to write your own [bold]Dockerfile[/bold] instead of the auto-generated one?',
                 default=False,
             )
-
             print('[green]That\'s all we need to create an Executor![/green]')
 
         def mustache_repl(srcs):
@@ -533,17 +548,21 @@ with f:
     @disk_cache_offline(cache_file=str(_cache_file))
     def fetch_meta(
         name: str,
-        tag: Optional[str] = None,
+        tag: str,
         secret: Optional[str] = None,
         force: bool = False,
     ) -> HubExecutor:
         """Fetch the executor meta info from Jina Hub.
         :param name: the UUID/Name of the executor
-        :param tag: the version tag of the executor
+        :param tag: the tag of the executor if available, otherwise, use `None` as the value
         :param secret: the access secret of the executor
         :param force: if set to True, access to fetch_meta will always pull latest Executor metas, otherwise, default
             to local cache
         :return: meta of executor
+
+        .. note::
+            The `name` and `tag` should be passed via ``args`` and `force` and `secret` as ``kwargs``, otherwise,
+            cache does not work.
         """
 
         with ImportExtensions(required=True):
@@ -570,7 +589,7 @@ with f:
             uuid=resp['id'],
             name=resp.get('name', None),
             sn=resp.get('sn', None),
-            tag=resp['tag'],
+            tag=tag or resp['tag'],
             visibility=resp['visibility'],
             image_name=resp['image'],
             archive_url=resp['package']['download'],
@@ -656,9 +675,8 @@ with f:
                 scheme, name, tag, secret = parse_hub_uri(self.args.uri)
 
                 st.update(f'Fetching [bold]{name}[/bold] from Jina Hub ...')
-                executor = HubIO.fetch_meta(
-                    name, tag=tag, secret=secret, force=need_pull
-                )
+                executor = HubIO.fetch_meta(name, tag, secret=secret, force=need_pull)
+
                 presented_id = getattr(executor, 'name', executor.uuid)
                 executor_name = (
                     f'{presented_id}'

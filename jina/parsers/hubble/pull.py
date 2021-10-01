@@ -36,6 +36,6 @@ def mixin_hub_pull_parser(parser):
     parser.add_argument(
         'uri',
         type=hub_uri,
-        help='The URI of the executor to pull (e.g., jinahub[+docker]://UUID8)',
+        help='The URI of the executor to pull (e.g., jinahub[+docker]://NAME)',
     )
     mixin_hub_pull_options_parser(parser)

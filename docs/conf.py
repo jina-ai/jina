@@ -63,10 +63,6 @@ html_theme_options = {
     },
     # start-announce
 
-    "announcement": '''
-    <a href="https://jina-ai.zoom.us/webinar/register/WN_US7_9uQMRXiYaKBXJw4vYA">📢 28 Sep 2021: We're revealing big news at our <strong>exclusive community webinar</strong>. Join us on Zoom! 🔍</a>
-    ''',
-        
     # end-announce
 }
 

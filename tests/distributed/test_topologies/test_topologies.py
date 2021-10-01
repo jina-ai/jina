@@ -189,6 +189,10 @@ def test_remote_flow_local_executors(mocker, parallel):
 
 
 def test_remote_workspace_value():
+    """
+    This tests the value set in `self.workspace` in a remote Flow.
+    It should always be `/workspace/ExecutorName/...
+    """
     HOST = __default_host__
     client = JinaDClient(host=HOST, port=8000)
     workspace_id = client.workspaces.create(paths=[os.path.join(cur_dir, 'yamls')])
@@ -206,3 +210,17 @@ def test_remote_workspace_value():
     )
     assert client.flows.delete(flow_id)
     assert client.workspaces.delete(workspace_id)
+
+
+@pytest.mark.parametrize('gpus', ['all', '2'])
+def test_remote_executor_gpu(mocker, gpus):
+    # This test wouldn't be able to use gpus on remote, as they're not available on CI.
+    # But it shouldn't fail the Pea creation.
+    response_mock = mocker.Mock()
+    f = Flow().add(host=CLOUD_HOST, gpus=gpus)
+    with f:
+        f.index(
+            inputs=(Document(text='hello') for _ in range(NUM_DOCS)),
+            on_done=response_mock,
+        )
+    response_mock.assert_called()

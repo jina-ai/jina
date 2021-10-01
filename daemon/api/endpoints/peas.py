@@ -38,6 +38,7 @@ async def _create(pea: PeaDepends = Depends(PeaDepends)):
             params=pea.params,
             ports=pea.ports,
             envs=pea.envs,
+            device_requests=pea.device_requests,
         )
     except Exception as ex:
         raise Runtime400Exception from ex
