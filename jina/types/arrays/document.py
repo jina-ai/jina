@@ -201,7 +201,7 @@ class DocumentArrayGetAttrMixin:
     @property
     def buffers(self) -> List[bytes]:
         """Get the buffer attribute of all Documents"""
-        return [b'']
+        ...
 
     @buffers.setter
     def buffers(self, buffers: List[bytes]):
