@@ -27,6 +27,7 @@ def test_lazy_load_k8s_client(monkeypatch):
         ('service', {'name': 'test-svc'}),
         ('deployment', {'name': 'test-dep'}),
         ('deployment-init', {'name': 'test-dep-init'}),
+        ('configmap', {'name': 'test-configmap'}),
     ],
 )
 def test_create(template: str, values: Dict, monkeypatch):
