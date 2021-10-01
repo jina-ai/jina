@@ -576,7 +576,7 @@ class DocumentArrayMemmap(
             d.embedding = x
 
     @DocumentArrayGetAttrMixin.tags.getter
-    def tags(self) -> Tuple[StructView]:
+    def tags(self) -> List[StructView]:
         """Get the tags attribute of all Documents
 
         :return: List of ``tags`` attributes for all Documents
@@ -584,12 +584,20 @@ class DocumentArrayMemmap(
         return self.get_attributes('tags')
 
     @DocumentArrayGetAttrMixin.texts.getter
-    def texts(self) -> Tuple[str]:
+    def texts(self) -> List[str]:
         """Get the text attribute of all Documents
 
         :return: List of ``text`` attributes for all Documents
         """
         return self.get_attributes('text')
+
+    @DocumentArrayGetAttrMixin.buffers.getter
+    def buffers(self) -> List[bytes]:
+        """Get the buffer attribute of all Documents
+
+        :return: List of ``buffer`` attributes for all Documents
+        """
+        return self.get_attributes('buffer')
 
     @DocumentArrayGetAttrMixin.blobs.getter
     def blobs(self) -> np.ndarray:
