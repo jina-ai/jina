@@ -77,7 +77,7 @@ def hello_world(args):
         finally:
             default_logger.info(
                 f'You should see a demo page opened in your browser, '
-                f'if not, you may open {url_html_path} manually'
+                f'if not, you may have to open {url_html_path} manually'
             )
 
         if not args.unblock_query_flow:
