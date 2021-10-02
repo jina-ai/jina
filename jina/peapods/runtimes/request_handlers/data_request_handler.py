@@ -46,6 +46,7 @@ def _get_docs_from_msg(
     else:
         result = getattr(msg.request, field)
 
+    return result
 
 class DataRequestHandler:
     """Object to encapsulate the code related to handle the data requests passing to executor and its returned values"""
