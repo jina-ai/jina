@@ -1080,12 +1080,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if self.args.env:
             for k in self.args.env.keys():
                 os.environ.pop(k, None)
-        if GATEWAY_NAME in self._pod_nodes:
-            self._pod_nodes.pop(GATEWAY_NAME)
 
-        if self.args.infrastructure == InfrastructureType.K8S:
-            # close some general namespace resource
-            pass
         self._build_level = FlowBuildLevel.EMPTY
         self.logger.debug('Flow is closed!')
         self.logger.close()

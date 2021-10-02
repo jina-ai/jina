@@ -223,7 +223,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Test k8s
         run: |
-          ./tests/k8s/test_k8s.sh
+          export JINA_K8S_USE_TEST_PIP=True
+          pytest -v -s --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml ./tests/k8s/
         timeout-minutes: 30
       - name: Check codecov file
         id: check_files
