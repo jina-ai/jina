@@ -128,7 +128,7 @@ def deploy_service(
     )
 
     kubernetes_tools.create(
-        name='connection-pool-role-binding',
+        template='connection-pool-role-binding',
         kind='RoleBinding',
         params={
             'namespace': namespace,
