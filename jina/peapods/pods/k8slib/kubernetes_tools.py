@@ -1,7 +1,7 @@
 import os
 import tempfile
 import json
-from typing import Dict, Optional
+from typing import Dict, Optional, List
 
 from jina.logging.logger import JinaLogger
 from jina.logging.predefined import default_logger
@@ -89,6 +89,7 @@ __k8s_clients = K8SClients()
 
 def create(
     template: str,
+    kind: str,
     params: Dict,
     logger: JinaLogger = default_logger,
     custom_resource_dir: Optional[str] = None,
@@ -96,6 +97,7 @@ def create(
     """Create a resource on Kubernetes based on the `template`. It fills the `template` using the `params`.
 
     :param template: path to the template file.
+    :param kind: kind of the k8s object.
     :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.
         Defaults to the standard location jina.resources if not specified.
     :param logger: logger to use. Defaults to the default logger.
@@ -105,7 +107,10 @@ def create(
     from kubernetes.utils import FailToCreateError
     from kubernetes import utils
 
-    yaml = _get_yaml(template, params, custom_resource_dir)
+    if kind == 'ConfigMap':
+        yaml = _patch_yaml(template, params, custom_resource_dir)
+    else:
+        yaml = _get_yaml(template, params, custom_resource_dir)
     fd, path = tempfile.mkstemp()
     try:
         with os.fdopen(fd, 'w') as tmp:
@@ -138,3 +143,22 @@ def _get_yaml(template: str, params: Dict, custom_resource_dir: Optional[str] = 
         for k, v in params.items():
             content = content.replace(f'{{{k}}}', str(v))
     return content
+
+
+def _patch_yaml(template: str, params: Dict, custom_resource_dir: Optional[str] = None):
+    import yaml
+
+    if custom_resource_dir:
+        path = os.path.join(custom_resource_dir, f'{template}.yml')
+    else:
+        path = os.path.join(DEFAULT_RESOURCE_DIR, f'{template}.yml')
+
+    with open(path) as f:
+        config_map = yaml.safe_load(f)
+
+    config_map['metadata']['namespace'] = params.get('namespace')
+    if params.get('data'):
+        for key, value in params['data'].items():
+            config_map['data'][key] = value
+
+    return json.dumps(config_map)

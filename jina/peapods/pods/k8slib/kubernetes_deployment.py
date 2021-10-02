@@ -59,8 +59,9 @@ def deploy_service(
 
     logger.info(f'🔋\tCreate Service for "{name}" with exposed port "{port_expose}"')
     kubernetes_tools.create(
-        'service',
-        {
+        template='service',
+        kind='Service',
+        params={
             'name': name,
             'target': name,
             'namespace': namespace,
@@ -84,8 +85,9 @@ def deploy_service(
         template_name = 'deployment'
         init_container = {}
     kubernetes_tools.create(
-        template_name,
-        {
+        template=template_name,
+        kind='Deployment',
+        params={
             'name': name,
             'namespace': namespace,
             'image': image_name,
@@ -104,10 +106,9 @@ def deploy_service(
     )
 
     kubernetes_tools.create(
-        'configmap',
-        {
-            'name': name,
-            'target': name,
+        template='configmap',
+        kind='ConfigMap',
+        params={
             'namespace': namespace,
             'data': envs,
             **init_container,
