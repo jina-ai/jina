@@ -28,7 +28,7 @@ class KindClusterWrapper:
     def port_forward(
         self,
         service_name: str,
-        local_port: int,
+        local_port: Optional[int],
         service_port: int,
         namespace: Optional[str] = None,
     ):
@@ -39,11 +39,11 @@ class KindClusterWrapper:
                 '-n',
                 namespace,
                 local_port=local_port,
-                retries=20,
+                retries=40,
             )
         else:
             return self._cluster.port_forward(
-                service_name, service_port, local_port=local_port, retries=20
+                service_name, service_port, local_port=local_port, retries=40
             )
 
     def load_docker_image(self, image_name: str):
