@@ -44,7 +44,7 @@ fragmented, multi-vendor, generic legacy tools.
 
 ## [Documentation](https://docs.jina.ai)
 
-## Run Quick Demo
+## Run your first Quick Demo!
 
 - [👗 Fashion image search](https://docs.jina.ai/get-started/hello-world/fashion/): `jina hello fashion`
 - [🤖 QA chatbot](https://docs.jina.ai/get-started/hello-world/covid-19-chatbot/): `pip install "jina[demo]" && jina hello chatbot`
