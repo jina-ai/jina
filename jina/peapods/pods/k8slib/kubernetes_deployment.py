@@ -120,15 +120,17 @@ def deploy_service(
     logger.info(f'🔑\tCreate necessary permissions"')
 
     kubernetes_tools.create(
-        'connection-pool-role',
-        {
+        template='connection-pool-role',
+        kind='Role',
+        params={
             'namespace': namespace,
         },
     )
 
     kubernetes_tools.create(
-        'connection-pool-role-binding',
-        {
+        name='connection-pool-role-binding',
+        kind='RoleBinding',
+        params={
             'namespace': namespace,
         },
     )

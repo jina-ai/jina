@@ -24,7 +24,7 @@ def test_lazy_load_k8s_client(monkeypatch):
 @pytest.mark.parametrize(
     ['template', 'kind', 'params'],
     [
-        ('namespace', 'NameSpace', {'name': 'test-ns'}),
+        ('namespace', 'Namespace', {'name': 'test-ns'}),
         ('service', 'Service', {'name': 'test-svc'}),
         ('deployment', 'Deployment', {'name': 'test-dep'}),
         ('deployment-init', 'Deployment', {'name': 'test-dep-init'}),
