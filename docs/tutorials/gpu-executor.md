@@ -222,7 +222,7 @@ We can see that we got over 7x speedup! And that's not even the best we can do -
 :class: note
 
 You have probably noticed that there was a delay (about 3 seconds) when creating the Flow.
-This occured because the weights of our model needed to be transfered from CPU to GPU when we
+This occurred because the weights of our model needed to be transfered from CPU to GPU when we
 initialized the Executor. However, this action only occurs once in the lifetime of the Executor,
 so for most use cases this is not something we would worry about.
 ```
