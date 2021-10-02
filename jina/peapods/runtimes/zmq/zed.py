@@ -331,7 +331,7 @@ class ZEDRuntime(ZMQRuntime):
     # Static methods used by the Pea to communicate with the `Runtime` in the separate process
 
     @staticmethod
-    def status(ctrl_address: str, timeout_ctrl: int):
+    async def status(ctrl_address: str, timeout_ctrl: int):
         """
         Send get status control message.
 
@@ -340,14 +340,14 @@ class ZEDRuntime(ZMQRuntime):
 
         :return: control message.
         """
-        from ...zmq import send_ctrl_message
+        from ...zmq import send_ctrl_message_async
 
-        return send_ctrl_message(
+        return await send_ctrl_message_async(
             ctrl_address, 'STATUS', timeout=timeout_ctrl, raise_exception=False
         )
 
     @staticmethod
-    def is_ready(ctrl_address: str, timeout_ctrl: int) -> bool:
+    async def is_ready(ctrl_address: str, timeout_ctrl: int) -> bool:
         """
         Check if status is ready.
 
@@ -356,7 +356,7 @@ class ZEDRuntime(ZMQRuntime):
 
         :return: True if status is ready else False.
         """
-        status = ZEDRuntime.status(ctrl_address, timeout_ctrl)
+        status = await ZEDRuntime.status(ctrl_address, timeout_ctrl)
         return status and status.is_ready
 
     @staticmethod
@@ -382,10 +382,12 @@ class ZEDRuntime(ZMQRuntime):
         timeout_ns = 1000000000 * timeout if timeout else None
         now = time.time_ns()
         while timeout_ns is None or time.time_ns() - now < timeout_ns:
-            if shutdown_event.is_set() or ZEDRuntime.is_ready(
-                ctrl_address, timeout_ctrl
-            ):
+            if shutdown_event.is_set():
                 return True
+            else:
+                is_ready = await ZEDRuntime.is_ready(ctrl_address, timeout_ctrl)
+                if is_ready:
+                    return True
             await asyncio.sleep(0.1)
         return False
 

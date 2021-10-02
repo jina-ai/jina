@@ -727,6 +727,43 @@ async def send_message_async(
             pass
 
 
+async def send_ctrl_message_async(
+    address: str, cmd: Union[str, Message], timeout: int, raise_exception: bool = False
+) -> 'Message':
+    """Send a control message to a specific address and wait for the response
+
+    :param address: the socket address to send
+    :param cmd: the control command to send
+    :param timeout: the waiting time (in ms) for the response
+    :param raise_exception: raise exception when exception found
+    :return: received message
+    """
+
+    if isinstance(cmd, str):
+        # we assume ControlMessage as default
+        msg = ControlMessage(cmd)
+    else:
+        msg = cmd
+
+    with zmq.asyncio.Context() as ctx:
+        ctx.setsockopt(zmq.LINGER, 0)
+        sock, _ = _init_socket(ctx, address, None, SocketType.PAIR_CONNECT)
+        result = None
+        try:
+
+            message_future = recv_message_async(sock, timeout)
+            await send_message_async(sock, msg, timeout)
+            result = await message_future
+        except Exception as ex:
+            if raise_exception:
+                raise ex
+            else:
+                pass
+        finally:
+            sock.close()
+        return result
+
+
 def recv_message(sock: 'zmq.Socket', timeout: int = -1, **kwargs) -> 'Message':
     """Receive a protobuf message from a socket
 

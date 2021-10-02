@@ -87,7 +87,7 @@ class GRPCDataRuntime(BaseRuntime, ABC):
         return None
 
     @staticmethod
-    def is_ready(ctrl_address: str, **kwargs) -> bool:
+    async def is_ready(ctrl_address: str, **kwargs) -> bool:
         """
         Check if status is ready.
 
@@ -98,7 +98,7 @@ class GRPCDataRuntime(BaseRuntime, ABC):
         """
 
         try:
-            response = Grpclet.send_ctrl_msg(ctrl_address, 'STATUS')
+            _ = await Grpclet.send_ctrl_msg(ctrl_address, 'STATUS')
         except RpcError:
             return False
 
@@ -152,8 +152,12 @@ class GRPCDataRuntime(BaseRuntime, ABC):
         timeout_ns = 1000000000 * timeout if timeout else None
         now = time.time_ns()
         while timeout_ns is None or time.time_ns() - now < timeout_ns:
-            if shutdown_event.is_set() or GRPCDataRuntime.is_ready(ctrl_address):
+            if shutdown_event.is_set():
                 return True
+            else:
+                is_ready = await GRPCDataRuntime.is_ready(ctrl_address)
+                if is_ready:
+                    return True
             await asyncio.sleep(0.1)
         return False
 

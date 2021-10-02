@@ -274,8 +274,7 @@ class ContainerRuntime(ZMQRuntime):
         while timeout_ns is None or time.time_ns() - now < timeout_ns:
             if ready_or_shutdown_event.is_set():
                 return True
-            else:
-                await asyncio.sleep(0.1)
+            await asyncio.sleep(0.1)
         return False
 
     @staticmethod

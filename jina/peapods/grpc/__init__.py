@@ -78,7 +78,7 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
             raise ex
 
     @staticmethod
-    def send_ctrl_msg(pod_address: str, command: str, timeout=1.0):
+    async def send_ctrl_msg(pod_address: str, command: str, timeout=1.0):
         """
         Sends a control message via gRPC to pod_address
         :param pod_address: the pod to send the command to
@@ -86,8 +86,8 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         :param timeout: optional timeout for the request in seconds
         :returns: Empty protobuf struct
         """
-        stub = Grpclet._create_grpc_stub(pod_address, is_async=False)
-        response = stub.Call(ControlMessage(command), timeout=timeout)
+        stub = Grpclet._create_grpc_stub(pod_address, is_async=True)
+        response = await stub.Call(ControlMessage(command), timeout=timeout)
         return response
 
     @staticmethod
