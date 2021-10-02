@@ -397,11 +397,82 @@ class DocumentArray(
             hi_idx -= 1
         self._update_id_to_index_map()
 
-    def sort(self, key=None, *args, **kwargs):
+    def _default_key(value):
         """
-        Sort the items of the :class:`DocumentArray` in place.
+        By default use values of arrays to sort on
+
+        :return: returns value in array
+        """
+        return value
+
+    def _swap(self, index_i, index_j):
+        """
+        In-place swap the elements at index_i and index_j.
+
+        :param index_i: index of an element to perform swap on
+        :param index_j: index of an element to perform swap on
+        """
+
+        tmp = jina_pb2.DocumentProto()
+        tmp.CopyFrom(self._pb_body[index_i])
+        self._pb_body[index_i].CopyFrom(self._pb_body[index_j])
+        self._pb_body[index_j].CopyFrom(tmp)
+
+    def _sort_top_k(self, arr, key=_default_key, top_k: int = None, **kwargs):
+        """
+        Extension of sort method to sort top_k elements
+        For ascending orer put sorted top_k smallest element on the top
+        For decending orer put sorted top_k largest element on the top
+        while rest of the collection may not be sorted.
 
         :param key: key callable to sort based upon
+        :param arr: array to be partitioned and sorted
+        :param top_k: number of top k values to be sorted.
+        :param kwargs: keyword arguments to pass to the sorting underlying function
+        """
+
+        if top_k == 1:
+            return
+
+        # Allow only reverse in kwargs
+        check_kwargs = set(kwargs.keys()) - set(['reverse'])
+
+        if not len(check_kwargs):
+
+            reverse = kwargs['reverse'] if 'reverse' in kwargs.keys() else False
+            left = 0
+            right = len(arr) - 1
+            pivot_index = top_k - 1
+            while left < pivot_index:
+                i = left
+                j = left
+                pivot_value = key(arr[pivot_index])
+
+                self._swap(pivot_index, right)
+                while j < right:
+                    if (not reverse and key(arr[j]) > pivot_value) or (
+                        reverse and key(arr[j]) < pivot_value
+                    ):
+                        j += 1
+
+                    else:
+                        self._swap(i, j)
+                        i = i + 1
+                        j = j + 1
+                self._swap(i, right)
+                if i <= pivot_index:
+                    left = i
+
+            self._sort_top_k(arr[:top_k], key=key, top_k=top_k - 1, **kwargs)
+
+        else:
+            raise ValueError(f'invalid argument: {check_kwargs}')
+
+    def sort(self, key=None, top_k: int = None, *args, **kwargs):
+        """
+        Sort the items of the :class:`DocumentArray` in place.
+        :param key: key callable to sort based upon
+        :param top_k: number of top k values to be sorted.
         :param args: variable set of arguments to pass to the sorting underlying function
         :param kwargs: keyword arguments to pass to the sorting underlying function
         """
@@ -425,9 +496,17 @@ class DocumentArray(
                 overriden = True
 
             if not overriden:
-                self._pb_body.sort(key=key, *args, **kwargs)
+                if top_k:
+                    self._sort_top_k(self._pb_body, key=key, top_k=top_k, **kwargs)
+                else:
+                    self._pb_body.sort(key=key, *args, **kwargs)
             else:
-                self._pb_body.sort(key=overriden_key, *args, **kwargs)
+                if top_k:
+                    self._sort_top_k(
+                        self._pb_body, key=overriden_key, top_k=top_k, **kwargs
+                    )
+                else:
+                    self._pb_body.sort(key=overriden_key, *args, **kwargs)
         else:
             self._pb_body.sort(*args, **kwargs)
 

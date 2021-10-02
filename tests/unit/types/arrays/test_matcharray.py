@@ -71,6 +71,30 @@ def test_matches_sort_by_document_interface_in_proto():
     assert query.matches[0].weight == 1
 
 
+@pytest.mark.parametrize('reverse', [True, False])
+def test_matches_topk_sort_by_document_interface_in_proto(reverse):
+    docs = [Document(weight=(10 - i)) for i in range(10)]
+    query = Document()
+    query.matches = docs
+    assert len(query.matches) == 10
+    assert query.matches[0].weight == 10
+
+    query.matches.sort(key=lambda m: m.weight, top_k=5, reverse=reverse)
+    if reverse:
+        assert query.matches[0].weight == 10
+        assert query.matches[1].weight == 9
+        assert query.matches[2].weight == 8
+        assert query.matches[3].weight == 7
+        assert query.matches[4].weight == 6
+
+    else:
+        assert query.matches[0].weight == 1
+        assert query.matches[1].weight == 2
+        assert query.matches[2].weight == 3
+        assert query.matches[3].weight == 4
+        assert query.matches[4].weight == 5
+
+
 def test_matches_sort_by_document_interface_not_in_proto():
     docs = [Document(embedding=np.array([1] * (10 - i))) for i in range(10)]
     query = Document()
@@ -80,6 +104,21 @@ def test_matches_sort_by_document_interface_not_in_proto():
 
     query.matches.sort(key=lambda m: m.embedding.shape[0])
     assert query.matches[0].embedding.shape == (1,)
+
+
+@pytest.mark.parametrize('reverse', [True, False])
+def test_matches_topk_sort_by_document_interface_not_in_proto(reverse):
+    docs = [Document(embedding=np.array([1] * (10 - i))) for i in range(10)]
+    query = Document()
+    query.matches = docs
+    assert len(query.matches) == 10
+    assert query.matches[0].embedding.shape == (10,)
+
+    query.matches.sort(key=lambda m: m.embedding.shape[0], top_k=5, reverse=reverse)
+    if reverse:
+        assert query.matches[0].embedding.shape == (10,)
+    else:
+        assert query.matches[0].embedding.shape == (1,)
 
 
 def test_query_match_array_sort_scores():

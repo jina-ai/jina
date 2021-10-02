@@ -320,6 +320,30 @@ def test_da_sort_by_document_interface_not_in_proto():
     assert da[0].embedding.shape == (1,)
 
 
+@pytest.mark.parametrize('reverse', [True, False])
+def test_da_reverse_sort_topk_by_document_interface_not_in_proto(reverse):
+    docs = [Document(embedding=np.array([1] * (10 - i))) for i in range(10)]
+    da = DocumentArray(
+        [docs[i] if (i % 2 == 0) else docs[i].proto for i in range(len(docs))]
+    )
+    assert len(da) == 10
+    assert da[0].embedding.shape == (10,)
+
+    da.sort(key=lambda d: d.embedding.shape[0], top_k=5, reverse=reverse)
+    if reverse:
+        assert da[0].embedding.shape == (10,)
+        assert da[1].embedding.shape == (9,)
+        assert da[2].embedding.shape == (8,)
+        assert da[3].embedding.shape == (7,)
+        assert da[4].embedding.shape == (6,)
+    else:
+        assert da[0].embedding.shape == (1,)
+        assert da[1].embedding.shape == (2,)
+        assert da[2].embedding.shape == (3,)
+        assert da[3].embedding.shape == (4,)
+        assert da[4].embedding.shape == (5,)
+
+
 def test_da_sort_by_document_interface_in_proto():
     docs = [Document(embedding=np.array([1] * (10 - i))) for i in range(10)]
     da = DocumentArray(
@@ -330,6 +354,30 @@ def test_da_sort_by_document_interface_in_proto():
 
     da.sort(key=lambda d: d.embedding.dense.shape[0])
     assert da[0].embedding.shape == (1,)
+
+
+@pytest.mark.parametrize('reverse', [True, False])
+def test_da_sort_topk_by_document_interface_in_proto(reverse):
+    docs = [Document(embedding=np.array([1] * (10 - i))) for i in range(10)]
+    da = DocumentArray(
+        [docs[i] if (i % 2 == 0) else docs[i].proto for i in range(len(docs))]
+    )
+    assert len(da) == 10
+    assert da[0].embedding.shape == (10,)
+
+    da.sort(key=lambda d: d.embedding.dense.shape[0], top_k=5, reverse=reverse)
+    if reverse:
+        assert da[0].embedding.shape == (10,)
+        assert da[1].embedding.shape == (9,)
+        assert da[2].embedding.shape == (8,)
+        assert da[3].embedding.shape == (7,)
+        assert da[4].embedding.shape == (6,)
+    else:
+        assert da[0].embedding.shape == (1,)
+        assert da[1].embedding.shape == (2,)
+        assert da[2].embedding.shape == (3,)
+        assert da[3].embedding.shape == (4,)
+        assert da[4].embedding.shape == (5,)
 
 
 def test_da_reverse():
