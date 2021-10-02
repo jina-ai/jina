@@ -10,19 +10,11 @@ import requests
 from jina import Flow
 
 
-def pull_images(images, cluster, logger):
-    # image pull anyways must be Never or IfNotPresent otherwise kubernetes will try to pull the image anyway
-    logger.debug(f'Loading docker image into kind cluster...')
-    for image in images:
-        cluster.load_docker_image(image)
-    cluster.load_docker_image('jinaai/jina:test-pip')
-    logger.debug(f'Done loading docker image into kind cluster...')
-
-
-def run_test(images, cluster, flow, logger, endpoint, port_expose):
-    pull_images(images, cluster, logger)
+def run_test(k8s_cluster, flow, logger, endpoint, port_expose):
     start_flow(flow, logger)
-    resp = send_dummy_request(endpoint, cluster, flow, logger, port_expose=port_expose)
+    resp = send_dummy_request(
+        endpoint, k8s_cluster, flow, logger, port_expose=port_expose
+    )
     return resp
 
 
@@ -141,15 +133,14 @@ def k8s_flow_with_sharding(
 @pytest.mark.parametrize('k8s_connection_pool', [True, False])
 def test_flow_with_needs(
     k8s_cluster,
-    test_executor_image,
-    executor_merger_image,
     k8s_flow_with_needs: Flow,
+    load_images_in_kind,
+    set_test_pip_version,
     logger,
     k8s_connection_pool: bool,
 ):
     k8s_flow_with_needs.args.k8s_connection_pool = k8s_connection_pool
     resp = run_test(
-        [test_executor_image, executor_merger_image],
         k8s_cluster,
         k8s_flow_with_needs,
         logger,
@@ -175,13 +166,12 @@ def test_flow_with_needs(
 @pytest.mark.timeout(3600)
 def test_flow_with_init(
     k8s_cluster,
-    test_executor_image,
-    dummy_dumper_image: str,
     k8s_flow_with_init_container: Flow,
+    load_images_in_kind,
+    set_test_pip_version,
     logger,
 ):
     resp = run_test(
-        [test_executor_image, dummy_dumper_image],
         k8s_cluster,
         k8s_flow_with_init_container,
         logger,
@@ -199,13 +189,12 @@ def test_flow_with_init(
 @pytest.mark.timeout(3600)
 def test_flow_with_sharding(
     k8s_cluster,
-    test_executor_image,
-    executor_merger_image,
     k8s_flow_with_sharding: Flow,
+    load_images_in_kind,
+    set_test_pip_version,
     logger,
 ):
     resp = run_test(
-        [test_executor_image, executor_merger_image],
         k8s_cluster,
         k8s_flow_with_sharding,
         logger,

@@ -56,7 +56,7 @@ class K8sPod(BasePod, ExitFIFO):
                 f'{kubernetes_deployment.get_cli_params(self.common_args, ("pod_role",))}]',
                 logger=JinaLogger(f'deploy_{self.name}'),
                 replicas=1,
-                pull_policy='Always',
+                pull_policy='IfNotPresent',
                 port_expose=self.common_args.port_expose,
             )
 
