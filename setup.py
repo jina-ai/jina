@@ -191,6 +191,7 @@ setup(
         'Topic :: Software Development :: Libraries',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
+    #can be explained via a function
     project_urls={
         'Documentation': 'https://docs.jina.ai',
         'Source': 'https://github.com/jina-ai/jina/',
