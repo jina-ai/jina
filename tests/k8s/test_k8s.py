@@ -65,7 +65,7 @@ def k8s_flow_with_sharding(
         timeout_ready=120000,
     ).add(
         name='test_executor',
-        shards=3,
+        shards=2,
         replicas=2,
         uses=test_executor_image,
         uses_after=executor_merger_image,

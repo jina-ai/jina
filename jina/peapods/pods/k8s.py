@@ -130,7 +130,7 @@ class K8sPod(BasePod, ExitFIFO):
 
             with JinaLogger(f'waiting_for_{self.name}') as logger:
                 logger.info(
-                    f'🏝️\t\tWaiting for "{self.name}" to be ready, with {self.num_replicas} replicas'
+                    f'🏝️\n\t\tWaiting for "{self.name}" to be ready, with {self.num_replicas} replicas'
                 )
                 timeout_ns = 1000000000 * _timeout if _timeout else None
                 now = time.time_ns()
@@ -153,7 +153,7 @@ class K8sPod(BasePod, ExitFIFO):
                                 api_response.status.available_replicas or 0
                             )
                             logger.info(
-                                f'Number of replicas available {available_replicas}, waiting for {self.num_replicas - available_replicas} replicas to be available'
+                                f'\nNumber of replicas available {available_replicas}, waiting for {self.num_replicas - available_replicas} replicas to be available'
                             )
                             time.sleep(1.0)
                     except client.ApiException as ex:
