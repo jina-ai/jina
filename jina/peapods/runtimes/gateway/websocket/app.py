@@ -2,7 +2,6 @@ import argparse
 import inspect
 from typing import List
 
-from ..prefetch import PrefetchCaller
 from ....grpc import Grpclet
 from ....zmq import AsyncZmqlet
 from .....importer import ImportExtensions
@@ -38,14 +37,19 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     app = FastAPI()
 
     if args.grpc_data_requests:
+        from ..prefetch import GrpcPrefetchCaller
+
         iolet = Grpclet(
             args=args,
             message_callback=None,
             logger=logger,
         )
+        servicer = GrpcPrefetchCaller(args, iolet)
     else:
+        from ..prefetch import ZmqPrefetchCaller
+
         iolet = AsyncZmqlet(args, logger)
-    servicer = PrefetchCaller(args, iolet)
+        servicer = ZmqPrefetchCaller(args, iolet)
 
     @app.on_event('shutdown')
     async def _shutdown():
