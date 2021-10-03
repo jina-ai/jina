@@ -72,7 +72,7 @@ html_css_files = [
     'docbot.css',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css',
 ]
-html_js_files = ['https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js', 'docbot.js']
+html_js_files = ['https://cdn.jsdelivr.net/npm/vue@2/dist/vue.min.js', 'docbot.js']
 htmlhelp_basename = slug
 html_show_sourcelink = False
 html_favicon = '_static/favicon.ico'
