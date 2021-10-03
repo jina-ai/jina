@@ -8,7 +8,7 @@ from ....helper import typename, get_or_reuse_loop
 from ....logging.logger import JinaLogger
 from ....types.message import Message
 
-__all__ = ['PrefetchCaller']
+__all__ = ['ZmqPrefetchCaller', 'GrpcPrefetchCaller', 'HTTPClientPrefetchCaller']
 
 if TYPE_CHECKING:
     from ...zmq import AsyncZmqlet
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 
 class BasePrefetchCaller:
-    """An async zmq request sender to be used in the Gateway"""
+    """An base async request handler"""
 
     def __init__(
         self,
@@ -142,6 +142,8 @@ class BasePrefetchCaller:
 
 
 class ZmqPrefetchCaller(BasePrefetchCaller):
+    """An async zmq request handler used in the Gateway"""
+
     def __init__(
         self,
         args: argparse.Namespace,
@@ -217,6 +219,8 @@ class ZmqPrefetchCaller(BasePrefetchCaller):
 
 
 class GrpcPrefetchCaller(ZmqPrefetchCaller):
+    """An async grpc request handler used in the Gateway"""
+
     def __init__(self, args: argparse.Namespace, iolet: 'Grpclet'):
         super().__init__(args, iolet)
         self.iolet.callback = lambda response: self.handle_response(response.request)
@@ -230,6 +234,8 @@ class GrpcPrefetchCaller(ZmqPrefetchCaller):
 
 
 class HTTPClientPrefetchCaller(BasePrefetchCaller):
+    """An async HTTP request handler used in the HTTP Client"""
+
     def convert_to_message(self, request: 'Request', **kwargs):
         """Convert request to dict for POST request
 
