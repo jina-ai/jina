@@ -633,3 +633,20 @@ def test_none_extend():
     da = DocumentArray([Document() for _ in range(100)])
     da.extend(None)
     assert len(da) == 100
+
+
+def test_buffers_getter_setter():
+    da = DocumentArray(
+        [
+            Document(buffer=b'aa'),
+            Document(buffer=b'bb'),
+            Document(buffer=b'cc'),
+        ]
+    )
+    assert da.buffers == [b'aa', b'bb', b'cc']
+    da.buffers = [b'cc', b'bb', b'aa']
+    assert da.buffers == [b'cc', b'bb', b'aa']
+    with pytest.raises(ValueError):
+        da.buffers = [b'cc', b'bb', b'aa', b'dd']
+    with pytest.raises(TypeError):
+        da.buffers = ['aa', 'bb', 'cc']

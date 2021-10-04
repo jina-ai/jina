@@ -198,6 +198,27 @@ class DocumentArrayGetAttrMixin:
         for doc, text in zip(self, texts):
             doc.text = text
 
+    @property
+    def buffers(self) -> List[bytes]:
+        """Get the buffer attribute of all Documents"""
+        ...
+
+    @buffers.setter
+    def buffers(self, buffers: List[bytes]):
+        """Set the buffer attribute for all Documents
+
+        :param buffers: A sequence of buffer to set, should be the same length as the
+            number of Documents
+        """
+        if len(buffers) != len(self):
+            raise ValueError(
+                f'the number of buffers in the input ({len(buffers)}), should match the'
+                f'number of Documents ({len(self)})'
+            )
+
+        for doc, buffer in zip(self, buffers):
+            doc.buffer = buffer
+
 
 class DocumentArray(
     TraversableSequence,
@@ -662,6 +683,14 @@ class DocumentArray(
         :return: List of ``text`` attributes for all Documents
         """
         return [d.text for d in self._pb_body]
+
+    @DocumentArrayGetAttrMixin.buffers.getter
+    def buffers(self) -> List[bytes]:
+        """Get the buffer attribute of all Documents
+
+        :return: List of ``buffer`` attributes for all Documents
+        """
+        return [d.buffer for d in self._pb_body]
 
     @DocumentArrayGetAttrMixin.blobs.getter
     def blobs(self) -> np.ndarray:

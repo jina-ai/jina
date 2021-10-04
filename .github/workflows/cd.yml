@@ -117,11 +117,14 @@ jobs:
   prep-testbed:
     runs-on: ubuntu-latest
     needs: update-schema
+    env:
+      release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}
     steps:
+      - uses: actions/checkout@v2
       - id: set-matrix
         run: |
           sudo apt-get install jq
-          echo "::set-output name=matrix::$(bash scripts/get-all-test-paths.sh tests)"
+          echo "::set-output name=matrix::$(bash scripts/get-all-test-paths.sh)"
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
@@ -263,8 +266,8 @@ jobs:
           JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
 
   k8s-test:
-    runs-on: ubuntu-latest
     needs: update-schema
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 3.7

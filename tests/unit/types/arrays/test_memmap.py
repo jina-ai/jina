@@ -610,3 +610,21 @@ def test_issue_3527_delete_and_match(tmpdir):
     da = DocumentArray([Document(embedding=np.array([5, 6, 7], dtype=np.float32))])
     da.match(dam)
     assert da[0].matches[0].id == 'c'
+
+
+def test_buffers_getter_setter(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend(
+        [
+            Document(buffer=b'aa'),
+            Document(buffer=b'bb'),
+            Document(buffer=b'cc'),
+        ]
+    )
+    assert dam.buffers == [b'aa', b'bb', b'cc']
+    dam.buffers = [b'cc', b'bb', b'aa']
+    assert dam.buffers == [b'cc', b'bb', b'aa']
+    with pytest.raises(ValueError):
+        dam.buffers = [b'cc', b'bb', b'aa', b'dd']
+    with pytest.raises(TypeError):
+        dam.buffers = ['aa', 'bb', 'cc']
