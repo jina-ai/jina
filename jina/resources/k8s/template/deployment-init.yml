@@ -42,6 +42,8 @@ spec:
           value: debug
         - name: PYTHONUNBUFFERED
           value: "1"
+        - name: JINA_EXECUTOR_CONTROL_PORT
+          value: "8081" # TODO there should be a better way to pass this and align with port_ctrl
         - name: WORKER_CLASS
           value: "uvicorn.workers.UvicornH11Worker"
         volumeMounts:
