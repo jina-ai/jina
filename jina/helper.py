@@ -1176,7 +1176,12 @@ def run_async(func, *args, **kwargs):
 
         def run(self):
             """Run given `func` asynchronously."""
-            self.result = asyncio.run(func(*args, **kwargs))
+            self.result = None
+            self.exception = None
+            try:
+                self.result = asyncio.run(func(*args, **kwargs))
+            except Exception as ex:
+                self.exception = ex
 
     try:
         loop = asyncio.get_running_loop()
@@ -1190,14 +1195,20 @@ def run_async(func, *args, **kwargs):
             thread = _RunThread()
             thread.start()
             thread.join()
-            try:
+            result = getattr(thread, 'result', None)
+            if result is not None:
                 return thread.result
-            except AttributeError:
-                from .excepts import BadClient
+            else:
+                thread_exc = getattr(thread, 'exception', None)
+                if thread_exc is not None:
+                    print(f' Joan here thread exception {thread_exc}')
+                    raise thread_exc
+                else:
+                    from .excepts import BadClient
 
-                raise BadClient(
-                    'something wrong when running the eventloop, result can not be retrieved'
-                )
+                    raise BadClient(
+                        'something wrong when running the eventloop, result can not be retrieved'
+                    )
         else:
 
             raise RuntimeError(
