@@ -7,7 +7,7 @@ from ...excepts import BadClient
 from ...importer import ImportExtensions
 from ...logging.profile import ProgressBar
 from ...types.request import Request
-from ...peapods.runtimes.gateway.prefetch import HTTPClientPrefetchCaller
+from ...peapods.runtimes.prefetch.client import HTTPClientPrefetcher
 
 
 if TYPE_CHECKING:
@@ -104,8 +104,8 @@ class HTTPBaseClient(BaseClient):
                     HTTPClientlet(url=url, logger=self.logger)
                 )
 
-                prefetch_caller = HTTPClientPrefetchCaller(self.args, iolet=iolet)
-                async for response in prefetch_caller.send(request_iterator):
+                prefetcher = HTTPClientPrefetcher(self.args, iolet=iolet)
+                async for response in prefetcher.send(request_iterator):
                     r_status = response.status
                     r_str = await response.json()
                     if r_status == 404:

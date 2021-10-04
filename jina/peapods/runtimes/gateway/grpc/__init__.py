@@ -8,7 +8,7 @@ from ....grpc import Grpclet
 from .....proto import jina_pb2_grpc
 from ....zmq import AsyncZmqlet
 from ...zmq.asyncio import AsyncNewLoopRuntime
-from ..prefetch import GrpcPrefetchCaller, ZmqPrefetchCaller
+from ...prefetch.gateway import GrpcGatewayPrefetcher, ZmqGatewayPrefetcher
 
 __all__ = ['GRPCRuntime']
 
@@ -39,10 +39,10 @@ class GRPCRuntime(AsyncNewLoopRuntime):
                 message_callback=None,
                 logger=self.logger,
             )
-            self._prefetcher = GrpcPrefetchCaller(self.args, iolet=self._grpclet)
+            self._prefetcher = GrpcGatewayPrefetcher(self.args, iolet=self._grpclet)
         else:
             self.zmqlet = AsyncZmqlet(self.args, logger=self.logger)
-            self._prefetcher = ZmqPrefetchCaller(self.args, iolet=self.zmqlet)
+            self._prefetcher = ZmqGatewayPrefetcher(self.args, iolet=self.zmqlet)
 
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self._prefetcher, self.server)
         bind_addr = f'{__default_host__}:{self.args.port_expose}'

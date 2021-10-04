@@ -37,19 +37,19 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     app = FastAPI()
 
     if args.grpc_data_requests:
-        from ..prefetch import GrpcPrefetchCaller
+        from ...prefetch.gateway import GrpcGatewayPrefetcher
 
         iolet = Grpclet(
             args=args,
             message_callback=None,
             logger=logger,
         )
-        servicer = GrpcPrefetchCaller(args, iolet)
+        servicer = GrpcGatewayPrefetcher(args, iolet)
     else:
-        from ..prefetch import ZmqPrefetchCaller
+        from ...prefetch.gateway import ZmqGatewayPrefetcher
 
         iolet = AsyncZmqlet(args, logger)
-        servicer = ZmqPrefetchCaller(args, iolet)
+        servicer = ZmqGatewayPrefetcher(args, iolet)
 
     @app.on_event('shutdown')
     async def _shutdown():
