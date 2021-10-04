@@ -59,8 +59,8 @@ def deploy_service(
 
     logger.info(f'🔋\tCreate Service for "{name}" with exposed port "{port_expose}"')
     kubernetes_tools.create(
-        template='service',
-        params={
+        'service',
+        {
             'name': name,
             'target': name,
             'namespace': namespace,
@@ -77,8 +77,8 @@ def deploy_service(
     logger.info(f'🐳\tCreate ConfigMap for deployment.')
 
     kubernetes_tools.create(
-        template='configmap',
-        params={
+        'configmap',
+        {
             'namespace': namespace,
             'data': envs,
         },
@@ -96,8 +96,8 @@ def deploy_service(
         template_name = 'deployment'
         init_container = {}
     kubernetes_tools.create(
-        template=template_name,
-        params={
+        template_name,
+        {
             'name': name,
             'namespace': namespace,
             'image': image_name,
@@ -118,15 +118,15 @@ def deploy_service(
     logger.info(f'🔑\tCreate necessary permissions"')
 
     kubernetes_tools.create(
-        template='connection-pool-role',
-        params={
+        'connection-pool-role',
+        {
             'namespace': namespace,
         },
     )
 
     kubernetes_tools.create(
-        template='connection-pool-role-binding',
-        params={
+        'connection-pool-role-binding',
+        {
             'namespace': namespace,
         },
     )
