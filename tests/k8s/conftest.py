@@ -29,23 +29,23 @@ class KindClusterWrapper:
         self._cluster.load_docker_image(image_name)
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture()
 def logger():
     logger = JinaLogger('kubernetes-testing')
     return logger
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture()
 def test_dir() -> str:
     return cur_dir
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture()
 def k8s_cluster(kind_cluster: KindCluster, logger: JinaLogger) -> KindClusterWrapper:
     return KindClusterWrapper(kind_cluster, logger)
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture()
 def test_executor_image(logger: JinaLogger):
     image, build_logs = client.images.build(
         path=os.path.join(cur_dir, 'test-executor'), tag='test-executor:0.13.1'
@@ -57,7 +57,7 @@ def test_executor_image(logger: JinaLogger):
     return image.tags[-1]
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture()
 def executor_merger_image(logger: JinaLogger):
     image, build_logs = client.images.build(
         path=os.path.join(cur_dir, 'executor-merger'), tag='merger-executor:0.1.1'
@@ -69,7 +69,7 @@ def executor_merger_image(logger: JinaLogger):
     return image.tags[-1]
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture()
 def dummy_dumper_image(logger: JinaLogger):
     image, build_logs = client.images.build(
         path=os.path.join(cur_dir, 'dummy-dumper'), tag='dummy-dumper:0.1.1'
@@ -81,7 +81,7 @@ def dummy_dumper_image(logger: JinaLogger):
     return image.tags[-1]
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture()
 def load_images_in_kind(
     logger, test_executor_image, executor_merger_image, dummy_dumper_image, k8s_cluster
 ):
@@ -96,7 +96,7 @@ def load_images_in_kind(
     logger.debug(f'Done loading docker image into kind cluster...')
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture()
 def set_test_pip_version():
     import os
 
