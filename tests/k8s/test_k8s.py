@@ -253,9 +253,7 @@ def test_flow_with_configmap(
         port_expose=8080,
     )
 
-    expected_traversed_executors = {
-        {'k1': 'v1', 'k2': 'v2'},
-    }
+    expected_traversed_executors = {'k1': 'v1', 'k2': 'v2'}
 
     assert resp.status_code == HTTPStatus.OK
     docs = resp.json()['data']['docs']
