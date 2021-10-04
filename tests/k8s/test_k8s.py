@@ -8,25 +8,24 @@ import pytest
 import requests
 
 from jina import Flow
+from jina.peapods.pods.k8slib.kubernetes_tools import get_port_forward_contextmanager
 
 
-def run_test(k8s_cluster, flow, logger, endpoint, port_expose):
+def run_test(flow, logger, endpoint, port_expose):
     with flow:
-        resp = send_dummy_request(
-            endpoint, k8s_cluster, flow, logger, port_expose=port_expose
-        )
+        resp = send_dummy_request(endpoint, flow, logger, port_expose=port_expose)
     return resp
 
 
-def send_dummy_request(endpoint, k8s_cluster, flow, logger, port_expose):
+def send_dummy_request(endpoint, flow, logger, port_expose):
     logger.debug(f'Starting port-forwarding to gateway service...')
-    with k8s_cluster.port_forward(
-        'service/gateway', None, port_expose, flow.args.name
-    ) as port_to_use:
+    with get_port_forward_contextmanager(
+        namespace=flow.args.name, port_expose=port_expose
+    ):
         logger.debug(f'Port-forward running...')
 
         resp = requests.post(
-            f'http://localhost:{port_to_use}/{endpoint}',
+            f'http://localhost:{port_expose}/{endpoint}',
             json={'data': [{} for _ in range(10)]},
         )
     return resp
@@ -134,7 +133,6 @@ def test_flow_with_needs(
         )
     )
     resp = run_test(
-        k8s_cluster,
         flow,
         logger,
         endpoint='index',
@@ -165,7 +163,6 @@ def test_flow_with_init(
     logger,
 ):
     resp = run_test(
-        k8s_cluster,
         k8s_flow_with_init_container,
         logger,
         endpoint='search',
@@ -188,7 +185,6 @@ def test_flow_with_sharding(
     logger,
 ):
     resp = run_test(
-        k8s_cluster,
         k8s_flow_with_sharding,
         logger,
         endpoint='index',
