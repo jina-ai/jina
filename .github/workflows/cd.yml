@@ -264,6 +264,7 @@ jobs:
           JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
 
   k8s-test:
+    needs: update-schema
     runs-on: ubuntu-latest
     needs: update-schema
     steps:
