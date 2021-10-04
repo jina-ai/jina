@@ -141,20 +141,16 @@ class K8sPod(BasePod, ExitFIFO):
                             name=self.dns_name, namespace=self.k8s_namespace
                         )
                         assert api_response.status.replicas == self.num_replicas
-                        logger.debug(f'\n API Response is {api_response}\n')
                         if (
-                            api_response.status.available_replicas is not None
-                            and api_response.status.available_replicas
-                            == self.num_replicas
+                            api_response.status.ready_replicas is not None
+                            and api_response.status.ready_replicas == self.num_replicas
                         ):
                             logger.success(f' {self.name} has all its replicas ready!!')
                             return
                         else:
-                            available_replicas = (
-                                api_response.status.available_replicas or 0
-                            )
+                            ready_replicas = api_response.status.ready_replicas or 0
                             logger.info(
-                                f'\nNumber of replicas available {available_replicas}, waiting for {self.num_replicas - available_replicas} replicas to be available'
+                                f'\nNumber of ready replicas {ready_replicas}, waiting for {self.num_replicas - ready_replicas} replicas to be available'
                             )
                             time.sleep(1.0)
                     except client.ApiException as ex:
