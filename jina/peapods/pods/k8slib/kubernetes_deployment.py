@@ -29,7 +29,7 @@ def deploy_service(
     init_container: Dict = None,
     custom_resource_dir: Optional[str] = None,
     port_expose: Optional[int] = None,
-    envs: Optional[List[Dict]] = None,
+    envs: Optional[Dict] = None,
 ) -> str:
     """Deploy service on Kubernetes.
 
@@ -81,7 +81,6 @@ def deploy_service(
         params={
             'namespace': namespace,
             'data': envs,
-            **init_container,
         },
         logger=logger,
         custom_resource_dir=None,

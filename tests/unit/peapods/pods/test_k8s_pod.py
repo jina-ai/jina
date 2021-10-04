@@ -44,7 +44,7 @@ def test_version(is_master, requests_mock, monkeypatch):
 
     with pod:
         assert (
-            mock_create.call_count == 5
+            mock_create.call_count == 6
         )  # 3 because of namespace, service and deployment
         if is_master:
             assert pod.version == 'master'
