@@ -229,3 +229,36 @@ def test_flow_with_sharding(
     assert len(docs) == 10
     for doc in docs:
         assert set(doc['tags']['traversed-executors']) == expected_traversed_executors
+
+
+@pytest.mark.timeout(3600)
+def test_flow_with_configmap(
+    k8s_cluster_namespaced,
+    k8s_flow_with_needs,
+    test_executor_image,
+    executor_merger_image,
+    k8s_flow_with_sharding: Flow,
+    logger,
+):
+
+    k8s_flow_with_needs.args.envs = {'k1': 'v1', 'k2': 'v2'}
+
+    resp = run_test(
+        [test_executor_image, executor_merger_image],
+        k8s_cluster_namespaced,
+        k8s_flow_with_sharding,
+        logger,
+        expected_running_pods=9,
+        endpoint='index',
+        port_expose=8080,
+    )
+
+    expected_traversed_executors = {
+        {'k1': 'v1', 'k2': 'v2'},
+    }
+
+    assert resp.status_code == HTTPStatus.OK
+    docs = resp.json()['data']['docs']
+    assert len(docs) == 10
+    for doc in docs:
+        assert set(doc['tags']['traversed-executors']) == expected_traversed_executors
