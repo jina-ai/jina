@@ -266,7 +266,6 @@ jobs:
   k8s-test:
     needs: update-schema
     runs-on: ubuntu-latest
-    needs: update-schema
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 3.7
