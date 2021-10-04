@@ -53,5 +53,3 @@ client.status
   }
 }
 ```
-
-Adding a dummy debug line. one more.
