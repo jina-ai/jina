@@ -201,7 +201,6 @@ ac_table = {
             '--k8s-mount-path',
             '--k8s-init-container-command',
             '--k8s-custom-resource-dir',
-            '--k8s-envs',
             '--dynamic-routing',
         ],
         'hub new': [
@@ -372,7 +371,6 @@ ac_table = {
             '--k8s-mount-path',
             '--k8s-init-container-command',
             '--k8s-custom-resource-dir',
-            '--k8s-envs',
         ],
         'client': [
             '--help',
