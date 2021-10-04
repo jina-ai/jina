@@ -117,15 +117,14 @@ jobs:
   prep-testbed:
     runs-on: ubuntu-latest
     needs: update-schema
-    with:
-      inputs: '{ "release_token": "${{ env.release_token }}", "triggered_by": "CD"}'
-      token: ${{ secrets.JINA_DEV_BOT }}
+    env:
+      release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}
     steps:
       - uses: actions/checkout@v2
       - id: set-matrix
         run: |
           sudo apt-get install jq
-          echo "::set-output name=matrix::$(bash scripts/get-all-test-paths.sh tests)"
+          echo "::set-output name=matrix::$(bash scripts/get-all-test-paths.sh)"
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
