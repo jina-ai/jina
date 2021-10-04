@@ -44,16 +44,16 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             message_callback=None,
             logger=logger,
         )
-        servicer = GrpcGatewayPrefetcher(args, iolet)
+        prefetcher = GrpcGatewayPrefetcher(args, iolet)
     else:
         from ...prefetch.gateway import ZmqGatewayPrefetcher
 
         iolet = AsyncZmqlet(args, logger)
-        servicer = ZmqGatewayPrefetcher(args, iolet)
+        prefetcher = ZmqGatewayPrefetcher(args, iolet)
 
     @app.on_event('shutdown')
     async def _shutdown():
-        await servicer.close()
+        await prefetcher.close()
         if inspect.iscoroutine(iolet.close):
             await iolet.close()
         else:
@@ -72,7 +72,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
                 yield Request(data)
 
         try:
-            async for msg in servicer.send(request_iterator=req_iter()):
+            async for msg in prefetcher.send(request_iterator=req_iter()):
                 await websocket.send_bytes(msg.binary_str())
         except WebSocketDisconnect:
             manager.disconnect(websocket)
