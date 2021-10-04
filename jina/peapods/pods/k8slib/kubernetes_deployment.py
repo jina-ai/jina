@@ -79,6 +79,7 @@ def deploy_service(
     kubernetes_tools.create(
         'configmap',
         {
+            'name': name,
             'namespace': namespace,
             'data': envs,
         },

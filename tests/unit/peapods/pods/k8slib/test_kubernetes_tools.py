@@ -30,7 +30,11 @@ def test_lazy_load_k8s_client(monkeypatch):
         ('deployment-init', {'name': 'test-dep-init'}),
         (
             'configmap',
-            {'namespace': 'test-configmap', 'data': {'k1': 'v1', 'k2': 'v2'}},
+            {
+                'name': 'test-configmap-executor',
+                'namespace': 'test-configmap',
+                'data': {'k1': 'v1', 'k2': 'v2'},
+            },
         ),
     ],
 )

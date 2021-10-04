@@ -151,6 +151,7 @@ def _patch_yaml(template: str, params: Dict):
     with open(path) as f:
         config_map = yaml.safe_load(f)
 
+    config_map['metadata']['name'] = params.get('name') + '-' + 'configmap'
     config_map['metadata']['namespace'] = params.get('namespace')
     if params.get('data'):
         for key, value in params['data'].items():

@@ -27,5 +27,5 @@ spec:
           - containerPort: {port_ctrl}
         envFrom:
           - configMapRef:
-              name: config-map
+              name: {name}-configmap
 
