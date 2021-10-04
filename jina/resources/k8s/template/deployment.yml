@@ -33,14 +33,14 @@ spec:
               - 'import os; import sys; from jina.peapods.runtimes.grpc import GRPCDataRuntime; control_port = int(os.getenv("JINA_EXECUTOR_CONTROL_PORT")); is_ready = GRPCDataRuntime.is_ready(ctrl_address=f"0.0.0.0:{str(control_port)}"); sys.exit(0) if is_ready else sys.exit(1)'
           initialDelaySeconds: 5
           periodSeconds: 5
-        livenessProbe:
-          exec:
-            command:
-              - python
-              - -c
-              - 'import os; import sys; from jina.peapods.runtimes.grpc import GRPCDataRuntime; control_port = int(os.getenv("JINA_EXECUTOR_CONTROL_PORT")); is_ready = GRPCDataRuntime.is_ready(ctrl_address=f"0.0.0.0:{str(control_port)}"); sys.exit(0) if is_ready else sys.exit(1)'
-          initialDelaySeconds: 30
-          periodSeconds: 60
+#        livenessProbe:
+#          exec:
+#            command:
+#              - python
+#              - -c
+#              - 'import os; import sys; from jina.peapods.runtimes.grpc import GRPCDataRuntime; control_port = int(os.getenv("JINA_EXECUTOR_CONTROL_PORT")); is_ready = GRPCDataRuntime.is_ready(ctrl_address=f"0.0.0.0:{str(control_port)}"); sys.exit(0) if is_ready else sys.exit(1)'
+#          initialDelaySeconds: 30
+#          periodSeconds: 60
         env:
           - name: JINA_LOG_LEVEL
             value: DEBUG

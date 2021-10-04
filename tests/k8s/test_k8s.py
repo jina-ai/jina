@@ -14,7 +14,6 @@ from jina.peapods.pods.k8slib.kubernetes_tools import get_port_forward_contextma
 def run_test(flow, logger, endpoint, port_expose):
     with flow:
         resp = send_dummy_request(endpoint, flow, logger, port_expose=port_expose)
-        flow.block()
     return resp
 
 
