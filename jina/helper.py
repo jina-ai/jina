@@ -1176,8 +1176,6 @@ def run_async(func, *args, **kwargs):
 
         def run(self):
             """Run given `func` asynchronously."""
-            self.result = None
-            self.exception = None
             try:
                 self.result = asyncio.run(func(*args, **kwargs))
             except Exception as ex:
@@ -1195,15 +1193,13 @@ def run_async(func, *args, **kwargs):
             thread = _RunThread()
             thread.start()
             thread.join()
-            result = getattr(thread, 'result', None)
-            if result is not None:
+            try:
                 return thread.result
-            else:
-                thread_exc = getattr(thread, 'exception', None)
-                if thread_exc is not None:
-                    print(f' Joan here thread exception {thread_exc}')
+            except AttributeError:
+                try:
+                    thread_exc = thread.exception
                     raise thread_exc
-                else:
+                except AttributeError:
                     from .excepts import BadClient
 
                     raise BadClient(

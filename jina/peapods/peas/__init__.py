@@ -258,9 +258,10 @@ class BasePea:
         )
 
     async def wait_start_success(self):
-        """Block until all peas starts successfully.
+        """Block until the pea starts successfully.
 
         If not success, it will raise an error hoping the outer function to catch it
+        .. # noqa: DAR201
         """
         _timeout = self.args.timeout_ready
         if _timeout <= 0:
