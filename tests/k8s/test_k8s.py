@@ -67,7 +67,7 @@ def k8s_flow_with_sharding(
         replicas=2,
         uses=test_executor_image,
         uses_after=executor_merger_image,
-        timeout_ready=240000,
+        timeout_ready=360000,
     )
     return flow
 

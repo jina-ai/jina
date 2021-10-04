@@ -933,30 +933,40 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     )
 
         for end, pod in self._pod_nodes.items():
-            if isinstance(pod, K8sPod):
-                from ..peapods.pods.k8slib import kubernetes_deployment
 
-                end = kubernetes_deployment.to_dns_name(end)
             if end == GATEWAY_NAME:
                 end = f'end-{GATEWAY_NAME}'
 
             if pod.head_args.hosts_in_connect is None:
                 pod.head_args.hosts_in_connect = []
 
+            if isinstance(pod, K8sPod):
+                from ..peapods.pods.k8slib import kubernetes_deployment
+
+                end = kubernetes_deployment.to_dns_name(end)
             if end not in graph.pods:
                 end = end + '_head'
+            if isinstance(pod, K8sPod):
+                from ..peapods.pods.k8slib import kubernetes_deployment
+
+                end = kubernetes_deployment.to_dns_name(end)
 
             for start in pod.needs:
                 start_pod = self._pod_nodes[start]
+
+                if start == GATEWAY_NAME:
+                    start = f'start-{GATEWAY_NAME}'
+
                 if isinstance(start_pod, K8sPod):
                     from ..peapods.pods.k8slib import kubernetes_deployment
 
                     start = kubernetes_deployment.to_dns_name(start)
-                if start == GATEWAY_NAME:
-                    start = f'start-{GATEWAY_NAME}'
-
                 if start not in graph.pods:
                     start = start + '_tail'
+                if isinstance(start_pod, K8sPod):
+                    from ..peapods.pods.k8slib import kubernetes_deployment
+
+                    start = kubernetes_deployment.to_dns_name(start)
 
                 start_pod = graph._get_target_pod(start)
 
