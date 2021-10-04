@@ -23,7 +23,6 @@ def send_dummy_request(endpoint, flow, logger, port_expose):
         namespace=flow.args.name, port_expose=port_expose
     ):
         logger.debug(f'Port-forward running...')
-
         resp = requests.post(
             f'http://localhost:{port_expose}/{endpoint}',
             json={'data': [{} for _ in range(10)]},
@@ -108,28 +107,16 @@ def test_flow_with_needs(
             timeout_ready=120000,
         )
         .add(
-            name='textstorage',
-            uses=test_executor_image,
-            needs='textencoder',
-            timeout_ready=120000,
-        )
-        .add(
             name='imageencoder',
             uses=test_executor_image,
             needs='segmenter',
             timeout_ready=120000,
         )
         .add(
-            name='imagestorage',
-            uses=test_executor_image,
-            needs='imageencoder',
-            timeout_ready=120000,
-        )
-        .add(
             name='merger',
             uses=executor_merger_image,
             timeout_ready=120000,
-            needs=['imagestorage', 'textstorage'],
+            needs=['imageencoder', 'textencoder'],
         )
     )
     resp = run_test(
@@ -143,8 +130,6 @@ def test_flow_with_needs(
         'segmenter',
         'imageencoder',
         'textencoder',
-        'imagestorage',
-        'textstorage',
     }
 
     assert resp.status_code == HTTPStatus.OK

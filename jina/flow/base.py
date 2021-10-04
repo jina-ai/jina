@@ -46,6 +46,7 @@ from ..logging.logger import JinaLogger
 from ..parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
 from ..parsers.flow import set_flow_parser
 from ..peapods import CompoundPod, Pod
+from ..peapods.pods.k8s import K8sPod
 from ..peapods.pods.factory import PodFactory
 from ..types.routing.table import RoutingTable
 from ..peapods.networking import is_remote_local_connection
@@ -92,7 +93,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 item.metadata.name for item in client.list_namespace().items
             ]
             if self.k8s_namespace not in list_namespaces:
-
                 with JinaLogger(f'create_{self.k8s_namespace}') as logger:
                     logger.info(f'🏝️\tCreate Namespace "{self.k8s_namespace}"')
                     kubernetes_tools.create(
@@ -933,6 +933,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     )
 
         for end, pod in self._pod_nodes.items():
+            if isinstance(pod, K8sPod):
+                from ..peapods.pods.k8slib import kubernetes_deployment
+
+                end = kubernetes_deployment.to_dns_name(end)
             if end == GATEWAY_NAME:
                 end = f'end-{GATEWAY_NAME}'
 
@@ -943,6 +947,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 end = end + '_head'
 
             for start in pod.needs:
+                start_pod = self._pod_nodes[start]
+                if isinstance(start_pod, K8sPod):
+                    from ..peapods.pods.k8slib import kubernetes_deployment
+
+                    start = kubernetes_deployment.to_dns_name(start)
                 if start == GATEWAY_NAME:
                     start = f'start-{GATEWAY_NAME}'
 

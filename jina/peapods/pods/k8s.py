@@ -47,7 +47,7 @@ class K8sPod(BasePod, ExitFIFO):
                 else f'jinaai/jina:{self.version}-py38-standard'
             )
             kubernetes_deployment.deploy_service(
-                self.name,
+                self.dns_name,
                 namespace=self.k8s_namespace,
                 image_name=image_name,
                 container_cmd='["jina"]',
@@ -141,6 +141,7 @@ class K8sPod(BasePod, ExitFIFO):
                             name=self.dns_name, namespace=self.k8s_namespace
                         )
                         assert api_response.status.replicas == self.num_replicas
+                        logger.debug(f'\n API Response is {api_response}\n')
                         if (
                             api_response.status.available_replicas is not None
                             and api_response.status.available_replicas
@@ -206,7 +207,7 @@ class K8sPod(BasePod, ExitFIFO):
 
         def to_node(self):
             return {
-                'name': self.name,
+                'name': self.dns_name,
                 'head_host': f'{self.dns_name}.{self.k8s_namespace}.svc',
                 'head_port_in': self.head_port_in,
                 'tail_port_out': self.tail_port_out,
