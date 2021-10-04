@@ -160,7 +160,6 @@ class K8sPod(BasePod):
         )
         kubernetes_tools.create(
             template='namespace',
-            kind='Namespace,',
             params={'name': self.args.k8s_namespace},
             logger=logger,
             custom_resource_dir=getattr(self.args, 'k8s_custom_resource_dir', None),

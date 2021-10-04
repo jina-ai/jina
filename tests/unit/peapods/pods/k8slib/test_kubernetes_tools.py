@@ -22,20 +22,19 @@ def test_lazy_load_k8s_client(monkeypatch):
 
 
 @pytest.mark.parametrize(
-    ['template', 'kind', 'params'],
+    ['template', 'params'],
     [
-        ('namespace', 'Namespace', {'name': 'test-ns'}),
-        ('service', 'Service', {'name': 'test-svc'}),
-        ('deployment', 'Deployment', {'name': 'test-dep'}),
-        ('deployment-init', 'Deployment', {'name': 'test-dep-init'}),
+        ('namespace', {'name': 'test-ns'}),
+        ('service', {'name': 'test-svc'}),
+        ('deployment', {'name': 'test-dep'}),
+        ('deployment-init', {'name': 'test-dep-init'}),
         (
             'configmap',
-            'ConfigMap',
             {'namespace': 'test-configmap', 'data': {'k1': 'v1', 'k2': 'v2'}},
         ),
     ],
 )
-def test_create(template: str, kind: str, params: Dict, monkeypatch):
+def test_create(template: str, params: Dict, monkeypatch):
     create_from_yaml_mock = Mock()
     monkeypatch.setattr(kubernetes.utils, 'create_from_yaml', create_from_yaml_mock)
 
@@ -43,7 +42,7 @@ def test_create(template: str, kind: str, params: Dict, monkeypatch):
     remove_mock = Mock()
     monkeypatch.setattr(os, 'remove', remove_mock)
 
-    create(template=template, kind=kind, params=params)
+    create(template=template, params=params)
 
     # get the path to the config file
     assert remove_mock.call_count == 1

@@ -89,7 +89,6 @@ __k8s_clients = K8SClients()
 
 def create(
     template: str,
-    kind: str,
     params: Dict,
     logger: JinaLogger = default_logger,
     custom_resource_dir: Optional[str] = None,
@@ -97,7 +96,6 @@ def create(
     """Create a resource on Kubernetes based on the `template`. It fills the `template` using the `params`.
 
     :param template: path to the template file.
-    :param kind: kind of the k8s object.
     :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.
         Defaults to the standard location jina.resources if not specified.
     :param logger: logger to use. Defaults to the default logger.
@@ -107,8 +105,8 @@ def create(
     from kubernetes.utils import FailToCreateError
     from kubernetes import utils
 
-    if kind == 'ConfigMap':
-        yaml = _patch_yaml(template, params, custom_resource_dir)
+    if template == 'configmap':
+        yaml = _patch_yaml(template, params)
     else:
         yaml = _get_yaml(template, params, custom_resource_dir)
     fd, path = tempfile.mkstemp()
@@ -145,13 +143,10 @@ def _get_yaml(template: str, params: Dict, custom_resource_dir: Optional[str] = 
     return content
 
 
-def _patch_yaml(template: str, params: Dict, custom_resource_dir: Optional[str] = None):
+def _patch_yaml(template: str, params: Dict):
     import yaml
 
-    if custom_resource_dir:
-        path = os.path.join(custom_resource_dir, f'{template}.yml')
-    else:
-        path = os.path.join(DEFAULT_RESOURCE_DIR, f'{template}.yml')
+    path = os.path.join(DEFAULT_RESOURCE_DIR, f'{template}.yml')
 
     with open(path) as f:
         config_map = yaml.safe_load(f)

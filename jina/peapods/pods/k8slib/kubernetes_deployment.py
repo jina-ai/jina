@@ -60,7 +60,6 @@ def deploy_service(
     logger.info(f'🔋\tCreate Service for "{name}" with exposed port "{port_expose}"')
     kubernetes_tools.create(
         template='service',
-        kind='Service',
         params={
             'name': name,
             'target': name,
@@ -75,6 +74,19 @@ def deploy_service(
         custom_resource_dir=custom_resource_dir,
     )
 
+    logger.info(f'🐳\tCreate ConfigMap for deployment.')
+
+    kubernetes_tools.create(
+        template='configmap',
+        params={
+            'namespace': namespace,
+            'data': envs,
+            **init_container,
+        },
+        logger=logger,
+        custom_resource_dir=None,
+    )
+
     logger.info(
         f'🐳\tCreate Deployment for "{name}" with image "{image_name}", replicas {replicas} and init_container {init_container is not None}'
     )
@@ -86,7 +98,6 @@ def deploy_service(
         init_container = {}
     kubernetes_tools.create(
         template=template_name,
-        kind='Deployment',
         params={
             'name': name,
             'namespace': namespace,
@@ -105,23 +116,10 @@ def deploy_service(
         custom_resource_dir=custom_resource_dir,
     )
 
-    kubernetes_tools.create(
-        template='configmap',
-        kind='ConfigMap',
-        params={
-            'namespace': namespace,
-            'data': envs,
-            **init_container,
-        },
-        logger=logger,
-        custom_resource_dir=custom_resource_dir,
-    )
-
     logger.info(f'🔑\tCreate necessary permissions"')
 
     kubernetes_tools.create(
         template='connection-pool-role',
-        kind='Role',
         params={
             'namespace': namespace,
         },
@@ -129,7 +127,6 @@ def deploy_service(
 
     kubernetes_tools.create(
         template='connection-pool-role-binding',
-        kind='RoleBinding',
         params={
             'namespace': namespace,
         },
