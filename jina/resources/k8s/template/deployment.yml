@@ -50,3 +50,4 @@ spec:
             value: "uvicorn.workers.UvicornH11Worker"
           - name: JINA_EXECUTOR_CONTROL_PORT
             value: "8081" # TODO there should be a better way to pass this and align with port_ctrl
+
