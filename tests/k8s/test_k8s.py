@@ -1,20 +1,45 @@
 from http import HTTPStatus
 from pytest_kind import cluster
+from pykube import Pod
 
 # kind version has to be bumped to v0.11.1 since pytest-kind is just using v0.10.0 which does not work on ubuntu in ci
 # TODO don't use pytest-kind anymore
 cluster.KIND_VERSION = 'v0.11.1'
 import pytest
 import requests
+import multiprocessing
+import time
 
 from jina import Flow
-from jina.peapods.pods.k8slib.kubernetes_tools import get_port_forward_contextmanager
+from jina.peapods.pods.k8slib.kubernetes_tools import (
+    get_port_forward_contextmanager,
+    K8sClients,
+)
 
 
-def run_test(flow, logger, endpoint, port_expose):
+def run_test(flow, logger, k8s_cluster, app_names, endpoint, port_expose):
+    event = multiprocessing.Event()
+    watch_process = multiprocessing.Process(
+        target=watch_pods,
+        kwargs={'k8s_cluster': k8s_cluster, 'app_names': app_names, 'event': event},
+        daemon=True,
+    )
+    watch_process.start()
     with flow:
         resp = send_dummy_request(endpoint, flow, logger, port_expose=port_expose)
+        event.set()
+    watch_process.join()
+    watch_process.terminate()
     return resp
+
+
+def watch_pods(k8s_cluster, flow_name, app_names, event):
+    # using Pykube to query pods
+    client = K8sClients()
+    client.core_v1.list_names
+    while not event.is_set():
+        for app in app_names:
+            logs = k8s_cluster.kubectl([f'get pods -n {flow_name}'])
 
 
 def send_dummy_request(endpoint, flow, logger, port_expose):
@@ -122,6 +147,8 @@ def test_flow_with_needs(
     resp = run_test(
         flow,
         logger,
+        k8s_cluster,
+        app_names=['segmenter', 'gateway', 'imageencoder', 'textencoder'],
         endpoint='index',
         port_expose=9090,
     )
@@ -150,6 +177,8 @@ def test_flow_with_init(
     resp = run_test(
         k8s_flow_with_init_container,
         logger,
+        k8s_cluster,
+        app_names=['test-executor', 'gateway'],
         endpoint='search',
         port_expose=9090,
     )
@@ -172,6 +201,14 @@ def test_flow_with_sharding(
     resp = run_test(
         k8s_flow_with_sharding,
         logger,
+        k8s_cluster,
+        app_names=[
+            'test-executor-head',
+            'test-executor-tail',
+            'test-executor-0',
+            'test-executor-1',
+            'gateway',
+        ],
         endpoint='index',
         port_expose=9090,
     )
