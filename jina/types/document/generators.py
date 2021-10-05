@@ -148,11 +148,7 @@ def from_huggingface_datasets(
     """
     from ..document import Document
 
-    with ImportExtensions(
-        required=True,
-        help_text='Package "datasets" is not installed. Install it using "pip install datasets"',
-        verbose=True,
-    ):
+    with ImportExtensions(required=True):
         import datasets
 
     # Validate dataset "split" argument
