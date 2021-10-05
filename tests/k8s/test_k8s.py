@@ -110,7 +110,7 @@ def test_flow_with_needs(
     )
     resp = run_test(
         flow,
-        endpoint='index',
+        endpoint='/index',
         port_expose=9090,
     )
 
@@ -136,7 +136,7 @@ def test_flow_with_init(
 ):
     resp = run_test(
         k8s_flow_with_init_container,
-        endpoint='search',
+        endpoint='/search',
         port_expose=9090,
     )
 
@@ -156,7 +156,7 @@ def test_flow_with_sharding(
 ):
     resp = run_test(
         k8s_flow_with_sharding,
-        endpoint='index',
+        endpoint='/index',
         port_expose=9090,
     )
 
