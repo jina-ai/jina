@@ -54,7 +54,7 @@ def test_memmap_delete_clear(tmpdir, mocker, idx1, idx99):
     assert len(dam) == 100
     del dam[idx1]
     assert len(dam) == 99
-    del dam[idx99]
+    del dam[idx99 if isinstance(idx99, str) else idx99 - 1]
     assert len(dam) == 98
     for d in dam:
         assert d.id != idx1
@@ -598,3 +598,33 @@ def test_blobs_wrong_len(tmpdir):
 
 def test_mmap_path_getter(memmap_with_text_and_embedding, tmpdir):
     assert memmap_with_text_and_embedding.path == tmpdir
+
+
+def test_issue_3527_delete_and_match(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+
+    dam.append(Document(id='a', embedding=np.array([1, 2, 3], dtype=np.float32)))
+    del dam['a']
+
+    dam.append(Document(id='c', embedding=np.array([1, 2, 3], dtype=np.float32)))
+    da = DocumentArray([Document(embedding=np.array([5, 6, 7], dtype=np.float32))])
+    da.match(dam)
+    assert da[0].matches[0].id == 'c'
+
+
+def test_buffers_getter_setter(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend(
+        [
+            Document(buffer=b'aa'),
+            Document(buffer=b'bb'),
+            Document(buffer=b'cc'),
+        ]
+    )
+    assert dam.buffers == [b'aa', b'bb', b'cc']
+    dam.buffers = [b'cc', b'bb', b'aa']
+    assert dam.buffers == [b'cc', b'bb', b'aa']
+    with pytest.raises(ValueError):
+        dam.buffers = [b'cc', b'bb', b'aa', b'dd']
+    with pytest.raises(TypeError):
+        dam.buffers = ['aa', 'bb', 'cc']

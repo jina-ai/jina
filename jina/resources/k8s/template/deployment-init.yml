@@ -42,9 +42,18 @@ spec:
           value: debug
         - name: PYTHONUNBUFFERED
           value: "1"
+        - name: JINA_EXECUTOR_CONTROL_PORT
+          value: "8081" # TODO there should be a better way to pass this and align with port_ctrl
         - name: WORKER_CLASS
           value: "uvicorn.workers.UvicornH11Worker"
         volumeMounts:
           - name: shared
             mountPath: {mount-path}
-
+        readinessProbe:
+          exec:
+            command:
+              - python
+              - -c
+              - 'import os; import sys; from jina.peapods.runtimes.grpc import GRPCDataRuntime; control_port = int(os.getenv("JINA_EXECUTOR_CONTROL_PORT")); is_ready = GRPCDataRuntime.is_ready(ctrl_address=f"0.0.0.0:{str(control_port)}"); sys.exit(0) if is_ready else sys.exit(1)'
+          initialDelaySeconds: 5
+          periodSeconds: 5

@@ -52,12 +52,6 @@ def mixin_k8s_parser(parser):
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
-    gp.add_argument(
-        '--k8s-startup-time',
-        type=int,
-        default=60,
-        help='Time to wait until the kubernetes flow started. In the future, we will solve this using probes.',
-    )
 
 
 def set_flow_parser(parser=None, with_identity=False):

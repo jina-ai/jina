@@ -139,6 +139,8 @@ class DocumentArrayMemmap(
             if not np.array_equal((r[1], r[2], r[3]), HEADER_NONE_ENTRY):
                 self._header_map[r[0]] = (idx, r[1], r[2], r[3])
 
+        self._header_keys = list(self._header_map.keys())
+
         self._body_fileno = self._body.fileno()
         self._start = 0
         if self._header_map:
@@ -201,8 +203,10 @@ class DocumentArrayMemmap(
         if idx is None:
             self._header_map[doc.id] = (self.last_header_entry, p, r, r + l)
             self.last_header_entry = self.last_header_entry + 1
+            self._header_keys.append(doc.id)
         else:
             self._header_map[doc.id] = (idx, p, r, r + l)
+            self._header_keys[idx] = doc.id
             self._header.seek(0, 2)
         self._start = p + r + l
         self._body.write(value)
@@ -337,7 +341,9 @@ class DocumentArrayMemmap(
         self._header.seek(0, 2)
         self._header.flush()
         self._last_mmap = None
+        pop_idx = self._header_keys.index(str_key)
         self._header_map.pop(str_key)
+        self._header_keys.pop(pop_idx)
         self.buffer_pool.delete_if_exists(str_key)
         self._invalidate_embeddings_memmap()
 
@@ -351,7 +357,7 @@ class DocumentArrayMemmap(
             str_key = self._int2str_id(idx)
             self._del_doc(idx, str_key)
         elif isinstance(key, slice):
-            for idx in self._iteridx_by_slice(key):
+            for idx in reversed(self._iteridx_by_slice(key)):
                 str_key = self._int2str_id(idx)
                 self._del_doc(idx, str_key)
         else:
@@ -361,13 +367,8 @@ class DocumentArrayMemmap(
         return self._header_map[key][0]
 
     def _int2str_id(self, key: int) -> str:
-        p = key * self._header_entry_size
-        self._header.seek(p, 0)
-        d_id = np.frombuffer(
-            self._header.read(4 * self._key_length), dtype=(np.str_, self._key_length)
-        )
-        self._header.seek(0, 2)
-        return d_id[0]
+        # i < 0 needs to be handled
+        return self._header_keys[key]
 
     def __iter__(self) -> Iterator['Document']:
         for k in self._header_map.keys():
@@ -575,7 +576,7 @@ class DocumentArrayMemmap(
             d.embedding = x
 
     @DocumentArrayGetAttrMixin.tags.getter
-    def tags(self) -> Tuple[StructView]:
+    def tags(self) -> List[StructView]:
         """Get the tags attribute of all Documents
 
         :return: List of ``tags`` attributes for all Documents
@@ -583,12 +584,20 @@ class DocumentArrayMemmap(
         return self.get_attributes('tags')
 
     @DocumentArrayGetAttrMixin.texts.getter
-    def texts(self) -> Tuple[str]:
+    def texts(self) -> List[str]:
         """Get the text attribute of all Documents
 
         :return: List of ``text`` attributes for all Documents
         """
         return self.get_attributes('text')
+
+    @DocumentArrayGetAttrMixin.buffers.getter
+    def buffers(self) -> List[bytes]:
+        """Get the buffer attribute of all Documents
+
+        :return: List of ``buffer`` attributes for all Documents
+        """
+        return self.get_attributes('buffer')
 
     @DocumentArrayGetAttrMixin.blobs.getter
     def blobs(self) -> np.ndarray:
