@@ -164,7 +164,7 @@ def mixin_prefetch_parser(parser=None):
     gp.add_argument(
         '--prefetch',
         type=int,
-        default=1,
+        default=50,
         help='The number of pre-fetched requests from the client',
     )
     gp.add_argument(
