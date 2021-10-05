@@ -1,6 +1,5 @@
 from http import HTTPStatus
 from pytest_kind import cluster
-from pykube import Pod
 
 # kind version has to be bumped to v0.11.1 since pytest-kind is just using v0.10.0 which does not work on ubuntu in ci
 # TODO don't use pytest-kind anymore
@@ -8,6 +7,7 @@ cluster.KIND_VERSION = 'v0.11.1'
 import pytest
 import requests
 import multiprocessing
+import threading
 import time
 
 from jina import Flow
@@ -17,29 +17,114 @@ from jina.peapods.pods.k8slib.kubernetes_tools import (
 )
 
 
-def run_test(flow, logger, k8s_cluster, app_names, endpoint, port_expose):
-    event = multiprocessing.Event()
-    watch_process = multiprocessing.Process(
-        target=watch_pods,
-        kwargs={'k8s_cluster': k8s_cluster, 'app_names': app_names, 'event': event},
-        daemon=True,
-    )
-    watch_process.start()
+def run_test(flow, logger, app_names, endpoint, port_expose, watch_pods=False):
+    if watch_pods:
+        event = multiprocessing.Event()
+
+        watch_process = multiprocessing.Process(
+            target=_watch_pods,
+            kwargs={
+                'flow_name': flow.args.name,
+                'app_names': app_names,
+                'event': event,
+            },
+            daemon=True,
+        )
+        watch_process.start()
     with flow:
+        if watch_pods:
+            event.is_set()
         resp = send_dummy_request(endpoint, flow, logger, port_expose=port_expose)
+    if watch_pods:
         event.set()
-    watch_process.join()
-    watch_process.terminate()
+        watch_process.terminate()
     return resp
 
 
-def watch_pods(k8s_cluster, flow_name, app_names, event):
+def _tail_logs(name, flow_name, pod_name):
+    from jina.logging.logger import JinaLogger
+    from kubernetes.watch import Watch
+
+    logger = JinaLogger(f'{flow_name}-{name}:{pod_name}')
+    logger.debug(f'\n\n ==== TAILING LOGS FOR APP {name} and pod {pod_name} === \n\n')
+    k8s_client = K8sClients()
+
+    def _work():
+        try:
+            logger.debug(f' Try to watch now')
+            w = Watch()
+            for e in w.stream(
+                k8s_client.core_v1.read_namespaced_pod_log,
+                name=pod_name,
+                namespace=flow_name,
+            ):
+                logger.info(e)
+        except Exception as ex:
+            logger.debug(f' exception {ex}')
+            time.sleep(0.5)
+
+    while True:
+        with logger:
+            _work()
+        time.sleep(0.5)
+
+
+def _watch_pods(flow_name, app_names, event):
     # using Pykube to query pods
-    client = K8sClients()
-    client.core_v1.list_names
-    while not event.is_set():
-        for app in app_names:
-            logs = k8s_cluster.kubectl([f'get pods -n {flow_name}'])
+    from jina.logging.logger import JinaLogger
+
+    logger = JinaLogger(f'test_watch_cluster-{flow_name}')
+    k8s_client = K8sClients()
+    added_apps = []
+    import time
+
+    now = time.time_ns()
+    timeout_ns = 1000000000 * 240
+    spawn_new_threads = True
+    while (
+        not event.is_set() and time.time_ns() - now < timeout_ns and spawn_new_threads
+    ):
+        with logger:
+            logger.info(
+                f' Wants to watch pods for the following deployments {app_names}'
+            )
+            try:
+                threads = []
+                for app in app_names:
+                    if app not in added_apps:
+                        pods = k8s_client.core_v1.list_namespaced_pod(
+                            namespace=flow_name, label_selector=f'app={app}'
+                        )
+                        pod_names = [item.metadata.name for item in pods.items]
+                        logger.debug(
+                            f'\n\n == Found {pod_names} for app {app} === \n\n'
+                        )
+                        for i, pod_name in enumerate(pod_names):
+                            th = threading.Thread(
+                                target=_tail_logs,
+                                kwargs={
+                                    'name': f'replica-{i}',
+                                    'flow_name': flow_name,
+                                    'pod_name': pod_name,
+                                },
+                                daemon=True,
+                            )
+                            th.start()
+                            threads.append(th)
+                        if len(pod_names) > 0:
+                            added_apps.append(app)
+                if len(added_apps) == len(app_names):
+                    spawn_new_threads = False
+            except Exception:
+                print(f' Exception Here Joan')
+                pass
+            finally:
+                time.sleep(0.5)
+
+    event.wait(timeout=timeout_ns / 1000)
+    # print(f' Join log threads')
+    # for thread in threads:
+    #     thread.join()
 
 
 def send_dummy_request(endpoint, flow, logger, port_expose):
@@ -147,8 +232,8 @@ def test_flow_with_needs(
     resp = run_test(
         flow,
         logger,
-        k8s_cluster,
-        app_names=['segmenter', 'gateway', 'imageencoder', 'textencoder'],
+        watch_pods=True,
+        app_names=['gateway', 'segmenter', 'imageencoder', 'textencoder'],
         endpoint='index',
         port_expose=9090,
     )
@@ -177,7 +262,7 @@ def test_flow_with_init(
     resp = run_test(
         k8s_flow_with_init_container,
         logger,
-        k8s_cluster,
+        watch_pods=True,
         app_names=['test-executor', 'gateway'],
         endpoint='search',
         port_expose=9090,
@@ -201,13 +286,13 @@ def test_flow_with_sharding(
     resp = run_test(
         k8s_flow_with_sharding,
         logger,
-        k8s_cluster,
+        watch_pods=True,
         app_names=[
+            'gateway',
             'test-executor-head',
-            'test-executor-tail',
             'test-executor-0',
             'test-executor-1',
-            'gateway',
+            'test-executor-tail',
         ],
         endpoint='index',
         port_expose=9090,
