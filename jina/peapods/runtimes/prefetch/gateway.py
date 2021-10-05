@@ -35,21 +35,21 @@ class GatewayPrefetcher(BasePrefetcher):
         """
         return Message(None, request, 'gateway', **vars(self.args))
 
-    def handle_request(self, request: 'Request', fetch_to: List):
+    def handle_request(self, request: 'Request') -> 'asyncio.Future':
         """
         For ZMQ & GRPC data requests, for each request in the iterator, we send the `Message` using
         `iolet.send_message()` and add {<request-id>: <an-empty-future>} to the message buffer.
         This empty future is used to track the `result` of this request during `receive`
 
         :param request: current request in the iterator
-        :param fetch_to: list to add the task to
+        :return: asyncio Future for sending message
         """
         future = get_or_reuse_loop().create_future()
         self.request_buffer[request.request_id] = future
         asyncio.create_task(
             self.iolet.send_message(self.convert_to_message(request=request))
         )
-        fetch_to.append(future)
+        return future
 
     async def receive(self):
         """Await messages back from Executors and process them in the message buffer"""

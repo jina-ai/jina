@@ -47,11 +47,12 @@ class BasePrefetcher:
         """
         raise NotImplementedError
 
-    def handle_request(self, request: 'Request', fetch_to: List):
+    def handle_request(
+        self, request: 'Request'
+    ) -> Union['asyncio.Task', 'asyncio.Future']:
         """Handle each request in the iterator
 
         :param request: current request in the iterator
-        :param fetch_to: list to add the task to
         """
         raise NotImplementedError
 
@@ -78,7 +79,9 @@ class BasePrefetcher:
                 'PrefetchCaller receive task not running, can not send messages'
             )
 
-        async def prefetch_req(num_req, fetch_to):
+        async def prefetch_req(
+            num_req: int, fetch_to: List[Union['asyncio.Task', 'asyncio.Future']]
+        ):
             """
             Fetch and send request.
 
@@ -97,7 +100,7 @@ class BasePrefetcher:
                             f'{typename(request_iterator)} does not have `__anext__` or `__next__`'
                         )
 
-                    self.handle_request(request=request, fetch_to=fetch_to)
+                    fetch_to.append(self.handle_request(request=request))
                 except (StopIteration, StopAsyncIteration):
                     return True
             return False

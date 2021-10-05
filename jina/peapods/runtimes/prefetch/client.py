@@ -38,18 +38,16 @@ class HTTPClientPrefetcher(ClientPrefetcher):
         req_dict['data'] = req_dict['data'].get('docs', None)
         return req_dict
 
-    def handle_request(self, request: 'Request', fetch_to: List):
+    def handle_request(self, request: 'Request') -> 'asyncio.Task':
         """
         For HTTP Client, for each request in the iterator, we send the message (http POST request)
         and add it to the list of tasks which is awaited.
 
         :param request: current request in the iterator
-        :param fetch_to: list to add the task to
+        :return: asyncio Task for sending message
         """
-        fetch_to.append(
-            asyncio.create_task(
-                self.iolet.send_message(self.convert_to_message(request=request))
-            )
+        return asyncio.create_task(
+            self.iolet.send_message(self.convert_to_message(request=request))
         )
 
 
