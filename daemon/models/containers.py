@@ -10,7 +10,7 @@ class ContainerArguments(BaseModel):
     """Pydantic model for ContainerArguments"""
 
     object: Dict
-    command: str
+    entrypoint: str
 
 
 class ContainerMetadata(BaseModel):

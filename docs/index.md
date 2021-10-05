@@ -1,10 +1,30 @@
 # Welcome to Jina!
 
-Jina is a neural search framework that allows anyone to build SOTA & scalable deep learning search applications in minutes.
+Jina is a neural search framework that empowers anyone to build SOTA and scalable deep learning search applications in minutes.
 
-1. Make sure that you have Python 3.7+ installed on Linux/MacOS.
-2. Install Jina: ``pip install jina``
-3. Run hello-world demos: ``jina hello fashion``
+1. Make sure that you have Python 3.7+ installed on Linux/MacOS/{ref}`Windows <jina-on-windows>`.
+2. Install Jina
+
+    ````{tab} via PyPI
+    ```shell
+    pip install -U jina
+    ```
+    ````
+    ````{tab} via Conda
+    ```shell
+    conda install jina -c conda-forge
+    ```
+    ````
+    ````{tab} via Docker
+    ```shell
+    docker run jinaai/jina:latest
+    ```
+    ````
+
+3. Run hello-world demo
+   ```bash 
+   jina hello fashion
+   ```
 4. That’s it! In the next few seconds the demo will open in a new page in your browser.
 
 Now that you’re set up, let’s dive into more of how Jina works and how to build great apps.
@@ -72,7 +92,7 @@ Awesome Jina swag to our awesome contributors (aka you)!
 
 ## Join the community
 
-- Join our 1.3K+ members [Slack community](https://slack.jina.ai) to chat to our engineers about your use cases, questions, and
+- Join our [Slack community](https://slack.jina.ai) and chat to our engineers about your use cases, questions, and
   support queries.
 - Join our [Engineering All Hands](https://youtube.com/playlist?list=PL3UBBWOUVhFYRUa_gpYYKBqEAkO4sxmne) meet-up to discuss your use case and learn Jina's new features.
     - **When?** The second Tuesday of every month
@@ -119,11 +139,12 @@ advanced/experimental/index
 tutorials/fuzzy-grep
 tutorials/chatbot
 tutorials/master-executor
+tutorials/refactor-hello-world
 tutorials/gpu-executor
 ```
 
 ```{toctree}
-:caption: Developer Reference
+:caption: API Reference
 :hidden:
 :maxdepth: 1
 
@@ -133,19 +154,14 @@ proto/index
 ```
 
 ```{toctree}
-:caption: Support
+:caption: Link
 :hidden:
 
-Issue tracker <https://github.com/jina-ai/jina/issues>
-Slack community <https://slack.jina.ai>
-Youtube <http://youtube.com/c/jina-ai>
-Twitter @JinaAI_ <https://twitter.com/JinaAI_>
-LinkedIn <https://www.linkedin.com/company/jinaai/>
-Jina AI Company <https://jina.ai>
-
+Jina Hub <https://hub.jina.ai>
+Benchmark <https://benchmark.jina.ai>
 ```
 
 
 ---
-{ref}`genindex` {ref}`modindex`
+{ref}`genindex` | {ref}`modindex`
 

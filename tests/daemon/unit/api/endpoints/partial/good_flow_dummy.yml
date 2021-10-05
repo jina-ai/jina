@@ -2,6 +2,6 @@
 version: '1.0'
 with:
   port_expose: 56789
-pods:
+executors:
   - uses: dummy_executor.yml
   - name: dummy_executor

@@ -1,6 +1,5 @@
 # JinaD Development Guides
 
-
 ## Build
 
 ```bash
@@ -12,7 +11,7 @@ docker build -f Dockerfiles/debianx.Dockerfile --build-arg PIP_TAG=daemon -t jin
 ```bash
 docker run --add-host host.docker.internal:host-gateway \
            --name jinad \
-           -e JINA_DAEMON_BUILD=DEVEL \
+           -e JINA_DAEMON_DOCKERFILE=DEVEL \
            -e JINA_LOG_LEVEL=DEBUG \
            -v /var/run/docker.sock:/var/run/docker.sock \
            -v /tmp/jinad:/tmp/jinad \
@@ -26,9 +25,9 @@ docker run --add-host host.docker.internal:host-gateway \
 
   All images created by JinaD during local tests use image with this name (hard-coded).
 
-- `--env JINA_DAEMON_BUILD=DEVEL` ?
+- `--env JINA_DAEMON_DOCKERFILE=DEVEL` ?
 
-  This makes sure default build for JinaD is `DEVEL`. This must be passed during development, CICD etc
+  This makes sure default build for JinaD is `DEVEL`. This should be passed only during development, CICD etc and must not be used when using the official image.
 
 - `--add-host` ?
 
@@ -45,5 +44,4 @@ docker run --add-host host.docker.internal:host-gateway \
 
   This is the default root workspace for JinaD. This gets mounted internally to all child containers. If we don't mount
   this while starting, `/tmp/jinad` local to JinaD would get mounted to child containers, which is not accessible by
-  DOCKERHOST
-
+  DOCKERHOST.

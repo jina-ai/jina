@@ -36,6 +36,7 @@ async def _create(pod: PodDepends = Depends(PodDepends)):
             params=pod.params,
             ports=pod.ports,
             envs=pod.envs,
+            device_requests=pod.device_requests,
         )
     except Exception as ex:
         raise Runtime400Exception from ex
@@ -70,7 +71,7 @@ async def _delete(id: DaemonID, workspace: bool = False):
     try:
         await store.delete(id=id, workspace=workspace)
     except KeyError:
-        raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
+        raise HTTPException(status_code=404, detail=f'{id} not found in store')
 
 
 @router.get(
@@ -80,4 +81,4 @@ async def _status(id: DaemonID):
     try:
         return store[id]
     except KeyError:
-        raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
+        raise HTTPException(status_code=404, detail=f'{id} not found in store')

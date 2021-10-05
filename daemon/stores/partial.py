@@ -8,7 +8,7 @@ from jina.peapods.peas.helper import update_runtime_cls
 from jina import Flow, __docker_host__
 from jina.logging.logger import JinaLogger
 
-from .. import jinad_args
+from .. import jinad_args, __partial_workspace__
 from ..models import GATEWAY_RUNTIME_DICT
 from ..models.enums import UpdateOperation
 from ..models.ports import Ports, PortMappings
@@ -108,6 +108,10 @@ class PartialFlowStore(PartialStore):
 
             self.object: Flow = Flow.load_config(yaml_source).build()
             self.object.workspace_id = jinad_args.workspace_id
+            self.object.workspace = __partial_workspace__
+            self.object.env = {'HOME': __partial_workspace__}
+            # TODO(Deepankar): pass envs from main daemon process to partial-daemon so that
+            # Pods/Peas/Runtimes/Executors can inherit these env vars
 
             for pod in self.object._pod_nodes.values():
                 runtime_cls = update_runtime_cls(pod.args, copy=True).runtime_cls
@@ -116,8 +120,14 @@ class PartialFlowStore(PartialStore):
                     # `runs_in_docker` to be False. Since `Flow` args are sent to all Pods, `runs_in_docker` gets set
                     # for the `CompoundPod`, which blocks the requests. Below we unset that (hacky & ugly).
                     # We do it only for runtimes that starts on local (not container or remote)
-                    if runtime_cls in ['ZEDRuntime', 'ContainerRuntime'] + list(
-                        GATEWAY_RUNTIME_DICT.values()
+                    if (
+                        runtime_cls
+                        in [
+                            'ZEDRuntime',
+                            'GRPCDataRuntime',
+                            'ContainerRuntime',
+                        ]
+                        + list(GATEWAY_RUNTIME_DICT.values())
                     ):
                         pod.args.runs_in_docker = False
                         for replica_args in pod.replicas_args:
@@ -141,9 +151,16 @@ class PartialFlowStore(PartialStore):
                                                 ),
                                             )
                             # Update replica_args according to updated head & tail args
-                            pod.replicas_args = CompoundPod._set_replica_args(
-                                pod.args, pod.head_args, pod.tail_args
-                            )
+                            pod.assign_replicas()
+                else:
+                    # avoid setting runs_in_docker for Pods with parallel > 1 and using `ZEDRuntime`
+                    # else, replica-peas would try connecting to head/tail-pea via __docker_host__
+                    if (
+                        runtime_cls in ['ZEDRuntime', 'GRPCDataRuntime']
+                        and pod.args.parallel > 1
+                    ):
+                        pod.args.runs_in_docker = False
+                        pod.update_pea_args()
 
             self.object = self.object.__enter__()
         except Exception as e:

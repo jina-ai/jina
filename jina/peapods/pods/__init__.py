@@ -284,9 +284,10 @@ class BasePod:
         """Wait until all pods and peas exit."""
         ...
 
+    @property
     @abstractmethod
-    def is_singleton(self) -> bool:
-        """Return if the Pod contains only a single Pea
+    def _mermaid_str(self) -> List[str]:
+        """String that will be used to represent the Pod graphically when `Flow.plot()` is invoked
 
 
         .. # noqa: DAR201
@@ -348,15 +349,6 @@ class Pod(BasePod, ExitFIFO):
             self.peas_args = self.args
         else:
             self.peas_args = self._parse_args(self.args)
-
-    @property
-    def is_singleton(self) -> bool:
-        """Return if the Pod contains only a single Pea
-
-
-        .. # noqa: DAR201
-        """
-        return not (self.is_head_router or self.is_tail_router)
 
     @property
     def first_pea_args(self) -> Namespace:
@@ -501,14 +493,11 @@ class Pod(BasePod, ExitFIFO):
             If one of the :class:`BasePea` fails to start, make sure that all of them
             are properly closed.
         """
-        if getattr(self.args, 'noblock_on_start', False):
-            for _args in self._fifo_args:
+        for _args in self._fifo_args:
+            if getattr(self.args, 'noblock_on_start', False):
                 _args.noblock_on_start = True
-                self._enter_pea(BasePea(_args))
-        else:
-            for _args in self._fifo_args:
-                self._enter_pea(BasePea(_args))
-
+            self._enter_pea(BasePea(_args))
+        if not getattr(self.args, 'noblock_on_start', False):
             self._activate()
         return self
 
@@ -517,12 +506,10 @@ class Pod(BasePod, ExitFIFO):
 
         If not successful, it will raise an error hoping the outer function to catch it
         """
-
         if not self.args.noblock_on_start:
             raise ValueError(
                 f'{self.wait_start_success!r} should only be called when `noblock_on_start` is set to True'
             )
-
         try:
             for p in self.peas:
                 p.wait_start_success()
@@ -683,3 +670,40 @@ class Pod(BasePod, ExitFIFO):
         if args.dynamic_routing:
             args.dynamic_routing_out = True
             args.socket_out = SocketType.ROUTER_BIND
+
+    @property
+    def _mermaid_str(self) -> List[str]:
+        """String that will be used to represent the Pod graphically when `Flow.plot()` is invoked
+
+
+        .. # noqa: DAR201
+        """
+        mermaid_graph = []
+        if self.role != PodRoleType.GATEWAY and not getattr(
+            self.args, 'external', False
+        ):
+            mermaid_graph = [f'subgraph {self.name};']
+
+            names = [args.name for args in self._fifo_args]
+            uses = self.args.uses
+            if len(names) == 1:
+                mermaid_graph.append(f'{names[0]}/pea-0[{uses}]:::PEA;')
+            else:
+                mermaid_graph.append(f'\ndirection LR;\n')
+                head_name = names[0]
+                tail_name = names[-1]
+                head_to_show = self.args.uses_before
+                if head_to_show is None or head_to_show == __default_executor__:
+                    head_to_show = head_name
+                tail_to_show = self.args.uses_after
+                if tail_to_show is None or tail_to_show == __default_executor__:
+                    tail_to_show = tail_name
+                for name in names[1:-1]:
+                    mermaid_graph.append(
+                        f'{head_name}[{head_to_show}]:::HEADTAIL --> {name}[{uses}]:::PEA;'
+                    )
+                    mermaid_graph.append(
+                        f'{name}[{uses}]:::PEA --> {tail_name}[{tail_to_show}]:::HEADTAIL;'
+                    )
+            mermaid_graph.append('end;')
+        return mermaid_graph

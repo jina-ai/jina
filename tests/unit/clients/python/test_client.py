@@ -5,8 +5,8 @@ import pytest
 import requests
 
 from jina import Executor, DocumentArray, requests as req
-from jina import Flow
-from jina import helper, Document
+from jina import Flow, __windows__
+from jina import helper
 from jina.clients import Client
 from jina.excepts import BadClientInput
 from jina.parsers import set_gateway_parser
@@ -89,16 +89,18 @@ def test_gateway_index(flow_with_http, test_img_1, test_img_2):
         assert resp['data']['docs'][0]['text'] == test_img_1
 
 
+class MimeExec(Executor):
+    @req
+    def foo(self, docs: 'DocumentArray', **kwargs):
+        for d in docs:
+            d.convert_uri_to_buffer()
+
+
+@pytest.mark.skipif(__windows__, reason='For windows, passes locally, but fails on CI')
 @pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_mime_type(protocol):
-    class MyExec(Executor):
-        @req
-        def foo(self, docs: 'DocumentArray', **kwargs):
-            for d in docs:
-                d.convert_uri_to_buffer()
-
-    f = Flow(protocol=protocol).add(uses=MyExec)
+    f = Flow(protocol=protocol).add(uses=MimeExec)
 
     def validate_mime_type(req):
         for d in req.data.docs:
@@ -172,16 +174,15 @@ def test_independent_client(protocol):
         c.post('/')
 
 
+class MyExec(Executor):
+    @req
+    def foo(self, docs, **kwargs):
+        pass
+
+
 @pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['http', 'grpc', 'websocket'])
 def test_all_sync_clients(protocol, mocker):
-    from jina import requests
-
-    class MyExec(Executor):
-        @requests
-        def foo(self, docs, **kwargs):
-            pass
-
     f = Flow(protocol=protocol).add(uses=MyExec)
     docs = list(random_docs(1000))
     m1 = mocker.Mock()

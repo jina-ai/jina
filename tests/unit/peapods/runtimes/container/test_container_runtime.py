@@ -8,13 +8,18 @@ import pytest
 from jina.checker import NetworkChecker
 from jina.executors import BaseExecutor
 from jina.executors.decorators import requests
-from jina import Flow
+from jina import Flow, __windows__
 from jina.helper import random_name
 from jina.parsers import set_pea_parser
 from jina.parsers.ping import set_ping_parser
 from jina.peapods import Pea
 from jina.peapods.runtimes.container import ContainerRuntime
+from jina.peapods.runtimes.container.helper import get_gpu_device_requests
 from tests import random_docs, validate_callback
+
+if __windows__:
+    pytest.skip(msg='Windows containers are not supported yet', allow_module_level=True)
+
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -232,10 +237,9 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
             pass
 
         def run(self, *args, **kwargs):
-            mock_kwargs = {k: kwargs[k] for k in ['hello', 'ports', 'environment']}
+            mock_kwargs = {k: kwargs[k] for k in ['hello', 'environment']}
             mock(**mock_kwargs)
             assert 'ports' in kwargs
-            assert kwargs['ports'] is None
             assert 'environment' in kwargs
             assert kwargs['environment'] == ['VAR1=BAR', 'VAR2=FOO']
             assert 'hello' in kwargs
@@ -275,13 +279,13 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
         ]
     )
     _ = ContainerRuntime(args, ctrl_addr='', ready_event=multiprocessing.Event())
-    expected_args = {'hello': 0, 'ports': None, 'environment': ['VAR1=BAR', 'VAR2=FOO']}
+    expected_args = {'hello': 0, 'environment': ['VAR1=BAR', 'VAR2=FOO']}
     mock.assert_called_with(**expected_args)
 
 
 def test_pass_arbitrary_kwargs_from_yaml():
     f = Flow.load_config(os.path.join(cur_dir, 'flow.yml'))
-    assert f._pod_nodes['pod1'].args.docker_kwargs == {
+    assert f._pod_nodes['executor1'].args.docker_kwargs == {
         'hello': 0,
         'environment': ['VAR1=BAR', 'VAR2=FOO'],
     }
@@ -384,7 +388,7 @@ def test_gpu_container(
         ['--uses', f'docker://{img_name}', '--gpus', gpus_value]
     )
 
-    device_requests = ContainerRuntime._get_gpu_device_requests(args.gpus)
+    device_requests = get_gpu_device_requests(args.gpus)
     assert device_requests[0]['Count'] == expected_count
     assert device_requests[0]['DeviceIDs'] == expected_device
     assert device_requests[0]['Driver'] == expected_driver

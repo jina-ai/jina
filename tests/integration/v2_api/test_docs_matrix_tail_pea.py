@@ -1,7 +1,6 @@
 import pytest
 from collections import OrderedDict
 from jina import Document, DocumentArray, Executor, Flow, requests
-from jina.types.document.multimodal import MultimodalDocument
 from jina.types.arrays.chunk import ChunkArray
 
 
@@ -72,18 +71,22 @@ def test_sharding_tail_pea(num_replicas, num_shards):
 def test_merging_head_pea():
     def multimodal_generator():
         for i in range(0, 5):
-            document = MultimodalDocument(modality_content_map={'1': '1', '2': '2'})
+            document = Document()
+            document.chunks.append(Document(modality='1', content='1'))
+            document.chunks.append(Document(modality='2', content='2'))
             yield document
 
     f = (
         Flow()
-        .add(uses={'jtype': 'DummyExecutor', 'with': {'mode': '1'}}, name='pod1')
+        .add(uses={'jtype': 'DummyExecutor', 'with': {'mode': '1'}}, name='executor1')
         .add(
             uses={'jtype': 'DummyExecutor', 'with': {'mode': '2'}},
-            name='pod2',
+            name='executor2',
             needs='gateway',
         )
-        .add(uses_before=ChunkMerger, name='pod3', needs=['pod1', 'pod2'])
+        .add(
+            uses_before=ChunkMerger, name='executor3', needs=['executor1', 'executor2']
+        )
     )
     with f:
         results = f.post(

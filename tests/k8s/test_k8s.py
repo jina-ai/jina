@@ -15,7 +15,7 @@ from jina import Flow
 @pytest.fixture()
 def k8s_flow_with_needs(test_executor_image: str, executor_merger_image: str) -> Flow:
     flow = (
-        Flow(name='test-flow', port_expose=8080, infrastructure='K8S', protocol='http')
+        Flow(name='test-flow', port_expose=9090, infrastructure='K8S', protocol='http')
         .add(
             name='segmenter',
             uses=test_executor_image,
@@ -54,25 +54,31 @@ def pull_images(images, cluster, logger):
     logger.debug(f'Loading docker image into kind cluster...')
     for image in images:
         cluster.needs_docker_image(image)
+    cluster.needs_docker_image('jinaai/jina:test-pip')
     logger.debug(f'Done loading docker image into kind cluster...')
 
 
-def run_test(images, cluster, flow, logger, expected_running_pods, endpoint):
+def run_test(
+    images, cluster, flow, logger, expected_running_pods, endpoint, port_expose
+):
     pull_images(images, cluster, logger)
     start_flow(expected_running_pods, cluster, flow, logger)
-    resp = send_dummy_request(endpoint, cluster, flow, logger)
+    resp = send_dummy_request(endpoint, cluster, flow, logger, port_expose=port_expose)
     return resp
 
 
-def send_dummy_request(endpoint, k8s_cluster_namespaced, k8s_flow_with_needs, logger):
+def send_dummy_request(
+    endpoint, k8s_cluster_namespaced, k8s_flow_with_needs, logger, port_expose
+):
     logger.debug(f'Starting port-forwarding to gateway service...')
     with k8s_cluster_namespaced.port_forward(
-        'service/gateway', 8080, 8080, k8s_flow_with_needs.args.name
+        'service/gateway', port_expose, port_expose, k8s_flow_with_needs.args.name
     ) as _:
         logger.debug(f'Port-forward running...')
 
         resp = requests.post(
-            f'http://localhost:8080/{endpoint}', json={'data': [{} for _ in range(10)]}
+            f'http://localhost:{port_expose}/{endpoint}',
+            json={'data': [{} for _ in range(10)]},
         )
     return resp
 
@@ -135,13 +141,16 @@ def k8s_flow_with_sharding(
 
 
 @pytest.mark.timeout(3600)
+@pytest.mark.parametrize('k8s_connection_pool', [True, False])
 def test_flow_with_needs(
     k8s_cluster_namespaced,
     test_executor_image,
     executor_merger_image,
     k8s_flow_with_needs: Flow,
     logger,
+    k8s_connection_pool: bool,
 ):
+    k8s_flow_with_needs.args.k8s_connection_pool = k8s_connection_pool
     resp = run_test(
         [test_executor_image, executor_merger_image],
         k8s_cluster_namespaced,
@@ -149,6 +158,7 @@ def test_flow_with_needs(
         logger,
         expected_running_pods=7,
         endpoint='index',
+        port_expose=9090,
     )
 
     expected_traversed_executors = {
@@ -181,6 +191,7 @@ def test_flow_with_init(
         logger,
         expected_running_pods=2,
         endpoint='search',
+        port_expose=8080,
     )
 
     assert resp.status_code == HTTPStatus.OK
@@ -206,6 +217,7 @@ def test_flow_with_sharding(
         logger,
         expected_running_pods=9,
         endpoint='index',
+        port_expose=8080,
     )
 
     expected_traversed_executors = {

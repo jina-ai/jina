@@ -1,5 +1,13 @@
 # Run Executors on GPU
 
+```{article-info}
+:avatar: avatars/tadej.jpg
+:avatar-link: https://jobs.jina.ai
+:avatar-outline: muted
+:author: Tadej @ Jina AI
+:date: Sept. 1, 2021
+```
+
 This tutorial will show you how to use an Executor on a GPU, both locally and in a
 Docker container. You will also learn how to use GPU with pre-built Hub executors.
 
@@ -171,7 +179,7 @@ Let's try it out by running
 python main.py
 ```
 ```console
-           pod0@26554[L]:ready and listening
+      executor0@26554[L]:ready and listening
         gateway@26554[L]:ready and listening
            Flow@26554[I]:🎉 Flow is ready to use!
         🔗 Protocol:            GRPC
@@ -198,7 +206,7 @@ First, we need to make sure that the encoder is using the GPU - change the `'dev
 python main.py
 ```
 ```console
-           pod0@21032[L]:ready and listening
+      executor0@21032[L]:ready and listening
         gateway@21032[L]:ready and listening
            Flow@21032[I]:🎉 Flow is ready to use!
         🔗 Protocol:            GRPC

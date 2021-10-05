@@ -27,6 +27,7 @@ from typing import (
     Sequence,
     Iterable,
 )
+from . import __windows__
 
 __all__ = [
     'batch_iterator',
@@ -571,7 +572,7 @@ _COLORS = {
 
 _RESET = '\033[0m'
 
-if os.name == 'nt':
+if __windows__:
     os.system('color')
 
 
@@ -871,17 +872,21 @@ def format_full_version_info(info: Dict, env_info: Dict) -> str:
     return version_info + '\n' + env_info
 
 
-def _use_uvloop():
-    if 'JINA_DISABLE_UVLOOP' in os.environ:
-        return
-    try:
-        import uvloop
+def _update_policy():
+    if __windows__:
+        asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 
-        asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-    except ModuleNotFoundError:
-        warnings.warn(
-            'Install `uvloop` via `pip install "jina[uvloop]"` for better performance.'
-        )
+    elif 'JINA_DISABLE_UVLOOP' in os.environ:
+        return
+    else:
+        try:
+            import uvloop
+
+            asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+        except ModuleNotFoundError:
+            warnings.warn(
+                'Install `uvloop` via `pip install "jina[uvloop]"` for better performance.'
+            )
 
 
 def get_or_reuse_loop():
@@ -895,7 +900,7 @@ def get_or_reuse_loop():
         if loop.is_closed():
             raise RuntimeError
     except RuntimeError:
-        _use_uvloop()
+        _update_policy()
         # no running event loop
         # create a new loop
         loop = asyncio.new_event_loop()
@@ -934,7 +939,7 @@ class CatchAllCleanupContextManager:
         pass
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if exc_type is not None:
+        if exc_type:
             self.sub_context.__exit__(exc_type, exc_val, exc_tb)
 
 
@@ -1223,7 +1228,10 @@ def is_yaml_filepath(val) -> bool:
     :param val: Path of target file.
     :return: True if the file is YAML else False.
     """
-    r = r'^[/\w\-\_\.]+.ya?ml$'
+    if __windows__:
+        r = r'.*.ya?ml$'  # TODO: might not be exhaustive
+    else:
+        r = r'^[/\w\-\_\.]+.ya?ml$'
     return re.match(r, val.strip()) is not None
 
 

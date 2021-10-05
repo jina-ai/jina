@@ -89,7 +89,7 @@ class BaseRuntime:
             self.logger.debug(f'{self!r} is ended')
         elif exc_type == KeyboardInterrupt:
             self.logger.debug(f'{self!r} is interrupted by user')
-        elif exc_type in {Exception, SystemError}:
+        elif exc_type and issubclass(exc_type, Exception):
             self.logger.error(
                 f'{exc_val!r} during {self.run_forever!r}'
                 + f'\n add "--quiet-error" to suppress the exception details'

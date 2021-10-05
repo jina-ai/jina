@@ -1,4 +1,4 @@
-# Start JinaD Client
+# JinaD Client
 
 You can use `JinaDClient` or (for your async
 code) feel free to use `AsyncJinaDClient` which makes all following code awaitables.
@@ -33,7 +33,7 @@ client.status
 ```json
 {
   "jina" {
-    "jina": "2.0.11",
+    "jina": "2.1.2",
     ...
   },
   "envs": {

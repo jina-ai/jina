@@ -50,6 +50,7 @@ class WebSocketRuntime(AsyncNewLoopRuntime):
 
         from .....helper import extend_rest_interface
 
+        uvicorn_kwargs = self.args.uvicorn_kwargs or {}
         self._server = UviServer(
             config=Config(
                 app=extend_rest_interface(get_fastapi_app(self.args, self.logger)),
@@ -57,6 +58,7 @@ class WebSocketRuntime(AsyncNewLoopRuntime):
                 port=self.args.port_expose,
                 ws_max_size=1024 * 1024 * 1024,
                 log_level=os.getenv('JINA_LOG_LEVEL', 'error').lower(),
+                **uvicorn_kwargs
             )
         )
         await self._server.setup()

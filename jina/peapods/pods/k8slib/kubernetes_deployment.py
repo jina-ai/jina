@@ -28,6 +28,7 @@ def deploy_service(
     pull_policy: str,
     init_container: Dict = None,
     custom_resource_dir: Optional[str] = None,
+    port_expose: Optional[int] = None,
 ) -> str:
     """Deploy service on Kubernetes.
 
@@ -42,18 +43,19 @@ def deploy_service(
     :param init_container: additional arguments used for the init container
     :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.
         Defaults to the standard location jina.resources if not specified.
+    :param port_expose: port which will be exposed by the deployed containers
     :return: dns name of the created service
     """
 
-    # small hack - we can always assume the ports are the same for all executors since they run on different k8s pods
-    port_expose = 8080
+    # we can always assume the ports are the same for all executors since they run on different k8s pods
+    # port expose can be defined by the user
+    if not port_expose:
+        port_expose = 8080
     port_in = 8081
     port_out = 8082
     port_ctrl = 8083
 
-    logger.info(
-        f'🔋\tCreate Service for "{name}" with image "{name}" pulling from "{image_name}"'
-    )
+    logger.info(f'🔋\tCreate Service for "{name}" with exposed port "{port_expose}"')
     kubernetes_tools.create(
         'service',
         {
@@ -66,11 +68,12 @@ def deploy_service(
             'port_ctrl': port_ctrl,
             'type': 'ClusterIP',
         },
+        logger=logger,
         custom_resource_dir=custom_resource_dir,
     )
 
     logger.info(
-        f'🐳\tCreate Deployment for "{image_name}" with replicas {replicas} and init_container {init_container is not None}'
+        f'🐳\tCreate Deployment for "{name}" with image "{image_name}", replicas {replicas} and init_container {init_container is not None}'
     )
 
     if init_container:
@@ -94,9 +97,27 @@ def deploy_service(
             'pull_policy': pull_policy,
             **init_container,
         },
+        logger=logger,
         custom_resource_dir=custom_resource_dir,
     )
-    return f'{name}.{namespace}.svc.cluster.local'
+
+    logger.info(f'🔑\tCreate necessary permissions"')
+
+    kubernetes_tools.create(
+        'connection-pool-role',
+        {
+            'namespace': namespace,
+        },
+    )
+
+    kubernetes_tools.create(
+        'connection-pool-role-binding',
+        {
+            'namespace': namespace,
+        },
+    )
+
+    return f'{name}.{namespace}.svc'
 
 
 def get_cli_params(arguments: Namespace, skip_list: Tuple[str] = ()) -> str:
@@ -117,7 +138,6 @@ def get_cli_params(arguments: Namespace, skip_list: Tuple[str] = ()) -> str:
         'dynamic_routing',
         'hosts_in_connect',
         'polling_type',
-        'k8s_namespace',
         'uses_after',
         'uses_before',
         'replicas',
@@ -125,7 +145,6 @@ def get_cli_params(arguments: Namespace, skip_list: Tuple[str] = ()) -> str:
         'port_in',
         'port_out',
         'port_ctrl',
-        'port_expose',
         'k8s_init_container_command',
         'k8s_uses_init',
         'k8s_mount_path',
@@ -146,7 +165,6 @@ def get_cli_params(arguments: Namespace, skip_list: Tuple[str] = ()) -> str:
                 value = value.replace('\'', '').replace('"', '\\"')
                 cli_args.append(f'"--{cli_attribute}", "{value}"')
 
-    cli_args.append('"--port-expose", "8080"')
     cli_args.append('"--port-in", "8081"')
     cli_args.append('"--port-out", "8082"')
     cli_args.append('"--port-ctrl", "8083"')
@@ -165,7 +183,7 @@ def get_image_name(uses: str) -> str:
     """
     try:
         scheme, name, tag, secret = parse_hub_uri(uses)
-        meta_data = HubIO.fetch_meta(name)
+        meta_data = HubIO.fetch_meta(name, tag, secret=secret)
         image_name = meta_data.image_name
         return image_name
     except Exception:

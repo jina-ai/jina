@@ -2,7 +2,7 @@ import pytest
 
 from jina.enums import SchedulerType, SocketType, PollingType
 from jina.parsers import set_pod_parser
-from jina import __default_executor__
+from jina import __default_executor__, __default_host__
 from jina.peapods import CompoundPod, Pod
 
 
@@ -16,7 +16,7 @@ def pod_args():
         '--replicas',
         '3',
         '--host',
-        '0.0.0.0',
+        __default_host__,
     ]
     return set_pod_parser().parse_args(args)
 
@@ -33,7 +33,7 @@ def pod_args_singleton():
         '--replicas',
         '3',
         '--host',
-        '0.0.0.0',
+        __default_host__,
     ]
     return set_pod_parser().parse_args(args)
 
@@ -45,8 +45,8 @@ def test_name(pod_args):
 
 def test_host(pod_args):
     with CompoundPod(pod_args) as pod:
-        assert pod.host == '0.0.0.0'
-        assert pod.head_host == '0.0.0.0'
+        assert pod.host == __default_host__
+        assert pod.head_host == __default_host__
 
 
 def test_is_ready(pod_args):

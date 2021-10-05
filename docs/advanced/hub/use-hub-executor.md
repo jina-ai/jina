@@ -3,7 +3,7 @@
 
 ## via Docker
 
-Use the prebuilt images from `Hubble` in your python codes,
+Use the prebuilt images from Hub in your python codes,
 
 ```python
 from jina import Flow
@@ -14,8 +14,14 @@ f = Flow().add(uses='jinahub+docker://<UUID>[:<SECRET>][/<TAG>]')
 
 If there is no `/<TAG>` provided when using, it by default equals to `/latest`, which means using the `latest` tag.
 
-It will pull Executor automatically if you didn't pull it before.
+````{important}
+To use private Executor, you must provide the `SECRET`. It is generated after `jina hub push`.
 
+```{figure} screenshots/secret.png
+:align: center
+```
+
+````
 
 ````{admonition} Attention
 :class: attention
@@ -23,8 +29,7 @@ It will pull Executor automatically if you didn't pull it before.
 If you are a Mac user, please use `host.docker.internal` as your url when you want to connect a local port from Executor
 docker container.
 
-For
-example: [`jinahub+docker://PostgreSQLStorage`](https://github.com/jina-ai/executor-indexers/tree/main/jinahub/indexers/storage/PostgreSQLStorage)
+For example: [PostgreSQLStorage](https://hub.jina.ai/executor/d45rawx6)
 will connect PostgreSQL server which was started at local. Then you must use it with:
 
 ```python
@@ -62,3 +67,32 @@ f = Flow().add(uses='jinahub://<UUID>[:<SECRET>][/<TAG>]',
 ```
 
 This way, the Executor will work with the overridden parameters.
+
+
+(pull-executor)=
+## Pulling without using
+
+You can also use `jina hub` CLI to pull an executor without actually using it in the Flow.
+
+### Pull the Docker image
+
+```bash
+jina hub pull jinahub+docker://<UUID>[:<SECRET>][/<TAG>]
+```
+
+
+You can find the Executor by running this command `docker images`. You can also indicate which version of the Executor you want to use by naming the `/<TAG>`.
+
+```bash
+jina hub pull jinahub+docker://DummyExecutor/v1.0.0
+```
+
+### Pull the source code
+
+```bash
+jina hub pull jinahub://<UUID>[:<SECRET>][/<TAG>]
+```
+
+
+The source code of the Executor will be stored at `~/.jina/hub-packages`.
+

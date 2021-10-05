@@ -4,11 +4,11 @@ import itertools
 import json
 import os
 import random
-from typing import Optional, Generator, Union, List, Iterable, Dict
+from typing import Optional, Generator, Union, List, Iterable, Dict, TYPE_CHECKING
 
 import numpy as np
 
-if False:
+if TYPE_CHECKING:
     from . import Document
 
 
@@ -81,7 +81,7 @@ def from_files(
                 yield Document(uri=g)
             elif read_mode in {'r', 'rb'}:
                 with open(g, read_mode) as fp:
-                    yield Document(content=fp.read())
+                    yield Document(content=fp.read(), uri=g)
             d += 1
         if size is not None and d >= size:
             break

@@ -1,4 +1,4 @@
-build = devel
+dockerfile = devel
 python = 3.7
 ports = 42860
 run = "python app.py 42860"

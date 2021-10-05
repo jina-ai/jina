@@ -1,4 +1,4 @@
-build = devel
+dockerfile = devel
 python = 3.7
 run = "echo Hello"
 ports = 12345,123456

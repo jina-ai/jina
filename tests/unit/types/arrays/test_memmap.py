@@ -3,7 +3,7 @@ import os
 import pytest
 import numpy as np
 
-from jina import Document, DocumentArray
+from jina import Document, DocumentArray, __windows__
 from jina.types.arrays.memmap import DocumentArrayMemmap
 from tests import random_docs
 
@@ -54,7 +54,7 @@ def test_memmap_delete_clear(tmpdir, mocker, idx1, idx99):
     assert len(dam) == 100
     del dam[idx1]
     assert len(dam) == 99
-    del dam[idx99]
+    del dam[idx99 if isinstance(idx99, str) else idx99 - 1]
     assert len(dam) == 98
     for d in dam:
         assert d.id != idx1
@@ -116,6 +116,7 @@ def test_error(tmpdir):
         del dam['12']
 
 
+@pytest.mark.xfail(__windows__, reason='broken on Windows')
 def test_persist(tmpdir):
     dam = DocumentArrayMemmap(tmpdir)
     docs = list(random_docs(100))
@@ -439,6 +440,7 @@ def test_memmap_persisted(tmpdir):
         assert doc.id == str(i)
 
 
+@pytest.mark.xfail(__windows__, reason='broken on Windows')
 def test_memmap_mutate(tmpdir):
     da = DocumentArrayMemmap(tmpdir)
     d0 = Document(text='hello')
@@ -502,6 +504,15 @@ def test_embeddings_getter_dam(tmpdir):
     np.testing.assert_almost_equal(dam.embeddings, emb)
 
 
+def test_embeddings_wrong_len(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document() for x in range(100)])
+    embeddings = np.ones((2, 10, 10))
+
+    with pytest.raises(ValueError, match='the number of rows in the'):
+        dam.embeddings = embeddings
+
+
 def test_blobs_getter_dam(tmpdir):
     blobs = np.random.random((100, 10, 10))
     dam = DocumentArrayMemmap(tmpdir)
@@ -510,10 +521,110 @@ def test_blobs_getter_dam(tmpdir):
     np.testing.assert_almost_equal(dam.get_attributes('blob'), dam.blobs)
 
 
-def test_blobs_setter_dma():
+def test_blobs_setter_dam(tmpdir):
     blobs = np.random.random((100, 10, 10))
-    da = DocumentArray([Document() for _ in range(100)])
-    da.blobs = blobs
-    np.testing.assert_almost_equal(da.blobs, blobs)
-    for x, doc in zip(blobs, da):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document() for _ in blobs])
+    dam.blobs = blobs
+    np.testing.assert_almost_equal(dam.blobs, blobs)
+    for x, doc in zip(blobs, dam):
         np.testing.assert_almost_equal(x, doc.blob)
+
+
+def test_tags_getter_dam(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document(tags={'a': 2, 'c': 'd'}) for _ in range(100)])
+    assert len(dam.tags) == 100
+    assert dam.tags == dam.get_attributes('tags')
+
+
+def test_tags_setter_dam(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    tags = [{'a': 2, 'c': 'd'} for _ in range(100)]
+    dam.extend([Document() for _ in range(100)])
+    dam.tags = tags
+    assert dam.tags == tags
+
+    for x, doc in zip(tags, dam):
+        assert x == doc.tags
+
+
+def test_setter_wrong_len(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document() for _ in range(100)])
+    tags = [{'1': 2}]
+
+    with pytest.raises(ValueError, match='the number of tags in the'):
+        dam.tags = tags
+
+
+def test_texts_getter_dam(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document(text='hello') for _ in range(100)])
+    assert len(dam.texts) == 100
+    t1 = dam.texts
+    t2 = dam.get_attributes('text')
+    assert t1 == t2
+
+
+def test_texts_setter_dam(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document() for _ in range(100)])
+    texts = ['text' for _ in range(100)]
+    dam.texts = texts
+    assert dam.texts == texts
+
+    for x, doc in zip(texts, dam):
+        assert x == doc.text
+
+
+def test_texts_wrong_len(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document() for _ in range(100)])
+    texts = ['hello']
+
+    with pytest.raises(ValueError, match='the number of texts in the'):
+        dam.texts = texts
+
+
+def test_blobs_wrong_len(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document() for x in range(100)])
+    blobs = np.ones((2, 10, 10))
+
+    with pytest.raises(ValueError, match='the number of rows in the'):
+        dam.blobs = blobs
+
+
+def test_mmap_path_getter(memmap_with_text_and_embedding, tmpdir):
+    assert memmap_with_text_and_embedding.path == tmpdir
+
+
+def test_issue_3527_delete_and_match(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+
+    dam.append(Document(id='a', embedding=np.array([1, 2, 3], dtype=np.float32)))
+    del dam['a']
+
+    dam.append(Document(id='c', embedding=np.array([1, 2, 3], dtype=np.float32)))
+    da = DocumentArray([Document(embedding=np.array([5, 6, 7], dtype=np.float32))])
+    da.match(dam)
+    assert da[0].matches[0].id == 'c'
+
+
+def test_buffers_getter_setter(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend(
+        [
+            Document(buffer=b'aa'),
+            Document(buffer=b'bb'),
+            Document(buffer=b'cc'),
+        ]
+    )
+    assert dam.buffers == [b'aa', b'bb', b'cc']
+    dam.buffers = [b'cc', b'bb', b'aa']
+    assert dam.buffers == [b'cc', b'bb', b'aa']
+    with pytest.raises(ValueError):
+        dam.buffers = [b'cc', b'bb', b'aa', b'dd']
+    with pytest.raises(TypeError):
+        dam.buffers = ['aa', 'bb', 'cc']

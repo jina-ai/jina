@@ -17,6 +17,8 @@ from typing import (
 
 import numpy as np
 
+from ... import __windows__
+
 from .abstract import AbstractDocumentArray
 from .bpm import BufferPoolManager
 from .document import DocumentArray, DocumentArrayGetAttrMixin
@@ -24,6 +26,7 @@ from .neural_ops import DocumentArrayNeuralOpsMixin
 from .search_ops import DocumentArraySearchOpsMixin
 from .traversable import TraversableSequence
 from ..document import Document
+from ..struct import StructView
 from ...logging.predefined import default_logger
 
 
@@ -136,6 +139,8 @@ class DocumentArrayMemmap(
             if not np.array_equal((r[1], r[2], r[3]), HEADER_NONE_ENTRY):
                 self._header_map[r[0]] = (idx, r[1], r[2], r[3])
 
+        self._header_keys = list(self._header_map.keys())
+
         self._body_fileno = self._body.fileno()
         self._start = 0
         if self._header_map:
@@ -198,8 +203,10 @@ class DocumentArrayMemmap(
         if idx is None:
             self._header_map[doc.id] = (self.last_header_entry, p, r, r + l)
             self.last_header_entry = self.last_header_entry + 1
+            self._header_keys.append(doc.id)
         else:
             self._header_map[doc.id] = (idx, p, r, r + l)
+            self._header_keys[idx] = doc.id
             self._header.seek(0, 2)
         self._start = p + r + l
         self._body.write(value)
@@ -278,9 +285,13 @@ class DocumentArrayMemmap(
     @property
     def _mmap(self) -> 'mmap':
         if self._last_mmap is None:
-            self._last_mmap = mmap.mmap(
-                self._body_fileno, length=0, prot=mmap.PROT_READ
+            self._last_mmap = (
+                mmap.mmap(self._body_fileno, length=0)
+                if __windows__
+                else mmap.mmap(self._body_fileno, length=0, prot=mmap.PROT_READ)
             )
+        if __windows__:
+            self._body.seek(self._start)
         return self._last_mmap
 
     def get_doc_by_key(self, key: str):
@@ -330,7 +341,9 @@ class DocumentArrayMemmap(
         self._header.seek(0, 2)
         self._header.flush()
         self._last_mmap = None
+        pop_idx = self._header_keys.index(str_key)
         self._header_map.pop(str_key)
+        self._header_keys.pop(pop_idx)
         self.buffer_pool.delete_if_exists(str_key)
         self._invalidate_embeddings_memmap()
 
@@ -344,7 +357,7 @@ class DocumentArrayMemmap(
             str_key = self._int2str_id(idx)
             self._del_doc(idx, str_key)
         elif isinstance(key, slice):
-            for idx in self._iteridx_by_slice(key):
+            for idx in reversed(self._iteridx_by_slice(key)):
                 str_key = self._int2str_id(idx)
                 self._del_doc(idx, str_key)
         else:
@@ -354,13 +367,8 @@ class DocumentArrayMemmap(
         return self._header_map[key][0]
 
     def _int2str_id(self, key: int) -> str:
-        p = key * self._header_entry_size
-        self._header.seek(p, 0)
-        d_id = np.frombuffer(
-            self._header.read(4 * self._key_length), dtype=(np.str_, self._key_length)
-        )
-        self._header.seek(0, 2)
-        return d_id[0]
+        # i < 0 needs to be handled
+        return self._header_keys[key]
 
     def __iter__(self) -> Iterator['Document']:
         for k in self._header_map.keys():
@@ -392,10 +400,6 @@ class DocumentArrayMemmap(
             self._update(value, self._str2int_id(key))
         else:
             raise TypeError(f'`key` must be int or str, but receiving {key!r}')
-
-    @staticmethod
-    def _flatten(sequence):
-        return itertools.chain.from_iterable(sequence)
 
     def __bool__(self):
         """To simulate ```l = []; if l: ...```
@@ -432,7 +436,11 @@ class DocumentArrayMemmap(
         dam = DocumentArrayMemmap(tdir, key_length=self._key_length)
         dam.extend(self)
         dam.reload()
+        if hasattr(self, '_body'):
+            self._body.close()
         os.remove(self._body_path)
+        if hasattr(self, '_header'):
+            self._header.close()
         os.remove(self._header_path)
         shutil.copy(os.path.join(tdir, 'header.bin'), self._header_path)
         shutil.copy(os.path.join(tdir, 'body.bin'), self._body_path)
@@ -554,15 +562,74 @@ class DocumentArrayMemmap(
 
     @embeddings.setter
     def embeddings(self, emb: np.ndarray):
+        """Set the embeddings of the Documents
 
-        assert len(emb) == len(self), (
-            'the number of rows in the input ({len(emb)}),'
-            'should match the number of Documents ({len(self)})'
-        )
+        :param emb: The embedding matrix to set
+        """
+        if len(emb) != len(self):
+            raise ValueError(
+                f'the number of rows in the input ({len(emb)}), should match the'
+                f'number of Documents ({len(self)})'
+            )
 
         for d, x in zip(self, emb):
             d.embedding = x
 
+    @DocumentArrayGetAttrMixin.tags.getter
+    def tags(self) -> List[StructView]:
+        """Get the tags attribute of all Documents
+
+        :return: List of ``tags`` attributes for all Documents
+        """
+        return self.get_attributes('tags')
+
+    @DocumentArrayGetAttrMixin.texts.getter
+    def texts(self) -> List[str]:
+        """Get the text attribute of all Documents
+
+        :return: List of ``text`` attributes for all Documents
+        """
+        return self.get_attributes('text')
+
+    @DocumentArrayGetAttrMixin.buffers.getter
+    def buffers(self) -> List[bytes]:
+        """Get the buffer attribute of all Documents
+
+        :return: List of ``buffer`` attributes for all Documents
+        """
+        return self.get_attributes('buffer')
+
+    @DocumentArrayGetAttrMixin.blobs.getter
+    def blobs(self) -> np.ndarray:
+        """Return a `np.ndarray` stacking all the `blob` attributes.
+
+        The `blob` attributes are stacked together along a newly created first
+        dimension (as if you would stack using ``np.stack(X, axis=0)``).
+
+        .. warning:: This operation assumes all blobs have the same shape and dtype.
+                 All dtype and shape values are assumed to be equal to the values of the
+                 first element in the DocumentArray / DocumentArrayMemmap
+
+        .. warning:: This operation currently does not support sparse arrays.
+
+        :return: blobs stacked per row as `np.ndarray`.
+        """
+
+        blobs = np.stack(self.get_attributes('blob'))
+        return blobs
+
     def _invalidate_embeddings_memmap(self):
         self._embeddings_memmap = None
         self._embeddings_shape = None
+
+    @staticmethod
+    def _flatten(sequence):
+        return itertools.chain.from_iterable(sequence)
+
+    @property
+    def path(self) -> str:
+        """Get the path where the instance is stored.
+
+        :returns: The stored path of the memmap instance.
+        """
+        return self._path

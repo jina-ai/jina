@@ -5,7 +5,7 @@ import pytest
 
 import jina
 from jina.helper import Namespace
-from jina.parsers import set_pod_parser
+from jina.parsers import set_pod_parser, set_gateway_parser
 from jina.peapods.pods.k8s import K8sPod
 from jina.peapods.pods.k8slib import kubernetes_tools, kubernetes_deployment
 from jina.peapods.pods.k8slib.kubernetes_deployment import dictionary_to_cli_param
@@ -44,7 +44,7 @@ def test_version(is_master, requests_mock, monkeypatch):
 
     with pod:
         assert (
-            mock_create.call_count == 3
+            mock_create.call_count == 5
         )  # 3 because of namespace, service and deployment
         if is_master:
             assert pod.version == 'master'
@@ -106,12 +106,12 @@ def test_parse_args_custom_executor(parallel: int):
         (
             'gateway',
             '1',
-            [{'name': 'gateway', 'head_host': 'gateway.ns.svc.cluster.local'}],
+            [{'name': 'gateway', 'head_host': 'gateway.ns.svc'}],
         ),
         (
             'test-pod',
             '1',
-            [{'name': 'test-pod', 'head_host': 'test-pod.ns.svc.cluster.local'}],
+            [{'name': 'test-pod', 'head_host': 'test-pod.ns.svc'}],
         ),
         (
             'test-pod',
@@ -119,13 +119,13 @@ def test_parse_args_custom_executor(parallel: int):
             [
                 {
                     'name': 'test-pod_head',
-                    'head_host': 'test-pod-head.ns.svc.cluster.local',
+                    'head_host': 'test-pod-head.ns.svc',
                 },
-                {'name': 'test-pod_0', 'head_host': 'test-pod-0.ns.svc.cluster.local'},
-                {'name': 'test-pod_1', 'head_host': 'test-pod-1.ns.svc.cluster.local'},
+                {'name': 'test-pod_0', 'head_host': 'test-pod-0.ns.svc'},
+                {'name': 'test-pod_1', 'head_host': 'test-pod-1.ns.svc'},
                 {
                     'name': 'test-pod_tail',
-                    'head_host': 'test-pod-tail.ns.svc.cluster.local',
+                    'head_host': 'test-pod-tail.ns.svc',
                 },
             ],
         ),
@@ -157,21 +157,32 @@ def get_k8s_pod(
     needs: Optional[Set[str]] = None,
     uses_before=None,
     uses_after=None,
+    port_expose=None,
 ):
-    if parallel is None:
-        parallel = '1'
-    if replicas is None:
-        replicas = '1'
-    parameter_list = [
-        '--name',
-        pod_name,
-        '--k8s-namespace',
-        namespace,
-        '--parallel',
-        parallel,
-        '--replicas',
-        replicas,
-    ]
+
+    parameter_list = ['--name', pod_name, '--k8s-namespace', namespace]
+    if parallel:
+        parameter_list.extend(
+            [
+                '--parallel',
+                str(parallel),
+            ]
+        )
+    if replicas:
+        parameter_list.extend(
+            [
+                '--replicas',
+                str(replicas),
+            ]
+        )
+
+    if port_expose:
+        parameter_list.extend(
+            [
+                '--port-expose',
+                str(port_expose),
+            ]
+        )
     if uses_before:
         parameter_list.extend(
             [
@@ -181,22 +192,23 @@ def get_k8s_pod(
         )
     if uses_after:
         parameter_list.extend(['--uses-after', uses_after])
-    args = set_pod_parser().parse_args(parameter_list)
+    parser = set_gateway_parser() if pod_name == 'gateway' else set_pod_parser()
+    args = parser.parse_args(parameter_list)
     pod = K8sPod(args, needs)
     return pod
 
 
 def test_start_creates_namespace():
     ns = 'test'
-    pod = get_k8s_pod('gateway', ns)
-    pod._deploy_gateway = Mock()
+    pod = get_k8s_pod('gateway', ns, port_expose=8085)
+    kubernetes_deployment.deploy_service = Mock()
     kubernetes_tools.create = Mock()
-
     pod.start()
-
     kubernetes_tools.create.assert_called_once()
     assert kubernetes_tools.create.call_args[0][0] == 'namespace'
     assert kubernetes_tools.create.call_args[0][1] == {'name': ns}
+    assert kubernetes_deployment.deploy_service.call_args[0][0] == 'gateway'
+    assert kubernetes_deployment.deploy_service.call_args[1]['port_expose'] == 8085
 
 
 def test_start_deploys_gateway():

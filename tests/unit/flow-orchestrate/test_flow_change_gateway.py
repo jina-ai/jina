@@ -9,7 +9,7 @@ from tests import random_docs
 @pytest.mark.parametrize('protocol', ['http', 'websocket', 'grpc'])
 @pytest.mark.parametrize('changeto_protocol', ['grpc', 'http', 'websocket'])
 def test_change_gateway(protocol, changeto_protocol, mocker):
-    f = Flow(protocol=protocol).add().add().add(needs='pod1').needs_all()
+    f = Flow(protocol=protocol).add().add().add(needs='executor1').needs_all()
 
     with f:
         mock = mocker.Mock()

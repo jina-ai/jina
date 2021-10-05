@@ -137,40 +137,7 @@ f.add(host='localhost', port_in=12345, external=True)
 f.add(host='123.45.67.89', port_in=12345, external=True)
 ```
 
-### Add & spawn a remote Executor via `jinad`
-
-In the example below, the Executor with
-the `host`
-keyword `gpu-exec`, is put to a remote machine for parallelization, whereas other Executors stay local. Extra file
-dependencies that need to be uploaded are specified via the `upload_files` keyword.
-
-````{tab} 123.45.67.89
-
-```bash
-# have docker installed
-docker run --name=jinad --network=host -v /var/run/docker.sock:/var/run/docker.sock jinaai/jina:latest-daemon --port-expose 8000
-# stop the docker container
-docker rm -f jinad
-```
-
-````
-
-````{tab} Local
-
-```python
-from jina import Flow
-
-f = (Flow()
-     .add()
-     .add(name='gpu_exec',
-          uses='mwu_encoder.yml',
-          host='123.45.67.89:8000',
-          parallel=2,
-          upload_files=['mwu_encoder.py'])
-     .add())
-```
-
-````
+### [Spawn remote Executors using `JinaD`](../../advanced/daemon/remote-executors)
 
 ````{admonition} Commonly used arguments for deployment in 
 :class: tip 
@@ -229,7 +196,7 @@ with flow as f:
 ```
 
 ```text
-           pod0@219291[L]:ready and listening
+      executor0@219291[L]:ready and listening
         gateway@219291[L]:ready and listening
            Flow@219291[I]:🎉 Flow is ready to use!
 	🔗 Protocol: 		GRPC
@@ -263,7 +230,7 @@ with flow as f:
     f.post('/')
 ```
 ```text
-           pod0@219662[L]:ready and listening
+      executor0@219662[L]:ready and listening
         gateway@219662[L]:ready and listening
            Flow@219662[I]:🎉 Flow is ready to use!
 	🔗 Protocol: 		GRPC
@@ -298,7 +265,7 @@ with flow as f:
 ```
 
 ```text
-           pod0@221058[L]:ready and listening
+      executor0@221058[L]:ready and listening
         gateway@221058[L]:ready and listening
            Flow@221058[I]:🎉 Flow is ready to use!
 	🔗 Protocol: 		GRPC

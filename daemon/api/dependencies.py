@@ -12,6 +12,7 @@ from jina import Flow, __docker_host__
 from jina.helper import cached_property
 from jina.peapods import CompoundPod
 from jina.peapods.peas.helper import update_runtime_cls
+from jina.peapods.runtimes.container.helper import get_gpu_device_requests
 from jina.enums import (
     PeaRoleType,
     SocketType,
@@ -68,6 +69,9 @@ class FlowDepends:
         self.envs = envs.vars
         self._ports = {}
         self.load_and_dump()
+        # Unlike `PeaModel` / `PodModel`, `gpus` arg doesn't exist in FlowModel
+        # We try assigning `all` gpus to the Flow container by default.
+        self.device_requests = get_gpu_device_requests('all')
 
     def localpath(self) -> Path:
         """Validates local filepath in workspace from filename.
@@ -138,8 +142,14 @@ class FlowDepends:
             for pod_name, pod in f._pod_nodes.items():
                 runtime_cls = update_runtime_cls(pod.args, copy=True).runtime_cls
                 if isinstance(pod, CompoundPod):
-                    if runtime_cls in ['ZEDRuntime', 'ContainerRuntime'] + list(
-                        GATEWAY_RUNTIME_DICT.values()
+                    if (
+                        runtime_cls
+                        in [
+                            'ZEDRuntime',
+                            'GRPCDataRuntime',
+                            'ContainerRuntime',
+                        ]
+                        + list(GATEWAY_RUNTIME_DICT.values())
                     ):
                         # For a `CompoundPod`, publish ports for head Pea & tail Pea
                         # Check daemon.stores.partial.PartialFlowStore.add() for addtional logic
@@ -162,7 +172,7 @@ class FlowDepends:
                                 )
                             )
                 else:
-                    if runtime_cls in ['ZEDRuntime'] + list(
+                    if runtime_cls in ['ZEDRuntime', 'GRPCDataRuntime'] + list(
                         GATEWAY_RUNTIME_DICT.values()
                     ):
                         pod.args.runs_in_docker = True
@@ -323,6 +333,9 @@ class PeaDepends:
         self.params.identity = self.id
         self.params.workspace_id = self.workspace_id
         self.params.runs_in_docker = True
+        self.device_requests = (
+            get_gpu_device_requests(self.params.gpus) if self.params.gpus else None
+        )
 
 
 class PodDepends(PeaDepends):

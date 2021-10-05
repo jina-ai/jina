@@ -15,7 +15,9 @@ That said, have fun!
 ```{toctree}
 :hidden:
 
+windows
 kubernetes
 indexers
-compound_executors
+compound-executor
+graph-document
 ```

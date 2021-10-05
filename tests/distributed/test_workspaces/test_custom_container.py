@@ -70,7 +70,6 @@ def test_update_custom_container():
     new_image_id = workspace_details.metadata.image_id
     assert new_image_id
     assert new_image_id != image_id
-    assert len(workspace_details.arguments.requirements.split()) == 3
 
 
 def test_delete_custom_container():

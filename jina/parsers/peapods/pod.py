@@ -13,12 +13,6 @@ def mixin_base_pod_parser(parser):
     gp = add_arg_group(parser, title='Pod')
 
     gp.add_argument(
-        '--install-requirements',
-        action='store_true',
-        default=False,
-        help='If set, install `requirements.txt` in the Hub Executor bundle',
-    )
-    gp.add_argument(
         '--uses-before',
         type=str,
         help='The executor attached after the Peas described by --uses, typically before sending to all '
@@ -140,14 +134,7 @@ def mixin_k8s_pod_parser(parser):
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
-    parser.add_argument(
-        '--k8s-namespace',
-        type=str,
-        default='',
-        help='Name of the namespace where Kubernetes deployment should be deployed, to be filled by flow name'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
-    )
+
     parser.add_argument(
         '--k8s-custom-resource-dir',
         type=str,
