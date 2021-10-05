@@ -143,16 +143,20 @@ class CompoundPod(BasePod, ExitStack):
                 f'{self.wait_start_success!r} should only be called when `noblock_on_start` is set to True'
             )
 
+        tasks = []
         try:
             import asyncio
 
-            _ = await asyncio.gather(
-                *[
-                    p.wait_start_success()
-                    for p in [self.head_pea, self.tail_pea] + self.replicas
-                ]
-            )
+            tasks = [
+                asyncio.create_task(p.wait_start_success())
+                for p in [self.head_pea, self.tail_pea] + self.replicas
+            ]
+            for future in asyncio.as_completed(tasks):
+                _ = await future
         except:
+            for task in tasks:
+                if not task.done():
+                    task.cancel()
             self.close()
             raise
 

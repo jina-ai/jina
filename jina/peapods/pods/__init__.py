@@ -517,12 +517,19 @@ class Pod(BasePod, ExitFIFO):
             raise ValueError(
                 f'{self.wait_start_success!r} should only be called when `noblock_on_start` is set to True'
             )
+        tasks = []
         try:
+            # TODO: Check behavior in case of exception
             import asyncio
 
-            _ = await asyncio.gather(*[pea.wait_start_success() for pea in self.peas])
+            tasks = [asyncio.create_task(pea.wait_start_success()) for pea in self.peas]
+            for future in asyncio.as_completed(tasks):
+                _ = await future
             self._activate()
         except:
+            for task in tasks:
+                if not task.done():
+                    task.cancel()
             self.close()
             raise
 

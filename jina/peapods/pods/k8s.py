@@ -4,12 +4,12 @@ import time
 from argparse import Namespace
 from typing import Optional, Dict, Union, Set, List
 
-import jina
 from .k8slib import kubernetes_deployment, kubernetes_tools
 from ..pods import BasePod, ExitFIFO
 from ... import __default_executor__
 from ...logging.logger import JinaLogger
 from ...excepts import RuntimeFailToStart
+from ...helper import run_async
 
 
 class K8sPod(BasePod, ExitFIFO):
@@ -117,13 +117,14 @@ class K8sPod(BasePod, ExitFIFO):
                 ),
             )
 
-        def wait_start_success(self):
+        async def wait_start_success(self):
             _timeout = self.common_args.timeout_ready
             if _timeout <= 0:
                 _timeout = None
             else:
                 _timeout /= 1e3
 
+            import asyncio
             from kubernetes import client
 
             k8s_client = kubernetes_tools.K8sClients().apps_v1
@@ -152,7 +153,7 @@ class K8sPod(BasePod, ExitFIFO):
                             logger.info(
                                 f'\nNumber of ready replicas {ready_replicas}, waiting for {self.num_replicas - ready_replicas} replicas to be available'
                             )
-                            time.sleep(1.0)
+                            await asyncio.sleep(1.0)
                     except client.ApiException as ex:
                         exception_to_raise = ex
                         break
@@ -169,7 +170,7 @@ class K8sPod(BasePod, ExitFIFO):
                 else:
                     self._deploy_runtime()
                 if not self.common_args.noblock_on_start:
-                    self.wait_start_success()
+                    run_async(self.wait_start_success(), any_event_loop=True)
             return self
 
         def close(self):
@@ -335,14 +336,28 @@ class K8sPod(BasePod, ExitFIFO):
             raise ValueError(
                 f'{self.wait_start_success!r} should only be called when `noblock_on_start` is set to True'
             )
+        tasks = []
         try:
+            # TODO: Check behavior in case of exception
+            import asyncio
+
             if self.k8s_head_deployment is not None:
-                self.k8s_head_deployment.wait_start_success()
+                tasks.append(
+                    asyncio.create_task(self.k8s_head_deployment.wait_start_success())
+                )
             for p in self.k8s_deployments:
-                p.wait_start_success()
+                tasks.append(asyncio.create_task(p.wait_start_success()))
             if self.k8s_tail_deployment is not None:
-                self.k8s_tail_deployment.wait_start_success()
+                tasks.append(
+                    asyncio.create_task(self.k8s_tail_deployment.wait_start_success())
+                )
+
+            for future in asyncio.as_completed(tasks):
+                _ = await future
         except:
+            for task in tasks:
+                if not task.done():
+                    task.cancel()
             self.close()
             raise
 
@@ -419,13 +434,14 @@ class K8sPod(BasePod, ExitFIFO):
         return res
 
     def _get_base_executor_version(self):
+        from ... import __version__
         import requests
 
         url = 'https://registry.hub.docker.com/v1/repositories/jinaai/jina/tags'
         tags = requests.get(url).json()
         name_set = {tag['name'] for tag in tags}
-        if jina.__version__ in name_set:
-            return jina.__version__
+        if __version__ in name_set:
+            return __version__
         else:
             return 'master'
 
