@@ -1,3 +1,4 @@
+import os
 from typing import Dict
 
 from jina import Executor, requests, DocumentArray
@@ -24,6 +25,20 @@ class TestExecutor(Executor):
             traversed = list(doc.tags.get(key))
             traversed.append(self._name)
             doc.tags[key] = traversed
+
+    @requests(on='/env')
+    def env(self, docs: DocumentArray, parameters: Dict, **kwargs):
+        self.logger.debug(
+            f'Received doc array in test-executor {self._name} with length {len(docs)}.'
+        )
+        key = 'environment-variables'
+
+        for doc in docs:
+            if key not in doc.tags:
+                doc.tags[key] = []
+            env_list = list(doc.tags.get(key))
+            env_list.append(os.environ['k1'])
+            doc.tags[key] = env_list
 
     @requests(on='/search')
     def read_file(self, docs: DocumentArray, parameters: Dict, **kwargs):
