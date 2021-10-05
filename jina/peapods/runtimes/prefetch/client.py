@@ -18,13 +18,18 @@ class HTTPClientPrefetcher(ClientPrefetcher):
     """An async HTTP request handler used in the HTTP Client"""
 
     def _create_receive_task(self) -> 'asyncio.Task':
-        """
-        For HTTP Client, there's no task needed for receiving.
-        Sleep like there's no tomorrow!
+        """Create receive task
 
         :return: asyncio Task
         """
-        return get_or_reuse_loop().create_task(asyncio.sleep(1e9))
+        return get_or_reuse_loop().create_task(self.receive())
+
+    async def receive(self):
+        """
+        For HTTP Client, there's no task needed for receiving.
+        Sleep like there's no tomorrow!
+        """
+        await asyncio.sleep(1e9)
 
     def convert_to_message(self, request: 'Request', **kwargs):
         """Convert request to dict for POST request

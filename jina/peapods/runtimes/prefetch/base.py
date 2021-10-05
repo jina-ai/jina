@@ -1,5 +1,6 @@
 import argparse
 import asyncio
+from abc import ABC, abstractmethod
 from typing import AsyncGenerator, List, Union, TYPE_CHECKING
 
 from ...grpc import Grpclet
@@ -15,7 +16,7 @@ if TYPE_CHECKING:
     from ....clients.base.http import HTTPClientlet
 
 
-class BasePrefetcher:
+class BasePrefetcher(ABC):
     """An base async request/response handler"""
 
     def __init__(
@@ -32,21 +33,24 @@ class BasePrefetcher:
         self.receive_task = self._create_receive_task()
         self.logger = JinaLogger(self.__class__.__name__, **vars(args))
 
+    @abstractmethod
     def _create_receive_task(self) -> asyncio.Task:
         """Start a receive task to be running in the background
 
         .. # noqa: DAR202
         :return: asyncio Task
         """
-        raise NotImplementedError
+        ...
 
+    @abstractmethod
     async def receive(self):
         """Implement `receive` logic for prefetcher
 
         .. # noqa: DAR202
         """
-        raise NotImplementedError
+        ...
 
+    @abstractmethod
     def handle_request(
         self, request: 'Request'
     ) -> Union['asyncio.Task', 'asyncio.Future']:
@@ -54,7 +58,7 @@ class BasePrefetcher:
 
         :param request: current request in the iterator
         """
-        raise NotImplementedError
+        ...
 
     async def close(self):
         """
