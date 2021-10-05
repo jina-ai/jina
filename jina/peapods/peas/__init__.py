@@ -327,6 +327,7 @@ class BasePea:
                     else '',
                     exc_info=not self.args.quiet_error,
                 )
+                self.terminate()
 
             # if it is not daemon, block until the process/thread finish work
             if not self.args.daemon:

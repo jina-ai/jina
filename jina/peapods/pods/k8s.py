@@ -139,8 +139,10 @@ class K8sPod(BasePod, ExitFIFO):
                 while timeout_ns is None or time.time_ns() - now < timeout_ns:
                     try:
                         api_response = k8s_client.read_namespaced_deployment(
-                            name=self.dns_name, namespace=self.k8s_namespace
-                        )
+                            name=self.dns_name,
+                            namespace=self.k8s_namespace,
+                            async_req=True,
+                        ).get()
                         assert api_response.status.replicas == self.num_replicas
                         if (
                             api_response.status.ready_replicas is not None
