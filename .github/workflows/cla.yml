@@ -20,7 +20,7 @@ jobs:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.CLA_TOKEN }}
         with:
           path-to-signatures: '.github/signatures/v1/cla.json'
-          path-To-cladocument: 'https://github.com/jina-ai/jina/blob/master/.github/CLA.md'
+          path-to-document: 'https://github.com/jina-ai/jina/blob/master/.github/CLA.md'
           branch: 'cla'
-          whitelist: jina-bot
+          allowlist: jina-bot
           signed-commit-message: '$contributorName has signed the CLA in #$pullRequestNo'
