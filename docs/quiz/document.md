@@ -19,24 +19,24 @@
 
 ### 3. How do you convert `doc.uri` to `doc.blob`?
 
-```python
-from jina.Document import convert_uri_to_blob
+-   ```python
+    from jina.Document import convert_uri_to_blob
 
-doc = Document(uri="foo.txt")
-doc.blob = convert_uri_to_blob(doc)
-```
+    doc = Document(uri="foo.txt")
+    doc.blob = convert_uri_to_blob(doc)
+    ```
 
-```python
-from jina.Document import blob
+-   ```python
+    from jina.Document import blob
 
-doc = Document(uri="foo.txt")
-doc.blob = blob(doc.uri)
-```
+    doc = Document(uri="foo.txt")
+    doc.blob = blob(doc.uri)
+    ```
 
-```python
-doc = Document(uri="foo.txt")
-doc.convert_uri_to_blob()
-```
+-   ```python
+    doc = Document(uri="foo.txt")
+    doc.convert_uri_to_blob()
+    ```
 
 > Converting to a blob is a built-in method of a `Document` object (as are many other [`.convert_x_to_y` methods](https://docs.jina.ai/fundamentals/document/document-api/#conversion-from-uri-to-content))
 
