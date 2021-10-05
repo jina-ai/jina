@@ -106,7 +106,7 @@ def create(
     from kubernetes import utils
 
     if template == 'configmap':
-        yaml = _patch_yaml(template, params)
+        yaml = _patch_configmap_yaml(template, params)
     else:
         yaml = _get_yaml(template, params, custom_resource_dir)
     fd, path = tempfile.mkstemp()
@@ -143,7 +143,7 @@ def _get_yaml(template: str, params: Dict, custom_resource_dir: Optional[str] = 
     return content
 
 
-def _patch_yaml(template: str, params: Dict):
+def _patch_configmap_yaml(template: str, params: Dict):
     import yaml
 
     path = os.path.join(DEFAULT_RESOURCE_DIR, f'{template}.yml')
