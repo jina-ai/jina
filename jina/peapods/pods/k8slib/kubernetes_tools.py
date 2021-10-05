@@ -1,30 +1,35 @@
 import os
 import tempfile
 import json
-from typing import Dict, Optional
+from typing import Dict, Optional, TYPE_CHECKING
 
-from jina.logging.logger import JinaLogger
-from jina.logging.predefined import default_logger
+from ....importer import ImportExtensions
+from ....logging.logger import JinaLogger
+from ....logging.predefined import default_logger
 
 cur_dir = os.path.dirname(__file__)
 DEFAULT_RESOURCE_DIR = os.path.join(
     cur_dir, '..', '..', '..', 'resources', 'k8s', 'template'
 )
 
+if TYPE_CHECKING:
+    from contextlib import GeneratorContextManager
 
-class K8SClients:
+
+class K8sClients:
     """
     The Kubernetes api is wrapped into a class to have a lazy reading of the cluster configuration.
 
     """
 
     def __init__(self):
-        self.__k8s_client = None
-        self.__v1 = None
-        self.__beta = None
-        self.__networking_v1_beta1_api = None
+        self._k8s_client = None
+        self._core_v1 = None
+        self._apps_v1 = None
+        self._beta = None
+        self._networking_v1_beta1_api = None
 
-    def __instantiate(self):
+    def _instantiate(self):
         # this import reads the `KUBECONFIG` env var. Lazy load to postpone the reading
         from kubernetes import config, client
 
@@ -36,11 +41,12 @@ class K8SClients:
             # this works if we are running inside k8s
             config.load_incluster_config()
 
-        self.__k8s_client = client.ApiClient()
-        self.__v1 = client.CoreV1Api(api_client=self.__k8s_client)
-        self.__beta = client.ExtensionsV1beta1Api(api_client=self.__k8s_client)
-        self.__networking_v1_beta1_api = client.NetworkingV1beta1Api(
-            api_client=self.__k8s_client
+        self._k8s_client = client.ApiClient()
+        self._core_v1 = client.CoreV1Api(api_client=self._k8s_client)
+        self._apps_v1 = client.AppsV1Api(api_client=self._k8s_client)
+        self._beta = client.ExtensionsV1beta1Api(api_client=self._k8s_client)
+        self._networking_v1_beta1_api = client.NetworkingV1beta1Api(
+            api_client=self._k8s_client
         )
 
     @property
@@ -49,19 +55,29 @@ class K8SClients:
 
         :return: k8s client
         """
-        if self.__k8s_client is None:
-            self.__instantiate()
-        return self.__k8s_client
+        if self._k8s_client is None:
+            self._instantiate()
+        return self._k8s_client
 
     @property
-    def v1(self):
+    def core_v1(self):
         """V1 client for core
 
         :return: v1 client
         """
-        if self.__v1 is None:
-            self.__instantiate()
-        return self.__v1
+        if self._core_v1 is None:
+            self._instantiate()
+        return self._core_v1
+
+    @property
+    def apps_v1(self):
+        """V1 client for core
+
+        :return: v1 client
+        """
+        if self._apps_v1 is None:
+            self._instantiate()
+        return self._apps_v1
 
     @property
     def beta(self):
@@ -69,9 +85,9 @@ class K8SClients:
 
         :return: beta client
         """
-        if self.__beta is None:
-            self.__instantiate()
-        return self.__beta
+        if self._beta is None:
+            self._instantiate()
+        return self._beta
 
     @property
     def networking_v1_beta1_api(self):
@@ -79,12 +95,12 @@ class K8SClients:
 
         :return: networking client
         """
-        if self.__networking_v1_beta1_api is None:
-            self.__instantiate()
-        return self.__networking_v1_beta1_api
+        if self._networking_v1_beta1_api is None:
+            self._instantiate()
+        return self._networking_v1_beta1_api
 
 
-__k8s_clients = K8SClients()
+_k8s_clients = K8sClients()
 
 
 def create(
@@ -111,7 +127,7 @@ def create(
         with os.fdopen(fd, 'w') as tmp:
             tmp.write(yaml)
         try:
-            utils.create_from_yaml(__k8s_clients.k8s_client, path)
+            utils.create_from_yaml(_k8s_clients.k8s_client, path)
         except FailToCreateError as e:
             for api_exception in e.api_exceptions:
                 if api_exception.status == 409:
@@ -138,3 +154,36 @@ def _get_yaml(template: str, params: Dict, custom_resource_dir: Optional[str] = 
         for k, v in params.items():
             content = content.replace(f'{{{k}}}', str(v))
     return content
+
+
+def _get_gateway_pod_name(namespace):
+    gateway_pod = _k8s_clients.core_v1.list_namespaced_pod(
+        namespace=namespace, label_selector='app=gateway'
+    )
+    return gateway_pod.items[0].metadata.name
+
+
+def get_port_forward_contextmanager(
+    namespace: str,
+    port_expose: int,
+    config_path: str = None,
+) -> 'GeneratorContextManager':
+    """Forward local requests to the gateway which is running in the Kubernetes cluster.
+    :param namespace: namespace of the gateway
+    :param port_expose: exposed port of the gateway
+    :param config_path: path to the Kubernetes config file
+    :return: context manager which sets up and terminates the port-forward
+    """
+    with ImportExtensions(
+        required=True,
+        help_text='sending requests to the Kubernetes cluster requires to install the portforward package, '
+        'please do `pip install jina[portforward]`',
+    ):
+        import portforward
+
+    gateway_pod_name = _get_gateway_pod_name(namespace)
+    if config_path is None and 'KUBECONFIG' in os.environ:
+        config_path = os.environ['KUBECONFIG']
+    return portforward.forward(
+        namespace, gateway_pod_name, port_expose, port_expose, config_path
+    )

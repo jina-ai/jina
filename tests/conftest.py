@@ -191,7 +191,7 @@ def tmpfile(tmpdir):
     return tmpdir / tmpfile
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope='session')
 def event_loop(request):
     """
     Valid only for `pytest.mark.asyncio` tests

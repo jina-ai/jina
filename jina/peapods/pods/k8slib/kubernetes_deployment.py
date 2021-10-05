@@ -199,18 +199,18 @@ def dictionary_to_cli_param(dictionary) -> str:
     return json.dumps(dictionary).replace('"', '\\"') if dictionary else ""
 
 
-def get_init_container_args(pod) -> Optional[Dict]:
+def get_init_container_args(args) -> Optional[Dict]:
     """Return the init container arguments for the k8s pod.
 
-    :param pod: pod where the init container is used.
+    :param args: args of the pod where the init container is used.
     :return: dictionary of init container arguments
     """
-    if pod.args.k8s_uses_init:
+    if args.k8s_uses_init:
         init_container = {
             'init-name': 'init',
-            'init-image': pod.args.k8s_uses_init,
-            'init-command': f'{pod.args.k8s_init_container_command}',
-            'mount-path': pod.args.k8s_mount_path,
+            'init-image': args.k8s_uses_init,
+            'init-command': f'{args.k8s_init_container_command}',
+            'mount-path': args.k8s_mount_path,
         }
     else:
         init_container = None
