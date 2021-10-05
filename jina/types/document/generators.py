@@ -8,6 +8,8 @@ from typing import Optional, Generator, Union, List, Iterable, Dict, TYPE_CHECKI
 
 import numpy as np
 
+from ...importer import ImportExtensions
+
 if TYPE_CHECKING:
     from . import Document
 
@@ -114,6 +116,93 @@ def from_csv(
             )
         else:
             yield Document(value, field_resolver)
+
+
+def from_huggingface_datasets(
+    dataset_path: str,
+    field_resolver: Optional[Dict[str, str]] = None,
+    size: Optional[int] = None,
+    sampling_rate: Optional[float] = None,
+    filter_fields: Optional[bool] = False,
+    **datasets_kwargs,
+) -> Generator['Document', None, None]:
+    """Generator function for Hugging Face Datasets. Yields documents.
+
+    This function helps to load datasets from Hugging Face Datasets Hub
+    (https://huggingface.co/datasets) in Jina. Additional parameters can be
+    passed to the ``datasets`` library using keyword arguments. The ``load_dataset``
+    method from ``datasets`` library is used to load the datasets.
+
+    :param dataset_path: a valid dataset path for Hugging Face Datasets library.
+    :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field
+            names defined in Protobuf. This is only used when the given ``document`` is
+            a JSON string or a Python dict.
+    :param size: the maximum number of the documents
+    :param sampling_rate: the sampling rate between [0, 1]
+    :param filter_fields: specifies whether to filter the dataset with the fields
+            given in ```field_resolver`` argument.
+    :param **datasets_kwargs: additional arguments for ``load_dataset`` method
+            from Datasets library. More details at
+            https://huggingface.co/docs/datasets/package_reference/loading_methods.html#datasets.load_dataset
+    :yield: documents
+    """
+    from ..document import Document
+
+    with ImportExtensions(
+        required=True,
+        help_text='Package "datasets" is not installed. Install it using "pip install datasets"',
+        verbose=True,
+    ):
+        import datasets
+
+    # Validate dataset "split" argument
+    if 'split' in datasets_kwargs and datasets_kwargs['split'] is None:
+        data_info = datasets.get_dataset_infos(dataset_path)
+        # Raise error based on number of dataset configuration (name) and available splits
+        data_config_num_names = len(data_info)
+        if data_config_num_names == 1:
+            data_config_name = data_info.keys()[0]
+        elif data_config_num_names > 1:
+            if 'name' in datasets_kwargs:
+                data_config_name = datasets_kwargs['name']
+            else:
+                raise ValueError(
+                    (
+                        'Please select a dataset configuration (using "name" argument). '
+                        f'Available configurations for this dataset : {list(data_info.keys())}'
+                    )
+                )
+        else:
+            raise Exception(
+                'Options "all" and None is not supported for "split" argument'
+            )
+
+        # Get list of available splits for the dataset configuration
+        splits = list(data_info[data_config_name].splits.keys())
+        raise Exception(
+            (
+                'Value for argument "split" cannot be None. Provide name of a split or "all"'
+                f'Available splits for this dataset : {splits}'
+            )
+        )
+    elif 'split' not in datasets_kwargs:
+        raise ValueError("Please provide a dataset split to load")
+
+    # Load the dataset using given arguments
+    data = datasets.load_dataset(dataset_path, **datasets_kwargs)
+
+    # Filter dataset if needed
+    if filter_fields:
+        if field_resolver is None or len(field_resolver.keys()) == 0:
+            raise ValueError(
+                'Filter fields option requires "field_resolver" to be provided.'
+            )
+        else:
+            data.set_format(type=None, columns=list(field_resolver.keys()))
+
+    # Return documents from dataset instances with subsampling if required
+    for value in _subsample(data, size, sampling_rate):
+        yield Document(value, field_resolver)
 
 
 def from_ndjson(
