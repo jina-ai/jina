@@ -490,7 +490,7 @@ class Pod(BasePod, ExitFIFO):
 
         self._activated = True
 
-    def start(self) -> 'BasePod':
+    def start(self) -> 'Pod':
         """
         Start to run all :class:`BasePea` in this BasePod.
 

@@ -46,6 +46,7 @@ from ..logging.logger import JinaLogger
 from ..parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
 from ..parsers.flow import set_flow_parser
 from ..peapods import CompoundPod, Pod
+from ..peapods.pods.k8s import K8sPod
 from ..peapods.pods.factory import PodFactory
 from ..types.routing.table import RoutingTable
 from ..peapods.networking import is_remote_local_connection
@@ -77,6 +78,37 @@ FALLBACK_PARSERS = [
 
 class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     """Flow is how Jina streamlines and distributes Executors. """
+
+    class _FlowK8sInfraResourcesManager:
+        def __init__(self, k8s_namespace: str, k8s_custom_resource_dir: Optional[str]):
+            self.k8s_namespace = k8s_namespace
+            self.k8s_custom_resource_dir = k8s_custom_resource_dir
+            self.namespace_created = False
+
+        def __enter__(self):
+            from ..peapods.pods.k8slib import kubernetes_tools
+
+            client = kubernetes_tools.K8sClients().core_v1
+            list_namespaces = [
+                item.metadata.name for item in client.list_namespace().items
+            ]
+            if self.k8s_namespace not in list_namespaces:
+                with JinaLogger(f'create_{self.k8s_namespace}') as logger:
+                    logger.info(f'🏝️\tCreate Namespace "{self.k8s_namespace}"')
+                    kubernetes_tools.create(
+                        'namespace',
+                        {'name': self.k8s_namespace},
+                        logger=logger,
+                        custom_resource_dir=self.k8s_custom_resource_dir,
+                    )
+                    self.namespace_created = True
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            from ..peapods.pods.k8slib import kubernetes_tools
+
+            if self.namespace_created:
+                client = kubernetes_tools.K8sClients().core_v1
+                client.delete_namespace(name=self.k8s_namespace)
 
     # overload_inject_start_client_flow
     @overload
@@ -323,6 +355,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         ]  #: default first pod is gateway, will add when build()
         self._update_args(args, **kwargs)
 
+        self.k8s_infrastructure_manager = None
+        if self.args.infrastructure == InfrastructureType.K8S:
+            self.k8s_infrastructure_manager = self._FlowK8sInfraResourcesManager(
+                k8s_namespace=self.args.name,
+                k8s_custom_resource_dir=getattr(
+                    self.args, 'k8s_custom_resource_dir', None
+                ),
+            )
         if isinstance(self.args, argparse.Namespace):
             self.logger = JinaLogger(
                 self.__class__.__name__, **vars(self.args), **self._common_kwargs
@@ -893,21 +933,40 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     )
 
         for end, pod in self._pod_nodes.items():
+
             if end == GATEWAY_NAME:
                 end = f'end-{GATEWAY_NAME}'
 
             if pod.head_args.hosts_in_connect is None:
                 pod.head_args.hosts_in_connect = []
 
+            if isinstance(pod, K8sPod):
+                from ..peapods.pods.k8slib import kubernetes_deployment
+
+                end = kubernetes_deployment.to_dns_name(end)
             if end not in graph.pods:
                 end = end + '_head'
+            if isinstance(pod, K8sPod):
+                from ..peapods.pods.k8slib import kubernetes_deployment
+
+                end = kubernetes_deployment.to_dns_name(end)
 
             for start in pod.needs:
+                start_pod = self._pod_nodes[start]
+
                 if start == GATEWAY_NAME:
                     start = f'start-{GATEWAY_NAME}'
 
+                if isinstance(start_pod, K8sPod):
+                    from ..peapods.pods.k8slib import kubernetes_deployment
+
+                    start = kubernetes_deployment.to_dns_name(start)
                 if start not in graph.pods:
                     start = start + '_tail'
+                if isinstance(start_pod, K8sPod):
+                    from ..peapods.pods.k8slib import kubernetes_deployment
+
+                    start = kubernetes_deployment.to_dns_name(start)
 
                 start_pod = graph._get_target_pod(start)
 
@@ -1040,8 +1099,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if self.args.env:
             for k in self.args.env.keys():
                 os.environ.pop(k, None)
+
+        # do not know why but removing these 2 lines make 2 tests fail
         if GATEWAY_NAME in self._pod_nodes:
             self._pod_nodes.pop(GATEWAY_NAME)
+
         self._build_level = FlowBuildLevel.EMPTY
         self.logger.debug('Flow is closed!')
         self.logger.close()
@@ -1061,6 +1123,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
             self.build(copy_flow=False)
+
+        if self.k8s_infrastructure_manager is not None:
+            self.enter_context(self.k8s_infrastructure_manager)
 
         # set env only before the Pod get started
         if self.args.env:
