@@ -620,6 +620,7 @@
 <span class="kn">from</span> <span class="nn">..parsers</span> <span class="kn">import</span> <span class="n">set_gateway_parser</span><span class="p">,</span> <span class="n">set_pod_parser</span><span class="p">,</span> <span class="n">set_client_cli_parser</span>
 <span class="kn">from</span> <span class="nn">..parsers.flow</span> <span class="kn">import</span> <span class="n">set_flow_parser</span>
 <span class="kn">from</span> <span class="nn">..peapods</span> <span class="kn">import</span> <span class="n">CompoundPod</span><span class="p">,</span> <span class="n">Pod</span>
+<span class="kn">from</span> <span class="nn">..peapods.pods.k8s</span> <span class="kn">import</span> <span class="n">K8sPod</span>
 <span class="kn">from</span> <span class="nn">..peapods.pods.factory</span> <span class="kn">import</span> <span class="n">PodFactory</span>
 <span class="kn">from</span> <span class="nn">..types.routing.table</span> <span class="kn">import</span> <span class="n">RoutingTable</span>
 <span class="kn">from</span> <span class="nn">..peapods.networking</span> <span class="kn">import</span> <span class="n">is_remote_local_connection</span>
@@ -651,6 +652,37 @@
 
 <div class="viewcode-block" id="Flow"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow">[docs]</a><span class="k">class</span> <span class="nc">Flow</span><span class="p">(</span><span class="n">PostMixin</span><span class="p">,</span> <span class="n">JAMLCompatible</span><span class="p">,</span> <span class="n">ExitStack</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">FlowType</span><span class="p">):</span>
     <span class="sd">"""Flow is how Jina streamlines and distributes Executors. """</span>
+
+    <span class="k">class</span> <span class="nc">_FlowK8sInfraResourcesManager</span><span class="p">:</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k8s_namespace</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">k8s_custom_resource_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span> <span class="o">=</span> <span class="n">k8s_namespace</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">k8s_custom_resource_dir</span> <span class="o">=</span> <span class="n">k8s_custom_resource_dir</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">namespace_created</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="kn">from</span> <span class="nn">..peapods.pods.k8slib</span> <span class="kn">import</span> <span class="n">kubernetes_tools</span>
+
+            <span class="n">client</span> <span class="o">=</span> <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">K8sClients</span><span class="p">()</span><span class="o">.</span><span class="n">core_v1</span>
+            <span class="n">list_namespaces</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">list_namespace</span><span class="p">()</span><span class="o">.</span><span class="n">items</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">list_namespaces</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="sa">f</span><span class="s1">'create_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">logger</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'🏝️</span><span class="se">\t</span><span class="s1">Create Namespace "</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span><span class="si">}</span><span class="s1">"'</span><span class="p">)</span>
+                    <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                        <span class="s1">'namespace'</span><span class="p">,</span>
+                        <span class="p">{</span><span class="s1">'name'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span><span class="p">},</span>
+                        <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+                        <span class="n">custom_resource_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_custom_resource_dir</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">namespace_created</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+            <span class="kn">from</span> <span class="nn">..peapods.pods.k8slib</span> <span class="kn">import</span> <span class="n">kubernetes_tools</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespace_created</span><span class="p">:</span>
+                <span class="n">client</span> <span class="o">=</span> <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">K8sClients</span><span class="p">()</span><span class="o">.</span><span class="n">core_v1</span>
+                <span class="n">client</span><span class="o">.</span><span class="n">delete_namespace</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span><span class="p">)</span>
 
     <span class="c1"># overload_inject_start_client_flow</span>
     <span class="nd">@overload</span>
@@ -897,6 +929,14 @@
         <span class="p">]</span>  <span class="c1">#: default first pod is gateway, will add when build()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_args</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">k8s_infrastructure_manager</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">infrastructure</span> <span class="o">==</span> <span class="n">InfrastructureType</span><span class="o">.</span><span class="n">K8S</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">k8s_infrastructure_manager</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_FlowK8sInfraResourcesManager</span><span class="p">(</span>
+                <span class="n">k8s_namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">k8s_custom_resource_dir</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'k8s_custom_resource_dir'</span><span class="p">,</span> <span class="kc">None</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">),</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span>
@@ -1467,21 +1507,40 @@
                     <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">end</span><span class="p">,</span> <span class="n">pod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
             <span class="k">if</span> <span class="n">end</span> <span class="o">==</span> <span class="n">GATEWAY_NAME</span><span class="p">:</span>
                 <span class="n">end</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'end-</span><span class="si">{</span><span class="n">GATEWAY_NAME</span><span class="si">}</span><span class="s1">'</span>
 
             <span class="k">if</span> <span class="n">pod</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">hosts_in_connect</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">pod</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">hosts_in_connect</span> <span class="o">=</span> <span class="p">[]</span>
 
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pod</span><span class="p">,</span> <span class="n">K8sPod</span><span class="p">):</span>
+                <span class="kn">from</span> <span class="nn">..peapods.pods.k8slib</span> <span class="kn">import</span> <span class="n">kubernetes_deployment</span>
+
+                <span class="n">end</span> <span class="o">=</span> <span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">to_dns_name</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">end</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">pods</span><span class="p">:</span>
                 <span class="n">end</span> <span class="o">=</span> <span class="n">end</span> <span class="o">+</span> <span class="s1">'_head'</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pod</span><span class="p">,</span> <span class="n">K8sPod</span><span class="p">):</span>
+                <span class="kn">from</span> <span class="nn">..peapods.pods.k8slib</span> <span class="kn">import</span> <span class="n">kubernetes_deployment</span>
+
+                <span class="n">end</span> <span class="o">=</span> <span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">to_dns_name</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
 
             <span class="k">for</span> <span class="n">start</span> <span class="ow">in</span> <span class="n">pod</span><span class="o">.</span><span class="n">needs</span><span class="p">:</span>
+                <span class="n">start_pod</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="n">start</span><span class="p">]</span>
+
                 <span class="k">if</span> <span class="n">start</span> <span class="o">==</span> <span class="n">GATEWAY_NAME</span><span class="p">:</span>
                     <span class="n">start</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'start-</span><span class="si">{</span><span class="n">GATEWAY_NAME</span><span class="si">}</span><span class="s1">'</span>
 
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_pod</span><span class="p">,</span> <span class="n">K8sPod</span><span class="p">):</span>
+                    <span class="kn">from</span> <span class="nn">..peapods.pods.k8slib</span> <span class="kn">import</span> <span class="n">kubernetes_deployment</span>
+
+                    <span class="n">start</span> <span class="o">=</span> <span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">to_dns_name</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">start</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">pods</span><span class="p">:</span>
                     <span class="n">start</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="s1">'_tail'</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_pod</span><span class="p">,</span> <span class="n">K8sPod</span><span class="p">):</span>
+                    <span class="kn">from</span> <span class="nn">..peapods.pods.k8slib</span> <span class="kn">import</span> <span class="n">kubernetes_deployment</span>
+
+                    <span class="n">start</span> <span class="o">=</span> <span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">to_dns_name</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
 
                 <span class="n">start_pod</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">_get_target_pod</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
 
@@ -1614,8 +1673,11 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">env</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="c1"># do not know why but removing these 2 lines make 2 tests fail</span>
         <span class="k">if</span> <span class="n">GATEWAY_NAME</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">GATEWAY_NAME</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'Flow is closed!'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
@@ -1635,6 +1697,9 @@
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span><span class="o">.</span><span class="n">value</span> <span class="o">&lt;</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">GRAPH</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">copy_flow</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">k8s_infrastructure_manager</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_infrastructure_manager</span><span class="p">)</span>
 
         <span class="c1"># set env only before the Pod get started</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">env</span><span class="p">:</span>

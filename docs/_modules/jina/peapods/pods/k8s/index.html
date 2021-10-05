@@ -574,18 +574,215 @@
                 <h1>Source code for jina.peapods.pods.k8s</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">List</span>
 
 <span class="kn">import</span> <span class="nn">jina</span>
 <span class="kn">from</span> <span class="nn">.k8slib</span> <span class="kn">import</span> <span class="n">kubernetes_deployment</span><span class="p">,</span> <span class="n">kubernetes_tools</span>
-<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">BasePod</span>
+<span class="kn">from</span> <span class="nn">..pods</span> <span class="kn">import</span> <span class="n">BasePod</span><span class="p">,</span> <span class="n">ExitFIFO</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">__default_executor__</span>
 <span class="kn">from</span> <span class="nn">...logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">...excepts</span> <span class="kn">import</span> <span class="n">RuntimeFailToStart</span>
 
 
-<div class="viewcode-block" id="K8sPod"><a class="viewcode-back" href="../../../../../api/jina.peapods.pods.k8s/#jina.peapods.pods.k8s.K8sPod">[docs]</a><span class="k">class</span> <span class="nc">K8sPod</span><span class="p">(</span><span class="n">BasePod</span><span class="p">):</span>
+<div class="viewcode-block" id="K8sPod"><a class="viewcode-back" href="../../../../../api/jina.peapods.pods.k8s/#jina.peapods.pods.k8s.K8sPod">[docs]</a><span class="k">class</span> <span class="nc">K8sPod</span><span class="p">(</span><span class="n">BasePod</span><span class="p">,</span> <span class="n">ExitFIFO</span><span class="p">):</span>
     <span class="sd">"""The K8sPod (KubernetesPod)  is used for deployments on Kubernetes."""</span>
+
+    <span class="k">class</span> <span class="nc">_K8sDeployment</span><span class="p">:</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">head_port_in</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">tail_port_out</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">head_zmq_identity</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
+            <span class="n">version</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">shard_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+            <span class="n">common_args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'Namespace'</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span>
+            <span class="n">deployment_args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'Namespace'</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dns_name</span> <span class="o">=</span> <span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">to_dns_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">head_port_in</span> <span class="o">=</span> <span class="n">head_port_in</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tail_port_out</span> <span class="o">=</span> <span class="n">tail_port_out</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">head_zmq_identity</span> <span class="o">=</span> <span class="n">head_zmq_identity</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">version</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shard_id</span> <span class="o">=</span> <span class="n">shard_id</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">common_args</span> <span class="o">=</span> <span class="n">common_args</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span> <span class="o">=</span> <span class="n">deployment_args</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">common_args</span><span class="o">.</span><span class="n">k8s_namespace</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_replicas</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">,</span> <span class="s1">'replicas'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">_deploy_gateway</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">test_pip</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'JINA_K8S_USE_TEST_PIP'</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="n">image_name</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">'jinaai/jina:test-pip'</span>
+                <span class="k">if</span> <span class="n">test_pip</span>
+                <span class="k">else</span> <span class="sa">f</span><span class="s1">'jinaai/jina:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s1">-py38-standard'</span>
+            <span class="p">)</span>
+            <span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">deploy_service</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dns_name</span><span class="p">,</span>
+                <span class="n">namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span><span class="p">,</span>
+                <span class="n">image_name</span><span class="o">=</span><span class="n">image_name</span><span class="p">,</span>
+                <span class="n">container_cmd</span><span class="o">=</span><span class="s1">'["jina"]'</span><span class="p">,</span>
+                <span class="n">container_args</span><span class="o">=</span><span class="sa">f</span><span class="s1">'["gateway", '</span>
+                <span class="sa">f</span><span class="s1">'"--grpc-data-requests", '</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">get_cli_params</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">common_args</span><span class="p">,</span> <span class="p">(</span><span class="s2">"pod_role"</span><span class="p">,))</span><span class="si">}</span><span class="s1">]'</span><span class="p">,</span>
+                <span class="n">logger</span><span class="o">=</span><span class="n">JinaLogger</span><span class="p">(</span><span class="sa">f</span><span class="s1">'deploy_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span><span class="p">),</span>
+                <span class="n">replicas</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">pull_policy</span><span class="o">=</span><span class="s1">'IfNotPresent'</span><span class="p">,</span>
+                <span class="n">port_expose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">common_args</span><span class="o">.</span><span class="n">port_expose</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="nd">@staticmethod</span>
+        <span class="k">def</span> <span class="nf">_construct_runtime_container_args</span><span class="p">(</span>
+            <span class="n">deployment_args</span><span class="p">,</span> <span class="n">uses</span><span class="p">,</span> <span class="n">uses_metas</span><span class="p">,</span> <span class="n">uses_with_string</span>
+        <span class="p">):</span>
+            <span class="n">container_args</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'["executor", '</span>
+                <span class="sa">f</span><span class="s1">'"--native", '</span>
+                <span class="sa">f</span><span class="s1">'"--uses", "</span><span class="si">{</span><span class="n">uses</span><span class="si">}</span><span class="s1">", '</span>
+                <span class="sa">f</span><span class="s1">'"--grpc-data-requests", '</span>
+                <span class="sa">f</span><span class="s1">'"--runtime-cls", "GRPCDataRuntime", '</span>
+                <span class="sa">f</span><span class="s1">'"--uses-metas", "</span><span class="si">{</span><span class="n">uses_metas</span><span class="si">}</span><span class="s1">", '</span>
+                <span class="o">+</span> <span class="n">uses_with_string</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">get_cli_params</span><span class="p">(</span><span class="n">deployment_args</span><span class="p">)</span><span class="si">}</span><span class="s1">]'</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">container_args</span>
+
+        <span class="k">def</span> <span class="nf">_deploy_runtime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">image_name</span> <span class="o">=</span> <span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">get_image_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="o">.</span><span class="n">uses</span><span class="p">)</span>
+            <span class="n">init_container_args</span> <span class="o">=</span> <span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">get_init_container_args</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">common_args</span>
+            <span class="p">)</span>
+            <span class="n">uses_metas</span> <span class="o">=</span> <span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">dictionary_to_cli_param</span><span class="p">(</span>
+                <span class="p">{</span><span class="s1">'pea_id'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">shard_id</span><span class="p">}</span>
+            <span class="p">)</span>
+            <span class="n">uses_with</span> <span class="o">=</span> <span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">dictionary_to_cli_param</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="o">.</span><span class="n">uses_with</span>
+            <span class="p">)</span>
+            <span class="n">uses_with_string</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'"--uses-with", "</span><span class="si">{</span><span class="n">uses_with</span><span class="si">}</span><span class="s1">", '</span> <span class="k">if</span> <span class="n">uses_with</span> <span class="k">else</span> <span class="s1">''</span>
+            <span class="k">if</span> <span class="n">image_name</span> <span class="o">==</span> <span class="n">__default_executor__</span><span class="p">:</span>
+                <span class="n">test_pip</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'JINA_K8S_USE_TEST_PIP'</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="n">image_name</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s1">'jinaai/jina:test-pip'</span>
+                    <span class="k">if</span> <span class="n">test_pip</span>
+                    <span class="k">else</span> <span class="sa">f</span><span class="s1">'jinaai/jina:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s1">-py38-standard'</span>
+                <span class="p">)</span>
+                <span class="n">uses</span> <span class="o">=</span> <span class="s1">'BaseExecutor'</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">uses</span> <span class="o">=</span> <span class="s1">'config.yml'</span>
+            <span class="n">container_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_construct_runtime_container_args</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">,</span> <span class="n">uses</span><span class="p">,</span> <span class="n">uses_metas</span><span class="p">,</span> <span class="n">uses_with_string</span>
+            <span class="p">)</span>
+
+            <span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">deploy_service</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dns_name</span><span class="p">,</span>
+                <span class="n">namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span><span class="p">,</span>
+                <span class="n">image_name</span><span class="o">=</span><span class="n">image_name</span><span class="p">,</span>
+                <span class="n">container_cmd</span><span class="o">=</span><span class="s1">'["jina"]'</span><span class="p">,</span>
+                <span class="n">container_args</span><span class="o">=</span><span class="n">container_args</span><span class="p">,</span>
+                <span class="n">logger</span><span class="o">=</span><span class="n">JinaLogger</span><span class="p">(</span><span class="sa">f</span><span class="s1">'deploy_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span><span class="p">),</span>
+                <span class="n">replicas</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_replicas</span><span class="p">,</span>
+                <span class="n">pull_policy</span><span class="o">=</span><span class="s1">'IfNotPresent'</span><span class="p">,</span>
+                <span class="n">init_container</span><span class="o">=</span><span class="n">init_container_args</span><span class="p">,</span>
+                <span class="n">custom_resource_dir</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">common_args</span><span class="p">,</span> <span class="s1">'k8s_custom_resource_dir'</span><span class="p">,</span> <span class="kc">None</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">wait_start_success</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">_timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">common_args</span><span class="o">.</span><span class="n">timeout_ready</span>
+            <span class="k">if</span> <span class="n">_timeout</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">_timeout</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">_timeout</span> <span class="o">/=</span> <span class="mf">1e3</span>
+
+            <span class="kn">from</span> <span class="nn">kubernetes</span> <span class="kn">import</span> <span class="n">client</span>
+
+            <span class="n">k8s_client</span> <span class="o">=</span> <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">K8sClients</span><span class="p">()</span><span class="o">.</span><span class="n">apps_v1</span>
+
+            <span class="k">with</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="sa">f</span><span class="s1">'waiting_for_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">logger</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'🏝️</span><span class="se">\n\t\t</span><span class="s1">Waiting for "</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">" to be ready, with </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_replicas</span><span class="si">}</span><span class="s1"> replicas'</span>
+                <span class="p">)</span>
+                <span class="n">timeout_ns</span> <span class="o">=</span> <span class="mi">1000000000</span> <span class="o">*</span> <span class="n">_timeout</span> <span class="k">if</span> <span class="n">_timeout</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">()</span>
+                <span class="n">exception_to_raise</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">while</span> <span class="n">timeout_ns</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">()</span> <span class="o">-</span> <span class="n">now</span> <span class="o">&lt;</span> <span class="n">timeout_ns</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">api_response</span> <span class="o">=</span> <span class="n">k8s_client</span><span class="o">.</span><span class="n">read_namespaced_deployment</span><span class="p">(</span>
+                            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dns_name</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span>
+                        <span class="p">)</span>
+                        <span class="k">assert</span> <span class="n">api_response</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">replicas</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_replicas</span>
+                        <span class="k">if</span> <span class="p">(</span>
+                            <span class="n">api_response</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">ready_replicas</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                            <span class="ow">and</span> <span class="n">api_response</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">ready_replicas</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_replicas</span>
+                        <span class="p">):</span>
+                            <span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">' </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> has all its replicas ready!!'</span><span class="p">)</span>
+                            <span class="k">return</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">ready_replicas</span> <span class="o">=</span> <span class="n">api_response</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">ready_replicas</span> <span class="ow">or</span> <span class="mi">0</span>
+                            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1">Number of ready replicas </span><span class="si">{</span><span class="n">ready_replicas</span><span class="si">}</span><span class="s1">, waiting for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_replicas</span> <span class="o">-</span> <span class="n">ready_replicas</span><span class="si">}</span><span class="s1"> replicas to be available'</span>
+                            <span class="p">)</span>
+                            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="n">client</span><span class="o">.</span><span class="n">ApiException</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                        <span class="n">exception_to_raise</span> <span class="o">=</span> <span class="n">ex</span>
+                        <span class="k">break</span>
+            <span class="n">fail_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">' Deployment </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> did not start with a timeout of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">common_args</span><span class="o">.</span><span class="n">timeout_ready</span><span class="si">}</span><span class="s1">'</span>
+            <span class="k">if</span> <span class="n">exception_to_raise</span><span class="p">:</span>
+                <span class="n">fail_msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">': </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">exception_to_raise</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
+            <span class="k">raise</span> <span class="n">RuntimeFailToStart</span><span class="p">(</span><span class="n">fail_msg</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="sa">f</span><span class="s1">'start_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">logger</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="se">\t\t</span><span class="s1">Deploying "</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">"'</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'gateway'</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_deploy_gateway</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_deploy_runtime</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">common_args</span><span class="o">.</span><span class="n">noblock_on_start</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span>
+
+        <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="kn">from</span> <span class="nn">kubernetes</span> <span class="kn">import</span> <span class="n">client</span>
+
+            <span class="n">k8s_client</span> <span class="o">=</span> <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">K8sClients</span><span class="p">()</span><span class="o">.</span><span class="n">apps_v1</span>
+
+            <span class="k">with</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="sa">f</span><span class="s1">'close_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">logger</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">resp</span> <span class="o">=</span> <span class="n">k8s_client</span><span class="o">.</span><span class="n">delete_namespaced_deployment</span><span class="p">(</span>
+                        <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dns_name</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s1">'Success'</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s1">' Successful deletion of deployment </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span>
+                        <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s1">' Deletion of deployment </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> unsuccessful with status </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s1">'</span>
+                        <span class="p">)</span>
+                <span class="k">except</span> <span class="n">client</span><span class="o">.</span><span class="n">ApiException</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">' Error deleting deployment </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">exc</span><span class="o">.</span><span class="n">reason</span><span class="si">}</span><span class="s1"> '</span>
+                    <span class="p">)</span>
+
+        <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">to_node</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s1">'name'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dns_name</span><span class="p">,</span>
+                <span class="s1">'head_host'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dns_name</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span><span class="si">}</span><span class="s1">.svc'</span><span class="p">,</span>
+                <span class="s1">'head_port_in'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_port_in</span><span class="p">,</span>
+                <span class="s1">'tail_port_out'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail_port_out</span><span class="p">,</span>
+                <span class="s1">'head_zmq_identity'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_zmq_identity</span><span class="p">,</span>
+            <span class="p">}</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'Namespace'</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span> <span class="n">needs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -598,6 +795,52 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">fixed_head_port_in</span> <span class="o">=</span> <span class="mi">8081</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fixed_tail_port_out</span> <span class="o">=</span> <span class="mi">8082</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k8s_head_deployment</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k8s_tail_deployment</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">[</span><span class="s1">'head_deployment'</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">-head'</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">k8s_head_deployment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_K8sDeployment</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">head_port_in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fixed_head_port_in</span><span class="p">,</span>
+                <span class="n">tail_port_out</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fixed_tail_port_out</span><span class="p">,</span>
+                <span class="n">head_zmq_identity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">head_zmq_identity</span><span class="p">,</span>
+                <span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+                <span class="n">shard_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">common_args</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+                <span class="n">deployment_args</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">[</span><span class="s1">'head_deployment'</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">[</span><span class="s1">'tail_deployment'</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">-tail'</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">k8s_tail_deployment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_K8sDeployment</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">head_port_in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fixed_head_port_in</span><span class="p">,</span>
+                <span class="n">tail_port_out</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fixed_tail_port_out</span><span class="p">,</span>
+                <span class="n">head_zmq_identity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">head_zmq_identity</span><span class="p">,</span>
+                <span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+                <span class="n">shard_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">common_args</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+                <span class="n">deployment_args</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">[</span><span class="s1">'tail_deployment'</span><span class="p">],</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">k8s_deployments</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">args</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">[</span><span class="s1">'deployments'</span><span class="p">]):</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">'</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">[</span><span class="s1">'deployments'</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span>
+                <span class="k">else</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">k8s_deployments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_K8sDeployment</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">head_port_in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fixed_head_port_in</span><span class="p">,</span>
+                    <span class="n">tail_port_out</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fixed_tail_port_out</span><span class="p">,</span>
+                    <span class="n">head_zmq_identity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">head_zmq_identity</span><span class="p">,</span>
+                    <span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+                    <span class="n">shard_id</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+                    <span class="n">common_args</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+                    <span class="n">deployment_args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_parse_args</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Namespace</span>
@@ -617,11 +860,13 @@
             <span class="c1"># reasons to separate head and tail from peas is that they</span>
             <span class="c1"># can be deducted based on the previous and next pods</span>
             <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'head_deployment'</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+            <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'head_deployment'</span><span class="p">]</span><span class="o">.</span><span class="n">replicas</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'head_deployment'</span><span class="p">]</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">args</span><span class="o">.</span><span class="n">uses_before</span> <span class="ow">or</span> <span class="n">__default_executor__</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">parallel</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'uses_after'</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
             <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'tail_deployment'</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+            <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'tail_deployment'</span><span class="p">]</span><span class="o">.</span><span class="n">replicas</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'tail_deployment'</span><span class="p">]</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">args</span><span class="o">.</span><span class="n">uses_after</span> <span class="ow">or</span> <span class="n">__default_executor__</span>
             <span class="p">)</span>
@@ -630,7 +875,7 @@
         <span class="k">return</span> <span class="n">parsed_args</span>
 
     <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
 
     <span class="nd">@property</span>
@@ -643,125 +888,40 @@
         <span class="sd">"""Not implemented"""</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-    <span class="k">def</span> <span class="nf">_deploy_gateway</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">test_pip</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'JINA_K8S_USE_TEST_PIP'</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-        <span class="n">image_name</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s1">'jinaai/jina:test-pip'</span>
-            <span class="k">if</span> <span class="n">test_pip</span>
-            <span class="k">else</span> <span class="sa">f</span><span class="s1">'jinaai/jina:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s1">-py38-standard'</span>
-        <span class="p">)</span>
-        <span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">deploy_service</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-            <span class="n">namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">k8s_namespace</span><span class="p">,</span>
-            <span class="n">image_name</span><span class="o">=</span><span class="n">image_name</span><span class="p">,</span>
-            <span class="n">container_cmd</span><span class="o">=</span><span class="s1">'["jina"]'</span><span class="p">,</span>
-            <span class="n">container_args</span><span class="o">=</span><span class="sa">f</span><span class="s1">'["gateway", '</span>
-            <span class="sa">f</span><span class="s1">'"--grpc-data-requests", '</span>
-            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">get_cli_params</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="p">(</span><span class="s2">"pod_role"</span><span class="p">,))</span><span class="si">}</span><span class="s1">]'</span><span class="p">,</span>
-            <span class="n">logger</span><span class="o">=</span><span class="n">JinaLogger</span><span class="p">(</span><span class="sa">f</span><span class="s1">'deploy_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span><span class="p">),</span>
-            <span class="n">replicas</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">pull_policy</span><span class="o">=</span><span class="s1">'IfNotPresent'</span><span class="p">,</span>
-            <span class="n">port_expose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_expose</span><span class="p">,</span>
-        <span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_deploy_runtime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deployment_args</span><span class="p">,</span> <span class="n">replicas</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">):</span>
-        <span class="n">image_name</span> <span class="o">=</span> <span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">get_image_name</span><span class="p">(</span><span class="n">deployment_args</span><span class="o">.</span><span class="n">uses</span><span class="p">)</span>
-        <span class="n">name_suffix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="p">(</span>
-            <span class="s1">''</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">parallel</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span>
-            <span class="k">else</span> <span class="p">(</span><span class="s1">'-'</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">deployment_id</span><span class="p">))</span>
-        <span class="p">)</span>
-        <span class="n">dns_name</span> <span class="o">=</span> <span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">to_dns_name</span><span class="p">(</span><span class="n">name_suffix</span><span class="p">)</span>
-        <span class="n">init_container_args</span> <span class="o">=</span> <span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">get_init_container_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="n">uses_metas</span> <span class="o">=</span> <span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">dictionary_to_cli_param</span><span class="p">(</span>
-            <span class="p">{</span><span class="s1">'pea_id'</span><span class="p">:</span> <span class="n">deployment_id</span><span class="p">}</span>
-        <span class="p">)</span>
-        <span class="n">uses_with</span> <span class="o">=</span> <span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">dictionary_to_cli_param</span><span class="p">(</span>
-            <span class="n">deployment_args</span><span class="o">.</span><span class="n">uses_with</span>
-        <span class="p">)</span>
-        <span class="n">uses_with_string</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'"--uses-with", "</span><span class="si">{</span><span class="n">uses_with</span><span class="si">}</span><span class="s1">", '</span> <span class="k">if</span> <span class="n">uses_with</span> <span class="k">else</span> <span class="s1">''</span>
-        <span class="k">if</span> <span class="n">image_name</span> <span class="o">==</span> <span class="n">__default_executor__</span><span class="p">:</span>
-            <span class="n">test_pip</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'JINA_K8S_USE_TEST_PIP'</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="n">image_name</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="s1">'jinaai/jina:test-pip'</span>
-                <span class="k">if</span> <span class="n">test_pip</span>
-                <span class="k">else</span> <span class="sa">f</span><span class="s1">'jinaai/jina:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s1">-py38-standard'</span>
-            <span class="p">)</span>
-            <span class="n">uses</span> <span class="o">=</span> <span class="s1">'BaseExecutor'</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">uses</span> <span class="o">=</span> <span class="s1">'config.yml'</span>
-        <span class="n">container_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_construct_runtime_container_args</span><span class="p">(</span>
-            <span class="n">deployment_args</span><span class="p">,</span> <span class="n">uses</span><span class="p">,</span> <span class="n">uses_metas</span><span class="p">,</span> <span class="n">uses_with_string</span>
-        <span class="p">)</span>
-
-        <span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">deploy_service</span><span class="p">(</span>
-            <span class="n">dns_name</span><span class="p">,</span>
-            <span class="n">namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">k8s_namespace</span><span class="p">,</span>
-            <span class="n">image_name</span><span class="o">=</span><span class="n">image_name</span><span class="p">,</span>
-            <span class="n">container_cmd</span><span class="o">=</span><span class="s1">'["jina"]'</span><span class="p">,</span>
-            <span class="n">container_args</span><span class="o">=</span><span class="n">container_args</span><span class="p">,</span>
-            <span class="n">logger</span><span class="o">=</span><span class="n">JinaLogger</span><span class="p">(</span><span class="sa">f</span><span class="s1">'deploy_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span><span class="p">),</span>
-            <span class="n">replicas</span><span class="o">=</span><span class="n">replicas</span><span class="p">,</span>
-            <span class="n">pull_policy</span><span class="o">=</span><span class="s1">'IfNotPresent'</span><span class="p">,</span>
-            <span class="n">init_container</span><span class="o">=</span><span class="n">init_container_args</span><span class="p">,</span>
-            <span class="n">custom_resource_dir</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'k8s_custom_resource_dir'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-        <span class="p">)</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_construct_runtime_container_args</span><span class="p">(</span>
-        <span class="n">deployment_args</span><span class="p">,</span> <span class="n">uses</span><span class="p">,</span> <span class="n">uses_metas</span><span class="p">,</span> <span class="n">uses_with_string</span>
-    <span class="p">):</span>
-        <span class="n">container_args</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'["executor", '</span>
-            <span class="sa">f</span><span class="s1">'"--native", '</span>
-            <span class="sa">f</span><span class="s1">'"--uses", "</span><span class="si">{</span><span class="n">uses</span><span class="si">}</span><span class="s1">", '</span>
-            <span class="sa">f</span><span class="s1">'"--grpc-data-requests", '</span>
-            <span class="sa">f</span><span class="s1">'"--runtime-cls", "GRPCDataRuntime", '</span>
-            <span class="sa">f</span><span class="s1">'"--uses-metas", "</span><span class="si">{</span><span class="n">uses_metas</span><span class="si">}</span><span class="s1">", '</span>
-            <span class="o">+</span> <span class="n">uses_with_string</span>
-            <span class="o">+</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">get_cli_params</span><span class="p">(</span><span class="n">deployment_args</span><span class="p">)</span><span class="si">}</span><span class="s1">]'</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">container_args</span>
-
 <div class="viewcode-block" id="K8sPod.start"><a class="viewcode-back" href="../../../../../api/jina.peapods.pods.k8s/#jina.peapods.pods.k8s.K8sPod.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'K8sPod'</span><span class="p">:</span>
         <span class="sd">"""Deploy the kubernetes pods via k8s Deployment and k8s Service.</span>
 
 <span class="sd">        :return: self</span>
 <span class="sd">        """</span>
-        <span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="sa">f</span><span class="s1">'start_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'🏝️</span><span class="se">\t</span><span class="s1">Create Namespace "</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">k8s_namespace</span><span class="si">}</span><span class="s1">" for "</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">"'</span>
-        <span class="p">)</span>
-        <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-            <span class="s1">'namespace'</span><span class="p">,</span>
-            <span class="p">{</span><span class="s1">'name'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">k8s_namespace</span><span class="p">},</span>
-            <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
-            <span class="n">custom_resource_dir</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'k8s_custom_resource_dir'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'gateway'</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_deploy_gateway</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">[</span><span class="s1">'head_deployment'</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_deploy_runtime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">[</span><span class="s1">'head_deployment'</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'head'</span><span class="p">)</span>
-
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">parallel</span><span class="p">):</span>
-                <span class="n">deployment_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">[</span><span class="s1">'deployments'</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_deploy_runtime</span><span class="p">(</span><span class="n">deployment_args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">replicas</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">[</span><span class="s1">'tail_deployment'</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_deploy_runtime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">[</span><span class="s1">'tail_deployment'</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'tail'</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="sa">f</span><span class="s1">'start_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">logger</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'🏝️</span><span class="se">\t</span><span class="s1">Create deployments for "</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">"'</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">k8s_head_deployment</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_head_deployment</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">k8s_deployment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">k8s_deployments</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">k8s_deployment</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">k8s_tail_deployment</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_tail_deployment</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="K8sPod.wait_start_success"><a class="viewcode-back" href="../../../../../api/jina.peapods.pods.k8s/#jina.peapods.pods.k8s.K8sPod.wait_start_success">[docs]</a>    <span class="k">def</span> <span class="nf">wait_start_success</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Not implemented. It should wait until the deployment is up and running"""</span>
-        <span class="k">pass</span></div>
-
-<div class="viewcode-block" id="K8sPod.close"><a class="viewcode-back" href="../../../../../api/jina.peapods.pods.k8s/#jina.peapods.pods.k8s.K8sPod.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Not implemented. It should delete the namespace of the flow"""</span>
-        <span class="k">pass</span></div>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">noblock_on_start</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">wait_start_success</span><span class="si">!r}</span><span class="s1"> should only be called when `noblock_on_start` is set to True'</span>
+            <span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">k8s_head_deployment</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">k8s_head_deployment</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">k8s_deployments</span><span class="p">:</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">k8s_tail_deployment</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">k8s_tail_deployment</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">raise</span></div>
 
 <div class="viewcode-block" id="K8sPod.join"><a class="viewcode-back" href="../../../../../api/jina.peapods.pods.k8s/#jina.peapods.pods.k8s.K8sPod.join">[docs]</a>    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Not implemented. It should wait to make sure deployments are properly killed."""</span>
+        <span class="sd">"""Not needed. The context managers will manage the proper deletion"""</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="K8sPod.update_pea_args"><a class="viewcode-back" href="../../../../../api/jina.peapods.pods.k8s/#jina.peapods.pods.k8s.K8sPod.update_pea_args">[docs]</a>    <span class="k">def</span> <span class="nf">update_pea_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -769,14 +929,6 @@
 <span class="sd">        Regenerate deployment args</span>
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span></div>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">"""Not implemented. It assumes it is ready.</span>
-
-<span class="sd">        :return: True</span>
-<span class="sd">        """</span>
-        <span class="k">return</span> <span class="kc">True</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">head_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
@@ -800,7 +952,19 @@
 
 <span class="sd">        :return: number of peas</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">k8s_head_deployment</span><span class="o">.</span><span class="n">num_replicas</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">k8s_head_deployment</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="mi">0</span>
+            <span class="p">]</span>
+            <span class="o">+</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">k8s_tail_deployment</span><span class="o">.</span><span class="n">num_replicas</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">k8s_tail_deployment</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="mi">0</span>
+            <span class="p">]</span>
+            <span class="o">+</span> <span class="p">[</span><span class="n">k8s_deployment</span><span class="o">.</span><span class="n">num_replicas</span> <span class="k">for</span> <span class="n">k8s_deployment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">k8s_deployments</span><span class="p">]</span>
+        <span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">head_zmq_identity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
@@ -817,22 +981,15 @@
 <span class="sd">        :return: list of dictionaries defining the attributes used by the routing table</span>
 <span class="sd">        """</span>
         <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'gateway'</span><span class="p">:</span>
-            <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_node</span><span class="p">(</span><span class="s1">''</span><span class="p">))</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_deployments</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">to_node</span><span class="p">())</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">[</span><span class="s1">'head_deployment'</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_node</span><span class="p">(</span><span class="s1">'head'</span><span class="p">))</span>
-            <span class="k">for</span> <span class="n">deployment_id</span><span class="p">,</span> <span class="n">deployment_arg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">[</span><span class="s1">'deployments'</span><span class="p">]</span>
-            <span class="p">):</span>
-                <span class="n">name_suffix</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">deployment_id</span>
-                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">[</span><span class="s1">'deployments'</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span>
-                    <span class="k">else</span> <span class="s1">''</span>
-                <span class="p">)</span>
-                <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_node</span><span class="p">(</span><span class="n">name_suffix</span><span class="p">))</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">[</span><span class="s1">'tail_deployment'</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_node</span><span class="p">(</span><span class="s1">'tail'</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">k8s_head_deployment</span><span class="p">:</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_head_deployment</span><span class="o">.</span><span class="n">to_node</span><span class="p">())</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">_</span><span class="o">.</span><span class="n">to_node</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">k8s_deployments</span><span class="p">])</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">k8s_tail_deployment</span><span class="p">:</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_tail_deployment</span><span class="o">.</span><span class="n">to_node</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">res</span>
 
     <span class="k">def</span> <span class="nf">_get_base_executor_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -845,17 +1002,6 @@
             <span class="k">return</span> <span class="n">jina</span><span class="o">.</span><span class="n">__version__</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="s1">'master'</span>
-
-    <span class="k">def</span> <span class="nf">_create_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suffix</span><span class="p">):</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s1">'</span> <span class="k">if</span> <span class="n">suffix</span> <span class="o">!=</span> <span class="s1">''</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
-        <span class="n">dns_name</span> <span class="o">=</span> <span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">to_dns_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">{</span>
-            <span class="s1">'name'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
-            <span class="s1">'head_host'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">dns_name</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">k8s_namespace</span><span class="si">}</span><span class="s1">.svc'</span><span class="p">,</span>
-            <span class="s1">'head_port_in'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fixed_head_port_in</span><span class="p">,</span>
-            <span class="s1">'tail_port_out'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fixed_tail_port_out</span><span class="p">,</span>
-            <span class="s1">'head_zmq_identity'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_zmq_identity</span><span class="p">,</span>
-        <span class="p">}</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_mermaid_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>

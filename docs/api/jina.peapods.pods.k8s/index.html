@@ -599,7 +599,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.peapods.pods.k8s.K8sPod">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.peapods.pods.k8s.</span></span><span class="sig-name descname"><span class="pre">K8sPod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">needs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/k8s/#K8sPod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.k8s.K8sPod" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.peapods.pods/#jina.peapods.pods.BasePod" title="jina.peapods.pods.BasePod"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.pods.BasePod</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../jina.peapods.pods/#jina.peapods.pods.BasePod" title="jina.peapods.pods.BasePod"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.pods.BasePod</span></code></a>, <a class="reference internal" href="../jina.peapods.pods/#jina.peapods.pods.ExitFIFO" title="jina.peapods.pods.ExitFIFO"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.pods.ExitFIFO</span></code></a></p>
 <p>The K8sPod (KubernetesPod)  is used for deployments on Kubernetes.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.peapods.pods.k8s.K8sPod.port_expose">
@@ -640,32 +640,14 @@
 <dd><p>Not implemented. It should wait until the deployment is up and running</p>
 </dd></dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.peapods.pods.k8s.K8sPod.close">
-<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/k8s/#K8sPod.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.k8s.K8sPod.close" title="Permalink to this definition">¶</a></dt>
-<dd><p>Not implemented. It should delete the namespace of the flow</p>
-</dd></dl>
-<dl class="py method">
 <dt class="sig sig-object py" id="jina.peapods.pods.k8s.K8sPod.join">
 <span class="sig-name descname"><span class="pre">join</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/k8s/#K8sPod.join"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.k8s.K8sPod.join" title="Permalink to this definition">¶</a></dt>
-<dd><p>Not implemented. It should wait to make sure deployments are properly killed.</p>
+<dd><p>Not needed. The context managers will manage the proper deletion</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.peapods.pods.k8s.K8sPod.update_pea_args">
 <span class="sig-name descname"><span class="pre">update_pea_args</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/k8s/#K8sPod.update_pea_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.k8s.K8sPod.update_pea_args" title="Permalink to this definition">¶</a></dt>
 <dd><p>Regenerate deployment args</p>
-</dd></dl>
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.peapods.pods.k8s.K8sPod.is_ready">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">is_ready</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#jina.peapods.pods.k8s.K8sPod.is_ready" title="Permalink to this definition">¶</a></dt>
-<dd><p>Not implemented. It assumes it is ready.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>True</p>
-</dd>
-</dl>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.peapods.pods.k8s.K8sPod.head_args">

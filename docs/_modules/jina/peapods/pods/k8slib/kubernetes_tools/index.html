@@ -575,30 +575,35 @@
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
 
-<span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
-<span class="kn">from</span> <span class="nn">jina.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
+<span class="kn">from</span> <span class="nn">....importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
+<span class="kn">from</span> <span class="nn">....logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">....logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
 <span class="n">cur_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
 <span class="n">DEFAULT_RESOURCE_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
     <span class="n">cur_dir</span><span class="p">,</span> <span class="s1">'..'</span><span class="p">,</span> <span class="s1">'..'</span><span class="p">,</span> <span class="s1">'..'</span><span class="p">,</span> <span class="s1">'resources'</span><span class="p">,</span> <span class="s1">'k8s'</span><span class="p">,</span> <span class="s1">'template'</span>
 <span class="p">)</span>
 
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">GeneratorContextManager</span>
 
-<div class="viewcode-block" id="K8SClients"><a class="viewcode-back" href="../../../../../../api/jina.peapods.pods.k8slib.kubernetes_tools/#jina.peapods.pods.k8slib.kubernetes_tools.K8SClients">[docs]</a><span class="k">class</span> <span class="nc">K8SClients</span><span class="p">:</span>
+
+<div class="viewcode-block" id="K8sClients"><a class="viewcode-back" href="../../../../../../api/jina.peapods.pods.k8slib.kubernetes_tools/#jina.peapods.pods.k8slib.kubernetes_tools.K8sClients">[docs]</a><span class="k">class</span> <span class="nc">K8sClients</span><span class="p">:</span>
     <span class="sd">"""</span>
 <span class="sd">    The Kubernetes api is wrapped into a class to have a lazy reading of the cluster configuration.</span>
 
 <span class="sd">    """</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__k8s_client</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__v1</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__beta</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__networking_v1_beta1_api</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_k8s_client</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_core_v1</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_apps_v1</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_beta</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_networking_v1_beta1_api</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__instantiate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_instantiate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># this import reads the `KUBECONFIG` env var. Lazy load to postpone the reading</span>
         <span class="kn">from</span> <span class="nn">kubernetes</span> <span class="kn">import</span> <span class="n">config</span><span class="p">,</span> <span class="n">client</span>
 
@@ -610,11 +615,12 @@
             <span class="c1"># this works if we are running inside k8s</span>
             <span class="n">config</span><span class="o">.</span><span class="n">load_incluster_config</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">__k8s_client</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">ApiClient</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__v1</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">CoreV1Api</span><span class="p">(</span><span class="n">api_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__k8s_client</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__beta</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">ExtensionsV1beta1Api</span><span class="p">(</span><span class="n">api_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__k8s_client</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__networking_v1_beta1_api</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">NetworkingV1beta1Api</span><span class="p">(</span>
-            <span class="n">api_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__k8s_client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_k8s_client</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">ApiClient</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_core_v1</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">CoreV1Api</span><span class="p">(</span><span class="n">api_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_k8s_client</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_apps_v1</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">AppsV1Api</span><span class="p">(</span><span class="n">api_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_k8s_client</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_beta</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">ExtensionsV1beta1Api</span><span class="p">(</span><span class="n">api_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_k8s_client</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_networking_v1_beta1_api</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">NetworkingV1beta1Api</span><span class="p">(</span>
+            <span class="n">api_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_k8s_client</span>
         <span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -623,19 +629,29 @@
 
 <span class="sd">        :return: k8s client</span>
 <span class="sd">        """</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__k8s_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__instantiate</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__k8s_client</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_k8s_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_instantiate</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_k8s_client</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">v1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">core_v1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""V1 client for core</span>
 
 <span class="sd">        :return: v1 client</span>
 <span class="sd">        """</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__v1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__instantiate</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__v1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_core_v1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_instantiate</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_core_v1</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">apps_v1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""V1 client for core</span>
+
+<span class="sd">        :return: v1 client</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apps_v1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_instantiate</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apps_v1</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">beta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -643,9 +659,9 @@
 
 <span class="sd">        :return: beta client</span>
 <span class="sd">        """</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__beta</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__instantiate</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__beta</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beta</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_instantiate</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beta</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">networking_v1_beta1_api</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -653,12 +669,12 @@
 
 <span class="sd">        :return: networking client</span>
 <span class="sd">        """</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__networking_v1_beta1_api</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__instantiate</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__networking_v1_beta1_api</span></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_networking_v1_beta1_api</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_instantiate</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_networking_v1_beta1_api</span></div>
 
 
-<span class="n">__k8s_clients</span> <span class="o">=</span> <span class="n">K8SClients</span><span class="p">()</span>
+<span class="n">_k8s_clients</span> <span class="o">=</span> <span class="n">K8sClients</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="create"><a class="viewcode-back" href="../../../../../../api/jina.peapods.pods.k8slib.kubernetes_tools/#jina.peapods.pods.k8slib.kubernetes_tools.create">[docs]</a><span class="k">def</span> <span class="nf">create</span><span class="p">(</span>
@@ -685,7 +701,7 @@
         <span class="k">with</span> <span class="n">os</span><span class="o">.</span><span class="n">fdopen</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
             <span class="n">tmp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">yaml</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">utils</span><span class="o">.</span><span class="n">create_from_yaml</span><span class="p">(</span><span class="n">__k8s_clients</span><span class="o">.</span><span class="n">k8s_client</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">create_from_yaml</span><span class="p">(</span><span class="n">_k8s_clients</span><span class="o">.</span><span class="n">k8s_client</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">FailToCreateError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">api_exception</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">api_exceptions</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">api_exception</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">409</span><span class="p">:</span>
@@ -712,6 +728,39 @@
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">content</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="se">{{</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="se">}}</span><span class="s1">'</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">content</span>
+
+
+<span class="k">def</span> <span class="nf">_get_gateway_pod_name</span><span class="p">(</span><span class="n">namespace</span><span class="p">):</span>
+    <span class="n">gateway_pod</span> <span class="o">=</span> <span class="n">_k8s_clients</span><span class="o">.</span><span class="n">core_v1</span><span class="o">.</span><span class="n">list_namespaced_pod</span><span class="p">(</span>
+        <span class="n">namespace</span><span class="o">=</span><span class="n">namespace</span><span class="p">,</span> <span class="n">label_selector</span><span class="o">=</span><span class="s1">'app=gateway'</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">gateway_pod</span><span class="o">.</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">name</span>
+
+
+<div class="viewcode-block" id="get_port_forward_contextmanager"><a class="viewcode-back" href="../../../../../../api/jina.peapods.pods.k8slib.kubernetes_tools/#jina.peapods.pods.k8slib.kubernetes_tools.get_port_forward_contextmanager">[docs]</a><span class="k">def</span> <span class="nf">get_port_forward_contextmanager</span><span class="p">(</span>
+    <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">port_expose</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">config_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'GeneratorContextManager'</span><span class="p">:</span>
+    <span class="sd">"""Forward local requests to the gateway which is running in the Kubernetes cluster.</span>
+<span class="sd">    :param namespace: namespace of the gateway</span>
+<span class="sd">    :param port_expose: exposed port of the gateway</span>
+<span class="sd">    :param config_path: path to the Kubernetes config file</span>
+<span class="sd">    :return: context manager which sets up and terminates the port-forward</span>
+<span class="sd">    """</span>
+    <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s1">'sending requests to the Kubernetes cluster requires to install the portforward package, '</span>
+        <span class="s1">'please do `pip install jina[portforward]`'</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">portforward</span>
+
+    <span class="n">gateway_pod_name</span> <span class="o">=</span> <span class="n">_get_gateway_pod_name</span><span class="p">(</span><span class="n">namespace</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">config_path</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s1">'KUBECONFIG'</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+        <span class="n">config_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'KUBECONFIG'</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">portforward</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span>
+        <span class="n">namespace</span><span class="p">,</span> <span class="n">gateway_pod_name</span><span class="p">,</span> <span class="n">port_expose</span><span class="p">,</span> <span class="n">port_expose</span><span class="p">,</span> <span class="n">config_path</span>
+    <span class="p">)</span></div>
 </pre></div>
             </article>
             <footer>

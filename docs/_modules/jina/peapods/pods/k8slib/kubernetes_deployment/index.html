@@ -773,18 +773,18 @@
     <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">dictionary</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'"'</span><span class="p">,</span> <span class="s1">'</span><span class="se">\\</span><span class="s1">"'</span><span class="p">)</span> <span class="k">if</span> <span class="n">dictionary</span> <span class="k">else</span> <span class="s2">""</span></div>
 
 
-<div class="viewcode-block" id="get_init_container_args"><a class="viewcode-back" href="../../../../../../api/jina.peapods.pods.k8slib.kubernetes_deployment/#jina.peapods.pods.k8slib.kubernetes_deployment.get_init_container_args">[docs]</a><span class="k">def</span> <span class="nf">get_init_container_args</span><span class="p">(</span><span class="n">pod</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
+<div class="viewcode-block" id="get_init_container_args"><a class="viewcode-back" href="../../../../../../api/jina.peapods.pods.k8slib.kubernetes_deployment/#jina.peapods.pods.k8slib.kubernetes_deployment.get_init_container_args">[docs]</a><span class="k">def</span> <span class="nf">get_init_container_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
     <span class="sd">"""Return the init container arguments for the k8s pod.</span>
 
-<span class="sd">    :param pod: pod where the init container is used.</span>
+<span class="sd">    :param args: args of the pod where the init container is used.</span>
 <span class="sd">    :return: dictionary of init container arguments</span>
 <span class="sd">    """</span>
-    <span class="k">if</span> <span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">k8s_uses_init</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">k8s_uses_init</span><span class="p">:</span>
         <span class="n">init_container</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">'init-name'</span><span class="p">:</span> <span class="s1">'init'</span><span class="p">,</span>
-            <span class="s1">'init-image'</span><span class="p">:</span> <span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">k8s_uses_init</span><span class="p">,</span>
-            <span class="s1">'init-command'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">k8s_init_container_command</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
-            <span class="s1">'mount-path'</span><span class="p">:</span> <span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">k8s_mount_path</span><span class="p">,</span>
+            <span class="s1">'init-image'</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">k8s_uses_init</span><span class="p">,</span>
+            <span class="s1">'init-command'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">k8s_init_container_command</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+            <span class="s1">'mount-path'</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">k8s_mount_path</span><span class="p">,</span>
         <span class="p">}</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">init_container</span> <span class="o">=</span> <span class="kc">None</span>

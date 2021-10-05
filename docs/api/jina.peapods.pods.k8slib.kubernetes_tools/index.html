@@ -597,13 +597,13 @@
                 <section id="module-jina.peapods.pods.k8slib.kubernetes_tools">
 <span id="jina-peapods-pods-k8slib-kubernetes-tools-module"></span><h1>jina.peapods.pods.k8slib.kubernetes_tools module<a class="headerlink" href="#module-jina.peapods.pods.k8slib.kubernetes_tools" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="jina.peapods.pods.k8slib.kubernetes_tools.K8SClients">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.peapods.pods.k8slib.kubernetes_tools.</span></span><span class="sig-name descname"><span class="pre">K8SClients</span></span><a class="reference internal" href="../../_modules/jina/peapods/pods/k8slib/kubernetes_tools/#K8SClients"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.k8slib.kubernetes_tools.K8SClients" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="jina.peapods.pods.k8slib.kubernetes_tools.K8sClients">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.peapods.pods.k8slib.kubernetes_tools.</span></span><span class="sig-name descname"><span class="pre">K8sClients</span></span><a class="reference internal" href="../../_modules/jina/peapods/pods/k8slib/kubernetes_tools/#K8sClients"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.k8slib.kubernetes_tools.K8sClients" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>The Kubernetes api is wrapped into a class to have a lazy reading of the cluster configuration.</p>
 <dl class="py property">
-<dt class="sig sig-object py" id="jina.peapods.pods.k8slib.kubernetes_tools.K8SClients.k8s_client">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">k8s_client</span></span><a class="headerlink" href="#jina.peapods.pods.k8slib.kubernetes_tools.K8SClients.k8s_client" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="jina.peapods.pods.k8slib.kubernetes_tools.K8sClients.k8s_client">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">k8s_client</span></span><a class="headerlink" href="#jina.peapods.pods.k8slib.kubernetes_tools.K8sClients.k8s_client" title="Permalink to this definition">¶</a></dt>
 <dd><p>Client for making requests to Kubernetes</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -612,8 +612,8 @@
 </dl>
 </dd></dl>
 <dl class="py property">
-<dt class="sig sig-object py" id="jina.peapods.pods.k8slib.kubernetes_tools.K8SClients.v1">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">v1</span></span><a class="headerlink" href="#jina.peapods.pods.k8slib.kubernetes_tools.K8SClients.v1" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="jina.peapods.pods.k8slib.kubernetes_tools.K8sClients.core_v1">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">core_v1</span></span><a class="headerlink" href="#jina.peapods.pods.k8slib.kubernetes_tools.K8sClients.core_v1" title="Permalink to this definition">¶</a></dt>
 <dd><p>V1 client for core</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -622,8 +622,18 @@
 </dl>
 </dd></dl>
 <dl class="py property">
-<dt class="sig sig-object py" id="jina.peapods.pods.k8slib.kubernetes_tools.K8SClients.beta">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">beta</span></span><a class="headerlink" href="#jina.peapods.pods.k8slib.kubernetes_tools.K8SClients.beta" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="jina.peapods.pods.k8slib.kubernetes_tools.K8sClients.apps_v1">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">apps_v1</span></span><a class="headerlink" href="#jina.peapods.pods.k8slib.kubernetes_tools.K8sClients.apps_v1" title="Permalink to this definition">¶</a></dt>
+<dd><p>V1 client for core</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>v1 client</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.peapods.pods.k8slib.kubernetes_tools.K8sClients.beta">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">beta</span></span><a class="headerlink" href="#jina.peapods.pods.k8slib.kubernetes_tools.K8sClients.beta" title="Permalink to this definition">¶</a></dt>
 <dd><p>Beta client for using beta features</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -632,8 +642,8 @@
 </dl>
 </dd></dl>
 <dl class="py property">
-<dt class="sig sig-object py" id="jina.peapods.pods.k8slib.kubernetes_tools.K8SClients.networking_v1_beta1_api">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">networking_v1_beta1_api</span></span><a class="headerlink" href="#jina.peapods.pods.k8slib.kubernetes_tools.K8SClients.networking_v1_beta1_api" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="jina.peapods.pods.k8slib.kubernetes_tools.K8sClients.networking_v1_beta1_api">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">networking_v1_beta1_api</span></span><a class="headerlink" href="#jina.peapods.pods.k8slib.kubernetes_tools.K8sClients.networking_v1_beta1_api" title="Permalink to this definition">¶</a></dt>
 <dd><p>Networking client used for creating the ingress</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -657,6 +667,19 @@ Defaults to the standard location jina.resources if not specified.</p></li>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.peapods.pods.k8slib.kubernetes_tools.get_port_forward_contextmanager">
+<span class="sig-prename descclassname"><span class="pre">jina.peapods.pods.k8slib.kubernetes_tools.</span></span><span class="sig-name descname"><span class="pre">get_port_forward_contextmanager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port_expose</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/k8slib/kubernetes_tools/#get_port_forward_contextmanager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.k8slib.kubernetes_tools.get_port_forward_contextmanager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Forward local requests to the gateway which is running in the Kubernetes cluster.
+:type namespace: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param namespace: namespace of the gateway
+:type port_expose: <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>
+:param port_expose: exposed port of the gateway
+:type config_path: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param config_path: path to the Kubernetes config file
+:rtype: GeneratorContextManager
+:return: context manager which sets up and terminates the port-forward</p>
 </dd></dl>
 </section>
 
