@@ -108,16 +108,18 @@ class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
     # Static methods used by the Pea to communicate with the `Runtime` in the separate process
 
     @staticmethod
-    def cancel(
-        cancel_event: Union['multiprocessing.Event', 'threading.Event'], **kwargs
-    ):
+    def cancel(process: Union['multiprocessing.Process', 'threading.Thread'], **kwargs):
         """
         Signal the runtime to terminate
 
-        :param cancel_event: the cancel event to set
+        :param process: The process to terminate
         :param kwargs: extra keyword arguments
         """
-        cancel_event.set()
+        if hasattr(process, 'terminate'):
+            process.terminate()
+        else:
+            # This is to handle threads
+            process._stop()
 
     @staticmethod
     def activate(**kwargs):

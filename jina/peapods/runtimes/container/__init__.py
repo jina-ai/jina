@@ -300,6 +300,7 @@ class ContainerRuntime(ZMQRuntime):
         socket_in_type: 'SocketType',
         skip_deactivate: bool,
         logger: 'JinaLogger',
+        container_name: str,
         **kwargs,
     ):
         """
@@ -311,6 +312,7 @@ class ContainerRuntime(ZMQRuntime):
         :param skip_deactivate: flag to tell if deactivate signal may be missed.
             This is important when you want to independently kill a Runtime
         :param logger: the JinaLogger to log messages
+        :param container_name: The name of the container to cancel,
         :param kwargs: extra keyword arguments
         """
         if not skip_deactivate and socket_in_type == SocketType.DEALER_CONNECT:
@@ -321,13 +323,13 @@ class ContainerRuntime(ZMQRuntime):
                 num_retry=3,
                 logger=logger,
             )
-        ContainerRuntime._retry_control_message(
-            ctrl_address=control_address,
-            timeout_ctrl=timeout_ctrl,
-            command='TERMINATE',
-            num_retry=3,
-            logger=logger,
-        )
+        import docker
+
+        client = docker.from_env()
+        container = client.containers.get(
+            container_id=ContainerRuntime._slugify(container_name)
+        )  # get the id somehow
+        container.kill(signal='SIGTERM')
 
     @staticmethod
     def activate(
