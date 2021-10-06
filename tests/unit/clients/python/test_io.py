@@ -229,16 +229,6 @@ def test_input_huggingface_datasets_with_filter_fields(dataset_configs):
     assert not 'title' in result[0].tags
 
 
-def test_input_huggingface_datasets_with_no_dataset_name(dataset_configs):
-    with pytest.raises(ValueError):
-        result = from_huggingface_datasets(
-            dataset_configs['adversarial']['dataset_path'],
-            split=dataset_configs['adversarial']['split'],
-        )
-        for _ in result:
-            pass
-
-
 def test_input_huggingface_datasets_with_no_split(dataset_configs):
     with pytest.raises(ValueError):
         result = from_huggingface_datasets(

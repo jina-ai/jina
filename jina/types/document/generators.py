@@ -123,7 +123,7 @@ def from_huggingface_datasets(
     field_resolver: Optional[Dict[str, str]] = None,
     size: Optional[int] = None,
     sampling_rate: Optional[float] = None,
-    filter_fields: Optional[bool] = False,
+    filter_fields: bool = False,
     **datasets_kwargs,
 ) -> Generator['Document', None, None]:
     """Generator function for Hugging Face Datasets. Yields documents.
@@ -151,41 +151,17 @@ def from_huggingface_datasets(
     with ImportExtensions(required=True):
         import datasets
 
-    # Validate dataset "split" argument
-    if 'split' in datasets_kwargs and datasets_kwargs['split'] is None:
-        data_info = datasets.get_dataset_infos(dataset_path)
-        # Raise error based on number of dataset configuration (name) and available splits
-        data_config_num_names = len(data_info)
-        if data_config_num_names == 1:
-            data_config_name = data_info.keys()[0]
-        elif data_config_num_names > 1:
-            if 'name' in datasets_kwargs:
-                data_config_name = datasets_kwargs['name']
-            else:
-                raise ValueError(
-                    (
-                        'Please select a dataset configuration (using "name" argument). '
-                        f'Available configurations for this dataset : {list(data_info.keys())}'
-                    )
-                )
-        else:
-            raise Exception(
-                'Options "all" and None is not supported for "split" argument'
-            )
-
-        # Get list of available splits for the dataset configuration
-        splits = list(data_info[data_config_name].splits.keys())
-        raise Exception(
-            (
-                'Value for argument "split" cannot be None. Provide name of a split or "all"'
-                f'Available splits for this dataset : {splits}'
-            )
-        )
-    elif 'split' not in datasets_kwargs:
-        raise ValueError("Please provide a dataset split to load")
-
     # Load the dataset using given arguments
     data = datasets.load_dataset(dataset_path, **datasets_kwargs)
+
+    # Validate loaded dataset for splits
+    if isinstance(data, (datasets.DatasetDict, datasets.IterableDatasetDict)):
+        raise ValueError(
+            (
+                'Please provide a split for dataset using "split" argument. '
+                f'The following splits are available for this dataset: {list(data.keys())}'
+            )
+        )
 
     # Filter dataset if needed
     if filter_fields:
