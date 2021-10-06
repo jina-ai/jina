@@ -348,6 +348,7 @@ with:
       summary: my endpoint
       tags:
         - fine-tuning
+    /foobar: {}
 executors:
   - name: indexer
 ```
