@@ -235,6 +235,8 @@ In Jina we support two ways of scaling:
 - **Replicas** can be used with any Executor type.
 - **Shards** should only be used with Indexers, since they store a state.
 
+Check {ref}`here <flow-parallelization>` for more information.
+
 ```{admonition} Important
 :class: important
 This page describes Jina's behavior with kubernetes deployment for now.
