@@ -35,7 +35,7 @@ def validate(req):
     'this should fail as explained in https://github.com/jina-ai/jina/pull/730'
 )
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
-def test_this_will_fail(mocker, protocol):
+def test_this_will_fail(protocol):
     f = (
         Flow(protocol=protocol)
         .add(name='a11', uses='DummySegment')
@@ -47,17 +47,15 @@ def test_this_will_fail(mocker, protocol):
         .add(needs=['r1', 'r2'])
     )
 
-    response_mock = mocker.Mock()
-
     with f:
-        f.index(inputs=random_docs(10, chunks_per_doc=0), on_done=response_mock)
+        results = f.index(inputs=random_docs(10, chunks_per_doc=0), return_results=True)
 
-    validate_callback(response_mock, validate)
+    validate(results[0])
 
 
 @pytest.mark.timeout(180)
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
-def test_this_should_work(mocker, protocol):
+def test_this_should_work(protocol):
     f = (
         Flow(protocol=protocol)
         .add(name='a1')
@@ -71,9 +69,7 @@ def test_this_should_work(mocker, protocol):
         .add(uses=Merger, needs=['r1', 'r2'])
     )
 
-    response_mock = mocker.Mock()
-
     with f:
-        f.index(inputs=random_docs(10, chunks_per_doc=0), on_done=response_mock)
+        results = f.index(inputs=random_docs(10, chunks_per_doc=0), return_results=True)
 
-    validate_callback(response_mock, validate)
+    validate(results[0])

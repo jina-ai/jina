@@ -49,12 +49,11 @@ def test_add_needs_inspect(tmpdir):
         .needs(['executor0', 'executor1'])
     )
     with f1:
-        f1.index(from_ndarray(np.random.random([5, 5])), on_done=print)
-
+        _ = f1.index(from_ndarray(np.random.random([5, 5])), return_results=True)
     f2 = Flow.load_config('yaml/flow-v1.0-syntax.yml')
 
     with f2:
-        f2.index(from_ndarray(np.random.random([5, 5])), on_done=print)
+        _ = f2.index(from_ndarray(np.random.random([5, 5])), return_results=True)
 
     assert f1 == f2
 
