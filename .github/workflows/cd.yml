@@ -101,7 +101,18 @@ jobs:
           token: ${{ secrets.JINA_DEV_BOT }}
         env:
           release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}
-      - uses: benc-uk/workflow-dispatch@v1
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Check if there were changes to docs
+        id: changed-files-docs
+        uses: tj-actions/changed-files@v10
+        with:
+          files: |
+            docs/**
+      - if: steps.changed-files-docs.outputs.any_changed == 'true'
+        name: Reindex & redeploy docsbot
+        uses: benc-uk/workflow-dispatch@v1
         with:
           repo: jina-ai/jina-docs-bot
           workflow: E2E pipeline
