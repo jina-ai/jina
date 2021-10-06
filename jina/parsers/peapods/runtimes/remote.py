@@ -167,12 +167,6 @@ def mixin_prefetch_parser(parser=None):
         default=50,
         help='The number of pre-fetched requests from the client',
     )
-    gp.add_argument(
-        '--prefetch-on-recv',
-        type=int,
-        default=1,
-        help='The number of additional requests to fetch on every receive',
-    )
 
 
 def mixin_compressor_parser(parser=None):

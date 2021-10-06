@@ -138,9 +138,7 @@ class BasePrefetcher(ABC):
                 for r in asyncio.as_completed(prefetch_task):
                     yield await r
                     if not is_req_empty:
-                        is_req_empty = await prefetch_req(
-                            self.args.prefetch_on_recv, onrecv_task
-                        )
+                        is_req_empty = await prefetch_req(1, onrecv_task)
 
                 # this list dries, clear it and feed it with on_recv_task
                 prefetch_task.clear()
