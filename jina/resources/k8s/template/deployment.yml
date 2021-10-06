@@ -17,6 +17,14 @@ spec:
       containers:
       - name: executor
         image: {image}
+#        resources:
+#          requests:
+#            memory: "256Mi"
+#            cpu: "250m"
+#          limits:
+#            memory: "256Mi"
+#            cpu: "250m"
+
         imagePullPolicy: {pull_policy}
         command: {command}
         args: {args}
@@ -26,13 +34,11 @@ spec:
           - containerPort: {port_out}
           - containerPort: {port_ctrl}
         readinessProbe:
-          exec:
-            command:
-              - python
-              - -c
-              - 'import sys; from jina.peapods.runtimes.grpc import GRPCDataRuntime; is_ready = GRPCDataRuntime.is_ready(ctrl_address="0.0.0.0:{port_in}"); sys.exit(0) if is_ready else sys.exit(1)'
-          initialDelaySeconds: 10
-          periodSeconds: 5
+          tcpSocket:
+            port: {port_in}
+          initialDelaySeconds: 5
+          periodSeconds: 10
+
 #        livenessProbe:
 #          exec:
 #            command:

@@ -30,6 +30,13 @@ spec:
       containers:
       - name: executor
         image: {image}
+#        resources:
+#          requests:
+#            memory: "256Mi"
+#            cpu: "250m"
+#          limits:
+#            memory: "256Mi"
+#            cpu: "250m"
         command: {command}
         args: {args}
         ports:
@@ -48,10 +55,7 @@ spec:
           - name: shared
             mountPath: {mount-path}
         readinessProbe:
-          exec:
-            command:
-              - python
-              - -c
-              - 'import sys; from jina.peapods.runtimes.grpc import GRPCDataRuntime; is_ready = GRPCDataRuntime.is_ready(ctrl_address="0.0.0.0:{port_in}"); sys.exit(0) if is_ready else sys.exit(1)'
-          initialDelaySeconds: 10
-          periodSeconds: 5
+          tcpSocket:
+            port: {port_in}
+          initialDelaySeconds: 5
+          periodSeconds: 10
