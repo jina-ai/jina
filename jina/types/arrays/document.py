@@ -380,7 +380,7 @@ class DocumentArray(
 
     def sort(
         self,
-        key: Optional[Callable] = None,
+        key: Callable,
         top_k: Optional[int] = None,
         reverse: bool = False,
     ):
@@ -392,25 +392,23 @@ class DocumentArray(
             sorting the entire list
         :param reverse: reverse=True will sort the list in descending order. Default is False
         """
-        _key = None
-        if key is not None:
 
-            def overriden_key(proto):
-                # Function to override the `proto` and wrap it around a `Document` to enable sorting via
-                # `Document-like` interface
-                d = Document(proto)
-                return key(d)
+        def overriden_key(proto):
+            # Function to override the `proto` and wrap it around a `Document` to enable sorting via
+            # `Document-like` interface
+            d = Document(proto)
+            return key(d)
 
-            # Logic here: `overriden_key` is offered to allow the user sort via pythonic `Document` syntax. However,
-            # maybe there may be cases where this won't work and the user may enter `proto-like` interface. To make
-            # sure (quite fragile) the `sort` will work seamlessly, it tries to apply `key` to the first element and
-            # see if it works. If it works it can sort with `proto` interface, otherwise use `Document` interface one.
-            # (Very often the 2 interfaces are both the same and valid, so proto will have less overhead
-            _key = key
-            try:
-                key(self._pb_body[0])
-            except:
-                _key = overriden_key
+        # Logic here: `overriden_key` is offered to allow the user sort via pythonic `Document` syntax. However,
+        # maybe there may be cases where this won't work and the user may enter `proto-like` interface. To make
+        # sure (quite fragile) the `sort` will work seamlessly, it tries to apply `key` to the first element and
+        # see if it works. If it works it can sort with `proto` interface, otherwise use `Document` interface one.
+        # (Very often the 2 interfaces are both the same and valid, so proto will have less overhead
+        _key = key
+        try:
+            key(self._pb_body[0])
+        except:
+            _key = overriden_key
 
         if top_k is None or top_k >= len(self._pb_body):
             self._pb_body.sort(key=_key, reverse=reverse)
