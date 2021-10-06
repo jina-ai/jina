@@ -5,9 +5,8 @@ from threading import Thread
 import numpy as np
 import pytest
 
-from jina import Document
+from jina import Document, Client, Flow
 from jina.enums import CompressAlgo
-from jina import Flow
 from tests import random_docs
 
 
@@ -31,16 +30,23 @@ def test_compression(compress_algo, mocker):
 
 
 @pytest.mark.slow
-@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
-def test_grpc_gateway_concurrency(protocol):
+# @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+@pytest.mark.parametrize('protocol', ['websocket'])
+def test_gateway_concurrency(protocol):
+    PORT_EXPOSE = 12345
+    CONCURRENCY = 2
+    threads = []
+    status_codes = [None] * CONCURRENCY
+    durations = [None] * CONCURRENCY
+
     def _validate(req, start, status_codes, durations, index):
         end = time.time()
         durations[index] = end - start
         status_codes[index] = req.status.code
 
-    def _request(f, status_codes, durations, index):
+    def _request(status_codes, durations, index):
         start = time.time()
-        f.index(
+        Client(port=PORT_EXPOSE, protocol=protocol).index(
             inputs=(Document() for _ in range(256)),
             on_done=functools.partial(
                 _validate,
@@ -52,14 +58,13 @@ def test_grpc_gateway_concurrency(protocol):
             batch_size=16,
         )
 
-    f = Flow(protocol=protocol).add(parallel=2)
-    concurrency = 100
+    f = Flow(protocol=protocol, port_expose=PORT_EXPOSE).add(parallel=2)
     with f:
         threads = []
-        status_codes = [None] * concurrency
-        durations = [None] * concurrency
-        for i in range(concurrency):
-            t = Thread(target=_request, args=(f, status_codes, durations, i))
+        status_codes = [None] * CONCURRENCY
+        durations = [None] * CONCURRENCY
+        for i in range(CONCURRENCY):
+            t = Thread(target=_request, args=(status_codes, durations, i))
             threads.append(t)
             t.start()
 
@@ -67,6 +72,8 @@ def test_grpc_gateway_concurrency(protocol):
             t.join()
             print(f'terminate {t}')
 
+    print(durations)
+    print(status_codes)
     success = status_codes.count(0)
     failed = len(status_codes) - success
     print(

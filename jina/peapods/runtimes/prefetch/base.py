@@ -3,7 +3,6 @@ import asyncio
 from abc import ABC, abstractmethod
 from typing import AsyncGenerator, List, Union, TYPE_CHECKING
 
-from ...grpc import Grpclet
 from ....helper import typename
 from ....logging.logger import JinaLogger
 from ....types.message import Message
@@ -11,9 +10,10 @@ from ....types.message import Message
 __all__ = ['BasePrefetcher']
 
 if TYPE_CHECKING:
+    from ...grpc import Grpclet
     from ...zmq import AsyncZmqlet
     from ....types.request import Request
-    from ....clients.base.http import HTTPClientlet
+    from ....clients.base.helper import HTTPClientlet, WebsocketClientlet
 
 
 class BasePrefetcher(ABC):
@@ -22,7 +22,7 @@ class BasePrefetcher(ABC):
     def __init__(
         self,
         args: argparse.Namespace,
-        iolet: Union['AsyncZmqlet', 'Grpclet', 'HTTPClientlet'],
+        iolet: Union['AsyncZmqlet', 'Grpclet', 'HTTPClientlet', 'WebsocketClientlet'],
     ):
         """
         :param args: args from CLI
@@ -43,14 +43,6 @@ class BasePrefetcher(ABC):
         ...
 
     @abstractmethod
-    async def receive(self):
-        """Implement `receive` logic for prefetcher
-
-        .. # noqa: DAR202
-        """
-        ...
-
-    @abstractmethod
     def handle_request(
         self, request: 'Request'
     ) -> Union['asyncio.Task', 'asyncio.Future']:
@@ -58,6 +50,10 @@ class BasePrefetcher(ABC):
 
         :param request: current request in the iterator
         """
+        ...
+
+    @abstractmethod
+    def handle_end_iter(self):
         ...
 
     async def close(self):
@@ -106,11 +102,15 @@ class BasePrefetcher(ABC):
 
                     fetch_to.append(self.handle_request(request=request))
                 except (StopIteration, StopAsyncIteration):
+                    task = self.handle_end_iter()
+                    if task:
+                        fetch_to.append(task)
                     return True
             return False
 
         prefetch_task = []
         is_req_empty = await prefetch_req(self.args.prefetch, prefetch_task)
+        print(f'\n\n\nis_req_empty1: {is_req_empty} {self.__class__.__name__}')
         if is_req_empty and not prefetch_task:
             self.logger.error(
                 'receive an empty stream from the client! '
@@ -122,7 +122,10 @@ class BasePrefetcher(ABC):
         # the total num requests < self.args.prefetch
         if is_req_empty:
             for r in asyncio.as_completed(prefetch_task):
-                yield await r
+                pp = await r
+                print(f'\n\n\nafter as_completed: {pp}\n\n\n')
+                yield pp
+                # yield await r
         else:
             # if there are left over (`else` clause above is unnecessary for code but for better readability)
             onrecv_task = []
@@ -136,10 +139,15 @@ class BasePrefetcher(ABC):
                     )
                 onrecv_task.clear()
                 for r in asyncio.as_completed(prefetch_task):
-                    yield await r
+                    pp = await r
+                    print(pp)
+                    yield pp
                     if not is_req_empty:
                         is_req_empty = await prefetch_req(
                             self.args.prefetch_on_recv, onrecv_task
+                        )
+                        print(
+                            f'\n\n\nis_req_empty2: {is_req_empty} {self.__class__.__name__}'
                         )
 
                 # this list dries, clear it and feed it with on_recv_task

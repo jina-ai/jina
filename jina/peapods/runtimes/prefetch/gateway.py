@@ -27,13 +27,8 @@ class GatewayPrefetcher(BasePrefetcher):
         self.request_buffer: Dict[str, asyncio.Future[Message]] = dict()
         self.Call = self.send  # Used in grpc servicer
 
-    def convert_to_message(self, request: 'Request'):
-        """Convert a `Request` to a `Message` to be sent from gateway
-
-        :param request: request from iterator
-        :return: Message from request
-        """
-        return Message(None, request, 'gateway', **vars(self.args))
+    def handle_end_iter(self):
+        return None
 
     def handle_request(self, request: 'Request') -> 'asyncio.Future':
         """
@@ -47,7 +42,9 @@ class GatewayPrefetcher(BasePrefetcher):
         future = get_or_reuse_loop().create_future()
         self.request_buffer[request.request_id] = future
         asyncio.create_task(
-            self.iolet.send_message(self.convert_to_message(request=request))
+            self.iolet.send_message(
+                Message(None, request, 'gateway', **vars(self.args))
+            )
         )
         return future
 

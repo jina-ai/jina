@@ -37,30 +37,18 @@ def on_done(response, final_da: DocumentArray):
 @pytest.mark.parametrize(
     'protocol, inputs',
     [
-        ('grpc', async_slow_gen),
-        pytest.param(
-            'grpc',
-            sync_slow_gen,
-            marks=pytest.mark.xfail(
-                reason='grpc client + sync generator with time.sleep is expected to fail'
-            ),
-        ),
-        pytest.param(
-            'websocket',
-            async_slow_gen,
-            marks=pytest.mark.skip(
-                reason='https://github.com/jina-ai/jina/issues/3563'
-            ),
-        ),
-        pytest.param(
-            'websocket',
-            sync_slow_gen,
-            marks=pytest.mark.xfail(
-                reason='https://github.com/jina-ai/jina/issues/3563'
-            ),
-        ),
-        ('http', async_slow_gen),
-        ('http', sync_slow_gen),
+        # ('grpc', async_slow_gen),
+        # pytest.param(
+        #     'grpc',
+        #     sync_slow_gen,
+        #     marks=pytest.mark.xfail(
+        #         reason='grpc client + sync generator with time.sleep is expected to fail'
+        #     ),
+        # ),
+        # ('websocket', async_slow_gen),
+        ('websocket', sync_slow_gen),
+        # ('http', async_slow_gen),
+        # ('http', sync_slow_gen),
     ],
 )
 def test_client_streaming_sync_gen(protocol, inputs):

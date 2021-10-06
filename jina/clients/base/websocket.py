@@ -1,13 +1,13 @@
 """A module for the websockets-based Client for Jina."""
-import asyncio
-from contextlib import nullcontext
 from typing import Callable, Optional
+from contextlib import nullcontext, AsyncExitStack
 
 from ..base import BaseClient, InputType
 from ..helper import callback_exec
 from ...importer import ImportExtensions
 from ...logging.profile import ProgressBar
-from ...types.request import Request
+from .helper import WebsocketClientlet
+from ...peapods.runtimes.prefetch.client import WebsocketClientPrefetcher
 
 
 class WebSocketBaseClient(BaseClient):
@@ -30,76 +30,35 @@ class WebSocketBaseClient(BaseClient):
         :yields: generator over results
         """
         with ImportExtensions(required=True):
-            import websockets
+            import aiohttp
 
         self.inputs = inputs
+        request_iterator = self._get_requests(**kwargs)
 
-        req_iter = self._get_requests(**kwargs)
-        try:
-            # setting `max_size` as None to avoid connection closure due to size of message
-            # https://websockets.readthedocs.io/en/stable/api.html?highlight=1009#module-websockets.protocol
-
-            proto = 'wss' if self.args.https else 'ws'
-            async with websockets.connect(
-                f'{proto}://{self.args.host}:{self.args.port}/',
-                max_size=None,
-                ping_interval=None,
-                ssl=self.args.https or None,
-            ) as websocket:
-                # To enable websockets debug logs
-                # https://websockets.readthedocs.io/en/stable/cheatsheet.html#debugging
-                self.logger.debug(f'connected to {self.args.host}:{self.args.port}')
-                self.num_requests = 0
-                self.num_responses = 0
-
-                async def _send_requests(request_iterator):
-                    next_request = None
-                    for next_request in request_iterator:
-                        await websocket.send(next_request.SerializePartialToString())
-                        self.num_requests += 1
-                    # Check if there was any request generated
-                    if next_request is not None:
-                        # Server has no way of knowing when to stop the await on sending response back to the client
-                        # We send one last message to say `request_iterator` is completed.
-                        # On the client side, this :meth:`send` doesn't need to be awaited with a :meth:`recv`
-                        await websocket.send(bytes(True))
-                    else:
-                        # There is nothing to send, disconnect gracefully
-                        await websocket.close(reason='No data to send')
-
+        async with AsyncExitStack() as stack:
+            try:
                 cm1 = ProgressBar() if self.show_progress else nullcontext()
+                p_bar = stack.enter_context(cm1)
 
-                with cm1 as p_bar:
-                    # Unlike gRPC, any arbitrary function (generator) cannot be passed via websockets.
-                    # Simply iterating through the `req_iter` makes the request-response sequential.
-                    # To make client unblocking, :func:`send_requests` and `recv_responses` are separate tasks
+                proto = 'wss' if self.args.https else 'ws'
+                url = f'{proto}://{self.args.host}:{self.args.port}/'
+                iolet = await stack.enter_async_context(WebsocketClientlet(url=url))
 
-                    asyncio.create_task(_send_requests(request_iterator=req_iter))
-                    async for response_bytes in websocket:
-                        # When we have a stream of responses, instead of doing `await websocket.recv()`,
-                        # we need to traverse through the websocket to recv messages.
-                        # https://websockets.readthedocs.io/en/stable/faq.html#why-does-the-server-close-the-connection-after-processing-one-message
+                prefetcher = WebsocketClientPrefetcher(self.args, iolet=iolet)
+                async for response in prefetcher.send(request_iterator):
+                    callback_exec(
+                        response=response,
+                        on_error=on_error,
+                        on_done=on_done,
+                        on_always=on_always,
+                        continue_on_error=self.continue_on_error,
+                        logger=self.logger,
+                    )
+                    if self.show_progress:
+                        p_bar.update()
+                    yield response
 
-                        resp = Request(response_bytes)
-                        resp = resp.as_typed_request(resp.request_type).as_response()
-                        callback_exec(
-                            response=resp,
-                            on_error=on_error,
-                            on_done=on_done,
-                            on_always=on_always,
-                            continue_on_error=self.continue_on_error,
-                            logger=self.logger,
-                        )
-                        if self.show_progress:
-                            p_bar.update()
-                        yield resp
-                        self.num_responses += 1
-                        if self.num_requests == self.num_responses:
-                            break
-
-        except websockets.exceptions.ConnectionClosedOK:
-            self.logger.warning(f'Client got disconnected from the websocket server')
-        except websockets.exceptions.WebSocketException as e:
-            self.logger.error(
-                f'Got following error while streaming requests via websocket: {e!r}'
-            )
+            except aiohttp.ClientError as e:
+                self.logger.warning(
+                    f'Error while streaming response from websocket server {e!r}'
+                )

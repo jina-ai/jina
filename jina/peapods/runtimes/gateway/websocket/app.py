@@ -27,6 +27,9 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
 
         async def connect(self, websocket: WebSocket):
             await websocket.accept()
+            print(
+                f'at server: websocket is  {websocket.client.host}:{websocket.client.port}'
+            )
             self.active_connections.append(websocket)
 
         def disconnect(self, websocket: WebSocket):
@@ -67,14 +70,19 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         async def req_iter():
             while True:
                 data = await websocket.receive_bytes()
+                print(f'data is {data}\n\n')
                 if data == bytes(True):
+                    print('breaking')
                     break
-                yield Request(data)
+                data = Request(data)
+                yield data
 
         try:
             async for msg in prefetcher.send(request_iterator=req_iter()):
+                print(f'to `send_bytes` from ws prefetcher {msg}\n\n')
                 await websocket.send_bytes(msg.binary_str())
         except WebSocketDisconnect:
+            logger.debug('Client successfully disconnected from server')
             manager.disconnect(websocket)
 
     return app
