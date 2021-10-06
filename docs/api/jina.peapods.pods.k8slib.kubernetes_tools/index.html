@@ -681,9 +681,9 @@ Defaults to the standard location jina.resources if not specified.</p></li>
 :param namespace: namespace of the gateway
 :type port_expose: <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>
 :param port_expose: exposed port of the gateway
-:type config_path: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:type config_path: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
 :param config_path: path to the Kubernetes config file
-:rtype: GeneratorContextManager
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]
 :return: context manager which sets up and terminates the port-forward</p>
 </dd></dl>
 </section>

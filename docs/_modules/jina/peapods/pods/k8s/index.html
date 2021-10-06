@@ -890,8 +890,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">host</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">"""Not implemented"""</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="sd">"""Currently, when deploying on Kubernetes, Jina does not expose a public host.</span>
+<span class="sd">        Instead Jina sends requests via port-forward and runs the requests against localhost.</span>
+
+<span class="sd">        :return: localhost</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="s1">'localhost'</span>
 
 <div class="viewcode-block" id="K8sPod.start"><a class="viewcode-back" href="../../../../../api/jina.peapods.pods.k8s/#jina.peapods.pods.k8s.K8sPod.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'K8sPod'</span><span class="p">:</span>
         <span class="sd">"""Deploy the kubernetes pods via k8s Deployment and k8s Service.</span>

@@ -577,10 +577,10 @@
                     </label>
                 </div>
                 <h1>Source code for jina.peapods.pods.k8slib.kubernetes_tools</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Generator</span>
 
 <span class="kn">from</span> <span class="nn">....importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">....logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
@@ -590,9 +590,6 @@
 <span class="n">DEFAULT_RESOURCE_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
     <span class="n">cur_dir</span><span class="p">,</span> <span class="s1">'..'</span><span class="p">,</span> <span class="s1">'..'</span><span class="p">,</span> <span class="s1">'..'</span><span class="p">,</span> <span class="s1">'resources'</span><span class="p">,</span> <span class="s1">'k8s'</span><span class="p">,</span> <span class="s1">'template'</span>
 <span class="p">)</span>
-
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">GeneratorContextManager</span>
 
 
 <div class="viewcode-block" id="K8sClients"><a class="viewcode-back" href="../../../../../../api/jina.peapods.pods.k8slib.kubernetes_tools/#jina.peapods.pods.k8slib.kubernetes_tools.K8sClients">[docs]</a><span class="k">class</span> <span class="nc">K8sClients</span><span class="p">:</span>
@@ -746,7 +743,7 @@
     <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">port_expose</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">config_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'GeneratorContextManager'</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
     <span class="sd">"""Forward local requests to the gateway which is running in the Kubernetes cluster.</span>
 <span class="sd">    :param namespace: namespace of the gateway</span>
 <span class="sd">    :param port_expose: exposed port of the gateway</span>
