@@ -198,6 +198,22 @@ def test_input_huggingface_datasets_with_tweet_dataset(dataset_configs):
     assert result[0].text
 
 
+def test_input_huggingface_datasets_from_csv_file(dataset_configs):
+    field_resolver = {'question': 'text'}
+    result = list(
+        from_huggingface_datasets(
+            'csv',
+            field_resolver=field_resolver,
+            data_files='docs.csv',
+            split='train',
+        )
+    )
+    assert len(result) == 2
+    assert isinstance(result[0], Document)
+    assert result[0].text == 'What are the symptoms?'
+    assert result[0].tags['source'] == 'testsrc'
+
+
 def test_input_huggingface_datasets_with_field_resolver(dataset_configs):
     field_resolver = {'question': 'text'}
     result = list(
