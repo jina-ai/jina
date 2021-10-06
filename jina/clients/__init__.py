@@ -20,6 +20,8 @@ def Client(
     host: Optional[str] = '0.0.0.0',
     https: Optional[bool] = False,
     port: Optional[int] = None,
+    prefetch: Optional[int] = 50,
+    prefetch_on_recv: Optional[int] = 1,
     protocol: Optional[str] = 'GRPC',
     proxy: Optional[bool] = False,
     **kwargs
@@ -37,6 +39,8 @@ def Client(
     :param host: The host address of the runtime, by default it is 0.0.0.0.
     :param https: If set, connect to gateway using https
     :param port: The port of the Gateway, which the client should connect to.
+    :param prefetch: The number of pre-fetched requests from the client
+    :param prefetch_on_recv: The number of additional requests to fetch on every receive
     :param protocol: Communication protocol between server and client.
     :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
     :return: the new Client object

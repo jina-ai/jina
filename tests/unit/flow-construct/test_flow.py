@@ -404,12 +404,10 @@ class DummyOneHotTextEncoder(Executor):
 
 @pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
-def test_flow_with_publish_driver(mocker, protocol):
+def test_flow_with_publish_driver(protocol):
     def validate(req):
         for d in req.docs:
             assert d.embedding is not None
-
-    response_mock = mocker.Mock()
 
     f = (
         Flow(protocol=protocol)
@@ -419,11 +417,11 @@ def test_flow_with_publish_driver(mocker, protocol):
     )
 
     with f:
-        f.index(
-            [Document(text='text_1'), Document(text='text_2')], on_done=response_mock
+        results = f.index(
+            [Document(text='text_1'), Document(text='text_2')], return_results=True
         )
 
-    validate_callback(response_mock, validate)
+    validate(results[0])
 
 
 @pytest.mark.slow
