@@ -4,7 +4,7 @@ const rawMarkdown = `## Document
 
 - Just plain text
 - Numpy array
-- Any kind of data
+- <!---correct---> Any kind of data
 
 > [A Document can contain *any* kind of data that can be stored digitally](https://docs.jina.ai/fundamentals/document/document-api/#document-content). Text, graphics, audio, video, amino acids, 3D meshes, Numpy arrays, you name it.
 
@@ -12,7 +12,7 @@ const rawMarkdown = `## Document
 
 
 - \`doc.buffer\`
-- \`doc.blob\`
+- <!---correct---> \`doc.blob\`
 - \`doc.text\`
 - Any of the above as long as the field is not empty
 
@@ -20,7 +20,8 @@ const rawMarkdown = `## Document
 
 ### 3. How do you convert \`doc.uri\` to \`doc.blob\`?
 
--   \`\`\`python
+- <!---correct--->
+    \`\`\`python
     from jina.Document import convert_uri_to_blob
 
     doc = Document(uri="foo.txt")
@@ -44,11 +45,30 @@ const rawMarkdown = `## Document
 
 
 `
+const renderer = {
+    blockquote(quote) {
+        return (
+            `<details>
+                <summary>Reveal explanation</summary>
+                <p>
+                    ${quote}
+                </p>
+            </details>`
+        )
+    },
+    listitem(text) {
+        return (
+            `
+                <p> <input type="checkbox"> ${text} </p>
+            `
+        )
+    }
+}
 
+marked.use({renderer})
 
 const app = new Vue({
     el: '#quiz-container',
-    delimiters: ['${', '}'],
     data: {
       rawMarkdown 
     },
