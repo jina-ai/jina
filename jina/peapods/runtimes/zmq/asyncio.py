@@ -6,14 +6,14 @@ import signal
 from typing import Union, Optional, TYPE_CHECKING
 
 from .... import __windows__
-from ..zmq.base import ZMQRuntime
+from ..base import BaseRuntime
 
 if TYPE_CHECKING:
     import multiprocessing
     import threading
 
 
-class AsyncZMQRuntime(ZMQRuntime):
+class AsyncZMQRuntime(BaseRuntime):
     """
     Runtime procedure in the async manners.
 

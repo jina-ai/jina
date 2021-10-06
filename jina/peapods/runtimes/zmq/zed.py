@@ -6,7 +6,7 @@ from typing import Dict, List, Optional, Union
 import zmq
 
 
-from .base import ZMQRuntime
+from ..base import BaseRuntime
 from ..request_handlers.data_request_handler import DataRequestHandler
 from ...zmq import ZmqStreamlet
 from ....enums import OnErrorStrategy, SocketType
@@ -29,7 +29,7 @@ if False:
     from ....logging.logger import JinaLogger
 
 
-class ZEDRuntime(ZMQRuntime):
+class ZEDRuntime(BaseRuntime):
     """Runtime procedure leveraging :class:`ZmqStreamlet` for Executor."""
 
     def __init__(self, args: 'argparse.Namespace', **kwargs):
