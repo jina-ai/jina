@@ -165,7 +165,7 @@ def from_huggingface_datasets(
 
     # Filter dataset if needed
     if filter_fields:
-        if field_resolver is None or len(field_resolver.keys()) == 0:
+        if not field_resolver:
             raise ValueError(
                 'Filter fields option requires "field_resolver" to be provided.'
             )
