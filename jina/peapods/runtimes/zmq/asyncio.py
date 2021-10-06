@@ -84,6 +84,16 @@ class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
                     f' The runtime {self.__class__.__name__} will not be able to handle termination signals. '
                     f' {repr(exc)}'
                 )
+                raise Exception(
+                    f' The runtime {self.__class__.__name__} will not be able to handle termination signals. '
+                    f' {repr(exc)}'
+                )
+        else:
+            import win32api
+
+            win32api.SetConsoleCtrlHandler(
+                lambda *args, **kwargs: self.is_cancel.set(), True
+            )
 
         self._loop.run_until_complete(self.async_setup())
 

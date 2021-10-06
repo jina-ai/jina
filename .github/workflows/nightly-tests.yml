@@ -7,7 +7,7 @@ on:
         default: master
   schedule:
     - cron: "0 6 * * 1-5"   # runs at 6AM UTC (mon-fri)
-  # pull_request:             # uncomment this if you want to run nightly tests in your PR
+  pull_request:             # uncomment this if you want to run nightly tests in your PR
 
 jobs:
   prep-testbed:
