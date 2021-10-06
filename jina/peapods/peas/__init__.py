@@ -325,6 +325,11 @@ class BasePea:
                     else '',
                     exc_info=not self.args.quiet_error,
                 )
+                # potentially we could not cancel
+                self.logger.warning(
+                    'Something happened while cancelling the runtime, will have to terminate it'
+                )
+                self.terminate()
 
             # if it is not daemon, block until the process/thread finish work
             if not self.args.daemon:
