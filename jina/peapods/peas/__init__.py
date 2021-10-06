@@ -233,6 +233,7 @@ class BasePea:
 
         :param skip_deactivate: Mark that the DEACTIVATE signal may be missed if set to True
         """
+        # needs to handle properly wether skip_deactivate should happen or not
         self.runtime_cls.cancel(
             cancel_event=self.cancel_event,
             logger=self.logger,
@@ -240,6 +241,8 @@ class BasePea:
             control_address=self.runtime_ctrl_address,
             timeout_ctrl=self._timeout_ctrl,
             skip_deactivate=skip_deactivate,
+            process=self.worker,
+            container_name=f'{self.name}/ContainerRuntime',
         )
 
     def _wait_for_ready_or_shutdown(self, timeout: Optional[float]):
@@ -308,59 +311,7 @@ class BasePea:
         """
         # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
         self.logger.debug('waiting for ready or shutdown signal from runtime')
-        if self.is_ready.is_set() and not self.is_shutdown.is_set():
-            try:
-                self._cancel_runtime()
-                if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
-                    self.terminate()
-                    time.sleep(0.1)
-                    raise Exception(
-                        f'Shutdown signal was not received for {self._timeout_ctrl}'
-                    )
-            except Exception as ex:
-                self.logger.error(
-                    f'{ex!r} during {self.close!r}'
-                    + f'\n add "--quiet-error" to suppress the exception details'
-                    if not self.args.quiet_error
-                    else '',
-                    exc_info=not self.args.quiet_error,
-                )
-
-            # if it is not daemon, block until the process/thread finish work
-            if not self.args.daemon:
-                self.join()
-        elif self.is_shutdown.is_set():
-            # here shutdown has been set already, therefore `run` will gracefully finish
-            pass
-        else:
-            # sometimes, we arrive to the close logic before the `is_ready` is even set.
-            # Observed with `gateway` when Pods fail to start
-            self.logger.warning(
-                'Pea is being closed before being ready. Most likely some other Pea in the Flow or Pod '
-                'failed to start'
-            )
-            _timeout = self.args.timeout_ready
-            if _timeout <= 0:
-                _timeout = None
-            else:
-                _timeout /= 1e3
-            self.logger.debug('waiting for ready or shutdown signal from runtime')
-            if self._wait_for_ready_or_shutdown(_timeout):
-                if not self.is_shutdown.is_set():
-                    self._cancel_runtime(skip_deactivate=True)
-                    if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
-                        self.terminate()
-                        time.sleep(0.1)
-                        raise Exception(
-                            f'Shutdown signal was not received for {self._timeout_ctrl}'
-                        )
-            else:
-                self.logger.warning(
-                    'Terminating process after waiting for readiness signal for graceful shutdown'
-                )
-                # Just last resource, terminate it
-                self.terminate()
-                time.sleep(0.1)
+        self._cancel_runtime()
         self.logger.debug(__stop_msg__)
         self.logger.close()
 

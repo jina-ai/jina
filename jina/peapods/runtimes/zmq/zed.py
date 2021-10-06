@@ -426,6 +426,7 @@ class ZEDRuntime(ZMQRuntime):
         socket_in_type: 'SocketType',
         skip_deactivate: bool,
         logger: 'JinaLogger',
+        process: Union['multiprocessing.Process', 'threading.Thread'],
         **kwargs,
     ):
         """
@@ -437,6 +438,7 @@ class ZEDRuntime(ZMQRuntime):
         :param skip_deactivate: flag to tell if deactivate signal may be missed.
             This is important when you want to independently kill a Runtime
         :param logger: the JinaLogger to log messages
+        :param process: The process to terminate
         :param kwargs: extra keyword arguments
         """
         if not skip_deactivate and socket_in_type == SocketType.DEALER_CONNECT:
@@ -447,13 +449,12 @@ class ZEDRuntime(ZMQRuntime):
                 num_retry=3,
                 logger=logger,
             )
-        ZEDRuntime._retry_control_message(
-            ctrl_address=control_address,
-            timeout_ctrl=timeout_ctrl,
-            command='TERMINATE',
-            num_retry=3,
-            logger=logger,
-        )
+
+        if hasattr(process, 'terminate'):
+            process.terminate()
+        else:
+            # This is to handle threads
+            process._stop()
 
     @staticmethod
     def activate(

@@ -117,20 +117,20 @@ class GRPCDataRuntime(BaseRuntime, ABC):
 
     @staticmethod
     def cancel(
-        control_address: str,
+        process: Union['multiprocessing.Process', 'threading.Thread'],
         **kwargs,
     ):
         """
         Cancel this runtime by sending a TERMINATE control message
 
-        :param control_address: the address where the control message needs to be sent
+        :param process: The process to terminate
         :param kwargs: extra keyword arguments
         """
-        try:
-            Grpclet.send_ctrl_msg(control_address, 'TERMINATE')
-        except RpcError:
-            # TERMINATE can fail if the the runtime dies before sending the return value
-            pass
+        if hasattr(process, 'terminate'):
+            process.terminate()
+        else:
+            # This is to handle threads
+            process._stop()
 
     @staticmethod
     def wait_for_ready_or_shutdown(
