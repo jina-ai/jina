@@ -1190,6 +1190,7 @@
 
         <span class="k">if</span> <span class="n">JINA_GLOBAL</span><span class="o">.</span><span class="n">scipy_installed</span><span class="p">:</span>
             <span class="kn">import</span> <span class="nn">scipy</span>
+            <span class="kn">import</span> <span class="nn">scipy.sparse</span>
 
             <span class="k">if</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
                 <span class="kn">from</span> <span class="nn">..ndarray.sparse.scipy</span> <span class="kn">import</span> <span class="n">SparseNdArray</span>
@@ -1947,7 +1948,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 05, 2021.
+                    Last updated on Oct 06, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
