@@ -8,8 +8,6 @@ spec:
   selector:
     matchLabels:
       app: {name}
-
-
   template:
     metadata:
       labels:
@@ -30,13 +28,6 @@ spec:
       containers:
       - name: executor
         image: {image}
-#        resources:
-#          requests:
-#            memory: "256Mi"
-#            cpu: "250m"
-#          limits:
-#            memory: "256Mi"
-#            cpu: "250m"
         command: {command}
         args: {args}
         ports:
