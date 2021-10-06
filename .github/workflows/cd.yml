@@ -101,6 +101,13 @@ jobs:
           token: ${{ secrets.JINA_DEV_BOT }}
         env:
           release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}
+      - uses: benc-uk/workflow-dispatch@v1
+        with:
+          repo: jina-ai/jina-docs-bot
+          workflow: E2E pipeline
+          inputs: '{ "environment": "prod" }'
+          ref: main
+          token: ${{ secrets.JINA_DEV_BOT }}
 
   update-docker:
     needs: [update-doc, update-schema]
