@@ -62,9 +62,7 @@ def k8s_flow_with_sharding(
 
 
 @pytest.fixture()
-def k8s_flow_configmap(
-    test_executor_image: str, executor_merger_image: str, dummy_dumper_image: str
-) -> Flow:
+def k8s_flow_configmap(test_executor_image: str) -> Flow:
     flow = Flow(
         name='k8s-flow-configmap',
         port_expose=9090,
@@ -74,8 +72,8 @@ def k8s_flow_configmap(
     ).add(
         name='test_executor',
         uses=test_executor_image,
-        timeout_ready=360000,
-        envs={'k1': 'v1', 'k2': 'v2'},
+        timeout_ready=12000,
+        env={'k1': 'v1', 'k2': 'v2'},
     )
     return flow
 
@@ -207,4 +205,4 @@ def test_flow_with_configmap(
     for doc in docs:
         assert doc.tags.get('k1') == 'v1'
         assert doc.tags.get('k2') == 'v2'
-        assert doc.tags.get('envs') == {'k1': 'v1', 'k2': 'v2'}
+        assert doc.tags.get('env') == {'k1': 'v1', 'k2': 'v2'}

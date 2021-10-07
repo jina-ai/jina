@@ -50,7 +50,7 @@ def test_deploy_service(init_container: Dict, custom_resource: str, monkeypatch)
         pull_policy='test-pull-policy',
         init_container=init_container,
         custom_resource_dir=custom_resource,
-        envs={'k1': 'v1', 'k2': 'v2'},
+        env={'k1': 'v1', 'k2': 'v2'},
     )
 
     assert mock_create.call_count == 5

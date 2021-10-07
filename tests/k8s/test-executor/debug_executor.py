@@ -36,7 +36,7 @@ class TestExecutor(Executor):
         for doc in docs:
             doc.tags['k1'] = os.environ.get('k1')
             doc.tags['k2'] = os.environ.get('k2')
-            doc.tags['envs'] = {'k1': os.environ.get('k1'), 'k2': os.environ.get('k2')}
+            doc.tags['env'] = {'k1': os.environ.get('k1'), 'k2': os.environ.get('k2')}
 
     @requests(on='/search')
     def read_file(self, docs: DocumentArray, parameters: Dict, **kwargs):
