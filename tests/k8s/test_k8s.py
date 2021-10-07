@@ -61,6 +61,27 @@ def k8s_flow_with_sharding(
     return flow
 
 
+@pytest.fixture()
+def k8s_flow_configmap(
+    test_executor_image: str, executor_merger_image: str, dummy_dumper_image: str
+) -> Flow:
+    flow = Flow(
+        name='k8s_flow_configmap',
+        port_expose=9090,
+        infrastructure='K8S',
+        protocol='http',
+        timeout_ready=120000,
+    ).add(
+        name='test_executor',
+        shards=2,
+        replicas=2,
+        uses=test_executor_image,
+        uses_after=executor_merger_image,
+        timeout_ready=360000,
+    )
+    return flow
+
+
 @pytest.mark.timeout(3600)
 @pytest.mark.parametrize('k8s_connection_pool', [True, False])
 def test_flow_with_needs(
@@ -173,19 +194,18 @@ def test_flow_with_sharding(
 @pytest.mark.timeout(3600)
 def test_flow_with_configmap(
     k8s_cluster,
-    k8s_flow_with_needs,
+    k8s_flow_configmap,
     test_executor_image,
     executor_merger_image,
-    k8s_flow_with_sharding: Flow,
     logger,
 ):
 
-    k8s_flow_with_needs.args.envs = {'k1': 'v1', 'k2': 'v2'}
+    k8s_flow_configmap.args.envs = {'k1': 'v1', 'k2': 'v2'}
 
     resp = run_test(
         [test_executor_image, executor_merger_image],
         k8s_cluster,
-        k8s_flow_with_needs,
+        k8s_flow_configmap,
         logger,
         expected_running_pods=9,
         endpoint='env',
