@@ -18,10 +18,10 @@ if TYPE_CHECKING:
 
 
 def _get_docs_matrix_from_message(
-    msg: "Message",
+    msg: 'Message',
     partial_request: Optional[List[Request]],
     field: str,
-) -> List["DocumentArray"]:
+) -> List['DocumentArray']:
     if partial_request is not None:
         result = [getattr(r, field) for r in reversed(partial_request)]
     else:
@@ -35,10 +35,10 @@ def _get_docs_matrix_from_message(
 
 
 def _get_docs_from_msg(
-    msg: "Message",
+    msg: 'Message',
     partial_request: Optional[List[Request]],
     field: str,
-) -> "DocumentArray":
+) -> 'DocumentArray':
     if partial_request is not None:
         result = DocumentArray(
             [d for r in reversed(partial_request) for d in getattr(r, field)]
@@ -52,7 +52,7 @@ def _get_docs_from_msg(
 class DataRequestHandler:
     """Object to encapsulate the code related to handle the data requests passing to executor and its returned values"""
 
-    def __init__(self, args: "argparse.Namespace", logger: "JinaLogger", **kwargs):
+    def __init__(self, args: 'argparse.Namespace', logger: 'JinaLogger', **kwargs):
         """Initialize private parameters and execute private loading functions.
 
         :param args: args from CLI
@@ -76,15 +76,15 @@ class DataRequestHandler:
             )
         except BadConfigSource as ex:
             self.logger.error(
-                f"fail to load config from {self.args.uses}, if you are using docker image for --uses, "
+                f'fail to load config from {self.args.uses}, if you are using docker image for --uses, '
                 f'please use "docker://YOUR_IMAGE_NAME"'
             )
             raise ExecutorFailToLoad from ex
         except FileNotFoundError as ex:
-            self.logger.error(f"fail to load file dependency")
+            self.logger.error(f'fail to load file dependency')
             raise ExecutorFailToLoad from ex
         except Exception as ex:
-            self.logger.critical(f"can not load the executor from {self.args.uses}")
+            self.logger.critical(f'can not load the executor from {self.args.uses}')
             raise ExecutorFailToLoad from ex
 
     @staticmethod
@@ -97,7 +97,7 @@ class DataRequestHandler:
 
     def handle(
         self,
-        msg: "Message",
+        msg: 'Message',
         partial_requests: Optional[List[Request]],
         peapod_name: str,
     ):
@@ -110,7 +110,7 @@ class DataRequestHandler:
         # skip executor if target_peapod mismatch
         if not re.match(msg.envelope.header.target_peapod, peapod_name):
             self.logger.debug(
-                f"skip executor: mismatch target, target: {msg.envelope.header.target_peapod}, name: {peapod_name}"
+                f'skip executor: mismatch target, target: {msg.envelope.header.target_peapod}, name: {peapod_name}'
             )
             return
 
@@ -120,7 +120,7 @@ class DataRequestHandler:
             and __default_endpoint__ not in self._executor.requests
         ):
             self.logger.debug(
-                f"skip executor: mismatch request, exec_endpoint: {msg.envelope.header.exec_endpoint}, requests: {self._executor.requests}"
+                f'skip executor: mismatch request, exec_endpoint: {msg.envelope.header.exec_endpoint}, requests: {self._executor.requests}'
             )
             if partial_requests:
                 DataRequestHandler.replace_docs(
@@ -128,7 +128,7 @@ class DataRequestHandler:
                     docs=_get_docs_from_msg(
                         msg,
                         partial_request=partial_requests,
-                        field="docs",
+                        field='docs',
                     ),
                 )
             return
@@ -137,7 +137,7 @@ class DataRequestHandler:
         docs = _get_docs_from_msg(
             msg,
             partial_request=partial_requests,
-            field="docs",
+            field='docs',
         )
         # executor logic
         r_docs = self._executor(
@@ -147,17 +147,17 @@ class DataRequestHandler:
             docs_matrix=_get_docs_matrix_from_message(
                 msg,
                 partial_request=partial_requests,
-                field="docs",
+                field='docs',
             ),
             groundtruths=_get_docs_from_msg(
                 msg,
                 partial_request=partial_requests,
-                field="groundtruths",
+                field='groundtruths',
             ),
             groundtruths_matrix=_get_docs_matrix_from_message(
                 msg,
                 partial_request=partial_requests,
-                field="groundtruths",
+                field='groundtruths',
             ),
         )
 
@@ -169,7 +169,7 @@ class DataRequestHandler:
         if r_docs is not None:
             if not isinstance(r_docs, AbstractDocumentArray):
                 raise TypeError(
-                    f"return type must be {DocumentArray!r} or None, but getting {typename(r_docs)}"
+                    f'return type must be {DocumentArray!r} or None, but getting {typename(r_docs)}'
                 )
             elif r_docs != msg.request.docs:
                 # this means the returned DocArray is a completely new one
