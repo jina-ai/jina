@@ -31,11 +31,11 @@ class TestExecutor(Executor):
         self.logger.debug(
             f'Received doc array in test-executor {self._name} with length {len(docs)}.'
         )
-        key = 'environment-variables'
 
         for doc in docs:
             doc.tags['k1'] = os.environ.get('k1')
             doc.tags['k2'] = os.environ.get('k2')
+            doc.tags['jina_log_level'] = os.environ.get('jina_log_level')
             doc.tags['env'] = {'k1': os.environ.get('k1'), 'k2': os.environ.get('k2')}
 
     @requests(on='/search')

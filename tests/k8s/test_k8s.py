@@ -201,8 +201,10 @@ def test_flow_with_configmap(
         port_expose=9090,
     )
 
-    docs = resp.json()['data']['docs']
+    docs = resp[0].docs
+    assert len(docs) == 10
     for doc in docs:
+        assert doc.tags.get('jina_log_level') == 'DEBUG'
         assert doc.tags.get('k1') == 'v1'
         assert doc.tags.get('k2') == 'v2'
         assert doc.tags.get('env') == {'k1': 'v1', 'k2': 'v2'}

@@ -1,4 +1,3 @@
-import json
 import os
 import tempfile
 import json
@@ -170,7 +169,6 @@ def _patch_configmap_yaml(template: str, params: Dict):
     if params.get('data'):
         for key, value in params['data'].items():
             config_map['data'][key] = value
-
     return json.dumps(config_map)
 
 
