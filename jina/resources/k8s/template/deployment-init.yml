@@ -8,8 +8,6 @@ spec:
   selector:
     matchLabels:
       app: {name}
-
-
   template:
     metadata:
       labels:
@@ -43,4 +41,8 @@ spec:
         volumeMounts:
           - name: shared
             mountPath: {mount-path}
-
+        readinessProbe:
+          tcpSocket:
+            port: {port_in}
+          initialDelaySeconds: 5
+          periodSeconds: 10

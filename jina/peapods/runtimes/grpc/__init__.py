@@ -40,6 +40,7 @@ class GRPCDataRuntime(BaseRuntime, ABC):
         self._pending_tasks = []
         self._static_routing_table = args.static_routing_table
 
+        # Keep this initialization order, otherwise readiness check is not valid
         self._data_request_handler = DataRequestHandler(args, self.logger)
         self._grpclet = Grpclet(
             args=self.args,

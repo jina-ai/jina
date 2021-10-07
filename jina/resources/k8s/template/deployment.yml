@@ -28,4 +28,17 @@ spec:
         envFrom:
           - configMapRef:
               name: {name}-configmap
+        readinessProbe:
+          tcpSocket:
+            port: {port_in}
+          initialDelaySeconds: 5
+          periodSeconds: 10
+#        livenessProbe:
+#          exec:
+#            command:
+#              - python
+#              - -c
+#              - 'import os; import sys; from jina.peapods.runtimes.grpc import GRPCDataRuntime; control_port = int(os.getenv("JINA_EXECUTOR_CONTROL_PORT")); is_ready = GRPCDataRuntime.is_ready(ctrl_address=f"0.0.0.0:{str(control_port)}"); sys.exit(0) if is_ready else sys.exit(1)'
+#          initialDelaySeconds: 30
+#          periodSeconds: 60
 
