@@ -201,7 +201,7 @@ def test_flow_with_configmap(
     logger,
 ):
     resp = run_test(
-        k8s_flow_with_sharding,
+        k8s_flow_configmap,
         endpoint='/env',
         port_expose=9090,
     )
