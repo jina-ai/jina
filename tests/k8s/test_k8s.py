@@ -191,8 +191,8 @@ def test_flow_with_sharding(
 def test_flow_with_configmap(
     k8s_cluster,
     k8s_flow_configmap,
-    test_executor_image,
-    executor_merger_image,
+    load_images_in_kind,
+    set_test_pip_version,
     logger,
 ):
     resp = run_test(
