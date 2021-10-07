@@ -34,11 +34,9 @@ class TestExecutor(Executor):
         key = 'environment-variables'
 
         for doc in docs:
-            if key not in doc.tags:
-                doc.tags[key] = []
-            env_list = list(doc.tags.get(key))
-            env_list.append(os.environ['k1'])
-            doc.tags[key] = env_list
+            doc.tags['k1'] = os.environ.get('k1')
+            doc.tags['k2'] = os.environ.get('k2')
+            doc.tags['envs'] = {'k1': os.environ.get('k1'), 'k2': os.environ.get('k2')}
 
     @requests(on='/search')
     def read_file(self, docs: DocumentArray, parameters: Dict, **kwargs):

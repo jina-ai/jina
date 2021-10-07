@@ -73,10 +73,7 @@ def k8s_flow_configmap(
         timeout_ready=120000,
     ).add(
         name='test_executor',
-        shards=2,
-        replicas=2,
         uses=test_executor_image,
-        uses_after=executor_merger_image,
         timeout_ready=360000,
         envs={'k1': 'v1', 'k2': 'v2'},
     )
@@ -206,10 +203,8 @@ def test_flow_with_configmap(
         port_expose=9090,
     )
 
-    expected_traversed_executors = {'k1': 'v1', 'k2': 'v2'}
-
-    assert resp.status_code == HTTPStatus.OK
     docs = resp.json()['data']['docs']
-    assert len(docs) == 10
     for doc in docs:
-        assert set(doc.tags['traversed-executors']) == expected_traversed_executors
+        assert doc.tags.get('k1') == 'v1'
+        assert doc.tags.get('k2') == 'v2'
+        assert doc.tags.get('envs') == {'k1': 'v1', 'k2': 'v2'}
