@@ -40,7 +40,7 @@ from ..helper import (
     download_mermaid_url,
     CatchAllCleanupContextManager,
 )
-from ..jaml import JAMLCompatible, JAML
+from ..jaml import JAMLCompatible
 
 from ..logging.logger import JinaLogger
 from ..parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
@@ -1760,17 +1760,20 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     # for backward support
     join = needs
 
-    def rolling_update(self, pod_name: str, dump_path: Optional[str] = None):
+    def rolling_update(
+        self,
+        pod_name: str,
+        dump_path: Optional[str],
+        *,
+        uses_with: Optional[Dict] = None,
+    ):
         """
-        Reload Pods sequentially - only used for compound pods.
+        Reload Pods sequentially
 
-        :param dump_path: the path from which to read the dump data
         :param pod_name: pod to update
+        :param dump_path: **backwards compatibility** This function was only accepting dump_path as the only potential arg to override
+        :param uses_with: a Dictionary of arguments to restart the executor with
         """
-        # TODO: By design after the Flow object started, Flow shouldn't have memory access to its sub-objects anymore.
-        #  All controlling should be issued via Network Request, not via memory access.
-        #  In the current master, we have Flow.rolling_update() & Flow.dump() method avoid the above design.
-        #  Avoiding this design make the whole system NOT cloud-native.
         warnings.warn(
             'This function is experimental and facing potential refactoring',
             FutureWarning,
@@ -1778,7 +1781,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         compound_pod = self._pod_nodes[pod_name]
         if isinstance(compound_pod, CompoundPod):
-            compound_pod.rolling_update(dump_path)
+            compound_pod.rolling_update(dump_path=dump_path, uses_with=uses_with)
         else:
             raise ValueError(
                 f'The BasePod {pod_name} is not a CompoundPod and does not support updating'
