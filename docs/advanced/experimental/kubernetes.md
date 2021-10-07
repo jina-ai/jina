@@ -135,6 +135,7 @@ export POSTGRES_PASSWORD=$(kubectl get secret --namespace default my-release-pos
 
 ```python
 from jina import Flow
+import os
 
 f = Flow(
     name='index-flow', port_expose=8080, infrastructure='K8S', protocol='http'
@@ -147,7 +148,7 @@ f = Flow(
     uses_with={
         'hostname': f'my-release-postgresql.default.svc.cluster.local',
         'username': 'postgres',
-        'password': 'QJgNIt10Rm', # example password - should be an environment variable
+        'password': os.environ['POSTGRES_PASSWORD'],
         'database': 'postgres',
         'table': 'test_searcher',
     },
@@ -238,6 +239,7 @@ Deploy search `Flow`:
 
 ```python
 from jina import Flow
+import os
 
 shards = 3
 
@@ -254,7 +256,7 @@ f = Flow(
         'total_shards': shards,
         'hostname': f'my-release-postgresql.default.svc.cluster.local',
         'username': 'postgres',
-        'password': 'QJgNIt10Rm', # example password - should be an environment variable
+        'password': os.environ['POSTGRES_PASSWORD'],
         'database': 'postgres',
         'table': 'test_searcher',
     },
