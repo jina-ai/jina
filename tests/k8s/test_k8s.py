@@ -66,7 +66,7 @@ def k8s_flow_configmap(
     test_executor_image: str, executor_merger_image: str, dummy_dumper_image: str
 ) -> Flow:
     flow = Flow(
-        name='k8s_flow_configmap',
+        name='k8s-flow-configmap',
         port_expose=9090,
         infrastructure='K8S',
         protocol='http',
