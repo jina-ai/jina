@@ -333,6 +333,8 @@ In Jina we support two ways of scaling:
 - **Replicas** can be used with any Executor type.
 - **Shards** should only be used with Indexers, since they store a state.
 
+Check {ref}`here <flow-parallelization>` for more information.
+
 ```{admonition} Important
 :class: important
 This page describes Jina's behavior with kubernetes deployment for now.
@@ -365,11 +367,12 @@ Sharding means splitting the content of an Indexer into several parts.
 These parts are then put on different machines.
 This is helpful in two situations:
 
-- When the full data does not fit onto one machine.
-- When the latency of a single request becomes too slow.
-  Then splitting the load across two or more machines yields better results.
+- When the full data does not fit on one machine 
+- When the latency of a single request becomes too large.
 
-When you shard your index, the request handling usually differes for index and search requests:
+Then splitting the load across two or more machines yields better results.
+
+When you shard your index, the request handling usually differs between index and search requests:
 
 - Index (and update, delete) will just be handled by a single shard => `polling='any'`
 - Search requests are handled by all shards => `polling='all'`
@@ -385,7 +388,7 @@ search_flow = Flow().add(name='ExecutorWithShards', shards=3, polling='all', use
 
 Each shard of a search Flow returns one set of results for each query Document.
 A merger Executor combines them afterwards.
-You can use the pre-build [MatchMerger](https://hub.jina.ai/executor/mruax3k7) or define your own merger.
+You can use the pre-built [MatchMerger](https://hub.jina.ai/executor/mruax3k7) or define your own merger.
 
 ```{admonition} Example
 :class: example
@@ -399,6 +402,6 @@ After the merger there will be 200 results per query Document.
 Combining both gives all the advantages mentioned above.
 When deploying to kubernetes, Jina replicates each single shard.
 Thus, shards can scale independently.
-The data syncronisation across replicas must be handled by the respective Indexer.
+The data synchronisation across replicas must be handled by the respective Indexer.
 For more detailed see {ref}`Dump and rolling update <dump-rolling-restart>`.
 

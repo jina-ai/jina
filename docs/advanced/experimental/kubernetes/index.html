@@ -915,6 +915,7 @@ Forwarding from [::1]:8081 -&gt; 8080
 <li><p><strong>Replicas</strong> can be used with any Executor type.</p></li>
 <li><p><strong>Shards</strong> should only be used with Indexers, since they store a state.</p></li>
 </ul>
+<p>Check <a class="reference internal" href="../../../fundamentals/flow/parallel/#flow-parallelization"><span class="std std-ref">here</span></a> for more information.</p>
 <div class="important admonition">
 <p class="admonition-title">Important</p>
 <p>This page describes Jina’s behavior with kubernetes deployment for now.
@@ -943,11 +944,11 @@ Replicas are currently only supported, when deploying Jina with kubernetes.</p>
 These parts are then put on different machines.
 This is helpful in two situations:</p>
 <ul class="simple">
-<li><p>When the full data does not fit onto one machine.</p></li>
-<li><p>When the latency of a single request becomes too slow.
-Then splitting the load across two or more machines yields better results.</p></li>
+<li><p>When the full data does not fit on one machine</p></li>
+<li><p>When the latency of a single request becomes too large.</p></li>
 </ul>
-<p>When you shard your index, the request handling usually differes for index and search requests:</p>
+<p>Then splitting the load across two or more machines yields better results.</p>
+<p>When you shard your index, the request handling usually differs between index and search requests:</p>
 <ul class="simple">
 <li><p>Index (and update, delete) will just be handled by a single shard =&gt; <code class="docutils literal notranslate"><span class="pre">polling='any'</span></code></p></li>
 <li><p>Search requests are handled by all shards =&gt; <code class="docutils literal notranslate"><span class="pre">polling='all'</span></code></p></li>
@@ -963,7 +964,7 @@ Then splitting the load across two or more machines yields better results.</p></
 <h3>Merging search results via <code class="docutils literal notranslate"><span class="pre">uses_after</span></code><a class="headerlink" href="#merging-search-results-via-uses-after" title="Permalink to this headline">¶</a></h3>
 <p>Each shard of a search Flow returns one set of results for each query Document.
 A merger Executor combines them afterwards.
-You can use the pre-build <a class="reference external" href="https://hub.jina.ai/executor/mruax3k7">MatchMerger</a> or define your own merger.</p>
+You can use the pre-built <a class="reference external" href="https://hub.jina.ai/executor/mruax3k7">MatchMerger</a> or define your own merger.</p>
 <div class="example admonition">
 <p class="admonition-title">Example</p>
 <p>A search Flow has 10 shards for an Indexer.
@@ -977,7 +978,7 @@ After the merger there will be 200 results per query Document.</p>
 <p>Combining both gives all the advantages mentioned above.
 When deploying to kubernetes, Jina replicates each single shard.
 Thus, shards can scale independently.
-The data syncronisation across replicas must be handled by the respective Indexer.
+The data synchronisation across replicas must be handled by the respective Indexer.
 For more detailed see <a class="reference internal" href="../indexers/#dump-rolling-restart"><span class="std std-ref">Dump and rolling update</span></a>.</p>
 </section>
 </section>
