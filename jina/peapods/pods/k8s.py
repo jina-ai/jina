@@ -195,6 +195,33 @@ class K8sPod(BasePod, ExitFIFO):
                         f' Error deleting deployment {self.name}: {exc.reason} '
                     )
 
+        def rolling_update(self, uses_with: Optional[Dict], **kwargs):
+            """Apply Rolling Update to all the deployment
+
+            :param uses_with: a Dictionary of arguments to restart the executor
+            :param kwargs: Extra parameters accepted to offer backwards compatibility to `dump_path` argument
+            """
+            from kubernetes import client
+
+            k8s_client = kubernetes_tools.K8sClients().apps_v1
+            with JinaLogger(f'rolling_update_{self.name}') as logger:
+                try:
+                    resp = k8s_client.patch_namespaced_deployment(
+                        name=self.dns_name, namespace=self.k8s_namespace
+                    )
+                    if resp.status == 'Success':
+                        logger.success(
+                            f' Successful rolling update of deployment {self.name}'
+                        )
+                    else:
+                        logger.error(
+                            f' Rolling update of deployment {self.name} unsuccessful with status {resp.status}'
+                        )
+                except client.ApiException as exc:
+                    logger.error(
+                        f' Error doing rolling update on deployment {self.name}: {exc.reason} '
+                    )
+
         def __enter__(self):
             return self.start()
 
@@ -317,6 +344,29 @@ class K8sPod(BasePod, ExitFIFO):
         :return: localhost
         """
         return 'localhost'
+
+    def rolling_update(self, uses_with: Optional[Dict] = None, **kwargs):
+        """Apply Rolling Update to all the Deployments in this Pod
+
+        :param uses_with: a Dictionary of arguments to restart the executor
+        :param kwargs: Extra parameters accepted to offer backwards compatibility to `dump_path` argument
+        """
+        # BACKWARDS COMPATIBILITY
+        if 'dump_path' in kwargs:
+            if uses_with is not None:
+                uses_with['dump_path'] = kwargs['dump_path']
+            else:
+                uses_with = {'dump_path': kwargs['dump_path']}
+
+        try:
+            if len(self.deployments) > 1:
+
+                for deployment in self.deployments[1:-1]:
+                    deployment.rolling_update(uses_with=uses_with, **kwargs)
+            else:
+                self.deployments[0].rolling_update(uses_with=uses_with, **kwargs)
+        except:
+            raise
 
     def start(self) -> 'K8sPod':
         """Deploy the kubernetes pods via k8s Deployment and k8s Service.
