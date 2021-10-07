@@ -246,18 +246,26 @@ class CompoundPod(BasePod, ExitStack):
             result.append(_args)
         return result
 
-    def rolling_update(self, dump_path: Optional[str] = None):
+    def rolling_update(self, uses_with: Optional[Dict] = None, **kwargs):
         """Reload all Pods of this Compound Pod.
 
-        :param dump_path: the dump from which to read the data
+        :param uses_with: a Dictionary of arguments to restart the executor
+        :param kwargs: Extra parameters accepted to offer backwards compatibility to `dump_path` argument
         """
+        # BACKWARDS COMPATIBILITY
+        if 'dump_path' in kwargs:
+            if uses_with is not None:
+                uses_with['dump_path'] = kwargs['dump_path']
+            else:
+                uses_with = {'dump_path': kwargs['dump_path']}
+
         try:
             for i in range(len(self.replicas)):
                 replica = self.replicas[i]
                 replica.close()
                 _args = self.replicas_args[i]
                 _args.noblock_on_start = False
-                _args.dump_path = dump_path
+                _args.uses_with = uses_with
                 new_replica = Pod(_args)
                 self.enter_context(new_replica)
                 self.replicas[i] = new_replica

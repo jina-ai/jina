@@ -1760,17 +1760,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     # for backward support
     join = needs
 
-    def rolling_update(self, pod_name: str, dump_path: Optional[str] = None):
+    def rolling_update(self, pod_name: str, uses_with: Optional[Dict] = None, **kwargs):
         """
         Reload Pods sequentially - only used for compound pods.
 
-        :param dump_path: the path from which to read the dump data
         :param pod_name: pod to update
+        :param uses_with: a Dictionary of arguments to restart the executor with
+        :param kwargs: Extra parameters accepted to offer backwards compatibility to `dump_path` argument
         """
-        # TODO: By design after the Flow object started, Flow shouldn't have memory access to its sub-objects anymore.
-        #  All controlling should be issued via Network Request, not via memory access.
-        #  In the current master, we have Flow.rolling_update() & Flow.dump() method avoid the above design.
-        #  Avoiding this design make the whole system NOT cloud-native.
         warnings.warn(
             'This function is experimental and facing potential refactoring',
             FutureWarning,
@@ -1778,7 +1775,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         compound_pod = self._pod_nodes[pod_name]
         if isinstance(compound_pod, CompoundPod):
-            compound_pod.rolling_update(dump_path)
+            compound_pod.rolling_update(uses_with, **kwargs)
         else:
             raise ValueError(
                 f'The BasePod {pod_name} is not a CompoundPod and does not support updating'

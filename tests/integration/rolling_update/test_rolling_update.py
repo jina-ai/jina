@@ -278,3 +278,47 @@ def test_num_peas(config):
             + 1  # compound pod tail
             + 1  # gateway
         )
+
+
+class UpdateExecutor(Executor):
+    def __init__(
+        self, argument1: str = 'version1', argument2: str = 'version1', *args, **kwargs
+    ):
+        super().__init__(*args, **kwargs)
+        self._argument1 = argument1
+        self._argument2 = argument2
+
+    @requests
+    def run(self, docs, **kwargs):
+        for doc in docs:
+            doc.tags['arg1'] = self._argument1
+            doc.tags['arg2'] = self._argument2
+
+
+@pytest.mark.timeout(60)
+def test_override_uses_with(docs):
+    flow = Flow().add(
+        name='executor1',
+        uses=UpdateExecutor,
+        replicas=2,
+        parallel=3,
+    )
+    with flow:
+        # test rolling update does not hang
+        ret1 = flow.search(docs, return_results=True)
+        flow.rolling_update(
+            'executor1', uses_with={'argument1': 'version2', 'argument2': 'version2'}
+        )
+        ret2 = flow.search(docs, return_results=True)
+
+    assert len(ret1) > 0
+    assert len(ret1[0].docs) > 0
+    for doc in ret1[0].docs:
+        assert doc.tags['arg1'] == 'version1'
+        assert doc.tags['arg2'] == 'version1'
+
+    assert len(ret2) > 0
+    assert len(ret2[0].docs) > 0
+    for doc in ret2[0].docs:
+        assert doc.tags['arg1'] == 'version2'
+        assert doc.tags['arg2'] == 'version2'
