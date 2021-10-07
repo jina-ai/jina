@@ -78,6 +78,7 @@ def k8s_flow_configmap(
         uses=test_executor_image,
         uses_after=executor_merger_image,
         timeout_ready=360000,
+        envs={'k1': 'v1', 'k2': 'v2'},
     )
     return flow
 
@@ -199,17 +200,10 @@ def test_flow_with_configmap(
     executor_merger_image,
     logger,
 ):
-
-    k8s_flow_configmap.args.envs = {'k1': 'v1', 'k2': 'v2'}
-
     resp = run_test(
-        [test_executor_image, executor_merger_image],
-        k8s_cluster,
-        k8s_flow_configmap,
-        logger,
-        expected_running_pods=9,
-        endpoint='env',
-        port_expose=8080,
+        k8s_flow_with_sharding,
+        endpoint='/env',
+        port_expose=9090,
     )
 
     expected_traversed_executors = {'k1': 'v1', 'k2': 'v2'}
