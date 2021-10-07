@@ -188,7 +188,7 @@ def test_flow_with_configmap(
         k8s_flow_with_sharding,
         logger,
         expected_running_pods=9,
-        endpoint='index',
+        endpoint='env',
         port_expose=8080,
     )
 
