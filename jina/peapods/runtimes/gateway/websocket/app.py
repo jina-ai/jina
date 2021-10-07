@@ -2,6 +2,7 @@ import argparse
 import inspect
 from typing import List
 
+from ..prefetch import PrefetchCaller
 from ....grpc import Grpclet
 from ....zmq import AsyncZmqlet
 from .....importer import ImportExtensions
@@ -37,23 +38,18 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     app = FastAPI()
 
     if args.grpc_data_requests:
-        from ...prefetch.gateway import GrpcGatewayPrefetcher
-
         iolet = Grpclet(
             args=args,
             message_callback=None,
             logger=logger,
         )
-        prefetcher = GrpcGatewayPrefetcher(args, iolet)
     else:
-        from ...prefetch.gateway import ZmqGatewayPrefetcher
-
         iolet = AsyncZmqlet(args, logger)
-        prefetcher = ZmqGatewayPrefetcher(args, iolet)
+    servicer = PrefetchCaller(args, iolet)
 
     @app.on_event('shutdown')
     async def _shutdown():
-        await prefetcher.close()
+        await servicer.close()
         if inspect.iscoroutine(iolet.close):
             await iolet.close()
         else:
@@ -72,7 +68,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
                 yield Request(data)
 
         try:
-            async for msg in prefetcher.send(request_iterator=req_iter()):
+            async for msg in servicer.send(request_iterator=req_iter()):
                 await websocket.send_bytes(msg.binary_str())
         except WebSocketDisconnect:
             manager.disconnect(websocket)

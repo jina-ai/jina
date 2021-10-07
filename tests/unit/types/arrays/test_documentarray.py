@@ -332,29 +332,6 @@ def test_da_sort_by_document_interface_in_proto():
     assert da[0].embedding.shape == (1,)
 
 
-def test_da_sort_topk():
-    da = DocumentArray(
-        [Document(id=i, copy=True, scores={'euclid': 10 - i}) for i in range(10)]
-    )
-    original = deepcopy(da)
-
-    da.sort(top_k=3, key=lambda d: d.scores['euclid'].value)
-    top = [da[i].scores['euclid'].value for i in range(3)]
-    rest = [da[i].scores['euclid'].value for i in range(3, 10)]
-    assert top[0] == 1 and top[1] == 2 and top[2] == 3
-    assert rest != sorted(rest)
-    assert len(da) == len(original)
-    assert all([d.id in original for d in da])
-
-    da.sort(top_k=3, key=lambda d: d.scores['euclid'].value, reverse=True)
-    top = [da[i].scores['euclid'].value for i in range(3)]
-    rest = [da[i].scores['euclid'].value for i in range(3, 10)]
-    assert top[0] == 10 and top[1] == 9 and top[2] == 8
-    assert rest != sorted(rest, reverse=True)
-    assert len(da) == len(original)
-    assert all([d.id in original for d in da])
-
-
 def test_da_reverse():
     docs = [Document(embedding=np.array([1] * (10 - i))) for i in range(10)]
     da = DocumentArray(

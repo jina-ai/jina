@@ -1,20 +1,31 @@
+from http import HTTPStatus
 from pytest_kind import cluster
 
 # kind version has to be bumped to v0.11.1 since pytest-kind is just using v0.10.0 which does not work on ubuntu in ci
 # TODO don't use pytest-kind anymore
 cluster.KIND_VERSION = 'v0.11.1'
 import pytest
+import requests
 
-from jina import Flow, Document
+from jina import Flow
+from jina.peapods.pods.k8slib.kubernetes_tools import get_port_forward_contextmanager
 
 
-def run_test(flow, endpoint, port_expose):
+def run_test(flow, logger, endpoint, port_expose):
     with flow:
-        resp = flow.post(
-            endpoint,
-            [Document() for _ in range(10)],
-            return_results=True,
-            port_expose=port_expose,
+        resp = send_dummy_request(endpoint, flow, logger, port_expose=port_expose)
+    return resp
+
+
+def send_dummy_request(endpoint, flow, logger, port_expose):
+    logger.debug(f'Starting port-forwarding to gateway service...')
+    with get_port_forward_contextmanager(
+        namespace=flow.args.name, port_expose=port_expose
+    ):
+        logger.debug(f'Port-forward running...')
+        resp = requests.post(
+            f'http://localhost:{port_expose}/{endpoint}',
+            json={'data': [{} for _ in range(10)]},
         )
     return resp
 
@@ -110,7 +121,8 @@ def test_flow_with_needs(
     )
     resp = run_test(
         flow,
-        endpoint='/index',
+        logger,
+        endpoint='index',
         port_expose=9090,
     )
 
@@ -120,10 +132,11 @@ def test_flow_with_needs(
         'textencoder',
     }
 
-    docs = resp[0].docs
+    assert resp.status_code == HTTPStatus.OK
+    docs = resp.json()['data']['docs']
     assert len(docs) == 10
     for doc in docs:
-        assert set(doc.tags['traversed-executors']) == expected_traversed_executors
+        assert set(doc['tags']['traversed-executors']) == expected_traversed_executors
 
 
 @pytest.mark.timeout(3600)
@@ -136,14 +149,16 @@ def test_flow_with_init(
 ):
     resp = run_test(
         k8s_flow_with_init_container,
-        endpoint='/search',
+        logger,
+        endpoint='search',
         port_expose=9090,
     )
 
-    docs = resp[0].docs
+    assert resp.status_code == HTTPStatus.OK
+    docs = resp.json()['data']['docs']
     assert len(docs) == 10
     for doc in docs:
-        assert doc.tags['file'] == ['1\n', '2\n', '3']
+        assert doc['tags']['file'] == ['1\n', '2\n', '3']
 
 
 @pytest.mark.timeout(3600)
@@ -156,7 +171,8 @@ def test_flow_with_sharding(
 ):
     resp = run_test(
         k8s_flow_with_sharding,
-        endpoint='/index',
+        logger,
+        endpoint='index',
         port_expose=9090,
     )
 
@@ -164,7 +180,8 @@ def test_flow_with_sharding(
         'test_executor',
     }
 
-    docs = resp[0].docs
+    assert resp.status_code == HTTPStatus.OK
+    docs = resp.json()['data']['docs']
     assert len(docs) == 10
     for doc in docs:
-        assert set(doc.tags['traversed-executors']) == expected_traversed_executors
+        assert set(doc['tags']['traversed-executors']) == expected_traversed_executors

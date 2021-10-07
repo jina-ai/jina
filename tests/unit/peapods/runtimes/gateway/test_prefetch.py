@@ -5,7 +5,7 @@ import pytest
 
 from jina.helper import ArgNamespace, random_identity
 from jina.parsers import set_gateway_parser
-from jina.peapods.runtimes.prefetch.gateway import ZmqGatewayPrefetcher
+from jina.peapods.runtimes.gateway.prefetch import PrefetchCaller
 from jina.proto import jina_pb2
 
 
@@ -37,13 +37,13 @@ class ZmqletMock:
 async def test_concurrent_requests():
     args = ArgNamespace.kwargs2namespace({}, set_gateway_parser())
     mock_zmqlet = ZmqletMock()
-    prefetcher = ZmqGatewayPrefetcher(args, mock_zmqlet)
+    servicer = PrefetchCaller(args, mock_zmqlet)
 
     request = _generate_request()
 
-    response = prefetcher.send(iter([request]))
+    response = servicer.send(iter([request]))
 
     async for r in response:
         assert r.proto == request
 
-    await prefetcher.close()
+    await servicer.close()

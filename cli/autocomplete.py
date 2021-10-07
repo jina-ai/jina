@@ -380,8 +380,6 @@ ac_table = {
             '--https',
             '--asyncio',
             '--protocol',
-            '--prefetch',
-            '--prefetch-on-recv',
         ],
         'export-api': ['--help', '--yaml-path', '--json-path', '--schema-path'],
     },

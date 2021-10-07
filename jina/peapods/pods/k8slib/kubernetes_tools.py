@@ -1,7 +1,7 @@
-import json
 import os
 import tempfile
-from typing import Dict, Optional, Generator
+import json
+from typing import Dict, Optional, TYPE_CHECKING
 
 from ....importer import ImportExtensions
 from ....logging.logger import JinaLogger
@@ -11,6 +11,9 @@ cur_dir = os.path.dirname(__file__)
 DEFAULT_RESOURCE_DIR = os.path.join(
     cur_dir, '..', '..', '..', 'resources', 'k8s', 'template'
 )
+
+if TYPE_CHECKING:
+    from contextlib import GeneratorContextManager
 
 
 class K8sClients:
@@ -164,7 +167,7 @@ def get_port_forward_contextmanager(
     namespace: str,
     port_expose: int,
     config_path: str = None,
-) -> Generator[None, None, None]:
+) -> 'GeneratorContextManager':
     """Forward local requests to the gateway which is running in the Kubernetes cluster.
     :param namespace: namespace of the gateway
     :param port_expose: exposed port of the gateway

@@ -1,11 +1,8 @@
-from contextlib import nullcontext
 from functools import partialmethod
 from typing import Optional, Dict, List, AsyncGenerator
 
 from .base import CallbackFnType, InputType
-from ..enums import InfrastructureType
 from ..helper import run_async
-from ..peapods.pods.k8slib import kubernetes_tools
 from ..types.request import Response
 
 
@@ -60,28 +57,18 @@ class PostMixin:
             if return_results:
                 return result
 
-        if (
-            hasattr(self.args, 'infrastructure')
-            and self.args.infrastructure == InfrastructureType.K8S
-        ):
-            context_mgr = kubernetes_tools.get_port_forward_contextmanager(
-                self.args.name, self.port_expose
-            )
-        else:
-            context_mgr = nullcontext()
-        with context_mgr:
-            return run_async(
-                _get_results,
-                inputs=inputs,
-                on_done=on_done,
-                on_error=on_error,
-                on_always=on_always,
-                exec_endpoint=on,
-                target_peapod=target_peapod,
-                parameters=parameters,
-                request_size=request_size,
-                **kwargs,
-            )
+        return run_async(
+            _get_results,
+            inputs=inputs,
+            on_done=on_done,
+            on_error=on_error,
+            on_always=on_always,
+            exec_endpoint=on,
+            target_peapod=target_peapod,
+            parameters=parameters,
+            request_size=request_size,
+            **kwargs,
+        )
 
     # ONLY CRUD, for other request please use `.post`
     index = partialmethod(post, '/index')
