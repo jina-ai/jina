@@ -726,6 +726,7 @@ helm install my-release bitnami/postgresql
 <section id="index-flow">
 <h4>Index flow<a class="headerlink" href="#index-flow" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+<span class="kn">import</span> <span class="nn">os</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s1">'index-flow'</span><span class="p">,</span> <span class="n">port_expose</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span> <span class="n">infrastructure</span><span class="o">=</span><span class="s1">'K8S'</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'http'</span>
@@ -738,7 +739,7 @@ helm install my-release bitnami/postgresql
     <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span>
         <span class="s1">'hostname'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'my-release-postgresql.default.svc.cluster.local'</span><span class="p">,</span>
         <span class="s1">'username'</span><span class="p">:</span> <span class="s1">'postgres'</span><span class="p">,</span>
-        <span class="s1">'password'</span><span class="p">:</span> <span class="s1">'QJgNIt10Rm'</span><span class="p">,</span> <span class="c1"># example password - should be an environment variable</span>
+        <span class="s1">'password'</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'POSTGRES_PASSWORD'</span><span class="p">],</span>
         <span class="s1">'database'</span><span class="p">:</span> <span class="s1">'postgres'</span><span class="p">,</span>
         <span class="s1">'table'</span><span class="p">:</span> <span class="s1">'test_searcher'</span><span class="p">,</span>
     <span class="p">},</span>
@@ -820,6 +821,7 @@ created.</p>
 </div>
 <p>Deploy search <code class="docutils literal notranslate"><span class="pre">Flow</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+<span class="kn">import</span> <span class="nn">os</span>
 
 <span class="n">shards</span> <span class="o">=</span> <span class="mi">3</span>
 
@@ -836,7 +838,7 @@ created.</p>
         <span class="s1">'total_shards'</span><span class="p">:</span> <span class="n">shards</span><span class="p">,</span>
         <span class="s1">'hostname'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'my-release-postgresql.default.svc.cluster.local'</span><span class="p">,</span>
         <span class="s1">'username'</span><span class="p">:</span> <span class="s1">'postgres'</span><span class="p">,</span>
-        <span class="s1">'password'</span><span class="p">:</span> <span class="s1">'QJgNIt10Rm'</span><span class="p">,</span> <span class="c1"># example password - should be an environment variable</span>
+        <span class="s1">'password'</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'POSTGRES_PASSWORD'</span><span class="p">],</span>
         <span class="s1">'database'</span><span class="p">:</span> <span class="s1">'postgres'</span><span class="p">,</span>
         <span class="s1">'table'</span><span class="p">:</span> <span class="s1">'test_searcher'</span><span class="p">,</span>
     <span class="p">},</span>
@@ -1012,7 +1014,7 @@ For more detailed see <a class="reference internal" href="../indexers/#dump-roll
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 06, 2021.
+                    Last updated on Oct 07, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
