@@ -27,10 +27,8 @@ def namespace_equal(
 
 
 @pytest.mark.parametrize('is_master', (True, False))
-def test_version(is_master, requests_mock, monkeypatch):
+def test_version(is_master, requests_mock):
     args = set_pod_parser().parse_args(['--name', 'test-pod'])
-    mock_create = Mock()
-    monkeypatch.setattr(kubernetes_tools, 'create', mock_create)
     if is_master:
         version = 'v2'
     else:
@@ -41,15 +39,10 @@ def test_version(is_master, requests_mock, monkeypatch):
         text='[{"name": "v1"}, {"name": "' + version + '"}]',
     )
     pod = K8sPod(args)
-
-    with pod:
-        assert (
-            mock_create.call_count == 6
-        )  # 3 because of namespace, service and deployment
-        if is_master:
-            assert pod.version == 'master'
-        else:
-            assert pod.version == jina.__version__
+    if is_master:
+        assert pod.version == 'master'
+    else:
+        assert pod.version == jina.__version__
 
 
 def test_dictionary_to_cli_param():

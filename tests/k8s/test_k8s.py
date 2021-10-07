@@ -167,12 +167,12 @@ def test_flow_with_sharding(
     docs = resp[0].docs
     assert len(docs) == 10
     for doc in docs:
-        assert set(doc['tags']['traversed-executors']) == expected_traversed_executors
+        assert set(doc.tags['traversed-executors']) == expected_traversed_executors
 
 
 @pytest.mark.timeout(3600)
 def test_flow_with_configmap(
-    k8s_cluster_namespaced,
+    k8s_cluster,
     k8s_flow_with_needs,
     test_executor_image,
     executor_merger_image,
@@ -184,8 +184,8 @@ def test_flow_with_configmap(
 
     resp = run_test(
         [test_executor_image, executor_merger_image],
-        k8s_cluster_namespaced,
-        k8s_flow_with_sharding,
+        k8s_cluster,
+        k8s_flow_with_needs,
         logger,
         expected_running_pods=9,
         endpoint='env',
