@@ -74,5 +74,7 @@ class K8sClients:
         if not self._networking_v1_beta1_api:
             from kubernetes import client
 
-            self._networking_v1_beta1_api = client.NetworkingV1beta1Api(api_client=self._k8s_client)
+            self._networking_v1_beta1_api = client.NetworkingV1beta1Api(
+                api_client=self._k8s_client
+            )
         return self._networking_v1_beta1_api
