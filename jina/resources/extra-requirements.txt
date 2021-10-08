@@ -76,3 +76,4 @@ portforward>=0.2.4:         cicd
 kubernetes>=18.20.0:        perf, standard, devel
 pytest-kind==21.1.3:        test
 pytest-lazy-fixture:        test
+datasets:                   test
