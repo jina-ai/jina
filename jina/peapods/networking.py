@@ -157,11 +157,12 @@ class GrpcConnectionPool(ConnectionPool):
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
         async def task_wrapper(new_message, stub):
-            call_response = stub.Call(new_message)
-            if call_response:
-                await call_response
-            else:
-                self._logger.warning(f'Sending grpc message returned None')
+            try:
+                await stub.Call(new_message)
+            except grpc.aio._call.AioRpcError as rpc_ex:
+                self._logger.warning(
+                    f'Sending message {new_message.request.request_id if new_message.is_data_request else ""} with grpc failed with code {rpc_ex.code()} due to {rpc_ex.details()}'
+                )
 
         return asyncio.create_task(task_wrapper(msg, connection))
 
