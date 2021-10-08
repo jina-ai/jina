@@ -5,7 +5,7 @@ from argparse import Namespace
 from typing import Optional, Dict, Union, Set, List
 
 import jina
-from .k8slib import kubernetes_deployment, kubernetes_tools
+from .k8slib import kubernetes_deployment, kubernetes_client
 from ..pods import BasePod, ExitFIFO
 from ... import __default_executor__
 from ...logging.logger import JinaLogger
@@ -126,7 +126,7 @@ class K8sPod(BasePod, ExitFIFO):
 
             from kubernetes import client
 
-            k8s_client = kubernetes_tools.K8sClients().apps_v1
+            k8s_client = kubernetes_client.K8sClients().apps_v1
 
             with JinaLogger(f'waiting_for_{self.name}') as logger:
                 logger.info(
@@ -175,7 +175,7 @@ class K8sPod(BasePod, ExitFIFO):
         def close(self):
             from kubernetes import client
 
-            k8s_client = kubernetes_tools.K8sClients().apps_v1
+            k8s_client = kubernetes_client.K8sClients().apps_v1
 
             with JinaLogger(f'close_{self.name}') as logger:
                 try:

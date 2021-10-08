@@ -3,7 +3,7 @@ import os
 import tempfile
 from typing import Dict, Optional, Generator
 
-from .client import K8sClients
+from .kubernetes_client import K8sClients
 from ....importer import ImportExtensions
 from ....logging.logger import JinaLogger
 from ....logging.predefined import default_logger
