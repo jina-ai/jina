@@ -27,8 +27,6 @@ class K8sClients:
 
         :return: k8s client
         """
-        if self._k8s_client is None:
-            self._instantiate()
         return self._k8s_client
 
     @property

@@ -14,9 +14,6 @@ DEFAULT_RESOURCE_DIR = os.path.join(
 )
 
 
-_k8s_clients = K8sClients()
-
-
 def create(
     template: str,
     params: Dict,
@@ -35,13 +32,14 @@ def create(
     from kubernetes.utils import FailToCreateError
     from kubernetes import utils
 
+    clients = K8sClients()
     yaml = _get_yaml(template, params, custom_resource_dir)
     fd, path = tempfile.mkstemp()
     try:
         with os.fdopen(fd, 'w') as tmp:
             tmp.write(yaml)
         try:
-            utils.create_from_yaml(_k8s_clients.k8s_client, path)
+            utils.create_from_yaml(clients.k8s_client, path)
         except FailToCreateError as e:
             for api_exception in e.api_exceptions:
                 if api_exception.status == 409:
@@ -70,8 +68,8 @@ def _get_yaml(template: str, params: Dict, custom_resource_dir: Optional[str] = 
     return content
 
 
-def _get_gateway_pod_name(namespace):
-    gateway_pod = _k8s_clients.core_v1.list_namespaced_pod(
+def _get_gateway_pod_name(namespace, k8s_clients: K8sClients):
+    gateway_pod = k8s_clients.core_v1.list_namespaced_pod(
         namespace=namespace, label_selector='app=gateway'
     )
     return gateway_pod.items[0].metadata.name
@@ -95,7 +93,8 @@ def get_port_forward_contextmanager(
     ):
         import portforward
 
-    gateway_pod_name = _get_gateway_pod_name(namespace)
+    clients = K8sClients()
+    gateway_pod_name = _get_gateway_pod_name(namespace, k8s_clients=clients)
     if config_path is None and 'KUBECONFIG' in os.environ:
         config_path = os.environ['KUBECONFIG']
     return portforward.forward(
