@@ -38,7 +38,7 @@ class K8sClients:
         if not self._core_v1:
             from kubernetes import client
 
-            return client.CoreV1Api(api_client=self._k8s_client)
+            self._core_v1 = client.CoreV1Api(api_client=self._k8s_client)
         return self._core_v1
 
     @property
@@ -50,7 +50,7 @@ class K8sClients:
         if not self._apps_v1:
             from kubernetes import client
 
-            return client.AppsV1Api(api_client=self._k8s_client)
+            self._apps_v1 = client.AppsV1Api(api_client=self._k8s_client)
         return self._apps_v1
 
     @property
@@ -62,7 +62,7 @@ class K8sClients:
         if not self._beta:
             from kubernetes import client
 
-            return client.ExtensionsV1beta1Api(api_client=self._k8s_client)
+            self._beta = client.ExtensionsV1beta1Api(api_client=self._k8s_client)
         return self._beta
 
     @property
@@ -74,5 +74,5 @@ class K8sClients:
         if not self._networking_v1_beta1_api:
             from kubernetes import client
 
-            return client.NetworkingV1beta1Api(api_client=self._k8s_client)
+            self._networking_v1_beta1_api = client.NetworkingV1beta1Api(api_client=self._k8s_client)
         return self._networking_v1_beta1_api
