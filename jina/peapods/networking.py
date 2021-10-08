@@ -157,7 +157,11 @@ class GrpcConnectionPool(ConnectionPool):
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
         async def task_wrapper(new_message, stub):
-            await stub.Call(new_message)
+            call_response = stub.Call(new_message)
+            if call_response:
+                await call_response
+            else:
+                self._logger.warning(f'Sending grpc message returned None')
 
         return asyncio.create_task(task_wrapper(msg, connection))
 
