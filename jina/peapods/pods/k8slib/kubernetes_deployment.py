@@ -74,7 +74,7 @@ def deploy_service(
         custom_resource_dir=custom_resource_dir,
     )
 
-    logger.info(f'🐳\tCreate ConfigMap for deployment.')
+    logger.info(f'📝\tCreate ConfigMap for deployment.')
 
     kubernetes_tools.create(
         'configmap',
