@@ -127,6 +127,7 @@ class JinadRuntime(AsyncNewLoopRuntime):
         def basename(field):
             if field and not field.startswith(('docker://', 'jinahub')):
                 try:
+                    print(f' COMPLETE PATH IN JINADRUNTIME')
                     return os.path.basename(complete_path(field))
                 except FileNotFoundError:
                     pass

@@ -11,9 +11,11 @@ api = '/flow'
 def test_flow_api(monkeypatch, partial_flow_client):
     flow_model = FlowModel()
     flow_model.uses = f'{cur_dir}/good_flow_dummy.yml'
-    response = partial_flow_client.post(
-        api, json={'flow': flow_model.dict(exclude={'log_config'})}
-    )
+    flow_dict = {'flow': flow_model.dict(exclude={'log_config'})}
+    import time
+
+    time.sleep(10)
+    response = partial_flow_client.post(api, json=flow_dict)
     assert response
 
     response = partial_flow_client.get(api)

@@ -134,27 +134,36 @@ def parse_config_source(
     """
     import io
 
+    print(f'\nPARSE CONFIG SOURCE with allow_yaml_file {allow_yaml_file}')
     if not path:
         raise BadConfigSource
     elif allow_dict and isinstance(path, dict):
         from . import JAML
 
+        print(f'\nA')
         tmp = JAML.dump(path)
         return io.StringIO(tmp), None
     elif allow_stream and hasattr(path, 'read'):
         # already a readable stream
+        print(f'\nB')
         return path, None
     elif allow_yaml_file and is_yaml_filepath(path):
+        print(f'\nC')
+        print(f'\nparse_config_source: lets complete {path}')
         comp_path = complete_path(path)
+        print(f'\nparse_config_source: completed {comp_path}')
         return open(comp_path, encoding='utf8'), comp_path
     elif allow_raw_yaml_content and path.lstrip().startswith(('!', 'jtype')):
         # possible YAML content
+        print(f'\nD')
         path = path.replace('|', '\n    with: ')
         return io.StringIO(path), None
     elif allow_class_type and path.isidentifier():
         # possible class name
+        print(f'\nE')
         return io.StringIO(f'!{path}'), None
     elif allow_json and isinstance(path, str):
+        print(f'\nF')
         try:
             from . import JAML
 
@@ -178,7 +187,11 @@ def complete_path(path: str, extra_search_paths: Optional[Tuple[str]] = None) ->
     :param extra_search_paths: extra paths to conduct search
     :return: Completed file path.
     """
+    if path == 'dummy_executor.yml':
+        print(f'\ncomplete_path: search path {path} in {extra_search_paths}')
     _p = _search_file_in_paths(path, extra_search_paths)
+    if path == 'dummy_executor.yml':
+        print(f'\ncomplete_path: _p is {_p}')
     if _p is None and os.path.exists(path):
         # this checks both abs and relative paths already
         _p = path
@@ -198,23 +211,42 @@ def _search_file_in_paths(path, extra_search_paths: Optional[Tuple[str]] = None)
     """
     import inspect
 
-    search_paths = []
+    search_paths = set()
+    if path == 'dummy_executor.yml':
+        print(
+            f'\n_search_file_in_paths: extra_search_paths {extra_search_paths} for {path}'
+        )
     if extra_search_paths:
-        search_paths.extend((v for v in extra_search_paths))
+        for v in extra_search_paths:
+            search_paths.add(v)
 
     frame = inspect.currentframe()
 
     # iterates over the call stack
     while frame:
-        search_paths.append(os.path.dirname(inspect.getfile(frame)))
+        print(f' frame {frame}')
+        search_paths.add(os.path.dirname(inspect.getfile(frame)))
         frame = frame.f_back
-    search_paths += os.environ['PATH'].split(os.pathsep)
+    if path == 'dummy_executor.yml':
+        print(f'\n_search_file_in_paths: after inspecting frame {search_paths}')
+
+    for p in os.environ['PATH'].split(os.pathsep):
+        search_paths.add(p)
+    if path == 'dummy_executor.yml':
+        print(f'\n_search_file_in_paths: search_paths {search_paths}')
+
+    # print(f' after adding path env {search_paths}')
 
     # return first occurrence of path. If it does not exist, return None.
     for p in search_paths:
         _p = os.path.join(p, path)
         if os.path.exists(_p):
+            if path == 'dummy_executor.yml':
+                print(f'\n_search_file_in_paths: return _p {_p} for search_path {p}')
             return _p
+    # if it did not find, maybe path is already global and exists
+    if os.path.exists(path):
+        return path
 
 
 def load_py_modules(d: Dict, extra_search_paths: Optional[Tuple[str]] = None) -> None:

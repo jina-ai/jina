@@ -106,7 +106,11 @@ class PartialFlowStore(PartialStore):
             with open(args.uses) as yaml_file:
                 yaml_source = yaml_file.read()
 
+            print(f' flow yaml {yaml_source}')
+
             self.object: Flow = Flow.load_config(yaml_source).build()
+            print(f' flow object build')
+            print(f' ======================================================')
             self.object.workspace_id = jinad_args.workspace_id
             self.object.workspace = __partial_workspace__
             self.object.env = {'HOME': __partial_workspace__}
