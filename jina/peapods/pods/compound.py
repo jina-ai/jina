@@ -41,16 +41,13 @@ class CompoundPod(BasePod, ExitStack):
         self.head_args = BasePod._copy_to_head_args(args, args.polling)
         self.tail_args = BasePod._copy_to_tail_args(self.args, self.args.polling)
         self.shards = []  # type: List['Pod']
-        self.assign_shards_args()
-
-    def assign_shards_args(self):
-        """Assign shards to the CompoundPod"""
-        cargs = copy.copy(self.args)
-        self.shards_args = self._set_shard_args(cargs, self.head_args, self.tail_args)
+        self.assign_shards()
 
     def assign_shards(self):
         """Assign shards to the CompoundPod"""
         self.shards.clear()
+        cargs = copy.copy(self.args)
+        self.shards_args = self._set_shard_args(cargs, self.head_args, self.tail_args)
 
         for _args in self.shards_args:
             if getattr(self.args, 'noblock_on_start', False):

@@ -144,7 +144,7 @@ class PartialFlowStore(PartialStore):
                                             pea_args, port_mapping, port_name
                                         )
                             # Update shard_args according to updated head & tail args
-                            pod.assign_shards_args()
+                            pod.assign_shards()
                 else:
                     if port_mapping and (
                         hasattr(pod.args, 'replicas') and pod.args.replicas > 1
