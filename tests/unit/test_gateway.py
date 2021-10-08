@@ -17,12 +17,7 @@ def test_compression(compress_algo, mocker):
 
     response_mock = mocker.Mock()
 
-    f = (
-        Flow(compress=str(compress_algo))
-        .add()
-        .add(name='DummyEncoder', parallel=2)
-        .add()
-    )
+    f = Flow(compress=str(compress_algo)).add().add(name='DummyEncoder', shards=2).add()
 
     with f:
         f.index(random_docs(10), on_done=response_mock)
@@ -52,7 +47,7 @@ def test_grpc_gateway_concurrency(protocol):
             batch_size=16,
         )
 
-    f = Flow(protocol=protocol).add(parallel=2)
+    f = Flow(protocol=protocol).add(shards=2)
     concurrency = 100
     with f:
         threads = []
@@ -65,7 +60,6 @@ def test_grpc_gateway_concurrency(protocol):
 
         for t in threads:
             t.join()
-            print(f'terminate {t}')
 
     success = status_codes.count(0)
     failed = len(status_codes) - success

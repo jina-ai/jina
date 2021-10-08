@@ -27,8 +27,8 @@ CLOUD_HOST = 'localhost:8000'  # consider it as the staged version
 NUM_DOCS = 100
 
 
-@pytest.mark.parametrize('parallels', [1, 2])
-def test_upload_via_pymodule(parallels, mocker):
+@pytest.mark.parametrize('replicas', [1, 2])
+def test_upload_via_pymodule(replicas, mocker):
     from .mwu_encoder import MWUEncoder
 
     response_mock = mocker.Mock()
@@ -39,7 +39,7 @@ def test_upload_via_pymodule(parallels, mocker):
             uses=MWUEncoder,
             uses_with={'greetings': 'hi'},
             host=CLOUD_HOST,
-            parallel=parallels,
+            replicas=replicas,
             py_modules=[os.path.join(cur_dir, 'mwu_encoder.py')],
         )
         .add()
@@ -52,8 +52,8 @@ def test_upload_via_pymodule(parallels, mocker):
     response_mock.assert_called()
 
 
-@pytest.mark.parametrize('parallels', [1, 2])
-def test_upload_via_yaml(parallels, mocker):
+@pytest.mark.parametrize('replicas', [1, 2])
+def test_upload_via_yaml(replicas, mocker):
     response_mock = mocker.Mock()
     f = (
         Flow()
@@ -61,7 +61,7 @@ def test_upload_via_yaml(parallels, mocker):
         .add(
             uses=[os.path.join(cur_dir, 'mwu_encoder.yml')],
             host=CLOUD_HOST,
-            parallel=parallels,
+            replicas=replicas,
             upload_files=[os.path.join(cur_dir, 'mwu_encoder.py')],
         )
         .add()
@@ -74,8 +74,8 @@ def test_upload_via_yaml(parallels, mocker):
     response_mock.assert_called()
 
 
-@pytest.mark.parametrize('parallels', [2])
-def test_upload_multiple_workspaces(parallels, mocker):
+@pytest.mark.parametrize('replicas', [2])
+def test_upload_multiple_workspaces(replicas, mocker):
     response_mock = mocker.Mock()
     encoder_workspace = 'sklearn_encoder_ws'
     indexer_workspace = 'tdb_indexer_ws'
@@ -89,7 +89,7 @@ def test_upload_multiple_workspaces(parallels, mocker):
             name='sklearn_encoder',
             uses=_path(encoder_workspace, 'sklearn.yml'),
             host=CLOUD_HOST,
-            parallel=parallels,
+            replicas=replicas,
             py_modules=[_path(encoder_workspace, 'encoder.py')],
             upload_files=[
                 _path(encoder_workspace, '.jinad'),
@@ -100,7 +100,7 @@ def test_upload_multiple_workspaces(parallels, mocker):
             name='tdb_indexer',
             uses=_path(indexer_workspace, 'tdb.yml'),
             host=CLOUD_HOST,
-            parallel=parallels,
+            replicas=replicas,
             py_modules=[_path(indexer_workspace, 'tdb_indexer.py')],
             upload_files=[
                 _path(indexer_workspace, '.jinad'),
