@@ -3,6 +3,7 @@ import os
 import tempfile
 from typing import Dict, Optional, Generator
 
+from .client import K8sClients
 from ....importer import ImportExtensions
 from ....logging.logger import JinaLogger
 from ....logging.predefined import default_logger
@@ -11,90 +12,6 @@ cur_dir = os.path.dirname(__file__)
 DEFAULT_RESOURCE_DIR = os.path.join(
     cur_dir, '..', '..', '..', 'resources', 'k8s', 'template'
 )
-
-
-class K8sClients:
-    """
-    The Kubernetes api is wrapped into a class to have a lazy reading of the cluster configuration.
-
-    """
-
-    def __init__(self):
-        self._k8s_client = None
-        self._core_v1 = None
-        self._apps_v1 = None
-        self._beta = None
-        self._networking_v1_beta1_api = None
-
-    def _instantiate(self):
-        # this import reads the `KUBECONFIG` env var. Lazy load to postpone the reading
-        from kubernetes import config, client
-
-        try:
-            # try loading kube config from disk first
-            config.load_kube_config()
-        except config.config_exception.ConfigException:
-            # if the config could not be read from disk, try loading in cluster config
-            # this works if we are running inside k8s
-            config.load_incluster_config()
-
-        self._k8s_client = client.ApiClient()
-        self._core_v1 = client.CoreV1Api(api_client=self._k8s_client)
-        self._apps_v1 = client.AppsV1Api(api_client=self._k8s_client)
-        self._beta = client.ExtensionsV1beta1Api(api_client=self._k8s_client)
-        self._networking_v1_beta1_api = client.NetworkingV1beta1Api(
-            api_client=self._k8s_client
-        )
-
-    @property
-    def k8s_client(self):
-        """Client for making requests to Kubernetes
-
-        :return: k8s client
-        """
-        if self._k8s_client is None:
-            self._instantiate()
-        return self._k8s_client
-
-    @property
-    def core_v1(self):
-        """V1 client for core
-
-        :return: v1 client
-        """
-        if self._core_v1 is None:
-            self._instantiate()
-        return self._core_v1
-
-    @property
-    def apps_v1(self):
-        """V1 client for core
-
-        :return: v1 client
-        """
-        if self._apps_v1 is None:
-            self._instantiate()
-        return self._apps_v1
-
-    @property
-    def beta(self):
-        """Beta client for using beta features
-
-        :return: beta client
-        """
-        if self._beta is None:
-            self._instantiate()
-        return self._beta
-
-    @property
-    def networking_v1_beta1_api(self):
-        """Networking client used for creating the ingress
-
-        :return: networking client
-        """
-        if self._networking_v1_beta1_api is None:
-            self._instantiate()
-        return self._networking_v1_beta1_api
 
 
 _k8s_clients = K8sClients()
