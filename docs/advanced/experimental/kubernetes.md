@@ -405,3 +405,19 @@ Thus, shards can scale independently.
 The data synchronisation across replicas must be handled by the respective Indexer.
 For more detailed see {ref}`Dump and rolling update <dump-rolling-restart>`.
 
+## Custom deployment templates for executors
+
+To use customized deployment template for your executors, specify your own deployemnt configuration file path by setting `k8s_custom_resource_dir`
+this will replace the [default deployment.](https://github.com/jina-ai/jina/blob/master/jina/resources/k8s/template/deployment.yml)
+
+```python
+from jina import Flow
+
+f = Flow(name='index-flow', port_expose=8080, infrastructure='K8S', protocol='http').add(
+    uses='jinahub+docker://CLIPImageEncoder',
+    k8s_custom_resource_dir='PATH/DEPLOYMENT'
+)
+
+with f:
+    f.block()
+```
