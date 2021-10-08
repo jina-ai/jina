@@ -69,7 +69,7 @@ def test_equal(pod_args, pod_args_singleton):
 
 
 @pytest.mark.slow
-@pytest.mark.parametrize('shards', [1, 4])
+@pytest.mark.parametrize('shards', [2, 4])
 @pytest.mark.parametrize('replicas', [3, 1])
 @pytest.mark.parametrize('runtime', ['process', 'thread'])
 def test_pod_context_sharded(runtime, shards, replicas):
