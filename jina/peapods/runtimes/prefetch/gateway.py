@@ -70,7 +70,7 @@ class GatewayPrefetcher(BasePrefetcher):
                 )
             self.request_buffer.clear()
 
-    def handle_response(self, response: 'Response'):
+    async def handle_response(self, response: 'Response'):
         """
         Set result of each response received from Executors in the request buffer
 
