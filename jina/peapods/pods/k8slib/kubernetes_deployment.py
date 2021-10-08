@@ -1,6 +1,6 @@
 import json
 from argparse import Namespace
-from typing import Dict, Optional, Tuple, List
+from typing import Dict, Optional, Tuple
 
 from jina.hubble.helper import parse_hub_uri
 from jina.hubble.hubio import HubIO
