@@ -672,6 +672,8 @@
 <span class="sd">        :return: a single :class:``TraversableSequence`` containing the document of all leaves when applying the traversal_paths.</span>
 <span class="sd">        """</span>
         <span class="n">_check_traversal_path_type</span><span class="p">(</span><span class="n">traversal_paths</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">traversal_paths</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">traversal_paths</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'r'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span>
 
         <span class="n">leaves</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traverse</span><span class="p">(</span><span class="n">traversal_paths</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flatten</span><span class="p">(</span><span class="n">leaves</span><span class="p">)</span></div>
