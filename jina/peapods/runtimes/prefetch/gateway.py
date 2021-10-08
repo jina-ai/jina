@@ -70,7 +70,7 @@ class GatewayPrefetcher(BasePrefetcher):
                 )
             self.request_buffer.clear()
 
-    async def handle_response(self, response: 'Response'):
+    def handle_response(self, response: 'Response'):
         """
         Set result of each response received from Executors in the request buffer
 
@@ -102,6 +102,14 @@ class GrpcGatewayPrefetcher(GatewayPrefetcher):
     def __init__(self, args: argparse.Namespace, iolet: 'Grpclet'):
         super().__init__(args, iolet)
         self.iolet.callback = lambda response: self.handle_response(response.request)
+
+    async def handle_response(self, response: 'Response'):
+        """
+        Async version of parents handle_response function
+
+        :param response: message received from grpclet callback
+        """
+        super().handle_response(response)
 
     def _create_receive_task(self) -> 'asyncio.Task':
         """Start a receive task that starts the GRPC server & awaits termination.
