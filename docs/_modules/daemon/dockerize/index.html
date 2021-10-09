@@ -851,7 +851,7 @@
                 <span class="s1">'Docker image not built properly, cannot proceed for run'</span>
             <span class="p">)</span>
         <span class="k">except</span> <span class="n">docker</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">APIError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'API Error while starting the docker container</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'API Error while starting the docker container </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span>
             <span class="k">if</span> <span class="n">_validate_device_request</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)):</span>
                 <span class="c1"># It might not be possible for local to know remote machine's gpu status.</span>
                 <span class="c1"># For few cases (Flow creation), we always set `gpus='all'`, which might fail</span>
@@ -868,7 +868,7 @@
                 <span class="n">run_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'device_requests'</span><span class="p">)</span>
                 <span class="n">container</span><span class="p">:</span> <span class="s1">'Container'</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">containers</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="o">**</span><span class="n">run_kwargs</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">+=</span> <span class="n">_validate_port_conflict</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                <span class="n">msg</span> <span class="o">+=</span> <span class="s1">' '</span> <span class="o">+</span> <span class="n">_validate_port_conflict</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
                 <span class="k">raise</span> <span class="n">DockerContainerException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">docker</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">APIError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'API Error while starting the docker container</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span>
