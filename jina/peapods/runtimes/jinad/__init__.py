@@ -68,11 +68,14 @@ class JinadRuntime(AsyncNewLoopRuntime):
             self.logger.critical(f'remote workspace creation failed')
             raise DaemonWorkspaceCreationFailed
 
+        self.logger.debug(f'call mask args {self.args}')
         payload = replace_enum_to_str(vars(self._mask_args(self.args)))
+        self.logger.debug(f'create pea {self.args}')
         # Create a remote Pea in the above workspace
         success, self.pea_id = await self.client.peas.create(
             workspace_id=self.workspace_id, payload=payload
         )
+        self.logger.debug(f'created pea {self.args}')
         if not success:
             self.logger.critical(f'remote pea creation failed')
             raise DaemonPeaCreationFailed
