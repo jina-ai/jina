@@ -157,6 +157,8 @@ class ContainerStore(BaseStore):
         :raises PartialDaemonConnectionException: if jinad cannot connect to partial
         :return: id of the container
         """
+        container = None
+
         try:
             from . import workspace_store
 
@@ -206,17 +208,18 @@ class ContainerStore(BaseStore):
             object = await self._add(uri=uri, params=params, **kwargs)
         except Exception as e:
             self._logger.error(f'{self._kind} creation failed as {e}')
-            container_logs = Dockerizer.logs(container.id)
-            if container_logs and isinstance(
-                e, (PartialDaemon400Exception, PartialDaemonConnectionException)
-            ):
-                self._logger.debug(
-                    f'error logs from partial daemon: \n {container_logs}'
-                )
-                if e.message and isinstance(e.message, list):
-                    e.message += container_logs.split('\n')
-                elif e.message and isinstance(e.message, str):
-                    e.message += container_logs
+            if container is not None:
+                container_logs = Dockerizer.logs(container.id)
+                if container_logs and isinstance(
+                    e, (PartialDaemon400Exception, PartialDaemonConnectionException)
+                ):
+                    self._logger.debug(
+                        f'error logs from partial daemon: \n {container_logs}'
+                    )
+                    if e.message and isinstance(e.message, list):
+                        e.message += container_logs.split('\n')
+                    elif e.message and isinstance(e.message, str):
+                        e.message += container_logs
             if id in Dockerizer.containers:
                 self._logger.info(f'removing container {id_cleaner(container.id)}')
                 Dockerizer.rm_container(container.id)
