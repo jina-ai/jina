@@ -13,7 +13,7 @@ from .... import __docker_host__
 from .helper import get_docker_network, get_gpu_device_requests
 from ....excepts import BadImageNameError, DockerVersionError
 from ...zmq import send_ctrl_message
-from ....helper import ArgNamespace, slugify
+from ....helper import ArgNamespace, slugify, random_name
 from ....enums import SocketType
 
 if TYPE_CHECKING:
@@ -203,7 +203,7 @@ class ContainerRuntime(ZMQRuntime):
             detach=True,
             auto_remove=True,
             ports=ports,
-            name=slugify(self.name),
+            name=slugify(f'{self.name}/{random_name()}'),
             volumes=_volumes,
             network_mode=self._net_mode,
             entrypoint=self.args.entrypoint,
