@@ -28,7 +28,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.peapods.pods.factory module" href="../jina.peapods.pods.factory/" /><link rel="prev" title="jina.peapods.pods.k8slib.kubernetes_tools module" href="../jina.peapods.pods.k8slib.kubernetes_tools/" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.10.09"/>
-        <title>jina.peapods.pods.compound module - Jina 2.1.6 documentation</title>
+        <title>jina.peapods.pods.compound module - Jina 2.1.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -162,7 +162,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 2.1.6 documentation</div>
+                <div class="brand">Jina 2.1.7 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -606,12 +606,12 @@
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.peapods.pods.compound.</span></span><span class="sig-name descname"><span class="pre">CompoundPod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">needs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/compound/#CompoundPod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.compound.CompoundPod" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../jina.peapods.pods/#jina.peapods.pods.BasePod" title="jina.peapods.pods.BasePod"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.pods.BasePod</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">contextlib.ExitStack</span></code></p>
 <p>A CompoundPod is a immutable set of pods, which run in parallel.
-A CompoundPod is an abstraction using a composable pattern to abstract the usage of parallel Pods that act as replicas.</p>
-<p>CompoundPod will make sure to add a <cite>HeadPea</cite> and a <cite>TailPea</cite> to serve as routing/merging pattern for the different Pod replicas</p>
+A CompoundPod is an abstraction using a composable pattern to abstract the usage of parallel Pods that act as shards.</p>
+<p>CompoundPod will make sure to add a <cite>HeadPea</cite> and a <cite>TailPea</cite> to serve as routing/merging pattern for the different Pod shards</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>args</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – pod arguments parsed from the CLI. These arguments will be used for each of the replicas</p></li>
+<li><p><strong>args</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – pod arguments parsed from the CLI. These arguments will be used for each of the shards</p></li>
 <li><p><strong>needs</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Set</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – pod names of preceding pods, the output of these pods are going into the input of this pod</p></li>
 </ul>
 </dd>
@@ -630,9 +630,9 @@ A CompoundPod is an abstraction using a composable pattern to abstract the usage
 <span class="sig-name descname"><span class="pre">tail_args</span></span><em class="property"> <span class="pre">=</span> <span class="pre">None</span></em><a class="headerlink" href="#jina.peapods.pods.compound.CompoundPod.tail_args" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.peapods.pods.compound.CompoundPod.assign_replicas">
-<span class="sig-name descname"><span class="pre">assign_replicas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/compound/#CompoundPod.assign_replicas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.compound.CompoundPod.assign_replicas" title="Permalink to this definition">¶</a></dt>
-<dd><p>Assign replicas to the CompoundPod</p>
+<dt class="sig sig-object py" id="jina.peapods.pods.compound.CompoundPod.assign_shards">
+<span class="sig-name descname"><span class="pre">assign_shards</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/compound/#CompoundPod.assign_shards"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.compound.CompoundPod.assign_shards" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assign shards to the CompoundPod</p>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.peapods.pods.compound.CompoundPod.port_jinad">
@@ -715,7 +715,7 @@ If not successful, it will raise an error hoping the outer function to catch it<
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.peapods.pods.compound.CompoundPod.rolling_update">
 <span class="sig-name descname"><span class="pre">rolling_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dump_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/compound/#CompoundPod.rolling_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.compound.CompoundPod.rolling_update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reload all Pods of this Compound Pod.</p>
+<dd><p>Reload all Shards of this Compound Pod.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>dump_path</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the dump from which to read the data</p>

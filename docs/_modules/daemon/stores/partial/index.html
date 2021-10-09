@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.10.09"/>
-        <title>daemon.stores.partial - Jina 2.1.6 documentation</title>
+        <title>daemon.stores.partial - Jina 2.1.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 2.1.6 documentation</div>
+                <div class="brand">Jina 2.1.7 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -709,8 +709,8 @@
                         <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">GATEWAY_RUNTIME_DICT</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
                     <span class="p">):</span>
                         <span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runs_in_docker</span> <span class="o">=</span> <span class="kc">False</span>
-                        <span class="k">for</span> <span class="n">replica_args</span> <span class="ow">in</span> <span class="n">pod</span><span class="o">.</span><span class="n">replicas_args</span><span class="p">:</span>
-                            <span class="n">replica_args</span><span class="o">.</span><span class="n">runs_in_docker</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="k">for</span> <span class="n">shards_args</span> <span class="ow">in</span> <span class="n">pod</span><span class="o">.</span><span class="n">shards_args</span><span class="p">:</span>
+                            <span class="n">shards_args</span><span class="o">.</span><span class="n">runs_in_docker</span> <span class="o">=</span> <span class="kc">False</span>
                         <span class="k">if</span> <span class="n">port_mapping</span><span class="p">:</span>
                             <span class="c1"># Ports for Head &amp; Tail Peas in a CompoundPod set here.</span>
                             <span class="c1"># This is specifically needed as `save_config` doesn't save `port_out` for a HeadPea</span>
@@ -719,27 +719,30 @@
                             <span class="k">for</span> <span class="n">pea_args</span> <span class="ow">in</span> <span class="p">[</span><span class="n">pod</span><span class="o">.</span><span class="n">head_args</span><span class="p">,</span> <span class="n">pod</span><span class="o">.</span><span class="n">tail_args</span><span class="p">]:</span>
                                 <span class="k">if</span> <span class="n">pea_args</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">port_mapping</span><span class="o">.</span><span class="n">pea_names</span><span class="p">:</span>
                                     <span class="k">for</span> <span class="n">port_name</span> <span class="ow">in</span> <span class="n">Ports</span><span class="o">.</span><span class="n">__fields__</span><span class="p">:</span>
-                                        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pea_args</span><span class="p">,</span> <span class="n">port_name</span><span class="p">):</span>
-                                            <span class="nb">setattr</span><span class="p">(</span>
-                                                <span class="n">pea_args</span><span class="p">,</span>
-                                                <span class="n">port_name</span><span class="p">,</span>
-                                                <span class="nb">getattr</span><span class="p">(</span>
-                                                    <span class="n">port_mapping</span><span class="p">[</span><span class="n">pea_args</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">ports</span><span class="p">,</span>
-                                                    <span class="n">port_name</span><span class="p">,</span>
-                                                    <span class="n">random_port</span><span class="p">(),</span>
-                                                <span class="p">),</span>
-                                            <span class="p">)</span>
-                            <span class="c1"># Update replica_args according to updated head &amp; tail args</span>
-                            <span class="n">pod</span><span class="o">.</span><span class="n">assign_replicas</span><span class="p">()</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">_set_pea_ports</span><span class="p">(</span>
+                                            <span class="n">pea_args</span><span class="p">,</span> <span class="n">port_mapping</span><span class="p">,</span> <span class="n">port_name</span>
+                                        <span class="p">)</span>
+                            <span class="c1"># Update shard_args according to updated head &amp; tail args</span>
+                            <span class="n">pod</span><span class="o">.</span><span class="n">assign_shards</span><span class="p">()</span>
                 <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">port_mapping</span> <span class="ow">and</span> <span class="p">(</span>
+                        <span class="nb">hasattr</span><span class="p">(</span><span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'replicas'</span><span class="p">)</span> <span class="ow">and</span> <span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">replicas</span> <span class="o">&gt;</span> <span class="mi">1</span>
+                    <span class="p">):</span>
+                        <span class="k">for</span> <span class="n">pea_args</span> <span class="ow">in</span> <span class="p">[</span><span class="n">pod</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">],</span> <span class="n">pod</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'tail'</span><span class="p">]]:</span>
+                            <span class="k">if</span> <span class="n">pea_args</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">port_mapping</span><span class="o">.</span><span class="n">pea_names</span><span class="p">:</span>
+                                <span class="k">for</span> <span class="n">port_name</span> <span class="ow">in</span> <span class="n">Ports</span><span class="o">.</span><span class="n">__fields__</span><span class="p">:</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">_set_pea_ports</span><span class="p">(</span>
+                                        <span class="n">pea_args</span><span class="p">,</span> <span class="n">port_mapping</span><span class="p">,</span> <span class="n">port_name</span>
+                                    <span class="p">)</span>
+                        <span class="n">pod</span><span class="o">.</span><span class="n">update_worker_pea_args</span><span class="p">()</span>
+
                     <span class="c1"># avoid setting runs_in_docker for Pods with parallel &gt; 1 and using `ZEDRuntime`</span>
                     <span class="c1"># else, replica-peas would try connecting to head/tail-pea via __docker_host__</span>
-                    <span class="k">if</span> <span class="p">(</span>
-                        <span class="n">runtime_cls</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'ZEDRuntime'</span><span class="p">,</span> <span class="s1">'GRPCDataRuntime'</span><span class="p">]</span>
-                        <span class="ow">and</span> <span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">parallel</span> <span class="o">&gt;</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="n">runtime_cls</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'ZEDRuntime'</span><span class="p">,</span> <span class="s1">'GRPCDataRuntime'</span><span class="p">]</span> <span class="ow">and</span> <span class="p">(</span>
+                        <span class="nb">hasattr</span><span class="p">(</span><span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'replicas'</span><span class="p">)</span> <span class="ow">and</span> <span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">replicas</span> <span class="o">&gt;</span> <span class="mi">1</span>
                     <span class="p">):</span>
                         <span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runs_in_docker</span> <span class="o">=</span> <span class="kc">False</span>
-                        <span class="n">pod</span><span class="o">.</span><span class="n">update_pea_args</span><span class="p">()</span>
+                        <span class="n">pod</span><span class="o">.</span><span class="n">update_worker_pea_args</span><span class="p">()</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -758,6 +761,18 @@
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Flow is created'</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">item</span></div>
+
+    <span class="k">def</span> <span class="nf">_set_pea_ports</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pea_args</span><span class="p">,</span> <span class="n">port_mapping</span><span class="p">,</span> <span class="n">port_name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pea_args</span><span class="p">,</span> <span class="n">port_name</span><span class="p">):</span>
+            <span class="nb">setattr</span><span class="p">(</span>
+                <span class="n">pea_args</span><span class="p">,</span>
+                <span class="n">port_name</span><span class="p">,</span>
+                <span class="nb">getattr</span><span class="p">(</span>
+                    <span class="n">port_mapping</span><span class="p">[</span><span class="n">pea_args</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">ports</span><span class="p">,</span>
+                    <span class="n">port_name</span><span class="p">,</span>
+                    <span class="n">random_port</span><span class="p">(),</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
 
 <div class="viewcode-block" id="PartialFlowStore.update"><a class="viewcode-back" href="../../../../api/daemon.stores.partial/#daemon.stores.partial.PartialFlowStore.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.10.09"/>
-        <title>jina.peapods.grpc - Jina 2.1.6 documentation</title>
+        <title>jina.peapods.grpc - Jina 2.1.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 2.1.6 documentation</div>
+                <div class="brand">Jina 2.1.7 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -743,7 +743,9 @@
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="o">.</span><span class="n">wait_for_termination</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_update_pending_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pending_tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">task</span> <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_tasks</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="o">.</span><span class="n">done</span><span class="p">()]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pending_tasks</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">task</span> <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_tasks</span> <span class="k">if</span> <span class="n">task</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">task</span><span class="o">.</span><span class="n">done</span><span class="p">()</span>
+        <span class="p">]</span>
 
 <div class="viewcode-block" id="Grpclet.Call"><a class="viewcode-back" href="../../../../api/jina.peapods.grpc/#jina.peapods.grpc.Grpclet.Call">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">Call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">"""Processes messages received by the GRPC server</span>
