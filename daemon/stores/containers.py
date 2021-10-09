@@ -78,7 +78,7 @@ class ContainerStore(BaseStore):
         :param uri: uri of partial-daemon
         :return: True if partial-daemon is ready"""
         async with aiohttp.ClientSession() as session:
-            for _ in range(20):
+            for _ in range(60):
                 try:
                     async with session.get(uri) as response:
                         if response.status == HTTPStatus.OK:
@@ -200,9 +200,12 @@ class ContainerStore(BaseStore):
             )
             if not await self.ready(uri):
                 if container:
+                    logs = Dockerizer.logs(id=container.id)
                     self._logger.warning(
-                        f'failed pea logs {Dockerizer.logs(id=container.id)}'
+                        f'failed pea logs of container {container.id} log length {len(logs)} {logs}'
                     )
+                    print('print?')
+                    print(logs)
                 raise PartialDaemonConnectionException(
                     f'{id.type.title()} creation failed, couldn\'t reach the container at {uri} after 10secs with id {id} entrpoiunt {entrypoint} and dockerports {dockerports}'
                 )
