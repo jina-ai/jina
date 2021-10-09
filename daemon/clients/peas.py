@@ -57,12 +57,12 @@ class AsyncPeaClient(AsyncBaseClient):
             timeout=self.timeout,
         ) as response:
             self._logger.info(
-                f'DO CREAT a {self._kind.title()} in workspace {workspace_id} with name {payload["name"]} and other args {payload}'
+                f'DO CREAT a {self._kind.title()} in workspace {workspace_id} with name {payload["name"] if "name" in payload else ""} and other args {payload}'
             )
             response_json = await response.json()
             if response.status == HTTPStatus.CREATED:
                 self._logger.success(
-                    f'successfully created a {self._kind.title()} {response_json} in workspace {workspace_id} with name {payload["name"]}'
+                    f'successfully created a {self._kind.title()} {response_json} in workspace {workspace_id} with name {payload["name"] if "name" in payload else ""}'
                 )
                 return True, response_json
             elif response.status == HTTPStatus.UNPROCESSABLE_ENTITY:
