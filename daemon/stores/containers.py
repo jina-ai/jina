@@ -198,7 +198,7 @@ class ContainerStore(BaseStore):
             )
             if not await self.ready(uri):
                 raise PartialDaemonConnectionException(
-                    f'{id.type.title()} creation failed, couldn\'t reach the container at {uri} after 10secs'
+                    f'{id.type.title()} creation failed, couldn\'t reach the container at {uri} after 10secs with id {id} entrpoiunt {entrypoint} and dockerports {dockerports}'
                 )
             kwargs.update(
                 {'ports': ports.dict()} if isinstance(ports, PortMappings) else {}

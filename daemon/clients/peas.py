@@ -49,6 +49,9 @@ class AsyncPeaClient(AsyncBaseClient):
             if envs and isinstance(envs, Dict)
             else []
         )
+        self._logger.info(
+            f'DO CREAT a {self._kind.title()} in workspace {workspace_id} with name {payload["name"] if "name" in payload else ""} and other args {payload}'
+        )
         async with aiohttp.request(
             method='POST',
             url=self.store_api,
@@ -56,9 +59,7 @@ class AsyncPeaClient(AsyncBaseClient):
             json=payload,
             timeout=self.timeout,
         ) as response:
-            self._logger.info(
-                f'DO CREAT a {self._kind.title()} in workspace {workspace_id} with name {payload["name"] if "name" in payload else ""} and other args {payload}'
-            )
+
             response_json = await response.json()
             if response.status == HTTPStatus.CREATED:
                 self._logger.success(
