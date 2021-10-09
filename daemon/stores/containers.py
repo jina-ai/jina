@@ -93,9 +93,11 @@ class ContainerStore(BaseStore):
                     self._logger.error(
                         f'error while checking if partial-daemon is ready: {e}'
                     )
+
         self._logger.error(
             f'couldn\'t reach {self._kind.title()} container at {uri} after 10secs'
         )
+
         return False
 
     def _uri(self, port: int) -> str:
@@ -197,6 +199,10 @@ class ContainerStore(BaseStore):
                 device_requests=device_requests,
             )
             if not await self.ready(uri):
+                if container:
+                    self._logger.warning(
+                        f'failed pea logs {Dockerizer.logs(id=container.id)}'
+                    )
                 raise PartialDaemonConnectionException(
                     f'{id.type.title()} creation failed, couldn\'t reach the container at {uri} after 10secs with id {id} entrpoiunt {entrypoint} and dockerports {dockerports}'
                 )

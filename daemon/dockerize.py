@@ -262,7 +262,9 @@ class Dockerizer:
                 working_dir=__partial_workspace__,
                 extra_hosts={__docker_host__: 'host-gateway'},
             )
+            cls.logger.info(f'run container {run_kwargs}')
             container: 'Container' = cls.client.containers.run(**run_kwargs)
+            cls.logger.info(f'started container {run_kwargs}')
         except docker.errors.NotFound as e:
             cls.logger.critical(
                 f'Image {image} or Network {network} not found locally {e!r}'
