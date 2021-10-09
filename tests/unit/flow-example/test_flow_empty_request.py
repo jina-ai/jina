@@ -8,7 +8,7 @@ class MyExecutor(Executor):
 
 
 def test_empty_post_request(mocker):
-    f = Flow().add(uses=MyExecutor, parallel=2, polling='ALL')
+    f = Flow().add(uses=MyExecutor, shards=2, polling='ALL')
     with f:
         on_error_mock = mocker.Mock()
         on_done_mock = mocker.Mock()

@@ -67,23 +67,6 @@ def test_parse_env_map():
     assert a.env == {'key1': 'value1', 'key2': 'value2', 'key3': 3}
 
 
-def test_shards_parallel_synonym():
-    a = set_pod_parser().parse_args(['--shards', '2'])
-    assert a.parallel == 2
-    with pytest.raises(AttributeError):
-        a.shards
-
-    a = set_pod_parser().parse_args(['--parallel', '2'])
-    assert a.parallel == 2
-    with pytest.raises(AttributeError):
-        a.shards
-
-    a = set_pod_parser().parse_args([])
-    assert a.parallel == 1
-    with pytest.raises(AttributeError):
-        a.shards
-
-
 @pytest.mark.slow
 def test_ping():
     a1 = set_pea_parser().parse_args([])

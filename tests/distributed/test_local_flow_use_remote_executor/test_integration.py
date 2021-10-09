@@ -8,7 +8,7 @@ from jina.parsers import set_pod_parser
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 single_compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
-parallel_compose_yml = os.path.join(cur_dir, 'docker-compose-parallel.yml')
+shards_compose_yml = os.path.join(cur_dir, 'docker-compose-shards.yml')
 
 
 @pytest.fixture
@@ -49,7 +49,7 @@ def patched_remote_local_connection(monkeypatch):
 
 @pytest.mark.parametrize(
     'docker_compose',
-    [single_compose_yml, parallel_compose_yml],
+    [single_compose_yml, shards_compose_yml],
     indirect=['docker_compose'],
 )
 def test_local_flow_use_external_executor(
