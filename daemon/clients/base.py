@@ -176,6 +176,7 @@ class AsyncBaseClient:
         except TypeError:
             self._logger.error(f'invalid id {id} passed for logstreaming, exiting..')
             return
+        self._logger.debug(f'start log streaming task for {id}')
         url = f'{self.logstream_api}/{id}'
         try:
             async with aiohttp.ClientSession() as session:
@@ -206,7 +207,7 @@ class AsyncBaseClient:
                             f'log streaming failed, you won\'t see logs on the remote\n Reason: {e!r}'
                         )
                         continue
-                    except asyncio.CancelledError:
+                    except asyncio.CancelledError as e:
                         self._logger.debug(
                             f'successfully cancelled log streaming task for {id}'
                         )
