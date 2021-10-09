@@ -78,7 +78,7 @@ class ContainerStore(BaseStore):
         :param uri: uri of partial-daemon
         :return: True if partial-daemon is ready"""
         async with aiohttp.ClientSession() as session:
-            for _ in range(20):
+            for _ in range(60):
                 try:
                     async with session.get(uri) as response:
                         if response.status == HTTPStatus.OK:
@@ -94,7 +94,7 @@ class ContainerStore(BaseStore):
                         f'error while checking if partial-daemon is ready: {e}'
                     )
         self._logger.error(
-            f'couldn\'t reach {self._kind.title()} container at {uri} after 10secs'
+            f'couldn\'t reach {self._kind.title()} container at {uri} after 30secs'
         )
         return False
 
@@ -198,7 +198,7 @@ class ContainerStore(BaseStore):
             )
             if not await self.ready(uri):
                 raise PartialDaemonConnectionException(
-                    f'{id.type.title()} creation failed, couldn\'t reach the container at {uri} after 10secs'
+                    f'{id.type.title()} creation failed, couldn\'t reach the container at {uri} after 30secs'
                 )
             kwargs.update(
                 {'ports': ports.dict()} if isinstance(ports, PortMappings) else {}
