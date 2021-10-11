@@ -70,7 +70,7 @@ class DocumentArrayNeuralOpsMixin:
         if batch_size is not None:
             if batch_size <= 0:
                 raise ValueError(
-                    f'`batch_size` must be larger than 0, receiving {limit}'
+                    f'`batch_size` must be larger than 0, receiving {batch_size}'
                 )
             else:
                 batch_size = int(batch_size)
