@@ -161,6 +161,36 @@ class K8sPod(BasePod, ExitFIFO):
                 fail_msg += f': {repr(exception_to_raise)}'
             raise RuntimeFailToStart(fail_msg)
 
+        def wait_restart_success(self):
+            _timeout = self.common_args.timeout_ready
+            if _timeout <= 0:
+                _timeout = None
+            else:
+                _timeout /= 1e3
+
+            from kubernetes import client
+
+            k8s_client = kubernetes_tools.K8sClients().apps_v1
+
+            with JinaLogger(f'waiting_for_{self.name}') as logger:
+                logger.info(
+                    f'🏝️\n\t\tWaiting for "{self.name}" to be ready, with {self.num_replicas} replicas'
+                )
+                timeout_ns = 1000000000 * _timeout if _timeout else None
+                now = time.time_ns()
+                exception_to_raise = None
+                while timeout_ns is None or time.time_ns() - now < timeout_ns:
+                    try:
+                        api_response = k8s_client.read_namespaced_deployment(
+                            name=self.dns_name, namespace=self.k8s_namespace
+                        )
+                        assert api_response.status.replicas == self.num_replicas
+                        logger.debug(f'API RESPONSE {api_response}')
+                        time.sleep(1.0)
+                    except client.ApiException as ex:
+                        exception_to_raise = ex
+                        break
+
         def start(self):
             with JinaLogger(f'start_{self.name}') as logger:
                 logger.info(f'\t\tDeploying "{self.name}"')
@@ -358,15 +388,14 @@ class K8sPod(BasePod, ExitFIFO):
             else:
                 uses_with = {'dump_path': kwargs['dump_path']}
 
-        try:
-            if len(self.deployments) > 1:
-
-                for deployment in self.deployments[1:-1]:
-                    deployment.rolling_update(uses_with=uses_with, **kwargs)
-            else:
-                self.deployments[0].rolling_update(uses_with=uses_with, **kwargs)
-        except:
-            raise
+        if len(self.k8s_deployments) > 1:
+            for deployment in self.k8s_deployments[1:-1]:
+                deployment.rolling_update(uses_with=uses_with, **kwargs)
+            for deployment in self.k8s_deployments[1:-1]:
+                deployment.wait_restart_success()
+        else:
+            self.k8s_deployments[0].rolling_update(uses_with=uses_with, **kwargs)
+            self.k8s_deployments[0].wait_restart_success()
 
     def start(self) -> 'K8sPod':
         """Deploy the kubernetes pods via k8s Deployment and k8s Service.
