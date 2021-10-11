@@ -623,7 +623,7 @@
             <span class="n">image_name</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="s1">'jinaai/jina:test-pip'</span>
                 <span class="k">if</span> <span class="n">test_pip</span>
-                <span class="k">else</span> <span class="sa">f</span><span class="s1">'jinaai/jina:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s1">-py38-standard'</span>
+                <span class="k">else</span> <span class="sa">f</span><span class="s1">'jinaai/jina:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s1">-py38-perf'</span>
             <span class="p">)</span>
             <span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">deploy_service</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">dns_name</span><span class="p">,</span>
@@ -672,7 +672,7 @@
                 <span class="n">image_name</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="s1">'jinaai/jina:test-pip'</span>
                     <span class="k">if</span> <span class="n">test_pip</span>
-                    <span class="k">else</span> <span class="sa">f</span><span class="s1">'jinaai/jina:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s1">-py38-standard'</span>
+                    <span class="k">else</span> <span class="sa">f</span><span class="s1">'jinaai/jina:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s1">-py38-perf'</span>
                 <span class="p">)</span>
                 <span class="n">uses</span> <span class="o">=</span> <span class="s1">'BaseExecutor'</span>
             <span class="k">else</span><span class="p">:</span>
