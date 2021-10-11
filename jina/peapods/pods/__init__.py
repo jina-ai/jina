@@ -577,6 +577,9 @@ class Pod(BasePod, ExitFIFO):
                     pea.close()
                     _args = self.peas_args['peas'][pea_args_idx]
                     _args.noblock_on_start = False
+                    ### BACKWARDS COMPATIBILITY, so THAT DUMP_PATH is in runtime_args
+                    _args.dump_path = dump_path
+                    ###
                     _args.uses_with = uses_with
                     new_pea = BasePea(_args)
                     self.enter_context(new_pea)
