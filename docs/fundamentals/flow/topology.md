@@ -1,7 +1,7 @@
 (flow-topology)=
 # Topology
 
-The topology of a Flow defines how information are distributed between all Executors.
+The topology of a Flow defines how information is distributed between all Executors.
 
 Each Executor has predecessors and successors. An Executor receives requests from all of its predecessors and sends them to all of its successors.
 
