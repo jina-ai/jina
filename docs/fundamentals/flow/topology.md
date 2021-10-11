@@ -82,7 +82,7 @@ This is helpful in two situations:
 
 Then splitting the load across two or more machines yields better results.
 
-For Shards you can define which shard (instance) will receive the request from its predecessor. This behaviour is called `polling`. By default `polling` is set so `ANY`, which means only one shard will receive a request. If `polling` is to `ALL` it means that all Shards will receive a request.
+For Shards you can define which shard (instance) will receive the request from its predecessor. This behaviour is called `polling`. By default `polling` is set to `ANY`, which means only one shard will receive a request. If `polling` is to `ALL` it means that all Shards will receive a request.
 
 When you shard your index, the request handling usually differs between index and search requests:
 
@@ -112,7 +112,7 @@ Each shard returns the top 20 results.
 After the merger there will be 200 results per query Document.
 ```
 
-### Distribute Replicas & Shards across machines
+## Distribute Replicas & Shards across machines
 
 Both Replicas and Shards can be distributed across machines to scale your Flow horizontally by using more machines.
 
@@ -120,7 +120,7 @@ In order to do this you need to provide a list of IPs in the `peas_hosts` argume
 
 ````{admonition} Important
 :class: important
-`{ref}`JinaD <jinad-server>`` needs to be installed and running on the machines you want to use in your Flow.
+{ref}`JinaD <jinad-server>` needs to be installed and run on the machines you want to use in your Flow.
 ````
 
 ```python
@@ -132,7 +132,7 @@ f = (Flow()
 
 This creates a Flow with an Executor and two Replicas of this Executor. Those two Replicas will be deployed to 10.0.0.1 and 10.0.0.2. Assuming those hosts have JinaD set up and reachable from the Flow's machine.
 
-### Combining Replicas & Shards
+## Combining Replicas & Shards
 
 Replicas and Shards can also be combined, which is necessary for Flows with high scalability needs.
 In this case Jina will shard the Executor and create Replicas for each shard.
@@ -142,6 +142,10 @@ from jina import Flow
 
 f = (Flow()
      .add(name='shards_with_replicas', shards=2, replicas=3))
+```
+
+```{figure} ../../../.github/2.0/replica_shards_example.svg
+:align: center
 ```
 
 This Flow has a single Executor with 2 Shards and 3 Replicas, which means it gets split into 2 Shards with 3 Replicas each. In total this Flow has 2*3=6 workers and could be distributed to six different machines if necessary.
