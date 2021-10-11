@@ -685,7 +685,6 @@
 <span class="sd">            If one of the :class:`Pod` fails to start, make sure that all of them</span>
 <span class="sd">            are properly closed.</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assign_shards</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'noblock_on_start'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
             <span class="n">head_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span>
             <span class="n">head_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
@@ -746,9 +745,7 @@
             <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">:</span>
                 <span class="n">p</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+            <span class="k">pass</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">is_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
