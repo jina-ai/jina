@@ -71,6 +71,6 @@ class HTTPBaseClient(BaseClient):
                         p_bar.update()
                     yield resp
             except aiohttp.ClientError as e:
-                self.logger.warning(
+                self.logger.error(
                     f'Error while fetching response from websocket server {e!r}'
                 )

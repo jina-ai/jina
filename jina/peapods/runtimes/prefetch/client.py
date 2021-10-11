@@ -25,7 +25,7 @@ class HTTPClientPrefetcher(ClientPrefetcher):
 
         :return: asyncio Task
         """
-        return asyncio.sleep(1e9)
+        return await asyncio.sleep(1e9)
 
     def handle_request(self, request: 'Request') -> 'asyncio.Task':
         """
@@ -55,12 +55,13 @@ class WebsocketClientPrefetcher(ClientPrefetcher):
             async for response in self.iolet.recv_message():
                 self.handle_response(response)
         finally:
-            self.logger.warning(
-                f'{self.__class__.__name__} closed, cancelling all outstanding requests'
-            )
-            for future in self.request_buffer.values():
-                future.cancel()
-            self.request_buffer.clear()
+            if self.request_buffer:
+                self.logger.warning(
+                    f'{self.__class__.__name__} closed, cancelling all outstanding requests'
+                )
+                for future in self.request_buffer.values():
+                    future.cancel()
+                self.request_buffer.clear()
 
     def handle_end_of_iter(self):
         """Send End of iteration signal to the Gateway"""

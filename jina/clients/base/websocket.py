@@ -61,6 +61,6 @@ class WebSocketBaseClient(BaseClient):
                     yield response
 
             except aiohttp.ClientError as e:
-                self.logger.warning(
+                self.logger.error(
                     f'Error while streaming response from websocket server {e!r}'
                 )

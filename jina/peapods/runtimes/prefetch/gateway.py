@@ -55,12 +55,13 @@ class ZmqGatewayPrefetcher(GatewayPrefetcher):
         except asyncio.CancelledError:
             raise
         finally:
-            self.logger.warning(
-                f'{self.__class__.__name__} closed, cancelling all outstanding requests'
-            )
-            for future in self.request_buffer.values():
-                future.cancel()
-            self.request_buffer.clear()
+            if self.request_buffer:
+                self.logger.warning(
+                    f'{self.__class__.__name__} closed, cancelling all outstanding requests'
+                )
+                for future in self.request_buffer.values():
+                    future.cancel()
+                self.request_buffer.clear()
 
 
 class GrpcGatewayPrefetcher(GatewayPrefetcher):

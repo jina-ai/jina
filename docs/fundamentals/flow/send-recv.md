@@ -325,3 +325,36 @@ then `return_results=True` means you will get nothing until the 1000th response 
 takes 10MB memory, it means you will consume upto 10GB memory! On contrary, with callback and `return_results=False`,
 your memory usage will stay constant at 10MB.
 ````
+
+## Environment Variables
+
+In some scenarios, you may want to set environment variables to the Flow and use it inside Executor.
+To do that, you can use `env`:
+
+```python
+import os
+from jina import Flow, Executor, requests
+
+
+class MyExecutor(Executor):
+    @requests
+    def foo(self, **kwargs):
+        print('MY_ENV', '->', os.environ.get('MY_ENV'))
+
+
+f = Flow().add(uses=MyExecutor, env={'MY_ENV': 'MY_ENV_VALUE'})
+
+with f:
+    f.post('/foo')
+```
+
+```console
+           Flow@23340[I]:🎉 Flow is ready to use!
+	🔗 Protocol: 		GRPC
+	🏠 Local access:	0.0.0.0:51587
+	🔒 Private network:	172.18.0.253:51587
+	🌐 Public address:	94.135.231.132:51587
+MY_ENV -> MY_ENV_VALUE
+
+Process finished with exit code 0
+```
