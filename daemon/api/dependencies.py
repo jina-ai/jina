@@ -156,21 +156,7 @@ class FlowDepends:
                         # to handle `CompoundPod` inside partial-daemon.
                         for pea_args in [pod.head_args, pod.tail_args]:
                             pea_args.runs_in_docker = False
-                            current_ports = Ports()
-                            for port_name in Ports.__fields__:
-                                # Get port from Namespace args & set to PortMappings
-                                setattr(
-                                    current_ports,
-                                    port_name,
-                                    getattr(pea_args, port_name, None),
-                                )
-                            port_mapping.append(
-                                PortMapping(
-                                    pod_name=pod_name,
-                                    pea_name=pea_args.name,
-                                    ports=current_ports,
-                                )
-                            )
+                            self._update_port_mapping(pea_args, pod_name, port_mapping)
                 else:
                     if runtime_cls in ['ZEDRuntime', 'GRPCDataRuntime'] + list(
                         GATEWAY_RUNTIME_DICT.values()
@@ -183,16 +169,41 @@ class FlowDepends:
                                 port_name,
                                 getattr(pod.args, port_name, None),
                             )
+
                         port_mapping.append(
                             PortMapping(
                                 pod_name=pod_name, pea_name='', ports=current_ports
                             )
                         )
+                    elif (
+                        runtime_cls in ['ContainerRuntime']
+                        and hasattr(pod.args, 'replicas')
+                        and pod.args.replicas > 1
+                    ):
+                        for pea_args in [pod.peas_args['head'], pod.peas_args['tail']]:
+                            self._update_port_mapping(pea_args, pod_name, port_mapping)
 
             self.ports = port_mapping
             # save to a new file & set it for partial-daemon
             f.save_config(filename=self.newfile)
             self.params.uses = os.path.basename(self.newfile)
+
+    def _update_port_mapping(self, pea_args, pod_name, port_mapping):
+        current_ports = Ports()
+        for port_name in Ports.__fields__:
+            # Get port from Namespace args & set to PortMappings
+            setattr(
+                current_ports,
+                port_name,
+                getattr(pea_args, port_name, None),
+            )
+        port_mapping.append(
+            PortMapping(
+                pod_name=pod_name,
+                pea_name=pea_args.name,
+                ports=current_ports,
+            )
+        )
 
     @property
     def ports(self) -> PortMappings:

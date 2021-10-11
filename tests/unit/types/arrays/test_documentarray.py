@@ -673,3 +673,9 @@ def test_buffers_getter_setter():
         da.buffers = [b'cc', b'bb', b'aa', b'dd']
     with pytest.raises(TypeError):
         da.buffers = ['aa', 'bb', 'cc']
+
+
+def test_traverse_flat_root_itself():
+    da = DocumentArray([Document() for _ in range(100)])
+    res = da.traverse_flat(['r'])
+    assert id(res) == id(da)

@@ -10,7 +10,7 @@ def test_namespace_to_dict():
         'head': Namespace(
             host='1.2.3.4',
             name='encoder',
-            parallel=2,
+            shards=2,
             pea_id=-1,
             polling=PollingType.ANY,
             port_ctrl=39011,
@@ -21,7 +21,7 @@ def test_namespace_to_dict():
         'tail': Namespace(
             host='1.2.3.4',
             name='encoder',
-            parallel=2,
+            shards=2,
             pea_id=-1,
             polling=PollingType.ANY,
             port_ctrl=46937,
@@ -33,7 +33,7 @@ def test_namespace_to_dict():
             Namespace(
                 host='1.2.3.4',
                 name='encoder',
-                parallel=2,
+                shards=2,
                 pea_id=-1,
                 polling=PollingType.ANY,
                 port_ctrl=44747,
@@ -45,7 +45,7 @@ def test_namespace_to_dict():
             Namespace(
                 host='1.2.3.4',
                 name='encoder',
-                parallel=2,
+                shards=2,
                 pea_id=-1,
                 polling=PollingType.ANY,
                 port_ctrl=48957,
