@@ -620,7 +620,7 @@
     <span class="n">download_mermaid_url</span><span class="p">,</span>
     <span class="n">CatchAllCleanupContextManager</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">..jaml</span> <span class="kn">import</span> <span class="n">JAMLCompatible</span><span class="p">,</span> <span class="n">JAML</span>
+<span class="kn">from</span> <span class="nn">..jaml</span> <span class="kn">import</span> <span class="n">JAMLCompatible</span>
 
 <span class="kn">from</span> <span class="nn">..logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">..parsers</span> <span class="kn">import</span> <span class="n">set_gateway_parser</span><span class="p">,</span> <span class="n">set_pod_parser</span><span class="p">,</span> <span class="n">set_client_cli_parser</span>
@@ -2357,23 +2357,23 @@
     <span class="c1"># for backward support</span>
     <span class="n">join</span> <span class="o">=</span> <span class="n">needs</span>
 
-<div class="viewcode-block" id="Flow.rolling_update"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.rolling_update">[docs]</a>    <span class="k">def</span> <span class="nf">rolling_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pod_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dump_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Flow.rolling_update"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.rolling_update">[docs]</a>    <span class="k">def</span> <span class="nf">rolling_update</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">pod_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">dump_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Reload all replicas of a pod sequentially</span>
 
-<span class="sd">        :param dump_path: the path from which to read the dump data</span>
 <span class="sd">        :param pod_name: pod to update</span>
+<span class="sd">        :param dump_path: **backwards compatibility** This function was only accepting dump_path as the only potential arg to override</span>
+<span class="sd">        :param uses_with: a Dictionary of arguments to restart the executor with</span>
 <span class="sd">        """</span>
-        <span class="c1"># TODO: By design after the Flow object started, Flow shouldn't have memory access to its sub-objects anymore.</span>
-        <span class="c1">#  All controlling should be issued via Network Request, not via memory access.</span>
-        <span class="c1">#  In the current master, we have Flow.rolling_update() &amp; Flow.dump() method avoid the above design.</span>
-        <span class="c1">#  Avoiding this design make the whole system NOT cloud-native.</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="s1">'This function is experimental and facing potential refactoring'</span><span class="p">,</span>
-            <span class="ne">FutureWarning</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="n">pod_name</span><span class="p">]</span><span class="o">.</span><span class="n">rolling_update</span><span class="p">(</span><span class="n">dump_path</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="n">pod_name</span><span class="p">]</span><span class="o">.</span><span class="n">rolling_update</span><span class="p">(</span>
+            <span class="n">dump_path</span><span class="o">=</span><span class="n">dump_path</span><span class="p">,</span> <span class="n">uses_with</span><span class="o">=</span><span class="n">uses_with</span>
+        <span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">client_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">:</span>

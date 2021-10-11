@@ -714,13 +714,12 @@ If not successful, it will raise an error hoping the outer function to catch it<
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.peapods.pods.compound.CompoundPod.rolling_update">
-<span class="sig-name descname"><span class="pre">rolling_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dump_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/compound/#CompoundPod.rolling_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.compound.CompoundPod.rolling_update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reload all Shards of this Compound Pod.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>dump_path</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the dump from which to read the data</p>
-</dd>
-</dl>
+<span class="sig-name descname"><span class="pre">rolling_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dump_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_with</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/compound/#CompoundPod.rolling_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.compound.CompoundPod.rolling_update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reload all Pods of this Compound Pod.
+:type dump_path: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
+:param dump_path: <strong>backwards compatibility</strong> This function was only accepting dump_path as the only potential arg to override
+:type uses_with: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]
+:param uses_with: a Dictionary of arguments to restart the executor with</p>
 </dd></dl>
 </dd></dl>
 </section>

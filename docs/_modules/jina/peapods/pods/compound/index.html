@@ -836,16 +836,15 @@
             <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span>
 
-<div class="viewcode-block" id="CompoundPod.rolling_update"><a class="viewcode-back" href="../../../../../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod.rolling_update">[docs]</a>    <span class="k">def</span> <span class="nf">rolling_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dump_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">"""Reload all Shards of this Compound Pod.</span>
-
-<span class="sd">        :param dump_path: the dump from which to read the data</span>
+<div class="viewcode-block" id="CompoundPod.rolling_update"><a class="viewcode-back" href="../../../../../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod.rolling_update">[docs]</a>    <span class="k">def</span> <span class="nf">rolling_update</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">dump_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="sd">"""Reload all Pods of this Compound Pod.</span>
+<span class="sd">        :param dump_path: **backwards compatibility** This function was only accepting dump_path as the only potential arg to override</span>
+<span class="sd">        :param uses_with: a Dictionary of arguments to restart the executor with</span>
 <span class="sd">        """</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">shard</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">:</span>
-                <span class="n">shard</span><span class="o">.</span><span class="n">rolling_update</span><span class="p">(</span><span class="n">dump_path</span><span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="k">raise</span></div>
+        <span class="k">for</span> <span class="n">shard</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">:</span>
+            <span class="n">shard</span><span class="o">.</span><span class="n">rolling_update</span><span class="p">(</span><span class="n">dump_path</span><span class="o">=</span><span class="n">dump_path</span><span class="p">,</span> <span class="n">uses_with</span><span class="o">=</span><span class="n">uses_with</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_mermaid_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>

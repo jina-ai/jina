@@ -1134,11 +1134,20 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">is_ready</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_activated</span>
 
-<div class="viewcode-block" id="Pod.rolling_update"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.Pod.rolling_update">[docs]</a>    <span class="k">def</span> <span class="nf">rolling_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dump_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Pod.rolling_update"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.Pod.rolling_update">[docs]</a>    <span class="k">def</span> <span class="nf">rolling_update</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">dump_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
         <span class="sd">"""Reload all Peas of this Pod.</span>
 
 <span class="sd">        :param dump_path: the dump from which to read the data</span>
+<span class="sd">        :param uses_with: a Dictionary of arguments to restart the executor with</span>
 <span class="sd">        """</span>
+        <span class="c1"># BACKWARDS COMPATIBILITY</span>
+        <span class="k">if</span> <span class="n">dump_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">uses_with</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">uses_with</span><span class="p">[</span><span class="s1">'dump_path'</span><span class="p">]</span> <span class="o">=</span> <span class="n">dump_path</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">uses_with</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'dump_path'</span><span class="p">:</span> <span class="n">dump_path</span><span class="p">}</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">pea_args_idx</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">peas</span><span class="p">)):</span>
@@ -1147,7 +1156,10 @@
                     <span class="n">pea</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
                     <span class="n">_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'peas'</span><span class="p">][</span><span class="n">pea_args_idx</span><span class="p">]</span>
                     <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="c1">### BACKWARDS COMPATIBILITY, so THAT DUMP_PATH is in runtime_args</span>
                     <span class="n">_args</span><span class="o">.</span><span class="n">dump_path</span> <span class="o">=</span> <span class="n">dump_path</span>
+                    <span class="c1">###</span>
+                    <span class="n">_args</span><span class="o">.</span><span class="n">uses_with</span> <span class="o">=</span> <span class="n">uses_with</span>
                     <span class="n">new_pea</span> <span class="o">=</span> <span class="n">BasePea</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">new_pea</span><span class="p">)</span>
                     <span class="n">new_pea</span><span class="o">.</span><span class="n">activate_runtime</span><span class="p">()</span>

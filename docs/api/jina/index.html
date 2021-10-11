@@ -2653,13 +2653,14 @@ do the modification on top of it then return, otherwise, do in-line modification
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.Flow.rolling_update">
-<span class="sig-name descname"><span class="pre">rolling_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pod_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dump_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/flow/base/#Flow.rolling_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.Flow.rolling_update" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">rolling_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pod_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dump_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_with</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/flow/base/#Flow.rolling_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.Flow.rolling_update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reload all replicas of a pod sequentially</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dump_path</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the path from which to read the dump data</p></li>
 <li><p><strong>pod_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – pod to update</p></li>
+<li><p><strong>dump_path</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – <strong>backwards compatibility</strong> This function was only accepting dump_path as the only potential arg to override</p></li>
+<li><p><strong>uses_with</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – a Dictionary of arguments to restart the executor with</p></li>
 </ul>
 </dd>
 </dl>
