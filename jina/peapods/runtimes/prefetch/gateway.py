@@ -27,29 +27,23 @@ class GatewayPrefetcher(BasePrefetcher):
         self.request_buffer: Dict[str, asyncio.Future[Message]] = dict()
         self.Call = self.send  # Used in grpc servicer
 
-    def handle_end_iter(self):
-        return None
-
-    def handle_request(self, request: 'Request') -> 'asyncio.Future':
-        """
-        For ZMQ & GRPC data requests, for each request in the iterator, we send the `Message` using
-        `iolet.send_message()` and add {<request-id>: <an-empty-future>} to the message buffer.
-        This empty future is used to track the `result` of this request during `receive`
+    def convert_to_message(self, request: 'Request') -> Message:
+        """Convert `Request` to `Message`
 
         :param request: current request in the iterator
-        :return: asyncio Future for sending message
+        :return: Message object
         """
-        future = get_or_reuse_loop().create_future()
-        self.request_buffer[request.request_id] = future
-        asyncio.create_task(
-            self.iolet.send_message(
-                Message(None, request, 'gateway', **vars(self.args))
-            )
-        )
-        return future
+        return Message(None, request, 'gateway', **vars(self.args))
+
+    def handle_end_of_iter(self):
+        pass
+
+
+class ZmqGatewayPrefetcher(GatewayPrefetcher):
+    """An async zmq request handler used in the Gateway"""
 
     async def receive(self):
-        """Await messages back from Executors and process them in the message buffer"""
+        """Await messages back from Executors and process them in the request buffer"""
         try:
             while True:
                 response = await self.iolet.recv_message(callback=lambda x: x.response)
@@ -61,36 +55,12 @@ class GatewayPrefetcher(BasePrefetcher):
         except asyncio.CancelledError:
             raise
         finally:
-            for future in self.request_buffer.values():
-                future.cancel(
-                    f'{self.__class__.__name__} closed, all outstanding requests canceled'
-                )
-            self.request_buffer.clear()
-
-    def handle_response(self, response: 'Response'):
-        """
-        Set result of each response received from Executors in the request buffer
-
-        :param response: message received during `iolet.recv_message`
-        """
-        if response.request_id in self.request_buffer:
-            future = self.request_buffer.pop(response.request_id)
-            future.set_result(response)
-        else:
             self.logger.warning(
-                f'Discarding unexpected response with request id {response.request_id}'
+                f'{self.__class__.__name__} closed, cancelling all outstanding requests'
             )
-
-
-class ZmqGatewayPrefetcher(GatewayPrefetcher):
-    """An async zmq request handler used in the Gateway"""
-
-    def _create_receive_task(self):
-        """Start a receive task that starts the GRPC server & awaits termination.
-
-        :return: asyncio Task
-        """
-        return get_or_reuse_loop().create_task(self.receive())
+            for future in self.request_buffer.values():
+                future.cancel()
+            self.request_buffer.clear()
 
 
 class GrpcGatewayPrefetcher(GatewayPrefetcher):
@@ -100,6 +70,13 @@ class GrpcGatewayPrefetcher(GatewayPrefetcher):
         super().__init__(args, iolet)
         self.iolet.callback = lambda response: self.handle_response(response.request)
 
+    async def receive(self):
+        """Start grpclet and await termination
+
+        :return: await iolet start
+        """
+        return await self.iolet.start()
+
     async def handle_response(self, response: 'Response'):
         """
         Async version of parents handle_response function
@@ -107,10 +84,3 @@ class GrpcGatewayPrefetcher(GatewayPrefetcher):
         :param response: message received from grpclet callback
         """
         super().handle_response(response)
-
-    def _create_receive_task(self) -> 'asyncio.Task':
-        """Start a receive task that starts the GRPC server & awaits termination.
-
-        :return: asyncio Task
-        """
-        return get_or_reuse_loop().create_task(self.iolet.start())

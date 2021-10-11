@@ -1,9 +1,9 @@
 import argparse
 import asyncio
 from abc import ABC, abstractmethod
-from typing import AsyncGenerator, List, Union, TYPE_CHECKING
+from typing import AsyncGenerator, List, Union, TYPE_CHECKING, Dict, Awaitable
 
-from ....helper import typename
+from ....helper import typename, get_or_reuse_loop
 from ....logging.logger import JinaLogger
 from ....types.message import Message
 
@@ -12,7 +12,7 @@ __all__ = ['BasePrefetcher']
 if TYPE_CHECKING:
     from ...grpc import Grpclet
     from ...zmq import AsyncZmqlet
-    from ....types.request import Request
+    from ....types.request import Request, Response
     from ....clients.base.helper import HTTPClientlet, WebsocketClientlet
 
 
@@ -30,30 +30,53 @@ class BasePrefetcher(ABC):
         """
         self.args = args
         self.iolet = iolet
-        self.receive_task = self._create_receive_task()
         self.logger = JinaLogger(self.__class__.__name__, **vars(args))
+        self.request_buffer: Dict[str, asyncio.Future] = dict()
+        self.receive_task = get_or_reuse_loop().create_task(self.receive())
 
     @abstractmethod
-    def _create_receive_task(self) -> asyncio.Task:
-        """Start a receive task to be running in the background
-
-        .. # noqa: DAR202
-        :return: asyncio Task
-        """
+    async def receive(self) -> Awaitable:
+        """Receive background task"""
         ...
 
     @abstractmethod
-    def handle_request(
-        self, request: 'Request'
-    ) -> Union['asyncio.Task', 'asyncio.Future']:
-        """Handle each request in the iterator
+    def convert_to_message(self, request: 'Request') -> Union['Message', 'Request']:
+        """Convert request to iolet message
 
         :param request: current request in the iterator
         """
         ...
 
+    def handle_request(self, request: 'Request') -> 'asyncio.Future':
+        """
+        For ZMQ & GRPC data requests, for each request in the iterator, we send the `Message` using
+        `iolet.send_message()` and add {<request-id>: <an-empty-future>} to the message buffer.
+        This empty future is used to track the `result` of this request during `receive`.
+
+        :param request: current request in the iterator
+        :return: asyncio Future for sending message
+        """
+        future = get_or_reuse_loop().create_future()
+        self.request_buffer[request.request_id] = future
+        asyncio.create_task(self.iolet.send_message(self.convert_to_message(request)))
+        return future
+
+    def handle_response(self, response: 'Response'):
+        """Set result of each response received in the request buffer
+
+        :param response: message received during `iolet.recv_message`
+        """
+        if response.request_id in self.request_buffer:
+            future = self.request_buffer.pop(response.request_id)
+            future.set_result(response)
+        else:
+            self.logger.warning(
+                f'Discarding unexpected response with request id {response.request_id}'
+            )
+
     @abstractmethod
-    def handle_end_iter(self):
+    def handle_end_of_iter(self):
+        """Manage end of iteration if required"""
         ...
 
     async def close(self):
@@ -70,13 +93,9 @@ class BasePrefetcher(ABC):
         :param args: additional arguments
         :yield: message
         """
-        self.args: argparse.Namespace
-        self.iolet: Union['AsyncZmqlet', 'Grpclet']
-        self.logger: JinaLogger
-
         if self.receive_task.done():
             raise RuntimeError(
-                'PrefetchCaller receive task not running, can not send messages'
+                'Prefetcher receive task not running, can not send messages'
             )
 
         async def prefetch_req(
@@ -102,15 +121,12 @@ class BasePrefetcher(ABC):
 
                     fetch_to.append(self.handle_request(request=request))
                 except (StopIteration, StopAsyncIteration):
-                    task = self.handle_end_iter()
-                    if task:
-                        fetch_to.append(task)
+                    self.handle_end_of_iter()
                     return True
             return False
 
         prefetch_task = []
         is_req_empty = await prefetch_req(self.args.prefetch, prefetch_task)
-        print(f'\n\n\nis_req_empty1: {is_req_empty} {self.__class__.__name__}')
         if is_req_empty and not prefetch_task:
             self.logger.error(
                 'receive an empty stream from the client! '
@@ -122,10 +138,7 @@ class BasePrefetcher(ABC):
         # the total num requests < self.args.prefetch
         if is_req_empty:
             for r in asyncio.as_completed(prefetch_task):
-                pp = await r
-                print(f'\n\n\nafter as_completed: {pp}\n\n\n')
-                yield pp
-                # yield await r
+                yield await r
         else:
             # if there are left over (`else` clause above is unnecessary for code but for better readability)
             onrecv_task = []
@@ -139,15 +152,10 @@ class BasePrefetcher(ABC):
                     )
                 onrecv_task.clear()
                 for r in asyncio.as_completed(prefetch_task):
-                    pp = await r
-                    print(pp)
-                    yield pp
+                    yield await r
                     if not is_req_empty:
                         is_req_empty = await prefetch_req(
                             self.args.prefetch_on_recv, onrecv_task
-                        )
-                        print(
-                            f'\n\n\nis_req_empty2: {is_req_empty} {self.__class__.__name__}'
                         )
 
                 # this list dries, clear it and feed it with on_recv_task

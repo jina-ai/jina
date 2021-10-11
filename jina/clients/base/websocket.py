@@ -42,7 +42,9 @@ class WebSocketBaseClient(BaseClient):
 
                 proto = 'wss' if self.args.https else 'ws'
                 url = f'{proto}://{self.args.host}:{self.args.port}/'
-                iolet = await stack.enter_async_context(WebsocketClientlet(url=url))
+                iolet = await stack.enter_async_context(
+                    WebsocketClientlet(url=url, logger=self.logger)
+                )
 
                 prefetcher = WebsocketClientPrefetcher(self.args, iolet=iolet)
                 async for response in prefetcher.send(request_iterator):

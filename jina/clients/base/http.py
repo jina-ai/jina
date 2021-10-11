@@ -44,7 +44,9 @@ class HTTPBaseClient(BaseClient):
 
                 proto = 'https' if self.args.https else 'http'
                 url = f'{proto}://{self.args.host}:{self.args.port}/post'
-                iolet = await stack.enter_async_context(HTTPClientlet(url=url))
+                iolet = await stack.enter_async_context(
+                    HTTPClientlet(url=url, logger=self.logger)
+                )
 
                 prefetcher = HTTPClientPrefetcher(self.args, iolet=iolet)
                 async for response in prefetcher.send(request_iterator):
@@ -68,5 +70,7 @@ class HTTPBaseClient(BaseClient):
                     if self.show_progress:
                         p_bar.update()
                     yield resp
-            except aiohttp.client_exceptions.ClientConnectorError:
-                self.logger.warning(f'Client got disconnected from the HTTP server')
+            except aiohttp.ClientError as e:
+                self.logger.warning(
+                    f'Error while fetching response from websocket server {e!r}'
+                )

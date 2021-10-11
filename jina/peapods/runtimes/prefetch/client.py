@@ -1,10 +1,7 @@
 import asyncio
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
-from ....types.request import Request
-from jina.types.message.common import ControlMessage
 from .base import BasePrefetcher
-from ....helper import get_or_reuse_loop
 
 __all__ = ['HTTPClientPrefetcher', 'WebsocketClientPrefetcher']
 
@@ -15,19 +12,19 @@ if TYPE_CHECKING:
 class ClientPrefetcher(BasePrefetcher):
     """Client Prefetcher to be inherited by HTTP / Websocket Prefetchers"""
 
-    def _create_receive_task(self) -> 'asyncio.Task':
-        """For Clients, there's no task needed for receiving.
-        Sleep like there's no tomorrow!
-
-        :return: asyncio Task
-        """
-        return get_or_reuse_loop().create_task(asyncio.sleep(1e9))
+    def convert_to_message(self, request):
+        return request
 
 
 class HTTPClientPrefetcher(ClientPrefetcher):
     """An async HTTP request handler used in the HTTP Client"""
 
     async def receive(self):
+        """For HTTP Client, there's no task needed for receiving.
+        Sleep like there's no tomorrow!
+
+        :return: asyncio Task
+        """
         return asyncio.sleep(1e9)
 
     def handle_request(self, request: 'Request') -> 'asyncio.Task':
@@ -40,28 +37,31 @@ class HTTPClientPrefetcher(ClientPrefetcher):
         """
         return asyncio.create_task(self.iolet.send_message(request=request))
 
-    def handle_end_iter(self):
-        return None
+    def handle_response(self):
+        """No responses to handle for HTTP Client"""
+        pass
+
+    def handle_end_of_iter(self):
+        """Iterator end doesn't need to be managed for HTTP Client"""
+        pass
 
 
 class WebsocketClientPrefetcher(ClientPrefetcher):
     """An async request/response handler used in the Websocket Client"""
 
     async def receive(self):
-        return self.iolet.recv_message()
+        """Await messages from Gateway and process them in the request buffer"""
+        try:
+            async for response in self.iolet.recv_message():
+                self.handle_response(response)
+        finally:
+            self.logger.warning(
+                f'{self.__class__.__name__} closed, cancelling all outstanding requests'
+            )
+            for future in self.request_buffer.values():
+                future.cancel()
+            self.request_buffer.clear()
 
-    def handle_request(self, request: 'Request') -> 'asyncio.Task':
-        """
-        For Websocket Client, for each request in the iterator, we `send_message` using
-        bytes and add the `recv_message` task to be awaited & yielded.
-
-        :param request: current request in the iterator
-        :return: asyncio Task for receiving message
-        """
-        return asyncio.create_task(self.iolet.send_message(request=request))
-        # return asyncio.create_task(self.iolet.recv_message())
-
-    def handle_end_iter(self):
-        # ControlMessage('TERMINATE').request
-        return asyncio.create_task(self.iolet.send_message())
-        # return asyncio.create_task(self.iolet.recv_message())
+    def handle_end_of_iter(self):
+        """Send End of iteration signal to the Gateway"""
+        asyncio.create_task(self.iolet.send_eoi())

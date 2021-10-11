@@ -25,8 +25,7 @@ def test_compression(compress_algo, mocker):
 
 
 @pytest.mark.slow
-# @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
-@pytest.mark.parametrize('protocol', ['websocket'])
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_gateway_concurrency(protocol):
     PORT_EXPOSE = 12345
     CONCURRENCY = 2
@@ -54,8 +53,6 @@ def test_gateway_concurrency(protocol):
         )
 
     f = Flow(protocol=protocol, port_expose=PORT_EXPOSE).add(parallel=2)
-    # f = Flow(protocol=protocol).add(shards=2)
-    concurrency = 100
     with f:
         threads = []
         status_codes = [None] * CONCURRENCY
@@ -68,8 +65,6 @@ def test_gateway_concurrency(protocol):
         for t in threads:
             t.join()
 
-    print(durations)
-    print(status_codes)
     success = status_codes.count(0)
     failed = len(status_codes) - success
     print(

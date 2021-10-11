@@ -34,27 +34,30 @@ def on_done(response, final_da: DocumentArray):
     final_da.extend(response.docs)
 
 
+@pytest.mark.parametrize('grpc_data_requests', [False, True])
 @pytest.mark.parametrize(
     'protocol, inputs',
     [
-        # ('grpc', async_slow_gen),
-        # pytest.param(
-        #     'grpc',
-        #     sync_slow_gen,
-        #     marks=pytest.mark.xfail(
-        #         reason='grpc client + sync generator with time.sleep is expected to fail'
-        #     ),
-        # ),
-        # ('websocket', async_slow_gen),
+        ('grpc', async_slow_gen),
+        pytest.param(
+            'grpc',
+            sync_slow_gen,
+            marks=pytest.mark.xfail(
+                reason='grpc client + sync generator with time.sleep is expected to fail'
+            ),
+        ),
+        ('websocket', async_slow_gen),
         ('websocket', sync_slow_gen),
-        # ('http', async_slow_gen),
-        # ('http', sync_slow_gen),
+        ('http', async_slow_gen),
+        ('http', sync_slow_gen),
     ],
 )
-def test_client_streaming_sync_gen(protocol, inputs):
+def test_client_streaming_sync_gen(grpc_data_requests, protocol, inputs):
     os.environ['JINA_LOG_LEVEL'] = 'ERROR'
     final_da = DocumentArray()
-    with Flow(protocol=protocol, prefetch=1).add(uses=MyExecutor) as f:
+    with Flow(protocol=protocol, prefetch=1, grpc_data_requests=grpc_data_requests).add(
+        uses=MyExecutor
+    ) as f:
         f.post(
             on='/',
             inputs=inputs,

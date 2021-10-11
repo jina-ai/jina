@@ -1,5 +1,5 @@
 import asyncio
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 from abc import ABC, abstractmethod
 
 from ...types.request import Request
@@ -7,17 +7,20 @@ from ...importer import ImportExtensions
 
 if TYPE_CHECKING:
     from ...types.request import Response
+    from ...logging.logger import JinaLogger
 
 
 class AioHttpClientlet(ABC):
     """aiohttp session manager"""
 
-    def __init__(self, url: str) -> None:
+    def __init__(self, url: str, logger: 'JinaLogger') -> None:
         """HTTP Client to be used with prefetcher
 
-        :param url: url to send POST request to
+        :param url: url to send http/websocket request to
+        :param logger: jina logger
         """
         self.url = url
+        self.logger = logger
         self.msg_recv = 0
         self.msg_sent = 0
         self.session = None
@@ -89,37 +92,46 @@ class WebsocketClientlet(AioHttpClientlet):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.ws = None
+        self.websocket = None
 
-    async def send_message(self, request: Optional['Request'] = None):
-        """Send request in bytes to the server
+    async def send_message(self, request: 'Request'):
+        """Send request in bytes to the server.
 
         :param request: request object
-        :return: send bytes awaitable
+        :return: send request as bytes awaitable
         """
-        return await self.ws.send_bytes(
-            request.SerializeToString() if request else bytes(True)
-        )
+        try:
+            return await self.websocket.send_bytes(request.SerializeToString())
+        except ConnectionResetError:
+            self.logger.critical(f'server connection closed already!')
+
+    async def send_eoi(self):
+        """To confirm end of iteration, we send `bytes(True)` to the server.
+
+        :return: send `bytes(True)` awaitable
+        """
+        try:
+            return await self.websocket.send_bytes(bytes(True))
+        except ConnectionResetError:
+            # server might be in a `CLOSING` state while sending EOI signal
+            # which raises a `ConnectionResetError`, this can be ignored.
+            pass
 
     async def recv_message(self) -> 'Response':
         """Receive messages in bytes from server and convert to `Response`
 
-        :return: response object from bytes
-        """
-        from aiohttp import WSMsgType
+        ..note::
+            aiohttp allows only one task which can `receive` concurrently.
+            we need to make sure we don't create multiple tasks with `recv_message`
 
-        async for response in self.ws:
-            print(f'\n\n\nrecv_message called, self._waiting: {self.ws._waiting}\n\n\n')
-            if response.type == WSMsgType.CLOSE:
-                print('CLOSE')
-                break
-            else:
-                response_bytes = response.data
-                print(f'\n\n\ngot a response {response_bytes}\n\n')
-                resp = Request(response_bytes)
-                return resp.as_typed_request(resp.request_type).as_response()
+        :yield: response objects received from server
+        """
+        async for response in self.websocket:
+            response_bytes = response.data
+            resp = Request(response_bytes)
+            yield resp.as_typed_request(resp.request_type).as_response()
 
     async def __aenter__(self):
         await super().__aenter__()
-        self.ws = await self.session.ws_connect(url=self.url).__aenter__()
+        self.websocket = await self.session.ws_connect(url=self.url).__aenter__()
         return self
