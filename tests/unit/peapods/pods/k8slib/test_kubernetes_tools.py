@@ -1,3 +1,4 @@
+import json
 from typing import Dict
 from unittest.mock import Mock
 
@@ -25,15 +26,23 @@ def test_lazy_load_k8s_client(monkeypatch):
 
 
 @pytest.mark.parametrize(
-    ['template', 'values'],
+    ['template', 'params'],
     [
         ('namespace', {'name': 'test-ns'}),
         ('service', {'name': 'test-svc'}),
         ('deployment', {'name': 'test-dep'}),
         ('deployment-init', {'name': 'test-dep-init'}),
+        (
+            'configmap',
+            {
+                'name': 'test-configmap-executor',
+                'namespace': 'test-configmap',
+                'data': {'k1': 'v1', 'k2': 'v2'},
+            },
+        ),
     ],
 )
-def test_create(template: str, values: Dict, monkeypatch):
+def test_create(template: str, params: Dict, monkeypatch):
     create_from_yaml_mock = Mock()
     monkeypatch.setattr(kubernetes.utils, 'create_from_yaml', create_from_yaml_mock)
 
@@ -41,7 +50,7 @@ def test_create(template: str, values: Dict, monkeypatch):
     remove_mock = Mock()
     monkeypatch.setattr(os, 'remove', remove_mock)
 
-    create(template, values)
+    create(template=template, params=params)
 
     # get the path to the config file
     assert remove_mock.call_count == 1
@@ -50,8 +59,13 @@ def test_create(template: str, values: Dict, monkeypatch):
     # get the content and check that the values are present
     with open(path_to_config_file, 'r') as fh:
         content = fh.read()
-    for v in values.values():
-        assert v in content
+    for v in params.values():
+        if isinstance(v, str):
+            assert v in content
+        elif isinstance(v, dict):
+            dict_content = json.loads(content)
+            for sub_key, sub_v in v.items():
+                assert dict_content['data'][sub_key] == sub_v
 
     monkeypatch.undo()
     os.remove(path_to_config_file)

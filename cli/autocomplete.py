@@ -33,7 +33,7 @@ ac_table = {
             '--download-proxy',
             '--index-data-url',
             '--port-expose',
-            '--parallel',
+            '--replicas',
             '--unblock-query-flow',
         ],
         'hello multimodal': [
@@ -357,8 +357,8 @@ ac_table = {
             '--force',
             '--uses-before',
             '--uses-after',
-            '--parallel',
             '--shards',
+            '--parallel',
             '--replicas',
             '--polling',
             '--scheduling',

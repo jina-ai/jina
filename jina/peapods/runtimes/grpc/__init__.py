@@ -49,7 +49,9 @@ class GRPCDataRuntime(BaseRuntime, ABC):
         )
 
     def _update_pending_tasks(self):
-        self._pending_tasks = [task for task in self._pending_tasks if not task.done()]
+        self._pending_tasks = [
+            task for task in self._pending_tasks if task and not task.done()
+        ]
 
     def run_forever(self):
         """Start the `Grpclet`."""

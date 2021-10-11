@@ -112,13 +112,13 @@ def test_dump_load_build(monkeypatch):
     executors:
         - name: executor1
           port_in: 45678
-          parallel: 2
+          shards: 2
         - name: executor2
           uses: docker://exec
           host: 1.2.3.4
         - name: executor3
           uses: docker://exec
-          parallel: 2
+          shards: 2
     '''
     ).build()
     f['gateway'].args.runs_in_docker = True

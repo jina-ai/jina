@@ -1,6 +1,6 @@
-import json
 import os
 import tempfile
+import json
 from typing import Dict, Optional, Generator
 
 from .kubernetes_client import K8sClients
@@ -33,7 +33,10 @@ def create(
     from kubernetes import utils
 
     clients = K8sClients()
-    yaml = _get_yaml(template, params, custom_resource_dir)
+    if template == 'configmap':
+        yaml = _patch_configmap_yaml(template, params)
+    else:
+        yaml = _get_yaml(template, params, custom_resource_dir)
     fd, path = tempfile.mkstemp()
     try:
         with os.fdopen(fd, 'w') as tmp:
@@ -68,7 +71,23 @@ def _get_yaml(template: str, params: Dict, custom_resource_dir: Optional[str] = 
     return content
 
 
-def _get_gateway_pod_name(namespace, k8s_clients: K8sClients):
+def _patch_configmap_yaml(template: str, params: Dict):
+    import yaml
+
+    path = os.path.join(DEFAULT_RESOURCE_DIR, f'{template}.yml')
+
+    with open(path) as f:
+        config_map = yaml.safe_load(f)
+
+    config_map['metadata']['name'] = params.get('name') + '-' + 'configmap'
+    config_map['metadata']['namespace'] = params.get('namespace')
+    if params.get('data'):
+        for key, value in params['data'].items():
+            config_map['data'][key] = value
+    return json.dumps(config_map)
+
+
+def _get_gateway_pod_name(namespace, k8s_clients):
     gateway_pod = k8s_clients.core_v1.list_namespaced_pod(
         namespace=namespace, label_selector='app=gateway'
     )

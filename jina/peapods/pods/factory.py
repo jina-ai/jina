@@ -29,7 +29,7 @@ class PodFactory:
         """
         if infrastructure == InfrastructureType.K8S:
             return K8sPod(args, needs=needs)
-        elif getattr(args, 'replicas', 1) > 1:
+        elif getattr(args, 'shards', 1) > 1:
             return CompoundPod(args, needs=needs)
         else:
             return Pod(args, needs=needs)

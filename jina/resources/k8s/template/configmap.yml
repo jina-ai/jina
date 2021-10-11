@@ -1,0 +1,8 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: config-map
+data:
+  jina_log_level: "DEBUG"
+  pythonunbuffered: "1"
+  worker_class: "uvicorn.workers.UvicornH11Worker"

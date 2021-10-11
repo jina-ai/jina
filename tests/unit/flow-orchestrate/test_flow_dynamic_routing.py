@@ -27,7 +27,7 @@ class MergeExecutor(Executor):
 
 @pytest.mark.parametrize(
     'use_grpc',
-    [True, False],
+    [True],
 )
 def test_expected_messages_routing(use_grpc):
     f = (
@@ -63,8 +63,8 @@ class SimplAddExecutor(Executor):
         docs.append(Document(text=self.runtime_args.name))
 
 
-def test_static_routing_table_parallel():
-    f = Flow(static_routing_table=True).add(uses=SimplAddExecutor, parallel=2)
+def test_static_routing_table_shards():
+    f = Flow(static_routing_table=True).add(uses=SimplAddExecutor, shards=2)
 
     with f:
         results = f.post(on='/index', inputs=[Document(text='1')], return_results=True)
@@ -81,18 +81,18 @@ def test_static_routing_table_complex_flow():
     f = (
         Flow(static_routing_table=True)
         .add(name='first', uses=SimplAddExecutor, needs=['gateway'])
-        .add(name='forth', uses=SimplAddExecutor, needs=['first'], parallel=2)
+        .add(name='forth', uses=SimplAddExecutor, needs=['first'], shards=2)
         .add(
-            name='second_parallel_needs',
+            name='second_shards_needs',
             uses=SimplAddExecutor,
             needs=['gateway'],
-            parallel=2,
+            shards=2,
         )
         .add(
             name='third',
             uses=SimplAddExecutor,
-            parallel=3,
-            needs=['second_parallel_needs'],
+            shards=3,
+            needs=['second_shards_needs'],
         )
         .add(name='merger', uses=MergeDocsExecutor, needs=['forth', 'third'])
     )
