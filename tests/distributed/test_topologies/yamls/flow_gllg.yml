@@ -5,6 +5,6 @@ with:
   protocol: http
 executors:
   - name: local1
-    parallel: $PARALLEL
+    replicas: $REPLICAS
   - name: local2
-    parallel: $PARALLEL
+    replicas: $REPLICAS

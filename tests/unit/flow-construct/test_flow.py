@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 
 from jina import Flow, Document, Executor, requests, __windows__
-from jina.enums import InfrastructureType, SocketType, FlowBuildLevel
+from jina.enums import InfrastructureType, SocketType, FlowBuildLevel, PollingType
 from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
 from jina.helper import random_identity
@@ -123,9 +123,9 @@ def test_flow_identical(tmpdir):
 
     b = (
         Flow()
-        .add(name='chunk_seg', parallel=3)
-        .add(name='wqncode1', parallel=2)
-        .add(name='encode2', parallel=2, needs='chunk_seg')
+        .add(name='chunk_seg', shards=3)
+        .add(name='wqncode1', shards=2)
+        .add(name='encode2', shards=2, needs='chunk_seg')
         .join(['wqncode1', 'encode2'])
     )
 
@@ -144,7 +144,7 @@ def test_flow_identical(tmpdir):
         node = f._pod_nodes['chunk_seg']
         assert node.head_args.socket_in == SocketType.ROUTER_BIND
         assert node.head_args.socket_out == SocketType.ROUTER_BIND
-        for arg in node.peas_args['peas']:
+        for arg in node.shards_args:
             assert arg.socket_in == SocketType.DEALER_CONNECT
             assert arg.socket_out == SocketType.PUSH_CONNECT
         assert node.tail_args.socket_in == SocketType.PULL_BIND
@@ -153,7 +153,7 @@ def test_flow_identical(tmpdir):
         node = f._pod_nodes['wqncode1']
         assert node.head_args.socket_in == SocketType.ROUTER_BIND
         assert node.head_args.socket_out == SocketType.ROUTER_BIND
-        for arg in node.peas_args['peas']:
+        for arg in node.shards_args:
             assert arg.socket_in == SocketType.DEALER_CONNECT
             assert arg.socket_out == SocketType.PUSH_CONNECT
         assert node.tail_args.socket_in == SocketType.PULL_BIND
@@ -162,7 +162,7 @@ def test_flow_identical(tmpdir):
         node = f._pod_nodes['encode2']
         assert node.head_args.socket_in == SocketType.ROUTER_BIND
         assert node.head_args.socket_out == SocketType.ROUTER_BIND
-        for arg in node.peas_args['peas']:
+        for arg in node.shards_args:
             assert arg.socket_in == SocketType.DEALER_CONNECT
             assert arg.socket_out == SocketType.PUSH_CONNECT
         assert node.tail_args.socket_in == SocketType.PULL_BIND
@@ -363,8 +363,8 @@ def test_refactor_num_part_proxy_2(protocol):
     f = (
         Flow(protocol=protocol)
         .add(name='r1')
-        .add(name='r2', needs='r1', parallel=2)
-        .add(name='r3', needs='r1', parallel=3, polling='ALL')
+        .add(name='r2', needs='r1', shards=2)
+        .add(name='r3', needs='r1', shards=3, polling='ALL')
         .needs(['r2', 'r3'])
     )
 
@@ -375,14 +375,12 @@ def test_refactor_num_part_proxy_2(protocol):
 @pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_refactor_num_part_2(protocol):
-    f = Flow(protocol=protocol).add(
-        name='r1', needs='gateway', parallel=3, polling='ALL'
-    )
+    f = Flow(protocol=protocol).add(name='r1', needs='gateway', shards=3, polling='ALL')
 
     with f:
         f.index([Document(text='abbcs'), Document(text='efgh')])
 
-    f = Flow(protocol=protocol).add(name='r1', needs='gateway', parallel=3)
+    f = Flow(protocol=protocol).add(name='r1', needs='gateway', shards=3)
 
     with f:
         f.index([Document(text='abbcs'), Document(text='efgh')])
@@ -578,12 +576,12 @@ def test_flow_identity():
 
 @pytest.mark.slow
 def test_flow_identity_override():
-    f = Flow().add().add(parallel=2).add(parallel=2)
+    f = Flow().add().add(shards=2).add(shards=2)
 
     with f:
         assert len(set(p.args.identity for _, p in f)) == f.num_pods
 
-    f = Flow(identity='123456').add().add(parallel=2).add(parallel=2)
+    f = Flow(identity='123456').add().add(shards=2).add(shards=2)
 
     with f:
         assert len(set(p.args.identity for _, p in f)) == 1
@@ -594,7 +592,7 @@ version: '1.0'
 executors:
     - name: hello
     - name: world
-      parallel: 3
+      shards: 3
     '''
 
     f = Flow.load_config(y)
@@ -638,8 +636,8 @@ def test_socket_types_2_remote_one_local():
     f = (
         Flow()
         .add(name='executor1', host='0.0.0.1')
-        .add(name='executor2', parallel=2, host='0.0.0.2')
-        .add(name='executor3', parallel=2, host='1.2.3.4', needs=['gateway'])
+        .add(name='executor2', shards=2, host='0.0.0.2')
+        .add(name='executor3', shards=2, host='1.2.3.4', needs=['gateway'])
         .join(name='join', needs=['executor2', 'executor3'])
     )
 
@@ -654,8 +652,8 @@ def test_socket_types_2_remote_one_local_input_socket_pull_connect_from_remote()
     f = (
         Flow()
         .add(name='executor1', host='0.0.0.1')
-        .add(name='executor2', parallel=2, host='0.0.0.2')
-        .add(name='executor3', parallel=2, host='1.2.3.4', needs=['gateway'])
+        .add(name='executor2', shards=2, host='0.0.0.2')
+        .add(name='executor3', shards=2, host='1.2.3.4', needs=['gateway'])
         .join(name='join', needs=['executor2', 'executor3'])
     )
 
@@ -791,7 +789,7 @@ def test_flow_routes_list(monkeypatch):
 
     with Flow().add(name='a1').add(name='a2').add(name='b1', needs='gateway').add(
         name='merge', needs=['a2', 'b1']
-    ) as parallel_flow:
+    ) as shards_flow:
 
         def validate_routes(x):
             gateway_entry, a1_entry, a2_entry, b1_entry, merge_entry = json.loads(
@@ -815,7 +813,7 @@ def test_flow_routes_list(monkeypatch):
                 > _time(gateway_entry['start_time'])
             )
 
-        parallel_flow.index(inputs=Document(), on_done=validate_routes)
+        shards_flow.index(inputs=Document(), on_done=validate_routes)
 
 
 def test_connect_to_predecessor():
@@ -838,3 +836,32 @@ def test_flow_grpc_with_shard():
     Flow(grpc_data_requests=False).add(shards=1)
     Flow(grpc_data_requests=False).add()
     Flow(grpc_data_requests=True, infrastructure=InfrastructureType.K8S).add(shards=2)
+
+
+def test_flow_auto_polling():
+    f = (
+        Flow()
+        .add(name='pod_replica_only_polling_any', replicas=2)
+        .add(name='pod_replica_only_polling_ignored', replicas=2, polling='ALL')
+        .add(name='pod_replicas_shards_auto_polling_all', replicas=2, shards=2)
+        .add(name='pod_shards_default_polling_any', shards=2)
+        .add(
+            name='pod_replicas_shards_manual_polling_any',
+            replicas=2,
+            shards=2,
+            polling='ANY',
+        )
+        .add(
+            name='pod_replicas_shards_manual_polling_all',
+            replicas=2,
+            shards=2,
+            polling='ALL',
+        )
+    )
+
+    assert f['pod_replica_only_polling_any'].args.polling == PollingType.ANY
+    assert f['pod_replica_only_polling_ignored'].args.polling == PollingType.ANY
+    assert f['pod_replicas_shards_auto_polling_all'].args.polling == PollingType.ALL
+    assert f['pod_shards_default_polling_any'].args.polling == PollingType.ANY
+    assert f['pod_replicas_shards_manual_polling_any'].args.polling == PollingType.ANY
+    assert f['pod_replicas_shards_manual_polling_all'].args.polling == PollingType.ALL

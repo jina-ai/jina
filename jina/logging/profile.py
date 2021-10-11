@@ -213,12 +213,14 @@ class ProgressBar(TimeContext):
         self,
         description: str = 'Working...',
         message_on_done: Union[str, Callable[..., str], None] = None,
+        final_line_feed: bool = True,
     ):
         """
         Create the ProgressBar.
 
         :param description: The name of the task, will be displayed in front of the bar.
         :param message_on_done: The final message to print when the progress is complete
+        :param final_line_feed: if False, the line will not get a Line Feed and thus is easily overwritable.
         """
         super().__init__(description, None)
         self._bars_on_row = 40
@@ -226,6 +228,7 @@ class ProgressBar(TimeContext):
         self._last_rendered_progress = 0
         self._num_update_called = 0
         self._on_done = message_on_done
+        self._final_line_feed = final_line_feed
         self._stop_event = threading.Event()
 
     def update(
@@ -268,7 +271,7 @@ class ProgressBar(TimeContext):
         speed_str = (
             'estimating...'
             if first_enter
-            else f'{self._num_update_called / elapsed:3.1f} step/s'
+            else f'{self._num_update_called / elapsed:4.1f} step/s'
         )
 
         description_str = description or self.task_name or ''
@@ -360,7 +363,8 @@ class ProgressBar(TimeContext):
                 elif callable(self._on_done):
                     final_msg = self._on_done()
             sys.stdout.write(final_msg)
-            sys.stdout.write('\n')
+            if self._final_line_feed:
+                sys.stdout.write('\n')
         else:
             # no actual render happens
             sys.stdout.write(self.clear_line)

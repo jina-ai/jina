@@ -8,7 +8,7 @@ executors:
   - name: indexer_query
     uses: indexer_query.yml
     replicas: 2
-    parallel: 3
+    shards: 3
     polling: all
     uses_after: merge_matches.yml
     timeout_ready: '-1'

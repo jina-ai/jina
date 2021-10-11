@@ -72,7 +72,7 @@ def test_flow_with_replica_container_ext_yaml(docker_image_built):
     f = Flow().add(
         name='dummyEncoder3',
         uses=f'docker://{img_name}',
-        parallel=3,
+        shards=3,
         entrypoint='jina pea',
     )
 
@@ -130,16 +130,16 @@ def test_flow_topo_mixed(docker_image_built, _logforward):
         f.post(on='/index', inputs=random_docs(10))
 
 
-def test_flow_topo_parallel():
+def test_flow_topo_shards():
     f = (
         Flow()
         .add(
             name='d7',
             uses='docker://jinaai/jina:test-pip',
             entrypoint='jina executor',
-            parallel=3,
+            shards=3,
         )
-        .add(name='d8', parallel=3)
+        .add(name='d8', shards=3)
         .add(
             name='d9',
             uses='docker://jinaai/jina:test-pip',
@@ -153,7 +153,7 @@ def test_flow_topo_parallel():
         f.post(on='/index', inputs=random_docs(10))
 
 
-def test_flow_topo_ldl_parallel():
+def test_flow_topo_ldl_shards():
     f = (
         Flow()
         .add(name='d10')
@@ -161,7 +161,7 @@ def test_flow_topo_ldl_parallel():
             name='d11',
             uses='docker://jinaai/jina:test-pip',
             entrypoint='jina executor',
-            parallel=3,
+            shards=3,
         )
         .add(name='d12')
     )
@@ -184,19 +184,19 @@ def test_container_ping(docker_image_built):
     assert cm.value.code == 0
 
 
-def test_tail_host_docker2local_parallel():
+def test_tail_host_docker2local_shards():
     f = (
         Flow()
         .add(
             name='d10',
             uses='docker://jinaai/jina:test-pip',
             entrypoint='jina executor',
-            parallel=3,
+            shards=3,
         )
         .add(name='d11')
     )
     with f:
-        assert getattr(f._pod_nodes['d10'].peas_args['tail'], 'host_out') == defaulthost
+        assert getattr(f._pod_nodes['d10'].tail_args, 'host_out') == defaulthost
 
 
 def test_tail_host_docker2local():

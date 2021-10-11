@@ -188,7 +188,7 @@ class ZEDRuntime(ZMQRuntime):
 
             # when no available dealer, pause the pollin from upstream
             if not self._idle_dealer_ids:
-                self._zmqstreamlet.pause_pollin()
+                self._pause_pollin()
             self.logger.debug(
                 f'using route, set receiver_id: {msg.envelope.receiver_id}'
             )
@@ -204,6 +204,10 @@ class ZEDRuntime(ZMQRuntime):
         )
 
         return msg
+
+    def _pause_pollin(self):
+        self.logger.debug('No idle dealers available, pause pollin')
+        self._zmqstreamlet.pause_pollin()
 
     def _handle_control_req(self, msg: 'Message'):
         # migrated from previous ControlDriver logic
@@ -221,7 +225,15 @@ class ZEDRuntime(ZMQRuntime):
             )
         elif msg.request.command == 'CANCEL':
             if msg.envelope.receiver_id in self._idle_dealer_ids:
+                self.logger.debug(
+                    f'Removing idle dealer {msg.envelope.receiver_id}, now I know these idle peas {self._idle_dealer_ids}'
+                )
                 self._idle_dealer_ids.remove(msg.envelope.receiver_id)
+
+                # when no available dealer, pause the pollin from upstream
+                if not self._idle_dealer_ids:
+                    self._pause_pollin()
+
         elif msg.request.command == 'ACTIVATE':
             self._zmqstreamlet._send_idle_to_router()
         elif msg.request.command == 'DEACTIVATE':

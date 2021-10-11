@@ -81,6 +81,23 @@ def k8s_flow_with_sharding(
     return flow
 
 
+@pytest.fixture()
+def k8s_flow_configmap(test_executor_image: str) -> Flow:
+    flow = Flow(
+        name='k8s-flow-configmap',
+        port_expose=9090,
+        infrastructure='K8S',
+        protocol='http',
+        timeout_ready=120000,
+    ).add(
+        name='test_executor',
+        uses=test_executor_image,
+        timeout_ready=12000,
+        env={'k1': 'v1', 'k2': 'v2'},
+    )
+    return flow
+
+
 @pytest.mark.timeout(3600)
 @pytest.mark.parametrize('k8s_connection_pool', [True, False])
 def test_flow_with_needs(
@@ -188,6 +205,29 @@ def test_flow_with_sharding(
     assert len(docs) == 10
     for doc in docs:
         assert set(doc.tags['traversed-executors']) == expected_traversed_executors
+
+
+@pytest.mark.timeout(3600)
+def test_flow_with_configmap(
+    k8s_cluster,
+    k8s_flow_configmap,
+    load_images_in_kind,
+    set_test_pip_version,
+    logger,
+):
+    resp = run_test(
+        k8s_flow_configmap,
+        endpoint='/env',
+        port_expose=9090,
+    )
+
+    docs = resp[0].docs
+    assert len(docs) == 10
+    for doc in docs:
+        assert doc.tags.get('jina_log_level') == 'DEBUG'
+        assert doc.tags.get('k1') == 'v1'
+        assert doc.tags.get('k2') == 'v2'
+        assert doc.tags.get('env') == {'k1': 'v1', 'k2': 'v2'}
 
 
 def test_rolling_update_simple(
