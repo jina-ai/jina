@@ -46,10 +46,7 @@ def _get_docs_from_msg(
     else:
         result = getattr(msg.request, field)
 
-    # to unify all length=0 DocumentArray (or any other results) will simply considered as None
-    # otherwise the executor has to handle DocArray(0)
-    if len(result):
-        return result
+    return result
 
 
 class DataRequestHandler:

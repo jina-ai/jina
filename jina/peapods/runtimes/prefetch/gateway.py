@@ -100,6 +100,14 @@ class GrpcGatewayPrefetcher(GatewayPrefetcher):
         super().__init__(args, iolet)
         self.iolet.callback = lambda response: self.handle_response(response.request)
 
+    async def handle_response(self, response: 'Response'):
+        """
+        Async version of parents handle_response function
+
+        :param response: message received from grpclet callback
+        """
+        super().handle_response(response)
+
     def _create_receive_task(self) -> 'asyncio.Task':
         """Start a receive task that starts the GRPC server & awaits termination.
 

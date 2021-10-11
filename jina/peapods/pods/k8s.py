@@ -279,10 +279,10 @@ class K8sPod(BasePod, ExitFIFO):
             'tail_deployment': None,
             'deployments': [],
         }
-        parallel = getattr(args, 'parallel', 1)
+        shards = getattr(args, 'shards', 1)
         replicas = getattr(args, 'replicas', 1)
         uses_before = getattr(args, 'uses_before', None)
-        if parallel > 1 or (len(self.needs) > 1 and replicas > 1) or uses_before:
+        if shards > 1 or (len(self.needs) > 1 and replicas > 1) or uses_before:
             # reasons to separate head and tail from peas is that they
             # can be deducted based on the previous and next pods
             parsed_args['head_deployment'] = copy.copy(args)
@@ -290,14 +290,14 @@ class K8sPod(BasePod, ExitFIFO):
             parsed_args['head_deployment'].uses = (
                 args.uses_before or __default_executor__
             )
-        if parallel > 1 or getattr(args, 'uses_after', None):
+        if shards > 1 or getattr(args, 'uses_after', None):
             parsed_args['tail_deployment'] = copy.copy(args)
             parsed_args['tail_deployment'].replicas = 1
             parsed_args['tail_deployment'].uses = (
                 args.uses_after or __default_executor__
             )
 
-        parsed_args['deployments'] = [args] * parallel
+        parsed_args['deployments'] = [args] * shards
         return parsed_args
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -311,8 +311,12 @@ class K8sPod(BasePod, ExitFIFO):
 
     @property
     def host(self) -> str:
-        """Not implemented"""
-        raise NotImplementedError
+        """Currently, when deploying on Kubernetes, Jina does not expose a public host.
+        Instead Jina sends requests via port-forward and runs the requests against localhost.
+
+        :return: localhost
+        """
+        return 'localhost'
 
     def start(self) -> 'K8sPod':
         """Deploy the kubernetes pods via k8s Deployment and k8s Service.
@@ -441,7 +445,7 @@ class K8sPod(BasePod, ExitFIFO):
             mermaid_graph = [f'subgraph {self.name};\n', f'direction LR;\n']
 
             num_replicas = getattr(self.args, 'replicas', 1)
-            num_shards = getattr(self.args, 'parallel', 1)
+            num_shards = getattr(self.args, 'shards', 1)
             uses = self.args.uses
             if num_shards > 1:
                 shard_names = [

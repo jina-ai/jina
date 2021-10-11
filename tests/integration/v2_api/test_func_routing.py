@@ -142,7 +142,7 @@ def test_func_joiner(mocker):
 
 
 def test_dealer_routing(mocker):
-    f = Flow().add(parallel=3)
+    f = Flow().add(shards=3)
     mock = mocker.Mock()
     with f:
         f.post(
@@ -248,7 +248,7 @@ def test_target_peapod_with_two_pathways_one_skip():
         assert len(results[0].data.docs) == 1
 
 
-def test_target_peapod_with_parallel():
+def test_target_peapod_with_shards():
     f = Flow().add(shards=2).add(name='my_target')
     with f:
         results = f.post(

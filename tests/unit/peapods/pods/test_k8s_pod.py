@@ -52,28 +52,28 @@ def test_dictionary_to_cli_param():
     )
 
 
-@pytest.mark.parametrize('parallel', [1, 2, 3, 4, 5])
-def test_parse_args(parallel: int):
-    args = set_pod_parser().parse_args(['--parallel', str(parallel)])
+@pytest.mark.parametrize('shards', [1, 2, 3, 4, 5])
+def test_parse_args(shards: int):
+    args = set_pod_parser().parse_args(['--shards', str(shards)])
     pod = K8sPod(args)
 
     assert namespace_equal(
-        pod.deployment_args['head_deployment'], None if parallel == 1 else args
+        pod.deployment_args['head_deployment'], None if shards == 1 else args
     )
     assert namespace_equal(
-        pod.deployment_args['tail_deployment'], None if parallel == 1 else args
+        pod.deployment_args['tail_deployment'], None if shards == 1 else args
     )
-    assert pod.deployment_args['deployments'] == [args] * parallel
+    assert pod.deployment_args['deployments'] == [args] * shards
 
 
-@pytest.mark.parametrize('parallel', [2, 3, 4, 5])
-def test_parse_args_custom_executor(parallel: int):
+@pytest.mark.parametrize('shards', [2, 3, 4, 5])
+def test_parse_args_custom_executor(shards: int):
     uses_before = 'custom-executor-before'
     uses_after = 'custom-executor-after'
     args = set_pod_parser().parse_args(
         [
-            '--parallel',
-            str(parallel),
+            '--shards',
+            str(shards),
             '--uses-before',
             uses_before,
             '--uses-after',
@@ -90,11 +90,11 @@ def test_parse_args_custom_executor(parallel: int):
         args, pod.deployment_args['tail_deployment'], skip_attr=('uses',)
     )
     assert pod.deployment_args['tail_deployment'].uses == uses_after
-    assert pod.deployment_args['deployments'] == [args] * parallel
+    assert pod.deployment_args['deployments'] == [args] * shards
 
 
 @pytest.mark.parametrize(
-    ['name', 'parallel', 'expected_deployments'],
+    ['name', 'shards', 'expected_deployments'],
     [
         (
             'gateway',
@@ -124,9 +124,9 @@ def test_parse_args_custom_executor(parallel: int):
         ),
     ],
 )
-def test_deployments(name: str, parallel: str, expected_deployments: List[Dict]):
+def test_deployments(name: str, shards: str, expected_deployments: List[Dict]):
     args = set_pod_parser().parse_args(
-        ['--name', name, '--parallel', parallel, '--k8s-namespace', 'ns']
+        ['--name', name, '--shards', shards, '--k8s-namespace', 'ns']
     )
     pod = K8sPod(args)
 
@@ -145,7 +145,7 @@ def test_deployments(name: str, parallel: str, expected_deployments: List[Dict])
 def get_k8s_pod(
     pod_name: str,
     namespace: str,
-    parallel: str = None,
+    shards: str = None,
     replicas: str = None,
     needs: Optional[Set[str]] = None,
     uses_before=None,
@@ -153,11 +153,11 @@ def get_k8s_pod(
     port_expose=None,
 ):
     parameter_list = ['--name', pod_name, '--k8s-namespace', namespace]
-    if parallel:
+    if shards:
         parameter_list.extend(
             [
-                '--parallel',
-                str(parallel),
+                '--shards',
+                str(shards),
             ]
         )
     if replicas:
@@ -257,17 +257,17 @@ def test_start_deploys_runtime():
         assert call_args[3] == ''
 
 
-@pytest.mark.parametrize('parallel', [2, 3, 4])
-def test_start_deploys_runtime_with_parallel(parallel: int):
+@pytest.mark.parametrize('shards', [2, 3, 4])
+def test_start_deploys_runtime_with_shards(shards: int):
     namespace = 'ns'
-    pod = get_k8s_pod('executor', namespace, str(parallel))
+    pod = get_k8s_pod('executor', namespace, str(shards))
 
     deploy_mock = Mock()
     kubernetes_deployment.deploy_service = deploy_mock
 
     pod.start()
 
-    expected_calls = parallel + 2  # for head and tail
+    expected_calls = shards + 2  # for head and tail
 
     assert expected_calls == kubernetes_deployment.deploy_service.call_count
 
@@ -275,7 +275,7 @@ def test_start_deploys_runtime_with_parallel(parallel: int):
     assert head_call_args[0] == pod.name + '-head'
 
     executor_call_args_list = [
-        deploy_mock.call_args_list[i][0] for i in range(1, parallel + 1)
+        deploy_mock.call_args_list[i][0] for i in range(1, shards + 1)
     ]
     for i, call_args in enumerate(executor_call_args_list):
         assert call_args[0] == pod.name + f'-{i}'

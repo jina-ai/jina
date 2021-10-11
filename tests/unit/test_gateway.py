@@ -16,12 +16,7 @@ def test_compression(compress_algo, mocker):
 
     response_mock = mocker.Mock()
 
-    f = (
-        Flow(compress=str(compress_algo))
-        .add()
-        .add(name='DummyEncoder', parallel=2)
-        .add()
-    )
+    f = Flow(compress=str(compress_algo)).add().add(name='DummyEncoder', shards=2).add()
 
     with f:
         f.index(random_docs(10), on_done=response_mock)
@@ -59,6 +54,8 @@ def test_gateway_concurrency(protocol):
         )
 
     f = Flow(protocol=protocol, port_expose=PORT_EXPOSE).add(parallel=2)
+    # f = Flow(protocol=protocol).add(shards=2)
+    concurrency = 100
     with f:
         threads = []
         status_codes = [None] * CONCURRENCY
@@ -70,7 +67,6 @@ def test_gateway_concurrency(protocol):
 
         for t in threads:
             t.join()
-            print(f'terminate {t}')
 
     print(durations)
     print(status_codes)
