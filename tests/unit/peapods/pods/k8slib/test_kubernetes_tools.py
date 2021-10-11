@@ -13,12 +13,15 @@ def test_lazy_load_k8s_client(monkeypatch):
     load_kube_config_mock = Mock()
     k8s_clients = K8sClients()
     monkeypatch.setattr(kubernetes.config, 'load_kube_config', load_kube_config_mock)
-    attributes = ['k8s_client', 'core_v1', 'beta', 'networking_v1_beta1_api', 'apps_v1']
+    attributes = ['core_v1', 'beta', 'networking_v1_beta1_api', 'apps_v1']
     for attribute in attributes:
         assert getattr(k8s_clients, f'_{attribute}') is None
 
     for attribute in attributes:
         assert getattr(k8s_clients, attribute) is not None
+
+    assert k8s_clients.k8s_client is not None
+    assert k8s_clients._k8s_client is not None
 
 
 @pytest.mark.parametrize(
