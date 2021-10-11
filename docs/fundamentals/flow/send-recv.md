@@ -328,7 +328,7 @@ your memory usage will stay constant at 10MB.
 
 ## Environment Variables
 
-In some scenarios (e.g. testing), you may want to set environment variables to the Flow and use it inside Executor.
+In some scenarios, you may want to set environment variables to the Flow and use it inside Executor.
 To do that, you can use `env`:
 
 ```python
