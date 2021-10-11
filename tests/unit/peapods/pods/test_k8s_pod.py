@@ -7,7 +7,7 @@ import jina
 from jina.helper import Namespace
 from jina.parsers import set_pod_parser, set_gateway_parser
 from jina.peapods.pods.k8s import K8sPod
-from jina.peapods.pods.k8slib import kubernetes_tools, kubernetes_deployment
+from jina.peapods.pods.k8slib import kubernetes_deployment
 from jina.peapods.pods.k8slib.kubernetes_deployment import dictionary_to_cli_param
 
 
