@@ -70,7 +70,7 @@ f = (Flow()
 :align: center
 ```
 
-The above Flow will create a topology with three replicas of Executor `slow_encoder`. The `Gateway` will send every request to excactly one of the three instances. Then the replica will send its result to `fast_indexer`.
+The above Flow will create a topology with three Replicas of Executor `slow_encoder`. The `Gateway` will send every request to excactly one of the three instances. Then the replica will send its result to `fast_indexer`.
 
 ## Partition data by using Shards
 
@@ -82,15 +82,15 @@ This is helpful in two situations:
 
 Then splitting the load across two or more machines yields better results.
 
-For Shards you can define which shard (instance) will receive the request from its predecessor. This behaviour is called `polling`. By default `polling` is set so `ANY`, which means only one shard will receive a request. If `polling` is to `ALL` it means that all shards will receive a request.
+For Shards you can define which shard (instance) will receive the request from its predecessor. This behaviour is called `polling`. By default `polling` is set so `ANY`, which means only one shard will receive a request. If `polling` is to `ALL` it means that all Shards will receive a request.
 
 When you shard your index, the request handling usually differs between index and search requests:
 
 - Index (and update, delete) will just be handled by a single shard => `polling='any'`
-- Search requests are handled by all shards => `polling='all'`
+- Search requests are handled by all Shards => `polling='all'`
 
 For indexing you only want a single shard to receive a request, because this is sufficient to add it to the index.
-For searching you probably need to send the search request to all shards, because the requested data could be on any shard.
+For searching you probably need to send the search request to all Shards, because the requested data could be on any shard.
 
 ```python Usage
 from jina import Flow
@@ -107,14 +107,34 @@ You can use the pre-built [MatchMerger](https://hub.jina.ai/executor/mruax3k7) o
 
 ```{admonition} Example
 :class: example
-A search Flow has 10 shards for an Indexer.
+A search Flow has 10 Shards for an Indexer.
 Each shard returns the top 20 results.
 After the merger there will be 200 results per query Document.
 ```
 
-### Combining replicas & shards
+### Distribute Replicas & Shards across machines
 
-Replicas and shards can also be combined, which is necessary for Flows with high scalability needs.
+Both Replicas and Shards can be distributed across machines to scale your Flow horizontally by using more machines.
+
+In order to do this you need to provide a list of IPs in the `peas_hosts` argument of an Executor.
+
+````{admonition} Important
+:class: important
+`{ref}`JinaD <jinad-server>`` needs to be installed and running on the machines you want to use in your Flow.
+````
+
+```python
+from jina import Flow
+
+f = (Flow()
+     .add(name='distributed_replicas', replicas=2, peas_hosts=['10.0.0.1', '10.0.0.2']))
+```
+
+This creates a Flow with an Executor and two Replicas of this Executor. Those two Replicas will be deployed to 10.0.0.1 and 10.0.0.2. Assuming those hosts have JinaD set up and reachable from the Flow's machine.
+
+### Combining Replicas & Shards
+
+Replicas and Shards can also be combined, which is necessary for Flows with high scalability needs.
 In this case Jina will shard the Executor and create Replicas for each shard.
 
 ```python
@@ -124,4 +144,4 @@ f = (Flow()
      .add(name='shards_with_replicas', shards=2, replicas=3))
 ```
 
-This Flow has a single Executor with 2 Shards and 3 Replicas, which means it gets split into 2 shards with 3 replicas each. In total this Flow has 2*3=6 workers and could be distributed to six different machines if necessary.
+This Flow has a single Executor with 2 Shards and 3 Replicas, which means it gets split into 2 Shards with 3 Replicas each. In total this Flow has 2*3=6 workers and could be distributed to six different machines if necessary.
