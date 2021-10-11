@@ -257,16 +257,15 @@ class CompoundPod(BasePod, ExitStack):
             result.append(_args)
         return result
 
-    def rolling_update(self, dump_path: Optional[str] = None):
-        """Reload all Shards of this Compound Pod.
-
-        :param dump_path: the dump from which to read the data
+    def rolling_update(
+        self, dump_path: Optional[str] = None, *, uses_with: Optional[Dict] = None
+    ):
+        """Reload all Pods of this Compound Pod.
+        :param dump_path: **backwards compatibility** This function was only accepting dump_path as the only potential arg to override
+        :param uses_with: a Dictionary of arguments to restart the executor with
         """
-        try:
-            for shard in self.shards:
-                shard.rolling_update(dump_path)
-        except:
-            raise
+        for shard in self.shards:
+            shard.rolling_update(dump_path=dump_path, uses_with=uses_with)
 
     @property
     def _mermaid_str(self) -> List[str]:

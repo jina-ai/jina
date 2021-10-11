@@ -555,11 +555,20 @@ class Pod(BasePod, ExitFIFO):
         """
         return all(p.is_ready.is_set() for p in self.peas) and self._activated
 
-    def rolling_update(self, dump_path: Optional[str] = None):
+    def rolling_update(
+        self, dump_path: Optional[str] = None, *, uses_with: Optional[Dict] = None
+    ):
         """Reload all Peas of this Pod.
 
         :param dump_path: the dump from which to read the data
+        :param uses_with: a Dictionary of arguments to restart the executor with
         """
+        # BACKWARDS COMPATIBILITY
+        if dump_path is not None:
+            if uses_with is not None:
+                uses_with['dump_path'] = dump_path
+            else:
+                uses_with = {'dump_path': dump_path}
         try:
             pea_args_idx = 0
             for i in range(len(self.peas)):
@@ -568,7 +577,10 @@ class Pod(BasePod, ExitFIFO):
                     pea.close()
                     _args = self.peas_args['peas'][pea_args_idx]
                     _args.noblock_on_start = False
+                    ### BACKWARDS COMPATIBILITY, so THAT DUMP_PATH is in runtime_args
                     _args.dump_path = dump_path
+                    ###
+                    _args.uses_with = uses_with
                     new_pea = BasePea(_args)
                     self.enter_context(new_pea)
                     new_pea.activate_runtime()
