@@ -112,6 +112,7 @@ class K8sPod(BasePod, ExitFIFO):
                 replicas=self.num_replicas,
                 pull_policy='IfNotPresent',
                 init_container=init_container_args,
+                env=self.deployment_args.env,
                 custom_resource_dir=getattr(
                     self.common_args, 'k8s_custom_resource_dir', None
                 ),

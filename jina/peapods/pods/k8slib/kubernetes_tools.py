@@ -1,6 +1,6 @@
-import json
 import os
 import tempfile
+import json
 from typing import Dict, Optional, Generator
 
 from ....importer import ImportExtensions
@@ -118,7 +118,10 @@ def create(
     from kubernetes.utils import FailToCreateError
     from kubernetes import utils
 
-    yaml = _get_yaml(template, params, custom_resource_dir)
+    if template == 'configmap':
+        yaml = _patch_configmap_yaml(template, params)
+    else:
+        yaml = _get_yaml(template, params, custom_resource_dir)
     fd, path = tempfile.mkstemp()
     try:
         with os.fdopen(fd, 'w') as tmp:
@@ -151,6 +154,22 @@ def _get_yaml(template: str, params: Dict, custom_resource_dir: Optional[str] = 
         for k, v in params.items():
             content = content.replace(f'{{{k}}}', str(v))
     return content
+
+
+def _patch_configmap_yaml(template: str, params: Dict):
+    import yaml
+
+    path = os.path.join(DEFAULT_RESOURCE_DIR, f'{template}.yml')
+
+    with open(path) as f:
+        config_map = yaml.safe_load(f)
+
+    config_map['metadata']['name'] = params.get('name') + '-' + 'configmap'
+    config_map['metadata']['namespace'] = params.get('namespace')
+    if params.get('data'):
+        for key, value in params['data'].items():
+            config_map['data'][key] = value
+    return json.dumps(config_map)
 
 
 def _get_gateway_pod_name(namespace):
