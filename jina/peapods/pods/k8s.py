@@ -44,7 +44,7 @@ class K8sPod(BasePod, ExitFIFO):
             image_name = (
                 'jinaai/jina:test-pip'
                 if test_pip
-                else f'jinaai/jina:{self.version}-py38-standard'
+                else f'jinaai/jina:{self.version}-py38-perf'
             )
             kubernetes_deployment.deploy_service(
                 self.dns_name,
@@ -93,7 +93,7 @@ class K8sPod(BasePod, ExitFIFO):
                 image_name = (
                     'jinaai/jina:test-pip'
                     if test_pip
-                    else f'jinaai/jina:{self.version}-py38-standard'
+                    else f'jinaai/jina:{self.version}-py38-perf'
                 )
                 uses = 'BaseExecutor'
             else:
