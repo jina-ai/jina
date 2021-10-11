@@ -441,8 +441,10 @@ class DocumentArray(
                 heap = [element for element in self._pb_body]
             else:
                 # heap is a list of tuples (key, document)
-                heap = [(_key(element), element) for element in self._pb_body]
-
+                heap = [
+                    (_key(element), i, element)
+                    for i, element in enumerate(self._pb_body)
+                ]
             # if reverse use the maxheap operations for .heapify and .heappop
             heapify = heapq._heapify_max if reverse else heapq.heapify
             heappop = heapq._heappop_max if reverse else heapq.heappop
@@ -451,12 +453,10 @@ class DocumentArray(
             heapify(heap)
             topk = [heappop(heap) for _ in range(top_k)]
 
-            if _key is not None:
-                # get back to lists of docs from the lists of tuples
-                _, topk = zip(*topk)
-                _, heap = zip(*heap)
-                topk, heap = list(topk), list(heap)
-
+            # get back to lists of docs from the lists of tuples
+            _, _, topk = zip(*topk)
+            _, _, heap = zip(*heap)
+            topk, heap = list(topk), list(heap)
             # update the protobuf body
             self._pb_body = topk + heap
 

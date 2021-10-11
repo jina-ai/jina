@@ -1,5 +1,4 @@
 import os
-import random
 from copy import deepcopy
 
 import pytest
@@ -333,9 +332,7 @@ def test_da_sort_by_document_interface_in_proto():
 
 
 def test_da_sort_topk():
-    da = DocumentArray(
-        [Document(id=i, copy=True, scores={'euclid': 10 - i}) for i in range(10)]
-    )
+    da = DocumentArray([Document(id=i, scores={'euclid': 10 - i}) for i in range(10)])
     original = deepcopy(da)
 
     da.sort(top_k=3, key=lambda d: d.scores['euclid'].value)
@@ -353,6 +350,16 @@ def test_da_sort_topk():
     assert rest != sorted(rest, reverse=True)
     assert len(da) == len(original)
     assert all([d.id in original for d in da])
+
+
+def test_da_sort_topk_tie():
+    da = DocumentArray([Document(id=i, tags={'order': i % 10}) for i in range(100)])
+    da.sort(top_k=10, key=lambda doc: doc.tags['order'])
+
+    top_k_ids = [doc.id for doc in da[0:10]]
+    assert top_k_ids == ['0', '10', '20', '30', '40', '50', '60', '70', '80', '90']
+    for i in range(10):
+        assert da[i].tags['order'] == 0
 
 
 def test_da_reverse():
