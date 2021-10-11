@@ -106,7 +106,6 @@ class CompoundPod(BasePod, ExitStack):
             If one of the :class:`Pod` fails to start, make sure that all of them
             are properly closed.
         """
-        self.assign_shards()
         if getattr(self.args, 'noblock_on_start', False):
             head_args = self.head_args
             head_args.noblock_on_start = True
@@ -168,8 +167,6 @@ class CompoundPod(BasePod, ExitStack):
                 p.join()
         except KeyboardInterrupt:
             pass
-        finally:
-            self.shards.clear()
 
     @property
     def is_ready(self) -> bool:
