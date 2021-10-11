@@ -46,6 +46,18 @@ def k8s_cluster(kind_cluster: KindCluster, logger: JinaLogger) -> KindClusterWra
 
 
 @pytest.fixture()
+def reload_executor_image(logger: JinaLogger):
+    image, build_logs = client.images.build(
+        path=os.path.join(cur_dir, 'reload-executor'), tag='reload-executor:0.13.1'
+    )
+    for chunk in build_logs:
+        if 'stream' in chunk:
+            for line in chunk['stream'].splitlines():
+                logger.debug(line)
+    return image.tags[-1]
+
+
+@pytest.fixture()
 def test_executor_image(logger: JinaLogger):
     image, build_logs = client.images.build(
         path=os.path.join(cur_dir, 'test-executor'), tag='test-executor:0.13.1'
@@ -83,13 +95,19 @@ def dummy_dumper_image(logger: JinaLogger):
 
 @pytest.fixture()
 def load_images_in_kind(
-    logger, test_executor_image, executor_merger_image, dummy_dumper_image, k8s_cluster
+    logger,
+    test_executor_image,
+    executor_merger_image,
+    dummy_dumper_image,
+    reload_executor_image,
+    k8s_cluster,
 ):
     logger.debug(f'Loading docker image into kind cluster...')
     for image in [
         test_executor_image,
         executor_merger_image,
         dummy_dumper_image,
+        reload_executor_image,
         'jinaai/jina:test-pip',
     ]:
         k8s_cluster.load_docker_image(image)

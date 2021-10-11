@@ -17,7 +17,7 @@ def to_dns_name(name: str) -> str:
     return name.replace('/', '-').replace('_', '-').lower()
 
 
-def restart_service(
+def restart_deployment(
     name: str,
     namespace: str,
     image_name: str,
@@ -53,7 +53,9 @@ def restart_service(
     port_out = 8082
     port_ctrl = 8083
 
-    logger.info(f'🔋\tCreate Service for "{name}" with exposed port "{port_expose}"')
+    logger.debug(
+        f'🔋\tReplace Deployment for "{name}" with exposed port "{port_expose}"'
+    )
     kubernetes_tools.replace(
         deployment_name=name,
         namespace_name=namespace,

@@ -131,7 +131,7 @@ class K8sPod(BasePod, ExitFIFO):
             image_name = self._get_image_name()
             container_args = self._get_container_args()
 
-            kubernetes_deployment.restart_service(
+            kubernetes_deployment.restart_deployment(
                 self.dns_name,
                 namespace=self.k8s_namespace,
                 image_name=image_name,
@@ -196,6 +196,8 @@ class K8sPod(BasePod, ExitFIFO):
             else:
                 _timeout /= 1e3
 
+            from kubernetes import client
+
             k8s_client = kubernetes_tools.K8sClients().apps_v1
 
             with JinaLogger(f'waiting_restart_for_{self.name}') as logger:
@@ -210,8 +212,28 @@ class K8sPod(BasePod, ExitFIFO):
                         api_response = k8s_client.read_namespaced_deployment(
                             name=self.dns_name, namespace=self.k8s_namespace
                         )
-                    finally:
-                        pass
+                        if (
+                            api_response.status.updated_replicas is not None
+                            and api_response.status.updated_replicas
+                            == self.num_replicas
+                        ):
+                            logger.success(
+                                f' {self.name} has all its replicas updated!!'
+                            )
+                            return
+                        else:
+                            updated_replicas = api_response.status.updated_replicas or 0
+                            logger.info(
+                                f'\nNumber of updated replicas {updated_replicas}, waiting for {self.num_replicas - updated_replicas} replicas to be updated'
+                            )
+                            time.sleep(1.0)
+                    except client.ApiException as ex:
+                        exception_to_raise = ex
+                        break
+            fail_msg = f' Deployment {self.name} did not restart with a timeout of {self.common_args.timeout_ready}'
+            if exception_to_raise:
+                fail_msg += f': {repr(exception_to_raise)}'
+            raise RuntimeFailToStart(fail_msg)
 
         def rolling_update(
             self, dump_path: Optional[str] = None, *, uses_with: Optional[Dict] = None

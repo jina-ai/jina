@@ -21,7 +21,7 @@ def run_test(flow, endpoint, port_expose):
 
 @pytest.fixture()
 def k8s_flow_with_init_container(
-    test_executor_image: str, executor_merger_image: str, dummy_dumper_image: str
+    test_executor_image: str, dummy_dumper_image: str
 ) -> Flow:
     flow = Flow(
         name='test-flow-with-init-container',
@@ -42,7 +42,7 @@ def k8s_flow_with_init_container(
 
 @pytest.fixture()
 def k8s_flow_with_sharding(
-    test_executor_image: str, executor_merger_image: str, dummy_dumper_image: str
+    test_executor_image: str, executor_merger_image: str
 ) -> Flow:
     flow = Flow(
         name='test-flow-with-sharding',
@@ -208,3 +208,95 @@ def test_flow_with_configmap(
         assert doc.tags.get('k1') == 'v1'
         assert doc.tags.get('k2') == 'v2'
         assert doc.tags.get('env') == {'k1': 'v1', 'k2': 'v2'}
+
+
+@pytest.fixture()
+def k8s_flow_with_reload_executor(
+    reload_executor_image: str,
+) -> Flow:
+    flow = Flow(
+        name='test-flow-with-reload',
+        port_expose=9090,
+        infrastructure='K8S',
+        protocol='http',
+        timeout_ready=120000,
+    ).add(
+        name='test_executor',
+        replicas=2,
+        uses_with={'argument': 'value1'},
+        uses=reload_executor_image,
+        timeout_ready=120000,
+    )
+    return flow
+
+
+def test_rolling_update_simple(
+    k8s_cluster,
+    k8s_flow_with_reload_executor,
+    load_images_in_kind,
+    set_test_pip_version,
+    logger,
+    reraise,
+):
+    from threading import Thread, Event
+    import time
+
+    def send_requests(flow_name, port_expose, client, event):
+        from jina.peapods.pods.k8slib import kubernetes_tools
+
+        with reraise:
+            with kubernetes_tools.get_port_forward_contextmanager(
+                flow_name, port_expose
+            ):
+                while not event.is_set():
+                    r = client.post(
+                        '/exec',
+                        [Document() for _ in range(10)],
+                        return_results=True,
+                        port_expose=9090,
+                    )
+                    assert len(r) > 0
+                    assert len(r[0].docs) > 0
+                    for doc in r[0].docs:
+                        assert doc.tags['argument'] in ['value1', 'value2']
+                    time.sleep(0.1)
+
+    with k8s_flow_with_reload_executor as flow:
+        resp_v1 = flow.post(
+            '/exec',
+            [Document() for _ in range(10)],
+            return_results=True,
+            port_expose=9090,
+        )
+        assert len(resp_v1[0].docs) > 0
+        for doc in resp_v1[0].docs:
+            assert doc.tags['argument'] == 'value1'
+
+        event = Event()
+        thread = Thread(
+            target=send_requests,
+            kwargs={
+                'flow_name': flow.args.name,
+                'port_expose': 9090,
+                'client': flow.client,
+                'event': event,
+            },
+        )
+        thread.start()
+        time.sleep(0.5)
+        flow.rolling_update('test_executor', uses_with={'argument': 'value2'})
+        event.set()
+        resp_v2 = flow.post(
+            '/exec',
+            [Document() for _ in range(10)],
+            return_results=True,
+            port_expose=9090,
+        )
+
+    assert len(resp_v1[0].docs) > 0
+    for doc in resp_v1[0].docs:
+        assert doc.tags['argument'] == 'value1'
+
+    assert len(resp_v2[0].docs) > 0
+    for doc in resp_v2[0].docs:
+        assert doc.tags['argument'] == 'value2'
