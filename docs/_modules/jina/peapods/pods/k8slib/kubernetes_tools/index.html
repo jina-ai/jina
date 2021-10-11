@@ -577,9 +577,9 @@
                     </label>
                 </div>
                 <h1>Source code for jina.peapods.pods.k8slib.kubernetes_tools</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Generator</span>
 
 <span class="kn">from</span> <span class="nn">....importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
@@ -697,7 +697,10 @@
     <span class="kn">from</span> <span class="nn">kubernetes.utils</span> <span class="kn">import</span> <span class="n">FailToCreateError</span>
     <span class="kn">from</span> <span class="nn">kubernetes</span> <span class="kn">import</span> <span class="n">utils</span>
 
-    <span class="n">yaml</span> <span class="o">=</span> <span class="n">_get_yaml</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">custom_resource_dir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">template</span> <span class="o">==</span> <span class="s1">'configmap'</span><span class="p">:</span>
+        <span class="n">yaml</span> <span class="o">=</span> <span class="n">_patch_configmap_yaml</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">yaml</span> <span class="o">=</span> <span class="n">_get_yaml</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">custom_resource_dir</span><span class="p">)</span>
     <span class="n">fd</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">()</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">os</span><span class="o">.</span><span class="n">fdopen</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
@@ -730,6 +733,22 @@
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">content</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="se">{{</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="se">}}</span><span class="s1">'</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">content</span>
+
+
+<span class="k">def</span> <span class="nf">_patch_configmap_yaml</span><span class="p">(</span><span class="n">template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">yaml</span>
+
+    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DEFAULT_RESOURCE_DIR</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">template</span><span class="si">}</span><span class="s1">.yml'</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">config_map</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+    <span class="n">config_map</span><span class="p">[</span><span class="s1">'metadata'</span><span class="p">][</span><span class="s1">'name'</span><span class="p">]</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'name'</span><span class="p">)</span> <span class="o">+</span> <span class="s1">'-'</span> <span class="o">+</span> <span class="s1">'configmap'</span>
+    <span class="n">config_map</span><span class="p">[</span><span class="s1">'metadata'</span><span class="p">][</span><span class="s1">'namespace'</span><span class="p">]</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'namespace'</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'data'</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">params</span><span class="p">[</span><span class="s1">'data'</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">config_map</span><span class="p">[</span><span class="s1">'data'</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">config_map</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_get_gateway_pod_name</span><span class="p">(</span><span class="n">namespace</span><span class="p">):</span>
@@ -774,7 +793,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 09, 2021.
+                    Last updated on Oct 11, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

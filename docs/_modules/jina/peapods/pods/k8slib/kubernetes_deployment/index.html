@@ -608,6 +608,7 @@
     <span class="n">init_container</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">custom_resource_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">port_expose</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">"""Deploy service on Kubernetes.</span>
 
@@ -623,6 +624,7 @@
 <span class="sd">    :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.</span>
 <span class="sd">        Defaults to the standard location jina.resources if not specified.</span>
 <span class="sd">    :param port_expose: port which will be exposed by the deployed containers</span>
+<span class="sd">    :param env: environment variables to be passed into configmap.</span>
 <span class="sd">    :return: dns name of the created service</span>
 <span class="sd">    """</span>
 
@@ -649,6 +651,19 @@
         <span class="p">},</span>
         <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
         <span class="n">custom_resource_dir</span><span class="o">=</span><span class="n">custom_resource_dir</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'📝</span><span class="se">\t</span><span class="s1">Create ConfigMap for deployment.'</span><span class="p">)</span>
+
+    <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+        <span class="s1">'configmap'</span><span class="p">,</span>
+        <span class="p">{</span>
+            <span class="s1">'name'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+            <span class="s1">'namespace'</span><span class="p">:</span> <span class="n">namespace</span><span class="p">,</span>
+            <span class="s1">'data'</span><span class="p">:</span> <span class="n">env</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+        <span class="n">custom_resource_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
@@ -805,7 +820,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 09, 2021.
+                    Last updated on Oct 11, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
