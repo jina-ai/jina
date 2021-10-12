@@ -50,9 +50,10 @@ def test_deploy_service(init_container: Dict, custom_resource: str, monkeypatch)
         pull_policy='test-pull-policy',
         init_container=init_container,
         custom_resource_dir=custom_resource,
+        env={'k1': 'v1', 'k2': 'v2'},
     )
 
-    assert mock_create.call_count == 4
+    assert mock_create.call_count == 5
 
     service_call_args = mock_create.call_args_list[0][0]
     service_call_kwargs = mock_create.call_args_list[0][1]
@@ -60,8 +61,14 @@ def test_deploy_service(init_container: Dict, custom_resource: str, monkeypatch)
     assert service_call_args[0] == 'service'
     assert service_call_kwargs['custom_resource_dir'] == custom_resource
 
-    deployment_call_args = mock_create.call_args_list[1][0]
-    deployment_call_kwargs = mock_create.call_args_list[1][1]
+    configmap_call_args = mock_create.call_args_list[1][0]
+    configmap_call_kwargs = mock_create.call_args_list[1][1]
+
+    assert configmap_call_args[0] == 'configmap'
+    assert configmap_call_kwargs['custom_resource_dir'] is None
+
+    deployment_call_args = mock_create.call_args_list[2][0]
+    deployment_call_kwargs = mock_create.call_args_list[2][1]
     assert deployment_call_kwargs['custom_resource_dir'] == custom_resource
 
     if init_container:

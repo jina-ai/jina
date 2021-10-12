@@ -628,3 +628,11 @@ def test_buffers_getter_setter(tmpdir):
         dam.buffers = [b'cc', b'bb', b'aa', b'dd']
     with pytest.raises(TypeError):
         dam.buffers = ['aa', 'bb', 'cc']
+
+
+def test_traverse_flat_root_itself(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend([Document() for _ in range(100)])
+    res = dam.traverse_flat(['r'])
+    assert isinstance(res, DocumentArrayMemmap)
+    assert id(res) == id(dam)

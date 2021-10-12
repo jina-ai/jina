@@ -611,6 +611,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
 
         if JINA_GLOBAL.scipy_installed:
             import scipy
+            import scipy.sparse
 
             if scipy.sparse.issparse(v):
                 from ..ndarray.sparse.scipy import SparseNdArray

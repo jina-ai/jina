@@ -165,7 +165,7 @@ def mixin_prefetch_parser(parser=None):
         '--prefetch',
         type=int,
         default=1,
-        help='The number of pre-fetched requests from the client',
+        help='The number of requests fetched from the client before feeding to the first Executor',
     )
 
 

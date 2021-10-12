@@ -164,7 +164,9 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         await self._grpc_server.wait_for_termination()
 
     def _update_pending_tasks(self):
-        self._pending_tasks = [task for task in self._pending_tasks if not task.done()]
+        self._pending_tasks = [
+            task for task in self._pending_tasks if task and not task.done()
+        ]
 
     async def Call(self, msg, *args):
         """Processes messages received by the GRPC server

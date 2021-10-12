@@ -78,7 +78,7 @@ class ContainerStore(BaseStore):
         :param uri: uri of partial-daemon
         :return: True if partial-daemon is ready"""
         async with aiohttp.ClientSession() as session:
-            for _ in range(20):
+            for _ in range(60):
                 try:
                     async with session.get(uri) as response:
                         if response.status == HTTPStatus.OK:
@@ -94,7 +94,7 @@ class ContainerStore(BaseStore):
                         f'error while checking if partial-daemon is ready: {e}'
                     )
         self._logger.error(
-            f'couldn\'t reach {self._kind.title()} container at {uri} after 10secs'
+            f'couldn\'t reach {self._kind.title()} container at {uri} after 30secs'
         )
         return False
 
@@ -157,6 +157,8 @@ class ContainerStore(BaseStore):
         :raises PartialDaemonConnectionException: if jinad cannot connect to partial
         :return: id of the container
         """
+        container = None
+
         try:
             from . import workspace_store
 
@@ -198,7 +200,7 @@ class ContainerStore(BaseStore):
             )
             if not await self.ready(uri):
                 raise PartialDaemonConnectionException(
-                    f'{id.type.title()} creation failed, couldn\'t reach the container at {uri} after 10secs'
+                    f'{id.type.title()} creation failed, couldn\'t reach the container at {uri} after 30secs'
                 )
             kwargs.update(
                 {'ports': ports.dict()} if isinstance(ports, PortMappings) else {}
@@ -206,17 +208,18 @@ class ContainerStore(BaseStore):
             object = await self._add(uri=uri, params=params, **kwargs)
         except Exception as e:
             self._logger.error(f'{self._kind} creation failed as {e}')
-            container_logs = Dockerizer.logs(container.id)
-            if container_logs and isinstance(
-                e, (PartialDaemon400Exception, PartialDaemonConnectionException)
-            ):
-                self._logger.debug(
-                    f'error logs from partial daemon: \n {container_logs}'
-                )
-                if e.message and isinstance(e.message, list):
-                    e.message += container_logs.split('\n')
-                elif e.message and isinstance(e.message, str):
-                    e.message += container_logs
+            if container is not None:
+                container_logs = Dockerizer.logs(container.id)
+                if container_logs and isinstance(
+                    e, (PartialDaemon400Exception, PartialDaemonConnectionException)
+                ):
+                    self._logger.debug(
+                        f'error logs from partial daemon: \n {container_logs}'
+                    )
+                    if e.message and isinstance(e.message, list):
+                        e.message += container_logs.split('\n')
+                    elif e.message and isinstance(e.message, str):
+                        e.message += container_logs
             if id in Dockerizer.containers:
                 self._logger.info(f'removing container {id_cleaner(container.id)}')
                 Dockerizer.rm_container(container.id)

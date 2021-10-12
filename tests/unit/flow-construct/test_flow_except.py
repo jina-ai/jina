@@ -84,7 +84,7 @@ class MyExecutor(Executor):
 
 @pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
-def test_except_with_parallel(mocker, protocol):
+def test_except_with_shards(mocker, protocol):
     def validate(req):
         assert req.status.code == jina_pb2.StatusProto.ERROR
         err_routes = [
@@ -99,7 +99,7 @@ def test_except_with_parallel(mocker, protocol):
     f = (
         Flow(protocol=protocol)
         .add(name='r1')
-        .add(name='r2', uses=DummyCrafterExcept, parallel=3)
+        .add(name='r2', uses=DummyCrafterExcept, shards=3)
         .add(name='r3', uses=MyExecutor)
     )
 

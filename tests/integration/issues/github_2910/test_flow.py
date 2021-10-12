@@ -14,7 +14,7 @@ def test_target_peapod(mocker):
 
     f = (
         Flow()
-        .add(uses=UpExecutor, parallel=3, name='up')
+        .add(uses=UpExecutor, shards=3, name='up')
         .add(uses=DownExecutor, needs='gateway', name='down')
         .join(needs=['up', 'down'])
     )

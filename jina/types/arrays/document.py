@@ -1,5 +1,6 @@
 import itertools
 import json
+import heapq
 from abc import abstractmethod
 from collections.abc import MutableSequence, Iterable as Itr
 from contextlib import nullcontext
@@ -16,6 +17,7 @@ from typing import (
     TypeVar,
     Dict,
     Sequence,
+    Callable,
 )
 
 import numpy as np
@@ -397,39 +399,66 @@ class DocumentArray(
             hi_idx -= 1
         self._update_id_to_index_map()
 
-    def sort(self, key=None, *args, **kwargs):
+    def sort(
+        self,
+        key: Callable,
+        top_k: Optional[int] = None,
+        reverse: bool = False,
+    ):
         """
         Sort the items of the :class:`DocumentArray` in place.
 
         :param key: key callable to sort based upon
-        :param args: variable set of arguments to pass to the sorting underlying function
-        :param kwargs: keyword arguments to pass to the sorting underlying function
+        :param top_k: make sure that the first `topk` elements are correctly sorted rather than
+            sorting the entire list
+        :param reverse: reverse=True will sort the list in descending order. Default is False
         """
-        if key:
 
-            def overriden_key(proto):
-                # Function to override the `proto` and wrap it around a `Document` to enable sorting via
-                # `Document-like` interface
-                d = Document(proto)
-                return key(d)
+        def overriden_key(proto):
+            # Function to override the `proto` and wrap it around a `Document` to enable sorting via
+            # `Document-like` interface
+            d = Document(proto)
+            return key(d)
 
-            # Logic here: `overriden_key` is offered to allow the user sort via pythonic `Document` syntax. However,
-            # maybe there may be cases where this won't work and the user may enter `proto-like` interface. To make
-            # sure (quite fragile) the `sort` will work seamlessly, it tries to apply `key` to the first element and
-            # see if it works. If it works it can sort with `proto` interface, otherwise use `Document` interface one.
-            # (Very often the 2 interfaces are both the same and valid, so proto will have less overhead
-            overriden = False
-            try:
-                key(self._pb_body[0])
-            except:
-                overriden = True
+        # Logic here: `overriden_key` is offered to allow the user sort via pythonic `Document` syntax. However,
+        # maybe there may be cases where this won't work and the user may enter `proto-like` interface. To make
+        # sure (quite fragile) the `sort` will work seamlessly, it tries to apply `key` to the first element and
+        # see if it works. If it works it can sort with `proto` interface, otherwise use `Document` interface one.
+        # (Very often the 2 interfaces are both the same and valid, so proto will have less overhead
+        _key = key
+        try:
+            key(self._pb_body[0])
+        except:
+            _key = overriden_key
 
-            if not overriden:
-                self._pb_body.sort(key=key, *args, **kwargs)
-            else:
-                self._pb_body.sort(key=overriden_key, *args, **kwargs)
+        if top_k is None or top_k >= len(self._pb_body):
+            self._pb_body.sort(key=_key, reverse=reverse)
         else:
-            self._pb_body.sort(*args, **kwargs)
+            # heap based sorting
+            # makes sure that the top_k elements are correctly sorted and leaves the rest unsorted
+            if _key is None:
+                # heap is a list of documents
+                heap = [element for element in self._pb_body]
+            else:
+                # heap is a list of tuples (key, document)
+                heap = [
+                    (_key(element), i, element)
+                    for i, element in enumerate(self._pb_body)
+                ]
+            # if reverse use the maxheap operations for .heapify and .heappop
+            heapify = heapq._heapify_max if reverse else heapq.heapify
+            heappop = heapq._heappop_max if reverse else heapq.heappop
+
+            # transform the original list to a heap and pop the top k elements
+            heapify(heap)
+            topk = [heappop(heap) for _ in range(top_k)]
+
+            # get back to lists of docs from the lists of tuples
+            _, _, topk = zip(*topk)
+            _, _, heap = zip(*heap)
+            topk, heap = list(topk), list(heap)
+            # update the protobuf body
+            self._pb_body = topk + heap
 
         self._update_id_to_index_map()
 
