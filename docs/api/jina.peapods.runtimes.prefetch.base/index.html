@@ -289,6 +289,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../jina.clients.base/">jina.clients.base package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.clients.base.grpc/">jina.clients.base.grpc module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.clients.base.helper/">jina.clients.base.helper module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.clients.base.http/">jina.clients.base.http module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.clients.base.websocket/">jina.clients.base.websocket module</a></li>
 </ul>
@@ -610,19 +611,24 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>) – args from CLI</p></li>
-<li><p><strong>iolet</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]) – One of AsyncZmqlet or Grpclet. Used for sending/receiving data to/from the Flow</p></li>
+<li><p><strong>iolet</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]) – One of AsyncZmqlet or Grpclet. Used for sending/receiving data to/from the Flow</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.peapods.runtimes.prefetch.base.BasePrefetcher.receive">
 <em class="property"><span class="pre">abstract</span> <span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">receive</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/prefetch/base/#BasePrefetcher.receive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.prefetch.base.BasePrefetcher.receive" title="Permalink to this definition">¶</a></dt>
-<dd><p>Implement <cite>receive</cite> logic for prefetcher</p>
+<dd><p>Receive background task</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Awaitable</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.peapods.runtimes.prefetch.base.BasePrefetcher.handle_request">
-<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">handle_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/prefetch/base/#BasePrefetcher.handle_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.prefetch.base.BasePrefetcher.handle_request" title="Permalink to this definition">¶</a></dt>
-<dd><p>Handle each request in the iterator</p>
+<dt class="sig sig-object py" id="jina.peapods.runtimes.prefetch.base.BasePrefetcher.convert_to_message">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">convert_to_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/prefetch/base/#BasePrefetcher.convert_to_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.prefetch.base.BasePrefetcher.convert_to_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert request to iolet message</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>request</strong> (<a class="reference internal" href="../jina.types.request/#jina.types.request.Request" title="jina.types.request.Request"><em>Request</em></a>) – current request in the iterator</p>
@@ -631,6 +637,39 @@
 <dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]</p>
 </dd>
 </dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.runtimes.prefetch.base.BasePrefetcher.handle_request">
+<span class="sig-name descname"><span class="pre">handle_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/prefetch/base/#BasePrefetcher.handle_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.prefetch.base.BasePrefetcher.handle_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>For ZMQ &amp; GRPC data requests, for each request in the iterator, we send the <cite>Message</cite> using
+<cite>iolet.send_message()</cite> and add {&lt;request-id&gt;: &lt;an-empty-future&gt;} to the message buffer.
+This empty future is used to track the <cite>result</cite> of this request during <cite>receive</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>request</strong> (<a class="reference internal" href="../jina.types.request/#jina.types.request.Request" title="jina.types.request.Request"><em>Request</em></a>) – current request in the iterator</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>asyncio.Future</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>asyncio Future for sending message</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.runtimes.prefetch.base.BasePrefetcher.handle_response">
+<span class="sig-name descname"><span class="pre">handle_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/prefetch/base/#BasePrefetcher.handle_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.prefetch.base.BasePrefetcher.handle_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set result of each response received in the request buffer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>response</strong> (<a class="reference internal" href="../jina.types.request/#jina.types.request.Response" title="jina.types.request.Response"><em>Response</em></a>) – message received during <cite>iolet.recv_message</cite></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.runtimes.prefetch.base.BasePrefetcher.handle_end_of_iter">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">handle_end_of_iter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/prefetch/base/#BasePrefetcher.handle_end_of_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.prefetch.base.BasePrefetcher.handle_end_of_iter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manage end of iteration if required</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.peapods.runtimes.prefetch.base.BasePrefetcher.close">

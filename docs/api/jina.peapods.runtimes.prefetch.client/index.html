@@ -289,6 +289,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../jina.clients.base/">jina.clients.base package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.clients.base.grpc/">jina.clients.base.grpc module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.clients.base.helper/">jina.clients.base.helper module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.clients.base.http/">jina.clients.base.http module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.clients.base.websocket/">jina.clients.base.websocket module</a></li>
 </ul>
@@ -610,7 +611,7 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>) – args from CLI</p></li>
-<li><p><strong>iolet</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]) – One of AsyncZmqlet or Grpclet. Used for sending/receiving data to/from the Flow</p></li>
+<li><p><strong>iolet</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]) – One of AsyncZmqlet or Grpclet. Used for sending/receiving data to/from the Flow</p></li>
 </ul>
 </dd>
 </dl>
@@ -619,28 +620,17 @@
 <em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">receive</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/prefetch/client/#HTTPClientPrefetcher.receive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher.receive" title="Permalink to this definition">¶</a></dt>
 <dd><p>For HTTP Client, there’s no task needed for receiving.
 Sleep like there’s no tomorrow!</p>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher.convert_to_message">
-<span class="sig-name descname"><span class="pre">convert_to_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/prefetch/client/#HTTPClientPrefetcher.convert_to_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher.convert_to_message" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert request to dict for POST request</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> (<a class="reference internal" href="../jina.types.request/#jina.types.request.Request" title="jina.types.request.Request"><em>Request</em></a>) – request from client</p></li>
-<li><p><strong>kwargs</strong> – keyword args</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>request as dict</p>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>asyncio Task</p>
 </dd>
 </dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher.handle_request">
 <span class="sig-name descname"><span class="pre">handle_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/prefetch/client/#HTTPClientPrefetcher.handle_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher.handle_request" title="Permalink to this definition">¶</a></dt>
-<dd><p>For HTTP Client, for each request in the iterator, we send the message (http POST request)
-and add it to the list of tasks which is awaited.</p>
+<dd><p>For HTTP Client, for each request in the iterator, we <cite>send_message</cite> using
+http POST request and add it to the list of tasks which is awaited and yielded.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>request</strong> (<a class="reference internal" href="../jina.types.request/#jina.types.request.Request" title="jina.types.request.Request"><em>Request</em></a>) – current request in the iterator</p>
@@ -653,20 +643,40 @@ and add it to the list of tasks which is awaited.</p>
 </dd>
 </dl>
 </dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher.handle_response">
+<span class="sig-name descname"><span class="pre">handle_response</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/prefetch/client/#HTTPClientPrefetcher.handle_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher.handle_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>No responses to handle for HTTP Client</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher.handle_end_of_iter">
+<span class="sig-name descname"><span class="pre">handle_end_of_iter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/prefetch/client/#HTTPClientPrefetcher.handle_end_of_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher.handle_end_of_iter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterator end doesn’t need to be managed for HTTP Client</p>
+</dd></dl>
 </dd></dl>
 <dl class="py class">
-<dt class="sig sig-object py" id="jina.peapods.runtimes.prefetch.client.WebsocketPrefetcher">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.peapods.runtimes.prefetch.client.</span></span><span class="sig-name descname"><span class="pre">WebsocketPrefetcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iolet</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/prefetch/client/#WebsocketPrefetcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.prefetch.client.WebsocketPrefetcher" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="jina.peapods.runtimes.prefetch.client.WebsocketClientPrefetcher">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.peapods.runtimes.prefetch.client.</span></span><span class="sig-name descname"><span class="pre">WebsocketClientPrefetcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iolet</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/prefetch/client/#WebsocketClientPrefetcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.prefetch.client.WebsocketClientPrefetcher" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.runtimes.prefetch.client.ClientPrefetcher</span></code></p>
-<p>An async request/response handler used in the Websocket Client (tbd)</p>
+<p>An async request/response handler used in the Websocket Client</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>) – args from CLI</p></li>
-<li><p><strong>iolet</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]) – One of AsyncZmqlet or Grpclet. Used for sending/receiving data to/from the Flow</p></li>
+<li><p><strong>iolet</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]) – One of AsyncZmqlet or Grpclet. Used for sending/receiving data to/from the Flow</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.runtimes.prefetch.client.WebsocketClientPrefetcher.receive">
+<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">receive</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/prefetch/client/#WebsocketClientPrefetcher.receive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.prefetch.client.WebsocketClientPrefetcher.receive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Await messages from Gateway and process them in the request buffer</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.runtimes.prefetch.client.WebsocketClientPrefetcher.handle_end_of_iter">
+<span class="sig-name descname"><span class="pre">handle_end_of_iter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/prefetch/client/#WebsocketClientPrefetcher.handle_end_of_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.prefetch.client.WebsocketClientPrefetcher.handle_end_of_iter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send End of iteration signal to the Gateway</p>
+</dd></dl>
 </dd></dl>
 </section>
 

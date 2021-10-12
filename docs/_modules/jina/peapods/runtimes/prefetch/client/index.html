@@ -266,6 +266,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../../api/jina.clients.base/">jina.clients.base package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../../api/jina.clients.base.grpc/">jina.clients.base.grpc module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../api/jina.clients.base.helper/">jina.clients.base.helper module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../../api/jina.clients.base.http/">jina.clients.base.http module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../../api/jina.clients.base.websocket/">jina.clients.base.websocket module</a></li>
 </ul>
@@ -578,12 +579,11 @@
                 </div>
                 <h1>Source code for jina.peapods.runtimes.prefetch.client</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">BasePrefetcher</span>
-<span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">get_or_reuse_loop</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'HTTPClientPrefetcher'</span><span class="p">,</span> <span class="s1">'WebsocketPrefetcher'</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'HTTPClientPrefetcher'</span><span class="p">,</span> <span class="s1">'WebsocketClientPrefetcher'</span><span class="p">]</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">....types.request</span> <span class="kn">import</span> <span class="n">Request</span>
@@ -592,51 +592,60 @@
 <span class="k">class</span> <span class="nc">ClientPrefetcher</span><span class="p">(</span><span class="n">BasePrefetcher</span><span class="p">):</span>
     <span class="sd">"""Client Prefetcher to be inherited by HTTP / Websocket Prefetchers"""</span>
 
+    <span class="k">def</span> <span class="nf">convert_to_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">request</span>
+
 
 <div class="viewcode-block" id="HTTPClientPrefetcher"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.prefetch.client/#jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher">[docs]</a><span class="k">class</span> <span class="nc">HTTPClientPrefetcher</span><span class="p">(</span><span class="n">ClientPrefetcher</span><span class="p">):</span>
     <span class="sd">"""An async HTTP request handler used in the HTTP Client"""</span>
 
-    <span class="k">def</span> <span class="nf">_create_receive_task</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'asyncio.Task'</span><span class="p">:</span>
-        <span class="sd">"""Create receive task</span>
+<div class="viewcode-block" id="HTTPClientPrefetcher.receive"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.prefetch.client/#jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher.receive">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""For HTTP Client, there's no task needed for receiving.</span>
+<span class="sd">        Sleep like there's no tomorrow!</span>
 
 <span class="sd">        :return: asyncio Task</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="n">get_or_reuse_loop</span><span class="p">()</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">receive</span><span class="p">())</span>
-
-<div class="viewcode-block" id="HTTPClientPrefetcher.receive"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.prefetch.client/#jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher.receive">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""</span>
-<span class="sd">        For HTTP Client, there's no task needed for receiving.</span>
-<span class="sd">        Sleep like there's no tomorrow!</span>
-<span class="sd">        """</span>
-        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1e9</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="HTTPClientPrefetcher.convert_to_message"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.prefetch.client/#jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher.convert_to_message">[docs]</a>    <span class="k">def</span> <span class="nf">convert_to_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s1">'Request'</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">"""Convert request to dict for POST request</span>
-
-<span class="sd">        :param request: request from client</span>
-<span class="sd">        :param kwargs: keyword args</span>
-<span class="sd">        :return: request as dict</span>
-<span class="sd">        """</span>
-        <span class="n">req_dict</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
-        <span class="n">req_dict</span><span class="p">[</span><span class="s1">'exec_endpoint'</span><span class="p">]</span> <span class="o">=</span> <span class="n">req_dict</span><span class="p">[</span><span class="s1">'header'</span><span class="p">][</span><span class="s1">'exec_endpoint'</span><span class="p">]</span>
-        <span class="n">req_dict</span><span class="p">[</span><span class="s1">'data'</span><span class="p">]</span> <span class="o">=</span> <span class="n">req_dict</span><span class="p">[</span><span class="s1">'data'</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'docs'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">req_dict</span></div>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1e9</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="HTTPClientPrefetcher.handle_request"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.prefetch.client/#jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher.handle_request">[docs]</a>    <span class="k">def</span> <span class="nf">handle_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s1">'Request'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'asyncio.Task'</span><span class="p">:</span>
         <span class="sd">"""</span>
-<span class="sd">        For HTTP Client, for each request in the iterator, we send the message (http POST request)</span>
-<span class="sd">        and add it to the list of tasks which is awaited.</span>
+<span class="sd">        For HTTP Client, for each request in the iterator, we `send_message` using</span>
+<span class="sd">        http POST request and add it to the list of tasks which is awaited and yielded.</span>
 
 <span class="sd">        :param request: current request in the iterator</span>
 <span class="sd">        :return: asyncio Task for sending message</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">iolet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">convert_to_message</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">))</span>
-        <span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iolet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="HTTPClientPrefetcher.handle_response"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.prefetch.client/#jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher.handle_response">[docs]</a>    <span class="k">def</span> <span class="nf">handle_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""No responses to handle for HTTP Client"""</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="HTTPClientPrefetcher.handle_end_of_iter"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.prefetch.client/#jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher.handle_end_of_iter">[docs]</a>    <span class="k">def</span> <span class="nf">handle_end_of_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Iterator end doesn't need to be managed for HTTP Client"""</span>
+        <span class="k">pass</span></div></div>
 
 
-<div class="viewcode-block" id="WebsocketPrefetcher"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.prefetch.client/#jina.peapods.runtimes.prefetch.client.WebsocketPrefetcher">[docs]</a><span class="k">class</span> <span class="nc">WebsocketPrefetcher</span><span class="p">(</span><span class="n">ClientPrefetcher</span><span class="p">):</span>
-    <span class="sd">"""An async request/response handler used in the Websocket Client (tbd)"""</span></div>
+<div class="viewcode-block" id="WebsocketClientPrefetcher"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.prefetch.client/#jina.peapods.runtimes.prefetch.client.WebsocketClientPrefetcher">[docs]</a><span class="k">class</span> <span class="nc">WebsocketClientPrefetcher</span><span class="p">(</span><span class="n">ClientPrefetcher</span><span class="p">):</span>
+    <span class="sd">"""An async request/response handler used in the Websocket Client"""</span>
+
+<div class="viewcode-block" id="WebsocketClientPrefetcher.receive"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.prefetch.client/#jina.peapods.runtimes.prefetch.client.WebsocketClientPrefetcher.receive">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Await messages from Gateway and process them in the request buffer"""</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iolet</span><span class="o">.</span><span class="n">recv_message</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">handle_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_buffer</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> closed, cancelling all outstanding requests'</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_buffer</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                    <span class="n">future</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">request_buffer</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="WebsocketClientPrefetcher.handle_end_of_iter"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.prefetch.client/#jina.peapods.runtimes.prefetch.client.WebsocketClientPrefetcher.handle_end_of_iter">[docs]</a>    <span class="k">def</span> <span class="nf">handle_end_of_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Send End of iteration signal to the Gateway"""</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iolet</span><span class="o">.</span><span class="n">send_eoi</span><span class="p">())</span></div></div>
 </pre></div>
             </article>
             <footer>

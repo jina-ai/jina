@@ -265,6 +265,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.clients.base/">jina.clients.base package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.clients.base.grpc/">jina.clients.base.grpc module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.clients.base.helper/">jina.clients.base.helper module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.clients.base.http/">jina.clients.base.http module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.clients.base.websocket/">jina.clients.base.websocket module</a></li>
 </ul>
@@ -689,6 +690,8 @@
 </li>
         </ul></li>
         <li><a href="../api/jina.optimizers/#jina.optimizers.EvaluationCallback.AGGREGATE_FUNCTIONS">AGGREGATE_FUNCTIONS (jina.optimizers.EvaluationCallback attribute)</a>
+</li>
+        <li><a href="../api/jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet">AioHttpClientlet (class in jina.clients.base.helper)</a>
 </li>
         <li><a href="../api/jina.peapods.runtimes.gateway.http.models/#jina.peapods.runtimes.gateway.http.models.JinaRequestModel.Config.alias_generator">alias_generator() (jina.peapods.runtimes.gateway.http.models.JinaRequestModel.Config method)</a>
 
@@ -1151,7 +1154,7 @@
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.client_args">(jina.flow.base.Flow property)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.clients.base.http/#jina.clients.base.http.HTTPClientlet.close">close() (jina.clients.base.http.HTTPClientlet method)</a>
+        <li><a href="../api/jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet.close">close() (jina.clients.base.helper.AioHttpClientlet method)</a>
 
         <ul>
           <li><a href="../api/jina.executors/#jina.executors.BaseExecutor.close">(jina.executors.BaseExecutor method)</a>
@@ -1329,7 +1332,7 @@
           <li><a href="../api/jina.types.document/#jina.types.document.Document.convert_text_to_uri">(jina.types.document.Document method)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.peapods.runtimes.prefetch.client/#jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher.convert_to_message">convert_to_message() (jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher method)</a>
+        <li><a href="../api/jina.peapods.runtimes.prefetch.base/#jina.peapods.runtimes.prefetch.base.BasePrefetcher.convert_to_message">convert_to_message() (jina.peapods.runtimes.prefetch.base.BasePrefetcher method)</a>
 </li>
         <li><a href="../api/jina.helper/#jina.helper.convert_tuple_to_list">convert_tuple_to_list() (in module jina.helper)</a>
 </li>
@@ -2391,14 +2394,28 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.peapods.runtimes.request_handlers.data_request_handler/#jina.peapods.runtimes.request_handlers.data_request_handler.DataRequestHandler.handle">handle() (jina.peapods.runtimes.request_handlers.data_request_handler.DataRequestHandler method)</a>
 </li>
+        <li><a href="../api/jina.peapods.runtimes.prefetch.base/#jina.peapods.runtimes.prefetch.base.BasePrefetcher.handle_end_of_iter">handle_end_of_iter() (jina.peapods.runtimes.prefetch.base.BasePrefetcher method)</a>
+
+        <ul>
+          <li><a href="../api/jina.peapods.runtimes.prefetch.client/#jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher.handle_end_of_iter">(jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher method)</a>
+</li>
+          <li><a href="../api/jina.peapods.runtimes.prefetch.client/#jina.peapods.runtimes.prefetch.client.WebsocketClientPrefetcher.handle_end_of_iter">(jina.peapods.runtimes.prefetch.client.WebsocketClientPrefetcher method)</a>
+</li>
+        </ul></li>
         <li><a href="../api/jina.peapods.runtimes.prefetch.base/#jina.peapods.runtimes.prefetch.base.BasePrefetcher.handle_request">handle_request() (jina.peapods.runtimes.prefetch.base.BasePrefetcher method)</a>
 
         <ul>
           <li><a href="../api/jina.peapods.runtimes.prefetch.client/#jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher.handle_request">(jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher method)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.peapods.runtimes.prefetch.gateway/#jina.peapods.runtimes.prefetch.gateway.GrpcGatewayPrefetcher.handle_response">handle_response() (jina.peapods.runtimes.prefetch.gateway.GrpcGatewayPrefetcher method)</a>
+        <li><a href="../api/jina.peapods.runtimes.prefetch.base/#jina.peapods.runtimes.prefetch.base.BasePrefetcher.handle_response">handle_response() (jina.peapods.runtimes.prefetch.base.BasePrefetcher method)</a>
+
+        <ul>
+          <li><a href="../api/jina.peapods.runtimes.prefetch.client/#jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher.handle_response">(jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher method)</a>
 </li>
+          <li><a href="../api/jina.peapods.runtimes.prefetch.gateway/#jina.peapods.runtimes.prefetch.gateway.GrpcGatewayPrefetcher.handle_response">(jina.peapods.runtimes.prefetch.gateway.GrpcGatewayPrefetcher method)</a>
+</li>
+        </ul></li>
         <li><a href="../api/jina.logging.logger/#jina.logging.logger.JinaLogger.handlers">handlers (jina.logging.logger.JinaLogger property)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.FlowInspectType.HANG">HANG (jina.enums.FlowInspectType attribute)</a>
@@ -2427,6 +2444,8 @@
           <li><a href="../api/jina.peapods.pods.k8s/#jina.peapods.pods.k8s.K8sPod.head_zmq_identity">(jina.peapods.pods.k8s.K8sPod property)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/cli.api/#cli.api.hello">hello() (in module cli.api)</a>
 </li>
         <li><a href="../api/jina.helloworld.fashion.app/#jina.helloworld.fashion.app.hello_world">hello_world() (in module jina.helloworld.fashion.app)</a>
@@ -2435,8 +2454,6 @@
           <li><a href="../api/jina.helloworld.multimodal.app/#jina.helloworld.multimodal.app.hello_world">(in module jina.helloworld.multimodal.app)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/cli.api/#cli.api.help">help() (in module cli.api)</a>
 </li>
         <li><a href="../api/jina/#jina.Flow.host">host (jina.Flow property)</a>
@@ -2463,7 +2480,7 @@
 </li>
         <li><a href="../api/jina.clients.http/#jina.clients.http.HTTPClient">HTTPClient (class in jina.clients.http)</a>
 </li>
-        <li><a href="../api/jina.clients.base.http/#jina.clients.base.http.HTTPClientlet">HTTPClientlet (class in jina.clients.base.http)</a>
+        <li><a href="../api/jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet">HTTPClientlet (class in jina.clients.base.helper)</a>
 </li>
         <li><a href="../api/jina.peapods.runtimes.prefetch.client/#jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher">HTTPClientPrefetcher (class in jina.peapods.runtimes.prefetch.client)</a>
 </li>
@@ -2698,6 +2715,13 @@
 
         <ul>
           <li><a href="../api/jina.clients.base.grpc/#module-jina.clients.base.grpc">module</a>
+</li>
+        </ul></li>
+        <li>
+    jina.clients.base.helper
+
+        <ul>
+          <li><a href="../api/jina.clients.base.helper/#module-jina.clients.base.helper">module</a>
 </li>
         </ul></li>
         <li>
@@ -4332,6 +4356,8 @@
 </li>
           <li><a href="../api/jina.clients.base.grpc/#module-jina.clients.base.grpc">jina.clients.base.grpc</a>
 </li>
+          <li><a href="../api/jina.clients.base.helper/#module-jina.clients.base.helper">jina.clients.base.helper</a>
+</li>
           <li><a href="../api/jina.clients.base.http/#module-jina.clients.base.http">jina.clients.base.http</a>
 </li>
           <li><a href="../api/jina.clients.base.websocket/#module-jina.clients.base.websocket">jina.clients.base.websocket</a>
@@ -5186,10 +5212,22 @@
         <ul>
           <li><a href="../api/jina.peapods.runtimes.prefetch.client/#jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher.receive">(jina.peapods.runtimes.prefetch.client.HTTPClientPrefetcher method)</a>
 </li>
+          <li><a href="../api/jina.peapods.runtimes.prefetch.client/#jina.peapods.runtimes.prefetch.client.WebsocketClientPrefetcher.receive">(jina.peapods.runtimes.prefetch.client.WebsocketClientPrefetcher method)</a>
+</li>
+          <li><a href="../api/jina.peapods.runtimes.prefetch.gateway/#jina.peapods.runtimes.prefetch.gateway.GrpcGatewayPrefetcher.receive">(jina.peapods.runtimes.prefetch.gateway.GrpcGatewayPrefetcher method)</a>
+</li>
+          <li><a href="../api/jina.peapods.runtimes.prefetch.gateway/#jina.peapods.runtimes.prefetch.gateway.ZmqGatewayPrefetcher.receive">(jina.peapods.runtimes.prefetch.gateway.ZmqGatewayPrefetcher method)</a>
+</li>
         </ul></li>
         <li><a href="../api/jina.peapods.zmq/#jina.peapods.zmq.recv_message">recv_message() (in module jina.peapods.zmq)</a>
 
         <ul>
+          <li><a href="../api/jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet.recv_message">(jina.clients.base.helper.AioHttpClientlet method)</a>
+</li>
+          <li><a href="../api/jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet.recv_message">(jina.clients.base.helper.HTTPClientlet method)</a>
+</li>
+          <li><a href="../api/jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.recv_message">(jina.clients.base.helper.WebsocketClientlet method)</a>
+</li>
           <li><a href="../api/jina.peapods.zmq/#jina.peapods.zmq.AsyncZmqlet.recv_message">(jina.peapods.zmq.AsyncZmqlet method)</a>
 </li>
           <li><a href="../api/jina.peapods.zmq/#jina.peapods.zmq.Zmqlet.recv_message">(jina.peapods.zmq.Zmqlet method)</a>
@@ -5285,14 +5323,14 @@
           <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceArguments.requirements">(daemon.models.workspaces.WorkspaceArguments attribute)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore.reset">reset() (daemon.stores.base.BaseStore method)</a>
 
         <ul>
           <li><a href="../api/jina.logging.profile/#jina.logging.profile.TimeDict.reset">(jina.logging.profile.TimeDict method)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.types.request/#jina.types.request.Response">Response (class in jina.types.request)</a>
 </li>
         <li><a href="../api/jina.types.message/#jina.types.message.Message.response">response (jina.types.message.Message property)</a>
@@ -5487,10 +5525,16 @@
 </li>
         <li><a href="../api/jina.peapods.grpc/#jina.peapods.grpc.Grpclet.send_ctrl_msg">send_ctrl_msg() (jina.peapods.grpc.Grpclet static method)</a>
 </li>
+        <li><a href="../api/jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.send_eoi">send_eoi() (jina.clients.base.helper.WebsocketClientlet method)</a>
+</li>
         <li><a href="../api/jina.peapods.zmq/#jina.peapods.zmq.send_message">send_message() (in module jina.peapods.zmq)</a>
 
         <ul>
-          <li><a href="../api/jina.clients.base.http/#jina.clients.base.http.HTTPClientlet.send_message">(jina.clients.base.http.HTTPClientlet method)</a>
+          <li><a href="../api/jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet.send_message">(jina.clients.base.helper.AioHttpClientlet method)</a>
+</li>
+          <li><a href="../api/jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet.send_message">(jina.clients.base.helper.HTTPClientlet method)</a>
+</li>
+          <li><a href="../api/jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.send_message">(jina.clients.base.helper.WebsocketClientlet method)</a>
 </li>
           <li><a href="../api/jina.peapods.grpc/#jina.peapods.grpc.Grpclet.send_message">(jina.peapods.grpc.Grpclet method)</a>
 </li>
@@ -5559,10 +5603,10 @@
 </li>
         <li><a href="../api/jina.parsers.ping/#jina.parsers.ping.set_ping_parser">set_ping_parser() (in module jina.parsers.ping)</a>
 </li>
-        <li><a href="../api/jina.parsers/#jina.parsers.set_pod_parser">set_pod_parser() (in module jina.parsers)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.parsers/#jina.parsers.set_pod_parser">set_pod_parser() (in module jina.parsers)</a>
+</li>
         <li><a href="../api/daemon/#daemon.setup">setup() (in module daemon)</a>
 </li>
         <li><a href="../api/jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray.shuffle">shuffle() (jina.types.arrays.abstract.AbstractDocumentArray method)</a>
@@ -5637,7 +5681,7 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.RemoteAccessType.SSH">SSH (jina.enums.RemoteAccessType attribute)</a>
 </li>
-        <li><a href="../api/jina.clients.base.http/#jina.clients.base.http.HTTPClientlet.start">start() (jina.clients.base.http.HTTPClientlet method)</a>
+        <li><a href="../api/jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet.start">start() (jina.clients.base.helper.AioHttpClientlet method)</a>
 
         <ul>
           <li><a href="../api/jina/#jina.Flow.start">(jina.Flow method)</a>
@@ -6063,7 +6107,9 @@
 </li>
         <li><a href="../api/jina.clients.websocket/#jina.clients.websocket.WebSocketClient">WebSocketClient (class in jina.clients.websocket)</a>
 </li>
-        <li><a href="../api/jina.peapods.runtimes.prefetch.client/#jina.peapods.runtimes.prefetch.client.WebsocketPrefetcher">WebsocketPrefetcher (class in jina.peapods.runtimes.prefetch.client)</a>
+        <li><a href="../api/jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet">WebsocketClientlet (class in jina.clients.base.helper)</a>
+</li>
+        <li><a href="../api/jina.peapods.runtimes.prefetch.client/#jina.peapods.runtimes.prefetch.client.WebsocketClientPrefetcher">WebsocketClientPrefetcher (class in jina.peapods.runtimes.prefetch.client)</a>
 </li>
         <li><a href="../api/jina.peapods.runtimes.gateway.websocket/#jina.peapods.runtimes.gateway.websocket.WebSocketRuntime">WebSocketRuntime (class in jina.peapods.runtimes.gateway.websocket)</a>
 </li>

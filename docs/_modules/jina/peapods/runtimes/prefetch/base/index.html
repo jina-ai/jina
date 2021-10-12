@@ -266,6 +266,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../../api/jina.clients.base/">jina.clients.base package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../../api/jina.clients.base.grpc/">jina.clients.base.grpc module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../api/jina.clients.base.helper/">jina.clients.base.helper module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../../api/jina.clients.base.http/">jina.clients.base.http module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../../api/jina.clients.base.websocket/">jina.clients.base.websocket module</a></li>
 </ul>
@@ -580,19 +581,19 @@
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">AsyncGenerator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">AsyncGenerator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Awaitable</span>
 
-<span class="kn">from</span> <span class="nn">...grpc</span> <span class="kn">import</span> <span class="n">Grpclet</span>
-<span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">typename</span>
+<span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">typename</span><span class="p">,</span> <span class="n">get_or_reuse_loop</span>
 <span class="kn">from</span> <span class="nn">....logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">....types.message</span> <span class="kn">import</span> <span class="n">Message</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'BasePrefetcher'</span><span class="p">]</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">...grpc</span> <span class="kn">import</span> <span class="n">Grpclet</span>
     <span class="kn">from</span> <span class="nn">...zmq</span> <span class="kn">import</span> <span class="n">AsyncZmqlet</span>
-    <span class="kn">from</span> <span class="nn">....types.request</span> <span class="kn">import</span> <span class="n">Request</span>
-    <span class="kn">from</span> <span class="nn">....clients.base.http</span> <span class="kn">import</span> <span class="n">HTTPClientlet</span>
+    <span class="kn">from</span> <span class="nn">....types.request</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span>
+    <span class="kn">from</span> <span class="nn">....clients.base.helper</span> <span class="kn">import</span> <span class="n">HTTPClientlet</span><span class="p">,</span> <span class="n">WebsocketClientlet</span>
 
 
 <div class="viewcode-block" id="BasePrefetcher"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.prefetch.base/#jina.peapods.runtimes.prefetch.base.BasePrefetcher">[docs]</a><span class="k">class</span> <span class="nc">BasePrefetcher</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
@@ -601,7 +602,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">args</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span>
-        <span class="n">iolet</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'AsyncZmqlet'</span><span class="p">,</span> <span class="s1">'Grpclet'</span><span class="p">,</span> <span class="s1">'HTTPClientlet'</span><span class="p">],</span>
+        <span class="n">iolet</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'AsyncZmqlet'</span><span class="p">,</span> <span class="s1">'Grpclet'</span><span class="p">,</span> <span class="s1">'HTTPClientlet'</span><span class="p">,</span> <span class="s1">'WebsocketClientlet'</span><span class="p">],</span>
     <span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        :param args: args from CLI</span>
@@ -609,34 +610,53 @@
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">iolet</span> <span class="o">=</span> <span class="n">iolet</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">receive_task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_receive_task</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
-
-    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">_create_receive_task</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">:</span>
-        <span class="sd">"""Start a receive task to be running in the background</span>
-
-<span class="sd">        .. # noqa: DAR202</span>
-<span class="sd">        :return: asyncio Task</span>
-<span class="sd">        """</span>
-        <span class="o">...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">request_buffer</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Future</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">receive_task</span> <span class="o">=</span> <span class="n">get_or_reuse_loop</span><span class="p">()</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">receive</span><span class="p">())</span>
 
 <div class="viewcode-block" id="BasePrefetcher.receive"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.prefetch.base/#jina.peapods.runtimes.prefetch.base.BasePrefetcher.receive">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Implement `receive` logic for prefetcher</span>
-
-<span class="sd">        .. # noqa: DAR202</span>
-<span class="sd">        """</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Awaitable</span><span class="p">:</span>
+        <span class="sd">"""Receive background task"""</span>
         <span class="o">...</span></div>
 
-<div class="viewcode-block" id="BasePrefetcher.handle_request"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.prefetch.base/#jina.peapods.runtimes.prefetch.base.BasePrefetcher.handle_request">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">handle_request</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s1">'Request'</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'asyncio.Task'</span><span class="p">,</span> <span class="s1">'asyncio.Future'</span><span class="p">]:</span>
-        <span class="sd">"""Handle each request in the iterator</span>
+<div class="viewcode-block" id="BasePrefetcher.convert_to_message"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.prefetch.base/#jina.peapods.runtimes.prefetch.base.BasePrefetcher.convert_to_message">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">convert_to_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s1">'Request'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'Message'</span><span class="p">,</span> <span class="s1">'Request'</span><span class="p">]:</span>
+        <span class="sd">"""Convert request to iolet message</span>
 
 <span class="sd">        :param request: current request in the iterator</span>
 <span class="sd">        """</span>
+        <span class="o">...</span></div>
+
+<div class="viewcode-block" id="BasePrefetcher.handle_request"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.prefetch.base/#jina.peapods.runtimes.prefetch.base.BasePrefetcher.handle_request">[docs]</a>    <span class="k">def</span> <span class="nf">handle_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s1">'Request'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'asyncio.Future'</span><span class="p">:</span>
+        <span class="sd">"""</span>
+<span class="sd">        For ZMQ &amp; GRPC data requests, for each request in the iterator, we send the `Message` using</span>
+<span class="sd">        `iolet.send_message()` and add {&lt;request-id&gt;: &lt;an-empty-future&gt;} to the message buffer.</span>
+<span class="sd">        This empty future is used to track the `result` of this request during `receive`.</span>
+
+<span class="sd">        :param request: current request in the iterator</span>
+<span class="sd">        :return: asyncio Future for sending message</span>
+<span class="sd">        """</span>
+        <span class="n">future</span> <span class="o">=</span> <span class="n">get_or_reuse_loop</span><span class="p">()</span><span class="o">.</span><span class="n">create_future</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">request_buffer</span><span class="p">[</span><span class="n">request</span><span class="o">.</span><span class="n">request_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">future</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iolet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">convert_to_message</span><span class="p">(</span><span class="n">request</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">future</span></div>
+
+<div class="viewcode-block" id="BasePrefetcher.handle_response"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.prefetch.base/#jina.peapods.runtimes.prefetch.base.BasePrefetcher.handle_response">[docs]</a>    <span class="k">def</span> <span class="nf">handle_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="s1">'Response'</span><span class="p">):</span>
+        <span class="sd">"""Set result of each response received in the request buffer</span>
+
+<span class="sd">        :param response: message received during `iolet.recv_message`</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">request_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_buffer</span><span class="p">:</span>
+            <span class="n">future</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_buffer</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">request_id</span><span class="p">)</span>
+            <span class="n">future</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'Discarding unexpected response with request id </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">request_id</span><span class="si">}</span><span class="s1">'</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="BasePrefetcher.handle_end_of_iter"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.prefetch.base/#jina.peapods.runtimes.prefetch.base.BasePrefetcher.handle_end_of_iter">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">handle_end_of_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Manage end of iteration if required"""</span>
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="BasePrefetcher.close"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.prefetch.base/#jina.peapods.runtimes.prefetch.base.BasePrefetcher.close">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -653,13 +673,9 @@
 <span class="sd">        :param args: additional arguments</span>
 <span class="sd">        :yield: message</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">iolet</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'AsyncZmqlet'</span><span class="p">,</span> <span class="s1">'Grpclet'</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">:</span> <span class="n">JinaLogger</span>
-
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">receive_task</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s1">'PrefetchCaller receive task not running, can not send messages'</span>
+                <span class="s1">'Prefetcher receive task not running, can not send messages'</span>
             <span class="p">)</span>
 
         <span class="k">async</span> <span class="k">def</span> <span class="nf">prefetch_req</span><span class="p">(</span>
@@ -685,6 +701,7 @@
 
                     <span class="n">fetch_to</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handle_request</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">))</span>
                 <span class="k">except</span> <span class="p">(</span><span class="ne">StopIteration</span><span class="p">,</span> <span class="ne">StopAsyncIteration</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">handle_end_of_iter</span><span class="p">()</span>
                     <span class="k">return</span> <span class="kc">True</span>
             <span class="k">return</span> <span class="kc">False</span>
 

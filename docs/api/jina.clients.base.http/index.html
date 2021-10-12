@@ -25,7 +25,7 @@
 
   gtag('config', 'G-48ZDWC8GT6');
 </script>
-    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.clients.base.websocket module" href="../jina.clients.base.websocket/" /><link rel="prev" title="jina.clients.base.grpc module" href="../jina.clients.base.grpc/" />
+    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.clients.base.websocket module" href="../jina.clients.base.websocket/" /><link rel="prev" title="jina.clients.base.helper module" href="../jina.clients.base.helper/" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.10.09"/>
         <title>jina.clients.base.http module - Jina 2.1.7 documentation</title>
@@ -289,6 +289,7 @@
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../jina.clients/">jina.clients package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3 current has-children"><a class="reference internal" href="../jina.clients.base/">jina.clients.base package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="../jina.clients.base.grpc/">jina.clients.base.grpc module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.clients.base.helper/">jina.clients.base.helper module</a></li>
 <li class="toctree-l4 current current-page"><a class="current reference internal" href="#">jina.clients.base.http module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.clients.base.websocket/">jina.clients.base.websocket module</a></li>
 </ul>
@@ -602,54 +603,6 @@
                 <section id="module-jina.clients.base.http">
 <span id="jina-clients-base-http-module"></span><h1>jina.clients.base.http module<a class="headerlink" href="#module-jina.clients.base.http" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="jina.clients.base.http.HTTPClientlet">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.http.</span></span><span class="sig-name descname"><span class="pre">HTTPClientlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/http/#HTTPClientlet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.http.HTTPClientlet" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>HTTP Client to be used with prefetcher</p>
-<p>HTTP Client to be used with prefetcher</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>url</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – url to send POST request to</p>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.base.http.HTTPClientlet.send_message">
-<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">send_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/http/#HTTPClientlet.send_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.http.HTTPClientlet.send_message" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sends a POST request to the server</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>request</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>) – request as dict</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>send post message</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.base.http.HTTPClientlet.start">
-<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/http/#HTTPClientlet.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.http.HTTPClientlet.start" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create ClientSession and enter context</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>self</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.clients.base.http.HTTPClientlet.close">
-<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/http/#HTTPClientlet.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.http.HTTPClientlet.close" title="Permalink to this definition">¶</a></dt>
-<dd><p>Close ClientSession</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>args</strong> – positional args</p></li>
-<li><p><strong>kwargs</strong> – keyword args</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-</dd></dl>
-<dl class="py class">
 <dt class="sig sig-object py" id="jina.clients.base.http.HTTPBaseClient">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.http.</span></span><span class="sig-name descname"><span class="pre">HTTPBaseClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/http/#HTTPBaseClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.http.HTTPBaseClient" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../jina.clients.base/#jina.clients.base.BaseClient" title="jina.clients.base.BaseClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.clients.base.BaseClient</span></code></a></p>
@@ -672,7 +625,7 @@
                             <use href="#svg-arrow-right"></use>
                         </svg>
                     </a>
-                    <a class="prev-page" href="../jina.clients.base.grpc/">
+                    <a class="prev-page" href="../jina.clients.base.helper/">
                         <svg>
                             <use href="#svg-arrow-right"></use>
                         </svg>
@@ -681,7 +634,7 @@
                                 <span>Previous</span>
                             </div>
                             
-                            <div class="title">jina.clients.base.grpc module</div>
+                            <div class="title">jina.clients.base.helper module</div>
                             
                         </div>
                     </a>
