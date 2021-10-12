@@ -112,26 +112,6 @@ Each shard returns the top 20 results.
 After the merger there will be 200 results per query Document.
 ```
 
-## Distribute Replicas & Shards across machines
-
-Both Replicas and Shards can be distributed across machines to scale your Flow horizontally by using more machines.
-
-In order to do this you need to provide a list of IPs in the `peas_hosts` argument of an Executor.
-
-````{admonition} Important
-:class: important
-{ref}`JinaD <jinad-server>` needs to be installed and run on the machines you want to use in your Flow.
-````
-
-```python
-from jina import Flow
-
-f = (Flow()
-     .add(name='distributed_replicas', replicas=2, peas_hosts=['10.0.0.1', '10.0.0.2']))
-```
-
-This creates a Flow with an Executor and two Replicas of this Executor. Those two Replicas will be deployed to 10.0.0.1 and 10.0.0.2. Assuming those hosts have JinaD set up and reachable from the Flow's machine.
-
 ## Combining Replicas & Shards
 
 Replicas and Shards can also be combined, which is necessary for Flows with high scalability needs.
