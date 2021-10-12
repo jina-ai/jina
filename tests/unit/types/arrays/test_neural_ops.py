@@ -599,10 +599,10 @@ def test_match_handle_different_limit(get_two_docarray, limit, tmpdir):
     assert len(da1[0].matches) == expected_length
 
 
-@pytest.mark.parametrize('limit', [0, -1, 2.5, 10.5])
+@pytest.mark.parametrize('limit', [0, -1])
 def test_match_assert_limit(get_two_docarray, limit, tmpdir):
     da1, da2 = get_two_docarray
     dam = DocumentArrayMemmap(tmpdir)
     dam.extend(da2)
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         da1.match(dam, limit=limit)
