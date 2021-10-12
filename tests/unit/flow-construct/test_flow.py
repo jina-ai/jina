@@ -736,7 +736,7 @@ def test_flow_empty_data_request(mocker):
 
 
 def test_flow_common_kwargs():
-
+    
     with Flow(name='hello', something_random=True).add() as f:
         assert f._common_kwargs == {'something_random': True}
 
@@ -824,6 +824,21 @@ def test_connect_to_predecessor():
     assert len(f._pod_nodes['gateway'].head_args.hosts_in_connect) == 0
     assert len(f._pod_nodes['executor1'].head_args.hosts_in_connect) == 0
     assert len(f._pod_nodes['executor2'].head_args.hosts_in_connect) == 1
+
+
+@pytest.mark.parametrize('k8s_no_connection_pool', [None, False, True])
+def test_flow_k8s_connection_pooling(k8s_no_connection_pool):
+    if k8s_no_connection_pool is None:
+        f = Flow(name='k8s-flow', port_expose=8080, infrastructure='K8S').add()
+    else: 
+        f = Flow(name='k8s-flow', port_expose=8080, infrastructure='K8S', k8s_no_connection_pool=k8s_no_connection_pool).add()
+    if k8s_no_connection_pool and f._args.k8s_connection_pool:
+        # Check if value is properly overridden
+        raise AssertionError(f'Flow got k8s_no_connection_pool={k8s_no_connection_pool} but uses k8s_connection_pool {f._args.k8s_connection_pool}')
+    if k8s_no_connection_pool is None or k8s_no_connection_pool == False:
+        # Check if default value True is used
+        if f._args.k8s_connection_pool == False:
+            raise AssertionError(f'Flow uses k8s_connection_pool={f._args.k8s_connection_pool} but k8s_no_connection_pool was not passed or passed as False.')
 
 
 def test_flow_grpc_with_shard():

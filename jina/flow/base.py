@@ -804,6 +804,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         op_flow._pod_nodes[pod_name] = PodFactory.build_pod(
             args, needs, self.args.infrastructure
         )
+        # expose internally used args for testing
+        op_flow._args = args
 
         op_flow.last_pod = pod_name
 
