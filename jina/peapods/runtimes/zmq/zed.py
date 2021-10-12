@@ -479,6 +479,7 @@ class ZEDRuntime(BaseRuntime):
         else:
             # This is to handle threads
             process._stop()
+        process.join()
 
     @staticmethod
     def activate(

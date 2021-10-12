@@ -145,6 +145,7 @@ class GRPCDataRuntime(BaseRuntime, ABC):
         else:
             # This is to handle threads
             process._stop()
+        process.join()
 
     @staticmethod
     def wait_for_ready_or_shutdown(
