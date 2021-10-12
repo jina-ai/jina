@@ -203,7 +203,7 @@ class ContainerRuntime(BaseRuntime):
             detach=True,
             auto_remove=True,
             ports=ports,
-            name=slugify(f'{self.name}/{random_name()}'),
+            name=slugify(f'{self.name}/{self.args.port_in}'),
             volumes=_volumes,
             network_mode=self._net_mode,
             entrypoint=self.args.entrypoint,
@@ -326,10 +326,18 @@ class ContainerRuntime(BaseRuntime):
         import docker
 
         client = docker.from_env()
-        container = client.containers.get(
-            container_id=slugify(container_name)
-        )  # get the id somehow
-        container.kill(signal='SIGTERM')
+
+        try:
+            container = client.containers.get(
+                container_id=slugify(container_name)
+            )  # get the id somehow
+            container.kill(signal='SIGTERM')
+            containers = client.containers.list()
+            while container in containers:
+                time.sleep(0.1)
+                containers = client.containers.list()
+        except docker.errors.NotFound:
+            pass
 
     @staticmethod
     def activate(

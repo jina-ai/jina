@@ -5,12 +5,12 @@ import threading
 import time
 from typing import Any, Tuple, Union, Dict, Optional
 
-from ...jaml import JAML
 from .helper import _get_event, ConditionalEvent
-from ... import __stop_msg__, __ready_msg__, __default_host__
+from ... import __stop_msg__, __ready_msg__
 from ...enums import PeaRoleType, RuntimeBackendType, SocketType
 from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
 from ...helper import typename
+from ...jaml import JAML
 from ...logging.logger import JinaLogger
 
 __all__ = ['BasePea']
@@ -130,6 +130,7 @@ class BasePea:
         # or thread. Control address from Zmqlet has some randomness and therefore we need to make sure Pea knows
         # control address of runtime
         self.runtime_cls = self._get_runtime_cls()
+        self._activated = False
         self._timeout_ctrl = self.args.timeout_ctrl
         self._set_ctrl_adrr()
         test_worker = {
@@ -226,6 +227,7 @@ class BasePea:
             control_address=self.runtime_ctrl_address,
             timeout_ctrl=self._timeout_ctrl,
         )
+        self._activated = True
 
     def _cancel_runtime(self, skip_deactivate: bool = False):
         """
@@ -233,7 +235,6 @@ class BasePea:
 
         :param skip_deactivate: Mark that the DEACTIVATE signal may be missed if set to True
         """
-        # needs to handle properly wether skip_deactivate should happen or not
         self.runtime_cls.cancel(
             cancel_event=self.cancel_event,
             logger=self.logger,
@@ -242,8 +243,9 @@ class BasePea:
             timeout_ctrl=self._timeout_ctrl,
             skip_deactivate=skip_deactivate,
             process=self.worker,
-            container_name=f'{self.name}/ContainerRuntime',
+            container_name=f'{self.name}/ContainerRuntime/{self.args.port_in}',
         )
+        self._activated = False
 
     def _wait_for_ready_or_shutdown(self, timeout: Optional[float]):
         """
@@ -304,14 +306,17 @@ class BasePea:
         """
         return self.args.socket_in == SocketType.DEALER_CONNECT
 
-    def close(self) -> None:
+    def close(self, is_exit=False) -> None:
         """Close the Pea
 
         This method makes sure that the `Process/thread` is properly finished and its resources properly released
+        :param is_exit: Flag to indicate if the context is destroyed as well
         """
         # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
         self.logger.debug('waiting for ready or shutdown signal from runtime')
-        self._cancel_runtime()
+        self._cancel_runtime(
+            skip_deactivate=is_exit or not (self._activated and self.is_ready.is_set())
+        )
         self.logger.debug(__stop_msg__)
         self.logger.close()
 
@@ -319,7 +324,7 @@ class BasePea:
         return self.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()
+        self.close(is_exit=True)
 
     def _get_runtime_cls(self) -> Tuple[Any, bool]:
         from .helper import update_runtime_cls
