@@ -130,7 +130,7 @@ class K8sPod(BasePod, ExitFIFO):
             k8s_client = kubernetes_tools.K8sClients().apps_v1
 
             with JinaLogger(f'waiting_for_{self.name}') as logger:
-                logger.info(
+                logger.debug(
                     f'🏝️\n\t\tWaiting for "{self.name}" to be ready, with {self.num_replicas} replicas'
                 )
                 timeout_ns = 1000000000 * _timeout if _timeout else None
@@ -150,7 +150,7 @@ class K8sPod(BasePod, ExitFIFO):
                             return
                         else:
                             ready_replicas = api_response.status.ready_replicas or 0
-                            logger.info(
+                            logger.debug(
                                 f'\nNumber of ready replicas {ready_replicas}, waiting for {self.num_replicas - ready_replicas} replicas to be available'
                             )
                             time.sleep(1.0)
@@ -164,7 +164,7 @@ class K8sPod(BasePod, ExitFIFO):
 
         def start(self):
             with JinaLogger(f'start_{self.name}') as logger:
-                logger.info(f'\t\tDeploying "{self.name}"')
+                logger.debug(f'\t\tDeploying "{self.name}"')
                 if self.name == 'gateway':
                     self._deploy_gateway()
                 else:
@@ -325,7 +325,7 @@ class K8sPod(BasePod, ExitFIFO):
         :return: self
         """
         with JinaLogger(f'start_{self.name}') as logger:
-            logger.info(f'🏝️\tCreate deployments for "{self.name}"')
+            logger.debug(f'🏝️\tCreate deployments for "{self.name}"')
             if self.k8s_head_deployment is not None:
                 self.enter_context(self.k8s_head_deployment)
             for k8s_deployment in self.k8s_deployments:

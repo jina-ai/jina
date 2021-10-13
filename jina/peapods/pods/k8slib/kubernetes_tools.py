@@ -135,7 +135,7 @@ def create(
                     # Kubernetes apiserver, it looks like:
                     # {..."message": "<resource> <name> already exists"...}
                     resp = json.loads(api_exception.body)
-                    logger.info(f'🔁\t{resp["message"]}')
+                    logger.warning(f'🔁\t{resp["message"]}')
                 else:
                     raise e
         except Exception as e2:

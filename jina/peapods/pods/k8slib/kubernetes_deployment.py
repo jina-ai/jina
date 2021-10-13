@@ -57,7 +57,7 @@ def deploy_service(
     port_out = 8082
     port_ctrl = 8083
 
-    logger.info(f'🔋\tCreate Service for "{name}" with exposed port "{port_expose}"')
+    logger.debug(f'🔋\tCreate Service for "{name}" with exposed port "{port_expose}"')
     kubernetes_tools.create(
         'service',
         {
@@ -74,7 +74,7 @@ def deploy_service(
         custom_resource_dir=custom_resource_dir,
     )
 
-    logger.info(f'📝\tCreate ConfigMap for deployment.')
+    logger.debug(f'📝\tCreate ConfigMap for deployment.')
 
     kubernetes_tools.create(
         'configmap',
@@ -87,7 +87,7 @@ def deploy_service(
         custom_resource_dir=None,
     )
 
-    logger.info(
+    logger.debug(
         f'🐳\tCreate Deployment for "{name}" with image "{image_name}", replicas {replicas} and init_container {init_container is not None}'
     )
 
@@ -116,7 +116,7 @@ def deploy_service(
         custom_resource_dir=custom_resource_dir,
     )
 
-    logger.info(f'🔑\tCreate necessary permissions"')
+    logger.debug(f'🔑\tCreate necessary permissions"')
 
     kubernetes_tools.create(
         'connection-pool-role',
