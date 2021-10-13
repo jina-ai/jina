@@ -1,5 +1,4 @@
-{% extends "base.html" %}
-
+{% extends meta.page_template|default("base.html") %}
 {% block body -%}
 {% include "partials/icons.html" %}
 
@@ -102,7 +101,6 @@
                     </label>
                 </div>
                 {% block content %}{{ body }}{% endblock %}
-                {% include "quiz.html" %}
             </article>
             <footer>
                 {% block footer %}

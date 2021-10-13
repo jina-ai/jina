@@ -8,16 +8,36 @@ const rawMarkdown = `## Document
 
 > [A Document can contain *any* kind of data that can be stored digitally](https://docs.jina.ai/fundamentals/document/document-api/#document-content). Text, graphics, audio, video, amino acids, 3D meshes, Numpy arrays, you name it.
 `
+const renderer = {
+    blockquote(quote) {
+        return (
+            `<details>
+                <summary>Reveal explanation</summary>
+                <p>
+                    ${quote}
+                </p>
+            </details>`
+        )
+    },
+    listitem(text) {
+        return (
+            `
+                <p> <input type="checkbox"> ${text} </p>
+            `
+        )
+    }
+}
 
 
-const app = new Vue({
+marked.use({renderer})
+
+const application = new Vue({
     el: '#quiz-container',
-    delimiters: ['${', '}'],
     data: {
       rawMarkdown 
     },
     computed: {
-        htmlContent:  () => {
+        quizContent:  () => {
             return marked(rawMarkdown)
         }
     },

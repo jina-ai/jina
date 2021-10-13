@@ -30,4 +30,5 @@ Document, Executor, and Flow are the three fundamental concepts in Jina.
 document-api
 documentarray-api
 documentarraymemmap-api
+document-quiz
 ```
