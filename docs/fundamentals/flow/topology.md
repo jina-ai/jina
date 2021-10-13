@@ -90,7 +90,7 @@ When you shard your index, the request handling usually differs between index an
 - Search requests are handled by all Shards => `polling='all'`
 
 For indexing you only want a single shard to receive a request, because this is sufficient to add it to the index.
-For searching you probably need to send the search request to all Shards, because the requested data could be on any shard.
+For searching, you probably need to send the search request to all Shards, because the requested data could be on any shard.
 
 ```python Usage
 from jina import Flow
