@@ -132,14 +132,14 @@ class JinaLogger:
             cfg = config.get('config', {}).get(h, None)
             if cfg is None:
                 raise ValueError(
-                    f'can not find configs for {h}, maybe it is not supported'
+                    f'can not find configs for {h}, maybe it is not supported. Check the content of {config_path}'
                 )
 
             fmt = getattr(formatter, cfg.get('formatter', 'Formatter'))
 
             if h not in self.supported:
                 raise ValueError(
-                    f'can not find configs for {h}, maybe it is not supported'
+                    f'can not find configs for {h}, maybe it is not supported. Check the content of {config_path}'
                 )
 
             handler = None
