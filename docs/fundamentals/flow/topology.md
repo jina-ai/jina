@@ -5,7 +5,7 @@ The topology of a Flow defines how information is distributed between all Execut
 
 Each Executor has predecessors and successors. An Executor receives requests from all of its predecessors and sends them to all of its successors.
 
-Additionally an Executor can be split into Shards and Replicas. This enables horizontal scaling of Executors. A shard is typically used for partitioning data (like a big index) and Replicas are used to increase throughput and availability.
+Additionally, an Executor can be split into Shards and Replicas. This enables horizontal scaling of Executors. A shard is typically used for partitioning data (like a big index) and Replicas are used to increase throughput and availability.
 
 ## Define predecessors via `needs`
 
