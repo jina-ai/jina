@@ -1,7 +1,6 @@
 import asyncio
 from typing import TYPE_CHECKING, AsyncIterator, Awaitable
 
-from .mixin import StreamMixin
 from .base import BaseStreamer
 
 __all__ = ['HTTPClientStreamer', 'WebsocketClientStreamer']
@@ -10,7 +9,7 @@ if TYPE_CHECKING:
     from ....types.request import Request
 
 
-class ClientStreamer(BaseStreamer, StreamMixin):
+class ClientStreamer(BaseStreamer):
     """Streamer used at Client to stream requests/responses to/from Gateway"""
 
     def convert_to_message(self, request):

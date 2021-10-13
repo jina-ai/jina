@@ -2,7 +2,6 @@ import argparse
 
 from typing import TYPE_CHECKING, AsyncIterator
 
-from .mixin import StreamMixin
 from .base import BaseStreamer
 from ....types.message import Message
 
@@ -14,7 +13,7 @@ if TYPE_CHECKING:
     from ....types.request import Request, Response
 
 
-class GatewayStreamer(BaseStreamer, StreamMixin):
+class GatewayStreamer(BaseStreamer):
     """Streamer used at Gateway to stream requests/responses to/from Executors"""
 
     def convert_to_message(self, request: 'Request') -> Message:
