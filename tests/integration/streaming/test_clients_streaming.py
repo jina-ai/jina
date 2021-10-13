@@ -55,7 +55,7 @@ def on_done(response, final_da: DocumentArray):
 def test_client_streaming_sync_gen(grpc_data_requests, protocol, inputs):
     os.environ['JINA_LOG_LEVEL'] = 'ERROR'
     final_da = DocumentArray()
-    with Flow(protocol=protocol, prefetch=1, grpc_data_requests=grpc_data_requests).add(
+    with Flow(protocol=protocol, prefetch=0, grpc_data_requests=grpc_data_requests).add(
         uses=MyExecutor
     ) as f:
         f.post(

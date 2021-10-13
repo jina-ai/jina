@@ -1,15 +1,14 @@
 from typing import Callable, Optional
 from contextlib import nullcontext, AsyncExitStack
 
-from .helper import HTTPClientlet
-from ..base import BaseClient, InputType
-from ..helper import callback_exec
 from ...excepts import BadClient
-from ...importer import ImportExtensions
-
-from ...logging.profile import ProgressBar
+from .helper import HTTPClientlet
+from ..helper import callback_exec
 from ...types.request import Request
-from ...peapods.runtimes.prefetch.client import HTTPClientPrefetcher
+from ...importer import ImportExtensions
+from ..base import BaseClient, InputType
+from ...logging.profile import ProgressBar
+from ...peapods.runtimes.stream.client import HTTPClientStreamer
 
 
 class HTTPBaseClient(BaseClient):
@@ -48,8 +47,8 @@ class HTTPBaseClient(BaseClient):
                     HTTPClientlet(url=url, logger=self.logger)
                 )
 
-                prefetcher = HTTPClientPrefetcher(self.args, iolet=iolet)
-                async for response in prefetcher.send(request_iterator):
+                streamer = HTTPClientStreamer(self.args, iolet=iolet)
+                async for response in streamer.stream(request_iterator):
                     r_status = response.status
                     r_str = await response.json()
                     if r_status == 404:

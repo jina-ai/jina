@@ -1,13 +1,12 @@
-import asyncio
 import argparse
 
-from typing import Dict, List, Union, TYPE_CHECKING
+from typing import TYPE_CHECKING, AsyncIterator
 
-from .base import BasePrefetcher
+from .mixin import StreamMixin
+from .base import BaseStreamer
 from ....types.message import Message
-from ....helper import get_or_reuse_loop
 
-__all__ = ['ZmqGatewayPrefetcher', 'GrpcGatewayPrefetcher']
+__all__ = ['ZmqGatewayStreamer', 'GrpcGatewayStreamer']
 
 if TYPE_CHECKING:
     from ...grpc import Grpclet
@@ -15,17 +14,8 @@ if TYPE_CHECKING:
     from ....types.request import Request, Response
 
 
-class GatewayPrefetcher(BasePrefetcher):
-    """Gateway Prefetcher to be inherited by ZMQ / GRPC Prefetchers"""
-
-    def __init__(
-        self,
-        args: argparse.Namespace,
-        iolet: Union['AsyncZmqlet', 'Grpclet'],
-    ):
-        super().__init__(args, iolet)
-        self.request_buffer: Dict[str, asyncio.Future[Message]] = dict()
-        self.Call = self.send  # Used in grpc servicer
+class GatewayStreamer(BaseStreamer, StreamMixin):
+    """Streamer used at Gateway to stream requests/responses to/from Executors"""
 
     def convert_to_message(self, request: 'Request') -> Message:
         """Convert `Request` to `Message`
@@ -35,12 +25,32 @@ class GatewayPrefetcher(BasePrefetcher):
         """
         return Message(None, request, 'gateway', **vars(self.args))
 
-    def handle_end_of_iter(self):
-        pass
+    async def stream(self, request_iterator, *args) -> AsyncIterator['Request']:
+        """
+        stream requests from client iterator and stream responses back.
+
+        :param request_iterator: iterator of requests
+        :param args: positional arguments
+        :yield: responses from Executors
+        """
+        if self.receive_task.done():
+            raise RuntimeError('receive task not running, can not send messages')
+
+        async_iter: AsyncIterator = (
+            self.stream_requests_with_prefetch(request_iterator, self.args.prefetch)
+            if self.args.prefetch > 0
+            else self.stream_requests(request_iterator)
+        )
+
+        async for response in async_iter:
+            yield response
+
+    # alias of stream used as a grpc servicer
+    Call = stream
 
 
-class ZmqGatewayPrefetcher(GatewayPrefetcher):
-    """An async zmq request handler used in the Gateway"""
+class ZmqGatewayStreamer(GatewayStreamer):
+    """Streamer used at Gateway to stream ZMQ requests/responses to/from Executors"""
 
     async def receive(self):
         """Await messages back from Executors and process them in the request buffer"""
@@ -52,8 +62,6 @@ class ZmqGatewayPrefetcher(GatewayPrefetcher):
                     break
 
                 self.handle_response(response)
-        except asyncio.CancelledError:
-            raise
         finally:
             if self.request_buffer:
                 self.logger.warning(
@@ -64,8 +72,8 @@ class ZmqGatewayPrefetcher(GatewayPrefetcher):
                 self.request_buffer.clear()
 
 
-class GrpcGatewayPrefetcher(GatewayPrefetcher):
-    """An async grpc request handler used in the Gateway"""
+class GrpcGatewayStreamer(GatewayStreamer):
+    """Streamer used at Gateway to stream GRPC requests/responses to/from Executors"""
 
     def __init__(self, args: argparse.Namespace, iolet: 'Grpclet'):
         super().__init__(args, iolet)
