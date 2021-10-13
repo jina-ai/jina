@@ -238,60 +238,98 @@ def test_rolling_update_simple(
     logger,
     reraise,
 ):
-    from threading import Thread, Event
+    from jina.peapods.pods.k8slib import kubernetes_tools
+    from multiprocessing import Process, Event
     import time
 
-    def send_requests(flow_name, port_expose, client, event):
-        from jina.peapods.pods.k8slib import kubernetes_tools
+    def send_requests(
+        client_kwargs,
+        rolling_event,
+        client_ready_to_send_event,
+        exception_to_raise_event,
+    ):
+        from jina.logging.logger import JinaLogger
+        from jina.clients import Client
 
-        with reraise:
-            with kubernetes_tools.get_port_forward_contextmanager(
-                flow_name, port_expose
-            ):
-                while not event.is_set():
-                    r = client.post(
-                        '/exec',
-                        [Document() for _ in range(10)],
-                        return_results=True,
-                        port_expose=9090,
-                    )
-                    assert len(r) > 0
-                    assert len(r[0].docs) > 0
-                    for doc in r[0].docs:
-                        assert doc.tags['argument'] in ['value1', 'value2']
+        _logger = JinaLogger('test_send_requests')
+        _logger.debug(f' send request start')
+        try:
+            client = Client(**client_kwargs)
+            client.show_progress = True
+            _logger.debug(f' Client instantiated with {client_kwargs}')
+            _logger.debug(f' Set client_ready_to_send_event event')
+            client_ready_to_send_event.set()
+            while not rolling_event.is_set():
+                _logger.debug(f' event is not set')
+                r = client.post(
+                    '/exec',
+                    [Document() for _ in range(10)],
+                    return_results=True,
+                    port_expose=9090,
+                )
+                _logger.debug(f' resp {r}')
+                assert len(r) > 0
+                assert len(r[0].docs) > 0
+                for doc in r[0].docs:
+                    assert doc.tags['argument'] in ['value1', 'value2']
                     time.sleep(0.1)
+                _logger.debug(f' event is unset')
+        except:
+            _logger.error(f' Some error happened while sending requests')
+            exception_to_raise_event.set()
+        _logger.debug(f' finishing the process')
 
     with k8s_flow_with_reload_executor as flow:
-        resp_v1 = flow.post(
-            '/exec',
-            [Document() for _ in range(10)],
-            return_results=True,
-            port_expose=9090,
-        )
-        assert len(resp_v1[0].docs) > 0
-        for doc in resp_v1[0].docs:
-            assert doc.tags['argument'] == 'value1'
+        with kubernetes_tools.get_port_forward_contextmanager(
+            'test-flow-with-reload', 9090
+        ):
+            resp_v1 = flow.post(
+                '/exec',
+                [Document() for _ in range(10)],
+                return_results=True,
+                port_expose=9090,
+                disable_portforward=True,
+            )
+            assert len(resp_v1[0].docs) > 0
+            for doc in resp_v1[0].docs:
+                assert doc.tags['argument'] == 'value1'
 
-        event = Event()
-        thread = Thread(
-            target=send_requests,
-            kwargs={
-                'flow_name': flow.args.name,
-                'port_expose': 9090,
-                'client': flow.client,
-                'event': event,
-            },
-        )
-        thread.start()
-        time.sleep(0.5)
-        flow.rolling_update('test_executor', uses_with={'argument': 'value2'})
-        event.set()
-        resp_v2 = flow.post(
-            '/exec',
-            [Document() for _ in range(10)],
-            return_results=True,
-            port_expose=9090,
-        )
+            rolling_update_finished_event = Event()
+            client_ready_to_send = Event()
+            exception_to_raise = Event()
+            client_kwargs = dict(
+                host='localhost',
+                port=9090,
+                protocol='http',
+            )
+            client_kwargs.update(flow._common_kwargs)
+            process = Process(
+                target=send_requests,
+                kwargs={
+                    'client_kwargs': client_kwargs,
+                    'rolling_event': rolling_update_finished_event,
+                    'client_ready_to_send_event': client_ready_to_send,
+                    'exception_to_raise_event': exception_to_raise,
+                },
+                daemon=True,
+            )
+            process.start()
+            logger.debug(f' Waiting for client to be ready to send')
+            client_ready_to_send.wait(10000.0)
+            logger.debug(f' Waiting for client to be ready to send')
+            flow.rolling_update('test_executor', uses_with={'argument': 'value2'})
+            rolling_update_finished_event.set()
+            resp_v2 = flow.post(
+                '/exec',
+                [Document() for _ in range(10)],
+                return_results=True,
+                port_expose=9090,
+                disable_portforward=True,
+            )
+        logger.debug(f' Joining the process')
+        process.join()
+
+    assert not exception_to_raise.set()
 
     assert len(resp_v1[0].docs) > 0
     for doc in resp_v1[0].docs:
