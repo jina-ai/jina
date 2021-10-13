@@ -204,7 +204,7 @@ def test_flow_with_configmap(
     docs = resp[0].docs
     assert len(docs) == 10
     for doc in docs:
-        assert doc.tags.get('jina_log_level') == 'DEBUG'
+        assert doc.tags.get('JINA_LOG_LEVEL') == 'DEBUG'
         assert doc.tags.get('k1') == 'v1'
         assert doc.tags.get('k2') == 'v2'
         assert doc.tags.get('env') == {'k1': 'v1', 'k2': 'v2'}
