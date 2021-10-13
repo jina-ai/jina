@@ -67,11 +67,10 @@ class ZEDRuntime(BaseRuntime):
 
     def _handle_sig_term(self, *args):
         self.logger.debug(f'Received SIGTERM')
-        self.teardown()
+        self._zmqstreamlet.close()
 
     def teardown(self):
         """Close the `ZmqStreamlet` and `Executor`."""
-        self._zmqstreamlet.close()
         self._data_request_handler.close()
         super().teardown()
 
@@ -276,7 +275,6 @@ class ZEDRuntime(BaseRuntime):
                 self._zmqstreamlet.send_message(processed_msg)
         except RuntimeTerminated:
             # this is the proper way to end when a terminate signal is sent
-            self.logger.debug(f' RuntimeTerminated exception')
             self._zmqstreamlet.send_message(msg)
             self._zmqstreamlet.close()
         except KeyboardInterrupt as kbex:
