@@ -194,7 +194,7 @@ def get_port_forward_contextmanager(
         required=True,
         help_text='Sending requests to the Kubernetes cluster requires to install the portforward package. '
         'Please do `pip install "jina[portforward]"`'
-        'Also make sure golang is installed by running `go version`',
+        'Also make sure golang is installed `https://golang.org/`',
     ):
         import portforward
 
