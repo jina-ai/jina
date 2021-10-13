@@ -2,7 +2,7 @@ import asyncio
 from abc import ABC, abstractmethod
 from typing import List, Union, Iterator, AsyncIterator, TYPE_CHECKING
 
-from .helper import IterateRequests
+from .helper import AsyncRequestsIterator
 
 if TYPE_CHECKING:
     from ...grpc import Grpclet
@@ -85,7 +85,7 @@ class StreamMixin(ABC):
             4. Handle EOI (needed for websocket client)
             5. Set `end_of_iter` event
             """
-            async for request in IterateRequests(iterator=request_iterator):
+            async for request in AsyncRequestsIterator(iterator=request_iterator):
                 future: 'asyncio.Future' = self.handle_request(request=request)
                 future.add_done_callback(callback)
                 futures.append(future)
@@ -127,7 +127,7 @@ class StreamMixin(ABC):
             :return: False if append task to :param:`fetch_to` else False
             """
             count = 0
-            async for request in IterateRequests(iterator=request_iterator):
+            async for request in AsyncRequestsIterator(iterator=request_iterator):
                 fetch_to.append(self.handle_request(request=request))
                 count += 1
                 if count == num_req:

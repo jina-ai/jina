@@ -3,7 +3,7 @@ from typing import Iterator, AsyncIterator, Union
 from ....helper import get_or_reuse_loop
 
 
-class IterateRequests:
+class AsyncRequestsIterator:
     """Iterator to allow async iteration of blocking/non-blocking iterator from the Client"""
 
     def __init__(self, iterator: Union[Iterator, AsyncIterator]) -> None:
