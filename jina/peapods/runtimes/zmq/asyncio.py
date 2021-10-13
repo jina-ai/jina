@@ -6,14 +6,14 @@ import signal
 from typing import Union, Optional, TYPE_CHECKING
 
 from .... import __windows__
-from ..zmq.base import ZMQRuntime
+from ..base import BaseRuntime
 
 if TYPE_CHECKING:
     import multiprocessing
     import threading
 
 
-class AsyncZMQRuntime(ZMQRuntime):
+class AsyncZMQRuntime(BaseRuntime):
     """
     Runtime procedure in the async manners.
 
@@ -84,6 +84,16 @@ class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
                     f' The runtime {self.__class__.__name__} will not be able to handle termination signals. '
                     f' {repr(exc)}'
                 )
+                raise Exception(
+                    f' The runtime {self.__class__.__name__} will not be able to handle termination signals. '
+                    f' {repr(exc)}'
+                )
+        else:
+            import win32api
+
+            win32api.SetConsoleCtrlHandler(
+                lambda *args, **kwargs: self.is_cancel.set(), True
+            )
 
         self._loop.run_until_complete(self.async_setup())
 
@@ -113,7 +123,6 @@ class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
     ):
         """
         Signal the runtime to terminate
-
         :param cancel_event: the cancel event to set
         :param kwargs: extra keyword arguments
         """

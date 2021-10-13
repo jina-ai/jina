@@ -6,20 +6,22 @@ import time
 from abc import ABC
 from collections import defaultdict
 from typing import Optional, Union, Dict, List
+import signal
 
 from grpc import RpcError
 
-from jina.enums import OnErrorStrategy
-from jina.excepts import NoExplicitMessage, ChainedPodException, RuntimeTerminated
-from jina.helper import get_or_reuse_loop, random_identity
-from jina.peapods.grpc import Grpclet
-from jina.peapods.runtimes.base import BaseRuntime
-from jina.peapods.runtimes.request_handlers.data_request_handler import (
+from .... import __windows__
+from ....enums import OnErrorStrategy
+from ....excepts import NoExplicitMessage, ChainedPodException, RuntimeTerminated
+from ....helper import get_or_reuse_loop, random_identity
+from ...grpc import Grpclet
+from ..base import BaseRuntime
+from ..request_handlers.data_request_handler import (
     DataRequestHandler,
 )
-from jina.proto import jina_pb2
-from jina.types.message import Message
-from jina.types.routing.table import RoutingTable
+from ....proto import jina_pb2
+from ....types.message import Message
+from ....types.routing.table import RoutingTable
 
 
 class GRPCDataRuntime(BaseRuntime, ABC):
@@ -31,6 +33,12 @@ class GRPCDataRuntime(BaseRuntime, ABC):
         :param kwargs: extra keyword arguments
         """
         super().__init__(args, **kwargs)
+        if not __windows__:
+            signal.signal(signal.SIGTERM, self._handle_sig_term)
+        else:
+            import win32api
+
+            win32api.SetConsoleCtrlHandler(self._handle_sig_term)
         self._id = random_identity()
         self._loop = get_or_reuse_loop()
         self._last_active_time = time.perf_counter()
@@ -47,6 +55,10 @@ class GRPCDataRuntime(BaseRuntime, ABC):
             message_callback=self._callback,
             logger=self.logger,
         )
+
+    def _handle_sig_term(self, *args):
+        self.logger.debug(f'Received SIGTERM')
+        self.teardown()
 
     def _update_pending_tasks(self):
         self._pending_tasks = [

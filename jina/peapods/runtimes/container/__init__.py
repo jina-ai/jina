@@ -7,7 +7,7 @@ from typing import Union, Optional, Dict, TYPE_CHECKING
 from pathlib import Path
 from platform import uname
 
-from ..zmq.base import ZMQRuntime
+from ..base import BaseRuntime
 from ...zmq import Zmqlet
 from .... import __docker_host__
 from .helper import get_docker_network, get_gpu_device_requests
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from ....logging.logger import JinaLogger
 
 
-class ContainerRuntime(ZMQRuntime):
+class ContainerRuntime(BaseRuntime):
     """Runtime procedure for container."""
 
     def __init__(self, args: 'argparse.Namespace', **kwargs):

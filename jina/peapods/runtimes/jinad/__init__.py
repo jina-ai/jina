@@ -83,12 +83,6 @@ class JinadRuntime(AsyncNewLoopRuntime):
             )  # pea id is the error message here, to be
         self.pea_id = ret
 
-    async def _wait_for_cancel(self):
-        while not self.is_cancel.is_set():
-            await asyncio.sleep(0.1)
-
-        send_ctrl_message(self.ctrl_addr, 'TERMINATE', self.timeout_ctrl)
-
     async def async_run_forever(self):
         """
         Streams log messages using websocket from remote server
