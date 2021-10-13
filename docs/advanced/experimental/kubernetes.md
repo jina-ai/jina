@@ -331,7 +331,7 @@ Len response matches: 15
 
 In Jina we support two ways of scaling:
 - **Replicas** can be used with any Executor type and is typically used for performance and availability.
-- **Shards** are used for partitioning data and should only be used with Indexers, since they store a state.
+- **Shards** are used for partitioning data and should only be used with Indexers since they store a state.
 
 Check {ref}`here <flow-topology>` for more information.
 
