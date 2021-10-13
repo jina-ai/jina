@@ -70,7 +70,7 @@ f = (Flow()
 :align: center
 ```
 
-The above Flow will create a topology with three Replicas of Executor `slow_encoder`. The `Gateway` will send every request to excactly one of the three instances. Then the replica will send its result to `fast_indexer`.
+The above Flow will create a topology with three Replicas of Executor `slow_encoder`. The `Gateway` will send every request to exactly one of the three instances. Then the replica will send its result to `fast_indexer`.
 
 ## Partition data by using Shards
 
