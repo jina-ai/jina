@@ -96,6 +96,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -10762,4 +10763,47 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```f2aa3dc8```](https://github.com/jina-ai/jina/commit/f2aa3dc866a30bf545c6f071d21e44eb10a3a559)] __-__ __cd__: fix missing checkout in cd (*Han Xiao*)
  - [[```a76a875b```](https://github.com/jina-ai/jina/commit/a76a875bed13664ed09e70048e888591fdab119b)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```03ad5807```](https://github.com/jina-ai/jina/commit/03ad580738898767a29ba90b4e03b64349a068fe)] __-__ __version__: the next version will be 2.1.6 (*Jina Dev Bot*)
+
+<a name=release-note-2-1-7></a>
+## Release Note (`2.1.7`)
+
+> Release time: 2021-10-13 17:17:56
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Jina Dev Bot,  Deepankar Mahapatro,  Han Xiao,  Joan Fontanals,  Florian Hönicke,  Wang Bo,  CallmeMehdi,  Tobias Jacobowitz,  🙇
+
+
+### 🆕 New Features
+
+ - [[```1e54f679```](https://github.com/jina-ai/jina/commit/1e54f679a39a0e0bea2e65781d200f1042a627fd)] __-__ k8s hubble no cache (#3627) (*Florian Hönicke*)
+ - [[```e42f6a49```](https://github.com/jina-ai/jina/commit/e42f6a49e45b347ed74ec3618847f42b3bbe8bd2)] __-__ pass uses_with to rolling_update (#3608) (*Joan Fontanals*)
+ - [[```6763577f```](https://github.com/jina-ai/jina/commit/6763577f737c1f388721551619c3475a7f095992)] __-__ k8s perf (#3628) (*Florian Hönicke*)
+ - [[```6cd417b0```](https://github.com/jina-ai/jina/commit/6cd417b0e5274e4519e1e419fb2e4d919e7a315c)] __-__ __k8s__: add environment variable configurations :champagne:  (#3502) (*Wang Bo*)
+ - [[```693cf475```](https://github.com/jina-ai/jina/commit/693cf4752bee41dbf494733e0eea02b6a6fc67a4)] __-__ __sharding__: align shard and replica concept with k8s (#3535) (*Tobias Jacobowitz*)
+
+### 🐞 Bug fixes
+
+ - [[```82d3eace```](https://github.com/jina-ai/jina/commit/82d3eacef8e3090ba90330842a1c2840fff87764)] __-__ __client__: websocket client streaming (#3600) (*Deepankar Mahapatro*)
+ - [[```f40e63c1```](https://github.com/jina-ai/jina/commit/f40e63c1b0aef7ad7f2ca431d3053182f81f77ec)] __-__ __match__: fix type of batch_size and limit in match function (#3639) (*Han Xiao*)
+ - [[```28a6689c```](https://github.com/jina-ai/jina/commit/28a6689c0955f1f80454cf27d3d8c440a84e841c)] __-__ fix darray sort tie (#3637) (*Joan Fontanals*)
+ - [[```411482ca```](https://github.com/jina-ai/jina/commit/411482cabe76664110a4ec4304db679cc16685bb)] __-__ validate limit input in match (#3633) (*Joan Fontanals*)
+ - [[```ba9a6510```](https://github.com/jina-ai/jina/commit/ba9a6510c578f10203e88483ada01d31511fc423)] __-__ move portforward to cicd tag (#3629) (*Joan Fontanals*)
+ - [[```6d409199```](https://github.com/jina-ai/jina/commit/6d4091998cb6224c5ba2a148748240c5d00fac64)] __-__ fix reference before assignment (#3615) (*Joan Fontanals*)
+
+### 🧼 Code Refactoring
+
+ - [[```03b47634```](https://github.com/jina-ai/jina/commit/03b47634f4ea0d88c0768d2f51d926bd1da65999)] __-__ avoid shards clearance (#3624) (*Joan Fontanals*)
+ - [[```aed448aa```](https://github.com/jina-ai/jina/commit/aed448aa9de34a922f2d0ff24080450c20c16f4a)] __-__ remove Optionality of DocumentArray 🍾  (#3553) (*CallmeMehdi*)
+
+### 📗 Documentation
+
+ - [[```553b8f6f```](https://github.com/jina-ai/jina/commit/553b8f6f8f9e0f49d5d1fa0a4726ff2d2d6cbba2)] __-__ add env to docs (#3626) (*Wang Bo*)
+
+### 🍹 Other Improvements
+
+ - [[```12b3a639```](https://github.com/jina-ai/jina/commit/12b3a6393a1bac5fbdf82c9a2eeede81d684ecc5)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```4504ee54```](https://github.com/jina-ai/jina/commit/4504ee5442b96d3e897155e40922d15e7581d0f7)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```e641a531```](https://github.com/jina-ai/jina/commit/e641a531d009bc6e3e592187d6df0e91210a2335)] __-__ __version__: the next version will be 2.1.7 (*Jina Dev Bot*)
 
