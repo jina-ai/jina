@@ -116,7 +116,7 @@ class JinaLogger:
         for handler in self.logger.handlers:
             handler.close()
 
-    def add_handlers(self, config_path: Optional[str] = None, **kwargs):
+    def add_handlers(self, config_path: str, **kwargs):
         """
         Add handlers from config file.
 
@@ -129,10 +129,15 @@ class JinaLogger:
             config = JAML.load(fp)
 
         for h in config['handlers']:
-            cfg = config['configs'].get(h, None)
+            cfg = config.get('config', {}).get(h, None)
+            if cfg is None:
+                raise ValueError(
+                    f'can not find configs for {h}, maybe it is not supported'
+                )
+
             fmt = getattr(formatter, cfg.get('formatter', 'Formatter'))
 
-            if h not in self.supported or not cfg:
+            if h not in self.supported:
                 raise ValueError(
                     f'can not find configs for {h}, maybe it is not supported'
                 )
