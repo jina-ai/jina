@@ -1,4 +1,6 @@
+import multiprocessing
 import time
+from multiprocessing import Process
 from threading import Event, Thread
 
 import pytest
@@ -16,19 +18,20 @@ from jina.types.message import Message
 @pytest.mark.timeout(5)
 def test_grpc_data_runtime(mocker):
     args = set_pea_parser().parse_args([])
-    handle_mock = mocker.Mock()
+    handle_mock = multiprocessing.Event()
 
-    def start_runtime(args, handle_mock):
-        with GRPCDataRuntime(args) as runtime:
-            runtime._data_request_handler.handle = handle_mock
+    cancel_event = multiprocessing.Event()
+
+    def start_runtime(args, handle_mock, cancel_event):
+        with GRPCDataRuntime(args, cancel_event) as runtime:
+            runtime._data_request_handler.handle = (
+                lambda *args, **kwargs: handle_mock.set()
+            )
             runtime.run_forever()
 
-    runtime_thread = Thread(
+    runtime_thread = Process(
         target=start_runtime,
-        args=(
-            args,
-            handle_mock,
-        ),
+        args=(args, handle_mock, cancel_event),
         daemon=True,
     )
     runtime_thread.start()
@@ -41,9 +44,9 @@ def test_grpc_data_runtime(mocker):
         _create_test_data_message()
     )
     time.sleep(0.1)
-    handle_mock.assert_called()
+    assert handle_mock.is_set()
 
-    GRPCDataRuntime.cancel(f'{args.host}:{args.port_in}')
+    GRPCDataRuntime.cancel(cancel_event)
     runtime_thread.join()
 
     assert not GRPCDataRuntime.is_ready(f'{args.host}:{args.port_in}')

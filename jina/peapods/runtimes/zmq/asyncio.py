@@ -57,7 +57,6 @@ class AsyncZMQRuntime(BaseRuntime):
             await asyncio.gather(self.async_run_forever(), self._wait_for_cancel())
         except asyncio.CancelledError:
             self.logger.warning('received terminate ctrl message from main process')
-        await self.async_cancel()
 
 
 class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):

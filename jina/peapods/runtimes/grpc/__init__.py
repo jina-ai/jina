@@ -3,49 +3,49 @@ import asyncio
 import multiprocessing
 import threading
 import time
+import traceback
 from abc import ABC
 from collections import defaultdict
-from typing import Optional, Union, Dict, List
-import signal
+from typing import Dict, List, Optional, Union
 
 from grpc import RpcError
 
-from .... import __windows__
-from ....enums import OnErrorStrategy
-from ....excepts import NoExplicitMessage, ChainedPodException, RuntimeTerminated
-from ....helper import get_or_reuse_loop, random_identity
-from ...grpc import Grpclet
-from ..base import BaseRuntime
 from ..request_handlers.data_request_handler import (
     DataRequestHandler,
 )
+from ..zmq.asyncio import AsyncNewLoopRuntime
+from ...grpc import Grpclet
+from ....enums import OnErrorStrategy
+from ....excepts import NoExplicitMessage, ChainedPodException
+from ....helper import get_or_reuse_loop, random_identity
 from ....proto import jina_pb2
 from ....types.message import Message
 from ....types.routing.table import RoutingTable
 
 
-class GRPCDataRuntime(BaseRuntime, ABC):
+class GRPCDataRuntime(AsyncNewLoopRuntime, ABC):
     """Runtime procedure leveraging :class:`Grpclet` for sending DataRequests"""
 
-    def __init__(self, args: argparse.Namespace, **kwargs):
+    def __init__(
+        self,
+        args: argparse.Namespace,
+        cancel_event: Optional[
+            Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
+        ] = None,
+        **kwargs,
+    ):
         """Initialize grpc and data request handling.
         :param args: args from CLI
-        :param kwargs: extra keyword arguments
+        :param cancel_event: the cancel event used to wait for canceling
+        :param kwargs: keyword args
         """
-        super().__init__(args, **kwargs)
-        if not __windows__:
-            signal.signal(signal.SIGTERM, self._handle_sig_term)
-        else:
-            import win32api
+        super().__init__(args, cancel_event, **kwargs)
 
-            win32api.SetConsoleCtrlHandler(self._handle_sig_term)
         self._id = random_identity()
-        self._loop = get_or_reuse_loop()
         self._last_active_time = time.perf_counter()
 
         self._pending_msgs = defaultdict(list)  # type: Dict[str, List[Message]]
         self._partial_requests = None
-        self._pending_tasks = []
         self._static_routing_table = args.static_routing_table
 
         # Keep this initialization order, otherwise readiness check is not valid
@@ -56,40 +56,30 @@ class GRPCDataRuntime(BaseRuntime, ABC):
             logger=self.logger,
         )
 
-    def _handle_sig_term(self, *args):
-        self.logger.debug(f'Received SIGTERM')
-        self.teardown()
+    async def async_run_forever(self):
+        """Start the grpclet """
+        await self._grpclet.start()
 
-    def _update_pending_tasks(self):
-        self._pending_tasks = [
-            task for task in self._pending_tasks if task and not task.done()
-        ]
+    async def async_cancel(self):
+        """The async method to stop server."""
+        self.logger.debug('Cancel GRPCDataRuntime')
 
-    def run_forever(self):
-        """Start the `Grpclet`."""
-        self._grpclet_task = self._loop.create_task(self._grpclet.start())
-        try:
-            self._loop.run_until_complete(self._grpclet_task)
-        except asyncio.CancelledError:
-            self.logger.warning('Grpclet task was cancelled')
+        # Wait max 1.0 second until partial messages are processed
+        timeout_ns = 1e9
+        now = time.time_ns()
+        while self._pending_msgs and time.time_ns() - now < timeout_ns:
+            await asyncio.sleep(0.1)
 
-    def teardown(self):
-        """Close the `Grpclet` and `DataRequestHandler`."""
-        self.logger.debug('Teardown GRPCDataRuntime')
+        if self._pending_msgs:
+            self.logger.warning(
+                f'GrpcDataRuntime is closed while there are still {len(self._pending_msgs)} partial requests pending.'
+            )
+
+        await self._grpclet.stop_receiving()
 
         self._data_request_handler.close()
-        start = time.time()
-        while self._pending_tasks and time.time() - start < 1.0:
-            self._update_pending_tasks()
-            time.sleep(0.1)
-        self._loop.stop()
-        self._loop.close()
 
-        super().teardown()
-
-    async def _close_grpclet(self):
-        await self._grpclet.close()
-        self._grpclet_task.cancel()
+        await self._grpclet.stop_sending()
 
     @staticmethod
     def get_control_address(**kwargs):
@@ -118,33 +108,6 @@ class GRPCDataRuntime(BaseRuntime, ABC):
             return False
 
         return True
-
-    @staticmethod
-    def activate(
-        **kwargs,
-    ):
-        """
-        Does nothing
-        :param kwargs: extra keyword arguments
-        """
-        pass
-
-    @staticmethod
-    def cancel(
-        control_address: str,
-        **kwargs,
-    ):
-        """
-        Cancel this runtime by sending a TERMINATE control message
-
-        :param control_address: the address where the control message needs to be sent
-        :param kwargs: extra keyword arguments
-        """
-        try:
-            Grpclet.send_ctrl_msg(control_address, 'TERMINATE')
-        except RpcError:
-            # TERMINATE can fail if the the runtime dies before sending the return value
-            pass
 
     @staticmethod
     def wait_for_ready_or_shutdown(
@@ -176,16 +139,6 @@ class GRPCDataRuntime(BaseRuntime, ABC):
             msg = self._post_hook(self._handle(self._pre_hook(msg)))
             if msg.is_data_request:
                 asyncio.create_task(self._grpclet.send_message(msg))
-        except RuntimeTerminated:
-            # this is the proper way to end when a terminate signal is sent
-            self._pending_tasks.append(asyncio.create_task(self._close_grpclet()))
-        except KeyboardInterrupt as kbex:
-            self.logger.debug(f'{kbex!r} causes the breaking from the event loop')
-            self._pending_tasks.append(asyncio.create_task(self._close_grpclet()))
-        except (SystemError) as ex:
-            # save executor
-            self.logger.debug(f'{ex!r} causes the breaking from the event loop')
-            self._pending_tasks.append(asyncio.create_task(self._close_grpclet()))
         except NoExplicitMessage:
             # silent and do not propagate message anymore
             # 1. wait partial message to be finished
@@ -224,8 +177,6 @@ class GRPCDataRuntime(BaseRuntime, ABC):
 
         # skip executor for non-DataRequest
         if msg.envelope.request_type != 'DataRequest':
-            if msg.request.command == 'TERMINATE':
-                raise RuntimeTerminated()
             self.logger.debug(f'skip executor: not data request')
             return msg
 
@@ -314,6 +265,8 @@ class GRPCDataRuntime(BaseRuntime, ABC):
         if self._get_expected_parts(msg) > 1:
             msgs = self._pending_msgs.pop(msg.envelope.request_id)
             msg.merge_envelope_from(msgs)
+        elif msg.envelope.request_id in self._pending_msgs:
+            del self._pending_msgs[msg.envelope.request_id]
 
         msg.update_timestamp()
         return msg
