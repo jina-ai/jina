@@ -103,7 +103,7 @@ search_flow = Flow().add(name='ExecutorWithShards', shards=3, polling='all', use
 
 Each shard of a search Flow returns one set of results for each query Document.
 A merger Executor combines them afterwards.
-You can use the pre-built [MatchMerger](https://hub.jina.ai/executor/mruax3k7) or define your own merger.
+You can use the pre-built [MatchMerger](https://hub.jina.ai/executor/mruax3k7) or define your merger.
 
 ```{admonition} Example
 :class: example
