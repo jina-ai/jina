@@ -82,7 +82,7 @@ This is helpful in two situations:
 
 Then splitting the load across two or more machines yields better results.
 
-For Shards you can define which shard (instance) will receive the request from its predecessor. This behaviour is called `polling`. By default `polling` is set to `ANY`, which means only one shard will receive a request. If `polling` is to `ALL` it means that all Shards will receive a request.
+For Shards, you can define which shard (instance) will receive the request from its predecessor. This behaviour is called `polling`. By default `polling` is set to `ANY`, which means only one shard will receive a request. If `polling` is to `ALL` it means that all Shards will receive a request.
 
 When you shard your index, the request handling usually differs between index and search requests:
 
