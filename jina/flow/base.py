@@ -1792,8 +1792,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param dump_path: **backwards compatibility** This function was only accepting dump_path as the only potential arg to override
         :param uses_with: a Dictionary of arguments to restart the executor with
         """
-        self._pod_nodes[pod_name].rolling_update(
-            dump_path=dump_path, uses_with=uses_with
+        from ..helper import run_async
+
+        run_async(
+            self._pod_nodes[pod_name].rolling_update,
+            dump_path=dump_path,
+            uses_with=uses_with,
+            any_event_loop=True,
         )
 
     @property

@@ -189,7 +189,7 @@ class K8sPod(BasePod, ExitFIFO):
                 fail_msg += f': {repr(exception_to_raise)}'
             raise RuntimeFailToStart(fail_msg)
 
-        def wait_restart_success(self):
+        async def wait_restart_success(self):
             _timeout = self.common_args.timeout_ready
             if _timeout <= 0:
                 _timeout = None
@@ -197,6 +197,7 @@ class K8sPod(BasePod, ExitFIFO):
                 _timeout /= 1e3
 
             from kubernetes import client
+            import asyncio
 
             k8s_client = kubernetes_tools.K8sClients().apps_v1
 
@@ -239,7 +240,7 @@ class K8sPod(BasePod, ExitFIFO):
                                     f'\nNumber of alive replicas {alive_replicas}, waiting for {alive_replicas - self.num_replicas} old replicas to be terminated'
                                 )
 
-                            time.sleep(1.0)
+                            await asyncio.sleep(1.0)
                     except client.ApiException as ex:
                         exception_to_raise = ex
                         break
@@ -420,7 +421,7 @@ class K8sPod(BasePod, ExitFIFO):
         """
         return 'localhost'
 
-    def rolling_update(
+    async def rolling_update(
         self, dump_path: Optional[str] = None, *, uses_with: Optional[Dict] = None
     ):
         """Reload all Deployments of this K8s Pod.
@@ -431,7 +432,7 @@ class K8sPod(BasePod, ExitFIFO):
             deployment.rolling_update(dump_path=dump_path, uses_with=uses_with)
 
         for deployment in self.k8s_deployments:
-            deployment.wait_restart_success()
+            await deployment.wait_restart_success()
 
     def start(self) -> 'K8sPod':
         """Deploy the kubernetes pods via k8s Deployment and k8s Service.
