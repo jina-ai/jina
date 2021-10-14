@@ -226,11 +226,11 @@ class K8sPod(BasePod, ExitFIFO):
                             updated_replicas = api_response.status.updated_replicas or 0
                             alive_replicas = api_response.status.replicas or 0
                             if updated_replicas < self.num_replicas:
-                                logger.info(
+                                logger.debug(
                                     f'\nNumber of updated replicas {updated_replicas}, waiting for {self.num_replicas - updated_replicas} replicas to be updated'
                                 )
                             else:
-                                logger.info(
+                                logger.debug(
                                     f'\nNumber of alive replicas {alive_replicas}, waiting for {alive_replicas - self.num_replicas} old replicas to be terminated'
                                 )
 
