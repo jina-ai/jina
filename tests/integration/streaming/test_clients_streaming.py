@@ -100,7 +100,7 @@ def test_disable_prefetch_slow_client_fast_executor(
     )
     os.environ['JINA_LOG_LEVEL'] = 'ERROR'
     final_da = DocumentArray()
-    with Flow(protocol=protocol, prefetch=0, grpc_data_requests=grpc_data_requests).add(
+    with Flow(protocol=protocol, grpc_data_requests=grpc_data_requests).add(
         uses=FastExecutor
     ) as f:
         f.post(
@@ -149,7 +149,7 @@ def test_disable_prefetch_fast_client_slow_executor(
     )
     os.environ['JINA_LOG_LEVEL'] = 'ERROR'
     final_da = DocumentArray()
-    with Flow(protocol=protocol, prefetch=0, grpc_data_requests=grpc_data_requests).add(
+    with Flow(protocol=protocol, grpc_data_requests=grpc_data_requests).add(
         uses=SlowExecutor
     ) as f:
         f.post(

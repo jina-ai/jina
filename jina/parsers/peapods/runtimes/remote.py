@@ -164,8 +164,11 @@ def mixin_prefetch_parser(parser=None):
     gp.add_argument(
         '--prefetch',
         type=int,
-        default=1,
-        help='The number of requests fetched from the client before feeding to the first Executor',
+        default=0,
+        help='''
+    Number of requests fetched from the client before feeding into the first Executor. 
+    
+    Used to control the speed of data input into a Flow. 0 disables prefetch (disabled by default)''',
     )
 
 
