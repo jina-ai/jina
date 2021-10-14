@@ -596,7 +596,6 @@ class GraphDocument(Document):
             default_logger.debug(f'Trying to iterate over a graph without edges')
 
     def __mermaid_str__(self) -> str:
-
         if len(self._nodes) == 0:
             return super().__mermaid_str__()
 
