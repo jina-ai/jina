@@ -67,10 +67,11 @@ class ZEDRuntime(BaseRuntime):
 
     def _handle_sig_term(self, *args):
         self.logger.debug(f'Received SIGTERM')
-        self._zmqstreamlet.close()
+        self.teardown()
 
     def teardown(self):
         """Close the `ZmqStreamlet` and `Executor`."""
+        self._zmqstreamlet.close()
         self._data_request_handler.close()
         super().teardown()
 

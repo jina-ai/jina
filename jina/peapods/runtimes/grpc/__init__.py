@@ -16,7 +16,7 @@ from ..request_handlers.data_request_handler import (
 from ..zmq.asyncio import AsyncNewLoopRuntime
 from ...grpc import Grpclet
 from ....enums import OnErrorStrategy
-from ....excepts import NoExplicitMessage, ChainedPodException
+from ....excepts import NoExplicitMessage, ChainedPodException, RuntimeTerminated
 from ....helper import get_or_reuse_loop, random_identity
 from ....proto import jina_pb2
 from ....types.message import Message
@@ -139,6 +139,8 @@ class GRPCDataRuntime(AsyncNewLoopRuntime, ABC):
             msg = self._post_hook(self._handle(self._pre_hook(msg)))
             if msg.is_data_request:
                 asyncio.create_task(self._grpclet.send_message(msg))
+        except RuntimeTerminated:
+            GRPCDataRuntime.cancel(self.is_cancel)
         except NoExplicitMessage:
             # silent and do not propagate message anymore
             # 1. wait partial message to be finished
@@ -177,6 +179,8 @@ class GRPCDataRuntime(AsyncNewLoopRuntime, ABC):
 
         # skip executor for non-DataRequest
         if msg.envelope.request_type != 'DataRequest':
+            if msg.request.command == 'TERMINATE':
+                raise RuntimeTerminated()
             self.logger.debug(f'skip executor: not data request')
             return msg
 
