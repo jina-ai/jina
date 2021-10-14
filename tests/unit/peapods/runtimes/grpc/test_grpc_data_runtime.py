@@ -53,23 +53,35 @@ def test_grpc_data_runtime(mocker):
 
 
 @pytest.mark.slow
-@pytest.mark.timeout(5)
+@pytest.mark.timeout(10)
 def test_grpc_data_runtime_graceful_shutdown():
     args = set_pea_parser().parse_args([])
 
     cancel_event = multiprocessing.Event()
+    handler_closed_event = multiprocessing.Event()
     slow_executor_block_time = 1.0
+    pending_requests = 3
+    sent_queue = multiprocessing.Queue()
 
-    def start_runtime(args, cancel_event):
+    def start_runtime(args, cancel_event, sent_queue, handler_closed_event):
         with GRPCDataRuntime(args, cancel_event) as runtime:
             runtime._data_request_handler.handle = lambda *args, **kwargs: time.sleep(
                 slow_executor_block_time
             )
+            runtime._data_request_handler.close = (
+                lambda *args, **kwargs: handler_closed_event.set()
+            )
+
+            async def mock(msg):
+                sent_queue.put('')
+
+            runtime._grpclet.send_message = mock
+
             runtime.run_forever()
 
     runtime_thread = Process(
         target=start_runtime,
-        args=(args, cancel_event),
+        args=(args, cancel_event, sent_queue, handler_closed_event),
         daemon=True,
     )
     runtime_thread.start()
@@ -79,14 +91,21 @@ def test_grpc_data_runtime_graceful_shutdown():
     )
 
     request_start_time = time.time()
-    Grpclet._create_grpc_stub(f'{args.host}:{args.port_in}', is_async=False).Call(
-        _create_test_data_message()
-    )
+    for i in range(pending_requests):
+        Grpclet._create_grpc_stub(f'{args.host}:{args.port_in}', is_async=False).Call(
+            _create_test_data_message()
+        )
     time.sleep(0.1)
 
     GRPCDataRuntime.cancel(cancel_event)
+    assert not handler_closed_event.is_set()
     runtime_thread.join()
-    assert time.time() - request_start_time >= slow_executor_block_time
+
+    assert (
+        time.time() - request_start_time >= slow_executor_block_time * pending_requests
+    )
+    assert sent_queue.qsize() == pending_requests
+    assert handler_closed_event.is_set()
 
     assert not GRPCDataRuntime.is_ready(f'{args.host}:{args.port_in}')
 
