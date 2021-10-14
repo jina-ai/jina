@@ -1,23 +1,19 @@
-import argparse
 import asyncio
-from abc import ABC
 import signal
-
+from abc import ABC, abstractmethod
 from typing import Union, Optional, TYPE_CHECKING
 
-from .... import __windows__
 from ..base import BaseRuntime
+from .... import __windows__
 
 if TYPE_CHECKING:
     import multiprocessing
     import threading
 
 
-class AsyncZMQRuntime(BaseRuntime):
+class AsyncNewLoopRuntime(BaseRuntime, ABC):
     """
-    Runtime procedure in the async manners.
-
-    Base class of :class:`AsyncNewLoopRuntime`.
+    The async runtime to start a new event loop.
     """
 
     def __init__(
@@ -29,46 +25,9 @@ class AsyncZMQRuntime(BaseRuntime):
         **kwargs,
     ):
         super().__init__(args, **kwargs)
-        self.is_cancel = cancel_event or asyncio.Event()
-
-    def run_forever(self):
-        """Running method to block the main thread."""
-        asyncio.run(self._loop_body())
-
-    async def async_cancel(self):
-        """An async method to cancel."""
-        raise NotImplementedError
-
-    async def async_run_forever(self):
-        """The async method to run until it is stopped."""
-        raise NotImplementedError
-
-    async def _wait_for_cancel(self):
-        """Do NOT override this method when inheriting from :class:`GatewayPea`"""
-        # handle terminate signals
-        while not self.is_cancel.is_set():
-            await asyncio.sleep(0.1)
-
-        await self.async_cancel()
-
-    async def _loop_body(self):
-        """Do NOT override this method when inheriting from :class:`GatewayPea`"""
-        try:
-            await asyncio.gather(self.async_run_forever(), self._wait_for_cancel())
-        except asyncio.CancelledError:
-            self.logger.warning('received terminate ctrl message from main process')
-
-
-class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
-    """
-    The runtime to start a new event loop.
-
-    """
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
         self._loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._loop)
+        self.is_cancel = cancel_event or asyncio.Event()
 
         if not __windows__:
             # TODO: windows event loops don't support signal handlers
@@ -80,10 +39,6 @@ class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
                     )
             except (ValueError, RuntimeError) as exc:
                 self.logger.warning(
-                    f' The runtime {self.__class__.__name__} will not be able to handle termination signals. '
-                    f' {repr(exc)}'
-                )
-                raise Exception(
                     f' The runtime {self.__class__.__name__} will not be able to handle termination signals. '
                     f' {repr(exc)}'
                 )
@@ -110,9 +65,34 @@ class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
         self._loop.close()
         super().teardown()
 
+    async def _wait_for_cancel(self):
+        """Do NOT override this method when inheriting from :class:`GatewayPea`"""
+        # handle terminate signals
+        while not self.is_cancel.is_set():
+            await asyncio.sleep(0.1)
+
+        await self.async_cancel()
+
+    async def _loop_body(self):
+        """Do NOT override this method when inheriting from :class:`GatewayPea`"""
+        try:
+            await asyncio.gather(self.async_run_forever(), self._wait_for_cancel())
+        except asyncio.CancelledError:
+            self.logger.warning('received terminate ctrl message from main process')
+
     async def async_setup(self):
         """The async method to setup."""
         pass
+
+    @abstractmethod
+    async def async_cancel(self):
+        """An async method to cancel."""
+        ...
+
+    @abstractmethod
+    async def async_run_forever(self):
+        """The async method to run until it is stopped."""
+        ...
 
     # Static methods used by the Pea to communicate with the `Runtime` in the separate process
 
