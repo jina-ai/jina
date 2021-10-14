@@ -41,7 +41,12 @@ class ZEDRuntime(BaseRuntime):
         """
         super().__init__(args, **kwargs)
         if not __windows__:
-            signal.signal(signal.SIGTERM, self._handle_sig_term)
+            try:
+                signal.signal(signal.SIGTERM, self._handle_sig_term)
+            except ValueError:
+                self.logger.warning(
+                    'Runtime is being run in a thread. Threads can not receive signals and may not shutdown as expected.'
+                )
         else:
             import win32api
 

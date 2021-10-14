@@ -96,10 +96,12 @@ def test_tail_args_get_set(pod_args, pod_args_singleton):
 @pytest.mark.slow
 @pytest.mark.parametrize('replicas', [1, 2, 4])
 @pytest.mark.parametrize('runtime', ['process', 'thread'])
-def test_pod_context_replicas(runtime, replicas):
-    args = set_pod_parser().parse_args(
-        ['--runtime-backend', runtime, '--replicas', str(replicas)]
-    )
+@pytest.mark.parametrize('grpc_data_requests', [False, True])
+def test_pod_context_replicas(runtime, replicas, grpc_data_requests):
+    args_list = ['--runtime-backend', runtime, '--replicas', str(replicas)]
+    if grpc_data_requests:
+        args_list.append('--grpc-data-requests')
+    args = set_pod_parser().parse_args(args_list)
     with Pod(args) as bp:
         if replicas == 1:
             assert bp.num_peas == 1
