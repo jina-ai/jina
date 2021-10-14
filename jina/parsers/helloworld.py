@@ -170,10 +170,10 @@ def set_hw_chatbot_parser(parser=None):
         help='The port of the host exposed to the public',
     )
     parser.add_argument(
-        '--parallel',
+        '--replicas',
         type=int,
         default=2,
-        help='The number of parallel when index and query',
+        help='The number of replicas when index and query',
     )
     parser.add_argument(
         '--unblock-query-flow',

@@ -27,10 +27,8 @@ def namespace_equal(
 
 
 @pytest.mark.parametrize('is_master', (True, False))
-def test_version(is_master, requests_mock, monkeypatch):
+def test_version(is_master, requests_mock):
     args = set_pod_parser().parse_args(['--name', 'test-pod'])
-    mock_create = Mock()
-    monkeypatch.setattr(kubernetes_tools, 'create', mock_create)
     if is_master:
         version = 'v2'
     else:
@@ -41,15 +39,10 @@ def test_version(is_master, requests_mock, monkeypatch):
         text='[{"name": "v1"}, {"name": "' + version + '"}]',
     )
     pod = K8sPod(args)
-
-    with pod:
-        assert (
-            mock_create.call_count == 5
-        )  # 3 because of namespace, service and deployment
-        if is_master:
-            assert pod.version == 'master'
-        else:
-            assert pod.version == jina.__version__
+    if is_master:
+        assert pod.version == 'master'
+    else:
+        assert pod.version == jina.__version__
 
 
 def test_dictionary_to_cli_param():
@@ -59,28 +52,28 @@ def test_dictionary_to_cli_param():
     )
 
 
-@pytest.mark.parametrize('parallel', [1, 2, 3, 4, 5])
-def test_parse_args(parallel: int):
-    args = set_pod_parser().parse_args(['--parallel', str(parallel)])
+@pytest.mark.parametrize('shards', [1, 2, 3, 4, 5])
+def test_parse_args(shards: int):
+    args = set_pod_parser().parse_args(['--shards', str(shards)])
     pod = K8sPod(args)
 
     assert namespace_equal(
-        pod.deployment_args['head_deployment'], None if parallel == 1 else args
+        pod.deployment_args['head_deployment'], None if shards == 1 else args
     )
     assert namespace_equal(
-        pod.deployment_args['tail_deployment'], None if parallel == 1 else args
+        pod.deployment_args['tail_deployment'], None if shards == 1 else args
     )
-    assert pod.deployment_args['deployments'] == [args] * parallel
+    assert pod.deployment_args['deployments'] == [args] * shards
 
 
-@pytest.mark.parametrize('parallel', [2, 3, 4, 5])
-def test_parse_args_custom_executor(parallel: int):
+@pytest.mark.parametrize('shards', [2, 3, 4, 5])
+def test_parse_args_custom_executor(shards: int):
     uses_before = 'custom-executor-before'
     uses_after = 'custom-executor-after'
     args = set_pod_parser().parse_args(
         [
-            '--parallel',
-            str(parallel),
+            '--shards',
+            str(shards),
             '--uses-before',
             uses_before,
             '--uses-after',
@@ -97,11 +90,11 @@ def test_parse_args_custom_executor(parallel: int):
         args, pod.deployment_args['tail_deployment'], skip_attr=('uses',)
     )
     assert pod.deployment_args['tail_deployment'].uses == uses_after
-    assert pod.deployment_args['deployments'] == [args] * parallel
+    assert pod.deployment_args['deployments'] == [args] * shards
 
 
 @pytest.mark.parametrize(
-    ['name', 'parallel', 'expected_deployments'],
+    ['name', 'shards', 'expected_deployments'],
     [
         (
             'gateway',
@@ -118,22 +111,22 @@ def test_parse_args_custom_executor(parallel: int):
             '2',
             [
                 {
-                    'name': 'test-pod_head',
+                    'name': 'test-pod-head',
                     'head_host': 'test-pod-head.ns.svc',
                 },
-                {'name': 'test-pod_0', 'head_host': 'test-pod-0.ns.svc'},
-                {'name': 'test-pod_1', 'head_host': 'test-pod-1.ns.svc'},
+                {'name': 'test-pod-0', 'head_host': 'test-pod-0.ns.svc'},
+                {'name': 'test-pod-1', 'head_host': 'test-pod-1.ns.svc'},
                 {
-                    'name': 'test-pod_tail',
+                    'name': 'test-pod-tail',
                     'head_host': 'test-pod-tail.ns.svc',
                 },
             ],
         ),
     ],
 )
-def test_deployments(name: str, parallel: str, expected_deployments: List[Dict]):
+def test_deployments(name: str, shards: str, expected_deployments: List[Dict]):
     args = set_pod_parser().parse_args(
-        ['--name', name, '--parallel', parallel, '--k8s-namespace', 'ns']
+        ['--name', name, '--shards', shards, '--k8s-namespace', 'ns']
     )
     pod = K8sPod(args)
 
@@ -152,20 +145,19 @@ def test_deployments(name: str, parallel: str, expected_deployments: List[Dict])
 def get_k8s_pod(
     pod_name: str,
     namespace: str,
-    parallel: str = None,
+    shards: str = None,
     replicas: str = None,
     needs: Optional[Set[str]] = None,
     uses_before=None,
     uses_after=None,
     port_expose=None,
 ):
-
     parameter_list = ['--name', pod_name, '--k8s-namespace', namespace]
-    if parallel:
+    if shards:
         parameter_list.extend(
             [
-                '--parallel',
-                str(parallel),
+                '--shards',
+                str(shards),
             ]
         )
     if replicas:
@@ -192,6 +184,7 @@ def get_k8s_pod(
         )
     if uses_after:
         parameter_list.extend(['--uses-after', uses_after])
+    parameter_list.append('--noblock-on-start')
     parser = set_gateway_parser() if pod_name == 'gateway' else set_pod_parser()
     args = parser.parse_args(parameter_list)
     pod = K8sPod(args, needs)
@@ -202,11 +195,7 @@ def test_start_creates_namespace():
     ns = 'test'
     pod = get_k8s_pod('gateway', ns, port_expose=8085)
     kubernetes_deployment.deploy_service = Mock()
-    kubernetes_tools.create = Mock()
     pod.start()
-    kubernetes_tools.create.assert_called_once()
-    assert kubernetes_tools.create.call_args[0][0] == 'namespace'
-    assert kubernetes_tools.create.call_args[0][1] == {'name': ns}
     assert kubernetes_deployment.deploy_service.call_args[0][0] == 'gateway'
     assert kubernetes_deployment.deploy_service.call_args[1]['port_expose'] == 8085
 
@@ -217,7 +206,6 @@ def test_start_deploys_gateway():
 
     kubernetes_deployment.deploy_service = Mock()
     kubernetes_deployment.get_cli_params = Mock()
-    kubernetes_tools.create = Mock()
 
     pod = get_k8s_pod(pod_name, ns)
     pod.start()
@@ -239,9 +227,10 @@ def test_start_deploys_runtime():
     namespace = 'ns'
     pod = get_k8s_pod(pod_name, namespace)
 
-    pod._construct_runtime_container_args = Mock()
+    assert len(pod.k8s_deployments) > 0
+    for deployment in pod.k8s_deployments:
+        deployment._construct_runtime_container_args = Mock()
     kubernetes_deployment.deploy_service = Mock()
-    kubernetes_tools.create = Mock()
 
     pod.start()
 
@@ -251,31 +240,34 @@ def test_start_deploys_runtime():
 
     assert dns_name == pod_name
     assert kwargs['namespace'] == namespace
-    assert kwargs['image_name'] == f'jinaai/jina:{pod.version}-py38-standard'
+    assert kwargs['image_name'] == f'jinaai/jina:{pod.version}-py38-perf'
     assert kwargs['replicas'] == 1
     assert kwargs['init_container'] is None
     assert kwargs['custom_resource_dir'] is None
 
-    pod._construct_runtime_container_args.assert_called_once()
-    call_args = pod._construct_runtime_container_args.call_args[0]
-    assert call_args[0] == pod.deployment_args['deployments'][0]
-    assert call_args[1] == pod.args.uses
-    assert call_args[2] == kubernetes_deployment.dictionary_to_cli_param({'pea_id': 0})
-    assert call_args[3] == ''
+    assert len(pod.k8s_deployments) > 0
+    for i, deployment in enumerate(pod.k8s_deployments):
+        deployment._construct_runtime_container_args.assert_called_once()
+        call_args = deployment._construct_runtime_container_args.call_args[0]
+        assert call_args[0] == deployment.deployment_args
+        assert call_args[1] == pod.args.uses
+        assert call_args[2] == kubernetes_deployment.dictionary_to_cli_param(
+            {'pea_id': i}
+        )
+        assert call_args[3] == ''
 
 
-@pytest.mark.parametrize('parallel', [2, 3, 4])
-def test_start_deploys_runtime_with_parallel(parallel: int):
+@pytest.mark.parametrize('shards', [2, 3, 4])
+def test_start_deploys_runtime_with_shards(shards: int):
     namespace = 'ns'
-    pod = get_k8s_pod('executor', namespace, str(parallel))
+    pod = get_k8s_pod('executor', namespace, str(shards))
 
     deploy_mock = Mock()
     kubernetes_deployment.deploy_service = deploy_mock
-    kubernetes_tools.create = Mock()
 
     pod.start()
 
-    expected_calls = parallel + 2  # for head and tail
+    expected_calls = shards + 2  # for head and tail
 
     assert expected_calls == kubernetes_deployment.deploy_service.call_count
 
@@ -283,7 +275,7 @@ def test_start_deploys_runtime_with_parallel(parallel: int):
     assert head_call_args[0] == pod.name + '-head'
 
     executor_call_args_list = [
-        deploy_mock.call_args_list[i][0] for i in range(1, parallel + 1)
+        deploy_mock.call_args_list[i][0] for i in range(1, shards + 1)
     ]
     for i, call_args in enumerate(executor_call_args_list):
         assert call_args[0] == pod.name + f'-{i}'
@@ -311,7 +303,6 @@ def test_needs(needs, replicas, expected_calls, expected_executors):
 
     deploy_mock = Mock()
     kubernetes_deployment.deploy_service = deploy_mock
-    kubernetes_tools.create = Mock()
     pod.start()
     assert expected_calls == kubernetes_deployment.deploy_service.call_count
 
@@ -342,7 +333,6 @@ def test_uses_before_and_uses_after(
     )
     deploy_mock = Mock()
     kubernetes_deployment.deploy_service = deploy_mock
-    kubernetes_tools.create = Mock()
     pod.start()
     assert expected_calls == kubernetes_deployment.deploy_service.call_count
 

@@ -40,6 +40,7 @@ class GRPCDataRuntime(BaseRuntime, ABC):
         self._pending_tasks = []
         self._static_routing_table = args.static_routing_table
 
+        # Keep this initialization order, otherwise readiness check is not valid
         self._data_request_handler = DataRequestHandler(args, self.logger)
         self._grpclet = Grpclet(
             args=self.args,
@@ -48,7 +49,9 @@ class GRPCDataRuntime(BaseRuntime, ABC):
         )
 
     def _update_pending_tasks(self):
-        self._pending_tasks = [task for task in self._pending_tasks if not task.done()]
+        self._pending_tasks = [
+            task for task in self._pending_tasks if task and not task.done()
+        ]
 
     def run_forever(self):
         """Start the `Grpclet`."""

@@ -5,6 +5,6 @@ with:
   port_expose: 12345
   protocol: http
 executors:
-  - name: local_shards
+  - name: local_replicas
     port_in: 45678
-    parallel: 2
+    replicas: 2

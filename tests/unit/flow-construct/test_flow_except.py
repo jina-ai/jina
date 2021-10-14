@@ -84,7 +84,7 @@ class MyExecutor(Executor):
 
 @pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
-def test_except_with_parallel(mocker, protocol):
+def test_except_with_shards(mocker, protocol):
     def validate(req):
         assert req.status.code == jina_pb2.StatusProto.ERROR
         err_routes = [
@@ -99,7 +99,7 @@ def test_except_with_parallel(mocker, protocol):
     f = (
         Flow(protocol=protocol)
         .add(name='r1')
-        .add(name='r2', uses=DummyCrafterExcept, parallel=3)
+        .add(name='r2', uses=DummyCrafterExcept, shards=3)
         .add(name='r3', uses=MyExecutor)
     )
 
@@ -143,25 +143,18 @@ def test_on_error_callback(mocker, protocol):
 
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_no_error_callback(mocker, protocol):
-    def validate2():
-        raise NotImplementedError
-
-    def validate1(x, *args):
-        pass
-
     f = Flow(protocol=protocol).add(name='r1').add(name='r3')
 
-    response_mock = mocker.Mock()
     on_error_mock = mocker.Mock()
 
     with f:
-        f.index(
+        results = f.index(
             [Document(text='abbcs'), Document(text='efgh')],
-            on_done=response_mock,
             on_error=on_error_mock,
+            return_results=True,
         )
 
-    validate_callback(response_mock, validate1)
+    assert len(results) > 0
     on_error_mock.assert_not_called()
 
 

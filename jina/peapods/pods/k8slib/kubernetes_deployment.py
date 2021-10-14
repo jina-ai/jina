@@ -29,6 +29,7 @@ def deploy_service(
     init_container: Dict = None,
     custom_resource_dir: Optional[str] = None,
     port_expose: Optional[int] = None,
+    env: Optional[Dict] = None,
 ) -> str:
     """Deploy service on Kubernetes.
 
@@ -44,6 +45,7 @@ def deploy_service(
     :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.
         Defaults to the standard location jina.resources if not specified.
     :param port_expose: port which will be exposed by the deployed containers
+    :param env: environment variables to be passed into configmap.
     :return: dns name of the created service
     """
 
@@ -70,6 +72,19 @@ def deploy_service(
         },
         logger=logger,
         custom_resource_dir=custom_resource_dir,
+    )
+
+    logger.info(f'📝\tCreate ConfigMap for deployment.')
+
+    kubernetes_tools.create(
+        'configmap',
+        {
+            'name': name,
+            'namespace': namespace,
+            'data': env,
+        },
+        logger=logger,
+        custom_resource_dir=None,
     )
 
     logger.info(
@@ -183,7 +198,7 @@ def get_image_name(uses: str) -> str:
     """
     try:
         scheme, name, tag, secret = parse_hub_uri(uses)
-        meta_data = HubIO.fetch_meta(name, tag, secret=secret)
+        meta_data = HubIO.fetch_meta(name, tag, secret=secret, force=True)
         image_name = meta_data.image_name
         return image_name
     except Exception:
@@ -199,18 +214,18 @@ def dictionary_to_cli_param(dictionary) -> str:
     return json.dumps(dictionary).replace('"', '\\"') if dictionary else ""
 
 
-def get_init_container_args(pod) -> Optional[Dict]:
+def get_init_container_args(args) -> Optional[Dict]:
     """Return the init container arguments for the k8s pod.
 
-    :param pod: pod where the init container is used.
+    :param args: args of the pod where the init container is used.
     :return: dictionary of init container arguments
     """
-    if pod.args.k8s_uses_init:
+    if args.k8s_uses_init:
         init_container = {
             'init-name': 'init',
-            'init-image': pod.args.k8s_uses_init,
-            'init-command': f'{pod.args.k8s_init_container_command}',
-            'mount-path': pod.args.k8s_mount_path,
+            'init-image': args.k8s_uses_init,
+            'init-command': f'{args.k8s_init_container_command}',
+            'mount-path': args.k8s_mount_path,
         }
     else:
         init_container = None

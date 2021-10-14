@@ -1,76 +1,89 @@
 import argparse
 import asyncio
-from asyncio import Future
-from typing import AsyncGenerator, Dict, Union
+from abc import ABC, abstractmethod
+from typing import AsyncGenerator, List, Union, TYPE_CHECKING, Dict, Awaitable
 
-from ...grpc import Grpclet
 from ....helper import typename, get_or_reuse_loop
 from ....logging.logger import JinaLogger
 from ....types.message import Message
 
-__all__ = ['PrefetchCaller']
+__all__ = ['BasePrefetcher']
 
-if False:
+if TYPE_CHECKING:
+    from ...grpc import Grpclet
     from ...zmq import AsyncZmqlet
+    from ....types.request import Request, Response
+    from ....clients.base.helper import HTTPClientlet, WebsocketClientlet
 
 
-class PrefetchCaller:
-    """An async zmq request sender to be used in the Gateway"""
+class BasePrefetcher(ABC):
+    """An base async request/response handler"""
 
     def __init__(
-        self, args: argparse.Namespace, iolet: Union['AsyncZmqlet', 'Grpclet']
+        self,
+        args: argparse.Namespace,
+        iolet: Union['AsyncZmqlet', 'Grpclet', 'HTTPClientlet', 'WebsocketClientlet'],
     ):
         """
         :param args: args from CLI
         :param iolet: One of AsyncZmqlet or Grpclet. Used for sending/receiving data to/from the Flow
         """
         self.args = args
-        self.name = args.name or self.__class__.__name__
-        self.logger = JinaLogger(self.name, **vars(args))
-        self._message_buffer: Dict[str, Future[Message]] = dict()
         self.iolet = iolet
+        self.logger = JinaLogger(self.__class__.__name__, **vars(args))
+        self.request_buffer: Dict[str, asyncio.Future] = dict()
+        self.receive_task = get_or_reuse_loop().create_task(self.receive())
 
-        if isinstance(iolet, Grpclet):
-            self.iolet.callback = self._unwrap_request
-            self._receive_task = get_or_reuse_loop().create_task(self.iolet.start())
-        else:
-            self._receive_task = get_or_reuse_loop().create_task(self._receive())
+    @abstractmethod
+    async def receive(self) -> Awaitable:
+        """Receive background task"""
+        ...
 
-    async def _unwrap_request(self, msg):
-        return self._process_message(msg.request)
+    @abstractmethod
+    def convert_to_message(self, request: 'Request') -> Union['Message', 'Request']:
+        """Convert request to iolet message
 
-    async def _receive(self):
-        try:
-            while True:
-                message = await self.iolet.recv_message(callback=lambda x: x.response)
-                # during shutdown the socket will return None
-                if message is None:
-                    break
+        :param request: current request in the iterator
+        """
+        ...
 
-                self._process_message(message)
-        except asyncio.CancelledError:
-            raise
-        finally:
-            for future in self._message_buffer.values():
-                future.cancel(
-                    'PrefetchCaller closed, all outstanding requests canceled'
-                )
-            self._message_buffer.clear()
+    def handle_request(self, request: 'Request') -> 'asyncio.Future':
+        """
+        For ZMQ & GRPC data requests, for each request in the iterator, we send the `Message` using
+        `iolet.send_message()` and add {<request-id>: <an-empty-future>} to the message buffer.
+        This empty future is used to track the `result` of this request during `receive`.
 
-    def _process_message(self, message):
-        if message.request_id in self._message_buffer:
-            future = self._message_buffer.pop(message.request_id)
-            future.set_result(message)
+        :param request: current request in the iterator
+        :return: asyncio Future for sending message
+        """
+        future = get_or_reuse_loop().create_future()
+        self.request_buffer[request.request_id] = future
+        asyncio.create_task(self.iolet.send_message(self.convert_to_message(request)))
+        return future
+
+    def handle_response(self, response: 'Response'):
+        """Set result of each response received in the request buffer
+
+        :param response: message received during `iolet.recv_message`
+        """
+        if response.request_id in self.request_buffer:
+            future = self.request_buffer.pop(response.request_id)
+            future.set_result(response)
         else:
             self.logger.warning(
-                f'Discarding unexpected message with request id {message.request_id}'
+                f'Discarding unexpected response with request id {response.request_id}'
             )
+
+    @abstractmethod
+    def handle_end_of_iter(self):
+        """Manage end of iteration if required"""
+        ...
 
     async def close(self):
         """
         Stop receiving messages
         """
-        self._receive_task.cancel()
+        self.receive_task.cancel()
 
     async def send(self, request_iterator, *args) -> AsyncGenerator[None, Message]:
         """
@@ -80,16 +93,14 @@ class PrefetchCaller:
         :param args: additional arguments
         :yield: message
         """
-        self.args: argparse.Namespace
-        self.iolet: Union['AsyncZmqlet', 'Grpclet']
-        self.logger: JinaLogger
-
-        if self._receive_task.done():
+        if self.receive_task.done():
             raise RuntimeError(
-                'PrefetchCaller receive task not running, can not send messages'
+                'Prefetcher receive task not running, can not send messages'
             )
 
-        async def prefetch_req(num_req, fetch_to):
+        async def prefetch_req(
+            num_req: int, fetch_to: List[Union['asyncio.Task', 'asyncio.Future']]
+        ):
             """
             Fetch and send request.
 
@@ -100,24 +111,17 @@ class PrefetchCaller:
             for _ in range(num_req):
                 try:
                     if hasattr(request_iterator, '__anext__'):
-                        next_request = await request_iterator.__anext__()
+                        request = await request_iterator.__anext__()
                     elif hasattr(request_iterator, '__next__'):
-                        next_request = next(request_iterator)
+                        request = next(request_iterator)
                     else:
                         raise TypeError(
                             f'{typename(request_iterator)} does not have `__anext__` or `__next__`'
                         )
 
-                    future = get_or_reuse_loop().create_future()
-                    self._message_buffer[next_request.request_id] = future
-                    asyncio.create_task(
-                        self.iolet.send_message(
-                            Message(None, next_request, 'gateway', **vars(self.args))
-                        )
-                    )
-
-                    fetch_to.append(future)
+                    fetch_to.append(self.handle_request(request=request))
                 except (StopIteration, StopAsyncIteration):
+                    self.handle_end_of_iter()
                     return True
             return False
 

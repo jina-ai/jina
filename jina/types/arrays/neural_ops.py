@@ -20,8 +20,8 @@ class DocumentArrayNeuralOpsMixin:
         metric: Union[
             str, Callable[['np.ndarray', 'np.ndarray'], 'np.ndarray']
         ] = 'cosine',
-        limit: Optional[int] = 20,
-        normalization: Optional[Tuple[int, int]] = None,
+        limit: Optional[Union[int, float]] = 20,
+        normalization: Optional[Tuple[float, float]] = None,
         metric_name: Optional[str] = None,
         batch_size: Optional[int] = None,
         traversal_ldarray: Optional[Sequence[str]] = None,
@@ -61,6 +61,19 @@ class DocumentArrayNeuralOpsMixin:
                         considered as matches.
         :param is_sparse: if set, the embeddings of left & right DocumentArray are considered as sparse NdArray
         """
+        if limit is not None:
+            if limit <= 0:
+                raise ValueError(f'`limit` must be larger than 0, receiving {limit}')
+            else:
+                limit = int(limit)
+
+        if batch_size is not None:
+            if batch_size <= 0:
+                raise ValueError(
+                    f'`batch_size` must be larger than 0, receiving {batch_size}'
+                )
+            else:
+                batch_size = int(batch_size)
 
         lhv = self
         if traversal_ldarray:

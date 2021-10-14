@@ -16,7 +16,7 @@ def pod_args():
     args = [
         '--name',
         'test',
-        '--parallel',
+        '--replicas',
         '2',
         '--host',
         __default_host__,
@@ -31,7 +31,7 @@ def pod_args_singleton():
         'test2',
         '--uses-before',
         __default_executor__,
-        '--parallel',
+        '--replicas',
         '1',
         '--host',
         __default_host__,
@@ -94,18 +94,18 @@ def test_tail_args_get_set(pod_args, pod_args_singleton):
 
 
 @pytest.mark.slow
-@pytest.mark.parametrize('parallel', [1, 2, 4])
+@pytest.mark.parametrize('replicas', [1, 2, 4])
 @pytest.mark.parametrize('runtime', ['process', 'thread'])
-def test_pod_context_parallel(runtime, parallel):
+def test_pod_context_replicas(runtime, replicas):
     args = set_pod_parser().parse_args(
-        ['--runtime-backend', runtime, '--parallel', str(parallel)]
+        ['--runtime-backend', runtime, '--replicas', str(replicas)]
     )
     with Pod(args) as bp:
-        if parallel == 1:
+        if replicas == 1:
             assert bp.num_peas == 1
         else:
             # count head and tail
-            assert bp.num_peas == parallel + 2
+            assert bp.num_peas == replicas + 2
 
     Pod(args).start().close()
 
@@ -137,35 +137,14 @@ def test_gateway_pod(runtime, protocol, runtime_cls):
 
 
 @pytest.mark.parametrize('runtime', ['process', 'thread'])
-def test_pod_naming_with_parallel_any(runtime):
+def test_pod_naming_with_replica(runtime):
     args = set_pod_parser().parse_args(
-        ['--name', 'pod', '--parallel', '2', '--runtime-backend', runtime]
+        ['--name', 'pod', '--replicas', '2', '--runtime-backend', runtime]
     )
     with Pod(args) as bp:
         assert bp.peas[0].name == 'pod/head'
-        assert bp.peas[1].name == 'pod/pea-0'
-        assert bp.peas[2].name == 'pod/pea-1'
-        assert bp.peas[3].name == 'pod/tail'
-
-
-@pytest.mark.parametrize('runtime', ['process', 'thread'])
-def test_pod_naming_with_parallel_all(runtime):
-    args = set_pod_parser().parse_args(
-        [
-            '--name',
-            'pod',
-            '--parallel',
-            '2',
-            '--runtime-backend',
-            runtime,
-            '--polling',
-            'ALL',
-        ]
-    )
-    with Pod(args) as bp:
-        assert bp.peas[0].name == 'pod/head'
-        assert bp.peas[1].name == 'pod/pea-0'
-        assert bp.peas[2].name == 'pod/pea-1'
+        assert bp.peas[1].name == 'pod/rep-0'
+        assert bp.peas[2].name == 'pod/rep-1'
         assert bp.peas[3].name == 'pod/tail'
 
 
@@ -186,7 +165,7 @@ def test_pod_args_remove_uses_ba():
             __default_executor__,
             '--uses-after',
             __default_executor__,
-            '--parallel',
+            '--replicas',
             '2',
         ]
     )
@@ -194,9 +173,9 @@ def test_pod_args_remove_uses_ba():
         assert p.num_peas == 4
 
 
-def test_pod_remote_pea_without_parallel():
+def test_pod_remote_pea_without_replicas():
     args = set_pod_parser().parse_args(
-        ['--peas-hosts', '0.0.0.1', '--parallel', str(1)]
+        ['--peas-hosts', '0.0.0.1', '--replicas', str(1)]
     )
     with Pod(args) as pod:
         peas = pod.peas
@@ -212,14 +191,14 @@ def test_pod_remote_pea_without_parallel():
         ('0.0.0.1', __default_host__, '0.0.0.1', '0.0.0.1'),
     ],
 )
-def test_pod_remote_pea_parallel_pea_host_set_partially(
+def test_pod_remote_pea_replicas_pea_host_set_partially(
     pod_host,
     pea1_host,
     expected_host_in,
     expected_host_out,
 ):
     args = set_pod_parser().parse_args(
-        ['--peas-hosts', f'{pea1_host}', '--parallel', str(2), '--host', pod_host]
+        ['--peas-hosts', f'{pea1_host}', '--replicas', str(2), '--host', pod_host]
     )
     assert args.host == pod_host
     pod = Pod(args)
@@ -251,7 +230,7 @@ def test_pod_remote_pea_parallel_pea_host_set_partially(
         ('0.0.0.1', [__default_host__, '0.0.0.2'], '0.0.0.1', '0.0.0.1'),
     ],
 )
-def test_pod_remote_pea_parallel_pea_host_set_completely(
+def test_pod_remote_pea_replicas_pea_host_set_completely(
     pod_host,
     peas_hosts,
     expected_host_in,
@@ -262,7 +241,7 @@ def test_pod_remote_pea_parallel_pea_host_set_completely(
             '--peas-hosts',
             f'{peas_hosts[0]}',
             f'{peas_hosts[1]}',
-            '--parallel',
+            '--replicas',
             str(2),
             '--host',
             pod_host,
@@ -280,7 +259,7 @@ def test_pod_remote_pea_parallel_pea_host_set_completely(
                 assert pea_arg.host_out == expected_host_out
 
 
-@pytest.mark.parametrize('parallel', [1])
+@pytest.mark.parametrize('replicas', [1])
 @pytest.mark.parametrize(
     'upload_files',
     [[os.path.join(cur_dir, __file__), os.path.join(cur_dir, '__init__.py')]],
@@ -328,7 +307,7 @@ def test_pod_remote_pea_parallel_pea_host_set_completely(
     ],
 )
 def test_pod_upload_files(
-    parallel,
+    replicas,
     upload_files,
     uses,
     uses_before,
@@ -348,8 +327,8 @@ def test_pod_upload_files(
             *py_modules,
             '--upload-files',
             *upload_files,
-            '--parallel',
-            str(parallel),
+            '--replicas',
+            str(replicas),
         ]
     )
     pod = Pod(args)
