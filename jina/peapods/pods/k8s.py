@@ -212,6 +212,11 @@ class K8sPod(BasePod, ExitFIFO):
                         api_response = k8s_client.read_namespaced_deployment(
                             name=self.dns_name, namespace=self.k8s_namespace
                         )
+                        logger.debug(
+                            f'\n\t\t Updated Replicas: {api_response.status.updated_replicas}.'
+                            f' Replicas: {api_response.status.replicas}.'
+                            f' Expected Replicas {self.num_replicas}'
+                        )
                         if (
                             api_response.status.updated_replicas is not None
                             and api_response.status.updated_replicas

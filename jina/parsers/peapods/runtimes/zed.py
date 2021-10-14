@@ -204,16 +204,7 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
     )
 
     gp.add_argument(
-        '--k8s-connection-pool',
-        action='store_true',
-        default=True,
-        help='Defines if connection pooling should be used in K8s'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
-    )
-
-    gp.add_argument(
-        '--k8s-no-connection-pool',
+        '--k8s-disable-connection-pool',
         action='store_false',
         dest='k8s_connection_pool',
         default=True,

@@ -462,7 +462,7 @@ def test_new_with_arguments(
             assert 'argsExecutor' in fp.read()
     if advance_configuration or confirm_advance_configuration:
         with open(path / 'manifest.yml') as fp:
-            temp = yaml.load(fp)
+            temp = yaml.load(fp, Loader=yaml.FullLoader)
             assert temp['name'] == 'argsExecutor'
             assert temp['description'] == 'args description'
             assert temp['keywords'] == 'args keywords'
