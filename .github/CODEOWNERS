@@ -2,13 +2,10 @@
 # the repo. Unless a later match takes precedence,
 # @global-owner1 and @global-owner2 will be requested for
 # review when someone opens a pull request.
-*    @jina-ai/engineering
 
-.github/workflows   @hanxiao
-setup.py  @hanxiao
-extra-requirements.txt  @hanxiao
+setup.py  @hanxiao @JoanFM @tadejsv
+extra-requirements.txt  @hanxiao @JoanFM @tadejsv
+requirements.txt  @hanxiao @JoanFM @tadejsv
 jina/__init__.py  @hanxiao
-requirements.txt  @hanxiao
 MANIFEST.in  @hanxiao
 README.md  @hanxiao
-docs/      @hanxiao @alexcg1
