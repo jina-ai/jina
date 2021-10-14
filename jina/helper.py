@@ -874,7 +874,7 @@ def format_full_version_info(info: Dict, env_info: Dict) -> str:
 
 def _update_policy():
     if __windows__:
-        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+        asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 
     elif 'JINA_DISABLE_UVLOOP' in os.environ:
         return
