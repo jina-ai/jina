@@ -36,7 +36,7 @@ def validate_result(result, tmpdir):
     result_path = os.path.join(tmpdir, 'out/best_parameters.yml')
     result.save_parameters(result_path)
     assert result.best_parameters == BEST_PARAMETERS
-    assert yaml.load(open(result_path)) == BEST_PARAMETERS
+    assert yaml.load(open(result_path), Loader=yaml.FullLoader) == BEST_PARAMETERS
 
 
 def document_generator(num_doc):
@@ -196,6 +196,9 @@ def test_cli(tmpdir, config, uses_output_dir):
     run_optimizer_cli(set_optimizer_parser().parse_args(args))
     if uses_output_dir:
         assert (
-            yaml.load(open(os.path.join(output_dir, 'best_parameters.yml')))
+            yaml.load(
+                open(os.path.join(output_dir, 'best_parameters.yml')),
+                Loader=yaml.FullLoader,
+            )
             == BEST_PARAMETERS
         )
