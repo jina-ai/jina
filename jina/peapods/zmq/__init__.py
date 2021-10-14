@@ -498,10 +498,21 @@ class ZmqStreamlet(Zmqlet):
     def _register_pollin(self):
         """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` in poller."""
         with ImportExtensions(required=True):
+
             import tornado.ioloop
 
-            get_or_reuse_loop()
-            self.io_loop = tornado.ioloop.IOLoop.current()
+            assert tornado.ioloop
+
+        from ... import __windows__
+        import sys
+
+        if __windows__ and sys.version_info >= (3, 8, 0):
+            import asyncio
+
+            # see https://github.com/tornadoweb/tornado/pull/2686
+            asyncio.WindowsSelectorEventLoopPolicy()
+        get_or_reuse_loop()
+        self.io_loop = tornado.ioloop.IOLoop.current()
         self.in_sock = ZMQStream(self.in_sock, self.io_loop)
         self.out_sock = ZMQStream(self.out_sock, self.io_loop)
         self.ctrl_sock = ZMQStream(self.ctrl_sock, self.io_loop)
@@ -509,7 +520,7 @@ class ZmqStreamlet(Zmqlet):
             self.in_connect_sock = ZMQStream(self.in_connect_sock, self.io_loop)
         self.in_sock.stop_on_recv()
 
-    def _get_dynamic_out_socket(self, target_pod):
+    def _get_dynamic_out_socket(self, target_pod, *args, **kwargs):
         return super()._get_dynamic_out_socket(target_pod, as_streaming=True)
 
     def close(self, flush: bool = True, *args, **kwargs):
