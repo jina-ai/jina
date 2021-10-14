@@ -238,33 +238,10 @@ with f:
 
 ```
 
-### Speed of request
+## Limiting outstanding requests
 
-You can also control the number of requests fetched at a time from the Client generator into the Executor using `prefetch` argument, e.g.- Setting `prefetch=2` would make sure only 2 requests reach the Executors at a time, hence controlling the overload. By default, prefetch is disabled (set to 0). In cases where an Executor is a slow worker, you can assign a higher value to prefetch.
+You can control the number of requests fetched at a time from the Client generator into the Executor using `prefetch` argument, e.g.- Setting `prefetch=2` would make sure only 2 requests reach the Executors at a time, hence controlling the overload. By default, prefetch is disabled (set to 0). In cases where an Executor is a slow worker, you can assign a higher value to prefetch.
 
-````{tab} Default
-```{code-block} python
----
-emphasize-lines: 3, 11
----
-
-def requests_generator():
-    while True:
-        slow_operation()
-        yield Document(...)
-
-class MyExecutor(Executor):
-    @request
-    def foo(self, **kwargs):
-        ...
-
-# This disables prefetch and sends all requests to Executor
-with Flow().add(uses=MyExecutor) as f:
-    f.post(on='/', inputs=requests_generator)
-```
-````
-
-````{tab} Slow Executor
 ```{code-block} python
 ---
 emphasize-lines: 8, 10
@@ -283,7 +260,6 @@ class MyExecutor(Executor):
 with Flow(prefetch=2).add(uses=MyExecutor) as f:
     f.post(on='/', inputs=requests_generator)
 ```
-````
 
 ## Response result
 
