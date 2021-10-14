@@ -270,7 +270,7 @@ Console output:
 ```txt
 start_test_searcher@81116[I]:🏝️	Create Namespace "search-flow" for "test_searcher"
 deploy_test_searcher@81116[I]:🔋	Create Service for "test-searcher-head" with exposed port "8080"
-deploy_test_searcher@81116[I]:🐳	Create Deployment for "test-searcher-head" with image "jinaai/jina:x.x.x-py38-standard", replicas 1 and init_container False
+deploy_test_searcher@81116[I]:🐳	Create Deployment for "test-searcher-head" with image "jinaai/jina:x.x.x-py38-perf", replicas 1 and init_container False
 deploy_test_searcher@81116[I]:🔋	Create Service for "test-searcher-0" with exposed port "8080"
 deploy_test_searcher@81116[I]:🐳	Create Deployment for "test-searcher-0" with image "jinahub/nflcyqe2:v10-2.1.0", replicas 2 and init_container False
 deploy_test_searcher@81116[I]:🔋	Create Service for "test-searcher-1" with exposed port "8080"
