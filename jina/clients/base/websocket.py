@@ -7,7 +7,7 @@ from .helper import WebsocketClientlet
 from ...importer import ImportExtensions
 from ..base import BaseClient, InputType
 from ...logging.profile import ProgressBar
-from ...peapods.runtimes.stream.client import WebsocketClientStreamer
+from ...peapods.stream.client import WebsocketClientStreamer
 
 
 class WebSocketBaseClient(BaseClient):

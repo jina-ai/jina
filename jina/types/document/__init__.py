@@ -143,7 +143,6 @@ class Document(ProtoTypeMixin, VersionedMixin):
     """
 
     ON_GETATTR = ['matches', 'chunks']
-    CNT = 0
 
     # overload_inject_start_document
     @overload
@@ -227,8 +226,6 @@ class Document(ProtoTypeMixin, VersionedMixin):
                 assert d.tags['hello'] == 'world'  # true
                 assert d.tags['good'] == 'bye'  # true
         """
-        Document.CNT += 1
-
         try:
             if isinstance(document, jina_pb2.DocumentProto):
                 if copy:
@@ -326,7 +323,17 @@ class Document(ProtoTypeMixin, VersionedMixin):
                     f'Document content fields are mutually exclusive, please provide only one of {_all_doc_content_keys}'
                 )
             self.set_attributes(**kwargs)
-        self._mermaid_id = str(Document.CNT) + self._pb_body.id
+        self.__mermaid_id = None
+
+    @property
+    def _mermaid_id(self):
+        if self.__mermaid_id is None:
+            self.__mermaid_id = random_identity()
+        return self.__mermaid_id
+
+    @_mermaid_id.setter
+    def _mermaid_id(self, m_id):
+        self.__mermaid_id = m_id
 
     def pop(self, *fields) -> None:
         """Remove the values from the given fields of this Document.

@@ -12,17 +12,17 @@ from typing import (
 )
 
 from .helper import AsyncRequestsIterator
-from ....helper import get_or_reuse_loop
-from ....logging.logger import JinaLogger
-from ....types.message import Message
+from ...helper import get_or_reuse_loop
+from ...logging.logger import JinaLogger
+from ...types.message import Message
 
 __all__ = ['BaseStreamer']
 
 if TYPE_CHECKING:
-    from ...grpc import Grpclet
-    from ...zmq import AsyncZmqlet
-    from ....types.request import Request, Response
-    from ....clients.base.helper import HTTPClientlet, WebsocketClientlet
+    from ..grpc import Grpclet
+    from ..zmq import AsyncZmqlet
+    from ...types.request import Request, Response
+    from ...clients.base.helper import HTTPClientlet, WebsocketClientlet
 
 
 class BaseStreamer(ABC):
@@ -41,22 +41,22 @@ class BaseStreamer(ABC):
         self.iolet = iolet
         self.logger = JinaLogger(self.__class__.__name__, **vars(args))
         self.request_buffer: Dict[str, asyncio.Future] = dict()
-        self.receive_task = get_or_reuse_loop().create_task(self.receive())
+        self.receive_task = get_or_reuse_loop().create_task(self._receive())
 
     @abstractmethod
-    async def receive(self) -> Awaitable:
+    async def _receive(self) -> Awaitable:
         """Receive background task"""
         ...
 
     @abstractmethod
-    def convert_to_message(self, request: 'Request') -> Union['Message', 'Request']:
+    def _convert_to_message(self, request: 'Request') -> Union['Message', 'Request']:
         """Convert request to iolet message
 
         :param request: current request in the iterator
         """
         ...
 
-    def handle_request(self, request: 'Request') -> 'asyncio.Future':
+    def _handle_request(self, request: 'Request') -> 'asyncio.Future':
         """
         For zmq & grpc data requests from gateway, for each request in the iterator, we send the `Message`
         using `iolet.send_message()`.
@@ -72,10 +72,10 @@ class BaseStreamer(ABC):
         """
         future = get_or_reuse_loop().create_future()
         self.request_buffer[request.request_id] = future
-        asyncio.create_task(self.iolet.send_message(self.convert_to_message(request)))
+        asyncio.create_task(self.iolet.send_message(self._convert_to_message(request)))
         return future
 
-    def handle_response(self, response: 'Response') -> None:
+    def _handle_response(self, response: 'Response') -> None:
         """Set result of each response received in the request buffer
 
         :param response: response received during `iolet.recv_message`
@@ -88,7 +88,7 @@ class BaseStreamer(ABC):
                 f'discarding unexpected response with request id {response.request_id}'
             )
 
-    def handle_end_of_iter(self) -> None:
+    def _handle_end_of_iter(self) -> None:
         """Send end of iterator signal to Gateway"""
         pass
 
@@ -108,7 +108,7 @@ class BaseStreamer(ABC):
         """
         ...
 
-    async def stream_requests(
+    async def _stream_requests(
         self, request_iterator: Union[Iterator, AsyncIterator]
     ) -> AsyncIterator:
         """Implements request and response handling without prefetching
@@ -145,10 +145,10 @@ class BaseStreamer(ABC):
             5. Set `end_of_iter` event
             """
             async for request in AsyncRequestsIterator(iterator=request_iterator):
-                future: 'asyncio.Future' = self.handle_request(request=request)
+                future: 'asyncio.Future' = self._handle_request(request=request)
                 future.add_done_callback(callback)
                 futures.append(future)
-            self.handle_end_of_iter()
+            self._handle_end_of_iter()
             end_of_iter.set()
 
         t = asyncio.create_task(iterate_requests())
@@ -164,7 +164,7 @@ class BaseStreamer(ABC):
                 await asyncio.sleep(0.2)
                 continue
 
-    async def stream_requests_with_prefetch(
+    async def _stream_requests_with_prefetch(
         self, request_iterator: Union[Iterator, AsyncIterator], prefetch: int
     ):
         """Implements request and response handling without prefetching
@@ -187,7 +187,7 @@ class BaseStreamer(ABC):
             """
             count = 0
             async for request in AsyncRequestsIterator(iterator=request_iterator):
-                fetch_to.append(self.handle_request(request=request))
+                fetch_to.append(self._handle_request(request=request))
                 count += 1
                 if count == num_req:
                     return False

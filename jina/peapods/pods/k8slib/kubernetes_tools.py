@@ -135,7 +135,7 @@ def create(
                     # Kubernetes apiserver, it looks like:
                     # {..."message": "<resource> <name> already exists"...}
                     resp = json.loads(api_exception.body)
-                    logger.info(f'🔁\t{resp["message"]}')
+                    logger.warning(f'🔁\t{resp["message"]}')
                 else:
                     raise e
         except Exception as e2:
@@ -192,8 +192,9 @@ def get_port_forward_contextmanager(
     """
     with ImportExtensions(
         required=True,
-        help_text='sending requests to the Kubernetes cluster requires to install the portforward package, '
-        'please do `pip install "jina[portforward]"`',
+        help_text='Sending requests to the Kubernetes cluster requires to install the portforward package. '
+        'Please do `pip install "jina[portforward]"`'
+        'Also make sure golang is installed `https://golang.org/`',
     ):
         import portforward
 

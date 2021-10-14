@@ -8,7 +8,7 @@ from ....grpc import Grpclet
 from .....proto import jina_pb2_grpc
 from ....zmq import AsyncZmqlet
 from ...zmq.asyncio import AsyncNewLoopRuntime
-from ...stream.gateway import GrpcGatewayStreamer, ZmqGatewayStreamer
+from ....stream.gateway import GrpcGatewayStreamer, ZmqGatewayStreamer
 
 __all__ = ['GRPCRuntime']
 

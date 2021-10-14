@@ -3,20 +3,19 @@ import argparse
 from typing import TYPE_CHECKING, AsyncIterator
 
 from .base import BaseStreamer
-from ....types.message import Message
+from ...types.message import Message
 
 __all__ = ['ZmqGatewayStreamer', 'GrpcGatewayStreamer']
 
 if TYPE_CHECKING:
-    from ...grpc import Grpclet
-    from ...zmq import AsyncZmqlet
-    from ....types.request import Request, Response
+    from ..grpc import Grpclet
+    from ...types.request import Request, Response
 
 
 class GatewayStreamer(BaseStreamer):
     """Streamer used at Gateway to stream requests/responses to/from Executors"""
 
-    def convert_to_message(self, request: 'Request') -> Message:
+    def _convert_to_message(self, request: 'Request') -> Message:
         """Convert `Request` to `Message`
 
         :param request: current request in the iterator
@@ -36,9 +35,9 @@ class GatewayStreamer(BaseStreamer):
             raise RuntimeError('receive task not running, can not send messages')
 
         async_iter: AsyncIterator = (
-            self.stream_requests_with_prefetch(request_iterator, self.args.prefetch)
+            self._stream_requests_with_prefetch(request_iterator, self.args.prefetch)
             if self.args.prefetch > 0
-            else self.stream_requests(request_iterator)
+            else self._stream_requests(request_iterator)
         )
 
         async for response in async_iter:
@@ -51,7 +50,7 @@ class GatewayStreamer(BaseStreamer):
 class ZmqGatewayStreamer(GatewayStreamer):
     """Streamer used at Gateway to stream ZMQ requests/responses to/from Executors"""
 
-    async def receive(self):
+    async def _receive(self):
         """Await messages back from Executors and process them in the request buffer"""
         try:
             while True:
@@ -60,7 +59,7 @@ class ZmqGatewayStreamer(GatewayStreamer):
                 if response is None:
                     break
 
-                self.handle_response(response)
+                self._handle_response(response)
         finally:
             if self.request_buffer:
                 self.logger.warning(
@@ -76,19 +75,19 @@ class GrpcGatewayStreamer(GatewayStreamer):
 
     def __init__(self, args: argparse.Namespace, iolet: 'Grpclet'):
         super().__init__(args, iolet)
-        self.iolet.callback = lambda response: self.handle_response(response.request)
+        self.iolet.callback = lambda response: self._handle_response(response.request)
 
-    async def receive(self):
+    async def _receive(self):
         """Start grpclet and await termination
 
         :return: await iolet start
         """
         return await self.iolet.start()
 
-    async def handle_response(self, response: 'Response'):
+    async def _handle_response(self, response: 'Response'):
         """
         Async version of parents handle_response function
 
         :param response: message received from grpclet callback
         """
-        super().handle_response(response)
+        super()._handle_response(response)

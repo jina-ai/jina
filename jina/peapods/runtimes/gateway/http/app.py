@@ -59,7 +59,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         )
 
     if args.grpc_data_requests:
-        from ...stream.gateway import GrpcGatewayStreamer
+        from ....stream.gateway import GrpcGatewayStreamer
 
         iolet = Grpclet(
             args=args,
@@ -68,7 +68,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         )
         streamer = GrpcGatewayStreamer(args, iolet)
     else:
-        from ...stream.gateway import ZmqGatewayStreamer
+        from ....stream.gateway import ZmqGatewayStreamer
 
         iolet = AsyncZmqlet(args, logger)
         streamer = ZmqGatewayStreamer(args, iolet)

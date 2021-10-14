@@ -1,6 +1,6 @@
 from typing import Iterator, AsyncIterator, Union
 
-from ....helper import get_or_reuse_loop
+from ...helper import get_or_reuse_loop
 
 
 class AsyncRequestsIterator:

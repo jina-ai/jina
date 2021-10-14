@@ -8,7 +8,7 @@ from ...types.request import Request
 from ...importer import ImportExtensions
 from ..base import BaseClient, InputType
 from ...logging.profile import ProgressBar
-from ...peapods.runtimes.stream.client import HTTPClientStreamer
+from ...peapods.stream.client import HTTPClientStreamer
 
 
 class HTTPBaseClient(BaseClient):
