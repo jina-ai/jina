@@ -784,16 +784,7 @@
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--k8s-connection-pool'</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'Defines if connection pooling should be used in K8s'</span>
-        <span class="k">if</span> <span class="n">_SHOW_ALL_ARGS</span>
-        <span class="k">else</span> <span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--k8s-no-connection-pool'</span><span class="p">,</span>
+        <span class="s1">'--k8s-disable-connection-pool'</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">'store_false'</span><span class="p">,</span>
         <span class="n">dest</span><span class="o">=</span><span class="s1">'k8s_connection_pool'</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
