@@ -7,7 +7,7 @@ on:
         default: master
   schedule:
     - cron: "0 6 * * 1-5"   # runs at 6AM UTC (mon-fri)
-  # pull_request:             # uncomment this if you want to run nightly tests in your PR
+  pull_request:             # uncomment this if you want to run nightly tests in your PR
 
 jobs:
   prep-testbed:
@@ -27,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.7]
+        python-version: [3.7, 3.8]
         test-path: ${{fromJson(needs.prep-testbed.outputs.windows)}}
     steps:
       - uses: actions/checkout@v2
