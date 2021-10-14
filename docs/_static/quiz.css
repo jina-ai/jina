@@ -1,0 +1,28 @@
+.flex {
+    display: flex;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.mr-4 {
+    margin-right: 1rem;
+}
+
+.mt-1 {
+    margin-top: 0.25rem;
+}
+
+.my-2 {
+    margin-top: .5rem;
+    margin-bottom: .5rem;
+}
+
+.correct-answer:checked + .option {
+    background-color: #00919155;
+}
+
+.incorrect-answer:checked + .option {
+    background-color: #B0002055;
+}

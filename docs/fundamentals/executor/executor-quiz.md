@@ -1,9 +1,9 @@
 # Executor Quiz
-<h2> 1. What does an Executor do? </h2>
+<h3> 1. What does an Executor do? </h3>
 <ul>
-<p> <input type="checkbox"> An Executor is the tool you use to execute your Flow from the CLI: <code>execute jina_app.py</code>. </p>
-<p> <input type="checkbox"> An Executor performs a single task on a <code>Document</code> or <code>DocumentArray</code>, like segmenting or encoding it. </p>
-<p> <input type="checkbox"> An Executor is a processing pipeline for indexing or querying a dataset. </p>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> An Executor is the tool you use to execute your Flow from the CLI: <code>execute jina_app.py</code>. </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> An Executor performs a single task on a <code>Document</code> or <code>DocumentArray</code>, like segmenting or encoding it. </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> An Executor is a processing pipeline for indexing or querying a dataset. </div> </li>
 </ul>
 <details>
 <summary>Reveal explanation</summary>
@@ -12,19 +12,24 @@
 
 </p>
 </details>
-<h2> 2. Which of the following usages of <code>requests</code> are valid? </h2>
-<pre><code class="language-python">    @requests(on=&#39;/index&#39;)
+<h3> 2. Which of the following usages of <code>requests</code> are valid? </h3>
+<ul>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">    @requests(on=&#39;/index&#39;)
     def foo(self, **kwargs):
         print(f&#39;foo is called: {kwargs}&#39;)
 </code></pre>
-<pre><code class="language-python">    @requests
+ </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">    @requests
     def foo(self, **kwargs):
         print(f&#39;foo is called: {kwargs}&#39;)
 </code></pre>
-<pre><code class="language-python">    @requests(&#39;/index&#39;)
+ </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">    @requests(&#39;/index&#39;)
     def foo(self, **kwargs):
         print(f&#39;foo is called: {kwargs}&#39;)
 </code></pre>
+ </div> </li>
+</ul>
 <details>
 <summary>Reveal explanation</summary>
 <p>
@@ -32,12 +37,12 @@
 
 </p>
 </details>
-<h2> 3. What <strong>should</strong> an Executor method return? </h2>
+<h3> 3. What <strong>should</strong> an Executor method return? </h3>
 <ul>
-<p> <input type="checkbox"> Nothing. </p>
-<p> <input type="checkbox"> It should yield the processed <code>Document</code>. </p>
-<p> <input type="checkbox"> It should return the processed <code>DocumentArray</code>. </p>
-<p> <input type="checkbox"> Whatever you like. </p>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> Nothing. </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> It should yield the processed <code>Document</code>. </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> It should return the processed <code>DocumentArray</code>. </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> Whatever you like. </div> </li>
 </ul>
 <details>
 <summary>Reveal explanation</summary>
@@ -46,11 +51,11 @@
 
 </p>
 </details>
-<h2> 4. Can you use an Executor outside of a Flow? </h2>
+<h3> 4. Can you use an Executor outside of a Flow? </h3>
 <ul>
-<p> <input type="checkbox"> Yes, just like an ordinary Python object </p>
-<p> <input type="checkbox"> Yes, but you need to use <code>jina.executor.load_executor</code> function </p>
-<p> <input type="checkbox"> No </p>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> Yes, just like an ordinary Python object </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> Yes, but you need to use <code>jina.executor.load_executor</code> function </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> No </div> </li>
 </ul>
 <details>
 <summary>Reveal explanation</summary>
@@ -59,12 +64,12 @@
 
 </p>
 </details>
-<h2> 5. What formats are supported for creating Executors? </h2>
+<h3> 5. What formats are supported for creating Executors? </h3>
 <ul>
-<p> <input type="checkbox"> YAML </p>
-<p> <input type="checkbox"> Python </p>
-<p> <input type="checkbox"> JSON </p>
-<p> <input type="checkbox"> JinaScript </p>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> YAML </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> Python </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> JSON </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> JinaScript </div> </li>
 </ul>
 <details>
 <summary>Reveal explanation</summary>
@@ -73,12 +78,12 @@
 
 </p>
 </details>
-<h2> 6. When creating an Executor with multiple Python files, how should it be organized? </h2>
+<h3> 6. When creating an Executor with multiple Python files, how should it be organized? </h3>
 <ul>
-<p> <input type="checkbox"> As a zip file </p>
-<p> <input type="checkbox"> Directly as a git repo </p>
-<p> <input type="checkbox"> As a Python package in a git repo </p>
-<p> <input type="checkbox"> Jina doesn&#39;t support multi-file Executors </p>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> As a zip file </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> Directly as a git repo </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> As a Python package in a git repo </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> Jina doesn&#39;t support multi-file Executors </div> </li>
 </ul>
 <details>
 <summary>Reveal explanation</summary>
@@ -87,12 +92,12 @@
 
 </p>
 </details>
-<h2> 7. What&#39;s the recommended way to share Executors with a colleague? </h2>
+<h3> 7. What&#39;s the recommended way to share Executors with a colleague? </h3>
 <ul>
-<p> <input type="checkbox"> Send them a link to the repo </p>
-<p> <input type="checkbox"> Dockerize your Executor and push directly to Docker Hub </p>
-<p> <input type="checkbox"> Push your Executor to Pypi and ask them to install via <code>pip</code> </p>
-<p> <input type="checkbox"> Push your Executor to Jina Hub </p>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> Send them a link to the repo </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> Dockerize your Executor and push directly to Docker Hub </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> Push your Executor to Pypi and ask them to install via <code>pip</code> </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> Push your Executor to Jina Hub </div> </li>
 </ul>
 <details>
 <summary>Reveal explanation</summary>
@@ -101,11 +106,11 @@
 
 </p>
 </details>
-<h2> 8. How would you create a new Hub Executor from the CLI? </h2>
+<h3> 8. How would you create a new Hub Executor from the CLI? </h3>
 <ul>
-<p> <input type="checkbox"> <code>jina hub create &lt;executor_name&gt;</code> </p>
-<p> <input type="checkbox"> <code>jina hub new</code> </p>
-<p> <input type="checkbox"> <code>cat executor.py | jina hub</code> </p>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <code>jina hub create &lt;executor_name&gt;</code> </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <code>jina hub new</code> </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <code>cat executor.py | jina hub</code> </div> </li>
 </ul>
 <details>
 <summary>Reveal explanation</summary>
@@ -114,21 +119,26 @@
 
 </p>
 </details>
-<h2> 9. How would you use an Executor from Hub directly in your Python code? </h2>
-<pre><code class="language-python">from jina import Flow
+<h3> 9. How would you use an Executor from Hub directly in your Python code? </h3>
+<ul>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">from jina import Flow
 
 f = Flow().add(uses=&#39;jinahub+docker://executor_name&#39;)
 </code></pre>
-<pre><code class="language-python">from jina import Flow, Hub
+ </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">from jina import Flow, Hub
 
 executor = Hub.pull(&quot;executor_name&quot;)
 
 f = Flow().add(uses=executor)
 </code></pre>
-<pre><code class="language-python">from jina import Flow
+ </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">from jina import Flow
 
 f = Flow().add(uses=executor, from=&quot;hub&quot;)
 </code></pre>
+ </div> </li>
+</ul>
 <details>
 <summary>Reveal explanation</summary>
 <p>
@@ -136,11 +146,11 @@ f = Flow().add(uses=executor, from=&quot;hub&quot;)
 
 </p>
 </details>
-<h2> 10. How would you publish a <strong>private</strong> Executor? </h2>
+<h3> 10. How would you publish a <strong>private</strong> Executor? </h3>
 <ul>
-<p> <input type="checkbox"> <code>jina hub push --private &lt;path_to_executor_folder&gt;</code>. </p>
-<p> <input type="checkbox"> <code>jina hub private push &lt;path_to_executor_folder&gt;</code>. </p>
-<p> <input type="checkbox"> <code>jina hub push</code> then log in to Jina Hub front-end to set it as private. </p>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <code>jina hub push --private &lt;path_to_executor_folder&gt;</code>. </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <code>jina hub private push &lt;path_to_executor_folder&gt;</code>. </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <code>jina hub push</code> then log in to Jina Hub front-end to set it as private. </div> </li>
 </ul>
 <details>
 <summary>Reveal explanation</summary>

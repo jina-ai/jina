@@ -1,9 +1,9 @@
-# Document
+# Document Quiz
 <h3> 1. What can kind of data can a Document contain? </h3>
 <ul>
-<p> <input type="checkbox"> Just plain text </p>
-<p> <input type="checkbox"> Numpy array </p>
-<p> <input type="checkbox"> Any kind of data </p>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> Just plain text </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> Numpy array </div> </li>
+<li class="flex my-2"> <input class="correct-answer mr-4 mt-1" type="checkbox"><div class="option"> Any kind of data  </div> </li>
 </ul>
 <details>
 <summary>Reveal explanation</summary>
@@ -14,10 +14,10 @@
 </details>
 <h3> 2. Given a Document <code>doc</code>, what does <code>doc.content</code> refer to? </h3>
 <ul>
-<p> <input type="checkbox"> <code>doc.buffer</code> </p>
-<p> <input type="checkbox"> <code>doc.blob</code> </p>
-<p> <input type="checkbox"> <code>doc.text</code> </p>
-<p> <input type="checkbox"> Any of the above as long as the field is not empty </p>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <code>doc.buffer</code> </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <code>doc.blob</code> </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <code>doc.text</code> </div> </li>
+<li class="flex my-2"> <input class="correct-answer mr-4 mt-1" type="checkbox"><div class="option"> Any of the above as long as the field is not empty  </div> </li>
 </ul>
 <details>
 <summary>Reveal explanation</summary>
@@ -28,22 +28,23 @@
 </details>
 <h3> 3. How do you convert <code>doc.uri</code> to <code>doc.blob</code>? </h3>
 <ul>
-<p> <input type="checkbox"> <pre><code class="language-python">from jina.Document import convert_uri_to_blob
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">from jina.Document import convert_uri_to_blob
 
 doc = Document(uri=&quot;foo.txt&quot;)
 doc.blob = convert_uri_to_blob(doc)
 </code></pre>
- </p>
-<p> <input type="checkbox"> <pre><code class="language-python">from jina.Document import blob
+ </div> </li>
+<li class="flex my-2"> <input class="correct-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">from jina.Document import blob
 
 doc = Document(uri=&quot;foo.txt&quot;)
 doc.blob = blob(doc.uri)
 </code></pre>
- </p>
-<p> <input type="checkbox"> <pre><code class="language-python">doc = Document(uri=&quot;foo.txt&quot;)
+<p></p>
+ </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">doc = Document(uri=&quot;foo.txt&quot;)
 doc.convert_uri_to_blob()
 </code></pre>
- </p>
+ </div> </li>
 </ul>
 <details>
 <summary>Reveal explanation</summary>
@@ -54,10 +55,10 @@ doc.convert_uri_to_blob()
 </details>
 <h3> 4. In what format is a Document&#39;s embedding? </h3>
 <ul>
-<p> <input type="checkbox"> An array (<code>numpy.ndarray</code>, Scipy sparse array, TensorFlow/PyTorch sparse array, etc) </p>
-<p> <input type="checkbox"> Byte string </p>
-<p> <input type="checkbox"> Protobuf </p>
-<p> <input type="checkbox"> Plain text </p>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> An array (<code>numpy.ndarray</code>, Scipy sparse array, TensorFlow/PyTorch sparse array, etc) </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> Byte string </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> Protobuf </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> Plain text </div> </li>
 </ul>
 <details>
 <summary>Reveal explanation</summary>
@@ -67,22 +68,27 @@ doc.convert_uri_to_blob()
 </p>
 </details>
 <h3> 5. What&#39;s the most efficient way to create a <code>DocumentArray</code> from a directory of images? </h3>
-<pre><code class="language-python">from jina import DocumentArray
+<ul>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">from jina import DocumentArray
 from jina.types.document.generators import from_files
 
 doc_array = DocumentArray(from_files(&quot;image_dir/*.png&quot;))
 </code></pre>
-<pre><code class="language-python">from jina import Document, DocumentArray
+ </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">from jina import Document, DocumentArray
 import os
 
 doc_array = DocumentArray()
 for image in os.listdir(&quot;image_dir&quot;):
   doc_array.append(Document(uri=image))
 </code></pre>
-<pre><code class="language-python">from jina import DocumentArray
+ </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">from jina import DocumentArray
 
 doc_array = DocumentArray(&quot;image_dir&quot;)
 </code></pre>
+ </div> </li>
+</ul>
 <details>
 <summary>Reveal explanation</summary>
 <p>
@@ -91,25 +97,29 @@ doc_array = DocumentArray(&quot;image_dir&quot;)
 </p>
 </details>
 <h3> 6. What&#39;s the recommended way to add sub-Documents to <code>Document.chunks</code>? </h3>
-<pre><code class="language-python">from jina import Document
+<ul>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">from jina import Document
 
 root_document = Document(text=&#39;i am root&#39;)
 root_document.chunks.append(Document(text=&#39;i am chunk 1&#39;))
 root_document.chunks.extend([
-   Document(text=&#39;i am chunk 2&#39;),
-   Document(text=&#39;i am chunk 3&#39;),
+  Document(text=&#39;i am chunk 2&#39;),
+  Document(text=&#39;i am chunk 3&#39;),
 ])
 </code></pre>
-<pre><code class="language-python">from jina import Document
+ </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">from jina import Document
 
 root_document = Document(
-   text=&#39;i am root&#39;,
-   chunks=[
+  text=&#39;i am root&#39;,
+  chunks=[
       Document(text=&#39;i am chunk 2&#39;),
       Document(text=&#39;i am chunk 3&#39;),
-   ]
+  ]
 )
 </code></pre>
+ </div> </li>
+</ul>
 <details>
 <summary>Reveal explanation</summary>
 <p>
@@ -118,7 +128,8 @@ root_document = Document(
 </p>
 </details>
 <h3> 7. What&#39;s the recommended way to filter Documents from a <code>DocumentArray</code> that only contain a <code>city</code> tag beginning with &quot;B&quot;? </h3>
-<pre><code class="language-python">d1 = Document(tags={&#39;city&#39;: &#39;Barcelona&#39;, &#39;phone&#39;: &#39;None&#39;})
+<ul>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">d1 = Document(tags={&#39;city&#39;: &#39;Barcelona&#39;, &#39;phone&#39;: &#39;None&#39;})
 d2 = Document(tags={&#39;city&#39;: &#39;Berlin&#39;, &#39;phone&#39;: &#39;648907348&#39;})
 d3 = Document(tags={&#39;city&#39;: &#39;Paris&#39;, &#39;phone&#39;: &#39;None&#39;})
 d4 = Document(tags={&#39;city&#39;: &#39;Brussels&#39;, &#39;phone&#39;: &#39;None&#39;})
@@ -127,7 +138,8 @@ docarray = DocumentArray([d1, d2, d3, d4])
 regexes = {&#39;city&#39;: r&#39;B.*&#39;}
 docarray_filtered = docarray.find(regexes=regexes)
 </code></pre>
-<pre><code class="language-python">d1 = Document(tags={&#39;city&#39;: &#39;Barcelona&#39;, &#39;phone&#39;: &#39;None&#39;})
+ </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">d1 = Document(tags={&#39;city&#39;: &#39;Barcelona&#39;, &#39;phone&#39;: &#39;None&#39;})
 d2 = Document(tags={&#39;city&#39;: &#39;Berlin&#39;, &#39;phone&#39;: &#39;648907348&#39;})
 d3 = Document(tags={&#39;city&#39;: &#39;Paris&#39;, &#39;phone&#39;: &#39;None&#39;})
 d4 = Document(tags={&#39;city&#39;: &#39;Brussels&#39;, &#39;phone&#39;: &#39;None&#39;})
@@ -139,6 +151,8 @@ for doc in docarray:
   if doc.tags[&quot;city&quot;][0] == &quot;B&quot;:
     filter_docarray.append(doc)
 </code></pre>
+ </div> </li>
+</ul>
 <details>
 <summary>Reveal explanation</summary>
 <p>
@@ -148,9 +162,9 @@ for doc in docarray:
 </details>
 <h3> 8. When would you use <code>DocumentArrayMemmap</code> instead of <code>DocumentArray</code>? </h3>
 <ul>
-<p> <input type="checkbox"> <code>DocumentArrayMemmap</code> is just the name for <code>DocumentArray</code> in the internals of Jina code </p>
-<p> <input type="checkbox"> When you need to index a large number of <code>Document</code>s and don&#39;t want to exhaust your memory </p>
-<p> <input type="checkbox"> When you want to save disk space </p>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <code>DocumentArrayMemmap</code> is just the name for <code>DocumentArray</code> in the internals of Jina code </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> When you need to index a large number of <code>Document</code>s and don&#39;t want to exhaust your memory </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> When you want to save disk space </div> </li>
 </ul>
 <details>
 <summary>Reveal explanation</summary>
@@ -161,10 +175,10 @@ for doc in docarray:
 </details>
 <h3> 9. Which of the following does <code>DocumentArrayMemmap</code> NOT support? </h3>
 <ul>
-<p> <input type="checkbox"> <code>append</code> </p>
-<p> <input type="checkbox"> <code>split</code> </p>
-<p> <input type="checkbox"> <code>shuffle</code> </p>
-<p> <input type="checkbox"> <code>sort</code> </p>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <code>append</code> </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <code>split</code> </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <code>shuffle</code> </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <code>sort</code> </div> </li>
 </ul>
 <details>
 <summary>Reveal explanation</summary>
@@ -174,20 +188,23 @@ for doc in docarray:
 </p>
 </details>
 <h3> 10. How would you convert a <code>DocumentArray</code> to a <code>DocumentArrayMemmap</code>? </h3>
-<pre><code class="language-python">from jina import Document, DocumentArray, DocumentArrayMemmap
+<ul>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">from jina import Document, DocumentArray, DocumentArrayMemmap
 
 doc_array = DocumentArray([Document(text=&#39;hello&#39;), Document(text=&#39;world&#39;)])
 
 doc_array_memmap = DocumentArrayMemmap(doc_array)
 </code></pre>
-<pre><code class="language-python">from jina import Document, DocumentArray, DocumentArrayMemmap
+ </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">from jina import Document, DocumentArray, DocumentArrayMemmap
 from jina.DocumentArray import convert_to_document_array_memmap
 
 doc_array = DocumentArray([Document(text=&#39;hello&#39;), Document(text=&#39;world&#39;)])
 
 doc_array_memmap = convert_to_document_array_memmap(doc_array)
 </code></pre>
-<pre><code class="language-python">from jina import Document, DocumentArray, DocumentArrayMemmap
+ </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">from jina import Document, DocumentArray, DocumentArrayMemmap
 
 doc_array = DocumentArray([Document(text=&#39;hello&#39;), Document(text=&#39;world&#39;)])
 
@@ -195,6 +212,8 @@ doc_array_memmap = DocumentArrayMemmap()
 for doc in doc_array:
   doc_array_memmap.append(doc)
 </code></pre>
+ </div> </li>
+</ul>
 <details>
 <summary>Reveal explanation</summary>
 <p>

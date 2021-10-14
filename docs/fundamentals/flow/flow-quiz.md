@@ -1,9 +1,9 @@
 # Flow Quiz
-<h2> 1. What does a Flow do? </h2>
+<h3> 1. What does a Flow do? </h3>
 <ul>
-<p> <input type="checkbox"> The <code>Flow</code> ties Executors together into a processing pipeline to perform a bigger task, like indexing or querying a dataset. </p>
-<p> <input type="checkbox"> The <code>Flow</code> is a graphical interface that lets users see how their <code>Documents</code> are flowing into the processing pipeline. </p>
-<p> <input type="checkbox"> The <code>Flow</code> is short for &quot;fast, low-resource&quot; and is a special kind of Executor for low-powered machines. </p>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> The <code>Flow</code> ties Executors together into a processing pipeline to perform a bigger task, like indexing or querying a dataset. </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> The <code>Flow</code> is a graphical interface that lets users see how their <code>Documents</code> are flowing into the processing pipeline. </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> The <code>Flow</code> is short for &quot;fast, low-resource&quot; and is a special kind of Executor for low-powered machines. </div> </li>
 </ul>
 <details>
 <summary>Reveal explanation</summary>
@@ -12,12 +12,12 @@
 
 </p>
 </details>
-<h2> 2. What languages can you use to create a Flow? </h2>
+<h3> 2. What languages can you use to create a Flow? </h3>
 <ul>
-<p> <input type="checkbox"> Python directly </p>
-<p> <input type="checkbox"> YAML </p>
-<p> <input type="checkbox"> JSON </p>
-<p> <input type="checkbox"> From the command line with <code>jina flow new</code> </p>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> Python directly </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> YAML </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> JSON </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> From the command line with <code>jina flow new</code> </div> </li>
 </ul>
 <details>
 <summary>Reveal explanation</summary>
@@ -26,23 +26,28 @@
 
 </p>
 </details>
-<h2> 3. How would you create and run a Flow? </h2>
-<pre><code class="language-python">from jina import Flow
+<h3> 3. How would you create and run a Flow? </h3>
+<ul>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">from jina import Flow
 
 flow = Flow()
 
 with flow:
-   flow.index()
+  flow.index()
 </code></pre>
-<pre><code class="language-python">from jina import Flow
+ </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">from jina import Flow
 
 flow = Flow()
 flow.index()
 </code></pre>
-<pre><code class="language-python">from jina import Flow
+ </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">from jina import Flow
 
 Flow.index()
 </code></pre>
+ </div> </li>
+</ul>
 <details>
 <summary>Reveal explanation</summary>
 <p>
@@ -50,16 +55,21 @@ Flow.index()
 
 </p>
 </details>
-<h2> 4. What are some valid ways to index a dataset? </h2>
-<pre><code class="language-python">with flow:
+<h3> 4. What are some valid ways to index a dataset? </h3>
+<ul>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">with flow:
   flow.index()
 </code></pre>
-<pre><code class="language-python">with flow:
+ </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">with flow:
   flow.post(&#39;/index&#39;)
 </code></pre>
-<pre><code>with flow:
+ </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">with flow:
   flow.post(task=&#39;index&#39;)
 </code></pre>
+ </div> </li>
+</ul>
 <details>
 <summary>Reveal explanation</summary>
 <p>
@@ -68,8 +78,9 @@ with <code>on=&#39;/index&#39;</code> , <code>on=&#39;/search&#39;</code>, etc.<
 
 </p>
 </details>
-<h2> 5. How do you add an Executor to a Flow? </h2>
-<pre><code class="language-python">from jina import Flow, Executor
+<h3> 5. How do you add an Executor to a Flow? </h3>
+<ul>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">from jina import Flow, Executor
 
 class MyExecutor(Executor):
     ...
@@ -77,7 +88,8 @@ class MyExecutor(Executor):
 
 f = Flow().add(uses=MyExecutor)
 </code></pre>
-<pre><code class="language-python">from jina import Flow, Executor
+ </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">from jina import Flow, Executor
 
 class MyExecutor(Executor):
     ...
@@ -85,7 +97,8 @@ class MyExecutor(Executor):
 
 f = Flow().append(MyExecutor)
 </code></pre>
-<pre><code class="language-python">from jina import Flow, Executor
+ </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">from jina import Flow, Executor
 
 class MyExecutor(Executor):
     ...
@@ -93,6 +106,8 @@ class MyExecutor(Executor):
 
 f = Flow(executors=[MyExecutor])
 </code></pre>
+ </div> </li>
+</ul>
 <details>
 <summary>Reveal explanation</summary>
 <p>
@@ -100,21 +115,26 @@ f = Flow(executors=[MyExecutor])
 
 </p>
 </details>
-<h2> 6. How would you override the <code>workspace</code> directory that an Executor uses? </h2>
-<pre><code class="language-python">flow = Flow().add(
+<h3> 6. How would you override the <code>workspace</code> directory that an Executor uses? </h3>
+<ul>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">flow = Flow().add(
     uses=MyExecutor,
     uses_metas={&#39;workspace&#39;: &#39;different_workspace&#39;},
 )
 </code></pre>
-<pre><code class="language-python">flow = Flow().add(
+ </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">flow = Flow().add(
     uses=MyExecutor,
     uses_with={&#39;workspace&#39;: &#39;different_workspace&#39;},
 )
 </code></pre>
-<pre><code class="language-python">flow = Flow().add(
+ </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">flow = Flow().add(
     uses=MyExecutor(workspace=&#39;different_workspace&#39;)
 )
 </code></pre>
+ </div> </li>
+</ul>
 <details>
 <summary>Reveal explanation</summary>
 <p>
@@ -122,11 +142,11 @@ f = Flow(executors=[MyExecutor])
 
 </p>
 </details>
-<h2> 7. What kind of input does an <code>AsyncFlow</code> accept? </h2>
+<h3> 7. What kind of input does an <code>AsyncFlow</code> accept? </h3>
 <ul>
-<p> <input type="checkbox"> Exactly the same as a standard Flow </p>
-<p> <input type="checkbox"> Async generators </p>
-<p> <input type="checkbox"> <code>AsyncDocumentArray</code>s </p>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> Exactly the same as a standard Flow </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> Async generators </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <code>AsyncDocumentArray</code>s </div> </li>
 </ul>
 <details>
 <summary>Reveal explanation</summary>
@@ -135,13 +155,13 @@ f = Flow(executors=[MyExecutor])
 
 </p>
 </details>
-<h2> 8. What communication protocols does a Flow support? </h2>
+<h3> 8. What communication protocols does a Flow support? </h3>
 <ul>
-<p> <input type="checkbox"> SOAP </p>
-<p> <input type="checkbox"> gRPC </p>
-<p> <input type="checkbox"> WebSocket </p>
-<p> <input type="checkbox"> REST </p>
-<p> <input type="checkbox"> GraphQL </p>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> SOAP </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> gRPC </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> WebSocket </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> REST </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> GraphQL </div> </li>
 </ul>
 <details>
 <summary>Reveal explanation</summary>
@@ -150,24 +170,29 @@ f = Flow(executors=[MyExecutor])
 
 </p>
 </details>
-<h2> 9. How do you create a RESTful gateway for a Flow? </h2>
-<pre><code class="language-python">flow = Flow()
+<h3> 9. How do you create a RESTful gateway for a Flow? </h3>
+<ul>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">flow = Flow()
 
 with f:
   f.protocol = &quot;http&quot;
   f.port_expose = 12345
   f.block()
 </code></pre>
-<pre><code class="language-python">flow = Flow(protocol=&quot;http&quot;, port_expose=12345)
+ </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">flow = Flow(protocol=&quot;http&quot;, port_expose=12345)
 
 with f:
   f.block()
 </code></pre>
-<pre><code class="language-python">flow = Flow()
+ </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> <pre><code class="language-python">flow = Flow()
 
 with f:
   f.gateway(protocol=&quot;restful&quot;, port=12345)
 </code></pre>
+ </div> </li>
+</ul>
 <details>
 <summary>Reveal explanation</summary>
 <p>
@@ -175,11 +200,11 @@ with f:
 
 </p>
 </details>
-<h2> 10. Can you access a Flow service from a web page with a different domain? </h2>
+<h3> 10. Can you access a Flow service from a web page with a different domain? </h3>
 <ul>
-<p> <input type="checkbox"> No. Jina only supports access from a web page running on the same machine. </p>
-<p> <input type="checkbox"> Yes, out of the box </p>
-<p> <input type="checkbox"> Yes, but you have to enable CORS </p>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> No. Jina only supports access from a web page running on the same machine. </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> Yes, out of the box </div> </li>
+<li class="flex my-2"> <input class="incorrect-answer mr-4 mt-1" type="checkbox"><div class="option"> Yes, but you have to enable CORS </div> </li>
 </ul>
 <details>
 <summary>Reveal explanation</summary>

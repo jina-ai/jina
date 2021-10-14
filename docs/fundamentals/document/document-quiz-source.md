@@ -1,10 +1,10 @@
-# Document
+# Document Quiz
 
 ### 1. What can kind of data can a Document contain?
 
 - Just plain text
 - Numpy array
-- Any kind of data
+- Any kind of data --correct-answer--
 
 > [A Document can contain *any* kind of data that can be stored digitally](https://docs.jina.ai/fundamentals/document/document-api/#document-content). Text, graphics, audio, video, amino acids, 3D meshes, Numpy arrays, you name it.
 
@@ -13,7 +13,7 @@
 - `doc.buffer`
 - `doc.blob`
 - `doc.text`
-- Any of the above as long as the field is not empty
+- Any of the above as long as the field is not empty --correct-answer--
 
 > [`doc.content`](https://docs.jina.ai/fundamentals/document/document-api/#document-content) is an alias that points to whatever attribute contains data. At any given point only `.buffer`, `.blob` or `.text` can contain data. Setting one of these attributes will unset any of the others that were previously in use.
 
@@ -32,6 +32,7 @@
     doc = Document(uri="foo.txt")
     doc.blob = blob(doc.uri)
     ```
+    --correct-answer--
 
 -   ```python
     doc = Document(uri="foo.txt")
@@ -51,85 +52,85 @@
 
 ### 5. What's the most efficient way to create a `DocumentArray` from a directory of images?
 
-```python
-from jina import DocumentArray
-from jina.types.document.generators import from_files
+-   ```python
+    from jina import DocumentArray
+    from jina.types.document.generators import from_files
 
-doc_array = DocumentArray(from_files("image_dir/*.png"))
-```
+    doc_array = DocumentArray(from_files("image_dir/*.png"))
+    ```
 
 
-```python
-from jina import Document, DocumentArray
-import os
+-   ```python
+    from jina import Document, DocumentArray
+    import os
 
-doc_array = DocumentArray()
-for image in os.listdir("image_dir"):
-  doc_array.append(Document(uri=image))
-```
+    doc_array = DocumentArray()
+    for image in os.listdir("image_dir"):
+      doc_array.append(Document(uri=image))
+    ```
 
-```python
-from jina import DocumentArray
+-   ```python
+    from jina import DocumentArray
 
-doc_array = DocumentArray("image_dir")
-```
+    doc_array = DocumentArray("image_dir")
+    ```
 
 > Many generators can be imported from `jina.types.document.generators` to easily create `DocumentArrays` of [different data types](https://docs.jina.ai/fundamentals/document/document-api/#construct-from-json-csv-ndarray-and-files).
 
 ### 6. What's the recommended way to add sub-Documents to `Document.chunks`?
 
-```python
-from jina import Document
+-   ```python
+    from jina import Document
 
-root_document = Document(text='i am root')
-root_document.chunks.append(Document(text='i am chunk 1'))
-root_document.chunks.extend([
-   Document(text='i am chunk 2'),
-   Document(text='i am chunk 3'),
-])
-```
-
-```python
-from jina import Document
-
-root_document = Document(
-   text='i am root',
-   chunks=[
+    root_document = Document(text='i am root')
+    root_document.chunks.append(Document(text='i am chunk 1'))
+    root_document.chunks.extend([
       Document(text='i am chunk 2'),
       Document(text='i am chunk 3'),
-   ]
-)
-```
+    ])
+    ```
+
+-   ```python
+    from jina import Document
+
+    root_document = Document(
+      text='i am root',
+      chunks=[
+          Document(text='i am chunk 2'),
+          Document(text='i am chunk 3'),
+      ]
+    )
+    ```
 
 > When adding sub-Documents to Document.chunks, [do not create them in one line to keep recursive document structure correct](https://docs.jina.ai/fundamentals/document/document-api/#caveat-order-matters). This is because chunks use ref_doc to control its granularity, at chunk creation time, it didn’t know anything about its parent, and will get a wrong granularity value.
 
 
 ### 7. What's the recommended way to filter Documents from a `DocumentArray` that only contain a `city` tag beginning with "B"?
 
-```python
-d1 = Document(tags={'city': 'Barcelona', 'phone': 'None'})
-d2 = Document(tags={'city': 'Berlin', 'phone': '648907348'})
-d3 = Document(tags={'city': 'Paris', 'phone': 'None'})
-d4 = Document(tags={'city': 'Brussels', 'phone': 'None'})
+-   ```python
+    d1 = Document(tags={'city': 'Barcelona', 'phone': 'None'})
+    d2 = Document(tags={'city': 'Berlin', 'phone': '648907348'})
+    d3 = Document(tags={'city': 'Paris', 'phone': 'None'})
+    d4 = Document(tags={'city': 'Brussels', 'phone': 'None'})
 
-docarray = DocumentArray([d1, d2, d3, d4])
-regexes = {'city': r'B.*'}
-docarray_filtered = docarray.find(regexes=regexes)
-```
+    docarray = DocumentArray([d1, d2, d3, d4])
+    regexes = {'city': r'B.*'}
+    docarray_filtered = docarray.find(regexes=regexes)
+    ```
 
-```python
-d1 = Document(tags={'city': 'Barcelona', 'phone': 'None'})
-d2 = Document(tags={'city': 'Berlin', 'phone': '648907348'})
-d3 = Document(tags={'city': 'Paris', 'phone': 'None'})
-d4 = Document(tags={'city': 'Brussels', 'phone': 'None'})
+-   ```python
+    d1 = Document(tags={'city': 'Barcelona', 'phone': 'None'})
+    d2 = Document(tags={'city': 'Berlin', 'phone': '648907348'})
+    d3 = Document(tags={'city': 'Paris', 'phone': 'None'})
+    d4 = Document(tags={'city': 'Brussels', 'phone': 'None'})
 
-docarray = DocumentArray([d1, d2, d3, d4])
+    docarray = DocumentArray([d1, d2, d3, d4])
 
-filtered_docarray = DocumentArray()
-for doc in docarray:
-  if doc.tags["city"][0] == "B":
-    filter_docarray.append(doc)
-```
+    filtered_docarray = DocumentArray()
+    for doc in docarray:
+      if doc.tags["city"][0] == "B":
+        filter_docarray.append(doc)
+    ```
 
 > DocumentArray provides function [.find](https://docs.jina.ai/fundamentals/document/documentarray-api/#advanced-filtering-via-find) that finds the Documents in the DocumentArray whose tag values match a dictionary of user provided regular expressions. Since a Document can have many tags, the function expects one regular expression for each tag that a user wants to consider.
 
@@ -154,31 +155,31 @@ for doc in docarray:
 
 ### 10. How would you convert a `DocumentArray` to a `DocumentArrayMemmap`?
 
-```python
-from jina import Document, DocumentArray, DocumentArrayMemmap
+-   ```python
+    from jina import Document, DocumentArray, DocumentArrayMemmap
 
-doc_array = DocumentArray([Document(text='hello'), Document(text='world')])
+    doc_array = DocumentArray([Document(text='hello'), Document(text='world')])
 
-doc_array_memmap = DocumentArrayMemmap(doc_array)
-```
+    doc_array_memmap = DocumentArrayMemmap(doc_array)
+    ```
 
-```python
-from jina import Document, DocumentArray, DocumentArrayMemmap
-from jina.DocumentArray import convert_to_document_array_memmap
+-   ```python
+    from jina import Document, DocumentArray, DocumentArrayMemmap
+    from jina.DocumentArray import convert_to_document_array_memmap
 
-doc_array = DocumentArray([Document(text='hello'), Document(text='world')])
+    doc_array = DocumentArray([Document(text='hello'), Document(text='world')])
 
-doc_array_memmap = convert_to_document_array_memmap(doc_array)
-```
+    doc_array_memmap = convert_to_document_array_memmap(doc_array)
+    ```
 
-```python
-from jina import Document, DocumentArray, DocumentArrayMemmap
+-   ```python
+    from jina import Document, DocumentArray, DocumentArrayMemmap
 
-doc_array = DocumentArray([Document(text='hello'), Document(text='world')])
+    doc_array = DocumentArray([Document(text='hello'), Document(text='world')])
 
-doc_array_memmap = DocumentArrayMemmap()
-for doc in doc_array:
-  doc_array_memmap.append(doc)
-```
+    doc_array_memmap = DocumentArrayMemmap()
+    for doc in doc_array:
+      doc_array_memmap.append(doc)
+    ```
 
 > [Converting a `DocumentArray` to a `DocumentMemmapArray`](https://docs.jina.ai/fundamentals/document/documentarraymemmap-api/#convert-to-from-documentarray) is just a matter of [casting](https://www.w3schools.com/python/python_casting.asp).

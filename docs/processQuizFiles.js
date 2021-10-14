@@ -18,8 +18,9 @@ ${quote}
       )
   },
   listitem(text) {
-      return ( `<p> <input type="checkbox"> ${text} </p>\n`
-      )
+    const correctAnswerClasses = text.includes('--correct-answer--') ? 'correct-answer' : 'incorrect-answer'
+    text = text.replace('--correct-answer--', '')
+    return( `<li class="flex my-2"> <input class="${correctAnswerClasses} mr-4 mt-1" type="checkbox"><div class="option"> ${text} </div> </li>\n`)
   }
 }
 marked.use({renderer})
