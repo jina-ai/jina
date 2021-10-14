@@ -1,5 +1,6 @@
 import argparse
 import time
+import threading
 from collections import defaultdict
 from typing import Dict, List, Optional, Union, TYPE_CHECKING
 
@@ -26,7 +27,7 @@ from ....types.routing.table import RoutingTable
 
 if TYPE_CHECKING:
     import multiprocessing
-    import threading
+
     from ....logging.logger import JinaLogger
 
 
@@ -43,6 +44,7 @@ class ZEDRuntime(BaseRuntime):
         if not __windows__:
             try:
                 signal.signal(signal.SIGTERM, self._handle_sig_term)
+                signal.signal(signal.SIGINT, self._handle_sig_term)
             except ValueError:
                 self.logger.warning(
                     'Runtime is being run in a thread. Threads can not receive signals and may not shutdown as expected.'
@@ -53,6 +55,7 @@ class ZEDRuntime(BaseRuntime):
             win32api.SetConsoleCtrlHandler(self._handle_sig_term)
         self._id = random_identity()
         self._last_active_time = time.perf_counter()
+        self._is_processing = threading.Event()
         self.ctrl_addr = self.get_control_address(args.host, args.port_ctrl)
 
         # all pending messages collected so far, key is the request id
@@ -76,8 +79,14 @@ class ZEDRuntime(BaseRuntime):
 
     def teardown(self):
         """Close the `ZmqStreamlet` and `Executor`."""
-        self._zmqstreamlet.close()
+        self._zmqstreamlet.pause_pollin()
+
+        print(f'{time.time()} wait for is processing')
+        self._is_processing.wait(1.0)
+        print(f'{time.time()} done waiting for is processing')
+
         self._data_request_handler.close()
+        self._zmqstreamlet.close()
         super().teardown()
 
     #: Private methods required by :meth:`setup`
@@ -211,13 +220,17 @@ class ZEDRuntime(BaseRuntime):
 
         req_id = msg.envelope.request_id
         num_expected_parts = self._expect_parts(msg)
-        self._data_request_handler.handle(
-            msg=msg,
-            partial_requests=[m.request for m in self._pending_msgs[req_id]]
-            if num_expected_parts > 1
-            else None,
-            peapod_name=self.name,
-        )
+        try:
+            self._is_processing.clear()
+            self._data_request_handler.handle(
+                msg=msg,
+                partial_requests=[m.request for m in self._pending_msgs[req_id]]
+                if num_expected_parts > 1
+                else None,
+                peapod_name=self.name,
+            )
+        finally:
+            self._is_processing.set()
 
         return msg
 
