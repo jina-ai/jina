@@ -151,7 +151,7 @@ class BaseStreamer(ABC):
             self._handle_end_of_iter()
             end_of_iter.set()
 
-        t = asyncio.create_task(iterate_requests())
+        asyncio.create_task(iterate_requests())
         while not end_of_iter.is_set() or len(futures) > 0 or not result_queue.empty():
             # `not end_of_iter.is_set()` validates iterator is completed.
             # `len(futures) > 0` makes sure all futures are taken care of.

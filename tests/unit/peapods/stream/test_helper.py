@@ -3,7 +3,7 @@ import asyncio
 
 from jina import Document
 from jina.clients.request import request_generator
-from jina.peapods.runtimes.stream.helper import AsyncRequestsIterator
+from jina.peapods.stream.helper import AsyncRequestsIterator
 
 import pytest
 

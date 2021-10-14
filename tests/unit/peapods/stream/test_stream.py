@@ -5,7 +5,7 @@ import pytest
 
 from jina.helper import ArgNamespace, random_identity
 from jina.parsers import set_gateway_parser
-from jina.peapods.runtimes.stream.gateway import ZmqGatewayStreamer
+from jina.peapods.stream.gateway import ZmqGatewayStreamer
 from jina.proto import jina_pb2
 
 
