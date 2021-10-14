@@ -52,6 +52,45 @@ def test_grpc_data_runtime(mocker):
     assert not GRPCDataRuntime.is_ready(f'{args.host}:{args.port_in}')
 
 
+@pytest.mark.slow
+@pytest.mark.timeout(5)
+def test_grpc_data_runtime_graceful_shutdown():
+    args = set_pea_parser().parse_args([])
+
+    cancel_event = multiprocessing.Event()
+    slow_executor_block_time = 1.0
+
+    def start_runtime(args, cancel_event):
+        with GRPCDataRuntime(args, cancel_event) as runtime:
+            runtime._data_request_handler.handle = lambda *args, **kwargs: time.sleep(
+                slow_executor_block_time
+            )
+            runtime.run_forever()
+
+    runtime_thread = Process(
+        target=start_runtime,
+        args=(args, cancel_event),
+        daemon=True,
+    )
+    runtime_thread.start()
+
+    assert GRPCDataRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0, ctrl_address=f'{args.host}:{args.port_in}', shutdown_event=Event()
+    )
+
+    request_start_time = time.time()
+    Grpclet._create_grpc_stub(f'{args.host}:{args.port_in}', is_async=False).Call(
+        _create_test_data_message()
+    )
+    time.sleep(0.1)
+
+    GRPCDataRuntime.cancel(cancel_event)
+    runtime_thread.join()
+    assert time.time() - request_start_time >= slow_executor_block_time
+
+    assert not GRPCDataRuntime.is_ready(f'{args.host}:{args.port_in}')
+
+
 def _create_test_data_message():
     req = list(
         request_generator(
