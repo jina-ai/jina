@@ -216,6 +216,7 @@ class K8sPod(BasePod, ExitFIFO):
                             api_response.status.updated_replicas is not None
                             and api_response.status.updated_replicas
                             == self.num_replicas
+                            and api_response.status.replicas == self.num_replicas
                         ):
                             logger.success(
                                 f' {self.name} has all its replicas updated!!'
@@ -223,9 +224,16 @@ class K8sPod(BasePod, ExitFIFO):
                             return
                         else:
                             updated_replicas = api_response.status.updated_replicas or 0
-                            logger.info(
-                                f'\nNumber of updated replicas {updated_replicas}, waiting for {self.num_replicas - updated_replicas} replicas to be updated'
-                            )
+                            alive_replicas = api_response.status.replicas or 0
+                            if updated_replicas < self.num_replicas:
+                                logger.info(
+                                    f'\nNumber of updated replicas {updated_replicas}, waiting for {self.num_replicas - updated_replicas} replicas to be updated'
+                                )
+                            else:
+                                logger.info(
+                                    f'\nNumber of alive replicas {alive_replicas}, waiting for {alive_replicas - self.num_replicas} old replicas to be terminated'
+                                )
+
                             time.sleep(1.0)
                     except client.ApiException as ex:
                         exception_to_raise = ex
