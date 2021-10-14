@@ -724,6 +724,39 @@
         <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="replace"><a class="viewcode-back" href="../../../../../../api/jina.peapods.pods.k8slib.kubernetes_tools/#jina.peapods.pods.k8slib.kubernetes_tools.replace">[docs]</a><span class="k">def</span> <span class="nf">replace</span><span class="p">(</span>
+    <span class="n">deployment_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">namespace_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">custom_resource_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">"""Create a resource on Kubernetes based on the `template`. It fills the `template` using the `params`.</span>
+
+<span class="sd">    :param deployment_name: The name of the deployment to replace</span>
+<span class="sd">    :param namespace_name: The name of the namespace where the deployment exists</span>
+<span class="sd">    :param template: path to the template file.</span>
+<span class="sd">    :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.</span>
+<span class="sd">        Defaults to the standard location jina.resources if not specified.</span>
+<span class="sd">    :param params: dictionary for replacing the placeholders (keys) with the actual values.</span>
+<span class="sd">    """</span>
+
+    <span class="kn">import</span> <span class="nn">yaml</span>
+
+    <span class="n">yaml_file_path</span> <span class="o">=</span> <span class="n">_get_yaml</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">custom_resource_dir</span><span class="p">)</span>
+    <span class="n">fd</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">os</span><span class="o">.</span><span class="n">fdopen</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
+            <span class="n">tmp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">yaml_file_path</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">path</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">yml_document_all</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">_k8s_clients</span><span class="o">.</span><span class="n">apps_v1</span><span class="o">.</span><span class="n">replace_namespaced_deployment</span><span class="p">(</span>
+            <span class="n">deployment_name</span><span class="p">,</span> <span class="n">namespace_name</span><span class="p">,</span> <span class="n">yml_document_all</span>
+        <span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+
 <span class="k">def</span> <span class="nf">_get_yaml</span><span class="p">(</span><span class="n">template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">custom_resource_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">custom_resource_dir</span><span class="p">:</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">custom_resource_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">template</span><span class="si">}</span><span class="s1">.yml'</span><span class="p">)</span>

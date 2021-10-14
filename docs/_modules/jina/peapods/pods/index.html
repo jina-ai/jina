@@ -668,14 +668,25 @@
 <span class="sd">    They can be also run in their own containers on remote machines.</span>
 <span class="sd">    """</span>
 
-<div class="viewcode-block" id="BasePod.start"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.BasePod.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'BasePod'</span><span class="p">:</span>
+<div class="viewcode-block" id="BasePod.start"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.BasePod.start">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'BasePod'</span><span class="p">:</span>
         <span class="sd">"""Start to run all :class:`BasePea` in this BasePod.</span>
 
 <span class="sd">        .. note::</span>
 <span class="sd">            If one of the :class:`BasePea` fails to start, make sure that all of them</span>
 <span class="sd">            are properly closed.</span>
 <span class="sd">        """</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="o">...</span></div>
+
+<div class="viewcode-block" id="BasePod.rolling_update"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.BasePod.rolling_update">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">rolling_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Roll update the Executors managed by the Pod</span>
+
+<span class="sd">            .. # noqa: DAR201</span>
+<span class="sd">            .. # noqa: DAR101</span>
+<span class="sd">        """</span>
+        <span class="o">...</span></div>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_set_upload_files</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>

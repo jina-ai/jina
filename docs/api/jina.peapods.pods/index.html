@@ -648,7 +648,7 @@ Internally, the peas can run with the process/thread backend.
 They can be also run in their own containers on remote machines.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.peapods.pods.BasePod.start">
-<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/#BasePod.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.BasePod.start" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/#BasePod.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.BasePod.start" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start to run all <code class="xref py py-class docutils literal notranslate"><span class="pre">BasePea</span></code> in this BasePod.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -660,6 +660,13 @@ are properly closed.</p>
 <dd class="field-odd"><p><a class="reference internal" href="#jina.peapods.pods.BasePod" title="jina.peapods.pods.BasePod"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePod</span></code></a></p>
 </dd>
 </dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.pods.BasePod.rolling_update">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">rolling_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/#BasePod.rolling_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.BasePod.rolling_update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Roll update the Executors managed by the Pod</p>
+<blockquote>
+<div></div></blockquote>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.peapods.pods.BasePod.role">

@@ -597,6 +597,67 @@
     <span class="k">return</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="s1">'-'</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'_'</span><span class="p">,</span> <span class="s1">'-'</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
 
 
+<div class="viewcode-block" id="restart_deployment"><a class="viewcode-back" href="../../../../../../api/jina.peapods.pods.k8slib.kubernetes_deployment/#jina.peapods.pods.k8slib.kubernetes_deployment.restart_deployment">[docs]</a><span class="k">def</span> <span class="nf">restart_deployment</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">image_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">container_cmd</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">container_args</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">logger</span><span class="p">:</span> <span class="n">JinaLogger</span><span class="p">,</span>
+    <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">pull_policy</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">custom_resource_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">port_expose</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">"""Restarts a service on Kubernetes.</span>
+
+<span class="sd">    :param name: name of the service and deployment</span>
+<span class="sd">    :param namespace: k8s namespace of the service and deployment</span>
+<span class="sd">    :param image_name: image for the k8s deployment</span>
+<span class="sd">    :param container_cmd: command executed on the k8s pods</span>
+<span class="sd">    :param container_args: arguments used for the k8s pod</span>
+<span class="sd">    :param logger: used logger</span>
+<span class="sd">    :param replicas: number of replicas</span>
+<span class="sd">    :param pull_policy: pull policy used for fetching the Docker images from the registry.</span>
+<span class="sd">    :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.</span>
+<span class="sd">        Defaults to the standard location jina.resources if not specified.</span>
+<span class="sd">    :param port_expose: port which will be exposed by the deployed containers</span>
+<span class="sd">    :return: dns name of the created service</span>
+<span class="sd">    """</span>
+
+    <span class="c1"># we can always assume the ports are the same for all executors since they run on different k8s pods</span>
+    <span class="c1"># port expose can be defined by the user</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">port_expose</span><span class="p">:</span>
+        <span class="n">port_expose</span> <span class="o">=</span> <span class="mi">8080</span>
+    <span class="n">port_in</span> <span class="o">=</span> <span class="mi">8081</span>
+    <span class="n">port_out</span> <span class="o">=</span> <span class="mi">8082</span>
+    <span class="n">port_ctrl</span> <span class="o">=</span> <span class="mi">8083</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s1">'🔋</span><span class="se">\t</span><span class="s1">Replace Deployment for "</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">" with exposed port "</span><span class="si">{</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">"'</span>
+    <span class="p">)</span>
+    <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+        <span class="n">deployment_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">namespace_name</span><span class="o">=</span><span class="n">namespace</span><span class="p">,</span>
+        <span class="n">template</span><span class="o">=</span><span class="s1">'deployment'</span><span class="p">,</span>
+        <span class="n">params</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">'name'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+            <span class="s1">'namespace'</span><span class="p">:</span> <span class="n">namespace</span><span class="p">,</span>
+            <span class="s1">'image'</span><span class="p">:</span> <span class="n">image_name</span><span class="p">,</span>
+            <span class="s1">'replicas'</span><span class="p">:</span> <span class="n">replicas</span><span class="p">,</span>
+            <span class="s1">'command'</span><span class="p">:</span> <span class="n">container_cmd</span><span class="p">,</span>
+            <span class="s1">'args'</span><span class="p">:</span> <span class="n">container_args</span><span class="p">,</span>
+            <span class="s1">'port_expose'</span><span class="p">:</span> <span class="n">port_expose</span><span class="p">,</span>
+            <span class="s1">'port_in'</span><span class="p">:</span> <span class="n">port_in</span><span class="p">,</span>
+            <span class="s1">'port_out'</span><span class="p">:</span> <span class="n">port_out</span><span class="p">,</span>
+            <span class="s1">'port_ctrl'</span><span class="p">:</span> <span class="n">port_ctrl</span><span class="p">,</span>
+            <span class="s1">'pull_policy'</span><span class="p">:</span> <span class="n">pull_policy</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">custom_resource_dir</span><span class="o">=</span><span class="n">custom_resource_dir</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">namespace</span><span class="si">}</span><span class="s1">.svc'</span></div>
+
+
 <div class="viewcode-block" id="deploy_service"><a class="viewcode-back" href="../../../../../../api/jina.peapods.pods.k8slib.kubernetes_deployment/#jina.peapods.pods.k8slib.kubernetes_deployment.deploy_service">[docs]</a><span class="k">def</span> <span class="nf">deploy_service</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -606,7 +667,7 @@
     <span class="n">logger</span><span class="p">:</span> <span class="n">JinaLogger</span><span class="p">,</span>
     <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">pull_policy</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">init_container</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">init_container</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">custom_resource_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">port_expose</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
