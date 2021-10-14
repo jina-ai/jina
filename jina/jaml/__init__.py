@@ -480,6 +480,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         override_with: Optional[Dict] = None,
         override_metas: Optional[Dict] = None,
         override_requests: Optional[Dict] = None,
+        extra_search_paths: Optional[List[str]] = None,
         **kwargs,
     ) -> 'JAMLCompatible':
         """A high-level interface for loading configuration with features
@@ -529,11 +530,14 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :param override_with: dictionary of parameters to overwrite from the default config's with field
         :param override_metas: dictionary of parameters to overwrite from the default config's metas field
         :param override_requests: dictionary of parameters to overwrite from the default config's requests field
+        :param extra_search_paths: extra paths to search for
         :param kwargs: kwargs for parse_config_source
         :return: :class:`JAMLCompatible` object
         """
 
-        stream, s_path = parse_config_source(source, **kwargs)
+        stream, s_path = parse_config_source(
+            source, extra_search_paths=extra_search_paths, **kwargs
+        )
         with stream as fp:
             # first load yml with no tag
             no_tag_yml = JAML.load_no_tags(fp)
@@ -571,9 +575,12 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 # expand variables
                 no_tag_yml = JAML.expand_dict(no_tag_yml, context)
             if allow_py_modules:
+                _extra_search_paths = extra_search_paths if extra_search_paths else []
                 load_py_modules(
                     no_tag_yml,
-                    extra_search_paths=(os.path.dirname(s_path),) if s_path else None,
+                    extra_search_paths=(_extra_search_paths + [os.path.dirname(s_path)])
+                    if s_path
+                    else None,
                 )
 
             from ..flow.base import Flow
