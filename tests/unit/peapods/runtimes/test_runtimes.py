@@ -1,7 +1,6 @@
 import multiprocessing
 import os
 import threading
-import time
 
 import pytest
 
