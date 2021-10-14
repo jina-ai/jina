@@ -144,6 +144,39 @@ def create(
         os.remove(path)
 
 
+def replace(
+    deployment_name: str,
+    namespace_name: str,
+    template: str,
+    params: Dict,
+    custom_resource_dir: Optional[str] = None,
+):
+    """Create a resource on Kubernetes based on the `template`. It fills the `template` using the `params`.
+
+    :param deployment_name: The name of the deployment to replace
+    :param namespace_name: The name of the namespace where the deployment exists
+    :param template: path to the template file.
+    :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.
+        Defaults to the standard location jina.resources if not specified.
+    :param params: dictionary for replacing the placeholders (keys) with the actual values.
+    """
+
+    import yaml
+
+    yaml_file_path = _get_yaml(template, params, custom_resource_dir)
+    fd, path = tempfile.mkstemp()
+    try:
+        with os.fdopen(fd, 'w') as tmp:
+            tmp.write(yaml_file_path)
+        with open(os.path.abspath(path)) as f:
+            yml_document_all = yaml.safe_load(f)
+        _k8s_clients.apps_v1.replace_namespaced_deployment(
+            deployment_name, namespace_name, yml_document_all
+        )
+    finally:
+        os.remove(path)
+
+
 def _get_yaml(template: str, params: Dict, custom_resource_dir: Optional[str] = None):
     if custom_resource_dir:
         path = os.path.join(custom_resource_dir, f'{template}.yml')

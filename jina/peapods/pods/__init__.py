@@ -88,6 +88,7 @@ class BasePod:
     They can be also run in their own containers on remote machines.
     """
 
+    @abstractmethod
     def start(self) -> 'BasePod':
         """Start to run all :class:`BasePea` in this BasePod.
 
@@ -95,7 +96,17 @@ class BasePod:
             If one of the :class:`BasePea` fails to start, make sure that all of them
             are properly closed.
         """
-        raise NotImplementedError
+        ...
+
+    @abstractmethod
+    def rolling_update(self, *args, **kwargs):
+        """
+        Roll update the Executors managed by the Pod
+
+            .. # noqa: DAR201
+            .. # noqa: DAR101
+        """
+        ...
 
     @staticmethod
     def _set_upload_files(args):
