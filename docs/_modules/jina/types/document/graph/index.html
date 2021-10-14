@@ -215,7 +215,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/flow-api/">Create Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/send-recv/">Flow IO</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/add-exec-to-flow/">Add Executor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/parallel/">Parallelization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/topology/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/async-flow/">Asynchronous Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/flow-as-a-service/">Serving Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/remarks/">Remarks</a></li>
@@ -1176,7 +1176,6 @@
             <span class="n">default_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Trying to iterate over a graph without edges'</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__mermaid_str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__mermaid_str__</span><span class="p">()</span>
 
@@ -1220,7 +1219,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 13, 2021.
+                    Last updated on Oct 14, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

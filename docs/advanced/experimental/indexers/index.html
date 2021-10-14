@@ -239,7 +239,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/flow/flow-api/">Create Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/flow/send-recv/">Flow IO</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/flow/add-exec-to-flow/">Add Executor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/flow/parallel/">Parallelization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/flow/topology/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/flow/async-flow/">Asynchronous Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/flow/flow-as-a-service/">Serving Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/flow/remarks/">Remarks</a></li>
@@ -781,7 +781,7 @@ At the other end, the <strong>rolling update</strong> tells the search Flow to r
 </tbody>
 </table></div>
 <p>The <a class="reference external" href="http://hub.jina.ai">Jina Hub</a> offers multiple Indexers for different use-cases.
-In a lot of production use-cases Indexers heavily use <a class="reference internal" href="../kubernetes/#shards"><span class="std std-ref">shards</span></a> and <a class="reference internal" href="../kubernetes/#replicas"><span class="std std-ref">replicas</span></a>.
+In a lot of production use-cases Indexers heavily use <span class="xref std std-ref">shards</span> and <span class="xref std std-ref">replicas</span>.
 There are four major questions that should be answered, when deciding for an Indexer and its configuration.</p>
 <section id="does-my-data-fit-into-memory">
 <h3>Does my data fit into memory?<a class="headerlink" href="#does-my-data-fit-into-memory" title="Permalink to this headline">¶</a></h3>
@@ -810,7 +810,7 @@ A high-quality Q&amp;A chatbot might be OK with having answers only after one or
 Usually, a new machine will spawn and take over.
 Anyhow, this might take some minutes.
 If you need instant failure recovery, you need to use replicas.
-Jina provides this via the <a class="reference external" href="https://hub.jina.ai/executor/ugatwtp8">FaissPostgresIndexer</a> in combination with <a class="reference internal" href="../kubernetes/#replicas"><span class="std std-ref">replicas</span></a> inside <a class="reference internal" href="../kubernetes/#kubernetes"><span class="std std-ref">kubernetes (k8s)</span></a>.</p>
+Jina provides this via the <a class="reference external" href="https://hub.jina.ai/executor/ugatwtp8">FaissPostgresIndexer</a> in combination with <span class="xref std std-ref">replicas</span> inside <a class="reference internal" href="../kubernetes/#kubernetes"><span class="std std-ref">kubernetes (k8s)</span></a>.</p>
 </section>
 </section>
 </section>
@@ -847,7 +847,7 @@ Jina provides this via the <a class="reference external" href="https://hub.jina.
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 13, 2021.
+                    Last updated on Oct 14, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

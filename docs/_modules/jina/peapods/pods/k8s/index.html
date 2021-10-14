@@ -215,7 +215,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/flow-api/">Create Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/send-recv/">Flow IO</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/add-exec-to-flow/">Add Executor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/parallel/">Parallelization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/topology/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/async-flow/">Asynchronous Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/flow-as-a-service/">Serving Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/remarks/">Remarks</a></li>
@@ -710,7 +710,7 @@
             <span class="n">k8s_client</span> <span class="o">=</span> <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">K8sClients</span><span class="p">()</span><span class="o">.</span><span class="n">apps_v1</span>
 
             <span class="k">with</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="sa">f</span><span class="s1">'waiting_for_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">logger</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'🏝️</span><span class="se">\n\t\t</span><span class="s1">Waiting for "</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">" to be ready, with </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_replicas</span><span class="si">}</span><span class="s1"> replicas'</span>
                 <span class="p">)</span>
                 <span class="n">timeout_ns</span> <span class="o">=</span> <span class="mi">1000000000</span> <span class="o">*</span> <span class="n">_timeout</span> <span class="k">if</span> <span class="n">_timeout</span> <span class="k">else</span> <span class="kc">None</span>
@@ -730,7 +730,7 @@
                             <span class="k">return</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">ready_replicas</span> <span class="o">=</span> <span class="n">api_response</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">ready_replicas</span> <span class="ow">or</span> <span class="mi">0</span>
-                            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                                 <span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1">Number of ready replicas </span><span class="si">{</span><span class="n">ready_replicas</span><span class="si">}</span><span class="s1">, waiting for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_replicas</span> <span class="o">-</span> <span class="n">ready_replicas</span><span class="si">}</span><span class="s1"> replicas to be available'</span>
                             <span class="p">)</span>
                             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
@@ -744,7 +744,7 @@
 
         <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">with</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="sa">f</span><span class="s1">'start_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">logger</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="se">\t\t</span><span class="s1">Deploying "</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">"'</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="se">\t\t</span><span class="s1">Deploying "</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">"'</span><span class="p">)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'gateway'</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_deploy_gateway</span><span class="p">()</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -905,7 +905,7 @@
 <span class="sd">        :return: self</span>
 <span class="sd">        """</span>
         <span class="k">with</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="sa">f</span><span class="s1">'start_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">logger</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'🏝️</span><span class="se">\t</span><span class="s1">Create deployments for "</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">"'</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'🏝️</span><span class="se">\t</span><span class="s1">Create deployments for "</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">"'</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">k8s_head_deployment</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_head_deployment</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">k8s_deployment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">k8s_deployments</span><span class="p">:</span>
@@ -1080,7 +1080,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 13, 2021.
+                    Last updated on Oct 14, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

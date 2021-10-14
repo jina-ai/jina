@@ -215,7 +215,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/flow-api/">Create Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/send-recv/">Flow IO</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/add-exec-to-flow/">Add Executor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/parallel/">Parallelization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/topology/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/async-flow/">Asynchronous Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/flow-as-a-service/">Serving Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/remarks/">Remarks</a></li>
@@ -715,7 +715,7 @@
                     <span class="c1"># Kubernetes apiserver, it looks like:</span>
                     <span class="c1"># {..."message": "&lt;resource&gt; &lt;name&gt; already exists"...}</span>
                     <span class="n">resp</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">api_exception</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'🔁</span><span class="se">\t</span><span class="si">{</span><span class="n">resp</span><span class="p">[</span><span class="s2">"message"</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'🔁</span><span class="se">\t</span><span class="si">{</span><span class="n">resp</span><span class="p">[</span><span class="s2">"message"</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">e</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e2</span><span class="p">:</span>
@@ -772,8 +772,9 @@
 <span class="sd">    """</span>
     <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s1">'sending requests to the Kubernetes cluster requires to install the portforward package, '</span>
-        <span class="s1">'please do `pip install "jina[portforward]"`'</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s1">'Sending requests to the Kubernetes cluster requires to install the portforward package. '</span>
+        <span class="s1">'Please do `pip install "jina[portforward]"`'</span>
+        <span class="s1">'Also make sure golang is installed `https://golang.org/`'</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="kn">import</span> <span class="nn">portforward</span>
 
@@ -794,7 +795,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 13, 2021.
+                    Last updated on Oct 14, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
