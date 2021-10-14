@@ -1,4 +1,4 @@
-## Document
+# Document
 
 ### 1. What can kind of data can a Document contain?
 

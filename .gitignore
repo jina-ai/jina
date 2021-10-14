@@ -151,3 +151,7 @@ output/
 # kubernetes testing
 .pytest-kind
 .kube
+
+# node dependencies
+
+node_modules/

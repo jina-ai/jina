@@ -14,6 +14,7 @@ executor-api
 executor-built-in-features
 executors-in-action
 repository-structure
+executor-quiz
 ```
 
 ````{admonition} See Also
