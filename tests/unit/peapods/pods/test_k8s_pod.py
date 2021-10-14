@@ -240,7 +240,7 @@ def test_start_deploys_runtime():
 
     assert dns_name == pod_name
     assert kwargs['namespace'] == namespace
-    assert kwargs['image_name'] == f'jinaai/jina:{pod.version}-py38-perf'
+    assert kwargs['image_name'] == f'jinaai/jina:{pod.version}-py38-standard'
     assert kwargs['replicas'] == 1
     assert kwargs['init_container'] is None
     assert kwargs['custom_resource_dir'] is None
