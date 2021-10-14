@@ -127,11 +127,18 @@ An Executor can be loaded from and stored to a YAML file. The YAML file has the 
 ```yaml
 jtype: MyExecutor
 with:
-  ...
+  parameter_1: foo
+  parameter_2: bar
 metas:
-  ...
+  name: MyExecutor
+  description: "MyExecutor does a thing to the stuff in your Documents"
+  workspace: workspace
+  py_modules:
+  - executor.py
 requests:
-  ...
+  index: class_index_method
+  search: class_search_method
+  random: class_other_method
 ```
 
 - `jtype` is a string. Defines the class name, interchangeable with bang mark `!`;
