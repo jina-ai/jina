@@ -99,7 +99,7 @@ def test_flow_with_needs(
             infrastructure='K8S',
             protocol='http',
             timeout_ready=120000,
-            k8s_connection_pool=k8s_connection_pool,
+            k8s_disable_connection_pool=not k8s_connection_pool,
         )
         .add(
             name='segmenter',
@@ -141,6 +141,11 @@ def test_flow_with_needs(
     assert len(docs) == 10
     for doc in docs:
         assert set(doc.tags['traversed-executors']) == expected_traversed_executors
+
+    for pod in flow._pod_nodes.values():
+        assert pod.args.k8s_connection_pool == k8s_connection_pool
+        for peapod in pod.k8s_deployments:
+            assert peapod.deployment_args.k8s_connection_pool == k8s_connection_pool
 
 
 @pytest.mark.timeout(3600)
