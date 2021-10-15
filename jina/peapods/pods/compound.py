@@ -264,15 +264,29 @@ class CompoundPod(BasePod, ExitStack):
             result.append(_args)
         return result
 
-    def rolling_update(
+    async def rolling_update(
         self, dump_path: Optional[str] = None, *, uses_with: Optional[Dict] = None
     ):
         """Reload all Pods of this Compound Pod.
         :param dump_path: **backwards compatibility** This function was only accepting dump_path as the only potential arg to override
         :param uses_with: a Dictionary of arguments to restart the executor with
         """
-        for shard in self.shards:
-            shard.rolling_update(dump_path=dump_path, uses_with=uses_with)
+        tasks = []
+        try:
+            import asyncio
+
+            tasks = [
+                asyncio.create_task(
+                    shard.rolling_update(dump_path=dump_path, uses_with=uses_with)
+                )
+                for shard in self.shards
+            ]
+            for future in asyncio.as_completed(tasks):
+                _ = await future
+        except:
+            for task in tasks:
+                if not task.done():
+                    task.cancel()
 
     @property
     def _mermaid_str(self) -> List[str]:
