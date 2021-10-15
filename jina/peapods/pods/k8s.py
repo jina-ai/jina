@@ -154,8 +154,6 @@ class K8sPod(BasePod, ExitFIFO):
 
             from kubernetes import client
 
-            k8s_client = kubernetes_client.K8sClients().apps_v1
-
             with JinaLogger(f'waiting_for_{self.name}') as logger:
                 logger.debug(
                     f'🏝️\n\t\tWaiting for "{self.name}" to be ready, with {self.num_replicas} replicas'
@@ -165,9 +163,7 @@ class K8sPod(BasePod, ExitFIFO):
                 exception_to_raise = None
                 while timeout_ns is None or time.time_ns() - now < timeout_ns:
                     try:
-                        api_response = k8s_client.read_namespaced_deployment(
-                            name=self.dns_name, namespace=self.k8s_namespace
-                        )
+                        api_response = self._read_namespaced_deployment()
                         assert api_response.status.replicas == self.num_replicas
                         if (
                             api_response.status.ready_replicas is not None
@@ -182,6 +178,7 @@ class K8sPod(BasePod, ExitFIFO):
                             )
                             time.sleep(1.0)
                     except client.ApiException as ex:
+                        print(ex)
                         exception_to_raise = ex
                         break
             fail_msg = f' Deployment {self.name} did not start with a timeout of {self.common_args.timeout_ready}'
@@ -295,6 +292,11 @@ class K8sPod(BasePod, ExitFIFO):
 
         def _delete_namespaced_deployment(self):
             return kubernetes_client.K8sClients().apps_v1.delete_namespaced_deployment(
+                name=self.dns_name, namespace=self.k8s_namespace
+            )
+
+        def _read_namespaced_deployment(self):
+            return kubernetes_client.K8sClients().apps_v1.read_namespaced_deployment(
                 name=self.dns_name, namespace=self.k8s_namespace
             )
 

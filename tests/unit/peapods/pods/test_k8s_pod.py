@@ -440,3 +440,57 @@ def test_pod_start_close_given_tail_deployment(
         assert isinstance(pod.k8s_tail_deployment, K8sPod._K8sDeployment)
         assert pod.k8s_tail_deployment.name == name + '-tail'
         assert pod.args.noblock_on_start
+
+
+@pytest.mark.parametrize(
+    'all_replicas_ready',
+    [
+        True,  # enter wait-until-success and ready replicas = num of replicas
+        False,  # enter wait-until-success and ready replicas < num of replicas
+    ],
+)
+def test_pod_wait_for_success(all_replicas_ready, mocker, caplog):
+    args_list = [
+        '--name',
+        'test-wait-success',
+        '--k8s-namespace',
+        'test-namespace',
+        '--shards',
+        '1',
+        '--replicas',
+        '3',
+        '--timeout-ready',
+        '100',
+    ]
+    if all_replicas_ready:
+        mocker.patch(
+            'jina.peapods.pods.k8s.K8sPod._K8sDeployment._read_namespaced_deployment',
+            return_value=client.V1Deployment(
+                status=client.V1DeploymentStatus(replicas=3, ready_replicas=3)
+            ),
+        )  # all ready
+    else:
+        mocker.patch(
+            'jina.peapods.pods.k8s.K8sPod._K8sDeployment._read_namespaced_deployment',
+            return_value=client.V1Deployment(
+                status=client.V1DeploymentStatus(replicas=3, ready_replicas=1)
+            ),
+        )  # not all peas ready
+    args = set_pod_parser().parse_args(args_list)
+    mocker.patch(
+        'jina.peapods.pods.k8slib.kubernetes_deployment.deploy_service',
+        return_value=f'test-wait-success.test-namespace.svc',
+    )
+    mocker.patch(
+        'jina.peapods.pods.k8s.K8sPod._K8sDeployment._delete_namespaced_deployment',
+        return_value=client.V1Status(status=200),
+    )
+    if all_replicas_ready:
+        with K8sPod(args):
+            pass
+    else:
+        # expect Number of ready replicas 1, waiting for 2 replicas to be available
+        # keep waiting, and we set a small timeout-ready, raise the exception
+        with pytest.raises(jina.excepts.RuntimeFailToStart):
+            with K8sPod(args):
+                pass
