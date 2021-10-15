@@ -85,7 +85,8 @@ def replace(
             tmp.write(yaml_file_path)
         with open(os.path.abspath(path)) as f:
             yml_document_all = yaml.safe_load(f)
-        _k8s_clients.apps_v1.replace_namespaced_deployment(
+        clients = K8sClients()
+        clients.apps_v1.replace_namespaced_deployment(
             deployment_name, namespace_name, yml_document_all
         )
     finally:

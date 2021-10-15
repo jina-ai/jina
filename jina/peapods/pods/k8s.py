@@ -198,7 +198,7 @@ class K8sPod(BasePod, ExitFIFO):
 
             from kubernetes import client
 
-            k8s_client = kubernetes_tools.K8sClients().apps_v1
+            k8s_client = kubernetes_client.K8sClients().apps_v1
 
             with JinaLogger(f'waiting_restart_for_{self.name}') as logger:
                 logger.info(
