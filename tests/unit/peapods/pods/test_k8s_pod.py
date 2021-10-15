@@ -2,12 +2,13 @@ from typing import Union, Dict, Tuple, List, Optional, Set
 from unittest.mock import Mock
 
 import pytest
+from kubernetes import client
 
 import jina
 from jina.helper import Namespace
 from jina.parsers import set_pod_parser, set_gateway_parser
 from jina.peapods.pods.k8s import K8sPod
-from jina.peapods.pods.k8slib import kubernetes_deployment
+from jina.peapods.pods.k8slib import kubernetes_deployment, kubernetes_client
 from jina.peapods.pods.k8slib.kubernetes_deployment import dictionary_to_cli_param
 
 
@@ -338,3 +339,42 @@ def test_uses_before_and_uses_after(
 
     actual_executors = [executor[0][0] for executor in deploy_mock.call_args_list]
     assert actual_executors == expected_executors
+
+
+@pytest.mark.parametrize(
+    'name, k8s_namespace, shards, replicas',
+    [('test-with-multiple-shards', 'test-namespace', '2', '1')],
+)
+def test_pod_start_given_head_deployment(name, k8s_namespace, shards, replicas, mocker):
+    args = set_pod_parser().parse_args(
+        [
+            '--name',
+            name,
+            '--k8s-namespace',
+            k8s_namespace,
+            '--shards',
+            shards,
+            '--replicas',
+            replicas,
+            '--noblock-on-start',
+        ]
+    )
+    pod = K8sPod(args)
+    pod.k8s_head_deployment
+    assert isinstance(pod.k8s_head_deployment, K8sPod._K8sDeployment)
+    assert pod.k8s_head_deployment.name == name + '-head'
+    assert pod.num_peas == 4
+    assert pod.args.noblock_on_start
+    # enter `_deploy_runtime`
+    mocker.patch(
+        'jina.peapods.pods.k8slib.kubernetes_deployment.deploy_service',
+        return_value=f'{name}.{k8s_namespace}.svc',
+    )
+    rv = pod.start()
+    assert isinstance(rv, K8sPod)
+    status_v1 = client.V1Status(status=200)
+    mocker.patch(
+        'jina.peapods.pods.k8s.K8sPod._K8sDeployment._delete_namespaced_deployment',
+        return_value=status_v1,
+    )
+    pod.close()

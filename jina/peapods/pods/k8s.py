@@ -277,13 +277,9 @@ class K8sPod(BasePod, ExitFIFO):
         def close(self):
             from kubernetes import client
 
-            k8s_client = kubernetes_client.K8sClients().apps_v1
-
             with JinaLogger(f'close_{self.name}') as logger:
                 try:
-                    resp = k8s_client.delete_namespaced_deployment(
-                        name=self.dns_name, namespace=self.k8s_namespace
-                    )
+                    resp = self._delete_namespaced_deployment()
                     if resp.status == 'Success':
                         logger.success(
                             f' Successful deletion of deployment {self.name}'
@@ -296,6 +292,11 @@ class K8sPod(BasePod, ExitFIFO):
                     logger.error(
                         f' Error deleting deployment {self.name}: {exc.reason} '
                     )
+
+        def _delete_namespaced_deployment(self):
+            return kubernetes_client.K8sClients().apps_v1.delete_namespaced_deployment(
+                name=self.dns_name, namespace=self.k8s_namespace
+            )
 
         def __enter__(self):
             return self.start()
