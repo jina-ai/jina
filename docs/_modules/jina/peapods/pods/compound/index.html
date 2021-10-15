@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.10.09"/>
-        <title>jina.peapods.pods.compound - Jina 2.1.8 documentation</title>
+        <title>jina.peapods.pods.compound - Jina 2.1.9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 2.1.8 documentation</div>
+                <div class="brand">Jina 2.1.9 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -622,6 +622,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tail_args</span> <span class="o">=</span> <span class="n">BasePod</span><span class="o">.</span><span class="n">_copy_to_tail_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">polling</span><span class="p">)</span>
         <span class="c1"># uses before with shards apply to shards and not to replicas</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shards</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: List['Pod']</span>
+        <span class="c1"># BACKWARDS COMPATIBILITY:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">parallel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">shards</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assign_shards</span><span class="p">()</span>
 
 <div class="viewcode-block" id="CompoundPod.assign_shards"><a class="viewcode-back" href="../../../../../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod.assign_shards">[docs]</a>    <span class="k">def</span> <span class="nf">assign_shards</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -796,6 +798,8 @@
             <span class="p">]</span>
             <span class="n">_args</span><span class="o">.</span><span class="n">peas_hosts</span> <span class="o">=</span> <span class="n">pod_host_list</span>
             <span class="n">_args</span><span class="o">.</span><span class="n">shard_id</span> <span class="o">=</span> <span class="n">idx</span>
+            <span class="c1"># BACKWARDS COMPATIBILITY:</span>
+            <span class="n">_args</span><span class="o">.</span><span class="n">pea_id</span> <span class="o">=</span> <span class="n">_args</span><span class="o">.</span><span class="n">shard_id</span>
             <span class="n">_args</span><span class="o">.</span><span class="n">identity</span> <span class="o">=</span> <span class="n">random_identity</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">_args</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
                 <span class="n">_args</span><span class="o">.</span><span class="n">name</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">'/shard-</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s1">'</span>
