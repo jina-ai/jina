@@ -342,25 +342,91 @@ def test_uses_before_and_uses_after(
 
 
 @pytest.mark.parametrize(
-    'name, k8s_namespace, shards, replicas',
-    [('test-with-multiple-shards', 'test-namespace', '2', '1')],
+    'name, k8s_namespace, shards, replicas, needs, uses_before',
+    [
+        (
+            'test-with-multiple-shards',
+            'test-namespace',
+            '2',
+            '1',
+            [],
+            False,
+        ),  # shards > 1
+        (
+            'test-with-replicas-needs',
+            'test-namespace',
+            '1',
+            '2',
+            [1, 2],
+            False,
+        ),  # replicas > 1 and needs
+        ('test-with-uses-before', 'test-namespace', '1', '1', [], True),  # uses before
+    ],
 )
 def test_pod_start_close_given_head_deployment(
-    name, k8s_namespace, shards, replicas, mocker
+    name, k8s_namespace, shards, replicas, mocker, needs, uses_before
 ):
-    args = set_pod_parser().parse_args(
-        [
-            '--name',
-            name,
-            '--k8s-namespace',
-            k8s_namespace,
-            '--shards',
-            shards,
-            '--replicas',
-            replicas,
-            '--noblock-on-start',
-        ]
+    args_list = [
+        '--name',
+        name,
+        '--k8s-namespace',
+        k8s_namespace,
+        '--shards',
+        shards,
+        '--replicas',
+        replicas,
+        '--noblock-on-start',
+    ]
+    if uses_before:
+        args_list.extend(['--uses-before', 'custom-executor-before'])
+    args = set_pod_parser().parse_args(args_list)
+    mocker.patch(
+        'jina.peapods.pods.k8slib.kubernetes_deployment.deploy_service',
+        return_value=f'{name}.{k8s_namespace}.svc',
     )
+    mocker.patch(
+        'jina.peapods.pods.k8s.K8sPod._K8sDeployment._delete_namespaced_deployment',
+        return_value=client.V1Status(status=200),
+    )
+    with K8sPod(args, needs=needs) as pod:
+        # enter `_deploy_runtime`
+        assert isinstance(pod.k8s_head_deployment, K8sPod._K8sDeployment)
+        assert pod.k8s_head_deployment.name == name + '-head'
+        assert pod.args.noblock_on_start
+
+
+@pytest.mark.parametrize(
+    'name, k8s_namespace, shards, uses_after',
+    [
+        (
+            'test-with-multiple-shards',
+            'test-namespace',
+            '2',
+            False,
+        ),  # shards > 1
+        (
+            'test-with-uses-after',
+            'test-namespace',
+            '1',
+            True,
+        ),  # uses-after
+    ],
+)
+def test_pod_start_close_given_tail_deployment(
+    name, k8s_namespace, shards, mocker, uses_after
+):
+    args_list = [
+        '--name',
+        name,
+        '--k8s-namespace',
+        k8s_namespace,
+        '--shards',
+        shards,
+        '--noblock-on-start',
+    ]
+    if uses_after:
+        args_list.extend(['--uses-after', 'custom-executor-after'])
+    args = set_pod_parser().parse_args(args_list)
     mocker.patch(
         'jina.peapods.pods.k8slib.kubernetes_deployment.deploy_service',
         return_value=f'{name}.{k8s_namespace}.svc',
@@ -371,8 +437,6 @@ def test_pod_start_close_given_head_deployment(
     )
     with K8sPod(args) as pod:
         # enter `_deploy_runtime`
-        assert isinstance(pod.k8s_head_deployment, K8sPod._K8sDeployment)
-        assert pod.k8s_head_deployment.name == name + '-head'
-        assert pod.num_peas == 4
+        assert isinstance(pod.k8s_tail_deployment, K8sPod._K8sDeployment)
+        assert pod.k8s_tail_deployment.name == name + '-tail'
         assert pod.args.noblock_on_start
-        pod.close()

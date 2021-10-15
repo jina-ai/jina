@@ -6,4 +6,3 @@ data:
   JINA_LOG_LEVEL: "DEBUG"
   pythonunbuffered: "1"
   worker_class: "uvicorn.workers.UvicornH11Worker"
-  jina_executor_control_port: "8081"
