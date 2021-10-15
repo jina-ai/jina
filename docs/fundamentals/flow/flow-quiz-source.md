@@ -2,7 +2,7 @@
 
 ### 1. What does a Flow do?
 
-- The `Flow` ties Executors together into a processing pipeline to perform a bigger task, like indexing or querying a dataset.
+- The `Flow` ties Executors together into a processing pipeline to perform a bigger task, like indexing or querying a dataset. --correct-answer--
 - The `Flow` is a graphical interface that lets users see how their `Documents` are flowing into the processing pipeline.
 - The `Flow` is short for "fast, low-resource" and is a special kind of Executor for low-powered machines.
 
@@ -10,8 +10,8 @@
 
 ### 2. What languages can you use to create a Flow?
 
-- Python directly
-- YAML
+- Python directly --correct-answer--
+- YAML --correct-answer--
 - JSON
 - From the command line with `jina flow new`
 
@@ -26,7 +26,8 @@
 
     with flow:
       flow.index()
-    ```
+    ``` 
+    --correct-answer--
 
 -   ```python
     from jina import Flow
@@ -49,6 +50,7 @@
     with flow:
       flow.index()
     ```
+    --correct-answer--
 
 -   ```python
     with flow:
@@ -74,6 +76,7 @@ with `on='/index'` , `on='/search'`, etc.
 
     f = Flow().add(uses=MyExecutor)
     ```
+    --correct-answer--
 
 -   ```python
     from jina import Flow, Executor
@@ -105,6 +108,7 @@ with `on='/index'` , `on='/search'`, etc.
         uses_metas={'workspace': 'different_workspace'},
     )
     ```
+    --correct-answer--
 
 -   ```python
     flow = Flow().add(
@@ -124,7 +128,7 @@ with `on='/index'` , `on='/search'`, etc.
 ### 7. What kind of input does an `AsyncFlow` accept?
 
 - Exactly the same as a standard Flow
-- Async generators
+- Async generators --correct-answer--
 - `AsyncDocumentArray`s
 
 > AsyncFlow is an “async version” of the Flow class. Unlike Flow, [AsyncFlow accepts input and output functions as async generators](https://docs.jina.ai/fundamentals/flow/async-flow/#create-asyncflow). This is useful when your data sources involve other asynchronous libraries (e.g. motor for MongoDB):
@@ -132,9 +136,9 @@ with `on='/index'` , `on='/search'`, etc.
 ### 8. What communication protocols does a Flow support?
 
 - SOAP
-- gRPC
-- WebSocket
-- REST
+- gRPC --correct-answer--
+- WebSocket --correct-answer--
+- REST --correct-answer--
 - GraphQL
 
 > Jina supports [HTTP (RESTful), gRPC, and WebSocket protocols](https://docs.jina.ai/fundamentals/flow/flow-as-a-service/#supported-communication-protocols).
@@ -149,6 +153,7 @@ with `on='/index'` , `on='/search'`, etc.
       f.port_expose = 12345
       f.block()
     ```
+    --correct-answer--
 
 -   ```python
     flow = Flow(protocol="http", port_expose=12345)
@@ -171,6 +176,6 @@ with `on='/index'` , `on='/search'`, etc.
 
 - No. Jina only supports access from a web page running on the same machine.
 - Yes, out of the box
-- Yes, but you have to enable CORS
+- Yes, but you have to enable CORS --correct-answer--
 
 > CORS (cross-origin-resources-sharing) is [by default disabled for security](https://docs.jina.ai/fundamentals/flow/flow-as-a-service/#enable-cross-origin-resources-sharing-cors). That means you can not access the service from a webpage with different domain until you enable it.

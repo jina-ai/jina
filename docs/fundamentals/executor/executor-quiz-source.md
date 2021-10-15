@@ -3,7 +3,7 @@
 ### 1. What does an Executor do?
 
 - An Executor is the tool you use to execute your Flow from the CLI: `execute jina_app.py`.
-- An Executor performs a single task on a `Document` or `DocumentArray`, like segmenting or encoding it.
+- An Executor performs a single task on a `Document` or `DocumentArray`, like segmenting or encoding it. --correct-answer--
 - An Executor is a processing pipeline for indexing or querying a dataset.
 
 > [An Executor](https://docs.jina.ai/fundamentals/executor/) represents a processing component in a Jina Flow. It performs a single task on a `Document` or `DocumentArray`.
@@ -16,12 +16,14 @@
         def foo(self, **kwargs):
             print(f'foo is called: {kwargs}')
     ```
+    --correct-answer--
 
 -   ```python
         @requests
         def foo(self, **kwargs):
             print(f'foo is called: {kwargs}')
     ```
+    --correct-answer--
 
 -   ```python
         @requests('/index')
@@ -31,18 +33,18 @@
 
 > [`@requests`](https://docs.jina.ai/fundamentals/executor/executor-api/#method-decorator) defines when a function will be invoked in the Flow. It has a keyword `on=` to define the endpoint.
 
-### 3. What **should** an Executor method return?
+### 3. What things **could** an Executor method return?
 
-- Nothing.
+- Nothing. --correct-answer--
 - It should yield the processed `Document`.
-- It should return the processed `DocumentArray`.
+- It should return the processed `DocumentArray`. --correct-answer--
 - Whatever you like.
 
 > Methods decorated with `@request` can [return `Optional[DocumentArray]`](https://docs.jina.ai/fundamentals/executor/executor-api/#method-returns). The return is optional. **All changes happen in-place**.
 
 ### 4. Can you use an Executor outside of a Flow?
 
-- Yes, just like an ordinary Python object
+- Yes, just like an ordinary Python object --correct-answer--
 - Yes, but you need to use `jina.executor.load_executor` function
 - No
 
@@ -50,8 +52,8 @@
 
 ### 5. What formats are supported for creating Executors?
 
-- YAML
-- Python
+- YAML --correct-answer--
+- Python --correct-answer--
 - JSON
 - JinaScript
 
@@ -61,7 +63,7 @@
 
 - As a zip file
 - Directly as a git repo
-- As a Python package in a git repo
+- As a Python package in a git repo --correct-answer--
 - Jina doesn't support multi-file Executors
 
 > When you are working with multiple python files, [you should organize them as a Python package](https://docs.jina.ai/fundamentals/executor/repository-structure/) and put them in a special folder inside your repository (as you would normally do with Python packages). 
@@ -71,14 +73,14 @@
 - Send them a link to the repo
 - Dockerize your Executor and push directly to Docker Hub
 - Push your Executor to Pypi and ask them to install via `pip`
-- Push your Executor to Jina Hub
+- Push your Executor to Jina Hub --correct-answer--
 
-> By using [Jina Hub](https://docs.jina.ai/advanced/hub/) you can pull prebuilt Executors to dramatically reduce the effort and complexity needed in your search system, or push your own custom Executors to share privately or publicly.
+> By using [Jina Hub](https://docs.jina.ai/advanced/hub/) you can pull prebuilt Executors to dramatically reduce the effort and complexity needed in your search system, or push your own custom Executors to share privately or publicly. Jina Hub will automatically Dockerize your Executor so you don't have to.
 
 ### 8. How would you create a new Hub Executor from the CLI?
 
 - `jina hub create <executor_name>`
-- `jina hub new`
+- `jina hub new` --correct-answer--
 - `cat executor.py | jina hub`
 
 > Running [`jina hub new`](https://docs.jina.ai/advanced/hub/create-hub-executor/#create-executor) starts a wizard that will ask you some questions to build your Executor.
@@ -90,6 +92,7 @@
 
     f = Flow().add(uses='jinahub+docker://executor_name')
     ```
+    --correct-answer--
 
 -   ```python
     from jina import Flow, Hub
@@ -109,7 +112,7 @@
 
 ### 10. How would you publish a **private** Executor?
 
-- `jina hub push --private <path_to_executor_folder>`.
+- `jina hub push --private <path_to_executor_folder>`. --correct-answer--
 - `jina hub private push <path_to_executor_folder>`.
 - `jina hub push` then log in to Jina Hub front-end to set it as private.
 

@@ -32,18 +32,20 @@
     doc = Document(uri="foo.txt")
     doc.blob = blob(doc.uri)
     ```
-    --correct-answer--
 
 -   ```python
     doc = Document(uri="foo.txt")
     doc.convert_uri_to_blob()
     ```
+    
+    --correct-answer--
+
 
 > Converting to a blob is a built-in method of a `Document` object (as are many other [`.convert_x_to_y` methods](https://docs.jina.ai/fundamentals/document/document-api/#conversion-from-uri-to-content))
 
 ### 4. In what format is a Document's embedding?
 
-- An array (`numpy.ndarray`, Scipy sparse array, TensorFlow/PyTorch sparse array, etc)
+- An array (`numpy.ndarray`, Scipy sparse array, TensorFlow/PyTorch sparse array, etc) --correct-answer--
 - Byte string
 - Protobuf
 - Plain text
@@ -58,6 +60,7 @@
 
     doc_array = DocumentArray(from_files("image_dir/*.png"))
     ```
+    --correct-answer--
 
 
 -   ```python
@@ -89,6 +92,7 @@
       Document(text='i am chunk 3'),
     ])
     ```
+    --correct-answer--
 
 -   ```python
     from jina import Document
@@ -117,6 +121,7 @@
     regexes = {'city': r'B.*'}
     docarray_filtered = docarray.find(regexes=regexes)
     ```
+    --correct-answer--
 
 -   ```python
     d1 = Document(tags={'city': 'Barcelona', 'phone': 'None'})
@@ -129,7 +134,7 @@
     filtered_docarray = DocumentArray()
     for doc in docarray:
       if doc.tags["city"][0] == "B":
-        filter_docarray.append(doc)
+        filtered_docarray.append(doc)
     ```
 
 > DocumentArray provides function [.find](https://docs.jina.ai/fundamentals/document/documentarray-api/#advanced-filtering-via-find) that finds the Documents in the DocumentArray whose tag values match a dictionary of user provided regular expressions. Since a Document can have many tags, the function expects one regular expression for each tag that a user wants to consider.
@@ -138,7 +143,7 @@
 ### 8. When would you use `DocumentArrayMemmap` instead of `DocumentArray`?
 
 - `DocumentArrayMemmap` is just the name for `DocumentArray` in the internals of Jina code
-- When you need to index a large number of `Document`s and don't want to exhaust your memory
+- When you need to index a large number of `Document`s and don't want to exhaust your memory --correct-answer--
 - When you want to save disk space
 
 > When your DocumentArray object contains a large number of Document, holding it in memory can be very demanding. You may want to use [DocumentArrayMemmap](https://docs.jina.ai/fundamentals/document/documentarraymemmap-api/) to alleviate this issue.
@@ -149,7 +154,7 @@
 - `append`
 - `split`
 - `shuffle`
-- `sort`
+- `sort` --correct-answer--
 
 > The API of `DocumentArrayMemmap` is almost the same as `DocumentArray`, but with a [few key differences](https://docs.jina.ai/fundamentals/document/documentarraymemmap-api/#api-side-by-side-vs-documentarray).
 
@@ -162,6 +167,7 @@
 
     doc_array_memmap = DocumentArrayMemmap(doc_array)
     ```
+    --correct-answer--
 
 -   ```python
     from jina import Document, DocumentArray, DocumentArrayMemmap
