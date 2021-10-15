@@ -2376,8 +2376,13 @@
 <span class="sd">        :param dump_path: **backwards compatibility** This function was only accepting dump_path as the only potential arg to override</span>
 <span class="sd">        :param uses_with: a Dictionary of arguments to restart the executor with</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="n">pod_name</span><span class="p">]</span><span class="o">.</span><span class="n">rolling_update</span><span class="p">(</span>
-            <span class="n">dump_path</span><span class="o">=</span><span class="n">dump_path</span><span class="p">,</span> <span class="n">uses_with</span><span class="o">=</span><span class="n">uses_with</span>
+        <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">run_async</span>
+
+        <span class="n">run_async</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="n">pod_name</span><span class="p">]</span><span class="o">.</span><span class="n">rolling_update</span><span class="p">,</span>
+            <span class="n">dump_path</span><span class="o">=</span><span class="n">dump_path</span><span class="p">,</span>
+            <span class="n">uses_with</span><span class="o">=</span><span class="n">uses_with</span><span class="p">,</span>
+            <span class="n">any_event_loop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span></div>
 
     <span class="nd">@property</span>

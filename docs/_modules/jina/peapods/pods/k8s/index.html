@@ -769,7 +769,7 @@
                 <span class="n">fail_msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">': </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">exception_to_raise</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
             <span class="k">raise</span> <span class="n">RuntimeFailToStart</span><span class="p">(</span><span class="n">fail_msg</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">wait_restart_success</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">wait_restart_success</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="n">_timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">common_args</span><span class="o">.</span><span class="n">timeout_ready</span>
             <span class="k">if</span> <span class="n">_timeout</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">_timeout</span> <span class="o">=</span> <span class="kc">None</span>
@@ -777,6 +777,7 @@
                 <span class="n">_timeout</span> <span class="o">/=</span> <span class="mf">1e3</span>
 
             <span class="kn">from</span> <span class="nn">kubernetes</span> <span class="kn">import</span> <span class="n">client</span>
+            <span class="kn">import</span> <span class="nn">asyncio</span>
 
             <span class="n">k8s_client</span> <span class="o">=</span> <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">K8sClients</span><span class="p">()</span><span class="o">.</span><span class="n">apps_v1</span>
 
@@ -819,7 +820,7 @@
                                     <span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1">Number of alive replicas </span><span class="si">{</span><span class="n">alive_replicas</span><span class="si">}</span><span class="s1">, waiting for </span><span class="si">{</span><span class="n">alive_replicas</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_replicas</span><span class="si">}</span><span class="s1"> old replicas to be terminated'</span>
                                 <span class="p">)</span>
 
-                            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+                            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
                     <span class="k">except</span> <span class="n">client</span><span class="o">.</span><span class="n">ApiException</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
                         <span class="n">exception_to_raise</span> <span class="o">=</span> <span class="n">ex</span>
                         <span class="k">break</span>
@@ -1000,7 +1001,7 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="s1">'localhost'</span>
 
-<div class="viewcode-block" id="K8sPod.rolling_update"><a class="viewcode-back" href="../../../../../api/jina.peapods.pods.k8s/#jina.peapods.pods.k8s.K8sPod.rolling_update">[docs]</a>    <span class="k">def</span> <span class="nf">rolling_update</span><span class="p">(</span>
+<div class="viewcode-block" id="K8sPod.rolling_update"><a class="viewcode-back" href="../../../../../api/jina.peapods.pods.k8s/#jina.peapods.pods.k8s.K8sPod.rolling_update">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">rolling_update</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">dump_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
         <span class="sd">"""Reload all Deployments of this K8s Pod.</span>
@@ -1011,7 +1012,7 @@
             <span class="n">deployment</span><span class="o">.</span><span class="n">rolling_update</span><span class="p">(</span><span class="n">dump_path</span><span class="o">=</span><span class="n">dump_path</span><span class="p">,</span> <span class="n">uses_with</span><span class="o">=</span><span class="n">uses_with</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">deployment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">k8s_deployments</span><span class="p">:</span>
-            <span class="n">deployment</span><span class="o">.</span><span class="n">wait_restart_success</span><span class="p">()</span></div>
+            <span class="k">await</span> <span class="n">deployment</span><span class="o">.</span><span class="n">wait_restart_success</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="K8sPod.start"><a class="viewcode-back" href="../../../../../api/jina.peapods.pods.k8s/#jina.peapods.pods.k8s.K8sPod.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'K8sPod'</span><span class="p">:</span>
         <span class="sd">"""Deploy the kubernetes pods via k8s Deployment and k8s Service.</span>
