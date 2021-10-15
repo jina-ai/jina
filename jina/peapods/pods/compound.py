@@ -40,6 +40,7 @@ class CompoundPod(BasePod, ExitStack):
         self.is_tail_router = True
         self.head_args = BasePod._copy_to_head_args(args, args.polling)
         self.tail_args = BasePod._copy_to_tail_args(self.args, self.args.polling)
+        # uses before with shards apply to shards and not to replicas
         self.shards = []  # type: List['Pod']
         self.assign_shards()
 
@@ -47,6 +48,8 @@ class CompoundPod(BasePod, ExitStack):
         """Assign shards to the CompoundPod"""
         self.shards.clear()
         cargs = copy.copy(self.args)
+        cargs.uses_before = None
+        cargs.uses_after = None
         self.shards_args = self._set_shard_args(cargs, self.head_args, self.tail_args)
 
         for _args in self.shards_args:
