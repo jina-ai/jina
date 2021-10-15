@@ -35,7 +35,7 @@ class TestExecutor(Executor):
         for doc in docs:
             doc.tags['k1'] = os.environ.get('k1')
             doc.tags['k2'] = os.environ.get('k2')
-            doc.tags['jina_log_level'] = os.environ.get('jina_log_level')
+            doc.tags['JINA_LOG_LEVEL'] = os.environ.get('JINA_LOG_LEVEL')
             doc.tags['env'] = {'k1': os.environ.get('k1'), 'k2': os.environ.get('k2')}
 
     @requests(on='/search')

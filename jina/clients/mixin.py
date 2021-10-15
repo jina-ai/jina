@@ -61,7 +61,8 @@ class PostMixin:
                 return result
 
         if (
-            hasattr(self.args, 'infrastructure')
+            'disable_portforward' not in kwargs.keys()
+            and hasattr(self.args, 'infrastructure')
             and self.args.infrastructure == InfrastructureType.K8S
         ):
             context_mgr = kubernetes_tools.get_port_forward_contextmanager(

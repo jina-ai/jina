@@ -3,7 +3,7 @@ apiVersion: v1
 metadata:
   name: config-map
 data:
-  jina_log_level: "DEBUG"
+  JINA_LOG_LEVEL: "DEBUG"
   pythonunbuffered: "1"
   worker_class: "uvicorn.workers.UvicornH11Worker"
   jina_executor_control_port: "8081"

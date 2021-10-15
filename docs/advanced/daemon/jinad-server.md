@@ -1,3 +1,4 @@
+(jinad-server)=
 # JinaD Server
 
 `JinaD` docker image is published

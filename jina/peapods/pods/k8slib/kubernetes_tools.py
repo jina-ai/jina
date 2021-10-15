@@ -50,11 +50,44 @@ def create(
                     # Kubernetes apiserver, it looks like:
                     # {..."message": "<resource> <name> already exists"...}
                     resp = json.loads(api_exception.body)
-                    logger.info(f'🔁\t{resp["message"]}')
+                    logger.warning(f'🔁\t{resp["message"]}')
                 else:
                     raise e
         except Exception as e2:
             raise e2
+    finally:
+        os.remove(path)
+
+
+def replace(
+    deployment_name: str,
+    namespace_name: str,
+    template: str,
+    params: Dict,
+    custom_resource_dir: Optional[str] = None,
+):
+    """Create a resource on Kubernetes based on the `template`. It fills the `template` using the `params`.
+
+    :param deployment_name: The name of the deployment to replace
+    :param namespace_name: The name of the namespace where the deployment exists
+    :param template: path to the template file.
+    :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.
+        Defaults to the standard location jina.resources if not specified.
+    :param params: dictionary for replacing the placeholders (keys) with the actual values.
+    """
+
+    import yaml
+
+    yaml_file_path = _get_yaml(template, params, custom_resource_dir)
+    fd, path = tempfile.mkstemp()
+    try:
+        with os.fdopen(fd, 'w') as tmp:
+            tmp.write(yaml_file_path)
+        with open(os.path.abspath(path)) as f:
+            yml_document_all = yaml.safe_load(f)
+        _k8s_clients.apps_v1.replace_namespaced_deployment(
+            deployment_name, namespace_name, yml_document_all
+        )
     finally:
         os.remove(path)
 
@@ -107,8 +140,9 @@ def get_port_forward_contextmanager(
     """
     with ImportExtensions(
         required=True,
-        help_text='sending requests to the Kubernetes cluster requires to install the portforward package, '
-        'please do `pip install jina[portforward]`',
+        help_text='Sending requests to the Kubernetes cluster requires to install the portforward package. '
+        'Please do `pip install "jina[portforward]"`'
+        'Also make sure golang is installed `https://golang.org/`',
     ):
         import portforward
 
