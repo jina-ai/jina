@@ -64,6 +64,7 @@ def mixin_pea_parser(parser):
     # hidden CLI used for internal only
 
     gp.add_argument(
+        '--shard-id',
         '--pea-id',
         type=int,
         default=0,

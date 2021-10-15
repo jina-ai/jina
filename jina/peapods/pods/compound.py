@@ -42,6 +42,8 @@ class CompoundPod(BasePod, ExitStack):
         self.tail_args = BasePod._copy_to_tail_args(self.args, self.args.polling)
         # uses before with shards apply to shards and not to replicas
         self.shards = []  # type: List['Pod']
+        # BACKWARDS COMPATIBILITY:
+        self.args.parallel = self.args.shards
         self.assign_shards()
 
     def assign_shards(self):
@@ -216,6 +218,8 @@ class CompoundPod(BasePod, ExitStack):
             ]
             _args.peas_hosts = pod_host_list
             _args.shard_id = idx
+            # BACKWARDS COMPATIBILITY:
+            _args.pea_id = _args.shard_id
             _args.identity = random_identity()
             if _args.name:
                 _args.name += f'/shard-{idx}'

@@ -102,3 +102,30 @@ When not given, then the default naming strategy will apply.
         type=str,
         help='Routing graph for the gateway' if _SHOW_ALL_ARGS else argparse.SUPPRESS,
     )
+
+    parser.add_argument(
+        '--dynamic-routing',
+        action='store_true',
+        default=True,
+        help='The Pod will setup the socket types of the HeadPea and TailPea depending on this argument.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+
+    gp.add_argument(
+        '--shards',
+        '--parallel',
+        type=int,
+        default=1,
+        help='The number of shards in the pod running at the same time, '
+        '`port_in` and `port_out` will be set to random, '
+        'and routers will be added automatically when necessary',
+    )
+    gp.add_argument(
+        '--replicas',
+        type=int,
+        default=1,
+        help='The number of replicas in the pod, '
+        '`port_in` and `port_out` will be set to random, '
+        'and routers will be added automatically when necessary',
+    )
