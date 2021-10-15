@@ -134,11 +134,11 @@ metas:
   description: "MyExecutor does a thing to the stuff in your Documents"
   workspace: workspace
   py_modules:
-  - executor.py
+    - executor.py
 requests:
-  index: class_index_method
-  search: class_search_method
-  random: class_other_method
+  index: MyExecutor_index_method
+  search: MyExecutor_search_method
+  random: MyExecutor_other_method
 ```
 
 - `jtype` is a string. Defines the class name, interchangeable with bang mark `!`;
