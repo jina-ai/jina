@@ -61,6 +61,8 @@ class DataRequestHandler:
         """
         super().__init__()
         self.args = args
+        self.args.pea_id = self.args.shard_id
+        self.args.parallel = self.args.shards
         self.logger = logger
         self._load_executor()
 
