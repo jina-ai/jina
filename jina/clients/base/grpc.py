@@ -43,7 +43,11 @@ class GRPCBaseClient(BaseClient):
                 stub = jina_pb2_grpc.JinaRPCStub(channel)
                 self.logger.debug(f'connected to {self.args.host}:{self.args.port}')
 
-                cm1 = ProgressBar() if self.show_progress else nullcontext()
+                cm1 = (
+                    ProgressBar(total_length=self._inputs_length)
+                    if self.show_progress
+                    else nullcontext()
+                )
 
                 with cm1 as p_bar:
                     async for resp in stub.Call(req_iter):
