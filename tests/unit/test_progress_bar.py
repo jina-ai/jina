@@ -11,7 +11,9 @@ from jina.logging.profile import ProgressBar
 @pytest.mark.parametrize('details', [None, 'step {}'])
 @pytest.mark.parametrize('msg_on_done', [None, 'done!', lambda: 'done!'])
 def test_progressbar(total_steps, update_tick, task_name, capsys, details, msg_on_done):
-    with ProgressBar(description=task_name, message_on_done=msg_on_done) as pb:
+    with ProgressBar(
+        description=task_name, message_on_done=msg_on_done, total_length=total_steps
+    ) as pb:
         for j in range(total_steps):
             pb.update(update_tick, message=details.format(j) if details else None)
             time.sleep(0.001)
