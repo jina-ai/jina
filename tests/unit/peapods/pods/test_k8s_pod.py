@@ -345,7 +345,7 @@ def test_uses_before_and_uses_after(
     'name, k8s_namespace, shards, replicas',
     [('test-with-multiple-shards', 'test-namespace', '2', '1')],
 )
-def test_pod_start_given_head_deployment(name, k8s_namespace, shards, replicas, mocker):
+def test_pod_start_close_given_head_deployment(name, k8s_namespace, shards, replicas, mocker):
     args = set_pod_parser().parse_args(
         [
             '--name',
@@ -360,7 +360,6 @@ def test_pod_start_given_head_deployment(name, k8s_namespace, shards, replicas, 
         ]
     )
     pod = K8sPod(args)
-    pod.k8s_head_deployment
     assert isinstance(pod.k8s_head_deployment, K8sPod._K8sDeployment)
     assert pod.k8s_head_deployment.name == name + '-head'
     assert pod.num_peas == 4
