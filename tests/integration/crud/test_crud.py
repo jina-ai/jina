@@ -30,7 +30,7 @@ def rest_post(f, endpoint, documents):
     return response.json()
 
 
-@pytest.mark.parametrize('rest', [False])
+@pytest.mark.parametrize('rest', [False, True])
 def test_crud(tmpdir, rest):
     os.environ['RESTFUL'] = 'http' if rest else 'grpc'
     os.environ['WORKSPACE'] = str(tmpdir)
