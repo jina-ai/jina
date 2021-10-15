@@ -190,6 +190,10 @@ def test_flow_with_sharding(
     assert len(docs) == 10
     for doc in docs:
         assert set(doc.tags['traversed-executors']) == expected_traversed_executors
+        assert set(doc.tags['pea_id']) == {0, 1}
+        assert set(doc.tags['shard_id']) == {0, 1}
+        assert doc.tags['parallel'] == [2, 2]
+        assert doc.tags['shards'] == [2, 2]
 
 
 @pytest.mark.timeout(3600)

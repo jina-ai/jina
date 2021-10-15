@@ -20,9 +20,18 @@ class ExecMerger(Executor):
         result = DocumentArray()
         for docs in zip(*docs_matrix):
             traversed_executors = [doc.tags['traversed-executors'] for doc in docs]
+            shard_ids = [doc.tags['shard_id'] for doc in docs]
+            pea_ids = [doc.tags['pea_id'] for doc in docs]
+            shards = [doc.tags['shards'] for doc in docs]
+            parallels = [doc.tags['parallels'] for doc in docs]
             traversed_executors = list(chain(*traversed_executors))
             doc = Document()
             doc.tags['traversed-executors'] = traversed_executors
+            doc.tags['shard_id'] = shard_ids
+            doc.tags['pea_id'] = pea_ids
+            doc.tags['shards'] = shards
+            doc.tags['parallels'] = parallels
+
             result.append(doc)
 
         return result
