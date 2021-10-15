@@ -250,3 +250,14 @@ def test_idle_does_not_create_response(command, response_expected):
             socket.connect(f'tcp://localhost:{p.args.port_ctrl}')
             socket.send_multipart(msg.dump())
             assert socket.poll(timeout=1000) == response_expected
+
+
+def test_pea_set_shard_pea_id():
+    args = set_pea_parser().parse_args(['--shard-id', '1', '--shards', '3'])
+
+    pea = Pea(args)
+    assert pea.args.shard_id == 1
+    assert pea.args.pea_id == 1
+
+    assert pea.args.shards == 3
+    assert pea.args.parallel == 3

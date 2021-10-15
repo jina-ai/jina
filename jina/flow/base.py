@@ -315,8 +315,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         name: Optional[str] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
-        replicas: Optional[int] = 1,
-        shards: Optional[int] = 1,
         static_routing_table: Optional[bool] = False,
         uses: Optional[str] = None,
         workspace: Optional[str] = './',
@@ -340,8 +338,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           When not given, then the default naming strategy will apply.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
-        :param replicas: The number of replicas in the pod, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary
-        :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary
         :param static_routing_table: Defines if the routing table should be pre computed by the Flow. In this case it is statically defined for each Pod and not send on every data request. Can not be used in combination with external pods
         :param uses: The YAML file represents a flow
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.

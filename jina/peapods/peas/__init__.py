@@ -109,6 +109,9 @@ class BasePea:
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__()  #: required here to call process/thread __init__
         self.args = args
+        # BACKWARDS COMPATIBILITY
+        self.args.pea_id = self.args.shard_id
+        self.args.parallel = self.args.shards
         self.name = self.args.name or self.__class__.__name__
 
         self.logger = JinaLogger(self.name, **vars(self.args))
