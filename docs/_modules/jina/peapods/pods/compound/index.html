@@ -620,6 +620,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">is_tail_router</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span> <span class="o">=</span> <span class="n">BasePod</span><span class="o">.</span><span class="n">_copy_to_head_args</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">polling</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tail_args</span> <span class="o">=</span> <span class="n">BasePod</span><span class="o">.</span><span class="n">_copy_to_tail_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">polling</span><span class="p">)</span>
+        <span class="c1"># uses before with shards apply to shards and not to replicas</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shards</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: List['Pod']</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assign_shards</span><span class="p">()</span>
 
@@ -627,6 +628,8 @@
         <span class="sd">"""Assign shards to the CompoundPod"""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="n">cargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">cargs</span><span class="o">.</span><span class="n">uses_before</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">cargs</span><span class="o">.</span><span class="n">uses_after</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shards_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_shard_args</span><span class="p">(</span><span class="n">cargs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail_args</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">_args</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shards_args</span><span class="p">:</span>
@@ -884,7 +887,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 14, 2021.
+                    Last updated on Oct 15, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
