@@ -671,6 +671,11 @@
         <span class="c1"># override by the caller-specific kwargs</span>
         <span class="n">_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">,</span> <span class="s1">'__len__'</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_inputs_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">)</span> <span class="o">/</span> <span class="n">_kwargs</span><span class="p">[</span><span class="s1">'request_size'</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_inputs_length</span> <span class="o">=</span> <span class="kc">None</span>
+
         <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isasyncgen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">):</span>
             <span class="kn">from</span> <span class="nn">..request.asyncio</span> <span class="kn">import</span> <span class="n">request_generator</span>
 

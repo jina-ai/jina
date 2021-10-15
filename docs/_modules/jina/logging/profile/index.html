@@ -588,10 +588,9 @@
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span>
 
-<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__windows__</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">ProgressBarStatus</span>
-
 <span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__windows__</span>
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">colored</span><span class="p">,</span> <span class="n">get_readable_size</span><span class="p">,</span> <span class="n">get_readable_time</span>
 
 
@@ -794,6 +793,7 @@
         <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'Working...'</span><span class="p">,</span>
         <span class="n">message_on_done</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">final_line_feed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">total_length</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Create the ProgressBar.</span>
@@ -801,6 +801,7 @@
 <span class="sd">        :param description: The name of the task, will be displayed in front of the bar.</span>
 <span class="sd">        :param message_on_done: The final message to print when the progress is complete</span>
 <span class="sd">        :param final_line_feed: if False, the line will not get a Line Feed and thus is easily overwritable.</span>
+<span class="sd">        :param total_length: if set, then every :py:meth:`.update` increases the bar by `1/total_length * _bars_on_row`</span>
 <span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">description</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_bars_on_row</span> <span class="o">=</span> <span class="mi">40</span>
@@ -809,6 +810,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_num_update_called</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_on_done</span> <span class="o">=</span> <span class="n">message_on_done</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_final_line_feed</span> <span class="o">=</span> <span class="n">final_line_feed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_total_length</span> <span class="o">=</span> <span class="n">total_length</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stop_event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
 
 <div class="viewcode-block" id="ProgressBar.update"><a class="viewcode-back" href="../../../../api/jina.logging.profile/#jina.logging.profile.ProgressBar.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span>
@@ -828,7 +830,8 @@
 <span class="sd">        :param status: If set to a value, it will mark the task as complete, can be either "Done" or "Canceled"</span>
 <span class="sd">        :param first_enter: if this method is called by `__enter__`</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_num_update_called</span> <span class="o">+=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">first_enter</span> <span class="k">else</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_length</span><span class="p">:</span>
+            <span class="n">progress</span> <span class="o">=</span> <span class="n">progress</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_length</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bars_on_row</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_completed_progress</span> <span class="o">+=</span> <span class="n">progress</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_rendered_progress</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_completed_progress</span>
         <span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span>
@@ -848,11 +851,15 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">bar_color</span><span class="p">,</span> <span class="n">unfinished_bar_color</span> <span class="o">=</span> <span class="s1">'green'</span><span class="p">,</span> <span class="s1">'green'</span>
 
-        <span class="n">speed_str</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s1">'estimating...'</span>
-            <span class="k">if</span> <span class="n">first_enter</span>
-            <span class="k">else</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_update_called</span> <span class="o">/</span> <span class="n">elapsed</span><span class="si">:</span><span class="s1">4.1f</span><span class="si">}</span><span class="s1"> step/s'</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">first_enter</span><span class="p">:</span>
+            <span class="n">speed_str</span> <span class="o">=</span> <span class="s1">'estimating...'</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_length</span><span class="p">:</span>
+            <span class="n">_prog</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_update_called</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_length</span>
+            <span class="n">speed_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="p">(</span><span class="n">_prog</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1">% ETA: </span><span class="si">{</span><span class="n">get_readable_time</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="n">_prog</span> <span class="o">+</span> <span class="mf">1e-6</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">_prog</span> <span class="o">+</span> <span class="mf">1e-6</span><span class="p">))</span><span class="si">}</span><span class="s1">'</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">speed_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_update_called</span> <span class="o">/</span> <span class="n">elapsed</span><span class="si">:</span><span class="s1">4.1f</span><span class="si">}</span><span class="s1"> step/s'</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_num_update_called</span> <span class="o">+=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">first_enter</span> <span class="k">else</span> <span class="mi">1</span>
 
         <span class="n">description_str</span> <span class="o">=</span> <span class="n">description</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_name</span> <span class="ow">or</span> <span class="s1">''</span>
         <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="n">ProgressBarStatus</span><span class="o">.</span><span class="n">WORKING</span><span class="p">:</span>
