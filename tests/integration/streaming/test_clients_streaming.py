@@ -136,7 +136,13 @@ def test_disable_prefetch_slow_client_fast_executor(
         ('grpc', gen),
         ('websocket', async_gen),
         ('websocket', gen),
-        ('http', async_gen),
+        pytest.param(
+            'http',
+            async_gen,
+            marks=pytest.mark.xpass(
+                reason='http protocol + async generator test passes locally, but flaky on CI'
+            ),
+        ),
         ('http', gen),
     ],
 )
