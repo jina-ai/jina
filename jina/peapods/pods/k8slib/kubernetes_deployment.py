@@ -91,6 +91,7 @@ def deploy_service(
     custom_resource_dir: Optional[str] = None,
     port_expose: Optional[int] = None,
     env: Optional[Dict] = None,
+    gpus: Optional[int] = None,
 ) -> str:
     """Deploy service on Kubernetes.
 
@@ -107,6 +108,8 @@ def deploy_service(
         Defaults to the standard location jina.resources if not specified.
     :param port_expose: port which will be exposed by the deployed containers
     :param env: environment variables to be passed into configmap.
+    :param gpus: number of gpus to use, for k8s requires you pass an int number,
+      refers to the number of requested gpus. Only support Nvidia.
     :return: dns name of the created service
     """
 
@@ -148,17 +151,20 @@ def deploy_service(
         custom_resource_dir=None,
     )
 
+    if gpus:
+        # First deploy DaemonSet, then request resources.
+        # Second path deployment resource limit section.
+        logger.debug(f'🐳\tCreate DaemonSet for gpu resource deployment.')
+        kubernetes_tools.create(
+            'nvidia-device-plugin',
+            {},
+        )
+
     logger.debug(
         f'🐳\tCreate Deployment for "{name}" with image "{image_name}", replicas {replicas} and init_container {init_container is not None}'
     )
 
-    if init_container:
-        template_name = 'deployment-init'
-    else:
-        template_name = 'deployment'
-        init_container = {}
-    kubernetes_tools.create(
-        template_name,
+    deployment_params = (
         {
             'name': name,
             'namespace': namespace,
@@ -171,8 +177,20 @@ def deploy_service(
             'port_out': port_out,
             'port_ctrl': port_ctrl,
             'pull_policy': pull_policy,
-            **init_container,
+            'num_gpus': 0,
         },
+    )
+
+    if init_container:
+        template_name = 'deployment-init'
+        deployment_params = {**deployment_params, **init_container}
+    else:
+        template_name = 'deployment'
+    if gpus:
+        deployment_params.update({'num_gpus': gpus})
+    kubernetes_tools.create(
+        template_name,
+        deployment_params,
         logger=logger,
         custom_resource_dir=custom_resource_dir,
     )
