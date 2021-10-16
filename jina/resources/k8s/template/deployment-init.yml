@@ -53,4 +53,4 @@ spec:
           periodSeconds: 10
         resources:
           limits:
-            nvidia.com/gpu: 0
+            nvidia.com/gpu: {num_gpus}
