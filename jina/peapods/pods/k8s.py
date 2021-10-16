@@ -5,7 +5,7 @@ from argparse import Namespace
 from typing import Optional, Dict, Union, Set, List
 
 import jina
-from .k8slib import kubernetes_deployment, kubernetes_tools
+from .k8slib import kubernetes_deployment, kubernetes_client
 from ..pods import BasePod, ExitFIFO
 from ... import __default_executor__
 from ...logging.logger import JinaLogger
@@ -154,8 +154,6 @@ class K8sPod(BasePod, ExitFIFO):
 
             from kubernetes import client
 
-            k8s_client = kubernetes_tools.K8sClients().apps_v1
-
             with JinaLogger(f'waiting_for_{self.name}') as logger:
                 logger.debug(
                     f'🏝️\n\t\tWaiting for "{self.name}" to be ready, with {self.num_replicas} replicas'
@@ -165,9 +163,7 @@ class K8sPod(BasePod, ExitFIFO):
                 exception_to_raise = None
                 while timeout_ns is None or time.time_ns() - now < timeout_ns:
                     try:
-                        api_response = k8s_client.read_namespaced_deployment(
-                            name=self.dns_name, namespace=self.k8s_namespace
-                        )
+                        api_response = self._read_namespaced_deployment()
                         assert api_response.status.replicas == self.num_replicas
                         if (
                             api_response.status.ready_replicas is not None
@@ -199,7 +195,7 @@ class K8sPod(BasePod, ExitFIFO):
             from kubernetes import client
             import asyncio
 
-            k8s_client = kubernetes_tools.K8sClients().apps_v1
+            k8s_client = kubernetes_client.K8sClients().apps_v1
 
             with JinaLogger(f'waiting_restart_for_{self.name}') as logger:
                 logger.info(
@@ -278,13 +274,9 @@ class K8sPod(BasePod, ExitFIFO):
         def close(self):
             from kubernetes import client
 
-            k8s_client = kubernetes_tools.K8sClients().apps_v1
-
             with JinaLogger(f'close_{self.name}') as logger:
                 try:
-                    resp = k8s_client.delete_namespaced_deployment(
-                        name=self.dns_name, namespace=self.k8s_namespace
-                    )
+                    resp = self._delete_namespaced_deployment()
                     if resp.status == 'Success':
                         logger.success(
                             f' Successful deletion of deployment {self.name}'
@@ -297,6 +289,16 @@ class K8sPod(BasePod, ExitFIFO):
                     logger.error(
                         f' Error deleting deployment {self.name}: {exc.reason} '
                     )
+
+        def _delete_namespaced_deployment(self):
+            return kubernetes_client.K8sClients().apps_v1.delete_namespaced_deployment(
+                name=self.dns_name, namespace=self.k8s_namespace
+            )
+
+        def _read_namespaced_deployment(self):
+            return kubernetes_client.K8sClients().apps_v1.read_namespaced_deployment(
+                name=self.dns_name, namespace=self.k8s_namespace
+            )
 
         def __enter__(self):
             return self.start()
