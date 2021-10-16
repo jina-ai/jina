@@ -584,10 +584,10 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">HubExecutor</span>
-<span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">unpack_package</span><span class="p">,</span> <span class="n">install_requirements</span>
+<span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">unpack_package</span><span class="p">,</span> <span class="n">install_requirements</span><span class="p">,</span> <span class="n">is_requirements_installed</span>
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">random_identity</span>
 
 <span class="n">_hub_root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
@@ -708,7 +708,7 @@
 <div class="viewcode-block" id="install_local"><a class="viewcode-back" href="../../../../api/jina.hubble.hubapi/#jina.hubble.hubapi.install_local">[docs]</a><span class="k">def</span> <span class="nf">install_local</span><span class="p">(</span>
     <span class="n">zip_package</span><span class="p">:</span> <span class="s1">'Path'</span><span class="p">,</span>
     <span class="n">executor</span><span class="p">:</span> <span class="s1">'HubExecutor'</span><span class="p">,</span>
-    <span class="n">install_deps</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">install_deps</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">"""Install the package in zip format to the Jina Hub root.</span>
 
@@ -729,12 +729,7 @@
     <span class="c1"># create dist-info folder</span>
     <span class="n">pkg_dist_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="c1"># install the dependencies included in requirements.txt</span>
-    <span class="k">if</span> <span class="n">install_deps</span><span class="p">:</span>
-        <span class="n">requirements_file</span> <span class="o">=</span> <span class="n">pkg_path</span> <span class="o">/</span> <span class="s1">'requirements.txt'</span>
-        <span class="k">if</span> <span class="n">requirements_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="n">install_requirements</span><span class="p">(</span><span class="n">requirements_file</span><span class="p">)</span>
-            <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">requirements_file</span><span class="p">,</span> <span class="n">pkg_dist_path</span> <span class="o">/</span> <span class="s1">'requirements.txt'</span><span class="p">)</span>
+    <span class="n">install_package_dependencies</span><span class="p">(</span><span class="n">install_deps</span><span class="p">,</span> <span class="n">pkg_dist_path</span><span class="p">,</span> <span class="n">pkg_path</span><span class="p">)</span>
 
     <span class="n">manifest_path</span> <span class="o">=</span> <span class="n">pkg_path</span> <span class="o">/</span> <span class="s1">'manifest.yml'</span>
     <span class="k">if</span> <span class="n">manifest_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
@@ -744,6 +739,31 @@
     <span class="k">if</span> <span class="n">executor</span><span class="o">.</span><span class="n">sn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">sn_file</span> <span class="o">=</span> <span class="n">pkg_dist_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">'PKG-SN-</span><span class="si">{</span><span class="n">executor</span><span class="o">.</span><span class="n">sn</span><span class="si">}</span><span class="s1">'</span>
         <span class="n">sn_file</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="install_package_dependencies"><a class="viewcode-back" href="../../../../api/jina.hubble.hubapi/#jina.hubble.hubapi.install_package_dependencies">[docs]</a><span class="k">def</span> <span class="nf">install_package_dependencies</span><span class="p">(</span>
+    <span class="n">install_deps</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">pkg_dist_path</span><span class="p">:</span> <span class="s1">'Path'</span><span class="p">,</span> <span class="n">pkg_path</span><span class="p">:</span> <span class="s1">'Path'</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">"""</span>
+
+<span class="sd">    :param install_deps: if set, then install dependencies</span>
+<span class="sd">    :param pkg_dist_path: package distribution path</span>
+<span class="sd">    :param pkg_path: package path</span>
+<span class="sd">    """</span>
+    <span class="c1"># install the dependencies included in requirements.txt</span>
+    <span class="n">requirements_file</span> <span class="o">=</span> <span class="n">pkg_path</span> <span class="o">/</span> <span class="s1">'requirements.txt'</span>
+    <span class="k">if</span> <span class="n">pkg_path</span> <span class="o">!=</span> <span class="n">pkg_dist_path</span><span class="p">:</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">requirements_file</span><span class="p">,</span> <span class="n">pkg_dist_path</span> <span class="o">/</span> <span class="s1">'requirements.txt'</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">requirements_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">install_deps</span><span class="p">:</span>
+            <span class="n">install_requirements</span><span class="p">(</span><span class="n">requirements_file</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">is_requirements_installed</span><span class="p">(</span><span class="n">requirements_file</span><span class="p">,</span> <span class="n">show_warning</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span>
+                <span class="s1">'Dependencies listed in requirements.txt are not all installed locally, '</span>
+                <span class="s1">'this Executor may not run as expect. To install dependencies, '</span>
+                <span class="s1">'add `--install-requirements` or set `install_requirements = True`'</span>
+            <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="uninstall_local"><a class="viewcode-back" href="../../../../api/jina.hubble.hubapi/#jina.hubble.hubapi.uninstall_local">[docs]</a><span class="k">def</span> <span class="nf">uninstall_local</span><span class="p">(</span><span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>

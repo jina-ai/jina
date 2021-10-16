@@ -585,7 +585,6 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span>
 <span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlencode</span>
@@ -599,13 +598,13 @@
     <span class="n">upload_file</span><span class="p">,</span>
     <span class="n">disk_cache_offline</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">install_requirements</span>
 <span class="kn">from</span> <span class="nn">.hubapi</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">install_local</span><span class="p">,</span>
     <span class="n">get_dist_path_of_executor</span><span class="p">,</span>
     <span class="n">load_secret</span><span class="p">,</span>
     <span class="n">dump_secret</span><span class="p">,</span>
     <span class="n">get_lockfile</span><span class="p">,</span>
+    <span class="n">install_package_dependencies</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__resources_path__</span>
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">get_full_version</span><span class="p">,</span> <span class="n">ArgNamespace</span>
@@ -1301,11 +1300,14 @@
                                 <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
                                     <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">pkg_path</span><span class="si">}</span><span class="s1"> need to be upgraded'</span>
                                 <span class="p">)</span>
-                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">install_requirements</span><span class="p">:</span>
-                                <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">'Installing [bold]requirements.txt[/bold]...'</span><span class="p">)</span>
-                                <span class="n">requirements_file</span> <span class="o">=</span> <span class="n">pkg_dist_path</span> <span class="o">/</span> <span class="s1">'requirements.txt'</span>
-                                <span class="k">if</span> <span class="n">requirements_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-                                    <span class="n">install_requirements</span><span class="p">(</span><span class="n">requirements_file</span><span class="p">)</span>
+
+                            <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">'Installing [bold]requirements.txt[/bold]...'</span><span class="p">)</span>
+                            <span class="n">install_package_dependencies</span><span class="p">(</span>
+                                <span class="n">install_deps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">install_requirements</span><span class="p">,</span>
+                                <span class="n">pkg_dist_path</span><span class="o">=</span><span class="n">pkg_dist_path</span><span class="p">,</span>
+                                <span class="n">pkg_path</span><span class="o">=</span><span class="n">pkg_dist_path</span><span class="p">,</span>
+                            <span class="p">)</span>
+
                         <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
                             <span class="n">need_pull</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -1341,10 +1343,9 @@
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1"> is not a valid scheme'</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
             <span class="n">executor_name</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Error while pulling </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1">: </span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">executor_name</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">raise</span> <span class="n">e</span>
+            <span class="k">raise</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="c1"># delete downloaded zip package if existed</span>
             <span class="k">if</span> <span class="n">cached_zip_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>

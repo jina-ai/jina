@@ -751,6 +751,17 @@ the function name</p></li>
 </dl>
 </dd></dl>
 <dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.helper.is_requirements_installed">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></span><span class="sig-name descname"><span class="pre">is_requirements_installed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requirements_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_warning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#is_requirements_installed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.is_requirements_installed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if requirements.txt is installed locally
+:type requirements_file: <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>
+:param requirements_file: the requirements.txt file
+:type show_warning: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:param show_warning: if to show a warning when a dependency is not satisfied
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:return: True of False if not satisfied</p>
+</dd></dl>
+<dl class="py function">
 <dt class="sig sig-object py" id="jina.hubble.helper.install_requirements">
 <span class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></span><span class="sig-name descname"><span class="pre">install_requirements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requirements_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excludes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('jina',)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#install_requirements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.install_requirements" title="Permalink to this definition">¶</a></dt>
 <dd><p>Install modules included in requirments file
