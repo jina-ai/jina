@@ -178,7 +178,6 @@ class K8sPod(BasePod, ExitFIFO):
                             )
                             time.sleep(1.0)
                     except client.ApiException as ex:
-                        print(ex)
                         exception_to_raise = ex
                         break
             fail_msg = f' Deployment {self.name} did not start with a timeout of {self.common_args.timeout_ready}'
