@@ -9,13 +9,13 @@ import subprocess
 import sys
 import tarfile
 import urllib
+import warnings
 import zipfile
 from functools import lru_cache, wraps
 from pathlib import Path
-from typing import Tuple, Optional, Dict, List
+from typing import Tuple, Optional, Dict
 from urllib.parse import urlparse, urljoin
 from urllib.request import Request, urlopen
-
 
 from .. import __resources_path__
 from ..importer import ImportExtensions
@@ -315,6 +315,27 @@ def disk_cache_offline(
     return decorator
 
 
+def is_requirements_installed(
+    requirements_file: 'Path', show_warning: bool = False
+) -> bool:
+    """Return True if requirements.txt is installed locally
+    :param requirements_file: the requirements.txt file
+    :param show_warning: if to show a warning when a dependency is not satisfied
+    :return: True of False if not satisfied
+    """
+    from pkg_resources import DistributionNotFound, VersionConflict
+    import pkg_resources
+
+    try:
+        with requirements_file.open() as requirements:
+            pkg_resources.require(requirements)
+    except (DistributionNotFound, VersionConflict) as ex:
+        if show_warning:
+            warnings.warn(ex, UserWarning)
+        return False
+    return True
+
+
 def install_requirements(
     requirements_file: 'Path', timeout: int = 1000, excludes: Tuple[str] = ('jina',)
 ):
@@ -333,6 +354,9 @@ def install_requirements(
         ]
 
     if len(install_reqs) == 0:
+        return
+
+    if is_requirements_installed(requirements_file):
         return
 
     subprocess.check_call(

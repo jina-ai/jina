@@ -3,11 +3,12 @@
 import json
 import os
 import shutil
+import warnings
 from pathlib import Path
 from typing import Tuple, Optional
 
 from . import HubExecutor
-from .helper import unpack_package, install_requirements
+from .helper import unpack_package, install_requirements, is_requirements_installed
 from ..helper import random_identity
 
 _hub_root = Path(
@@ -128,7 +129,7 @@ def dump_secret(work_path: 'Path', uuid8: str, secret: str):
 def install_local(
     zip_package: 'Path',
     executor: 'HubExecutor',
-    install_deps: Optional[bool] = False,
+    install_deps: bool = False,
 ):
     """Install the package in zip format to the Jina Hub root.
 
@@ -149,12 +150,7 @@ def install_local(
     # create dist-info folder
     pkg_dist_path.mkdir(parents=False, exist_ok=True)
 
-    # install the dependencies included in requirements.txt
-    if install_deps:
-        requirements_file = pkg_path / 'requirements.txt'
-        if requirements_file.exists():
-            install_requirements(requirements_file)
-            shutil.copyfile(requirements_file, pkg_dist_path / 'requirements.txt')
+    install_package_dependencies(install_deps, pkg_dist_path, pkg_path)
 
     manifest_path = pkg_path / 'manifest.yml'
     if manifest_path.exists():
@@ -164,6 +160,29 @@ def install_local(
     if executor.sn is not None:
         sn_file = pkg_dist_path / f'PKG-SN-{executor.sn}'
         sn_file.touch()
+
+
+def install_package_dependencies(
+    install_deps: bool, pkg_dist_path: 'Path', pkg_path: 'Path'
+) -> None:
+    """
+
+    :param install_deps: if set, then install dependencies
+    :param pkg_dist_path: package distribution path
+    :param pkg_path: package path
+    """
+    # install the dependencies included in requirements.txt
+    requirements_file = pkg_path / 'requirements.txt'
+    if requirements_file.exists():
+        if install_deps:
+            install_requirements(requirements_file)
+            shutil.copyfile(requirements_file, pkg_dist_path / 'requirements.txt')
+        elif not is_requirements_installed(requirements_file):
+            warnings.warn(
+                '''Dependencies listed in requirements.txt are not all installed locally, 
+                this Executor may not run as expect. 
+                To install dependencies, add `--install-requirements` or set `install_requirements = True`'''
+            )
 
 
 def uninstall_local(uuid: str):
