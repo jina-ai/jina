@@ -400,6 +400,7 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../api/jina.peapods.pods/">jina.peapods.pods package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" role="switch" type="checkbox"/><label for="toctree-checkbox-33"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../api/jina.peapods.pods.k8slib/">jina.peapods.pods.k8slib package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" role="switch" type="checkbox"/><label for="toctree-checkbox-34"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.peapods.pods.k8slib.kubernetes_client/">jina.peapods.pods.k8slib.kubernetes_client module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.peapods.pods.k8slib.kubernetes_deployment/">jina.peapods.pods.k8slib.kubernetes_deployment module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.peapods.pods.k8slib.kubernetes_tools/">jina.peapods.pods.k8slib.kubernetes_tools module</a></li>
 </ul>
@@ -585,7 +586,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">List</span>
 
 <span class="kn">import</span> <span class="nn">jina</span>
-<span class="kn">from</span> <span class="nn">.k8slib</span> <span class="kn">import</span> <span class="n">kubernetes_deployment</span><span class="p">,</span> <span class="n">kubernetes_tools</span>
+<span class="kn">from</span> <span class="nn">.k8slib</span> <span class="kn">import</span> <span class="n">kubernetes_deployment</span><span class="p">,</span> <span class="n">kubernetes_client</span>
 <span class="kn">from</span> <span class="nn">..pods</span> <span class="kn">import</span> <span class="n">BasePod</span><span class="p">,</span> <span class="n">ExitFIFO</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">__default_executor__</span>
 <span class="kn">from</span> <span class="nn">...logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
@@ -734,8 +735,6 @@
 
             <span class="kn">from</span> <span class="nn">kubernetes</span> <span class="kn">import</span> <span class="n">client</span>
 
-            <span class="n">k8s_client</span> <span class="o">=</span> <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">K8sClients</span><span class="p">()</span><span class="o">.</span><span class="n">apps_v1</span>
-
             <span class="k">with</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="sa">f</span><span class="s1">'waiting_for_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">logger</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'🏝️</span><span class="se">\n\t\t</span><span class="s1">Waiting for "</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">" to be ready, with </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_replicas</span><span class="si">}</span><span class="s1"> replicas'</span>
@@ -745,9 +744,7 @@
                 <span class="n">exception_to_raise</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="k">while</span> <span class="n">timeout_ns</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">()</span> <span class="o">-</span> <span class="n">now</span> <span class="o">&lt;</span> <span class="n">timeout_ns</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span>
-                        <span class="n">api_response</span> <span class="o">=</span> <span class="n">k8s_client</span><span class="o">.</span><span class="n">read_namespaced_deployment</span><span class="p">(</span>
-                            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dns_name</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span>
-                        <span class="p">)</span>
+                        <span class="n">api_response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_namespaced_deployment</span><span class="p">()</span>
                         <span class="k">assert</span> <span class="n">api_response</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">replicas</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_replicas</span>
                         <span class="k">if</span> <span class="p">(</span>
                             <span class="n">api_response</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">ready_replicas</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
@@ -779,7 +776,7 @@
             <span class="kn">from</span> <span class="nn">kubernetes</span> <span class="kn">import</span> <span class="n">client</span>
             <span class="kn">import</span> <span class="nn">asyncio</span>
 
-            <span class="n">k8s_client</span> <span class="o">=</span> <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">K8sClients</span><span class="p">()</span><span class="o">.</span><span class="n">apps_v1</span>
+            <span class="n">k8s_client</span> <span class="o">=</span> <span class="n">kubernetes_client</span><span class="o">.</span><span class="n">K8sClients</span><span class="p">()</span><span class="o">.</span><span class="n">apps_v1</span>
 
             <span class="k">with</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="sa">f</span><span class="s1">'waiting_restart_for_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">logger</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
@@ -858,13 +855,9 @@
         <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="kn">from</span> <span class="nn">kubernetes</span> <span class="kn">import</span> <span class="n">client</span>
 
-            <span class="n">k8s_client</span> <span class="o">=</span> <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">K8sClients</span><span class="p">()</span><span class="o">.</span><span class="n">apps_v1</span>
-
             <span class="k">with</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="sa">f</span><span class="s1">'close_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">logger</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">resp</span> <span class="o">=</span> <span class="n">k8s_client</span><span class="o">.</span><span class="n">delete_namespaced_deployment</span><span class="p">(</span>
-                        <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dns_name</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span>
-                    <span class="p">)</span>
+                    <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delete_namespaced_deployment</span><span class="p">()</span>
                     <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s1">'Success'</span><span class="p">:</span>
                         <span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
                             <span class="sa">f</span><span class="s1">' Successful deletion of deployment </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span>
@@ -877,6 +870,16 @@
                     <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s1">' Error deleting deployment </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">exc</span><span class="o">.</span><span class="n">reason</span><span class="si">}</span><span class="s1"> '</span>
                     <span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">_delete_namespaced_deployment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">kubernetes_client</span><span class="o">.</span><span class="n">K8sClients</span><span class="p">()</span><span class="o">.</span><span class="n">apps_v1</span><span class="o">.</span><span class="n">delete_namespaced_deployment</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dns_name</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span>
+            <span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">_read_namespaced_deployment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">kubernetes_client</span><span class="o">.</span><span class="n">K8sClients</span><span class="p">()</span><span class="o">.</span><span class="n">apps_v1</span><span class="o">.</span><span class="n">read_namespaced_deployment</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dns_name</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span>
+            <span class="p">)</span>
 
         <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>

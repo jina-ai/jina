@@ -423,6 +423,7 @@
 </li>
 <li class="toctree-l3 current has-children"><a class="reference internal" href="../jina.peapods.pods/">jina.peapods.pods package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" role="switch" type="checkbox"/><label for="toctree-checkbox-33"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l4 current has-children"><a class="reference internal" href="../jina.peapods.pods.k8slib/">jina.peapods.pods.k8slib package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" role="switch" type="checkbox"/><label for="toctree-checkbox-34"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.pods.k8slib.kubernetes_client/">jina.peapods.pods.k8slib.kubernetes_client module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../jina.peapods.pods.k8slib.kubernetes_deployment/">jina.peapods.pods.k8slib.kubernetes_deployment module</a></li>
 <li class="toctree-l5 current current-page"><a class="current reference internal" href="#">jina.peapods.pods.k8slib.kubernetes_tools module</a></li>
 </ul>
@@ -602,62 +603,6 @@
                 </div>
                 <section id="module-jina.peapods.pods.k8slib.kubernetes_tools">
 <span id="jina-peapods-pods-k8slib-kubernetes-tools-module"></span><h1>jina.peapods.pods.k8slib.kubernetes_tools module<a class="headerlink" href="#module-jina.peapods.pods.k8slib.kubernetes_tools" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.peapods.pods.k8slib.kubernetes_tools.K8sClients">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.peapods.pods.k8slib.kubernetes_tools.</span></span><span class="sig-name descname"><span class="pre">K8sClients</span></span><a class="reference internal" href="../../_modules/jina/peapods/pods/k8slib/kubernetes_tools/#K8sClients"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.k8slib.kubernetes_tools.K8sClients" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>The Kubernetes api is wrapped into a class to have a lazy reading of the cluster configuration.</p>
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.peapods.pods.k8slib.kubernetes_tools.K8sClients.k8s_client">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">k8s_client</span></span><a class="headerlink" href="#jina.peapods.pods.k8slib.kubernetes_tools.K8sClients.k8s_client" title="Permalink to this definition">¶</a></dt>
-<dd><p>Client for making requests to Kubernetes</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>k8s client</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.peapods.pods.k8slib.kubernetes_tools.K8sClients.core_v1">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">core_v1</span></span><a class="headerlink" href="#jina.peapods.pods.k8slib.kubernetes_tools.K8sClients.core_v1" title="Permalink to this definition">¶</a></dt>
-<dd><p>V1 client for core</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>v1 client</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.peapods.pods.k8slib.kubernetes_tools.K8sClients.apps_v1">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">apps_v1</span></span><a class="headerlink" href="#jina.peapods.pods.k8slib.kubernetes_tools.K8sClients.apps_v1" title="Permalink to this definition">¶</a></dt>
-<dd><p>V1 client for core</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>v1 client</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.peapods.pods.k8slib.kubernetes_tools.K8sClients.beta">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">beta</span></span><a class="headerlink" href="#jina.peapods.pods.k8slib.kubernetes_tools.K8sClients.beta" title="Permalink to this definition">¶</a></dt>
-<dd><p>Beta client for using beta features</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>beta client</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.peapods.pods.k8slib.kubernetes_tools.K8sClients.networking_v1_beta1_api">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">networking_v1_beta1_api</span></span><a class="headerlink" href="#jina.peapods.pods.k8slib.kubernetes_tools.K8sClients.networking_v1_beta1_api" title="Permalink to this definition">¶</a></dt>
-<dd><p>Networking client used for creating the ingress</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>networking client</p>
-</dd>
-</dl>
-</dd></dl>
-</dd></dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.peapods.pods.k8slib.kubernetes_tools.create">
 <span class="sig-prename descclassname"><span class="pre">jina.peapods.pods.k8slib.kubernetes_tools.</span></span><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">template</span></em>, <em class="sig-param"><span class="pre">params</span></em>, <em class="sig-param"><span class="pre">logger=&lt;jina.logging.logger.JinaLogger</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">custom_resource_dir=None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/k8slib/kubernetes_tools/#create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.k8slib.kubernetes_tools.create" title="Permalink to this definition">¶</a></dt>
