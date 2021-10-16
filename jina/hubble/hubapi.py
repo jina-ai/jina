@@ -3,9 +3,8 @@
 import json
 import os
 import shutil
-import warnings
 from pathlib import Path
-from typing import Tuple, Optional
+from typing import Tuple
 
 from . import HubExecutor
 from .helper import unpack_package, install_requirements, is_requirements_installed
@@ -173,15 +172,17 @@ def install_package_dependencies(
     """
     # install the dependencies included in requirements.txt
     requirements_file = pkg_path / 'requirements.txt'
+    if pkg_path != pkg_dist_path:
+        shutil.copyfile(requirements_file, pkg_dist_path / 'requirements.txt')
+
     if requirements_file.exists():
         if install_deps:
             install_requirements(requirements_file)
-            shutil.copyfile(requirements_file, pkg_dist_path / 'requirements.txt')
-        elif not is_requirements_installed(requirements_file):
-            warnings.warn(
-                '''Dependencies listed in requirements.txt are not all installed locally, 
-                this Executor may not run as expect. 
-                To install dependencies, add `--install-requirements` or set `install_requirements = True`'''
+        elif not is_requirements_installed(requirements_file, show_warning=True):
+            raise ModuleNotFoundError(
+                'Dependencies listed in requirements.txt are not all installed locally, '
+                'this Executor may not run as expect. To install dependencies, '
+                'add `--install-requirements` or set `install_requirements = True`'
             )
 
 

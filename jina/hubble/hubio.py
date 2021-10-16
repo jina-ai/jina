@@ -763,10 +763,9 @@ with f:
                     raise ValueError(f'{self.args.uri} is not a valid scheme')
         except KeyboardInterrupt:
             executor_name = None
-        except Exception as e:
-            self.logger.error(f'Error while pulling {self.args.uri}: \n{e!r}')
+        except Exception:
             executor_name = None
-            raise e
+            raise
         finally:
             # delete downloaded zip package if existed
             if cached_zip_file is not None:

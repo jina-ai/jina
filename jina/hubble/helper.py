@@ -323,15 +323,19 @@ def is_requirements_installed(
     :param show_warning: if to show a warning when a dependency is not satisfied
     :return: True of False if not satisfied
     """
-    from pkg_resources import DistributionNotFound, VersionConflict
+    from pkg_resources import (
+        DistributionNotFound,
+        VersionConflict,
+        RequirementParseError,
+    )
     import pkg_resources
 
     try:
         with requirements_file.open() as requirements:
             pkg_resources.require(requirements)
-    except (DistributionNotFound, VersionConflict) as ex:
+    except (DistributionNotFound, VersionConflict, RequirementParseError) as ex:
         if show_warning:
-            warnings.warn(ex, UserWarning)
+            warnings.warn(str(ex), UserWarning)
         return False
     return True
 
