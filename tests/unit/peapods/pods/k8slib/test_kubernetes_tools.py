@@ -21,9 +21,6 @@ def test_lazy_load_k8s_client(monkeypatch):
     for attribute in attributes:
         assert getattr(k8s_clients, attribute) is not None
 
-    assert k8s_clients.k8s_client is not None
-    assert k8s_clients._k8s_client is not None
-
 
 @pytest.mark.parametrize(
     ['template', 'params'],
@@ -44,7 +41,9 @@ def test_lazy_load_k8s_client(monkeypatch):
 )
 def test_create(template: str, params: Dict, monkeypatch):
     create_from_yaml_mock = Mock()
+    load_kube_config_mock = Mock()
     monkeypatch.setattr(kubernetes.utils, 'create_from_yaml', create_from_yaml_mock)
+    monkeypatch.setattr(kubernetes.config, 'load_kube_config', load_kube_config_mock)
 
     # avoid deleting the config file so that we can check it
     remove_mock = Mock()

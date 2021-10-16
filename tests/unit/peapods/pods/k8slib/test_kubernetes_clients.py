@@ -4,7 +4,8 @@ from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
 
 
 @pytest.fixture
-def k8s_clients():
+def k8s_clients(mocker):
+    mocker.patch('kubernetes.config.load_kube_config', return_value=None)
     return K8sClients()
 
 

@@ -5,17 +5,17 @@ class K8sClients:
     """
 
     def __init__(self):
-        from kubernetes import config, client
+        import kubernetes
 
         try:
             # try loading kube config from disk first
-            config.load_kube_config()
-        except config.config_exception.ConfigException:
+            kubernetes.config.load_kube_config()
+        except kubernetes.config.config_exception.ConfigException:
             # if the config could not be read from disk, try loading in cluster config
             # this works if we are running inside k8s
-            config.load_incluster_config()
+            kubernetes.config.load_incluster_config()
 
-        self._k8s_client = client.ApiClient()
+        self._k8s_client = kubernetes.client.ApiClient()
         self._core_v1 = None
         self._apps_v1 = None
         self._beta = None
