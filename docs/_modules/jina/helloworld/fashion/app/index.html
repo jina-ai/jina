@@ -647,8 +647,6 @@
     <span class="c1"># download the data</span>
     <span class="n">download_data</span><span class="p">(</span><span class="n">targets</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">download_proxy</span><span class="p">)</span>
 
-    <span class="c1"># reduce the network load by using `fp16`, or even `uint8`</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'JINA_ARRAY_QUANT'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'fp16'</span>
     <span class="c1"># now comes the real work</span>
     <span class="c1"># load index flow from a YAML file</span>
     <span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
@@ -694,7 +692,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 15, 2021.
+                    Last updated on Oct 16, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

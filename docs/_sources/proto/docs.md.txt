@@ -501,8 +501,9 @@ Represents a Status
 | Name | Number | Description |
 | ---- | ------ | ----------- |
 | NONE | 0 | no quantization is performed, stored in the original ``dtype`` |
-| FP16 | 1 | 2x smaller if dtype is set to FP32 |
-| UINT8 | 2 | 4x smaller but lossy when dtype is FP32 |
+| FP16 | 1 | 4x smaller if original dtype FP64, lossy |
+| UINT8 | 2 | 4x smaller if original dtype FP32, lossy |
+| FP32 | 3 | 2x smaller if dtype is set to FP64 |
 
 
 
