@@ -865,3 +865,17 @@ def test_flow_auto_polling():
     assert f['pod_shards_default_polling_any'].args.polling == PollingType.ANY
     assert f['pod_replicas_shards_manual_polling_any'].args.polling == PollingType.ANY
     assert f['pod_replicas_shards_manual_polling_all'].args.polling == PollingType.ALL
+
+
+def test_flow_change_parameters():
+    class MyExec(Executor):
+        @requests
+        def foo(self, **kwargs):
+            return {'a': 1}
+
+    f = Flow().add(uses=MyExec)
+    with f:
+        r = f.post('/', parameters={'a': 2}, return_results=True)
+        assert r[0].parameters['a'] == 1.0
+        r = f.post('/', parameters={}, return_results=True)
+        assert r[0].parameters['a'] == 1.0
