@@ -880,15 +880,14 @@ processing.</p>
 </section>
 <section id="method-returns">
 <h3>Method returns<a class="headerlink" href="#method-returns" title="Permalink to this headline">¶</a></h3>
-<p>Methods decorated with <code class="docutils literal notranslate"><span class="pre">@request</span></code> can return <code class="docutils literal notranslate"><span class="pre">Optional[DocumentArray]</span></code>.</p>
-<p>The return is optional. <strong>All changes happen in-place.</strong></p>
+<p>Methods decorated with <code class="docutils literal notranslate"><span class="pre">@request</span></code> can return <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>, <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code>, <code class="docutils literal notranslate"><span class="pre">Dict</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 <ul class="simple">
-<li><p>If the return is not <code class="docutils literal notranslate"><span class="pre">None</span></code>, then the current <code class="docutils literal notranslate"><span class="pre">docs</span></code> field in the <code class="docutils literal notranslate"><span class="pre">Request</span></code> will be overridden by the
-returned <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>, which will be forwarded to the next Executor in the Flow.</p></li>
-<li><p>If the return is just a shallow copy of <code class="docutils literal notranslate"><span class="pre">Request.docs</span></code>, then nothing happens. This is because the changes are already
-made in-place, there is no point to assign the value.</p></li>
+<li><p>If the return is <code class="docutils literal notranslate"><span class="pre">None</span></code>, then Jina considers all changes happen in-place. The next Executor will receive the updated <code class="docutils literal notranslate"><span class="pre">docs</span></code> modified by the current Executor.</p></li>
+<li><p>If the return is <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> or <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code>, then the current <code class="docutils literal notranslate"><span class="pre">docs</span></code> field in the <code class="docutils literal notranslate"><span class="pre">Request</span></code> will be overridden by the
+return, which will be forwarded to the next Executor in the Flow.</p></li>
+<li><p>If the return is a <code class="docutils literal notranslate"><span class="pre">Dict</span></code>, then <code class="docutils literal notranslate"><span class="pre">Request.parameters</span></code> will be updated by union with the return. The next Executor will receive this updated <code class="docutils literal notranslate"><span class="pre">Request.parameters</span></code>. One can leverage this feature to pass parameters between Executors.</p></li>
 </ul>
-<p>So do I need a return? No, unless you must create a new <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>. Let’s see some examples.</p>
+<p>So do I need a return? Most time you don’t. Let’s see some examples.</p>
 <section id="embed-documents-blob">
 <h4>Embed Documents <code class="docutils literal notranslate"><span class="pre">blob</span></code><a class="headerlink" href="#embed-documents-blob" title="Permalink to this headline">¶</a></h4>
 <p>In this example, <code class="docutils literal notranslate"><span class="pre">encode()</span></code> uses some neural network to get the embedding for each <code class="docutils literal notranslate"><span class="pre">Document.blob</span></code>, then assign it
@@ -954,6 +953,25 @@ info over the network. This needs a return.</p>
 </span></pre></div>
 </div>
 </section>
+<section id="pass-change-request-parameters">
+<h4>Pass/change request parameters<a class="headerlink" href="#pass-change-request-parameters" title="Permalink to this headline">¶</a></h4>
+<p>In this example, <code class="docutils literal notranslate"><span class="pre">MyExec2</span></code> receives the parameters <code class="docutils literal notranslate"><span class="pre">{'top_k':</span> <span class="pre">10}</span></code> from <code class="docutils literal notranslate"><span class="pre">MyExec1</span></code> when the Flow containing <code class="docutils literal notranslate"><span class="pre">MyExec1</span> <span class="pre">-&gt;</span> <span class="pre">MyExec2</span></code> in order.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">Executor</span>
+
+<span class="k">class</span> <span class="nc">MyExec1</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/index'</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="hll">        <span class="k">return</span> <span class="p">{</span><span class="s1">'top_k'</span><span class="p">:</span> <span class="mi">10</span><span class="p">}</span>
+</span>
+<span class="k">class</span> <span class="nc">MyExec2</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/index'</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">docs</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s1">'top_k'</span><span class="p">]))</span>
+</span></pre></div>
+</div>
+</section>
 </section>
 </section>
 </section>
@@ -990,7 +1008,7 @@ info over the network. This needs a return.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 16, 2021.
+                    Last updated on Oct 17, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -1035,6 +1053,7 @@ info over the network. This needs a return.</p>
 <li><a class="reference internal" href="#embed-documents-blob">Embed Documents <code class="docutils literal notranslate"><span class="pre">blob</span></code></a></li>
 <li><a class="reference internal" href="#add-chunks-by-segmenting-document">Add Chunks by segmenting Document</a></li>
 <li><a class="reference internal" href="#preserve-document-id-only">Preserve Document <code class="docutils literal notranslate"><span class="pre">id</span></code> only</a></li>
+<li><a class="reference internal" href="#pass-change-request-parameters">Pass/change request parameters</a></li>
 </ul>
 </li>
 </ul>
