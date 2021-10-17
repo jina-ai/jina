@@ -8,10 +8,9 @@ from collections import defaultdict
 from functools import wraps
 from typing import Optional, Union, Callable
 
-from .. import __windows__
 from jina.enums import ProgressBarStatus
-
 from .logger import JinaLogger
+from .. import __windows__
 from ..helper import colored, get_readable_size, get_readable_time
 
 
@@ -214,6 +213,7 @@ class ProgressBar(TimeContext):
         description: str = 'Working...',
         message_on_done: Union[str, Callable[..., str], None] = None,
         final_line_feed: bool = True,
+        total_length: Optional[int] = None,
     ):
         """
         Create the ProgressBar.
@@ -221,6 +221,7 @@ class ProgressBar(TimeContext):
         :param description: The name of the task, will be displayed in front of the bar.
         :param message_on_done: The final message to print when the progress is complete
         :param final_line_feed: if False, the line will not get a Line Feed and thus is easily overwritable.
+        :param total_length: if set, then every :py:meth:`.update` increases the bar by `1/total_length * _bars_on_row`
         """
         super().__init__(description, None)
         self._bars_on_row = 40
@@ -229,6 +230,7 @@ class ProgressBar(TimeContext):
         self._num_update_called = 0
         self._on_done = message_on_done
         self._final_line_feed = final_line_feed
+        self._total_length = total_length
         self._stop_event = threading.Event()
 
     def update(
@@ -248,7 +250,8 @@ class ProgressBar(TimeContext):
         :param status: If set to a value, it will mark the task as complete, can be either "Done" or "Canceled"
         :param first_enter: if this method is called by `__enter__`
         """
-        self._num_update_called += 0 if first_enter else 1
+        if self._total_length:
+            progress = progress / self._total_length * self._bars_on_row
         self._completed_progress += progress
         self._last_rendered_progress = self._completed_progress
         elapsed = time.perf_counter() - self.start
@@ -268,11 +271,15 @@ class ProgressBar(TimeContext):
         else:
             bar_color, unfinished_bar_color = 'green', 'green'
 
-        speed_str = (
-            'estimating...'
-            if first_enter
-            else f'{self._num_update_called / elapsed:4.1f} step/s'
-        )
+        if first_enter:
+            speed_str = 'estimating...'
+        elif self._total_length:
+            _prog = self._num_update_called / self._total_length
+            speed_str = f'{(_prog * 100):.0f}% ETA: {get_readable_time(seconds=self.now() / (_prog + 1e-6) * (1 - _prog + 1e-6))}'
+        else:
+            speed_str = f'{self._num_update_called / elapsed:4.1f} step/s'
+
+        self._num_update_called += 0 if first_enter else 1
 
         description_str = description or self.task_name or ''
         if status != ProgressBarStatus.WORKING:
@@ -341,7 +348,6 @@ class ProgressBar(TimeContext):
             self._stop_event.set()
             self.update(0, status=ProgressBarStatus.CANCELED)
             self._print_bar(self._bar_info)
-            return True  # prevent it from being propagated
         elif exc_type and issubclass(exc_type, Exception):
             self._stop_event.set()
             self.update(0, status=ProgressBarStatus.ERROR)

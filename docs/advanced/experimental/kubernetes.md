@@ -55,7 +55,7 @@ deploy_executor0@65952[I]:🐳	Create Deployment for "executor0" with image "jin
   start_gateway@65952[I]:🏝️	Create Namespace "index-flow" for "gateway"
   start_gateway@65952[I]:🔁	namespaces "index-flow" already exists
  deploy_gateway@65952[I]:🔋	Create Service for "gateway" with exposed port "8080"
- deploy_gateway@65952[I]:🐳	Create Deployment for "gateway" with image "jinaai/jina:master-py38-perf", replicas 1 and init_container False                                                                                               
+ deploy_gateway@65952[I]:🐳	Create Deployment for "gateway" with image "jinaai/jina:master-py38-standard", replicas 1 and init_container False                                                                                               
 ```
 
 After the deployment finished, set up port forwarding to enable the client to send requests to the `Flow`.
@@ -166,7 +166,7 @@ deploy_test_searcher@80992[I]:🐳	Create Deployment for "test-searcher" with im
   start_gateway@80992[I]:🏝️	Create Namespace "index-flow" for "gateway"
   start_gateway@80992[I]:🔁	namespaces "index-flow" already exists
  deploy_gateway@80992[I]:🔋	Create Service for "gateway" with exposed port "8080"
- deploy_gateway@80992[I]:🐳	Create Deployment for "gateway" with image "jinaai/jina:2.1.4-py38-perf", replicas 1 and init_container False
+ deploy_gateway@80992[I]:🐳	Create Deployment for "gateway" with image "jinaai/jina:x.x.x-py38-standard", replicas 1 and init_container False
 ```
 
 Use `port-forward` to send requests to the gateway of the index `Flow`:
@@ -270,7 +270,7 @@ Console output:
 ```txt
 start_test_searcher@81116[I]:🏝️	Create Namespace "search-flow" for "test_searcher"
 deploy_test_searcher@81116[I]:🔋	Create Service for "test-searcher-head" with exposed port "8080"
-deploy_test_searcher@81116[I]:🐳	Create Deployment for "test-searcher-head" with image "jinaai/jina:2.1.4-py38-perf", replicas 1 and init_container False
+deploy_test_searcher@81116[I]:🐳	Create Deployment for "test-searcher-head" with image "jinaai/jina:x.x.x-py38-perf", replicas 1 and init_container False
 deploy_test_searcher@81116[I]:🔋	Create Service for "test-searcher-0" with exposed port "8080"
 deploy_test_searcher@81116[I]:🐳	Create Deployment for "test-searcher-0" with image "jinahub/nflcyqe2:v10-2.1.0", replicas 2 and init_container False
 deploy_test_searcher@81116[I]:🔋	Create Service for "test-searcher-1" with exposed port "8080"
@@ -282,7 +282,7 @@ deploy_test_searcher@81116[I]:🐳	Create Deployment for "test-searcher-tail" wi
   start_gateway@81116[I]:🏝️	Create Namespace "search-flow" for "gateway"
   start_gateway@81116[I]:🔁	namespaces "search-flow" already exists
  deploy_gateway@81116[I]:🔋	Create Service for "gateway" with exposed port "8080"
- deploy_gateway@81116[I]:🐳	Create Deployment for "gateway" with image "jinaai/jina:2.1.4-py38-perf", replicas 1 and init_container False                                                                                                 
+ deploy_gateway@81116[I]:🐳	Create Deployment for "gateway" with image "jinaai/jina:x.x.x-py38-standard", replicas 1 and init_container False                                                                                                 
 ```
 
 Use `port-forward` to send requests to the gateway of the search `Flow`:

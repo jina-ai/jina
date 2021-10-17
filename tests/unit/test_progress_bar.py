@@ -11,7 +11,9 @@ from jina.logging.profile import ProgressBar
 @pytest.mark.parametrize('details', [None, 'step {}'])
 @pytest.mark.parametrize('msg_on_done', [None, 'done!', lambda: 'done!'])
 def test_progressbar(total_steps, update_tick, task_name, capsys, details, msg_on_done):
-    with ProgressBar(description=task_name, message_on_done=msg_on_done) as pb:
+    with ProgressBar(
+        description=task_name, message_on_done=msg_on_done, total_length=total_steps
+    ) as pb:
         for j in range(total_steps):
             pb.update(update_tick, message=details.format(j) if details else None)
             time.sleep(0.001)
@@ -40,11 +42,12 @@ def test_error_in_progress_bar(capsys):
 
 
 def test_kb_interrupt_in_progress_bar(capsys):
-    with ProgressBar('update') as p:
-        for j in range(100):
-            p.update()
-            time.sleep(0.01)
-            if j > 5:
-                raise KeyboardInterrupt
+    with pytest.raises(KeyboardInterrupt):
+        with ProgressBar('update') as p:
+            for j in range(100):
+                p.update()
+                time.sleep(0.01)
+                if j > 5:
+                    raise KeyboardInterrupt
     captured = capsys.readouterr()
     assert str(ProgressBarStatus.CANCELED) in captured.out

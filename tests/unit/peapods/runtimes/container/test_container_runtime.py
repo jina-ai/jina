@@ -68,6 +68,18 @@ def test_flow_with_one_container_pod(docker_image_built):
         f.post(on='/index', inputs=random_docs(10))
 
 
+def test_flow_with_one_container_pod_shards(docker_image_built):
+    f = Flow().add(name='dummyEncoder1', shards=2, uses=f'docker://{img_name}')
+
+    with f:
+        pod = f._pod_nodes['dummyEncoder1']
+        assert pod.args.shards == pod.args.parallel == 2
+        for idx, shard in enumerate(pod.shards):
+            assert shard.args.pea_id == shard.args.shard_id == idx
+            assert shard.args.shards == shard.args.parallel == 2
+        f.post(on='/index', inputs=random_docs(10))
+
+
 def test_flow_with_replica_container_ext_yaml(docker_image_built):
     f = Flow().add(
         name='dummyEncoder3',
