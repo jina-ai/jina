@@ -982,7 +982,10 @@
                 <span class="n">args</span><span class="o">.</span><span class="n">uses_after</span> <span class="ow">or</span> <span class="n">__default_executor__</span>
             <span class="p">)</span>
 
-        <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'deployments'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">args</span><span class="p">]</span> <span class="o">*</span> <span class="n">shards</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">shards</span><span class="p">):</span>
+            <span class="n">cargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+            <span class="n">cargs</span><span class="o">.</span><span class="n">shard_id</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'deployments'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">parsed_args</span>
 
     <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
