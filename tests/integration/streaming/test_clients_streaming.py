@@ -81,7 +81,7 @@ def on_done(response, final_da: DocumentArray):
         pytest.param(
             'grpc',
             slow_blocking_gen,
-            marks=pytest.mark.xfail(
+            marks=pytest.mark.skip(
                 reason='grpc client + sync generator with time.sleep is expected to fail'
             ),
         ),
@@ -143,7 +143,13 @@ def test_disable_prefetch_slow_client_fast_executor(
                 reason='http protocol + async generator test passes locally, but flaky on CI'
             ),
         ),
-        ('http', gen),
+        pytest.param(
+            'http',
+            gen,
+            marks=pytest.mark.xpass(
+                reason='http protocol + async generator test passes locally, but flaky on CI'
+            ),
+        ),
     ],
 )
 def test_disable_prefetch_fast_client_slow_executor(
