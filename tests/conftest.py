@@ -58,7 +58,6 @@ def partial_pea_client(monkeypatch):
 
 
 def get_partial_client(mode, monkeypatch):
-    monkeypatch.setattr(os, "kill", lambda *args, **kwargs: None)
     from daemon import __root_workspace__
 
     pathlib.Path(__root_workspace__).mkdir(parents=True, exist_ok=True)
