@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import itertools
 
 from typing import Optional, Union, List, Tuple, Sequence, Any
 from math import log
@@ -270,7 +271,7 @@ class DocumentArrayRankingEvaluationOpsMixin(ABC):
             pairs = []
             for doc, groundtruth in zip(self.doc.chunks, self.groundtruth.chunks):
                 pairs.append(
-                    DocumentArrayRankingEvaluationOpsMixin.DocGroundtruthPair(
+                    DocumentArrayRankingEvaluationOpsMixin._DocGroundtruthPair(
                         doc, groundtruth
                     )
                 )
@@ -306,6 +307,12 @@ class DocumentArrayRankingEvaluationOpsMixin(ABC):
         def __iter__(self):
             for pair in self._pairs:
                 yield pair
+
+        @staticmethod
+        def _flatten(sequence):
+            return DocumentArrayRankingEvaluationOpsMixin._DocGroundtruthArray(
+                list(itertools.chain.from_iterable(sequence))
+            )
 
     def evaluate(
         self,
@@ -399,25 +406,25 @@ class DocumentArrayRankingEvaluationOpsMixin(ABC):
 
         num = 0
         for doc, groundtruth in docs_groundtruths.traverse_flat(traversal_paths):
+            if eval_at is not None:
+                if isinstance(eval_at, int):
+                    eval_at_iter = [eval_at] * len(metrics_list)
+                else:
+                    eval_at_iter = eval_at
+            else:
+                eval_at_iter = [None] * len(metrics_list)
 
-            eval_at_iter = (
-                eval_at
-                if eval_at is not None and not isinstance(eval_at, int)
-                else [None] * len(metrics_list)
-            )
+            if evaluation_names is not None:
+                evaluation_names_iter = evaluation_names
+            else:
+                evaluation_names_iter = [None] * len(metrics_list)
 
-            evaluation_names_iter = (
-                evaluation_names
-                if evaluation_names is not None
-                else [None] * len(metrics_list)
-            )
-
-            for i, metric, k, evaluation_name in enumerate(
+            for i, (metric, k, evaluation_name) in enumerate(
                 zip(metrics_list, eval_at_iter, evaluation_names_iter)
             ):
-                eval_name = (
-                    evaluation_name or f'{metric}@{k}' if k is not None else metric
-                )
+                eval_name = evaluation_name
+                if eval_name is None:
+                    eval_name = f'{metric}@{k}' if k is not None else metric
 
                 actual = [
                     match.get_attributes(*attribute_fields) for match in doc.matches
@@ -426,6 +433,7 @@ class DocumentArrayRankingEvaluationOpsMixin(ABC):
                     match.get_attributes(*attribute_fields)
                     for match in groundtruth.matches
                 ]
+                kwargs['eval_at'] = k
                 evaluation = DocumentArrayRankingEvaluationOpsMixin.funcs[metric](
                     actual=actual, desired=desired, **kwargs
                 )
