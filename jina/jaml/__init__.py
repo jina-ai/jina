@@ -1,3 +1,4 @@
+import copy
 import inspect
 import sys
 import os
@@ -570,13 +571,8 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 cls._override_yml_params(no_tag_yml, 'metas', override_metas)
                 cls._override_yml_params(no_tag_yml, 'requests', override_requests)
 
-                extra_search_paths_copy = (
-                    list(extra_search_paths)
-                    if extra_search_paths
-                    else extra_search_paths
-                )
                 cls._override_yml_params(
-                    no_tag_yml, 'extra_search_paths', extra_search_paths_copy
+                    no_tag_yml, 'extra_search_paths', copy.copy(extra_search_paths)
                 )
 
             else:
@@ -590,9 +586,9 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 _extra_search_paths = extra_search_paths or []
                 load_py_modules(
                     no_tag_yml,
-                    extra_search_paths=(
-                        _extra_search_paths + [os.path.dirname(s_path)]
-                    ),
+                    extra_search_paths=(_extra_search_paths + [os.path.dirname(s_path)])
+                    if s_path
+                    else None,
                 )
 
             from ..flow.base import Flow
