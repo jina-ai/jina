@@ -60,6 +60,12 @@ class GRPCDataRuntime(AsyncNewLoopRuntime, ABC):
         """Start the grpclet """
         await self._grpclet.start()
 
+    async def async_teardown(self):
+        """Close the data request handler and stop sending messages"""
+        self._data_request_handler.close()
+
+        await self._grpclet.stop_sending()
+
     async def async_cancel(self):
         """The async method to stop server."""
         self.logger.debug('Cancel GRPCDataRuntime')
@@ -76,10 +82,6 @@ class GRPCDataRuntime(AsyncNewLoopRuntime, ABC):
             )
 
         await self._grpclet.stop_receiving()
-
-        self._data_request_handler.close()
-
-        await self._grpclet.stop_sending()
 
     @staticmethod
     def get_control_address(**kwargs):

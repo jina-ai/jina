@@ -61,7 +61,8 @@ class AsyncNewLoopRuntime(BaseRuntime, ABC):
         self._loop.run_until_complete(self._loop_body())
 
     def teardown(self):
-        """Stop and close the event loop."""
+        """Call async_teardown() and stop and close the event loop."""
+        self._loop.run_until_complete(self.async_teardown())
         self._loop.stop()
         self._loop.close()
         super().teardown()
@@ -85,9 +86,13 @@ class AsyncNewLoopRuntime(BaseRuntime, ABC):
         """The async method to setup."""
         pass
 
+    async def async_teardown(self):
+        """The async method to clean up resources during teardown. This method should free all resources allocated during async_setup"""
+        pass
+
     @abstractmethod
     async def async_cancel(self):
-        """An async method to cancel."""
+        """An async method to cancel async_run_forever."""
         ...
 
     @abstractmethod
