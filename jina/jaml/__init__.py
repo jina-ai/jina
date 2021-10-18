@@ -534,6 +534,8 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :param kwargs: kwargs for parse_config_source
         :return: :class:`JAMLCompatible` object
         """
+        if isinstance(source, str) and os.path.exists(source):
+            extra_search_paths = (extra_search_paths or []) + [os.path.dirname(source)]
 
         stream, s_path = parse_config_source(
             source, extra_search_paths=extra_search_paths, **kwargs
@@ -566,6 +568,9 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 cls._override_yml_params(no_tag_yml, 'with', override_with)
                 cls._override_yml_params(no_tag_yml, 'metas', override_metas)
                 cls._override_yml_params(no_tag_yml, 'requests', override_requests)
+                cls._override_yml_params(
+                    no_tag_yml, 'extra_search_paths', extra_search_paths
+                )
 
             else:
                 raise BadConfigSource(
@@ -575,7 +580,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 # expand variables
                 no_tag_yml = JAML.expand_dict(no_tag_yml, context)
             if allow_py_modules:
-                _extra_search_paths = extra_search_paths if extra_search_paths else []
+                _extra_search_paths = extra_search_paths or []
                 load_py_modules(
                     no_tag_yml,
                     extra_search_paths=(_extra_search_paths + [os.path.dirname(s_path)])

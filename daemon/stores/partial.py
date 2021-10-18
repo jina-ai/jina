@@ -103,12 +103,10 @@ class PartialFlowStore(PartialStore):
             elif not Path(args.uses).is_file():
                 raise ValueError(f'uses {args.uses} not found in workspace')
 
-            self.parent_path = str(Path(args.uses).parent)
-
             with open(args.uses) as yaml_file:
                 yaml_source = yaml_file.read()
 
-            self.object: Flow = Flow.load_config(yaml_source).build()
+            self.object: Flow = Flow.load_config(args.uses).build()
             self.object.workspace_id = jinad_args.workspace_id
             self.object.workspace = __partial_workspace__
             self.object.env = {'HOME': __partial_workspace__}
@@ -116,7 +114,6 @@ class PartialFlowStore(PartialStore):
             # Pods/Peas/Runtimes/Executors can inherit these env vars
 
             for pod in self.object._pod_nodes.values():
-                pod.args.extra_search_paths = [self.parent_path]
                 runtime_cls = update_runtime_cls(pod.args, copy=True).runtime_cls
                 if isinstance(pod, CompoundPod):
                     # In dependencies, we set `runs_in_docker` for the `gateway` and for `CompoundPod` we need

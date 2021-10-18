@@ -57,12 +57,14 @@ class V1Parser(VersionedYAMLParser):
         :return: the Flow YAML parser given the syntax version number
         """
         p = data.get('with', {})  # type: Dict[str, Any]
+        extra_search_paths = data.get('extra_search_paths', [])
+
         a = p.pop('args') if 'args' in p else ()
         k = p.pop('kwargs') if 'kwargs' in p else {}
         # maybe there are some hanging kwargs in "parameters"
         tmp_a = (expand_env_var(v) for v in a)
         tmp_p = {kk: expand_env_var(vv) for kk, vv in {**k, **p}.items()}
-        obj = cls(*tmp_a, **tmp_p)
+        obj = cls(*tmp_a, extra_search_paths=extra_search_paths, **tmp_p)
 
         pp = data.get('executors', data.get('pods', []))
         for pods in pp:

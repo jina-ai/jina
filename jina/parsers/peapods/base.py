@@ -111,3 +111,12 @@ When not given, then the default naming strategy will apply.
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
+
+    parser.add_argument(
+        '--extra-search-paths',
+        type=str,
+        action='append',
+        help='Extra search paths to be used when loading modules.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
