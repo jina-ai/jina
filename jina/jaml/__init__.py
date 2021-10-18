@@ -587,12 +587,12 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 # expand variables
                 no_tag_yml = JAML.expand_dict(no_tag_yml, context)
             if allow_py_modules:
-                _extra_search_paths = (extra_search_paths or []) + [
-                    os.path.dirname(s_path)
-                ]
+                _extra_search_paths = extra_search_paths or []
                 load_py_modules(
                     no_tag_yml,
-                    extra_search_paths=_extra_search_paths if s_path else None,
+                    extra_search_paths=(
+                        _extra_search_paths + [os.path.dirname(s_path)]
+                    ),
                 )
 
             from ..flow.base import Flow
