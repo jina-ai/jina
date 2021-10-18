@@ -97,6 +97,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -322,6 +323,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`2.1.5`)](#release-note-215)
 - [Release Note (`2.1.6`)](#release-note-216)
 - [Release Note (`2.1.7`)](#release-note-217)
+- [Release Note (`2.1.8`)](#release-note-218)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -10807,4 +10809,47 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```12b3a639```](https://github.com/jina-ai/jina/commit/12b3a6393a1bac5fbdf82c9a2eeede81d684ecc5)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```4504ee54```](https://github.com/jina-ai/jina/commit/4504ee5442b96d3e897155e40922d15e7581d0f7)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```e641a531```](https://github.com/jina-ai/jina/commit/e641a531d009bc6e3e592187d6df0e91210a2335)] __-__ __version__: the next version will be 2.1.7 (*Jina Dev Bot*)
+
+<a name=release-note-2-1-8></a>
+## Release Note (`2.1.8`)
+
+> Release time: 2021-10-15 20:19:04
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Tobias Jacobowitz,  Han Xiao,  Zhaofeng Miao,  Joan Fontanals,  Jina Dev Bot,  Florian Hönicke,  M4rtin König,  🙇
+
+
+### 🆕 New Features
+
+ - [[```bd6e5626```](https://github.com/jina-ai/jina/commit/bd6e5626e8d9c8f4750150945cad156566548b43)] __-__ __helper__: add eta on progressbar for known-length inputs (#3688) (*Han Xiao*)
+ - [[```18c32e78```](https://github.com/jina-ai/jina/commit/18c32e787ac791f5711b056a3ecd0096aeb55773)] __-__ k8s pod rolling update (#3631) (*Joan Fontanals*)
+ - [[```8a44d1b3```](https://github.com/jina-ai/jina/commit/8a44d1b3fb513db4c4515774f4eb7443f8c228dd)] __-__ k8s update policy (#3669) (*Florian Hönicke*)
+
+### 🐞 Bug fixes
+
+ - [[```dca6d016```](https://github.com/jina-ai/jina/commit/dca6d0168bf185bc1b43ce1e8baf784a02e57ab7)] __-__ __docker__: args processing in container runtime (#3684) (*Tobias Jacobowitz*)
+ - [[```7d9e6fd3```](https://github.com/jina-ai/jina/commit/7d9e6fd33080a9c7d9f46c29da0e5a49a7a3dfe5)] __-__ __dockerfile__: use right environment when build core and perf (#3673) (*Zhaofeng Miao*)
+ - [[```af9c2749```](https://github.com/jina-ai/jina/commit/af9c2749fc22a686a85bfb3ed635558893b411cb)] __-__ fix ambiguity uses after and before (#3683) (*Joan Fontanals*)
+ - [[```2b08e230```](https://github.com/jina-ai/jina/commit/2b08e23094a9b74faf16da29bee63d79b855a718)] __-__ gateway uvicorn needed (#3674) (*Florian Hönicke*)
+ - [[```76285be3```](https://github.com/jina-ai/jina/commit/76285be3b75761167a7ffe067e739cfd7ef24a9a)] __-__ __args__: allow disabling k8s_connection_pooling (#3532) (#3667) (*M4rtin König*)
+ - [[```b341b9d6```](https://github.com/jina-ai/jina/commit/b341b9d668141725ef7f06d8fdab636760429b17)] __-__ compatibility with pyyaml 6.0 (#3675) (*Joan Fontanals*)
+ - [[```e969ce29```](https://github.com/jina-ai/jina/commit/e969ce296998fa330faf45bbed9d29ef66b22153)] __-__ set debug log level to k8spod (#3660) (*Joan Fontanals*)
+ - [[```cf7c215f```](https://github.com/jina-ai/jina/commit/cf7c215fc8c29a9e9dbc1e75ed9bc4461dd80d0b)] __-__ fix plot document (#3659) (*Joan Fontanals*)
+
+### 🧼 Code Refactoring
+
+ - [[```b014f0c8```](https://github.com/jina-ai/jina/commit/b014f0c8384932e133135c518d2274b2dcc5644b)] __-__ go lang warning (#3671) (*Florian Hönicke*)
+
+### 📗 Documentation
+
+ - [[```4a090144```](https://github.com/jina-ai/jina/commit/4a090144fbbb329752cebdc3e9411f5c857be0c5)] __-__ refactor shard and replica docs (#3630) (*Tobias Jacobowitz*)
+
+### 🍹 Other Improvements
+
+ - [[```f30ecd89```](https://github.com/jina-ai/jina/commit/f30ecd892b24c2c93af072039b7cf8b3d126b36b)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```deee1719```](https://github.com/jina-ai/jina/commit/deee17194bf5a6a0af3bcd33ef4fe50ca7cc0317)] __-__ update codeowners (#3677) (*Han Xiao*)
+ - [[```b0746c4d```](https://github.com/jina-ai/jina/commit/b0746c4d2c7b14716790f171e0dab19e846ae491)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```0221034c```](https://github.com/jina-ai/jina/commit/0221034c5b460a20bf08e8c02740d705f6850ab4)] __-__ __version__: the next version will be 2.1.8 (*Jina Dev Bot*)
 

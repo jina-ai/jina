@@ -5,7 +5,7 @@ from argparse import Namespace
 from typing import Optional, Dict, Union, Set, List
 
 import jina
-from .k8slib import kubernetes_deployment, kubernetes_tools
+from .k8slib import kubernetes_deployment, kubernetes_client
 from ..pods import BasePod, ExitFIFO
 from ... import __default_executor__
 from ...logging.logger import JinaLogger
@@ -76,18 +76,8 @@ class K8sPod(BasePod, ExitFIFO):
             )
             return container_args
 
-        def _deploy_runtime(self):
+        def _get_image_name(self):
             image_name = kubernetes_deployment.get_image_name(self.deployment_args.uses)
-            init_container_args = kubernetes_deployment.get_init_container_args(
-                self.common_args
-            )
-            uses_metas = kubernetes_deployment.dictionary_to_cli_param(
-                {'pea_id': self.shard_id}
-            )
-            uses_with = kubernetes_deployment.dictionary_to_cli_param(
-                self.deployment_args.uses_with
-            )
-            uses_with_string = f'"--uses-with", "{uses_with}", ' if uses_with else ''
             if image_name == __default_executor__:
                 test_pip = os.getenv('JINA_K8S_USE_TEST_PIP') is not None
                 image_name = (
@@ -95,12 +85,31 @@ class K8sPod(BasePod, ExitFIFO):
                     if test_pip
                     else f'jinaai/jina:{self.version}-py38-perf'
                 )
-                uses = 'BaseExecutor'
-            else:
+
+            return image_name
+
+        def _get_init_container_args(self):
+            return kubernetes_deployment.get_init_container_args(self.common_args)
+
+        def _get_container_args(self):
+            uses_metas = kubernetes_deployment.dictionary_to_cli_param(
+                {'pea_id': self.shard_id}
+            )
+            uses_with = kubernetes_deployment.dictionary_to_cli_param(
+                self.deployment_args.uses_with
+            )
+            uses_with_string = f'"--uses-with", "{uses_with}", ' if uses_with else ''
+            uses = self.deployment_args.uses
+            if self.deployment_args.uses != __default_executor__:
                 uses = 'config.yml'
-            container_args = self._construct_runtime_container_args(
+            return self._construct_runtime_container_args(
                 self.deployment_args, uses, uses_metas, uses_with_string
             )
+
+        def _deploy_runtime(self):
+            image_name = self._get_image_name()
+            init_container_args = self._get_init_container_args()
+            container_args = self._get_container_args()
 
             kubernetes_deployment.deploy_service(
                 self.dns_name,
@@ -118,6 +127,24 @@ class K8sPod(BasePod, ExitFIFO):
                 ),
             )
 
+        def _restart_runtime(self):
+            image_name = self._get_image_name()
+            container_args = self._get_container_args()
+
+            kubernetes_deployment.restart_deployment(
+                self.dns_name,
+                namespace=self.k8s_namespace,
+                image_name=image_name,
+                container_cmd='["jina"]',
+                container_args=container_args,
+                logger=JinaLogger(f'restart_{self.name}'),
+                replicas=self.num_replicas,
+                pull_policy='IfNotPresent',
+                custom_resource_dir=getattr(
+                    self.common_args, 'k8s_custom_resource_dir', None
+                ),
+            )
+
         def wait_start_success(self):
             _timeout = self.common_args.timeout_ready
             if _timeout <= 0:
@@ -126,8 +153,6 @@ class K8sPod(BasePod, ExitFIFO):
                 _timeout /= 1e3
 
             from kubernetes import client
-
-            k8s_client = kubernetes_tools.K8sClients().apps_v1
 
             with JinaLogger(f'waiting_for_{self.name}') as logger:
                 logger.debug(
@@ -138,9 +163,7 @@ class K8sPod(BasePod, ExitFIFO):
                 exception_to_raise = None
                 while timeout_ns is None or time.time_ns() - now < timeout_ns:
                     try:
-                        api_response = k8s_client.read_namespaced_deployment(
-                            name=self.dns_name, namespace=self.k8s_namespace
-                        )
+                        api_response = self._read_namespaced_deployment()
                         assert api_response.status.replicas == self.num_replicas
                         if (
                             api_response.status.ready_replicas is not None
@@ -162,6 +185,81 @@ class K8sPod(BasePod, ExitFIFO):
                 fail_msg += f': {repr(exception_to_raise)}'
             raise RuntimeFailToStart(fail_msg)
 
+        async def wait_restart_success(self):
+            _timeout = self.common_args.timeout_ready
+            if _timeout <= 0:
+                _timeout = None
+            else:
+                _timeout /= 1e3
+
+            from kubernetes import client
+            import asyncio
+
+            k8s_client = kubernetes_client.K8sClients().apps_v1
+
+            with JinaLogger(f'waiting_restart_for_{self.name}') as logger:
+                logger.info(
+                    f'🏝️\n\t\tWaiting for "{self.name}" to be restarted, with {self.num_replicas} replicas'
+                )
+                timeout_ns = 1000000000 * _timeout if _timeout else None
+                now = time.time_ns()
+                exception_to_raise = None
+                while timeout_ns is None or time.time_ns() - now < timeout_ns:
+                    try:
+                        api_response = k8s_client.read_namespaced_deployment(
+                            name=self.dns_name, namespace=self.k8s_namespace
+                        )
+                        logger.debug(
+                            f'\n\t\t Updated Replicas: {api_response.status.updated_replicas}.'
+                            f' Replicas: {api_response.status.replicas}.'
+                            f' Expected Replicas {self.num_replicas}'
+                        )
+                        if (
+                            api_response.status.updated_replicas is not None
+                            and api_response.status.updated_replicas
+                            == self.num_replicas
+                            and api_response.status.replicas == self.num_replicas
+                        ):
+                            logger.success(
+                                f' {self.name} has all its replicas updated!!'
+                            )
+                            return
+                        else:
+                            updated_replicas = api_response.status.updated_replicas or 0
+                            alive_replicas = api_response.status.replicas or 0
+                            if updated_replicas < self.num_replicas:
+                                logger.debug(
+                                    f'\nNumber of updated replicas {updated_replicas}, waiting for {self.num_replicas - updated_replicas} replicas to be updated'
+                                )
+                            else:
+                                logger.debug(
+                                    f'\nNumber of alive replicas {alive_replicas}, waiting for {alive_replicas - self.num_replicas} old replicas to be terminated'
+                                )
+
+                            await asyncio.sleep(1.0)
+                    except client.ApiException as ex:
+                        exception_to_raise = ex
+                        break
+            fail_msg = f' Deployment {self.name} did not restart with a timeout of {self.common_args.timeout_ready}'
+            if exception_to_raise:
+                fail_msg += f': {repr(exception_to_raise)}'
+            raise RuntimeFailToStart(fail_msg)
+
+        def rolling_update(
+            self, dump_path: Optional[str] = None, *, uses_with: Optional[Dict] = None
+        ):
+            assert (
+                self.name != 'gateway'
+            ), 'Rolling update on the gateway is not supported'
+            if dump_path is not None:
+                if uses_with is not None:
+                    uses_with['dump_path'] = dump_path
+                else:
+                    uses_with = {'dump_path': dump_path}
+            self.deployment_args.uses_with = uses_with
+            self.deployment_args.dump_path = dump_path
+            self._restart_runtime()
+
         def start(self):
             with JinaLogger(f'start_{self.name}') as logger:
                 logger.debug(f'\t\tDeploying "{self.name}"')
@@ -176,13 +274,9 @@ class K8sPod(BasePod, ExitFIFO):
         def close(self):
             from kubernetes import client
 
-            k8s_client = kubernetes_tools.K8sClients().apps_v1
-
             with JinaLogger(f'close_{self.name}') as logger:
                 try:
-                    resp = k8s_client.delete_namespaced_deployment(
-                        name=self.dns_name, namespace=self.k8s_namespace
-                    )
+                    resp = self._delete_namespaced_deployment()
                     if resp.status == 'Success':
                         logger.success(
                             f' Successful deletion of deployment {self.name}'
@@ -195,6 +289,16 @@ class K8sPod(BasePod, ExitFIFO):
                     logger.error(
                         f' Error deleting deployment {self.name}: {exc.reason} '
                     )
+
+        def _delete_namespaced_deployment(self):
+            return kubernetes_client.K8sClients().apps_v1.delete_namespaced_deployment(
+                name=self.dns_name, namespace=self.k8s_namespace
+            )
+
+        def _read_namespaced_deployment(self):
+            return kubernetes_client.K8sClients().apps_v1.read_namespaced_deployment(
+                name=self.dns_name, namespace=self.k8s_namespace
+            )
 
         def __enter__(self):
             return self.start()
@@ -318,6 +422,19 @@ class K8sPod(BasePod, ExitFIFO):
         :return: localhost
         """
         return 'localhost'
+
+    async def rolling_update(
+        self, dump_path: Optional[str] = None, *, uses_with: Optional[Dict] = None
+    ):
+        """Reload all Deployments of this K8s Pod.
+        :param dump_path: **backwards compatibility** This function was only accepting dump_path as the only potential arg to override
+        :param uses_with: a Dictionary of arguments to restart the executor with
+        """
+        for deployment in self.k8s_deployments:
+            deployment.rolling_update(dump_path=dump_path, uses_with=uses_with)
+
+        for deployment in self.k8s_deployments:
+            await deployment.wait_restart_success()
 
     def start(self) -> 'K8sPod':
         """Deploy the kubernetes pods via k8s Deployment and k8s Service.

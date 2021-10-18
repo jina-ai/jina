@@ -7,18 +7,19 @@ import pytest
 import kubernetes
 
 from jina.peapods.pods.k8slib.kubernetes_tools import create
-from jina.peapods.pods.k8slib.kubernetes_tools import _k8s_clients
+from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
 
 
 def test_lazy_load_k8s_client(monkeypatch):
     load_kube_config_mock = Mock()
     monkeypatch.setattr(kubernetes.config, 'load_kube_config', load_kube_config_mock)
-    attributes = ['k8s_client', 'core_v1', 'beta', 'networking_v1_beta1_api', 'apps_v1']
+    k8s_clients = K8sClients()
+    attributes = ['core_v1', 'beta', 'networking_v1_beta1_api', 'apps_v1']
     for attribute in attributes:
-        assert getattr(_k8s_clients, f'_{attribute}') is None
+        assert getattr(k8s_clients, f'_{attribute}') is None
 
     for attribute in attributes:
-        assert getattr(_k8s_clients, attribute) is not None
+        assert getattr(k8s_clients, attribute) is not None
 
 
 @pytest.mark.parametrize(
@@ -40,7 +41,9 @@ def test_lazy_load_k8s_client(monkeypatch):
 )
 def test_create(template: str, params: Dict, monkeypatch):
     create_from_yaml_mock = Mock()
+    load_kube_config_mock = Mock()
     monkeypatch.setattr(kubernetes.utils, 'create_from_yaml', create_from_yaml_mock)
+    monkeypatch.setattr(kubernetes.config, 'load_kube_config', load_kube_config_mock)
 
     # avoid deleting the config file so that we can check it
     remove_mock = Mock()

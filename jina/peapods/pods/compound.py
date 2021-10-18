@@ -40,13 +40,18 @@ class CompoundPod(BasePod, ExitStack):
         self.is_tail_router = True
         self.head_args = BasePod._copy_to_head_args(args, args.polling)
         self.tail_args = BasePod._copy_to_tail_args(self.args, self.args.polling)
+        # uses before with shards apply to shards and not to replicas
         self.shards = []  # type: List['Pod']
+        # BACKWARDS COMPATIBILITY:
+        self.args.parallel = self.args.shards
         self.assign_shards()
 
     def assign_shards(self):
         """Assign shards to the CompoundPod"""
         self.shards.clear()
         cargs = copy.copy(self.args)
+        cargs.uses_before = None
+        cargs.uses_after = None
         self.shards_args = self._set_shard_args(cargs, self.head_args, self.tail_args)
 
         for _args in self.shards_args:
@@ -213,6 +218,8 @@ class CompoundPod(BasePod, ExitStack):
             ]
             _args.peas_hosts = pod_host_list
             _args.shard_id = idx
+            # BACKWARDS COMPATIBILITY:
+            _args.pea_id = _args.shard_id
             _args.identity = random_identity()
             if _args.name:
                 _args.name += f'/shard-{idx}'
@@ -257,15 +264,29 @@ class CompoundPod(BasePod, ExitStack):
             result.append(_args)
         return result
 
-    def rolling_update(
+    async def rolling_update(
         self, dump_path: Optional[str] = None, *, uses_with: Optional[Dict] = None
     ):
         """Reload all Pods of this Compound Pod.
         :param dump_path: **backwards compatibility** This function was only accepting dump_path as the only potential arg to override
         :param uses_with: a Dictionary of arguments to restart the executor with
         """
-        for shard in self.shards:
-            shard.rolling_update(dump_path=dump_path, uses_with=uses_with)
+        tasks = []
+        try:
+            import asyncio
+
+            tasks = [
+                asyncio.create_task(
+                    shard.rolling_update(dump_path=dump_path, uses_with=uses_with)
+                )
+                for shard in self.shards
+            ]
+            for future in asyncio.as_completed(tasks):
+                _ = await future
+        except:
+            for task in tasks:
+                if not task.done():
+                    task.cancel()
 
     @property
     def _mermaid_str(self) -> List[str]:

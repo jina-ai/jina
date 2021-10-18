@@ -278,16 +278,14 @@ class MyExecutor(Executor):
 
 ### Method returns
 
-Methods decorated with `@request` can return `Optional[DocumentArray]`.
+Methods decorated with `@request` can return `DocumentArray`, `DocumentArrayMemmap`, `Dict` or `None`.
 
-The return is optional. **All changes happen in-place.**
+- If the return is `None`, then Jina considers all changes happen in-place. The next Executor will receive the updated `docs` modified by the current Executor.
+- If the return is `DocumentArray` or `DocumentArrayMemmap`, then the current `docs` field in the `Request` will be overridden by the
+  return, which will be forwarded to the next Executor in the Flow.
+- If the return is a `Dict`, then `Request.parameters` will be updated by union with the return. The next Executor will receive this updated `Request.parameters`. One can leverage this feature to pass parameters between Executors.
 
-- If the return is not `None`, then the current `docs` field in the `Request` will be overridden by the
-  returned `DocumentArray`, which will be forwarded to the next Executor in the Flow.
-- If the return is just a shallow copy of `Request.docs`, then nothing happens. This is because the changes are already
-  made in-place, there is no point to assign the value.
-
-So do I need a return? No, unless you must create a new `DocumentArray`. Let's see some examples.
+So do I need a return? Most time you don't. Let's see some examples.
 
 
 #### Embed Documents `blob`
@@ -361,3 +359,25 @@ class MyIndexer(Executor):
         return DocumentArray([Document(id=d.id) for d in docs])
 ```
 
+#### Pass/change request parameters
+
+In this example, `MyExec2` receives the parameters `{'top_k': 10}` from `MyExec1` when the Flow containing `MyExec1 -> MyExec2` in order. 
+
+```{code-block} python
+---
+emphasize-lines: 7, 13
+---
+from jina import requests, Document, Executor
+
+class MyExec1(Executor):
+
+    @requests(on='/index')
+    def index(self, **kwargs):
+        return {'top_k': 10}
+
+class MyExec2(Executor):
+
+    @requests(on='/index')
+    def index(self, parameters, **kwargs):
+        self.docs[:int(parameters['top_k']))
+```

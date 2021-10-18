@@ -250,3 +250,30 @@ def test_sockets(polling, shards, pea_socket_in):
             for pea in shard.peas_args['peas']:
                 assert pea.socket_in == SocketType.DEALER_CONNECT
                 assert pea.socket_out == SocketType.PUSH_CONNECT
+
+
+def test_compound_pod_do_not_forward_uses_before_uses_after():
+    polling = 'all'
+    shards = 2
+    replicas = 2
+    args = set_pod_parser().parse_args(
+        [
+            '--name',
+            'pod',
+            '--shards',
+            f'{shards}',
+            '--polling',
+            f'{polling}',
+            '--replicas',
+            f'{replicas}',
+            '--uses-after',
+            'BaseExecutor',
+            '--uses-before',
+            'BaseExecutor',
+        ]
+    )
+
+    cpod = CompoundPod(args)
+    for pod in cpod.shards:
+        assert pod.args.uses_before is None
+        assert pod.args.uses_after is None

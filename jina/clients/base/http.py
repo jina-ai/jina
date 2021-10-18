@@ -38,7 +38,11 @@ class HTTPBaseClient(BaseClient):
 
         async with AsyncExitStack() as stack:
             try:
-                cm1 = ProgressBar() if self.show_progress else nullcontext()
+                cm1 = (
+                    ProgressBar(total_length=self._inputs_length)
+                    if self.show_progress
+                    else nullcontext()
+                )
                 p_bar = stack.enter_context(cm1)
 
                 proto = 'https' if self.args.https else 'http'

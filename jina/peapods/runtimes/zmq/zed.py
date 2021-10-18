@@ -389,7 +389,7 @@ class ZEDRuntime(ZMQRuntime):
         :param kwargs: extra keyword arguments
         :return: True if is ready or it needs to be shutdown
         """
-        timeout_ns = 1000000000 * timeout if timeout else None
+        timeout_ns = 1e9 * timeout if timeout else None
         now = time.time_ns()
         while timeout_ns is None or time.time_ns() - now < timeout_ns:
             if shutdown_event.is_set() or ZEDRuntime.is_ready(

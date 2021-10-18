@@ -87,9 +87,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             self.namespace_created = False
 
         def __enter__(self):
-            from ..peapods.pods.k8slib import kubernetes_tools
+            from ..peapods.pods.k8slib import kubernetes_tools, kubernetes_client
 
-            client = kubernetes_tools.K8sClients().core_v1
+            client = kubernetes_client.K8sClients().core_v1
             list_namespaces = [
                 item.metadata.name for item in client.list_namespace().items
             ]
@@ -105,10 +105,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     self.namespace_created = True
 
         def __exit__(self, exc_type, exc_val, exc_tb):
-            from ..peapods.pods.k8slib import kubernetes_tools
+            from ..peapods.pods.k8slib import kubernetes_client
 
             if self.namespace_created:
-                client = kubernetes_tools.K8sClients().core_v1
+                client = kubernetes_client.K8sClients().core_v1
                 client.delete_namespace(name=self.k8s_namespace)
 
     # overload_inject_start_client_flow
@@ -182,9 +182,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
+        replicas: Optional[int] = 1,
         runs_in_docker: Optional[bool] = False,
         runtime_backend: Optional[str] = 'PROCESS',
         runtime_cls: Optional[str] = 'GRPCRuntime',
+        shards: Optional[int] = 1,
         socket_in: Optional[str] = 'PULL_CONNECT',
         socket_out: Optional[str] = 'PUSH_CONNECT',
         ssh_keyfile: Optional[str] = None,
@@ -263,9 +265,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           `Executor cookbook <https://docs.jina.ai/fundamentals/executor/repository-structure/>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param replicas: The number of replicas in the pod, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary
         :param runs_in_docker: Informs a Pea that runs in a container. Important to properly set networking information
         :param runtime_backend: The parallel backend of the runtime inside the Pea
         :param runtime_cls: The runtime class to run inside the Pea
+        :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary
         :param socket_in: The socket type for input port
         :param socket_out: The socket type for output port
         :param ssh_keyfile: This specifies a key to be used in ssh login, default None. regular default ssh keys will be used without specifying this argument.
@@ -1792,8 +1796,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param dump_path: **backwards compatibility** This function was only accepting dump_path as the only potential arg to override
         :param uses_with: a Dictionary of arguments to restart the executor with
         """
-        self._pod_nodes[pod_name].rolling_update(
-            dump_path=dump_path, uses_with=uses_with
+        from ..helper import run_async
+
+        run_async(
+            self._pod_nodes[pod_name].rolling_update,
+            dump_path=dump_path,
+            uses_with=uses_with,
+            any_event_loop=True,
         )
 
     @property
