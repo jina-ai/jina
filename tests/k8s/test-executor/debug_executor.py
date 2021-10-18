@@ -1,5 +1,4 @@
 import os
-from typing import Dict
 
 from jina import Executor, requests, DocumentArray
 
@@ -25,6 +24,10 @@ class TestExecutor(Executor):
             traversed = list(doc.tags.get(key))
             traversed.append(self._name)
             doc.tags[key] = traversed
+            doc.tags['parallel'] = self.runtime_args.parallel
+            doc.tags['shards'] = self.runtime_args.shards
+            doc.tags['shard_id'] = self.runtime_args.shard_id
+            doc.tags['pea_id'] = self.runtime_args.pea_id
 
     @requests(on='/env')
     def env(self, docs: DocumentArray, **kwargs):
