@@ -13,7 +13,7 @@ class TestExecutor(Executor):
         self._name = self.runtime_args.name
 
     @requests(on='/index')
-    def debug(self, docs: DocumentArray, parameters: Dict, **kwargs):
+    def debug(self, docs: DocumentArray, **kwargs):
         self.logger.debug(
             f'Received doc array in test-executor {self._name} with length {len(docs)}.'
         )
@@ -27,7 +27,7 @@ class TestExecutor(Executor):
             doc.tags[key] = traversed
 
     @requests(on='/env')
-    def env(self, docs: DocumentArray, parameters: Dict, **kwargs):
+    def env(self, docs: DocumentArray, **kwargs):
         self.logger.debug(
             f'Received doc array in test-executor {self._name} with length {len(docs)}.'
         )
@@ -35,11 +35,11 @@ class TestExecutor(Executor):
         for doc in docs:
             doc.tags['k1'] = os.environ.get('k1')
             doc.tags['k2'] = os.environ.get('k2')
-            doc.tags['jina_log_level'] = os.environ.get('jina_log_level')
+            doc.tags['JINA_LOG_LEVEL'] = os.environ.get('JINA_LOG_LEVEL')
             doc.tags['env'] = {'k1': os.environ.get('k1'), 'k2': os.environ.get('k2')}
 
     @requests(on='/search')
-    def read_file(self, docs: DocumentArray, parameters: Dict, **kwargs):
+    def read_file(self, docs: DocumentArray, **kwargs):
         self.logger.debug(
             f'Received doc array in test-executor {self._name} with length {len(docs)}.'
         )

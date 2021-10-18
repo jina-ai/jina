@@ -1,8 +1,28 @@
+import os
 import struct
 import zlib
 from typing import Optional
-
+import urllib.parse
+import urllib.request
 import numpy as np
+
+
+def uri_to_buffer(uri: str) -> bytes:
+    """Convert uri to buffer
+    Internally it reads uri into buffer.
+
+    :param uri: the uri of Document
+    :return: buffer bytes.
+    """
+    if urllib.parse.urlparse(uri).scheme in {'http', 'https', 'data'}:
+        req = urllib.request.Request(uri, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req) as fp:
+            return fp.read()
+    elif os.path.exists(uri):
+        with open(uri, 'rb') as fp:
+            return fp.read()
+    else:
+        raise FileNotFoundError(f'{uri} is not a URL or a valid local path')
 
 
 def _png_to_buffer_1d(arr: 'np.ndarray', width: int, height: int) -> bytes:

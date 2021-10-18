@@ -88,6 +88,7 @@ class BasePod:
     They can be also run in their own containers on remote machines.
     """
 
+    @abstractmethod
     def start(self) -> 'BasePod':
         """Start to run all :class:`BasePea` in this BasePod.
 
@@ -95,7 +96,17 @@ class BasePod:
             If one of the :class:`BasePea` fails to start, make sure that all of them
             are properly closed.
         """
-        raise NotImplementedError
+        ...
+
+    @abstractmethod
+    async def rolling_update(self, *args, **kwargs):
+        """
+        Roll update the Executors managed by the Pod
+
+            .. # noqa: DAR201
+            .. # noqa: DAR101
+        """
+        ...
 
     @staticmethod
     def _set_upload_files(args):
@@ -555,7 +566,7 @@ class Pod(BasePod, ExitFIFO):
         """
         return all(p.is_ready.is_set() for p in self.peas) and self._activated
 
-    def rolling_update(
+    async def rolling_update(
         self, dump_path: Optional[str] = None, *, uses_with: Optional[Dict] = None
     ):
         """Reload all Peas of this Pod.
@@ -576,13 +587,14 @@ class Pod(BasePod, ExitFIFO):
                 if pea.role == PeaRoleType.PARALLEL:
                     pea.close()
                     _args = self.peas_args['peas'][pea_args_idx]
-                    _args.noblock_on_start = False
+                    _args.noblock_on_start = True
                     ### BACKWARDS COMPATIBILITY, so THAT DUMP_PATH is in runtime_args
                     _args.dump_path = dump_path
                     ###
                     _args.uses_with = uses_with
                     new_pea = BasePea(_args)
                     self.enter_context(new_pea)
+                    await new_pea.async_wait_start_success()
                     new_pea.activate_runtime()
                     self.peas[i] = new_pea
                     pea_args_idx += 1

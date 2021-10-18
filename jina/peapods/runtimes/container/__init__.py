@@ -7,7 +7,7 @@ from typing import Union, Optional, Dict, TYPE_CHECKING
 from pathlib import Path
 from platform import uname
 
-from ..zmq.base import ZMQRuntime
+from ..base import BaseRuntime
 from ...zmq import Zmqlet
 from .... import __docker_host__
 from .helper import get_docker_network, get_gpu_device_requests
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from ....logging.logger import JinaLogger
 
 
-class ContainerRuntime(ZMQRuntime):
+class ContainerRuntime(BaseRuntime):
     """Runtime procedure for container."""
 
     def __init__(self, args: 'argparse.Namespace', **kwargs):
@@ -195,6 +195,10 @@ class ContainerRuntime(ZMQRuntime):
 
         _args = ArgNamespace.kwargs2list(non_defaults)
         ports = {f'{v}/tcp': v for v in _expose_port} if not self._net_mode else None
+
+        # WORKAROUND: we cant automatically find these true/false flags, this needs to be fixed
+        if 'dynamic_routing' in non_defaults and not non_defaults['dynamic_routing']:
+            _args.append('--no-dynamic-routing')
 
         docker_kwargs = self.args.docker_kwargs or {}
         self._container = client.containers.run(

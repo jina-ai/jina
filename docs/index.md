@@ -1,6 +1,11 @@
 # Welcome to Jina!
 
-Jina is a neural search framework that empowers anyone to build SOTA and scalable deep learning search applications in minutes.
+```{include} ../README.md
+:start-after: <!-- start elevator-pitch -->
+:end-before: <!-- end elevator-pitch -->
+```
+
+## Install
 
 1. Make sure that you have Python 3.7+ installed on Linux/MacOS/{ref}`Windows <jina-on-windows>`.
 2. Install Jina
@@ -29,7 +34,7 @@ Jina is a neural search framework that empowers anyone to build SOTA and scalabl
 
 Now that you’re set up, let’s dive into more of how Jina works and how to build great apps.
 
-## Next Steps
+## Next steps
 
 :::::{grid} 2
 :gutter: 3
@@ -90,17 +95,10 @@ Awesome Jina swag to our awesome contributors (aka you)!
 
 :::::
 
-## Join the community
-
-- Join our [Slack community](https://slack.jina.ai) and chat to our engineers about your use cases, questions, and
-  support queries.
-- Join our [Engineering All Hands](https://youtube.com/playlist?list=PL3UBBWOUVhFYRUa_gpYYKBqEAkO4sxmne) meet-up to discuss your use case and learn Jina's new features.
-    - **When?** The second Tuesday of every month
-    - **Where?**
-      Zoom ([see our public events calendar](https://calendar.google.com/calendar/embed?src=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&ctz=Europe%2FBerlin)/[.ical](https://calendar.google.com/calendar/ical/c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com/public/basic.ics))
-      and [live stream on YouTube](https://youtube.com/c/jina-ai)
-- Subscribe to the latest video tutorials on our [YouTube channel](https://youtube.com/c/jina-ai)
-
+```{include} ../README.md
+:start-after: <!-- start support-pitch -->
+:end-before: <!-- end support-pitch -->
+```
 
 ```{toctree}
 :caption: Get started

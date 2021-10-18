@@ -439,7 +439,7 @@ def create_connection_pool(args: 'Namespace') -> ConnectionPool:
     :return: A connection pool object
     """
     if args.k8s_namespace and args.k8s_connection_pool:
-        from jina.peapods.pods.k8slib.kubernetes_tools import K8sClients
+        from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
 
         k8s_clients = K8sClients()
         return K8sGrpcConnectionPool(
