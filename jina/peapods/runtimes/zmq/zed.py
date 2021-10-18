@@ -72,7 +72,6 @@ class ZEDRuntime(BaseRuntime):
         self._zmqstreamlet.start(self._msg_callback)
 
     def _handle_sig_term(self, *args):
-        self.logger.debug(f'Received SIGTERM')
         self.teardown()
 
     def teardown(self):
