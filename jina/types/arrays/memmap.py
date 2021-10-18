@@ -17,6 +17,7 @@ from typing import (
 
 import numpy as np
 
+from .ranking_evaluation import DocumentArrayRankingEvaluationOpsMixin
 from ... import __windows__
 
 from .abstract import AbstractDocumentArray
@@ -39,6 +40,7 @@ class DocumentArrayMemmap(
     DocumentArrayGetAttrMixin,
     DocumentArrayNeuralOpsMixin,
     DocumentArraySearchOpsMixin,
+    DocumentArrayRankingEvaluationOpsMixin,
     Itr,
     AbstractDocumentArray,
 ):

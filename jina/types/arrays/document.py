@@ -24,6 +24,7 @@ import numpy as np
 
 from .abstract import AbstractDocumentArray
 from .neural_ops import DocumentArrayNeuralOpsMixin
+from .ranking_evaluation import DocumentArrayRankingEvaluationOpsMixin
 from .search_ops import DocumentArraySearchOpsMixin
 from .traversable import TraversableSequence
 from ..document import Document
@@ -228,6 +229,7 @@ class DocumentArray(
     DocumentArrayGetAttrMixin,
     DocumentArrayNeuralOpsMixin,
     DocumentArraySearchOpsMixin,
+    DocumentArrayRankingEvaluationOpsMixin,
     Itr,
     AbstractDocumentArray,
 ):
