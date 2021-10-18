@@ -1,12 +1,14 @@
 import argparse
 import time
+import threading
 from collections import defaultdict
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, TYPE_CHECKING
 
 import zmq
+import signal
 
-
-from .base import ZMQRuntime
+from .... import __windows__
+from ..base import BaseRuntime
 from ..request_handlers.data_request_handler import DataRequestHandler
 from ...zmq import ZmqStreamlet
 from ....enums import OnErrorStrategy, SocketType
@@ -23,13 +25,13 @@ from ....proto import jina_pb2
 from ....types.message import Message
 from ....types.routing.table import RoutingTable
 
-if False:
+if TYPE_CHECKING:
     import multiprocessing
-    import threading
+
     from ....logging.logger import JinaLogger
 
 
-class ZEDRuntime(ZMQRuntime):
+class ZEDRuntime(BaseRuntime):
     """Runtime procedure leveraging :class:`ZmqStreamlet` for Executor."""
 
     def __init__(self, args: 'argparse.Namespace', **kwargs):
@@ -39,6 +41,17 @@ class ZEDRuntime(ZMQRuntime):
         :param kwargs: extra keyword arguments
         """
         super().__init__(args, **kwargs)
+        if not __windows__:
+            try:
+                signal.signal(signal.SIGTERM, self._handle_sig_term)
+            except ValueError:
+                self.logger.warning(
+                    'Runtime is being run in a thread. Threads can not receive signals and may not shutdown as expected.'
+                )
+        else:
+            import win32api
+
+            win32api.SetConsoleCtrlHandler(self._handle_sig_term)
         self._id = random_identity()
         self._last_active_time = time.perf_counter()
         self.ctrl_addr = self.get_control_address(args.host, args.port_ctrl)
@@ -57,6 +70,9 @@ class ZEDRuntime(ZMQRuntime):
     def run_forever(self):
         """Start the `ZmqStreamlet`."""
         self._zmqstreamlet.start(self._msg_callback)
+
+    def _handle_sig_term(self, *args):
+        self.teardown()
 
     def teardown(self):
         """Close the `ZmqStreamlet` and `Executor`."""

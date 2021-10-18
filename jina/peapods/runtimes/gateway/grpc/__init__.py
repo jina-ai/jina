@@ -49,15 +49,18 @@ class GRPCRuntime(AsyncNewLoopRuntime):
         self.server.add_insecure_port(bind_addr)
         await self.server.start()
 
-    async def async_cancel(self):
-        """The async method to stop server."""
-        await self.server.stop(0)
+    async def async_teardown(self):
+        """Close the prefetcher"""
         await self._prefetcher.close()
-
-    async def async_run_forever(self):
-        """The async running of server."""
-        await self.server.wait_for_termination()
         if self.args.grpc_data_requests:
             await self._grpclet.close()
         else:
             self.zmqlet.close()
+
+    async def async_cancel(self):
+        """The async method to stop server."""
+        await self.server.stop(0)
+
+    async def async_run_forever(self):
+        """The async running of server."""
+        await self.server.wait_for_termination()
