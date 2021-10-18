@@ -453,22 +453,23 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.peapods.runtimes.grpc/">jina.peapods.runtimes.grpc package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.peapods.runtimes.prefetch/">jina.peapods.runtimes.prefetch package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.prefetch.base/">jina.peapods.runtimes.prefetch.base module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.prefetch.client/">jina.peapods.runtimes.prefetch.client module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.prefetch.gateway/">jina.peapods.runtimes.prefetch.gateway module</a></li>
-</ul>
-</li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.request_handlers.data_request_handler/">jina.peapods.runtimes.request_handlers.data_request_handler module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.zmq.asyncio/">jina.peapods.runtimes.zmq.asyncio module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.peapods.runtimes.base/">jina.peapods.runtimes.base module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.peapods.stream/">jina.peapods.stream package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.peapods.stream.base/">jina.peapods.stream.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.peapods.stream.client/">jina.peapods.stream.client module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.peapods.stream.gateway/">jina.peapods.stream.gateway module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.peapods.stream.helper/">jina.peapods.stream.helper module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.peapods.zmq/">jina.peapods.zmq package</a></li>
@@ -607,7 +608,7 @@
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.helper.</span></span><span class="sig-name descname"><span class="pre">AioHttpClientlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#AioHttpClientlet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.AioHttpClientlet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>aiohttp session manager</p>
-<p>HTTP Client to be used with prefetcher</p>
+<p>HTTP Client to be used with the streamer</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -654,8 +655,8 @@
 <dt class="sig sig-object py" id="jina.clients.base.helper.HTTPClientlet">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.helper.</span></span><span class="sig-name descname"><span class="pre">HTTPClientlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#HTTPClientlet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.HTTPClientlet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#jina.clients.base.helper.AioHttpClientlet" title="jina.clients.base.helper.AioHttpClientlet"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.clients.base.helper.AioHttpClientlet</span></code></a></p>
-<p>HTTP Client to be used with prefetcher</p>
-<p>HTTP Client to be used with prefetcher</p>
+<p>HTTP Client to be used with the streamer</p>
+<p>HTTP Client to be used with the streamer</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -692,8 +693,8 @@
 <dt class="sig sig-object py" id="jina.clients.base.helper.WebsocketClientlet">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.helper.</span></span><span class="sig-name descname"><span class="pre">WebsocketClientlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#WebsocketClientlet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.WebsocketClientlet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#jina.clients.base.helper.AioHttpClientlet" title="jina.clients.base.helper.AioHttpClientlet"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.clients.base.helper.AioHttpClientlet</span></code></a></p>
-<p>Websocket Client to be used with prefetcher</p>
-<p>HTTP Client to be used with prefetcher</p>
+<p>Websocket Client to be used with the streamer</p>
+<p>HTTP Client to be used with the streamer</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

@@ -430,22 +430,23 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.grpc/">jina.peapods.runtimes.grpc package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.prefetch/">jina.peapods.runtimes.prefetch package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.prefetch.base/">jina.peapods.runtimes.prefetch.base module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.prefetch.client/">jina.peapods.runtimes.prefetch.client module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.prefetch.gateway/">jina.peapods.runtimes.prefetch.gateway module</a></li>
-</ul>
-</li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.request_handlers.data_request_handler/">jina.peapods.runtimes.request_handlers.data_request_handler module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.zmq.asyncio/">jina.peapods.runtimes.zmq.asyncio module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.base/">jina.peapods.runtimes.base module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.peapods.stream/">jina.peapods.stream package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.stream.base/">jina.peapods.stream.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.stream.client/">jina.peapods.stream.client module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.stream.gateway/">jina.peapods.stream.gateway module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.stream.helper/">jina.peapods.stream.helper module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.peapods.zmq/">jina.peapods.zmq package</a></li>
@@ -614,7 +615,7 @@
             <span class="bp">self</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="nb">object</span></div>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">slice</span><span class="p">]):</span>
-        <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s1">'list index out of range'</span><span class="p">)</span>
         <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">struct_pb2</span><span class="o">.</span><span class="n">Struct</span><span class="p">):</span>

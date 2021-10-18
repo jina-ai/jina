@@ -454,22 +454,23 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.peapods.runtimes.grpc/">jina.peapods.runtimes.grpc package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/jina.peapods.runtimes.prefetch/">jina.peapods.runtimes.prefetch package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.runtimes.prefetch.base/">jina.peapods.runtimes.prefetch.base module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.runtimes.prefetch.client/">jina.peapods.runtimes.prefetch.client module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.runtimes.prefetch.gateway/">jina.peapods.runtimes.prefetch.gateway module</a></li>
-</ul>
-</li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.runtimes.request_handlers.data_request_handler/">jina.peapods.runtimes.request_handlers.data_request_handler module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.runtimes.zmq.asyncio/">jina.peapods.runtimes.zmq.asyncio module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.peapods.runtimes.base/">jina.peapods.runtimes.base module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.peapods.stream/">jina.peapods.stream package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.peapods.stream.base/">jina.peapods.stream.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.peapods.stream.client/">jina.peapods.stream.client module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.peapods.stream.gateway/">jina.peapods.stream.gateway module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.peapods.stream.helper/">jina.peapods.stream.helper module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.peapods.zmq/">jina.peapods.zmq package</a></li>
@@ -652,7 +653,7 @@ object, and None.</p>
     <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="n">doc_gen</span><span class="p">)</span>  <span class="c1"># Document generator</span>
 
     <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">]))</span>  <span class="c1"># DocumentArray</span>
-    
+
     <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="n">DocumentArrayMemmap</span><span class="p">(</span><span class="s1">'./my-mmap'</span><span class="p">))</span>  <span class="c1"># DocumentArray</span>
 
     <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/'</span><span class="p">)</span>  <span class="c1"># empty</span>
@@ -714,7 +715,7 @@ parameters dictionary before calling the executor <code class="docutils literal 
     <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DocumentArray</span><span class="p">],</span> <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">param</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'param'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_param</span><span class="p">)</span>
-        <span class="c1"># param may be overriden for this specific request. </span>
+        <span class="c1"># param may be overriden for this specific request.</span>
         <span class="c1"># The first instance will receive 10, and the second one will receive 5</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'my-executor-1'</span><span class="p">:</span>
             <span class="k">assert</span> <span class="n">param</span> <span class="o">==</span> <span class="mi">10</span>
@@ -797,6 +798,24 @@ you <code class="docutils literal notranslate"><span class="pre">request_size</s
 <span class="go">	🔒 Private network:	192.168.1.100:59109</span>
 <span class="go">	🌐 Public address:	197.28.126.36:59109</span>
 <span class="go">⏳   |██████████          | ⏱️ 0.0s 🐎 429.0 RPS✅ 10 requests done in ⏱ 0 seconds 🐎 425.1 RPS</span>
+</pre></div>
+</div>
+</section>
+<section id="limiting-outstanding-requests">
+<h2>Limiting outstanding requests<a class="headerlink" href="#limiting-outstanding-requests" title="Permalink to this headline">¶</a></h2>
+<p>You can control the number of requests fetched at a time from the Client generator into the Executor using <code class="docutils literal notranslate"><span class="pre">prefetch</span></code> argument, e.g.- Setting <code class="docutils literal notranslate"><span class="pre">prefetch=2</span></code> would make sure only 2 requests reach the Executors at a time, hence controlling the overload. By default, prefetch is disabled (set to 0). In cases where an Executor is a slow worker, you can assign a higher value to prefetch.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">requests_generator</span><span class="p">():</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">Document</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@request</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="hll">        <span class="n">slow_operation</span><span class="p">()</span>
+</span>
+<span class="hll"><span class="c1"># Makes sure only 2 requests reach the Executor at a time.</span>
+</span><span class="k">with</span> <span class="n">Flow</span><span class="p">(</span><span class="n">prefetch</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/'</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">requests_generator</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -968,6 +987,7 @@ To do that, you can use <code class="docutils literal notranslate"><span class="
 <li><a class="reference internal" href="#request-data">Request data</a></li>
 <li><a class="reference internal" href="#request-parameters">Request parameters</a></li>
 <li><a class="reference internal" href="#size-of-request">Size of request</a></li>
+<li><a class="reference internal" href="#limiting-outstanding-requests">Limiting outstanding requests</a></li>
 <li><a class="reference internal" href="#response-result">Response result</a><ul>
 <li><a class="reference internal" href="#get-all-responses">Get all responses</a></li>
 </ul>

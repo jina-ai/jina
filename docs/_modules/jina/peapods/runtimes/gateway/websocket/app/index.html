@@ -430,22 +430,23 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../../../api/jina.peapods.runtimes.grpc/">jina.peapods.runtimes.grpc package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../../../api/jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../../api/jina.peapods.runtimes.prefetch/">jina.peapods.runtimes.prefetch package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../../../../../../api/jina.peapods.runtimes.prefetch.base/">jina.peapods.runtimes.prefetch.base module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../../../../api/jina.peapods.runtimes.prefetch.client/">jina.peapods.runtimes.prefetch.client module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../../../../api/jina.peapods.runtimes.prefetch.gateway/">jina.peapods.runtimes.prefetch.gateway module</a></li>
-</ul>
-</li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../../api/jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../../api/jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../../api/jina.peapods.runtimes.request_handlers.data_request_handler/">jina.peapods.runtimes.request_handlers.data_request_handler module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../../api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../../api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../../api/jina.peapods.runtimes.zmq.asyncio/">jina.peapods.runtimes.zmq.asyncio module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../../api/jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../../../api/jina.peapods.runtimes.base/">jina.peapods.runtimes.base module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../../../api/jina.peapods.stream/">jina.peapods.stream package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../../api/jina.peapods.stream.base/">jina.peapods.stream.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../../api/jina.peapods.stream.client/">jina.peapods.stream.client module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../../api/jina.peapods.stream.gateway/">jina.peapods.stream.gateway module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../../api/jina.peapods.stream.helper/">jina.peapods.stream.helper module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../../api/jina.peapods.zmq/">jina.peapods.zmq package</a></li>
@@ -620,23 +621,23 @@
     <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">grpc_data_requests</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">...prefetch.gateway</span> <span class="kn">import</span> <span class="n">GrpcGatewayPrefetcher</span>
+        <span class="kn">from</span> <span class="nn">....stream.gateway</span> <span class="kn">import</span> <span class="n">GrpcGatewayStreamer</span>
 
         <span class="n">iolet</span> <span class="o">=</span> <span class="n">Grpclet</span><span class="p">(</span>
             <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
             <span class="n">message_callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">prefetcher</span> <span class="o">=</span> <span class="n">GrpcGatewayPrefetcher</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">iolet</span><span class="p">)</span>
+        <span class="n">streamer</span> <span class="o">=</span> <span class="n">GrpcGatewayStreamer</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">iolet</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">...prefetch.gateway</span> <span class="kn">import</span> <span class="n">ZmqGatewayPrefetcher</span>
+        <span class="kn">from</span> <span class="nn">....stream.gateway</span> <span class="kn">import</span> <span class="n">ZmqGatewayStreamer</span>
 
         <span class="n">iolet</span> <span class="o">=</span> <span class="n">AsyncZmqlet</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
-        <span class="n">prefetcher</span> <span class="o">=</span> <span class="n">ZmqGatewayPrefetcher</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">iolet</span><span class="p">)</span>
+        <span class="n">streamer</span> <span class="o">=</span> <span class="n">ZmqGatewayStreamer</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">iolet</span><span class="p">)</span>
 
     <span class="nd">@app</span><span class="o">.</span><span class="n">on_event</span><span class="p">(</span><span class="s1">'shutdown'</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_shutdown</span><span class="p">():</span>
-        <span class="k">await</span> <span class="n">prefetcher</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">await</span> <span class="n">streamer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">iscoroutine</span><span class="p">(</span><span class="n">iolet</span><span class="o">.</span><span class="n">close</span><span class="p">):</span>
             <span class="k">await</span> <span class="n">iolet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
@@ -654,7 +655,7 @@
                 <span class="k">yield</span> <span class="n">Request</span><span class="p">(</span><span class="n">request_bytes</span><span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">async</span> <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">prefetcher</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request_iterator</span><span class="o">=</span><span class="n">req_iter</span><span class="p">()):</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">streamer</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">request_iterator</span><span class="o">=</span><span class="n">req_iter</span><span class="p">()):</span>
                 <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send_bytes</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">binary_str</span><span class="p">())</span>
         <span class="k">except</span> <span class="n">WebSocketDisconnect</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'Client successfully disconnected from server'</span><span class="p">)</span>

@@ -430,22 +430,23 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.grpc/">jina.peapods.runtimes.grpc package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.prefetch/">jina.peapods.runtimes.prefetch package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.prefetch.base/">jina.peapods.runtimes.prefetch.base module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.prefetch.client/">jina.peapods.runtimes.prefetch.client module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.prefetch.gateway/">jina.peapods.runtimes.prefetch.gateway module</a></li>
-</ul>
-</li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.request_handlers.data_request_handler/">jina.peapods.runtimes.request_handlers.data_request_handler module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.zmq.asyncio/">jina.peapods.runtimes.zmq.asyncio module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.base/">jina.peapods.runtimes.base module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../../api/jina.peapods.stream/">jina.peapods.stream package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../api/jina.peapods.stream.base/">jina.peapods.stream.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../api/jina.peapods.stream.client/">jina.peapods.stream.client module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../api/jina.peapods.stream.gateway/">jina.peapods.stream.gateway module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../api/jina.peapods.stream.helper/">jina.peapods.stream.helper module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../api/jina.peapods.zmq/">jina.peapods.zmq package</a></li>
@@ -588,7 +589,7 @@
 <span class="kn">from</span> <span class="nn">.....proto</span> <span class="kn">import</span> <span class="n">jina_pb2_grpc</span>
 <span class="kn">from</span> <span class="nn">....zmq</span> <span class="kn">import</span> <span class="n">AsyncZmqlet</span>
 <span class="kn">from</span> <span class="nn">...zmq.asyncio</span> <span class="kn">import</span> <span class="n">AsyncNewLoopRuntime</span>
-<span class="kn">from</span> <span class="nn">...prefetch.gateway</span> <span class="kn">import</span> <span class="n">GrpcGatewayPrefetcher</span><span class="p">,</span> <span class="n">ZmqGatewayPrefetcher</span>
+<span class="kn">from</span> <span class="nn">....stream.gateway</span> <span class="kn">import</span> <span class="n">GrpcGatewayStreamer</span><span class="p">,</span> <span class="n">ZmqGatewayStreamer</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'GRPCRuntime'</span><span class="p">]</span>
 
@@ -619,19 +620,19 @@
                 <span class="n">message_callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_prefetcher</span> <span class="o">=</span> <span class="n">GrpcGatewayPrefetcher</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">iolet</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_grpclet</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span> <span class="o">=</span> <span class="n">GrpcGatewayStreamer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">iolet</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_grpclet</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">zmqlet</span> <span class="o">=</span> <span class="n">AsyncZmqlet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_prefetcher</span> <span class="o">=</span> <span class="n">ZmqGatewayPrefetcher</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">iolet</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">zmqlet</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span> <span class="o">=</span> <span class="n">ZmqGatewayStreamer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">iolet</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">zmqlet</span><span class="p">)</span>
 
-        <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prefetcher</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
+        <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
         <span class="n">bind_addr</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">__default_host__</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">'</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">add_insecure_port</span><span class="p">(</span><span class="n">bind_addr</span><span class="p">)</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="GRPCRuntime.async_teardown"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.gateway.grpc/#jina.peapods.runtimes.gateway.grpc.GRPCRuntime.async_teardown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Close the prefetcher"""</span>
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefetcher</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">grpc_data_requests</span><span class="p">:</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpclet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
