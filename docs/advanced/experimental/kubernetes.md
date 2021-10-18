@@ -36,8 +36,8 @@ All Executors in the Flow should be used with `jinahub+docker://...` or `docker:
 
 The following code deploys a simple `Flow` with just a single `Executor`.
 It does the following:
-- setting up a port forward when entering the context of the `Flow`
-- sending an example image to the `Flow`
+- deploying the `CLIP Executor` and the `Gateway` when entering the context of the `Flow`
+- sending an example image to the `Flow` using `port-forward`
 - printing the dimension of the resulting embedding
 - cleaning up the deployment when leaving the context of the `Flow`
 
