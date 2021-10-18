@@ -207,7 +207,7 @@ def test_uvicorn_ssl_with_flow(cert_pem, key_pem, protocol, capsys):
         ],
     ) as f:
         os.environ['JINA_LOG_LEVEL'] = 'ERROR'
-        Client(protocol='http', port=f.port_expose, https=True).index([Document()])
+        Client(protocol=protocol, port=f.port_expose, https=True).index([Document()])
         assert (
             '''certificate verify failed: self signed certificate'''
             in capsys.readouterr().out

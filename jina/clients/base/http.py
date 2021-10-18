@@ -75,5 +75,5 @@ class HTTPBaseClient(BaseClient):
                     yield resp
             except aiohttp.ClientError as e:
                 self.logger.error(
-                    f'Error while fetching response from websocket server {e!r}'
+                    f'Error while fetching response from HTTP server {e!r}'
                 )
