@@ -52,6 +52,10 @@ class GRPCRuntime(AsyncNewLoopRuntime):
     async def async_teardown(self):
         """Close the prefetcher"""
         await self._prefetcher.close()
+        if self.args.grpc_data_requests:
+            await self._grpclet.close()
+        else:
+            self.zmqlet.close()
 
     async def async_cancel(self):
         """The async method to stop server."""
