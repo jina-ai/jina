@@ -8,7 +8,7 @@ from ....grpc import Grpclet
 from .....proto import jina_pb2_grpc
 from ....zmq import AsyncZmqlet
 from ...zmq.asyncio import AsyncNewLoopRuntime
-from ...prefetch.gateway import GrpcGatewayPrefetcher, ZmqGatewayPrefetcher
+from ....stream.gateway import GrpcGatewayStreamer, ZmqGatewayStreamer
 
 __all__ = ['GRPCRuntime']
 
@@ -39,19 +39,19 @@ class GRPCRuntime(AsyncNewLoopRuntime):
                 message_callback=None,
                 logger=self.logger,
             )
-            self._prefetcher = GrpcGatewayPrefetcher(self.args, iolet=self._grpclet)
+            self.streamer = GrpcGatewayStreamer(self.args, iolet=self._grpclet)
         else:
             self.zmqlet = AsyncZmqlet(self.args, logger=self.logger)
-            self._prefetcher = ZmqGatewayPrefetcher(self.args, iolet=self.zmqlet)
+            self.streamer = ZmqGatewayStreamer(self.args, iolet=self.zmqlet)
 
-        jina_pb2_grpc.add_JinaRPCServicer_to_server(self._prefetcher, self.server)
+        jina_pb2_grpc.add_JinaRPCServicer_to_server(self.streamer, self.server)
         bind_addr = f'{__default_host__}:{self.args.port_expose}'
         self.server.add_insecure_port(bind_addr)
         await self.server.start()
 
     async def async_teardown(self):
         """Close the prefetcher"""
-        await self._prefetcher.close()
+        await self.streamer.close()
         if self.args.grpc_data_requests:
             await self._grpclet.close()
         else:
