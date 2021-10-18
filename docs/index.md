@@ -34,7 +34,7 @@
 
 Now that you’re set up, let’s dive into more of how Jina works and how to build great apps.
 
-## Next Steps
+## Next steps
 
 :::::{grid} 2
 :gutter: 3
