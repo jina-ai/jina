@@ -442,7 +442,6 @@
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.zmq.asyncio/">jina.peapods.runtimes.zmq.asyncio module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.zmq.base/">jina.peapods.runtimes.zmq.base module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
 </ul>
 </li>
@@ -644,6 +643,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">pea_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">shard_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">parallel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">shards</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_closed</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_executor</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_load_executor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -777,7 +777,9 @@
 
 <div class="viewcode-block" id="DataRequestHandler.close"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.request_handlers.data_request_handler/#jina.peapods.runtimes.request_handlers.data_request_handler.DataRequestHandler.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">""" Close the data request handler, by closing the executor """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_closed</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_is_closed</span> <span class="o">=</span> <span class="kc">True</span></div></div>
 </pre></div>
             </article>
             <footer>

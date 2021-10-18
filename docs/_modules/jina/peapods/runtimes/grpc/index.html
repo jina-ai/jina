@@ -442,7 +442,6 @@
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.peapods.runtimes.zmq.asyncio/">jina.peapods.runtimes.zmq.asyncio module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.peapods.runtimes.zmq.base/">jina.peapods.runtimes.zmq.base module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
 </ul>
 </li>
@@ -584,41 +583,49 @@
 <span class="kn">import</span> <span class="nn">multiprocessing</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">grpc</span> <span class="kn">import</span> <span class="n">RpcError</span>
 
-<span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">OnErrorStrategy</span>
-<span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">NoExplicitMessage</span><span class="p">,</span> <span class="n">ChainedPodException</span><span class="p">,</span> <span class="n">RuntimeTerminated</span>
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_or_reuse_loop</span><span class="p">,</span> <span class="n">random_identity</span>
-<span class="kn">from</span> <span class="nn">jina.peapods.grpc</span> <span class="kn">import</span> <span class="n">Grpclet</span>
-<span class="kn">from</span> <span class="nn">jina.peapods.runtimes.base</span> <span class="kn">import</span> <span class="n">BaseRuntime</span>
-<span class="kn">from</span> <span class="nn">jina.peapods.runtimes.request_handlers.data_request_handler</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">..request_handlers.data_request_handler</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">DataRequestHandler</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
-<span class="kn">from</span> <span class="nn">jina.types.message</span> <span class="kn">import</span> <span class="n">Message</span>
-<span class="kn">from</span> <span class="nn">jina.types.routing.table</span> <span class="kn">import</span> <span class="n">RoutingTable</span>
+<span class="kn">from</span> <span class="nn">..zmq.asyncio</span> <span class="kn">import</span> <span class="n">AsyncNewLoopRuntime</span>
+<span class="kn">from</span> <span class="nn">...grpc</span> <span class="kn">import</span> <span class="n">Grpclet</span>
+<span class="kn">from</span> <span class="nn">....enums</span> <span class="kn">import</span> <span class="n">OnErrorStrategy</span>
+<span class="kn">from</span> <span class="nn">....excepts</span> <span class="kn">import</span> <span class="n">NoExplicitMessage</span><span class="p">,</span> <span class="n">ChainedPodException</span><span class="p">,</span> <span class="n">RuntimeTerminated</span>
+<span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">get_or_reuse_loop</span><span class="p">,</span> <span class="n">random_identity</span>
+<span class="kn">from</span> <span class="nn">....proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
+<span class="kn">from</span> <span class="nn">....types.message</span> <span class="kn">import</span> <span class="n">Message</span>
+<span class="kn">from</span> <span class="nn">....types.routing.table</span> <span class="kn">import</span> <span class="n">RoutingTable</span>
 
 
-<div class="viewcode-block" id="GRPCDataRuntime"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.grpc/#jina.peapods.runtimes.grpc.GRPCDataRuntime">[docs]</a><span class="k">class</span> <span class="nc">GRPCDataRuntime</span><span class="p">(</span><span class="n">BaseRuntime</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+<div class="viewcode-block" id="GRPCDataRuntime"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.grpc/#jina.peapods.runtimes.grpc.GRPCDataRuntime">[docs]</a><span class="k">class</span> <span class="nc">GRPCDataRuntime</span><span class="p">(</span><span class="n">AsyncNewLoopRuntime</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
     <span class="sd">"""Runtime procedure leveraging :class:`Grpclet` for sending DataRequests"""</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span>
+        <span class="n">cancel_event</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+            <span class="n">Union</span><span class="p">[</span><span class="s1">'asyncio.Event'</span><span class="p">,</span> <span class="s1">'multiprocessing.Event'</span><span class="p">,</span> <span class="s1">'threading.Event'</span><span class="p">]</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">"""Initialize grpc and data request handling.</span>
 <span class="sd">        :param args: args from CLI</span>
-<span class="sd">        :param kwargs: extra keyword arguments</span>
+<span class="sd">        :param cancel_event: the cancel event used to wait for canceling</span>
+<span class="sd">        :param kwargs: keyword args</span>
 <span class="sd">        """</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">cancel_event</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">random_identity</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span> <span class="o">=</span> <span class="n">get_or_reuse_loop</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_active_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_pending_msgs</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>  <span class="c1"># type: Dict[str, List[Message]]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_partial_requests</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pending_tasks</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_static_routing_table</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">static_routing_table</span>
 
         <span class="c1"># Keep this initialization order, otherwise readiness check is not valid</span>
@@ -629,36 +636,32 @@
             <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_update_pending_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pending_tasks</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">task</span> <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_tasks</span> <span class="k">if</span> <span class="n">task</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">task</span><span class="o">.</span><span class="n">done</span><span class="p">()</span>
-        <span class="p">]</span>
+<div class="viewcode-block" id="GRPCDataRuntime.async_run_forever"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.grpc/#jina.peapods.runtimes.grpc.GRPCDataRuntime.async_run_forever">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Start the grpclet """</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpclet</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="GRPCDataRuntime.run_forever"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.grpc/#jina.peapods.runtimes.grpc.GRPCDataRuntime.run_forever">[docs]</a>    <span class="k">def</span> <span class="nf">run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Start the `Grpclet`."""</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_grpclet_task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_grpclet</span><span class="o">.</span><span class="n">start</span><span class="p">())</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_grpclet_task</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">'Grpclet task was cancelled'</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="GRPCDataRuntime.teardown"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.grpc/#jina.peapods.runtimes.grpc.GRPCDataRuntime.teardown">[docs]</a>    <span class="k">def</span> <span class="nf">teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Close the `Grpclet` and `DataRequestHandler`."""</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'Teardown GRPCDataRuntime'</span><span class="p">)</span>
-
+<div class="viewcode-block" id="GRPCDataRuntime.async_teardown"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.grpc/#jina.peapods.runtimes.grpc.GRPCDataRuntime.async_teardown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Close the data request handler and stop sending messages"""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data_request_handler</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_tasks</span> <span class="ow">and</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_update_pending_tasks</span><span class="p">()</span>
-            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">teardown</span><span class="p">()</span></div>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpclet</span><span class="o">.</span><span class="n">stop_sending</span><span class="p">()</span></div>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_close_grpclet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpclet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_grpclet_task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+<div class="viewcode-block" id="GRPCDataRuntime.async_cancel"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.grpc/#jina.peapods.runtimes.grpc.GRPCDataRuntime.async_cancel">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""The async method to stop server."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'Cancel GRPCDataRuntime'</span><span class="p">)</span>
+
+        <span class="c1"># Wait max 1.0 second until partial messages are processed</span>
+        <span class="n">timeout_ns</span> <span class="o">=</span> <span class="mf">1e9</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">()</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_msgs</span> <span class="ow">and</span> <span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">()</span> <span class="o">-</span> <span class="n">now</span> <span class="o">&lt;</span> <span class="n">timeout_ns</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_msgs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'GrpcDataRuntime is closed while there are still </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pending_msgs</span><span class="p">)</span><span class="si">}</span><span class="s1"> partial requests pending.'</span>
+            <span class="p">)</span>
+
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpclet</span><span class="o">.</span><span class="n">stop_receiving</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="GRPCDataRuntime.get_control_address"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.grpc/#jina.peapods.runtimes.grpc.GRPCDataRuntime.get_control_address">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_control_address</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -687,33 +690,6 @@
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">return</span> <span class="kc">True</span></div>
-
-<div class="viewcode-block" id="GRPCDataRuntime.activate"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.grpc/#jina.peapods.runtimes.grpc.GRPCDataRuntime.activate">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">activate</span><span class="p">(</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="sd">"""</span>
-<span class="sd">        Does nothing</span>
-<span class="sd">        :param kwargs: extra keyword arguments</span>
-<span class="sd">        """</span>
-        <span class="k">pass</span></div>
-
-<div class="viewcode-block" id="GRPCDataRuntime.cancel"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.grpc/#jina.peapods.runtimes.grpc.GRPCDataRuntime.cancel">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">cancel</span><span class="p">(</span>
-        <span class="n">control_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="sd">"""</span>
-<span class="sd">        Cancel this runtime by sending a TERMINATE control message</span>
-
-<span class="sd">        :param control_address: the address where the control message needs to be sent</span>
-<span class="sd">        :param kwargs: extra keyword arguments</span>
-<span class="sd">        """</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">Grpclet</span><span class="o">.</span><span class="n">send_ctrl_msg</span><span class="p">(</span><span class="n">control_address</span><span class="p">,</span> <span class="s1">'TERMINATE'</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">RpcError</span><span class="p">:</span>
-            <span class="c1"># TERMINATE can fail if the the runtime dies before sending the return value</span>
-            <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="GRPCDataRuntime.wait_for_ready_or_shutdown"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.grpc/#jina.peapods.runtimes.grpc.GRPCDataRuntime.wait_for_ready_or_shutdown">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">wait_for_ready_or_shutdown</span><span class="p">(</span>
@@ -746,15 +722,7 @@
             <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">is_data_request</span><span class="p">:</span>
                 <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_grpclet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
         <span class="k">except</span> <span class="n">RuntimeTerminated</span><span class="p">:</span>
-            <span class="c1"># this is the proper way to end when a terminate signal is sent</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_close_grpclet</span><span class="p">()))</span>
-        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span> <span class="k">as</span> <span class="n">kbex</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">kbex</span><span class="si">!r}</span><span class="s1"> causes the breaking from the event loop'</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_close_grpclet</span><span class="p">()))</span>
-        <span class="k">except</span> <span class="p">(</span><span class="ne">SystemError</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-            <span class="c1"># save executor</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1"> causes the breaking from the event loop'</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_close_grpclet</span><span class="p">()))</span>
+            <span class="n">GRPCDataRuntime</span><span class="o">.</span><span class="n">cancel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">NoExplicitMessage</span><span class="p">:</span>
             <span class="c1"># silent and do not propagate message anymore</span>
             <span class="c1"># 1. wait partial message to be finished</span>
@@ -883,6 +851,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_expected_parts</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">msgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_msgs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">request_id</span><span class="p">)</span>
             <span class="n">msg</span><span class="o">.</span><span class="n">merge_envelope_from</span><span class="p">(</span><span class="n">msgs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">msg</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">request_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_msgs</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_msgs</span><span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">request_id</span><span class="p">]</span>
 
         <span class="n">msg</span><span class="o">.</span><span class="n">update_timestamp</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">msg</span></div>

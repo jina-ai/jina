@@ -466,7 +466,6 @@
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.zmq.asyncio/">jina.peapods.runtimes.zmq.asyncio module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.zmq.base/">jina.peapods.runtimes.zmq.base module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
 </ul>
 </li>
@@ -608,22 +607,29 @@
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.peapods.runtimes.grpc" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.peapods.runtimes.grpc.GRPCDataRuntime">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.peapods.runtimes.grpc.</span></span><span class="sig-name descname"><span class="pre">GRPCDataRuntime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/grpc/#GRPCDataRuntime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.grpc.GRPCDataRuntime" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.peapods.runtimes.base/#jina.peapods.runtimes.base.BaseRuntime" title="jina.peapods.runtimes.base.BaseRuntime"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.runtimes.base.BaseRuntime</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.peapods.runtimes.grpc.</span></span><span class="sig-name descname"><span class="pre">GRPCDataRuntime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cancel_event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/grpc/#GRPCDataRuntime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.grpc.GRPCDataRuntime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime" title="jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>Runtime procedure leveraging <code class="xref py py-class docutils literal notranslate"><span class="pre">Grpclet</span></code> for sending DataRequests</p>
 <p>Initialize grpc and data request handling.
 :type args: <code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>
 :param args: args from CLI
-:param kwargs: extra keyword arguments</p>
+:type cancel_event: <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]
+:param cancel_event: the cancel event used to wait for canceling
+:param kwargs: keyword args</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.peapods.runtimes.grpc.GRPCDataRuntime.run_forever">
-<span class="sig-name descname"><span class="pre">run_forever</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/grpc/#GRPCDataRuntime.run_forever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.grpc.GRPCDataRuntime.run_forever" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start the <cite>Grpclet</cite>.</p>
+<dt class="sig sig-object py" id="jina.peapods.runtimes.grpc.GRPCDataRuntime.async_run_forever">
+<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">async_run_forever</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/grpc/#GRPCDataRuntime.async_run_forever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.grpc.GRPCDataRuntime.async_run_forever" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start the grpclet</p>
 </dd></dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.peapods.runtimes.grpc.GRPCDataRuntime.teardown">
-<span class="sig-name descname"><span class="pre">teardown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/grpc/#GRPCDataRuntime.teardown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.grpc.GRPCDataRuntime.teardown" title="Permalink to this definition">¶</a></dt>
-<dd><p>Close the <cite>Grpclet</cite> and <cite>DataRequestHandler</cite>.</p>
+<dt class="sig sig-object py" id="jina.peapods.runtimes.grpc.GRPCDataRuntime.async_teardown">
+<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">async_teardown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/grpc/#GRPCDataRuntime.async_teardown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.grpc.GRPCDataRuntime.async_teardown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the data request handler and stop sending messages</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.runtimes.grpc.GRPCDataRuntime.async_cancel">
+<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">async_cancel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/grpc/#GRPCDataRuntime.async_cancel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.grpc.GRPCDataRuntime.async_cancel" title="Permalink to this definition">¶</a></dt>
+<dd><p>The async method to stop server.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.peapods.runtimes.grpc.GRPCDataRuntime.get_control_address">
@@ -654,25 +660,6 @@
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>True if status is ready else False.</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.peapods.runtimes.grpc.GRPCDataRuntime.activate">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">activate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/grpc/#GRPCDataRuntime.activate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.grpc.GRPCDataRuntime.activate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Does nothing
-:param kwargs: extra keyword arguments</p>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.peapods.runtimes.grpc.GRPCDataRuntime.cancel">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">cancel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">control_address</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/grpc/#GRPCDataRuntime.cancel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.grpc.GRPCDataRuntime.cancel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Cancel this runtime by sending a TERMINATE control message</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>control_address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the address where the control message needs to be sent</p></li>
-<li><p><strong>kwargs</strong> – extra keyword arguments</p></li>
-</ul>
 </dd>
 </dl>
 </dd></dl>

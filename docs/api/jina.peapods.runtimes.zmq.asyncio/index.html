@@ -25,7 +25,7 @@
 
   gtag('config', 'G-48ZDWC8GT6');
 </script>
-    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.peapods.runtimes.zmq.base module" href="../jina.peapods.runtimes.zmq.base/" /><link rel="prev" title="jina.peapods.runtimes.zmq package" href="../jina.peapods.runtimes.zmq/" />
+    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.peapods.runtimes.zmq.zed module" href="../jina.peapods.runtimes.zmq.zed/" /><link rel="prev" title="jina.peapods.runtimes.zmq package" href="../jina.peapods.runtimes.zmq/" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.10.09"/>
         <title>jina.peapods.runtimes.zmq.asyncio module - Jina 2.1.9 documentation</title>
@@ -465,7 +465,6 @@
 </li>
 <li class="toctree-l4 current has-children"><a class="reference internal" href="../jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l5 current current-page"><a class="current reference internal" href="#">jina.peapods.runtimes.zmq.asyncio module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.zmq.base/">jina.peapods.runtimes.zmq.base module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
 </ul>
 </li>
@@ -604,32 +603,10 @@
                 <section id="module-jina.peapods.runtimes.zmq.asyncio">
 <span id="jina-peapods-runtimes-zmq-asyncio-module"></span><h1>jina.peapods.runtimes.zmq.asyncio module<a class="headerlink" href="#module-jina.peapods.runtimes.zmq.asyncio" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="jina.peapods.runtimes.zmq.asyncio.AsyncZMQRuntime">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.peapods.runtimes.zmq.asyncio.</span></span><span class="sig-name descname"><span class="pre">AsyncZMQRuntime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cancel_event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/zmq/asyncio/#AsyncZMQRuntime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.zmq.asyncio.AsyncZMQRuntime" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.peapods.runtimes.zmq.base/#jina.peapods.runtimes.zmq.base.ZMQRuntime" title="jina.peapods.runtimes.zmq.base.ZMQRuntime"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.runtimes.zmq.base.ZMQRuntime</span></code></a></p>
-<p>Runtime procedure in the async manners.</p>
-<p>Base class of <a class="reference internal" href="#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime" title="jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime</span></code></a>.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.peapods.runtimes.zmq.asyncio.AsyncZMQRuntime.run_forever">
-<span class="sig-name descname"><span class="pre">run_forever</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/zmq/asyncio/#AsyncZMQRuntime.run_forever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.zmq.asyncio.AsyncZMQRuntime.run_forever" title="Permalink to this definition">¶</a></dt>
-<dd><p>Running method to block the main thread.</p>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.peapods.runtimes.zmq.asyncio.AsyncZMQRuntime.async_cancel">
-<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">async_cancel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/zmq/asyncio/#AsyncZMQRuntime.async_cancel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.zmq.asyncio.AsyncZMQRuntime.async_cancel" title="Permalink to this definition">¶</a></dt>
-<dd><p>An async method to cancel.</p>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.peapods.runtimes.zmq.asyncio.AsyncZMQRuntime.async_run_forever">
-<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">async_run_forever</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/zmq/asyncio/#AsyncZMQRuntime.async_run_forever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.zmq.asyncio.AsyncZMQRuntime.async_run_forever" title="Permalink to this definition">¶</a></dt>
-<dd><p>The async method to run until it is stopped.</p>
-</dd></dl>
-</dd></dl>
-<dl class="py class">
 <dt class="sig sig-object py" id="jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.peapods.runtimes.zmq.asyncio.</span></span><span class="sig-name descname"><span class="pre">AsyncNewLoopRuntime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/zmq/asyncio/#AsyncNewLoopRuntime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.peapods.runtimes.zmq.asyncio.AsyncZMQRuntime" title="jina.peapods.runtimes.zmq.asyncio.AsyncZMQRuntime"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.runtimes.zmq.asyncio.AsyncZMQRuntime</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
-<p>The runtime to start a new event loop.</p>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.peapods.runtimes.zmq.asyncio.</span></span><span class="sig-name descname"><span class="pre">AsyncNewLoopRuntime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cancel_event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/zmq/asyncio/#AsyncNewLoopRuntime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../jina.peapods.runtimes.base/#jina.peapods.runtimes.base.BaseRuntime" title="jina.peapods.runtimes.base.BaseRuntime"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.runtimes.base.BaseRuntime</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>The async runtime to start a new event loop.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.run_forever">
 <span class="sig-name descname"><span class="pre">run_forever</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/zmq/asyncio/#AsyncNewLoopRuntime.run_forever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.run_forever" title="Permalink to this definition">¶</a></dt>
@@ -639,7 +616,7 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.teardown">
 <span class="sig-name descname"><span class="pre">teardown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/zmq/asyncio/#AsyncNewLoopRuntime.teardown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.teardown" title="Permalink to this definition">¶</a></dt>
-<dd><p>Stop and close the event loop.</p>
+<dd><p>Call async_teardown() and stop and close the event loop.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.async_setup">
@@ -647,17 +624,27 @@
 <dd><p>The async method to setup.</p>
 </dd></dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.async_teardown">
+<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">async_teardown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/zmq/asyncio/#AsyncNewLoopRuntime.async_teardown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.async_teardown" title="Permalink to this definition">¶</a></dt>
+<dd><p>The async method to clean up resources during teardown. This method should free all resources allocated during async_setup</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.async_cancel">
+<em class="property"><span class="pre">abstract</span> <span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">async_cancel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/zmq/asyncio/#AsyncNewLoopRuntime.async_cancel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.async_cancel" title="Permalink to this definition">¶</a></dt>
+<dd><p>An async method to cancel async_run_forever.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.async_run_forever">
+<em class="property"><span class="pre">abstract</span> <span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">async_run_forever</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/zmq/asyncio/#AsyncNewLoopRuntime.async_run_forever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.async_run_forever" title="Permalink to this definition">¶</a></dt>
+<dd><p>The async method to run until it is stopped.</p>
+</dd></dl>
+<dl class="py method">
 <dt class="sig sig-object py" id="jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.cancel">
 <em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">cancel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cancel_event</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/zmq/asyncio/#AsyncNewLoopRuntime.cancel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.cancel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Signal the runtime to terminate</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>cancel_event</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]) – the cancel event to set</p></li>
-<li><p><strong>kwargs</strong> – extra keyword arguments</p></li>
-</ul>
-</dd>
-</dl>
+<dd><p>Signal the runtime to terminate
+:type cancel_event: <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]
+:param cancel_event: the cancel event to set
+:param kwargs: extra keyword arguments</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.activate">
@@ -710,12 +697,12 @@
             <footer>
                 
                 <div class="related-pages">
-                    <a class="next-page" href="../jina.peapods.runtimes.zmq.base/">
+                    <a class="next-page" href="../jina.peapods.runtimes.zmq.zed/">
                         <div class="page-info">
                             <div class="context">
                                 <span>Next</span>
                             </div>
-                            <div class="title">jina.peapods.runtimes.zmq.base module</div>
+                            <div class="title">jina.peapods.runtimes.zmq.zed module</div>
                         </div>
                         <svg>
                             <use href="#svg-arrow-right"></use>

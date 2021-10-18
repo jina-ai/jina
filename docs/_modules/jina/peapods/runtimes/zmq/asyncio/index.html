@@ -442,7 +442,6 @@
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.zmq.asyncio/">jina.peapods.runtimes.zmq.asyncio module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.zmq.base/">jina.peapods.runtimes.zmq.base module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
 </ul>
 </li>
@@ -581,24 +580,21 @@
                 <h1>Source code for jina.peapods.runtimes.zmq.asyncio</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
 <span class="kn">import</span> <span class="nn">signal</span>
-
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
 
+<span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">BaseRuntime</span>
 <span class="kn">from</span> <span class="nn">....</span> <span class="kn">import</span> <span class="n">__windows__</span>
-<span class="kn">from</span> <span class="nn">..zmq.base</span> <span class="kn">import</span> <span class="n">ZMQRuntime</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">multiprocessing</span>
     <span class="kn">import</span> <span class="nn">threading</span>
 
 
-<div class="viewcode-block" id="AsyncZMQRuntime"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncZMQRuntime">[docs]</a><span class="k">class</span> <span class="nc">AsyncZMQRuntime</span><span class="p">(</span><span class="n">ZMQRuntime</span><span class="p">):</span>
+<div class="viewcode-block" id="AsyncNewLoopRuntime"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime">[docs]</a><span class="k">class</span> <span class="nc">AsyncNewLoopRuntime</span><span class="p">(</span><span class="n">BaseRuntime</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
     <span class="sd">"""</span>
-<span class="sd">    Runtime procedure in the async manners.</span>
-
-<span class="sd">    Base class of :class:`AsyncNewLoopRuntime`.</span>
+<span class="sd">    The async runtime to start a new event loop.</span>
 <span class="sd">    """</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -610,19 +606,46 @@
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span> <span class="o">=</span> <span class="n">cancel_event</span> <span class="ow">or</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
 
-<div class="viewcode-block" id="AsyncZMQRuntime.run_forever"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncZMQRuntime.run_forever">[docs]</a>    <span class="k">def</span> <span class="nf">run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Running method to block the main thread."""</span>
-        <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop_body</span><span class="p">())</span></div>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">__windows__</span><span class="p">:</span>
+            <span class="c1"># TODO: windows event loops don't support signal handlers</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">signame</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'SIGINT'</span><span class="p">,</span> <span class="s1">'SIGTERM'</span><span class="p">}:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">add_signal_handler</span><span class="p">(</span>
+                        <span class="nb">getattr</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">signame</span><span class="p">),</span>
+                        <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">set</span><span class="p">(),</span>
+                    <span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">RuntimeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">' The runtime </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> will not be able to handle termination signals. '</span>
+                    <span class="sa">f</span><span class="s1">' </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">win32api</span>
 
-<div class="viewcode-block" id="AsyncZMQRuntime.async_cancel"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncZMQRuntime.async_cancel">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""An async method to cancel."""</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+            <span class="n">win32api</span><span class="o">.</span><span class="n">SetConsoleCtrlHandler</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">set</span><span class="p">(),</span> <span class="kc">True</span>
+            <span class="p">)</span>
 
-<div class="viewcode-block" id="AsyncZMQRuntime.async_run_forever"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncZMQRuntime.async_run_forever">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""The async method to run until it is stopped."""</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">async_setup</span><span class="p">())</span>
+
+<div class="viewcode-block" id="AsyncNewLoopRuntime.run_forever"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.run_forever">[docs]</a>    <span class="k">def</span> <span class="nf">run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Running method to block the main thread.</span>
+
+<span class="sd">        Run the event loop until a Future is done.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop_body</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="AsyncNewLoopRuntime.teardown"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.teardown">[docs]</a>    <span class="k">def</span> <span class="nf">teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Call async_teardown() and stop and close the event loop."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">async_teardown</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">teardown</span><span class="p">()</span></div>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_wait_for_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Do NOT override this method when inheriting from :class:`GatewayPea`"""</span>
@@ -638,53 +661,24 @@
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">async_run_forever</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wait_for_cancel</span><span class="p">())</span>
         <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">'received terminate ctrl message from main process'</span><span class="p">)</span>
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_cancel</span><span class="p">()</span></div>
-
-
-<div class="viewcode-block" id="AsyncNewLoopRuntime"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime">[docs]</a><span class="k">class</span> <span class="nc">AsyncNewLoopRuntime</span><span class="p">(</span><span class="n">AsyncZMQRuntime</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">"""</span>
-<span class="sd">    The runtime to start a new event loop.</span>
-
-<span class="sd">    """</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span>
-        <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">__windows__</span><span class="p">:</span>
-            <span class="c1"># TODO: windows event loops don't support signal handlers</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">signame</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'SIGINT'</span><span class="p">,</span> <span class="s1">'SIGTERM'</span><span class="p">}:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">add_signal_handler</span><span class="p">(</span>
-                        <span class="nb">getattr</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">signame</span><span class="p">),</span>
-                        <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">set</span><span class="p">(),</span>
-                    <span class="p">)</span>
-            <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">RuntimeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">' The runtime </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> will not be able to handle termination signals. '</span>
-                    <span class="sa">f</span><span class="s1">' </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
-                <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">async_setup</span><span class="p">())</span>
-
-<div class="viewcode-block" id="AsyncNewLoopRuntime.run_forever"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.run_forever">[docs]</a>    <span class="k">def</span> <span class="nf">run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""</span>
-<span class="sd">        Running method to block the main thread.</span>
-
-<span class="sd">        Run the event loop until a Future is done.</span>
-<span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop_body</span><span class="p">())</span></div>
-
-<div class="viewcode-block" id="AsyncNewLoopRuntime.teardown"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.teardown">[docs]</a>    <span class="k">def</span> <span class="nf">teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Stop and close the event loop."""</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">teardown</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="AsyncNewLoopRuntime.async_setup"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.async_setup">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""The async method to setup."""</span>
         <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="AsyncNewLoopRuntime.async_teardown"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.async_teardown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""The async method to clean up resources during teardown. This method should free all resources allocated during async_setup"""</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="AsyncNewLoopRuntime.async_cancel"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.async_cancel">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""An async method to cancel async_run_forever."""</span>
+        <span class="o">...</span></div>
+
+<div class="viewcode-block" id="AsyncNewLoopRuntime.async_run_forever"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.async_run_forever">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""The async method to run until it is stopped."""</span>
+        <span class="o">...</span></div>
 
     <span class="c1"># Static methods used by the Pea to communicate with the `Runtime` in the separate process</span>
 
@@ -694,7 +688,6 @@
     <span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Signal the runtime to terminate</span>
-
 <span class="sd">        :param cancel_event: the cancel event to set</span>
 <span class="sd">        :param kwargs: extra keyword arguments</span>
 <span class="sd">        """</span>

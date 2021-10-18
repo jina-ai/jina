@@ -442,7 +442,6 @@
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.zmq.asyncio/">jina.peapods.runtimes.zmq.asyncio module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.zmq.base/">jina.peapods.runtimes.zmq.base module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
 </ul>
 </li>
@@ -705,14 +704,27 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">msg</span>
 
+<div class="viewcode-block" id="Grpclet.stop_receiving"><a class="viewcode-back" href="../../../../api/jina.peapods.grpc/#jina.peapods.grpc.Grpclet.stop_receiving">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">stop_receiving</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grace_period</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">"""Stop accepting new messages</span>
+<span class="sd">        :param grace_period: Time to wait for message processing to finish before killing the grpc server</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'Close grpc server'</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="n">grace_period</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="Grpclet.close"><a class="viewcode-back" href="../../../../api/jina.peapods.grpc/#jina.peapods.grpc.Grpclet.close">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grace_period</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""Stop the Grpc server</span>
 <span class="sd">        :param grace_period: Time to wait for message processing to finish before killing the grpc server</span>
 <span class="sd">        :param args: Extra positional arguments</span>
 <span class="sd">        :param kwargs: Extra key-value arguments</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_update_pending_tasks</span><span class="p">()</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_receiving</span><span class="p">(</span><span class="n">grace_period</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_sending</span><span class="p">()</span></div>
 
+<div class="viewcode-block" id="Grpclet.stop_sending"><a class="viewcode-back" href="../../../../api/jina.peapods.grpc/#jina.peapods.grpc.Grpclet.stop_sending">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">stop_sending</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Flush pending messages and stop sending new messages</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_pending_tasks</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_pending_tasks</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">:</span>
@@ -720,10 +732,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'Could not gracefully complete </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pending_tasks</span><span class="p">)</span><span class="si">}</span><span class="s1"> pending tasks on close.'</span>
             <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_connection_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'Close grpc server'</span><span class="p">)</span>
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="n">grace_period</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connection_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Grpclet.start"><a class="viewcode-back" href="../../../../api/jina.peapods.grpc/#jina.peapods.grpc.Grpclet.start">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""</span>

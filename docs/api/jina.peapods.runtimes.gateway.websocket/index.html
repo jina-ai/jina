@@ -466,7 +466,6 @@
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.zmq.asyncio/">jina.peapods.runtimes.zmq.asyncio module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.zmq.base/">jina.peapods.runtimes.zmq.base module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
 </ul>
 </li>
@@ -616,7 +615,7 @@
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.peapods.runtimes.gateway.websocket" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.peapods.runtimes.gateway.websocket.WebSocketRuntime">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.peapods.runtimes.gateway.websocket.</span></span><span class="sig-name descname"><span class="pre">WebSocketRuntime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/gateway/websocket/#WebSocketRuntime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.gateway.websocket.WebSocketRuntime" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.peapods.runtimes.gateway.websocket.</span></span><span class="sig-name descname"><span class="pre">WebSocketRuntime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cancel_event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/gateway/websocket/#WebSocketRuntime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.gateway.websocket.WebSocketRuntime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime" title="jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime</span></code></a></p>
 <p>Runtime for Websocket interface.</p>
 <dl class="py method">
@@ -629,6 +628,11 @@
 <dt class="sig sig-object py" id="jina.peapods.runtimes.gateway.websocket.WebSocketRuntime.async_run_forever">
 <em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">async_run_forever</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/gateway/websocket/#WebSocketRuntime.async_run_forever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.gateway.websocket.WebSocketRuntime.async_run_forever" title="Permalink to this definition">¶</a></dt>
 <dd><p>Running method of ther server.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.runtimes.gateway.websocket.WebSocketRuntime.async_teardown">
+<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">async_teardown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/gateway/websocket/#WebSocketRuntime.async_teardown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.gateway.websocket.WebSocketRuntime.async_teardown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shutdown the server.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.peapods.runtimes.gateway.websocket.WebSocketRuntime.async_cancel">

@@ -466,7 +466,6 @@
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.zmq.asyncio/">jina.peapods.runtimes.zmq.asyncio module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.zmq.base/">jina.peapods.runtimes.zmq.base module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
 </ul>
 </li>
@@ -640,12 +639,23 @@
 :returns: Empty protobuf struct</p>
 </dd></dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.grpc.Grpclet.stop_receiving">
+<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">stop_receiving</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grace_period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/grpc/#Grpclet.stop_receiving"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.grpc.Grpclet.stop_receiving" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop accepting new messages
+:param grace_period: Time to wait for message processing to finish before killing the grpc server</p>
+</dd></dl>
+<dl class="py method">
 <dt class="sig sig-object py" id="jina.peapods.grpc.Grpclet.close">
 <em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grace_period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/grpc/#Grpclet.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.grpc.Grpclet.close" title="Permalink to this definition">¶</a></dt>
 <dd><p>Stop the Grpc server
 :param grace_period: Time to wait for message processing to finish before killing the grpc server
 :param args: Extra positional arguments
 :param kwargs: Extra key-value arguments</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.grpc.Grpclet.stop_sending">
+<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">stop_sending</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/grpc/#Grpclet.stop_sending"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.grpc.Grpclet.stop_sending" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flush pending messages and stop sending new messages</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.peapods.grpc.Grpclet.start">
