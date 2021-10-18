@@ -87,9 +87,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             self.namespace_created = False
 
         def __enter__(self):
-            from ..peapods.pods.k8slib import kubernetes_tools
+            from ..peapods.pods.k8slib import kubernetes_tools, kubernetes_client
 
-            client = kubernetes_tools.K8sClients().core_v1
+            client = kubernetes_client.K8sClients().core_v1
             list_namespaces = [
                 item.metadata.name for item in client.list_namespace().items
             ]
@@ -105,10 +105,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     self.namespace_created = True
 
         def __exit__(self, exc_type, exc_val, exc_tb):
-            from ..peapods.pods.k8slib import kubernetes_tools
+            from ..peapods.pods.k8slib import kubernetes_client
 
             if self.namespace_created:
-                client = kubernetes_tools.K8sClients().core_v1
+                client = kubernetes_client.K8sClients().core_v1
                 client.delete_namespace(name=self.k8s_namespace)
 
     # overload_inject_start_client_flow
@@ -1796,8 +1796,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param dump_path: **backwards compatibility** This function was only accepting dump_path as the only potential arg to override
         :param uses_with: a Dictionary of arguments to restart the executor with
         """
-        self._pod_nodes[pod_name].rolling_update(
-            dump_path=dump_path, uses_with=uses_with
+        from ..helper import run_async
+
+        run_async(
+            self._pod_nodes[pod_name].rolling_update,
+            dump_path=dump_path,
+            uses_with=uses_with,
+            any_event_loop=True,
         )
 
     @property

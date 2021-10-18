@@ -8,8 +8,6 @@ from ....proto import jina_pb2
 
 __all__ = ['BaseDenseNdArray']
 
-QUANTIZE = os.environ.get('JINA_ARRAY_QUANT')
-
 
 class DenseNdArray(BaseDenseNdArray):
     """
@@ -18,7 +16,7 @@ class DenseNdArray(BaseDenseNdArray):
     Most of the cases you don't want use this class directly, use :class:`NdArray` instead.
 
     :param proto: the protobuf message, when not given then create a new one
-    :param quantize: the quantization method used when converting to protobuf.
+    :param dtype: the dtype used when stored as protobuf message.
     :param args: Additional positional arguments which are just used for the parent initialization
     :param kwargs: Additional keyword arguments which are just used for the parent initialization
         Availables are ``fp16``, ``uint8``, default is None.
@@ -37,13 +35,13 @@ class DenseNdArray(BaseDenseNdArray):
 
     def __init__(
         self,
-        proto: 'jina_pb2.NdArrayProto' = None,
-        quantize: Optional[str] = None,
+        proto: Optional['jina_pb2.NdArrayProto'] = None,
+        dtype: Optional[str] = None,
         *args,
         **kwargs
     ):
         super().__init__(proto, *args, **kwargs)
-        self.quantize = quantize or QUANTIZE
+        self._dtype = dtype or os.environ.get('JINA_ARRAY_QUANT')
 
     @property
     def value(self) -> 'np.ndarray':
@@ -75,11 +73,15 @@ class DenseNdArray(BaseDenseNdArray):
         blob = self._pb_body
         x = value
 
-        if self.quantize == 'fp16' and (x.dtype == np.float32 or x.dtype == np.float64):
+        if self._dtype == 'fp32' and x.dtype == np.float64:
+            blob.quantization = jina_pb2.DenseNdArrayProto.FP32
+            blob.original_dtype = x.dtype.name
+            x = x.astype(np.float32)
+        elif self._dtype == 'fp16' and (x.dtype == np.float32 or x.dtype == np.float64):
             blob.quantization = jina_pb2.DenseNdArrayProto.FP16
             blob.original_dtype = x.dtype.name
             x = x.astype(np.float16)
-        elif self.quantize == 'uint8' and (
+        elif self._dtype == 'uint8' and (
             x.dtype == np.float32 or x.dtype == np.float64 or x.dtype == np.float16
         ):
             blob.quantization = jina_pb2.DenseNdArrayProto.UINT8

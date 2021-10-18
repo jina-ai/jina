@@ -5,7 +5,7 @@ from argparse import Namespace
 from typing import Optional, Dict, Union, Set, List
 
 import jina
-from .k8slib import kubernetes_deployment, kubernetes_tools
+from .k8slib import kubernetes_deployment, kubernetes_client
 from ..pods import BasePod, ExitFIFO
 from ... import __default_executor__
 from ...logging.logger import JinaLogger
@@ -64,6 +64,7 @@ class K8sPod(BasePod, ExitFIFO):
         def _construct_runtime_container_args(
             deployment_args, uses, uses_metas, uses_with_string
         ):
+            print(f' deployment_args {deployment_args}')
             container_args = (
                 f'["executor", '
                 f'"--native", '
@@ -154,8 +155,6 @@ class K8sPod(BasePod, ExitFIFO):
 
             from kubernetes import client
 
-            k8s_client = kubernetes_tools.K8sClients().apps_v1
-
             with JinaLogger(f'waiting_for_{self.name}') as logger:
                 logger.debug(
                     f'🏝️\n\t\tWaiting for "{self.name}" to be ready, with {self.num_replicas} replicas'
@@ -165,9 +164,7 @@ class K8sPod(BasePod, ExitFIFO):
                 exception_to_raise = None
                 while timeout_ns is None or time.time_ns() - now < timeout_ns:
                     try:
-                        api_response = k8s_client.read_namespaced_deployment(
-                            name=self.dns_name, namespace=self.k8s_namespace
-                        )
+                        api_response = self._read_namespaced_deployment()
                         assert api_response.status.replicas == self.num_replicas
                         if (
                             api_response.status.ready_replicas is not None
@@ -189,7 +186,7 @@ class K8sPod(BasePod, ExitFIFO):
                 fail_msg += f': {repr(exception_to_raise)}'
             raise RuntimeFailToStart(fail_msg)
 
-        def wait_restart_success(self):
+        async def wait_restart_success(self):
             _timeout = self.common_args.timeout_ready
             if _timeout <= 0:
                 _timeout = None
@@ -197,8 +194,9 @@ class K8sPod(BasePod, ExitFIFO):
                 _timeout /= 1e3
 
             from kubernetes import client
+            import asyncio
 
-            k8s_client = kubernetes_tools.K8sClients().apps_v1
+            k8s_client = kubernetes_client.K8sClients().apps_v1
 
             with JinaLogger(f'waiting_restart_for_{self.name}') as logger:
                 logger.info(
@@ -239,7 +237,7 @@ class K8sPod(BasePod, ExitFIFO):
                                     f'\nNumber of alive replicas {alive_replicas}, waiting for {alive_replicas - self.num_replicas} old replicas to be terminated'
                                 )
 
-                            time.sleep(1.0)
+                            await asyncio.sleep(1.0)
                     except client.ApiException as ex:
                         exception_to_raise = ex
                         break
@@ -277,13 +275,9 @@ class K8sPod(BasePod, ExitFIFO):
         def close(self):
             from kubernetes import client
 
-            k8s_client = kubernetes_tools.K8sClients().apps_v1
-
             with JinaLogger(f'close_{self.name}') as logger:
                 try:
-                    resp = k8s_client.delete_namespaced_deployment(
-                        name=self.dns_name, namespace=self.k8s_namespace
-                    )
+                    resp = self._delete_namespaced_deployment()
                     if resp.status == 'Success':
                         logger.success(
                             f' Successful deletion of deployment {self.name}'
@@ -296,6 +290,16 @@ class K8sPod(BasePod, ExitFIFO):
                     logger.error(
                         f' Error deleting deployment {self.name}: {exc.reason} '
                     )
+
+        def _delete_namespaced_deployment(self):
+            return kubernetes_client.K8sClients().apps_v1.delete_namespaced_deployment(
+                name=self.dns_name, namespace=self.k8s_namespace
+            )
+
+        def _read_namespaced_deployment(self):
+            return kubernetes_client.K8sClients().apps_v1.read_namespaced_deployment(
+                name=self.dns_name, namespace=self.k8s_namespace
+            )
 
         def __enter__(self):
             return self.start()
@@ -399,7 +403,10 @@ class K8sPod(BasePod, ExitFIFO):
                 args.uses_after or __default_executor__
             )
 
-        parsed_args['deployments'] = [args] * shards
+        for i in range(shards):
+            cargs = copy.deepcopy(args)
+            cargs.shard_id = i
+            parsed_args['deployments'].append(cargs)
         return parsed_args
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -420,7 +427,7 @@ class K8sPod(BasePod, ExitFIFO):
         """
         return 'localhost'
 
-    def rolling_update(
+    async def rolling_update(
         self, dump_path: Optional[str] = None, *, uses_with: Optional[Dict] = None
     ):
         """Reload all Deployments of this K8s Pod.
@@ -431,7 +438,7 @@ class K8sPod(BasePod, ExitFIFO):
             deployment.rolling_update(dump_path=dump_path, uses_with=uses_with)
 
         for deployment in self.k8s_deployments:
-            deployment.wait_restart_success()
+            await deployment.wait_restart_success()
 
     def start(self) -> 'K8sPod':
         """Deploy the kubernetes pods via k8s Deployment and k8s Service.

@@ -42,11 +42,12 @@ def test_error_in_progress_bar(capsys):
 
 
 def test_kb_interrupt_in_progress_bar(capsys):
-    with ProgressBar('update') as p:
-        for j in range(100):
-            p.update()
-            time.sleep(0.01)
-            if j > 5:
-                raise KeyboardInterrupt
+    with pytest.raises(KeyboardInterrupt):
+        with ProgressBar('update') as p:
+            for j in range(100):
+                p.update()
+                time.sleep(0.01)
+                if j > 5:
+                    raise KeyboardInterrupt
     captured = capsys.readouterr()
     assert str(ProgressBarStatus.CANCELED) in captured.out
