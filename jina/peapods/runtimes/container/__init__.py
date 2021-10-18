@@ -13,7 +13,7 @@ from .... import __docker_host__
 from .helper import get_docker_network, get_gpu_device_requests
 from ....excepts import BadImageNameError, DockerVersionError
 from ...zmq import send_ctrl_message
-from ....helper import ArgNamespace, slugify, random_name
+from ....helper import ArgNamespace, slugify
 from ....enums import SocketType
 
 if TYPE_CHECKING:
@@ -201,13 +201,14 @@ class ContainerRuntime(ZMQRuntime):
             _args.append('--no-dynamic-routing')
 
         docker_kwargs = self.args.docker_kwargs or {}
+        self._container_name = slugify(f'{self.name}/{os.getpid()}')
         self._container = client.containers.run(
             uses_img,
             _args,
             detach=True,
             auto_remove=True,
             ports=ports,
-            name=slugify(f'{self.name}/{random_name()}'),
+            name=self._container_name,
             volumes=_volumes,
             network_mode=self._net_mode,
             entrypoint=self.args.entrypoint,

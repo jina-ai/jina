@@ -9,7 +9,7 @@ from jina.checker import NetworkChecker
 from jina.executors import BaseExecutor
 from jina.executors.decorators import requests
 from jina import Flow, __windows__
-from jina.helper import random_name
+from jina.helper import random_name, slugify
 from jina.parsers import set_pea_parser
 from jina.parsers.ping import set_ping_parser
 from jina.peapods import Pea
@@ -54,8 +54,14 @@ def docker_image_built():
 def test_simple_container(docker_image_built):
     args = set_pea_parser().parse_args(['--uses', f'docker://{img_name}'])
 
-    with Pea(args):
-        pass
+    with Pea(args) as pea:
+        import docker
+
+        client = docker.from_env()
+        assert (
+            client.containers.get(slugify(f'ContainerRuntime/{pea.worker.pid}'))
+            is not None
+        )
 
     time.sleep(2)
     Pea(args).start().close()
