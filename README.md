@@ -21,6 +21,7 @@
 <a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-1.8k%2B-blueviolet?logo=slack&amp;logoColor=white"></a>
 </p>
 
+<!-- start elevator-pitch -->
 
 Jina<sup><a href=".github/pronounce-jina.mp3">`🔊`</a></sup> is a neural search framework that empowers anyone to build SOTA and scalable deep learning search applications in minutes.
 
@@ -34,6 +35,7 @@ containerizing, streaming, paralleling, sharding, async scheduling, HTTP/gRPC/We
 🍱 **Own your stack** - Keep end-to-end stack ownership of your solution, avoid integration pitfalls you get with
 fragmented, multi-vendor, generic legacy tools.
 
+<!-- end elevator-pitch -->
 
 ## Install
 
@@ -146,6 +148,8 @@ This prints the following results:
 ```
 <sup>😔 Doesn't work? Our bad! <a href="https://github.com/jina-ai/jina/issues/new?assignees=&labels=kind%2Fbug&template=---found-a-bug-and-i-solved-it.md&title=">Please report it here.</a></sup>
 
+<!-- start support-pitch -->
+
 ## Support
 
 - Join our [Slack community](https://slack.jina.ai) to chat to our engineers about your use cases, questions, and
@@ -159,7 +163,9 @@ This prints the following results:
 
 ## Join Us
 
-Jina is backed by [Jina AI](https://jina.ai). [We are actively hiring](https://jobs.jina.ai) AI engineers, solution engineers to build the next neural search ecosystem in opensource.
+Jina is backed by [Jina AI](https://jina.ai) and licensed under [Apache-2.0](./LICENSE). [We are actively hiring](https://jobs.jina.ai) AI engineers, solution engineers to build the next neural search ecosystem in opensource.
+
+<!-- end support-pitch -->
 
 ## Contributing
 
