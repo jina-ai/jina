@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
+from collections import defaultdict
 import itertools
 
-from typing import Optional, Union, List, Tuple, Sequence, Any
+from typing import Optional, Union, List, Tuple, Sequence, Any, Dict
 from math import log
 
 from .abstract import AbstractDocumentArray
@@ -323,7 +324,7 @@ class DocumentArrayRankingEvaluationOpsMixin(ABC):
         evaluation_names: Optional[List[Optional[str]]] = None,
         traversal_paths: List[str] = ['r'],
         **kwargs,
-    ) -> Union[float, List[float]]:
+    ) -> Dict[str, float]:
 
         """Compute ranking evaluation metrics for a given `DocumentArray` when compared with a groundtruth.
 
@@ -388,7 +389,6 @@ class DocumentArrayRankingEvaluationOpsMixin(ABC):
         :param kwargs: Additional keyword arguments to be passed to each specific `evaluation function`
         :return: The average evaluation computed or a list of them if multiple metrics are required
         """
-
         docs_groundtruths = DocumentArrayRankingEvaluationOpsMixin._DocGroundtruthArray(
             [
                 DocumentArrayRankingEvaluationOpsMixin._DocGroundtruthPair(
@@ -398,11 +398,11 @@ class DocumentArrayRankingEvaluationOpsMixin(ABC):
             ]
         )
 
-        return_list = isinstance(metrics, list)
+        if isinstance(attribute_fields[0], str):
+            attribute_fields = [attribute_fields]
 
         metrics_list = metrics if isinstance(metrics, list) else [metrics]
-
-        results = [0.0] * len(metrics_list)
+        results = defaultdict(float)
 
         num = 0
         for doc, groundtruth in docs_groundtruths.traverse_flat(traversal_paths):
@@ -419,29 +419,23 @@ class DocumentArrayRankingEvaluationOpsMixin(ABC):
             else:
                 evaluation_names_iter = [None] * len(metrics_list)
 
-            for i, (metric, k, evaluation_name) in enumerate(
-                zip(metrics_list, eval_at_iter, evaluation_names_iter)
+            for i, (metric, k, evaluation_name, attr_fields) in enumerate(
+                zip(metrics_list, eval_at_iter, evaluation_names_iter, attribute_fields)
             ):
                 eval_name = evaluation_name
                 if eval_name is None:
                     eval_name = f'{metric}@{k}' if k is not None else metric
 
-                actual = [
-                    match.get_attributes(*attribute_fields) for match in doc.matches
-                ]
+                actual = [match.get_attributes(*attr_fields) for match in doc.matches]
                 desired = [
-                    match.get_attributes(*attribute_fields)
-                    for match in groundtruth.matches
+                    match.get_attributes(*attr_fields) for match in groundtruth.matches
                 ]
                 kwargs['eval_at'] = k
                 evaluation = DocumentArrayRankingEvaluationOpsMixin.funcs[metric](
                     actual=actual, desired=desired, **kwargs
                 )
-                results[i] += evaluation
+                results[eval_name] += evaluation
                 doc.evaluations[eval_name] = evaluation
             num += 1
 
-        if return_list:
-            return list(map(lambda x: x / num, results))
-        else:
-            return results[0] / num
+        return dict(map(lambda item: (item[0], item[1] / num), results.items()))
