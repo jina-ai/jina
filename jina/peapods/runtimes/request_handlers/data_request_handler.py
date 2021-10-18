@@ -63,6 +63,7 @@ class DataRequestHandler:
         self.args.pea_id = self.args.shard_id
         self.args.parallel = self.args.shards
         self.logger = logger
+        self._is_closed = False
         self._load_executor()
 
     def _load_executor(self):
@@ -196,4 +197,6 @@ class DataRequestHandler:
 
     def close(self):
         """ Close the data request handler, by closing the executor """
-        self._executor.close()
+        if not self._is_closed:
+            self._executor.close()
+            self._is_closed = True

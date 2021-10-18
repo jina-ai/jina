@@ -12,7 +12,7 @@ class ExecMerger(Executor):
         self.logger = JinaLogger(self.__class__.__name__)
 
     @requests
-    def debug(self, docs_matrix: List[DocumentArray], parameters: Dict, **kwargs):
+    def debug(self, docs_matrix: List[DocumentArray], **kwargs):
         self.logger.debug(
             f'Received doc matrix in exec-merger with length {len(docs_matrix)}.'
         )
@@ -20,9 +20,18 @@ class ExecMerger(Executor):
         result = DocumentArray()
         for docs in zip(*docs_matrix):
             traversed_executors = [doc.tags['traversed-executors'] for doc in docs]
+            shard_ids = [doc.tags['shard_id'] for doc in docs]
+            pea_ids = [doc.tags['pea_id'] for doc in docs]
+            shards = [doc.tags['shards'] for doc in docs]
+            parallels = [doc.tags['parallel'] for doc in docs]
             traversed_executors = list(chain(*traversed_executors))
             doc = Document()
             doc.tags['traversed-executors'] = traversed_executors
+            doc.tags['shard_id'] = shard_ids
+            doc.tags['pea_id'] = pea_ids
+            doc.tags['shards'] = shards
+            doc.tags['parallel'] = parallels
+
             result.append(doc)
 
         return result

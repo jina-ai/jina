@@ -190,6 +190,10 @@ def test_flow_with_sharding(
     assert len(docs) == 10
     for doc in docs:
         assert set(doc.tags['traversed-executors']) == expected_traversed_executors
+        assert set(doc.tags['pea_id']) == {0, 1}
+        assert set(doc.tags['shard_id']) == {0, 1}
+        assert doc.tags['parallel'] == [2, 2]
+        assert doc.tags['shards'] == [2, 2]
 
 
 @pytest.mark.timeout(3600)
@@ -281,7 +285,7 @@ def test_rolling_update_simple(
         except:
             _logger.error(f' Some error happened while sending requests')
             exception_to_raise_event.set()
-        _logger.debug(f' finishing the process')
+        _logger.debug(f' send requests finished')
 
     with k8s_flow_with_reload_executor as flow:
         with kubernetes_tools.get_port_forward_contextmanager(
@@ -333,6 +337,7 @@ def test_rolling_update_simple(
             )
         logger.debug(f' Joining the process')
         process.join()
+        logger.debug(f' Process succesfully joined')
 
     assert not exception_to_raise.set()
 
