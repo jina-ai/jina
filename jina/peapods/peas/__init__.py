@@ -310,9 +310,12 @@ class BasePea:
         self.logger.debug('waiting for ready or shutdown signal from runtime')
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
             try:
+                self.logger.debug('CANCEL RUNTIME')
                 self._cancel_runtime()
                 if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
+                    self.logger.debug('TERMINATE RUNTIME')
                     self.terminate()
+                    self.logger.debug('TERMINATED RUNTIME')
                     time.sleep(0.1)
                     raise Exception(
                         f'Shutdown signal was not received for {self._timeout_ctrl}'
@@ -328,6 +331,7 @@ class BasePea:
 
             # if it is not daemon, block until the process/thread finish work
             if not self.args.daemon:
+                self.logger.debug('JOIN RUNTIME')
                 self.join()
         elif self.is_shutdown.is_set():
             # here shutdown has been set already, therefore `run` will gracefully finish

@@ -77,8 +77,11 @@ class ZEDRuntime(BaseRuntime):
 
     def teardown(self):
         """Close the `ZmqStreamlet` and `Executor`."""
+        self.logger.debug('TEARDOWN ZEDRUNTIME')
         self._zmqstreamlet.close()
+        self.logger.debug('CLOSE DRH')
         self._data_request_handler.close()
+        self.logger.debug('TEARDOWN SUPER')
         super().teardown()
 
     #: Private methods required by :meth:`setup`

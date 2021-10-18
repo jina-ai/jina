@@ -156,6 +156,7 @@ class Zmqlet:
 
     def _close_sockets(self):
         """Close input, output and control sockets of this `Zmqlet`. """
+        self.logger.debug('_close_sockets')
         for k in self.opened_socks:
             k.close()
 
@@ -273,6 +274,7 @@ class Zmqlet:
             self.is_closed = True
             self._close_sockets()
             if hasattr(self, 'ctx'):
+                self.logger.debug('cancel context')
                 self.ctx.term()
             self.print_stats()
 
@@ -531,6 +533,7 @@ class ZmqStreamlet(Zmqlet):
         ):
             try:
                 if self._active:
+                    self.logger.debug('send cancel to router')
                     self._send_cancel_to_router(raise_exception=True)
             except zmq.error.ZMQError:
                 self.logger.debug(
@@ -544,9 +547,11 @@ class ZmqStreamlet(Zmqlet):
             # wait until the close signal is received
             time.sleep(0.01)
             if flush:
+                self.logger.debug('flush sockets')
                 for s in self.opened_socks:
                     events = s.flush()
                     self.logger.debug(f'Handled #{events} during flush of socket')
+            self.logger.debug('super close')
             super().close()
             if hasattr(self, 'io_loop'):
                 try:
