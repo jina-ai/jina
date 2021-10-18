@@ -64,7 +64,6 @@ class K8sPod(BasePod, ExitFIFO):
         def _construct_runtime_container_args(
             deployment_args, uses, uses_metas, uses_with_string
         ):
-            print(f' deployment_args {deployment_args}')
             container_args = (
                 f'["executor", '
                 f'"--native", '
