@@ -74,7 +74,10 @@ class HTTPRuntime(AsyncNewLoopRuntime):
 
         await self.async_cancel()
 
+    async def async_teardown(self):
+        """Shutdown the server."""
+        await self._server.shutdown()
+
     async def async_cancel(self):
         """Stop the server."""
         self._server.should_exit = True
-        await self._server.shutdown()

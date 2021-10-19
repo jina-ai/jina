@@ -2,12 +2,12 @@
 from typing import Callable, Optional
 from contextlib import nullcontext, AsyncExitStack
 
-from ..base import BaseClient, InputType
 from ..helper import callback_exec
-from ...importer import ImportExtensions
-from ...logging.profile import ProgressBar
 from .helper import WebsocketClientlet
-from ...peapods.runtimes.prefetch.client import WebsocketClientPrefetcher
+from ...importer import ImportExtensions
+from ..base import BaseClient, InputType
+from ...logging.profile import ProgressBar
+from ...peapods.stream.client import WebsocketClientStreamer
 
 
 class WebSocketBaseClient(BaseClient):
@@ -50,8 +50,8 @@ class WebSocketBaseClient(BaseClient):
                     WebsocketClientlet(url=url, logger=self.logger)
                 )
 
-                prefetcher = WebsocketClientPrefetcher(self.args, iolet=iolet)
-                async for response in prefetcher.send(request_iterator):
+                streamer = WebsocketClientStreamer(self.args, iolet=iolet)
+                async for response in streamer.stream(request_iterator):
                     callback_exec(
                         response=response,
                         on_error=on_error,

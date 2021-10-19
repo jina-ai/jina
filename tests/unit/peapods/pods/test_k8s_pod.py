@@ -64,7 +64,12 @@ def test_parse_args(shards: int):
     assert namespace_equal(
         pod.deployment_args['tail_deployment'], None if shards == 1 else args
     )
-    assert pod.deployment_args['deployments'] == [args] * shards
+    for i, depl_arg in enumerate(pod.deployment_args['deployments']):
+        import copy
+
+        cargs = copy.deepcopy(args)
+        cargs.shard_id = i
+        assert depl_arg == cargs
 
 
 @pytest.mark.parametrize('shards', [2, 3, 4, 5])
@@ -91,7 +96,12 @@ def test_parse_args_custom_executor(shards: int):
         args, pod.deployment_args['tail_deployment'], skip_attr=('uses',)
     )
     assert pod.deployment_args['tail_deployment'].uses == uses_after
-    assert pod.deployment_args['deployments'] == [args] * shards
+    for i, depl_arg in enumerate(pod.deployment_args['deployments']):
+        import copy
+
+        cargs = copy.deepcopy(args)
+        cargs.shard_id = i
+        assert depl_arg == cargs
 
 
 @pytest.mark.parametrize(

@@ -107,11 +107,11 @@ class Zmqlet:
             self.poller.register(self.in_connect_sock, zmq.POLLIN)
 
     def pause_pollin(self):
-        """Remove :attr:`in_sock` from the poller """
+        """Remove :attr:`in_sock` from the poller"""
         self.poller.unregister(self.in_sock)
 
     def resume_pollin(self):
-        """Put :attr:`in_sock` back to the poller """
+        """Put :attr:`in_sock` back to the poller"""
         self.poller.register(self.in_sock)
 
     @staticmethod
@@ -155,7 +155,7 @@ class Zmqlet:
             return self.in_connect_sock
 
     def _close_sockets(self):
-        """Close input, output and control sockets of this `Zmqlet`. """
+        """Close input, output and control sockets of this `Zmqlet`."""
         for k in self.opened_socks:
             k.close()
 
@@ -277,7 +277,7 @@ class Zmqlet:
             self.print_stats()
 
     def print_stats(self):
-        """Print out the network stats of of itself """
+        """Print out the network stats of of itself"""
         self.logger.debug(
             f'#sent: {self.msg_sent} '
             f'#recv: {self.msg_recv} '
@@ -382,7 +382,7 @@ class Zmqlet:
         )
 
     def _send_idle_to_router(self):
-        """Tell the upstream router this dealer is idle """
+        """Tell the upstream router this dealer is idle"""
         self._send_control_to_router('IDLE')
 
     def _send_cancel_to_router(self, raise_exception=False):
@@ -498,10 +498,13 @@ class ZmqStreamlet(Zmqlet):
     def _register_pollin(self):
         """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` in poller."""
         with ImportExtensions(required=True):
+
             import tornado.ioloop
 
-            get_or_reuse_loop()
-            self.io_loop = tornado.ioloop.IOLoop.current()
+            assert tornado.ioloop
+
+        get_or_reuse_loop()
+        self.io_loop = tornado.ioloop.IOLoop.current()
         self.in_sock = ZMQStream(self.in_sock, self.io_loop)
         self.out_sock = ZMQStream(self.out_sock, self.io_loop)
         self.ctrl_sock = ZMQStream(self.ctrl_sock, self.io_loop)
@@ -509,7 +512,7 @@ class ZmqStreamlet(Zmqlet):
             self.in_connect_sock = ZMQStream(self.in_connect_sock, self.io_loop)
         self.in_sock.stop_on_recv()
 
-    def _get_dynamic_out_socket(self, target_pod):
+    def _get_dynamic_out_socket(self, target_pod, *args, **kwargs):
         return super()._get_dynamic_out_socket(target_pod, as_streaming=True)
 
     def close(self, flush: bool = True, *args, **kwargs):
@@ -567,12 +570,12 @@ class ZmqStreamlet(Zmqlet):
                     self.logger.error(f'failed to stop. {e!r}')
 
     def pause_pollin(self):
-        """Remove :attr:`in_sock` from the poller """
+        """Remove :attr:`in_sock` from the poller"""
         self.in_sock.stop_on_recv()
         self.is_polling_paused = True
 
     def resume_pollin(self):
-        """Put :attr:`in_sock` back to the poller """
+        """Put :attr:`in_sock` back to the poller"""
         if self.is_polling_paused:
             self.in_sock.on_recv(self._in_sock_callback)
             self.is_polling_paused = False
