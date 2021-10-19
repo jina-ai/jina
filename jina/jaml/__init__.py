@@ -571,10 +571,6 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 cls._override_yml_params(no_tag_yml, 'metas', override_metas)
                 cls._override_yml_params(no_tag_yml, 'requests', override_requests)
 
-                cls._override_yml_params(
-                    no_tag_yml, 'extra_search_paths', copy.copy(extra_search_paths)
-                )
-
             else:
                 raise BadConfigSource(
                     f'can not construct {cls} from an empty {source}. nothing to read from there'
@@ -582,6 +578,13 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             if substitute:
                 # expand variables
                 no_tag_yml = JAML.expand_dict(no_tag_yml, context)
+
+            if no_tag_yml.get('with') is None:
+                no_tag_yml['with'] = {}
+            no_tag_yml['with']['extra_search_paths'] = (
+                no_tag_yml['with'].get('extra_search_paths') or []
+            ) + extra_search_paths
+
             if allow_py_modules:
                 _extra_search_paths = extra_search_paths or []
                 load_py_modules(
