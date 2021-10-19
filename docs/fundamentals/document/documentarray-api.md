@@ -533,5 +533,67 @@ match emb = [[1.  2.2 2.  1.  0. ]] score = 1.5620499849319458
 match emb = [[1.  0.1 0.  0.  0. ]] score = 1.6763054132461548
 ```
 
+### Evaluate results
 
+`DocumentArray` provides a `.evaluate` function that supports computing ranking evaluation metrics such as `precision, recall, reciprocal rank, ndcg` 
+given another `DocumentArray` that is considered as the `groundtruth`.
 
+Given two `DocumentArray` objects `da_1` and `da_2` the
+function `evaluations = da_1.evaluate(groundtruth=da_2, metrics=['precision', 'recall'], eval_at=[3, 2], attribute_fields=('tags__eval_id', 'tags__eval_id'))` computes precision and recall 
+comparing the `matches` of every `document` in `da_1` with the matches of every `document` in `da_2`. The comparision is done given the `doc.tags['eval_id']`.
+
+`da_2` is expected to be of the same length as `da_1` and sorted in the same way. So that for every entry in these arrays, each `Document` in `groundtruth`
+is considered to have the expected `matches`.
+
+The `evaluate` function, adds each evaluation result inside the `evaluations` field of `Document`. The returned result is a `dictionary` of the average results
+of the metrics for the entire `DocumentArray`.
+
+```{code-block} python
+---
+emphasize-lines: 18
+---
+from jina import Document, DocumentArray
+
+query1 = Document()
+resulting_matches1 = DocumentArray([Document(tags={'id': i}) for i in range(5)])
+query1.matches = resulting_matches1
+
+query2 = Document()
+resulting_matches2 = DocumentArray([Document(tags={'id': i}) for i in reversed(range(5))])
+query2.matches = resulting_matches2
+
+gt1 = Document()
+expected_matches1 = DocumentArray(
+    [
+        Document(tags={'id': 1}),
+        Document(tags={'id': 0}),
+        Document(tags={'id': 20}),
+        Document(tags={'id': 30}),
+        Document(tags={'id': 40}),
+    ]
+)
+gt1.matches = expected_matches1
+
+gt2 = Document()
+expected_matches2 = resulting_matches2
+gt2.matches = expected_matches2
+
+queries = DocumentArray([query1, query2])
+groundtruth = DocumentArray([gt1, gt2])
+
+result = queries.evaluate(
+    groundtruth=groundtruth, metrics='precision', eval_at=3
+)
+for i, query in enumerate(queries):
+    print(f' query-{i} evaluation {query.evaluations["precision@3"].value}')
+
+print(f' average evaluation {result}')
+```
+
+```text
+ query-0 evaluation 0.6666666865348816
+ query-1 evaluation 1.0
+ average evaluation {'precision@3': 0.8333333333333333}
+```
+
+Currently the supported evaluation metrics are `precision, recall, ndcg, reciprocal_rank, fScore and map (mean average precision)`
