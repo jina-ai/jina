@@ -2,11 +2,10 @@ import os
 import copy
 import asyncio
 import argparse
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Optional
 
 from ....enums import SocketType
 
-from ...zmq import send_ctrl_message
 from ....jaml.helper import complete_path
 from ....importer import ImportExtensions
 from ....enums import replace_enum_to_str
@@ -18,8 +17,6 @@ from ....excepts import (
 )
 
 if TYPE_CHECKING:
-    import multiprocessing
-    import threading
     from ....logging.logger import JinaLogger
 
 
@@ -102,9 +99,11 @@ class JinadRuntime(AsyncNewLoopRuntime):
         """Cancels the logstream task, removes the remote Pea"""
         if self.logstream is not None:
             self.logstream.cancel()
+            self.logstream = None
         if self.pea_id is not None:
             if await self.client.peas.delete(id=self.pea_id):
                 self.logger.success(f'Successfully terminated remote Pea {self.pea_id}')
+            self.pea_id = None
             # Don't delete workspace here, as other Executors might use them.
             # TODO(Deepankar): probably enable an arg here?
 
@@ -164,24 +163,36 @@ class JinadRuntime(AsyncNewLoopRuntime):
         return _args
 
     # Static methods used by the Pea to communicate with the `Runtime` in the separate process
-
     @staticmethod
-    def cancel(
-        cancel_event: Union['multiprocessing.Event', 'threading.Event'], **kwargs
+    def _retry_control_message(
+        ctrl_address: str,
+        timeout_ctrl: int,
+        command: str,
+        num_retry: int,
+        logger: 'JinaLogger',
     ):
-        """
-        Signal the runtime to terminate
+        from ...zmq import send_ctrl_message
 
-        :param cancel_event: the cancel event to set
-        :param kwargs: extra keyword arguments
-        """
-        cancel_event.set()
+        for retry in range(1, num_retry + 1):
+            logger.debug(f'Sending {command} command for the {retry}th time')
+            try:
+                send_ctrl_message(
+                    ctrl_address,
+                    command,
+                    timeout=timeout_ctrl,
+                    raise_exception=True,
+                )
+                break
+            except Exception as ex:
+                logger.warning(f'{ex!r}')
+                if retry == num_retry:
+                    raise ex
 
     @staticmethod
     def activate(
         control_address: str,
         timeout_ctrl: int,
-        socket_in_type: 'SocketType',
+        socket_in_type: Optional['SocketType'],
         logger: 'JinaLogger',
         **kwargs,
     ):
@@ -195,38 +206,46 @@ class JinadRuntime(AsyncNewLoopRuntime):
         :param kwargs: extra keyword arguments
         """
 
-        def _retry_control_message(
-            ctrl_address: str,
-            timeout_ctrl: int,
-            command: str,
-            num_retry: int,
-            logger: 'JinaLogger',
-        ):
-            from ...zmq import send_ctrl_message
-
-            for retry in range(1, num_retry + 1):
-                logger.debug(f'Sending {command} command for the {retry}th time')
-                try:
-                    send_ctrl_message(
-                        ctrl_address,
-                        command,
-                        timeout=timeout_ctrl,
-                        raise_exception=True,
-                    )
-                    break
-                except Exception as ex:
-                    logger.warning(f'{ex!r}')
-                    if retry == num_retry:
-                        raise ex
-
-        if socket_in_type == SocketType.DEALER_CONNECT:
-            _retry_control_message(
+        if socket_in_type is not None and socket_in_type == SocketType.DEALER_CONNECT:
+            JinadRuntime._retry_control_message(
                 ctrl_address=control_address,
                 timeout_ctrl=timeout_ctrl,
                 command='ACTIVATE',
                 num_retry=3,
                 logger=logger,
             )
+
+    @staticmethod
+    def deactivate(
+        control_address: str,
+        timeout_ctrl: int,
+        socket_in_type: Optional['SocketType'],
+        logger: 'JinaLogger',
+        **kwargs,
+    ):
+        """
+        Check if the runtime has successfully started
+
+        :param control_address: the address where the control message needs to be sent
+        :param timeout_ctrl: the timeout to wait for control messages to be processed
+        :param socket_in_type: the type of input socket, needed to know if is a dealer
+        :param logger: the JinaLogger to log messages
+        :param kwargs: extra keyword arguments
+        """
+        # In the case Container uses GRPCDataRuntime, the `socket_in_type` should not be set, hacky ...
+        if socket_in_type is not None and socket_in_type == SocketType.DEALER_CONNECT:
+            JinadRuntime._retry_control_message(
+                ctrl_address=control_address,
+                timeout_ctrl=timeout_ctrl,
+                command='DEACTIVATE',
+                num_retry=3,
+                logger=logger,
+            )
+
+    def teardown(self):
+        """Close the remote Pea"""
+        self._loop.run_until_complete(self.async_cancel())
+        super().teardown()
 
     @staticmethod
     def get_control_address(host: str, port: str, **kwargs):

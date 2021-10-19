@@ -103,38 +103,11 @@ class GRPCDataRuntime(AsyncNewLoopRuntime, ABC):
         """
 
         try:
-            response = Grpclet.send_ctrl_msg(ctrl_address, 'STATUS')
+            _ = Grpclet.send_ctrl_msg(ctrl_address, 'STATUS')
         except RpcError:
             return False
 
         return True
-
-    @staticmethod
-    def activate(
-        **kwargs,
-    ):
-        """
-        Does nothing
-        :param kwargs: extra keyword arguments
-        """
-        pass
-
-    @staticmethod
-    def cancel(
-        process: Union['multiprocessing.Process', 'threading.Thread'],
-        **kwargs,
-    ):
-        """
-        Cancel this runtime by sending a TERMINATE control message
-
-        :param process: The process to terminate
-        :param kwargs: extra keyword arguments
-        """
-        if hasattr(process, 'terminate'):
-            process.terminate()
-        else:
-            # This is to handle threads
-            process._stop()
 
     @staticmethod
     def wait_for_ready_or_shutdown(
