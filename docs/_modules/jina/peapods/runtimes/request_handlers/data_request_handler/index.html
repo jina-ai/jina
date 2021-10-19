@@ -716,7 +716,9 @@
                 <span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_params</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_params</span><span class="p">(</span>
+            <span class="n">msg</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">dict</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span>
+        <span class="p">)</span>
         <span class="n">docs</span> <span class="o">=</span> <span class="n">_get_docs_from_msg</span><span class="p">(</span>
             <span class="n">msg</span><span class="p">,</span>
             <span class="n">partial_request</span><span class="o">=</span><span class="n">partial_requests</span><span class="p">,</span>
@@ -755,10 +757,7 @@
                     <span class="c1"># this means the returned DocArray is a completely new one</span>
                     <span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">replace_docs</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">r_docs</span><span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">r_docs</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="c1"># TODO(Han): the ideal Jina idiom should be `msg.request.parameters.update(r_docs)`, however the current</span>
-                <span class="c1">#    implementation of `parameters` with StructView.dict() gives a read-only view. I see it as a</span>
-                <span class="c1">#    bug.</span>
-                <span class="n">msg</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">r_docs</span><span class="p">)</span>
+                <span class="n">msg</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">r_docs</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'return type must be </span><span class="si">{</span><span class="n">DocumentArray</span><span class="si">!r}</span><span class="s1">, `None` or Dict, but getting </span><span class="si">{</span><span class="n">r_docs</span><span class="si">!r}</span><span class="s1">'</span>
