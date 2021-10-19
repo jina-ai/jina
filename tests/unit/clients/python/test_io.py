@@ -170,6 +170,11 @@ def test_input_files_with_invalid_read_mode(client):
         client.check_input(from_files(patterns='*.*', read_mode='invalid'))
 
 
+def test_from_files_with_uri():
+    for d in from_files(patterns='*.*', to_dataturi=True, size=10):
+        assert d.uri.startswith('data:')
+
+
 @pytest.mark.parametrize(
     'array', [np.random.random([100, 4, 2]), ['asda', 'dsadas asdasd']]
 )
