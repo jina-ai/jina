@@ -60,7 +60,6 @@ create_example-clip@15611[I]:🏝️	Create Namespace "example-clip"
 ⠋ 1/2 waiting executor0 to be ready...waiting_for_executor0@15611[L]: executor0 has all its replicas ready!!
 Forwarding from 127.0.0.1:8080 -> 8080
 Forwarding from [::1]:8080 -> 8080
-UserWarning: ignored unknown argument: ['8080']. (raised from /Users/florianhonicke/jina/jina/jina/helper.py:685)
 embedding size:  512                                                                                       
 ```
 
@@ -119,7 +118,6 @@ create_index-flow@19114[I]:🏝️	Create Namespace "index-flow"
 ⠸ 0/2 waiting test_searcher gateway to be ready...waiting_for_gateway@19114[L]: gateway has all its replicas ready!!
 ⠦ 1/2 waiting test_searcher to be ready...waiting_for_test_searcher@19114[L]: test_searcher has all its replicas ready!!
 start indexing
-UserWarning: ignored unknown argument: ['8080']. (raised from /Users/florianhonicke/jina/jina/jina/helper.py:685)
 Forwarding from 127.0.0.1:8080 -> 8080
 Forwarding from [::1]:8080 -> 8080
 indexing done
@@ -201,7 +199,6 @@ create_search-flow2@19273[I]:🏝️	Create Namespace "search-flow2"
 ⠹ 1/2 waiting gateway to be ready...waiting_for_gateway@19273[L]: gateway has all its replicas ready!!
 Forwarding from 127.0.0.1:8080 -> 8080
 Forwarding from [::1]:8080 -> 8080
-UserWarning: ignored unknown argument: ['8080']. (raised from /Users/florianhonicke/jina/jina/jina/helper.py:685)
 Len response matches: 15
   close_gateway@19273[L]: Successful deletion of deployment gateway
 close_test_searcher-head@19273[L]: Successful deletion of deployment test_searcher-head
@@ -209,6 +206,71 @@ close_test_searcher-0@19273[L]: Successful deletion of deployment test_searcher-
 close_test_searcher-1@19273[L]: Successful deletion of deployment test_searcher-1
 close_test_searcher-2@19273[L]: Successful deletion of deployment test_searcher-2
 close_test_searcher-tail@19273[L]: Successful deletion of deployment test_searcher-tail
+```
+## Exposing your `Flow`
+The previous examples use port-forwarding to send documents to the `Flow`. 
+Thinking about real world applications, 
+you might want to expose your service to make it reachable by the users.
+
+```{caution}
+Exposing your `Flow` only works if the environment of your `Kubernetes cluster` supports `External Loadbalancers`.
+```
+
+### Server
+Use the context manager and `f.block()` to make sure the `Flow` is deployed and cleaned up after termination.
+```python
+from jina import Flow
+
+f = Flow(name='example-clip', port_expose=8080, infrastructure='K8S', protocol='http').add(
+    uses='jinahub+docker://CLIPImageEncoder'
+)
+with f:
+    f.block()
+```
+
+Console output:
+```txt
+create_example-clip@15611[I]:🏝️	Create Namespace "example-clip"
+⠸ 0/2 waiting executor0 gateway to be ready...waiting_for_gateway@15611[L]: gateway has all its replicas ready!!
+⠋ 1/2 waiting executor0 to be ready...waiting_for_executor0@15611[L]: executor0 has all its replicas ready!!                                                                      
+```
+Once the `Flow` is deployed, you can expose a service.
+```bash
+kubectl expose deployment gateway --name=gateway-exposed --type LoadBalancer --port 80 --target-port 8080 -n example-clip
+sleep 60 # wait until the external ip is configured
+```
+
+Export the external ip which is needed for the client in the next section when sending documents to the `Flow`. 
+```bash
+export EXTERNAL_IP=`kubectl get service gateway-exposed -n example-clip -o=jsonpath='{.status.loadBalancer.ingress[0].ip}'`
+```
+
+### Client
+The client sends an image to the exposed `Flow` on `$EXTERNAL_IP` and retrieves the embedding created by the CLIPImageEncoder.
+Finally, it prints the dimensionality of the embedding.
+```python
+import base64
+import numpy as np
+import requests
+from jina import Document
+import os
+host = os.environ['EXTERNAL_IP']
+port = 80
+url = f'http://{host}:{port}'
+doc = Document(id=f'image', blob=np.random.rand(3, 16, 16)).dict()
+resp = requests.post(f'{url}/index', json={'data': [doc]})
+embedding = np.frombuffer(
+    base64.decodebytes(
+        resp.json()['data']['docs'][0]['embedding']['dense']['buffer'].encode()
+    ),
+    np.float32,
+)
+print('embedding size: ', len(embedding))
+```
+
+Console output:
+```txt
+embedding size:  512
 ```
 
 ## Scaling Executors on Kubernetes
