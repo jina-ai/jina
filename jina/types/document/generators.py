@@ -48,6 +48,7 @@ def from_files(
     size: Optional[int] = None,
     sampling_rate: Optional[float] = None,
     read_mode: Optional[str] = None,
+    to_dataturi: bool = False,
 ) -> Generator['Document', None, None]:
     """Creates an iterator over a list of file path or the content of the files.
 
@@ -59,6 +60,7 @@ def from_files(
     :param read_mode: specifies the mode in which the file is opened.
         'r' for reading in text mode, 'rb' for reading in binary mode.
         If `read_mode` is None, will iterate over filenames.
+    :param to_dataturi: if set, then the Document.uri will be filled with DataURI instead of the plan URI
     :yield: file paths or binary content
 
     .. note::
@@ -74,18 +76,26 @@ def from_files(
             glob.iglob(p, recursive=recursive) for p in ps
         )
 
-    d = 0
+    num_docs = 0
     if isinstance(patterns, str):
         patterns = [patterns]
     for g in _iter_file_exts(patterns):
+        if os.path.isdir(g):
+            continue
         if sampling_rate is None or random.random() < sampling_rate:
             if read_mode is None:
-                yield Document(uri=g)
+                d = Document(uri=g)
+                if to_dataturi:
+                    d.convert_uri_to_datauri()
+                yield d
             elif read_mode in {'r', 'rb'}:
                 with open(g, read_mode) as fp:
-                    yield Document(content=fp.read(), uri=g)
-            d += 1
-        if size is not None and d >= size:
+                    d = Document(content=fp.read(), uri=g)
+                    if to_dataturi:
+                        d.convert_uri_to_datauri()
+                    yield d
+            num_docs += 1
+        if size is not None and num_docs >= size:
             break
 
 
