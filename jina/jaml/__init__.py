@@ -578,12 +578,6 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 # expand variables
                 no_tag_yml = JAML.expand_dict(no_tag_yml, context)
 
-            if no_tag_yml.get('with') is None:
-                no_tag_yml['with'] = {}
-            no_tag_yml['with']['extra_search_paths'] = (
-                no_tag_yml['with'].get('extra_search_paths') or []
-            ) + (extra_search_paths or [])
-
             if allow_py_modules:
                 _extra_search_paths = extra_search_paths or []
                 load_py_modules(
@@ -596,6 +590,13 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             from ..flow.base import Flow
 
             if issubclass(cls, Flow):
+                # only needed for Flow
+                if no_tag_yml.get('with') is None:
+                    no_tag_yml['with'] = {}
+                no_tag_yml['with']['extra_search_paths'] = (
+                    no_tag_yml['with'].get('extra_search_paths') or []
+                ) + (extra_search_paths or [])
+
                 tag_yml = JAML.unescape(
                     JAML.dump(no_tag_yml),
                     include_unknown_tags=False,
