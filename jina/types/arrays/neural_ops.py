@@ -79,7 +79,7 @@ class DocumentArrayNeuralOpsMixin:
             from .document import DocumentArray
 
             if not isinstance(rhv, DocumentArray):
-                rhv = DocumentArray(lhv)
+                rhv = DocumentArray(rhv)
 
         if not (lhv and rhv):
             return
