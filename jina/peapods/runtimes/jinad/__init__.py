@@ -31,7 +31,6 @@ class JinadRuntime(AsyncNewLoopRuntime):
         super().__init__(args, **kwargs)
         # Need the `proper` control address to send `activate` and `deactivate` signals, from the pea in the `main`
         # process.
-        self.ctrl_addr = self.get_control_address(args.host, args.port_ctrl)
         self.timeout_ctrl = args.timeout_ctrl
         self.host = args.host
         self.port_jinad = args.port_jinad
@@ -115,14 +114,13 @@ class JinadRuntime(AsyncNewLoopRuntime):
         _args = copy.deepcopy(args)
 
         # reset the runtime to ZEDRuntime/GRPCDataRuntime or ContainerRuntime
-        if _args.runtime_cls == 'JinadRuntime':
-            if _args.uses.startswith(('docker://', 'jinahub+docker://')):
-                _args.runtime_cls = 'ContainerRuntime'
+        if _args.uses.startswith(('docker://', 'jinahub+docker://')):
+            _args.runtime_cls = 'ContainerRuntime'
+        else:
+            if _args.grpc_data_requests:
+                _args.runtime_cls = 'GRPCDataRuntime'
             else:
-                if _args.grpc_data_requests:
-                    _args.runtime_cls = 'GRPCDataRuntime'
-                else:
-                    _args.runtime_cls = 'ZEDRuntime'
+                _args.runtime_cls = 'ZEDRuntime'
 
         # TODO:/NOTE this prevents jumping from remote to another remote (Han: 2021.1.17)
         # _args.host = __default_host__
@@ -223,17 +221,3 @@ class JinadRuntime(AsyncNewLoopRuntime):
         """Close the remote Pea"""
         self._loop.run_until_complete(self.async_cancel())
         super().teardown()
-
-    @staticmethod
-    def get_control_address(host: str, port: str, **kwargs):
-        """
-        Get the control address for a runtime with a given host and port
-
-        :param host: the host where the runtime works
-        :param port: the control port where the runtime listens
-        :param kwargs: extra keyword arguments
-        :return: The corresponding control address
-        """
-        from ...zmq import Zmqlet
-
-        return Zmqlet.get_ctrl_address(host, port, False)[0]

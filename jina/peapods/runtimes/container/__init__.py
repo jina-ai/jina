@@ -41,18 +41,20 @@ class ContainerRuntime(BaseRuntime):
             import win32api
 
             win32api.SetConsoleCtrlHandler(self._handle_sig_term)
-        self.ctrl_addr = self.get_control_address(
-            args.host,
-            args.port_ctrl,
-            docker_kwargs=self.args.docker_kwargs,
-        )
+        self.ctrl_addr = None
+        if not self.args.grpc_data_requests:
+            self.ctrl_addr = self.get_control_address(
+                args.host,
+                args.port_ctrl,
+                docker_kwargs=self.args.docker_kwargs,
+            )
+            self._set_network_for_dind_linux()
         if (
             self.args.docker_kwargs
             and 'extra_hosts' in self.args.docker_kwargs
             and __docker_host__ in self.args.docker_kwargs['extra_hosts']
         ):
             self.args.docker_kwargs.pop('extra_hosts')
-        self._set_network_for_dind_linux()
         self._docker_run()
         while self._is_container_alive and not self.is_ready:
             time.sleep(1)
@@ -163,6 +165,10 @@ class ContainerRuntime(BaseRuntime):
             },
         )
         img_not_found = False
+        if not self.args.grpc_data_requests:
+            self.args.runtime_cls = 'ZEDRuntime'
+        else:
+            self.args.runtime_cls = 'GRPCDataRuntime'
 
         try:
             client.images.get(uses_img)
