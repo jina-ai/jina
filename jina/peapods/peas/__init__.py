@@ -345,11 +345,13 @@ class BasePea:
         """
         # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
         self.logger.debug('waiting for ready or shutdown signal from runtime')
+        terminated = False
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
             try:
                 self._cancel_runtime()
                 if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
                     self.terminate()
+                    terminated = True
                     time.sleep(0.1)
                     raise Exception(
                         f'Shutdown signal was not received for {self._timeout_ctrl}'
@@ -362,7 +364,8 @@ class BasePea:
                     else '',
                     exc_info=not self.args.quiet_error,
                 )
-                self.terminate()
+                if not terminated:
+                    self.terminate()
 
             # if it is not daemon, block until the process/thread finish work
             if not self.args.daemon:
