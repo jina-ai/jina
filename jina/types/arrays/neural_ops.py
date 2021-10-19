@@ -76,10 +76,10 @@ class DocumentArrayNeuralOpsMixin:
         if traversal_rdarray:
             rhv = darray.traverse_flat(traversal_rdarray)
 
-        # filter out docs to be matched (rhv) with invalid embeddings
-        # not performing filtering on lhv because if lhv have
-        # invalid embeddings, error should be raised instead
-        rhv = self._filter(rhv)
+            from .document import DocumentArray
+
+            if not isinstance(rhv, DocumentArray):
+                rhv = DocumentArray(lhv)
 
         if not (lhv and rhv):
             return
@@ -97,16 +97,34 @@ class DocumentArrayNeuralOpsMixin:
             )
 
         metric_name = metric_name or (metric.__name__ if callable(metric) else metric)
-        _limit = len(rhv) if limit is None else (limit + (1 if exclude_self else 0))
 
-        if batch_size:
-            dist, idx = lhv._match_online(
-                rhv, cdist, _limit, normalization, metric_name, batch_size
+        def _match_helper(docs):
+            newLimit = (
+                len(docs) if limit is None else (limit + (1 if exclude_self else 0))
             )
-        else:
-            dist, idx = lhv._match(
-                rhv, cdist, _limit, normalization, metric_name, is_sparse
-            )
+
+            if batch_size:
+                distance, indices = lhv._match_online(
+                    docs, cdist, newLimit, normalization, metric_name, batch_size
+                )
+            else:
+                distance, indices = lhv._match(
+                    docs, cdist, newLimit, normalization, metric_name, is_sparse
+                )
+            return distance, indices, newLimit
+
+        error = False
+        try:
+            dist, idx, _limit = _match_helper(rhv)
+        except Exception:
+            # filter out docs to be matched (rhv) with invalid embeddings
+            # not performing filtering on lhv because if lhv have
+            # invalid embeddings, error should be raised instead
+            error = True
+            rhv = self._filter(rhv)
+
+        if error:
+            dist, idx, _limit = _match_helper(rhv)
 
         for _q, _ids, _dists in zip(lhv, idx, dist):
             _q.matches.clear()
@@ -321,8 +339,6 @@ class DocumentArrayNeuralOpsMixin:
 
     @staticmethod
     def _filter(docs: Union['DocumentArray', 'DocumentArrayMemmap']):
-        if not docs:
-            return
         from .document import DocumentArray
 
         filtered_docs, shape = DocumentArray(), None
