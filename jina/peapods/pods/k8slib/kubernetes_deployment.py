@@ -17,6 +17,67 @@ def to_dns_name(name: str) -> str:
     return name.replace('/', '-').replace('_', '-').lower()
 
 
+def restart_deployment(
+    name: str,
+    namespace: str,
+    image_name: str,
+    container_cmd: str,
+    container_args: str,
+    logger: JinaLogger,
+    replicas: int,
+    pull_policy: str,
+    custom_resource_dir: Optional[str] = None,
+    port_expose: Optional[int] = None,
+) -> str:
+    """Restarts a service on Kubernetes.
+
+    :param name: name of the service and deployment
+    :param namespace: k8s namespace of the service and deployment
+    :param image_name: image for the k8s deployment
+    :param container_cmd: command executed on the k8s pods
+    :param container_args: arguments used for the k8s pod
+    :param logger: used logger
+    :param replicas: number of replicas
+    :param pull_policy: pull policy used for fetching the Docker images from the registry.
+    :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.
+        Defaults to the standard location jina.resources if not specified.
+    :param port_expose: port which will be exposed by the deployed containers
+    :return: dns name of the created service
+    """
+
+    # we can always assume the ports are the same for all executors since they run on different k8s pods
+    # port expose can be defined by the user
+    if not port_expose:
+        port_expose = 8080
+    port_in = 8081
+    port_out = 8082
+    port_ctrl = 8083
+
+    logger.debug(
+        f'🔋\tReplace Deployment for "{name}" with exposed port "{port_expose}"'
+    )
+    kubernetes_tools.replace(
+        deployment_name=name,
+        namespace_name=namespace,
+        template='deployment',
+        params={
+            'name': name,
+            'namespace': namespace,
+            'image': image_name,
+            'replicas': replicas,
+            'command': container_cmd,
+            'args': container_args,
+            'port_expose': port_expose,
+            'port_in': port_in,
+            'port_out': port_out,
+            'port_ctrl': port_ctrl,
+            'pull_policy': pull_policy,
+        },
+        custom_resource_dir=custom_resource_dir,
+    )
+    return f'{name}.{namespace}.svc'
+
+
 def deploy_service(
     name: str,
     namespace: str,
@@ -26,9 +87,10 @@ def deploy_service(
     logger: JinaLogger,
     replicas: int,
     pull_policy: str,
-    init_container: Dict = None,
+    init_container: Optional[Dict] = None,
     custom_resource_dir: Optional[str] = None,
     port_expose: Optional[int] = None,
+    env: Optional[Dict] = None,
 ) -> str:
     """Deploy service on Kubernetes.
 
@@ -44,6 +106,7 @@ def deploy_service(
     :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.
         Defaults to the standard location jina.resources if not specified.
     :param port_expose: port which will be exposed by the deployed containers
+    :param env: environment variables to be passed into configmap.
     :return: dns name of the created service
     """
 
@@ -55,7 +118,7 @@ def deploy_service(
     port_out = 8082
     port_ctrl = 8083
 
-    logger.info(f'🔋\tCreate Service for "{name}" with exposed port "{port_expose}"')
+    logger.debug(f'🔋\tCreate Service for "{name}" with exposed port "{port_expose}"')
     kubernetes_tools.create(
         'service',
         {
@@ -72,7 +135,20 @@ def deploy_service(
         custom_resource_dir=custom_resource_dir,
     )
 
-    logger.info(
+    logger.debug(f'📝\tCreate ConfigMap for deployment.')
+
+    kubernetes_tools.create(
+        'configmap',
+        {
+            'name': name,
+            'namespace': namespace,
+            'data': env,
+        },
+        logger=logger,
+        custom_resource_dir=None,
+    )
+
+    logger.debug(
         f'🐳\tCreate Deployment for "{name}" with image "{image_name}", replicas {replicas} and init_container {init_container is not None}'
     )
 
@@ -101,7 +177,7 @@ def deploy_service(
         custom_resource_dir=custom_resource_dir,
     )
 
-    logger.info(f'🔑\tCreate necessary permissions"')
+    logger.debug(f'🔑\tCreate necessary permissions"')
 
     kubernetes_tools.create(
         'connection-pool-role',
@@ -183,7 +259,7 @@ def get_image_name(uses: str) -> str:
     """
     try:
         scheme, name, tag, secret = parse_hub_uri(uses)
-        meta_data = HubIO.fetch_meta(name, tag, secret=secret)
+        meta_data = HubIO.fetch_meta(name, tag, secret=secret, force=True)
         image_name = meta_data.image_name
         return image_name
     except Exception:

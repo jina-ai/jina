@@ -83,7 +83,7 @@ class AsyncWorkspaceClient(AsyncBaseClient):
         This is to handle a special case when JinadRuntime knows the workspace id already
         (during Pea creation). It should get invoked only by :meth:`create`.
 
-        For parallel > 1
+        For shards > 1
         - pea0 throws TypeError & we create a workspace
         - peaN (all other Peas) wait for workspace creation & don't emit logs
 

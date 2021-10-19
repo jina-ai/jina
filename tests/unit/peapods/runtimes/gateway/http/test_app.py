@@ -197,7 +197,7 @@ def test_uvicorn_ssl_wrong_password(cert_pem, key_pem, runtime_cls):
 
 
 @pytest.mark.parametrize('protocol', ['http', 'websocket'])
-def test_uvicorn_ssl_with_flow(cert_pem, key_pem, protocol, monkeypatch):
+def test_uvicorn_ssl_with_flow(cert_pem, key_pem, protocol, capsys):
     with Flow(
         protocol=protocol,
         uvicorn_kwargs=[
@@ -206,15 +206,9 @@ def test_uvicorn_ssl_with_flow(cert_pem, key_pem, protocol, monkeypatch):
             'ssl_keyfile_password: abcd',
         ],
     ) as f:
-        if protocol == 'http':
-            Client(protocol=protocol, port=f.port_expose, https=True).index(
-                [Document()]
-            )
-        else:
-            with pytest.raises(ssl.SSLCertVerificationError) as r:
-                Client(protocol=protocol, port=f.port_expose, https=True).index(
-                    [Document()]
-                )
-            assert (
-                'certificate verify failed: self signed certificate' in r.value.args[1]
-            )
+        os.environ['JINA_LOG_LEVEL'] = 'ERROR'
+        Client(protocol=protocol, port=f.port_expose, https=True).index([Document()])
+        assert (
+            '''certificate verify failed: self signed certificate'''
+            in capsys.readouterr().out
+        )

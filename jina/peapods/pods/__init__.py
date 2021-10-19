@@ -88,6 +88,7 @@ class BasePod:
     They can be also run in their own containers on remote machines.
     """
 
+    @abstractmethod
     def start(self) -> 'BasePod':
         """Start to run all :class:`BasePea` in this BasePod.
 
@@ -95,7 +96,17 @@ class BasePod:
             If one of the :class:`BasePea` fails to start, make sure that all of them
             are properly closed.
         """
-        raise NotImplementedError
+        ...
+
+    @abstractmethod
+    async def rolling_update(self, *args, **kwargs):
+        """
+        Roll update the Executors managed by the Pod
+
+            .. # noqa: DAR201
+            .. # noqa: DAR101
+        """
+        ...
 
     @staticmethod
     def _set_upload_files(args):
@@ -255,7 +266,7 @@ class BasePod:
             else:
                 _tail_args.name = f'tail'
             _tail_args.pea_role = PeaRoleType.TAIL
-            _tail_args.num_part = 1 if polling_type.is_push else args.parallel
+            _tail_args.num_part = 1 if polling_type.is_push else args.shards
 
         Pod._set_dynamic_routing_out(_tail_args)
 
@@ -312,7 +323,7 @@ class BasePod:
 
 
 class Pod(BasePod, ExitFIFO):
-    """A BasePod is an immutable set of peas, which run in parallel. They share the same input and output socket.
+    """A Pod is an immutable set of peas, which run in replicas. They share the same input and output socket.
     Internally, the peas can run with the process/thread backend. They can be also run in their own containers
     :param args: arguments parsed from the CLI
     :param needs: pod names of preceding pods, the output of these pods are going into the input of this pod
@@ -326,6 +337,8 @@ class Pod(BasePod, ExitFIFO):
         super().__init__()
         args.upload_files = BasePod._set_upload_files(args)
         self.args = args
+        # a pod only can have replicas and they can only have polling ANY
+        self.args.polling = PollingType.ANY
         self.needs = (
             needs or set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
@@ -343,12 +356,20 @@ class Pod(BasePod, ExitFIFO):
         self.join()
 
     def update_pea_args(self):
-        """ Update args of its peas based on Pod args"""
+        """ Update args of all its peas based on Pod args. Including head/tail"""
         if isinstance(self.args, Dict):
             # This is used when a Pod is created in a remote context, where peas & their connections are already given.
             self.peas_args = self.args
         else:
             self.peas_args = self._parse_args(self.args)
+
+    def update_worker_pea_args(self):
+        """ Update args of all its worker peas based on Pod args. Does not touch head and tail"""
+        self.peas_args['peas'] = self._set_peas_args(
+            self.args,
+            head_args=self.peas_args['head'],
+            tail_args=self.peas_args['tail'],
+        )
 
     @property
     def first_pea_args(self) -> Namespace:
@@ -476,7 +497,10 @@ class Pod(BasePod, ExitFIFO):
         self.peas.append(pea)
         self.enter_context(pea)
 
-    def _activate(self):
+    def activate(self):
+        """
+        Activate all peas in this pod
+        """
         # order is good. Activate from tail to head
         for pea in reversed(self.peas):
             pea.activate_runtime()
@@ -498,7 +522,7 @@ class Pod(BasePod, ExitFIFO):
                 _args.noblock_on_start = True
             self._enter_pea(BasePea(_args))
         if not getattr(self.args, 'noblock_on_start', False):
-            self._activate()
+            self.activate()
         return self
 
     def wait_start_success(self) -> None:
@@ -513,7 +537,7 @@ class Pod(BasePod, ExitFIFO):
         try:
             for p in self.peas:
                 p.wait_start_success()
-            self._activate()
+            self.activate()
         except:
             self.close()
             raise
@@ -542,6 +566,41 @@ class Pod(BasePod, ExitFIFO):
         """
         return all(p.is_ready.is_set() for p in self.peas) and self._activated
 
+    async def rolling_update(
+        self, dump_path: Optional[str] = None, *, uses_with: Optional[Dict] = None
+    ):
+        """Reload all Peas of this Pod.
+
+        :param dump_path: the dump from which to read the data
+        :param uses_with: a Dictionary of arguments to restart the executor with
+        """
+        # BACKWARDS COMPATIBILITY
+        if dump_path is not None:
+            if uses_with is not None:
+                uses_with['dump_path'] = dump_path
+            else:
+                uses_with = {'dump_path': dump_path}
+        try:
+            pea_args_idx = 0
+            for i in range(len(self.peas)):
+                pea = self.peas[i]
+                if pea.role == PeaRoleType.PARALLEL:
+                    pea.close()
+                    _args = self.peas_args['peas'][pea_args_idx]
+                    _args.noblock_on_start = True
+                    ### BACKWARDS COMPATIBILITY, so THAT DUMP_PATH is in runtime_args
+                    _args.dump_path = dump_path
+                    ###
+                    _args.uses_with = uses_with
+                    new_pea = BasePea(_args)
+                    self.enter_context(new_pea)
+                    await new_pea.async_wait_start_success()
+                    new_pea.activate_runtime()
+                    self.peas[i] = new_pea
+                    pea_args_idx += 1
+        except:
+            raise
+
     @staticmethod
     def _set_peas_args(
         args: Namespace,
@@ -557,18 +616,20 @@ class Pod(BasePod, ExitFIFO):
             ]
         )
 
-        for idx, pea_host in zip(range(args.parallel), cycle(_host_list)):
+        for idx, pea_host in zip(range(args.replicas), cycle(_host_list)):
             _args = copy.deepcopy(args)
-            _args.pea_id = idx
-
-            if args.parallel > 1:
+            # BACKWARDS COMPATIBILITY:
+            # pea_id used to be shard_id so we keep it this way, even though a pea in a BasePod is a replica
+            _args.pea_id = getattr(_args, 'shard_id', 0)
+            _args.replica_id = idx
+            if args.replicas > 1:
                 _args.pea_role = PeaRoleType.PARALLEL
                 _args.identity = random_identity()
 
                 if _args.peas_hosts:
                     _args.host = pea_host
                 if _args.name:
-                    _args.name += f'/pea-{idx}'
+                    _args.name += f'/rep-{idx}'
                 else:
                     _args.name = f'{idx}'
             else:
@@ -580,18 +641,16 @@ class Pod(BasePod, ExitFIFO):
                 _args.port_out = tail_args.port_in
             _args.port_ctrl = helper.random_port()
             _args.socket_out = SocketType.PUSH_CONNECT
-            if args.polling.is_push:
-                if args.scheduling == SchedulerType.ROUND_ROBIN:
-                    _args.socket_in = SocketType.PULL_CONNECT
-                elif args.scheduling == SchedulerType.LOAD_BALANCE:
-                    _args.socket_in = SocketType.DEALER_CONNECT
-                else:
-                    raise ValueError(
-                        f'{args.scheduling} is not supported as a SchedulerType!'
-                    )
 
+            if args.scheduling == SchedulerType.ROUND_ROBIN:
+                _args.socket_in = SocketType.PULL_CONNECT
+            elif args.scheduling == SchedulerType.LOAD_BALANCE:
+                _args.socket_in = SocketType.DEALER_CONNECT
             else:
-                _args.socket_in = SocketType.SUB_CONNECT
+                raise ValueError(
+                    f'{args.scheduling} is not supported as a SchedulerType!'
+                )
+
             if head_args:
                 _args.host_in = get_connect_host(
                     bind_host=head_args.host,
@@ -617,13 +676,13 @@ class Pod(BasePod, ExitFIFO):
 
     def _parse_base_pod_args(self, args):
         parsed_args = {'head': None, 'tail': None, 'peas': []}
-        if getattr(args, 'parallel', 1) > 1:
+        if getattr(args, 'replicas', 1) > 1:
             # reasons to separate head and tail from peas is that they
             # can be deducted based on the previous and next pods
             self.is_head_router = True
             self.is_tail_router = True
-            parsed_args['head'] = BasePod._copy_to_head_args(args, args.polling)
-            parsed_args['tail'] = BasePod._copy_to_tail_args(args, args.polling)
+            parsed_args['head'] = BasePod._copy_to_head_args(args, PollingType.ANY)
+            parsed_args['tail'] = BasePod._copy_to_tail_args(args, PollingType.ANY)
             parsed_args['peas'] = self._set_peas_args(
                 args,
                 head_args=parsed_args['head'],

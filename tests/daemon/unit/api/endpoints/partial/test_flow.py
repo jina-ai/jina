@@ -27,7 +27,6 @@ def test_flow_api(monkeypatch, partial_flow_client):
         on='/any_endpoint', inputs=Document(), on_done=response_checker
     )
 
-    # the pod used in this flow is not a compound pod and does not support ROLLING_UPDATE
     response = partial_flow_client.put(
         api,
         params={
@@ -37,7 +36,7 @@ def test_flow_api(monkeypatch, partial_flow_client):
             'shards': 1,
         },
     )
-    assert response.status_code == 400
+    assert response.status_code == 200
 
     response = partial_flow_client.delete(api)
     assert response

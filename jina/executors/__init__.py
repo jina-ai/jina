@@ -213,7 +213,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         if workspace:
             complete_workspace = os.path.join(workspace, self.metas.name)
             replica_id = getattr(self.runtime_args, 'replica_id', None)
-            pea_id = getattr(self.runtime_args, 'pea_id', None)
+            pea_id = getattr(
+                self.runtime_args,
+                'pea_id',
+                getattr(self.runtime_args, 'shard_id', None),
+            )
             if replica_id is not None and replica_id != -1:
                 complete_workspace = os.path.join(complete_workspace, str(replica_id))
             if pea_id is not None and pea_id != -1:

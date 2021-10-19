@@ -135,6 +135,7 @@ export POSTGRES_PASSWORD=$(kubectl get secret --namespace default my-release-pos
 
 ```python
 from jina import Flow
+import os
 
 f = Flow(
     name='index-flow', port_expose=8080, infrastructure='K8S', protocol='http'
@@ -147,7 +148,7 @@ f = Flow(
     uses_with={
         'hostname': f'my-release-postgresql.default.svc.cluster.local',
         'username': 'postgres',
-        'password': 'QJgNIt10Rm', # example password - should be an environment variable
+        'password': os.environ['POSTGRES_PASSWORD'],
         'database': 'postgres',
         'table': 'test_searcher',
     },
@@ -165,7 +166,7 @@ deploy_test_searcher@80992[I]:🐳	Create Deployment for "test-searcher" with im
   start_gateway@80992[I]:🏝️	Create Namespace "index-flow" for "gateway"
   start_gateway@80992[I]:🔁	namespaces "index-flow" already exists
  deploy_gateway@80992[I]:🔋	Create Service for "gateway" with exposed port "8080"
- deploy_gateway@80992[I]:🐳	Create Deployment for "gateway" with image "jinaai/jina:2.1.4-py38-standard", replicas 1 and init_container False
+ deploy_gateway@80992[I]:🐳	Create Deployment for "gateway" with image "jinaai/jina:x.x.x-py38-standard", replicas 1 and init_container False
 ```
 
 Use `port-forward` to send requests to the gateway of the index `Flow`:
@@ -238,6 +239,7 @@ Deploy search `Flow`:
 
 ```python
 from jina import Flow
+import os
 
 shards = 3
 
@@ -254,7 +256,7 @@ f = Flow(
         'total_shards': shards,
         'hostname': f'my-release-postgresql.default.svc.cluster.local',
         'username': 'postgres',
-        'password': 'QJgNIt10Rm', # example password - should be an environment variable
+        'password': os.environ['POSTGRES_PASSWORD'],
         'database': 'postgres',
         'table': 'test_searcher',
     },
@@ -268,7 +270,7 @@ Console output:
 ```txt
 start_test_searcher@81116[I]:🏝️	Create Namespace "search-flow" for "test_searcher"
 deploy_test_searcher@81116[I]:🔋	Create Service for "test-searcher-head" with exposed port "8080"
-deploy_test_searcher@81116[I]:🐳	Create Deployment for "test-searcher-head" with image "jinaai/jina:2.1.4-py38-standard", replicas 1 and init_container False
+deploy_test_searcher@81116[I]:🐳	Create Deployment for "test-searcher-head" with image "jinaai/jina:x.x.x-py38-perf", replicas 1 and init_container False
 deploy_test_searcher@81116[I]:🔋	Create Service for "test-searcher-0" with exposed port "8080"
 deploy_test_searcher@81116[I]:🐳	Create Deployment for "test-searcher-0" with image "jinahub/nflcyqe2:v10-2.1.0", replicas 2 and init_container False
 deploy_test_searcher@81116[I]:🔋	Create Service for "test-searcher-1" with exposed port "8080"
@@ -280,7 +282,7 @@ deploy_test_searcher@81116[I]:🐳	Create Deployment for "test-searcher-tail" wi
   start_gateway@81116[I]:🏝️	Create Namespace "search-flow" for "gateway"
   start_gateway@81116[I]:🔁	namespaces "search-flow" already exists
  deploy_gateway@81116[I]:🔋	Create Service for "gateway" with exposed port "8080"
- deploy_gateway@81116[I]:🐳	Create Deployment for "gateway" with image "jinaai/jina:2.1.4-py38-standard", replicas 1 and init_container False                                                                                                 
+ deploy_gateway@81116[I]:🐳	Create Deployment for "gateway" with image "jinaai/jina:x.x.x-py38-standard", replicas 1 and init_container False                                                                                                 
 ```
 
 Use `port-forward` to send requests to the gateway of the search `Flow`:
@@ -328,75 +330,10 @@ Len response matches: 15
 ## Scaling Executors on Kubernetes
 
 In Jina we support two ways of scaling:
-- **Replicas** can be used with any Executor type.
-- **Shards** should only be used with Indexers, since they store a state.
+- **Replicas** can be used with any Executor type and is typically used for performance and availability.
+- **Shards** are used for partitioning data and should only be used with Indexers since they store a state.
 
-```{admonition} Important
-:class: important
-This page describes Jina's behavior with kubernetes deployment for now.
-When using `shards` and `replicas` without kubernetes, Jina will behave slightly different.
-It is discouraged to use the `parallel` argument when deploying to kubernetes.
-```
+Check {ref}`here <flow-topology>` for more information.
 
-(replicas)=
-### Replicas
-
-Replication (or horizontal scaling) means duplicating an Executor and its state.
-It allows more requests to be served in parallel.
-A single request to Jina is only send to one of the replicas.
-Furthermore, it increases the failure tolerance.
-When one replica dies, another will immediately take over.
-In a cloud environment any machine might die at any point in time.
-Thus, using replicas is important for reliable services.
-Replicas are currently only supported, when deploying Jina with kubernetes.
-
-```python Usage
-from jina import Flow
-
-f = Flow().add(name='ExecutorWithReplicas', replicas=3)
-```
-
-(shards)=
-### Shards
-
-Sharding means splitting the content of an Indexer into several parts.
-These parts are then put on different machines.
-This is helpful in two situations:
-
-- When the full data does not fit onto one machine.
-- When the latency of a single request becomes too slow.
-  Then splitting the load across two or more machines yields better results.
-
-When you shard your index, the request handling usually differes for index and search requests:
-
-- Index (and update, delete) will just be handled by a single shard => `polling='any'`
-- Search requests are handled by all shards => `polling='all'`
-
-```python Usage
-from jina import Flow
-
-index_flow = Flow().add(name='ExecutorWithShards', shards=3, polling='any')
-search_flow = Flow().add(name='ExecutorWithShards', shards=3, polling='all', uses_after='MatchMerger')
-```
-
-### Merging search results via `uses_after`
-
-Each shard of a search Flow returns one set of results for each query Document.
-A merger Executor combines them afterwards.
-You can use the pre-build [MatchMerger](https://hub.jina.ai/executor/mruax3k7) or define your own merger.
-
-```{admonition} Example
-:class: example
-A search Flow has 10 shards for an Indexer.
-Each shard returns the top 20 results.
-After the merger there will be 200 results per query Document.
-```
-
-## Combining replicas & shards
-
-Combining both gives all the advantages mentioned above.
-When deploying to kubernetes, Jina replicates each single shard.
-Thus, shards can scale independently.
-The data syncronisation across replicas must be handled by the respective Indexer.
-For more detailed see {ref}`Dump and rolling update <dump-rolling-restart>`.
+Jina creates a separate Deployment in Kubernetes per Shard and uses [Kubernetes native replica scaling](https://kubernetes.io/docs/tutorials/kubernetes-basics/scale/scale-intro/) to create multiple Replicas per Shard.
 

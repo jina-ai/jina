@@ -2,7 +2,6 @@
 
 `.post()` is the core method for sending data to a `Flow` object, it provides multiple callbacks for fetching results from the Flow.
 
-
 ```python
 from jina import Flow
 
@@ -58,7 +57,7 @@ with Flow() as f:
     f.post('/', doc_gen)  # Document generator
 
     f.post('/', DocumentArray([d1, d2]))  # DocumentArray
-    
+
     f.post('/', DocumentArrayMemmap('./my-mmap'))  # DocumentArray
 
     f.post('/')  # empty
@@ -117,7 +116,6 @@ with f:
 This is useful to control `Executor` objects in the runtime.
 ````
 
-
 If user wants different executors to have different values of the same parameters, one can specify specific parameters for the specific `executor` by adding a dictionary inside parameters
 with the `executor` name as `key`. Jina will then take all these specific parameters and copy to the root of the
 parameters dictionary before calling the executor `method`.
@@ -138,7 +136,7 @@ class MyExecutor(Executor):
     @requests
     def foo(self, docs: Optional[DocumentArray], parameters: dict, **kwargs):
         param = parameters.get('param', self.default_param)
-        # param may be overriden for this specific request. 
+        # param may be overriden for this specific request.
         # The first instance will receive 10, and the second one will receive 5
         if self.metas.name == 'my-executor-1':
             assert param == 10
@@ -152,9 +150,8 @@ with (Flow().
     f.post(on='/endpoint', inputs=DocumentArray([]), parameters={'param': 5, 'my-executor-1': {'param': 10}})
 ```
 
-
 Note, as `parameters` does not have a fixed schema, it is declared with type `google.protobuf.Struct` in the `RequestProto`
-protobuf declaration. However, `google.protobuf.Struct` follows the JSON specification and does not 
+protobuf declaration. However, `google.protobuf.Struct` follows the JSON specification and does not
 differentiate `int` from `float`. **So, data of type `int` in `parameters` will be casted to `float` when request is
 sent to executor.**
 
@@ -199,7 +196,6 @@ with Flow().add(uses=MyExecutor) as f:
 ```
 ````
 
-
 ## Size of request
 
 You can control how many `Documents` in each request by `request_size`. Say your `inputs` has length of 100, whereas
@@ -242,6 +238,28 @@ with f:
 
 ```
 
+## Limiting outstanding requests
+
+You can control the number of requests fetched at a time from the Client generator into the Executor using `prefetch` argument, e.g.- Setting `prefetch=2` would make sure only 2 requests reach the Executors at a time, hence controlling the overload. By default, prefetch is disabled (set to 0). In cases where an Executor is a slow worker, you can assign a higher value to prefetch.
+
+```{code-block} python
+---
+emphasize-lines: 8, 10
+---
+
+def requests_generator():
+    while True:
+        yield Document(...)
+
+class MyExecutor(Executor):
+    @request
+    def foo(self, **kwargs):
+        slow_operation()
+
+# Makes sure only 2 requests reach the Executor at a time.
+with Flow(prefetch=2).add(uses=MyExecutor) as f:
+    f.post(on='/', inputs=requests_generator)
+```
 
 ## Response result
 
@@ -318,10 +336,43 @@ with f:
 
 ```
 
-````{admonition} Caution
+```{admonition} Caution
 :class: caution
 Turning on `return_results` breaks the streaming of the system. If you are sending 1000 requests,
 then `return_results=True` means you will get nothing until the 1000th response returns. Moreover, if each response
 takes 10MB memory, it means you will consume upto 10GB memory! On contrary, with callback and `return_results=False`,
 your memory usage will stay constant at 10MB.
-````
+```
+
+## Environment Variables
+
+In some scenarios, you may want to set environment variables to the Flow and use it inside Executor.
+To do that, you can use `env`:
+
+```python
+import os
+from jina import Flow, Executor, requests
+
+
+class MyExecutor(Executor):
+    @requests
+    def foo(self, **kwargs):
+        print('MY_ENV', '->', os.environ.get('MY_ENV'))
+
+
+f = Flow().add(uses=MyExecutor, env={'MY_ENV': 'MY_ENV_VALUE'})
+
+with f:
+    f.post('/foo')
+```
+
+```console
+           Flow@23340[I]:🎉 Flow is ready to use!
+	🔗 Protocol: 		GRPC
+	🏠 Local access:	0.0.0.0:51587
+	🔒 Private network:	172.18.0.253:51587
+	🌐 Public address:	94.135.231.132:51587
+MY_ENV -> MY_ENV_VALUE
+
+Process finished with exit code 0
+```

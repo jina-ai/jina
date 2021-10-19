@@ -124,14 +124,27 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         else:
             return msg
 
+    async def stop_receiving(self, grace_period=None):
+        """Stop accepting new messages
+        :param grace_period: Time to wait for message processing to finish before killing the grpc server
+        """
+        self._logger.debug('Close grpc server')
+        await self._grpc_server.stop(grace_period)
+
     async def close(self, grace_period=None, *args, **kwargs):
         """Stop the Grpc server
         :param grace_period: Time to wait for message processing to finish before killing the grpc server
         :param args: Extra positional arguments
         :param kwargs: Extra key-value arguments
         """
-        self._update_pending_tasks()
+        await self.stop_receiving(grace_period)
+        await self.stop_sending()
 
+    async def stop_sending(self):
+        """
+        Flush pending messages and stop sending new messages
+        """
+        self._update_pending_tasks()
         try:
             await asyncio.wait_for(asyncio.gather(*self._pending_tasks), timeout=1.0)
         except asyncio.TimeoutError:
@@ -139,10 +152,7 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
             self._logger.warning(
                 f'Could not gracefully complete {len(self._pending_tasks)} pending tasks on close.'
             )
-
         self._connection_pool.close()
-        self._logger.debug('Close grpc server')
-        await self._grpc_server.stop(grace_period)
 
     async def start(self):
         """
@@ -164,7 +174,9 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         await self._grpc_server.wait_for_termination()
 
     def _update_pending_tasks(self):
-        self._pending_tasks = [task for task in self._pending_tasks if not task.done()]
+        self._pending_tasks = [
+            task for task in self._pending_tasks if task and not task.done()
+        ]
 
     async def Call(self, msg, *args):
         """Processes messages received by the GRPC server

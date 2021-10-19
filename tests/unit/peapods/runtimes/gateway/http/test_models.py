@@ -34,7 +34,7 @@ def test_enum_definitions():
     quantization_enum_definition = PROTO_TO_PYDANTIC_MODELS.DocumentProto().schema()[
         'definitions'
     ]['QuantizationMode']
-    assert quantization_enum_definition['enum'] == [0, 1, 2]
+    assert quantization_enum_definition['enum'] == [0, 1, 2, 3]
 
     status_code_enum_definition = PROTO_TO_PYDANTIC_MODELS.StatusProto().schema()[
         'definitions'
