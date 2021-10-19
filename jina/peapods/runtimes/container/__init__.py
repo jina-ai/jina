@@ -295,31 +295,6 @@ class ContainerRuntime(BaseRuntime):
         return ready_or_shutdown_event.wait(timeout)
 
     @staticmethod
-    def _retry_control_message(
-        ctrl_address: str,
-        timeout_ctrl: int,
-        command: str,
-        num_retry: int,
-        logger: 'JinaLogger',
-    ):
-        from ...zmq import send_ctrl_message
-
-        for retry in range(1, num_retry + 1):
-            logger.debug(f'Sending {command} command for the {retry}th time')
-            try:
-                send_ctrl_message(
-                    ctrl_address,
-                    command,
-                    timeout=timeout_ctrl,
-                    raise_exception=True,
-                )
-                break
-            except Exception as ex:
-                logger.warning(f'{ex!r}')
-                if retry == num_retry:
-                    raise ex
-
-    @staticmethod
     def deactivate(
         control_address: str,
         timeout_ctrl: int,
@@ -338,11 +313,12 @@ class ContainerRuntime(BaseRuntime):
         """
         # In the case Container uses GRPCDataRuntime, the `socket_in_type` should not be set, hacky ...
         if socket_in_type is not None and socket_in_type == SocketType.DEALER_CONNECT:
-            ContainerRuntime._retry_control_message(
-                ctrl_address=control_address,
+            from ..zmq.zed import ZEDRuntime
+
+            ZEDRuntime.deactivate(
+                control_address=control_address,
                 timeout_ctrl=timeout_ctrl,
-                command='DEACTIVATE',
-                num_retry=3,
+                socket_in_type=socket_in_type,
                 logger=logger,
             )
 
@@ -365,11 +341,12 @@ class ContainerRuntime(BaseRuntime):
         """
         # In the case Container uses GRPCDataRuntime, the `socket_in_type` should not be set, hacky ...
         if socket_in_type is not None and socket_in_type == SocketType.DEALER_CONNECT:
-            ContainerRuntime._retry_control_message(
-                ctrl_address=control_address,
+            from ..zmq.zed import ZEDRuntime
+
+            ZEDRuntime.activate(
+                control_address=control_address,
                 timeout_ctrl=timeout_ctrl,
-                command='ACTIVATE',
-                num_retry=3,
+                socket_in_type=socket_in_type,
                 logger=logger,
             )
 
