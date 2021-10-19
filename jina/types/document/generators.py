@@ -78,6 +78,8 @@ def from_files(
     if isinstance(patterns, str):
         patterns = [patterns]
     for g in _iter_file_exts(patterns):
+        if os.path.isdir(g):
+            continue
         if sampling_rate is None or random.random() < sampling_rate:
             if read_mode is None:
                 d = Document(uri=g)
