@@ -95,10 +95,12 @@ table code {
 .sidebar-ecosys-logo {
     width: 1.2em;
     margin-right: .5em;
+    vertical-align: middle
 }
 
 /*temp fix on diff size*/
 .sidebar-ecosys-logo-finetuner {
     width: 1em;
     margin-right: .7em;
+    vertical-align: middle
 }
