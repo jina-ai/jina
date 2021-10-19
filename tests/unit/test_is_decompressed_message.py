@@ -57,8 +57,6 @@ args1 = set_pea_parser().parse_args(
         'PULL_CONNECT',
         '--socket-out',
         'PUSH_CONNECT',
-        '--timeout-ctrl',
-        '-1',
     ]
 )
 
@@ -76,8 +74,6 @@ args2 = set_pea_parser().parse_args(
         'PULL_BIND',
         '--socket-out',
         'PUSH_BIND',
-        '--timeout-ctrl',
-        '-1',
         '--runtime-cls',
         'MockRuntimeNotDecompressed',
     ]
@@ -99,8 +95,6 @@ args3 = set_pea_parser().parse_args(
         'PUSH_BIND',
         '--uses',
         'DecompressExec',
-        '--timeout-ctrl',
-        '-1',
         '--runtime-cls',
         'MockRuntimeDecompressed',
     ]

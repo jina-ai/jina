@@ -231,13 +231,13 @@ class Request(ProtoTypeMixin, DocsPropertyMixin, GroundtruthPropertyMixin):
         return Response._from_request(self)
 
     @property
-    def parameters(self) -> Dict:
+    def parameters(self) -> StructView:
         """Return the `tags` field of this Document as a Python dict
 
         :return: a Python dict view of the tags.
         """
         # if u get this u need to have it decompressed
-        return StructView(self.proto.parameters).dict()
+        return StructView(self.proto.parameters)
 
     @parameters.setter
     def parameters(self, value: Dict):

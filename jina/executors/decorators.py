@@ -71,7 +71,7 @@ def store_init_kwargs(func: Callable) -> Callable:
 def requests(
     func: Callable[
         [DocumentArray, Dict, DocumentArray, List[DocumentArray], List[DocumentArray]],
-        Union[DocumentArray, Dict, None],
+        Optional[Union[DocumentArray, Dict]],
     ] = None,
     *,
     on: Optional[Union[str, Sequence[str]]] = None,
