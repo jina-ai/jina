@@ -43,7 +43,12 @@ class ZEDRuntime(BaseRuntime):
         super().__init__(args, **kwargs)
         if not __windows__:
             try:
-                signal.signal(signal.SIGTERM, self._handle_sig_term)
+                signal.signal(
+                    signal.SIGTERM,
+                    lambda *args, **kwargs: self._zmqstreamlet.io_loop.add_callback_from_signal(
+                        self._handle_sig_term
+                    ),
+                )
             except ValueError:
                 self.logger.warning(
                     'Runtime is being run in a thread. Threads can not receive signals and may not shutdown as expected.'
@@ -72,6 +77,7 @@ class ZEDRuntime(BaseRuntime):
         self._zmqstreamlet.start(self._msg_callback)
 
     def _handle_sig_term(self, *args, **kwargs):
+        self.logger.debug(f' Received terminate signal')
         self.teardown()
 
     def teardown(self):

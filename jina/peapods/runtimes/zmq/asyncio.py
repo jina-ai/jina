@@ -87,7 +87,8 @@ class AsyncNewLoopRuntime(BaseRuntime, ABC):
         pass
 
     async def async_teardown(self):
-        """The async method to clean up resources during teardown. This method should free all resources allocated during async_setup"""
+        """The async method to clean up resources during teardown. This method should free all resources allocated
+        during async_setup"""
         pass
 
     @abstractmethod
@@ -101,30 +102,6 @@ class AsyncNewLoopRuntime(BaseRuntime, ABC):
         ...
 
     # Static methods used by the Pea to communicate with the `Runtime` in the separate process
-
-    @staticmethod
-    def cancel(process: Union['multiprocessing.Process', 'threading.Thread'], **kwargs):
-        """
-        Signal the runtime to terminate
-
-        :param process: The process to terminate
-        :param kwargs: extra keyword arguments
-        """
-        if hasattr(process, 'terminate'):
-            process.terminate()
-        else:
-            # This is to handle threads
-            process._stop()
-
-    @staticmethod
-    def activate(**kwargs):
-        """
-        Activate the runtime, does not apply to these runtimes
-
-        :param kwargs: extra keyword arguments
-        """
-        # does not apply to this types of runtimes
-        pass
 
     @staticmethod
     def get_control_address(host: str, port: str, **kwargs):
