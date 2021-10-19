@@ -1,4 +1,3 @@
-import copy
 import inspect
 import sys
 import os
@@ -583,7 +582,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 no_tag_yml['with'] = {}
             no_tag_yml['with']['extra_search_paths'] = (
                 no_tag_yml['with'].get('extra_search_paths') or []
-            ) + extra_search_paths
+            ) + (extra_search_paths or [])
 
             if allow_py_modules:
                 _extra_search_paths = extra_search_paths or []
