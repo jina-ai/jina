@@ -347,13 +347,19 @@ class BasePea:
         """
         # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
         self.logger.debug('waiting for ready or shutdown signal from runtime')
-        self._deactivate_runtime()
-        # This should fire a chain of SIGTERM passing, if local, ZEDRuntime, GRPCDataRuntime and all the Gateway Runtimes are ready to properly handle SIGTERM.
-        # If ContainerRuntime or JinaDRuntime, they are also ready, and they will propagate the required termination, ContainerRuntime will `kill` the container,
-        # sending a SIGTERM inside the container, and JinaDRuntime will send an API call to delete the Pea remotely which will close the Pea which will send the
-        # SIGTERM to the local ZEDRuntime or GRPCDataRuntime
-        self.terminate()
-        self.logger.debug(__stop_msg__)
+        if self.is_ready.is_set() and not self.is_shutdown.is_set():
+            self._deactivate_runtime()
+            # This should fire a chain of SIGTERM passing, if local, ZEDRuntime, GRPCDataRuntime and all the Gateway
+            # Runtimes are ready to properly handle SIGTERM. If ContainerRuntime or JinaDRuntime, they are also
+            # ready, and they will propagate the required termination, ContainerRuntime will `kill` the container,
+            # sending a SIGTERM inside the container, and JinaDRuntime will send an API call to delete the Pea
+            # remotely which will close the Pea which will send the SIGTERM to the local ZEDRuntime or GRPCDataRuntime
+            self.terminate()
+        elif self.is_shutdown.is_set():
+            # here shutdown has been set already, therefore `run` will gracefully finish
+            pass
+        else:
+            self.terminate()
         self.logger.close()
 
     def __enter__(self):
