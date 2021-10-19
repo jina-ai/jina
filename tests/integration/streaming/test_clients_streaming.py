@@ -3,8 +3,7 @@ import time, asyncio
 from typing import List
 from datetime import datetime
 from functools import partial
-from threading import Thread, current_thread
-
+from multiprocessing import Process, current_process
 
 import pytest
 from jina import Flow, Document, DocumentArray, Executor, requests, Client
@@ -200,19 +199,7 @@ class Indexer(Executor):
 
 
 @pytest.mark.parametrize('prefetch', [0, 5])
-@pytest.mark.parametrize(
-    'protocol',
-    [
-        'websocket',
-        'http',
-        pytest.param(
-            'grpc',
-            marks=pytest.mark.skip(
-                reason='grpc client doesn\'t work with multiple threads'
-            ),
-        ),
-    ],
-)
+@pytest.mark.parametrize('protocol', ['websocket', 'http', 'grpc'])
 @pytest.mark.parametrize('grpc_data_requests', [False, True])
 def test_multiple_clients(prefetch, protocol, grpc_data_requests):
     os.environ['JINA_LOG_LEVEL'] = 'INFO'
@@ -222,7 +209,7 @@ def test_multiple_clients(prefetch, protocol, grpc_data_requests):
 
     def get_document(i):
         return Document(
-            id=f'{current_thread().name}_{i}',
+            id=f'{current_process().name}_{i}',
             buffer=bytes(bytearray(os.urandom(512 * 4))),
         )
 
@@ -237,12 +224,10 @@ def test_multiple_clients(prefetch, protocol, grpc_data_requests):
 
     def client(gen, port, protocol):
         Client(protocol=protocol, port=port).post(
-            on='/index',
-            inputs=gen,
-            request_size=1,
+            on='/index', inputs=gen, request_size=1
         )
 
-    pool: List[Thread] = []
+    pool: List[Process] = []
     f = Flow(
         protocol=protocol, prefetch=prefetch, grpc_data_requests=grpc_data_requests
     ).add(uses=Indexer)
@@ -250,23 +235,23 @@ def test_multiple_clients(prefetch, protocol, grpc_data_requests):
         # We have 5 good clients connecting to the same gateway. They have controlled requests.
         # Each client sends `GOOD_CLIENT_NUM_DOCS` (20) requests and sleeps after each request.
         for i in range(GOOD_CLIENTS):
-            t = Thread(
+            p = Process(
                 target=partial(client, good_client_gen, f.port_expose, protocol),
                 name=f'goodguy_{i}',
             )
-            t.start()
-            pool.append(t)
+            p.start()
+            pool.append(p)
 
         # and 1 malicious client, sending lot of requests (trying to block others)
-        t = Thread(
+        p = Process(
             target=partial(client, malicious_client_gen, f.port_expose, protocol),
             name='badguy',
         )
-        t.start()
-        pool.append(t)
+        p.start()
+        pool.append(p)
 
-        for t in pool:
-            t.join()
+        for p in pool:
+            p.join()
 
         order_of_ids = list(
             Client(protocol=protocol, port=f.port_expose)
