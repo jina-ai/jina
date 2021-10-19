@@ -8,7 +8,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/advanced/experimental/kubernetes.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="Jina natively supports Kubernetes and you can use it via Flow API. Preliminaries: Please first set up a Kubernetes cluster and configure the cluster access locally. Deploy your Flow: To deploy a Flow on Kubernetes, you have to set infrastructure='K8S' when creating the Flow. Examples: CLIP image ..." />
+  <meta property="og:description" content="Jina natively supports Kubernetes and you can use it via Flow API. Preliminaries: Please first set up a Kubernetes cluster and configure the cluster access locally. Deploy your Flow: To deploy a Flow on Kubernetes, you have to set infrastructure='K8S' when creating the Flow. The context manager m..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -625,96 +625,51 @@
 </section>
 <section id="deploy-your-flow">
 <h2>Deploy your <code class="docutils literal notranslate"><span class="pre">Flow</span></code><a class="headerlink" href="#deploy-your-flow" title="Permalink to this headline">¶</a></h2>
-<p>To deploy a <code class="docutils literal notranslate"><span class="pre">Flow</span></code> on <code class="docutils literal notranslate"><span class="pre">Kubernetes</span></code>, you have to set <code class="docutils literal notranslate"><span class="pre">infrastructure='K8S'</span></code> when creating the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>.</p>
+<p>To deploy a <code class="docutils literal notranslate"><span class="pre">Flow</span></code> on <code class="docutils literal notranslate"><span class="pre">Kubernetes</span></code>, you have to set <code class="docutils literal notranslate"><span class="pre">infrastructure='K8S'</span></code> when creating the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>.
+The context manager makes sure to deploy the <code class="docutils literal notranslate"><span class="pre">Flow</span></code> when entering the context and to clean it up when leaving the context.</p>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
-<p>All Executors in the Flow should be used with <code class="docutils literal notranslate"><span class="pre">jinahub+docker://</span></code>.</p>
+<p>All Executors in the Flow should be used with <code class="docutils literal notranslate"><span class="pre">jinahub+docker://...</span></code> or <code class="docutils literal notranslate"><span class="pre">docker://...</span></code>.</p>
 </div>
 </section>
 <section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <section id="clip-image-encoder">
 <h3>CLIP image encoder<a class="headerlink" href="#clip-image-encoder" title="Permalink to this headline">¶</a></h3>
-<section id="server">
-<h4>Server<a class="headerlink" href="#server" title="Permalink to this headline">¶</a></h4>
-<p>The following code deploys a simple <code class="docutils literal notranslate"><span class="pre">Flow</span></code> with just a single <code class="docutils literal notranslate"><span class="pre">Executor</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+<p>The following code deploys a simple <code class="docutils literal notranslate"><span class="pre">Flow</span></code> with just a single <code class="docutils literal notranslate"><span class="pre">Executor</span></code>.
+It does the following:</p>
+<ul class="simple">
+<li><p>deploying the <code class="docutils literal notranslate"><span class="pre">CLIP</span> <span class="pre">Executor</span></code> and the <code class="docutils literal notranslate"><span class="pre">Gateway</span></code> when entering the context of the <code class="docutils literal notranslate"><span class="pre">Flow</span></code></p></li>
+<li><p>sending an example image to the <code class="docutils literal notranslate"><span class="pre">Flow</span></code> using <code class="docutils literal notranslate"><span class="pre">port-forward</span></code></p></li>
+<li><p>printing the dimension of the resulting embedding</p></li>
+<li><p>cleaning up the deployment when leaving the context of the <code class="docutils literal notranslate"><span class="pre">Flow</span></code></p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Document</span>
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'index-flow'</span><span class="p">,</span> <span class="n">port_expose</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span> <span class="n">infrastructure</span><span class="o">=</span><span class="s1">'K8S'</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'http'</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'example-clip'</span><span class="p">,</span> <span class="n">port_expose</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span> <span class="n">infrastructure</span><span class="o">=</span><span class="s1">'K8S'</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'http'</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
     <span class="n">uses</span><span class="o">=</span><span class="s1">'jinahub+docker://CLIPImageEncoder'</span>
 <span class="p">)</span>
 
 <span class="k">with</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s1">'image'</span><span class="p">,</span> <span class="n">blob</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">)),</span> <span class="n">return_results</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'embedding size: '</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">resp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">embedding</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>Console output:</p>
-<div class="highlight-txt notranslate"><div class="highlight"><pre><span></span>start_executor0@65952[I]:🏝️	Create Namespace "index-flow" for "executor0"
-deploy_executor0@65952[I]:🔋	Create Service for "executor0" with exposed port "8080"
-deploy_executor0@65952[I]:🐳	Create Deployment for "executor0" with image "jinahub/0hnlmu3q:v33-2.1.0", replicas 1 and init_container False
-  start_gateway@65952[I]:🏝️	Create Namespace "index-flow" for "gateway"
-  start_gateway@65952[I]:🔁	namespaces "index-flow" already exists
- deploy_gateway@65952[I]:🔋	Create Service for "gateway" with exposed port "8080"
- deploy_gateway@65952[I]:🐳	Create Deployment for "gateway" with image "jinaai/jina:master-py38-standard", replicas 1 and init_container False                                                                                               
-</pre></div>
-</div>
-<p>After the deployment finished, set up port forwarding to enable the client to send requests to the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl port-forward svc/gateway -n index-flow <span class="m">8080</span>:8080
-</pre></div>
-</div>
-<p>Console output:</p>
-<div class="highlight-txt notranslate"><div class="highlight"><pre><span></span>Forwarding from 127.0.0.1:8080 -&gt; 8080
+<div class="highlight-txt notranslate"><div class="highlight"><pre><span></span>create_example-clip@15611[I]:🏝️	Create Namespace "example-clip"
+⠸ 0/2 waiting executor0 gateway to be ready...waiting_for_gateway@15611[L]: gateway has all its replicas ready!!
+⠋ 1/2 waiting executor0 to be ready...waiting_for_executor0@15611[L]: executor0 has all its replicas ready!!
+Forwarding from 127.0.0.1:8080 -&gt; 8080
 Forwarding from [::1]:8080 -&gt; 8080
+embedding size:  512                                                                                       
 </pre></div>
 </div>
-</section>
-<section id="client">
-<h4>Client<a class="headerlink" href="#client" title="Permalink to this headline">¶</a></h4>
-<p>Once the port forward is set up, you can request embeddings for images.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">base64</span>
-
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">requests</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-
-<span class="c1"># since port forwarding is running, you can run requests to localhost on 8080</span>
-<span class="n">host</span> <span class="o">=</span> <span class="s1">'127.0.0.1'</span>
-<span class="n">port</span> <span class="o">=</span> <span class="mi">8080</span>
-
-<span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'http://</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
-
-<span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s1">'image'</span><span class="p">,</span> <span class="n">blob</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">))</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
-
-<span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s1">/index'</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s1">'data'</span><span class="p">:</span> <span class="p">[</span><span class="n">doc</span><span class="p">]})</span>
-<span class="n">embedding</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span>
-    <span class="n">base64</span><span class="o">.</span><span class="n">decodebytes</span><span class="p">(</span>
-        <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">'data'</span><span class="p">][</span><span class="s1">'docs'</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">'embedding'</span><span class="p">][</span><span class="s1">'dense'</span><span class="p">][</span><span class="s1">'buffer'</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
-    <span class="p">),</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s1">'embedding size: '</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">embedding</span><span class="p">))</span>
-</pre></div>
-</div>
-<p>Console output:</p>
-<div class="highlight-txt notranslate"><div class="highlight"><pre><span></span>embedding size:  512
-</pre></div>
-</div>
-</section>
-<section id="cleanup">
-<h4>Cleanup<a class="headerlink" href="#cleanup" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl delete ns index-flow
-</pre></div>
-</div>
-<p>Console output:</p>
-<div class="highlight-txt notranslate"><div class="highlight"><pre><span></span>namespace "index-flow" deleted
-</pre></div>
-</div>
-</section>
 </section>
 <section id="postgres-indexer">
 <h3>Postgres indexer<a class="headerlink" href="#postgres-indexer" title="Permalink to this headline">¶</a></h3>
-<p>This example deploys the index <code class="docutils literal notranslate"><span class="pre">Flow</span></code> on <code class="docutils literal notranslate"><span class="pre">Kubernetes</span></code>
+<p>This example deploys and index <code class="docutils literal notranslate"><span class="pre">Flow</span></code> and a search <code class="docutils literal notranslate"><span class="pre">Flow</span></code> on <code class="docutils literal notranslate"><span class="pre">Kubernetes</span></code>.
+Having two flows deployed independently allows query while indexing.
 You can use any <code class="docutils literal notranslate"><span class="pre">postgres</span></code> database which is reachable from within the <code class="docutils literal notranslate"><span class="pre">Kubernetes</span></code> cluster.
 Here is an example on how to create a <code class="docutils literal notranslate"><span class="pre">postgres</span></code> database on the cluster directly:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>helm repo add bitnami https://charts.bitnami.com/bitnami
@@ -725,10 +680,11 @@ helm install my-release bitnami/postgresql
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">POSTGRES_PASSWORD</span><span class="o">=</span><span class="k">$(</span>kubectl get secret --namespace default my-release-postgresql -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s2">"{.data.postgresql-password}"</span> <span class="p">|</span> base64 --decode<span class="k">)</span>
 </pre></div>
 </div>
-<section id="index-flow">
-<h4>Index flow<a class="headerlink" href="#index-flow" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+<section id="indexing">
+<h4>Indexing<a class="headerlink" href="#indexing" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Document</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s1">'index-flow'</span><span class="p">,</span> <span class="n">port_expose</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span> <span class="n">infrastructure</span><span class="o">=</span><span class="s1">'K8S'</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'http'</span>
@@ -748,63 +704,29 @@ helm install my-release bitnami/postgresql
 <span class="p">)</span>
 
 <span class="k">with</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'start indexing'</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="s1">'/index'</span><span class="p">,</span>
+        <span class="p">[</span><span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s1">'item </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">128</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)],</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'indexing done'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Console output:</p>
-<div class="highlight-txt notranslate"><div class="highlight"><pre><span></span>start_test_searcher@80992[I]:🏝️	Create Namespace "index-flow" for "test_searcher"
-deploy_test_searcher@80992[I]:🔋	Create Service for "test-searcher" with exposed port "8080"
-deploy_test_searcher@80992[I]:🐳	Create Deployment for "test-searcher" with image "jinahub/nflcyqe2:v10-2.1.0", replicas 1 and init_container False
-  start_gateway@80992[I]:🏝️	Create Namespace "index-flow" for "gateway"
-  start_gateway@80992[I]:🔁	namespaces "index-flow" already exists
- deploy_gateway@80992[I]:🔋	Create Service for "gateway" with exposed port "8080"
- deploy_gateway@80992[I]:🐳	Create Deployment for "gateway" with image "jinaai/jina:x.x.x-py38-standard", replicas 1 and init_container False
-</pre></div>
-</div>
-<p>Use <code class="docutils literal notranslate"><span class="pre">port-forward</span></code> to send requests to the gateway of the index <code class="docutils literal notranslate"><span class="pre">Flow</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl port-forward svc/gateway -n index-flow <span class="m">8080</span>:8080
-</pre></div>
-</div>
-<p>Console output:</p>
-<div class="highlight-txt notranslate"><div class="highlight"><pre><span></span>Forwarding from 127.0.0.1:8080 -&gt; 8080
+<div class="highlight-txt notranslate"><div class="highlight"><pre><span></span>create_index-flow@19114[I]:🏝️	Create Namespace "index-flow"
+⠸ 0/2 waiting test_searcher gateway to be ready...waiting_for_gateway@19114[L]: gateway has all its replicas ready!!
+⠦ 1/2 waiting test_searcher to be ready...waiting_for_test_searcher@19114[L]: test_searcher has all its replicas ready!!
+start indexing
+Forwarding from 127.0.0.1:8080 -&gt; 8080
 Forwarding from [::1]:8080 -&gt; 8080
-
+indexing done
+  close_gateway@19114[L]: Successful deletion of deployment gateway
+close_test_searcher@19114[L]: Successful deletion of deployment test_searcher
 </pre></div>
 </div>
 </section>
-<section id="index-client">
-<h4>Index client<a class="headerlink" href="#index-client" title="Permalink to this headline">¶</a></h4>
-<p>On the client side, let’s index 100 <code class="docutils literal notranslate"><span class="pre">Documents</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">requests</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-
-<span class="n">ip</span> <span class="o">=</span> <span class="s1">'127.0.0.1'</span>
-<span class="n">port</span> <span class="o">=</span> <span class="mi">8080</span>
-<span class="n">host</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'http://</span><span class="si">{</span><span class="n">ip</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
-
-<span class="n">docs</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s1">'item </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
-<span class="p">]</span>
-<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">'index document:'</span><span class="p">,</span> <span class="n">d</span><span class="p">[</span><span class="s1">'id'</span><span class="p">])</span>
-    <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s1">/index'</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s1">'data'</span><span class="p">:</span> <span class="p">[</span><span class="n">d</span><span class="p">]})</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Console output:</p>
-<div class="highlight-txt notranslate"><div class="highlight"><pre><span></span>index document: item 0
-{"requestId":"a133c678-99cc-4903-ae34-1524d3fb3cc4",...}
-index document: item 1
-...
-index document: item 99
-{"requestId":"02a9041b-d5e8-4625-8e97-6dffb5da2e96",...}
-</pre></div>
-</div>
-</section>
-<section id="search-server">
-<h4>Search server<a class="headerlink" href="#search-server" title="Permalink to this headline">¶</a></h4>
+<section id="searching">
+<h4>Searching<a class="headerlink" href="#searching" title="Permalink to this headline">¶</a></h4>
 <p>The following code deploys a search <code class="docutils literal notranslate"><span class="pre">Flow</span></code> on <code class="docutils literal notranslate"><span class="pre">Kubernetes</span></code>. In total, there are 9 <code class="docutils literal notranslate"><span class="pre">Kubernetes</span></code> deployments and services
 created.</p>
 <ul class="simple">
@@ -822,8 +744,9 @@ created.</p>
 </pre></div>
 </div>
 <p>Deploy search <code class="docutils literal notranslate"><span class="pre">Flow</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Document</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="n">shards</span> <span class="o">=</span> <span class="mi">3</span>
 
@@ -848,66 +771,106 @@ created.</p>
 <span class="p">)</span>
 
 <span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/search'</span><span class="p">,</span> <span class="n">Document</span><span class="p">(</span><span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">128</span><span class="p">)),</span> <span class="n">return_results</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Len response matches: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">resp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">matches</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Console output:</p>
+<div class="highlight-txt notranslate"><div class="highlight"><pre><span></span>create_search-flow2@19273[I]:🏝️	Create Namespace "search-flow2"
+           JINA@19273[W]:🔁	roles.rbac.authorization.k8s.io "connection-pool" already exists
+           JINA@19273[W]:🔁	rolebindings.rbac.authorization.k8s.io "connection-pool-binding" already exists
+           JINA@19273[W]:🔁	roles.rbac.authorization.k8s.io "connection-pool" already exists
+           JINA@19273[W]:🔁	rolebindings.rbac.authorization.k8s.io "connection-pool-binding" already exists
+           JINA@19273[W]:🔁	roles.rbac.authorization.k8s.io "connection-pool" already exists
+           JINA@19273[W]:🔁	rolebindings.rbac.authorization.k8s.io "connection-pool-binding" already exists
+           JINA@19273[W]:🔁	roles.rbac.authorization.k8s.io "connection-pool" already exists
+           JINA@19273[W]:🔁	rolebindings.rbac.authorization.k8s.io "connection-pool-binding" already exists
+           JINA@19273[W]:🔁	roles.rbac.authorization.k8s.io "connection-pool" already exists
+           JINA@19273[W]:🔁	rolebindings.rbac.authorization.k8s.io "connection-pool-binding" already exists
+⠋ 0/2 waiting test_searcher gateway to be ready...waiting_for_test_searcher-head@19273[L]: test_searcher-head has all its replicas ready!!
+⠋ 0/2 waiting test_searcher gateway to be ready...waiting_for_test_searcher-0@19273[L]: test_searcher-0 has all its replicas ready!!
+⠦ 0/2 waiting test_searcher gateway to be ready...waiting_for_test_searcher-1@19273[L]: test_searcher-1 has all its replicas ready!!
+⠇ 0/2 waiting test_searcher gateway to be ready...waiting_for_test_searcher-2@19273[L]: test_searcher-2 has all its replicas ready!!
+⠙ 0/2 waiting test_searcher gateway to be ready...waiting_for_test_searcher-tail@19273[L]: test_searcher-tail has all its replicas ready!!
+⠹ 1/2 waiting gateway to be ready...waiting_for_gateway@19273[L]: gateway has all its replicas ready!!
+Forwarding from 127.0.0.1:8080 -&gt; 8080
+Forwarding from [::1]:8080 -&gt; 8080
+Len response matches: 15
+  close_gateway@19273[L]: Successful deletion of deployment gateway
+close_test_searcher-head@19273[L]: Successful deletion of deployment test_searcher-head
+close_test_searcher-0@19273[L]: Successful deletion of deployment test_searcher-0
+close_test_searcher-1@19273[L]: Successful deletion of deployment test_searcher-1
+close_test_searcher-2@19273[L]: Successful deletion of deployment test_searcher-2
+close_test_searcher-tail@19273[L]: Successful deletion of deployment test_searcher-tail
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="exposing-your-flow">
+<h2>Exposing your <code class="docutils literal notranslate"><span class="pre">Flow</span></code><a class="headerlink" href="#exposing-your-flow" title="Permalink to this headline">¶</a></h2>
+<p>The previous examples use port-forwarding to send documents to the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>.
+Thinking about real world applications,
+you might want to expose your service to make it reachable by the users.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>Exposing your <code class="docutils literal notranslate"><span class="pre">Flow</span></code> only works if the environment of your <code class="docutils literal notranslate"><span class="pre">Kubernetes</span> <span class="pre">cluster</span></code> supports <code class="docutils literal notranslate"><span class="pre">External</span> <span class="pre">Loadbalancers</span></code>.</p>
+</div>
+<section id="server">
+<h3>Server<a class="headerlink" href="#server" title="Permalink to this headline">¶</a></h3>
+<p>Use the context manager and <code class="docutils literal notranslate"><span class="pre">f.block()</span></code> to make sure the <code class="docutils literal notranslate"><span class="pre">Flow</span></code> is deployed and cleaned up after termination.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'example-clip'</span><span class="p">,</span> <span class="n">port_expose</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span> <span class="n">infrastructure</span><span class="o">=</span><span class="s1">'K8S'</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'http'</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+    <span class="n">uses</span><span class="o">=</span><span class="s1">'jinahub+docker://CLIPImageEncoder'</span>
+<span class="p">)</span>
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Console output:</p>
-<div class="highlight-txt notranslate"><div class="highlight"><pre><span></span>start_test_searcher@81116[I]:🏝️	Create Namespace "search-flow" for "test_searcher"
-deploy_test_searcher@81116[I]:🔋	Create Service for "test-searcher-head" with exposed port "8080"
-deploy_test_searcher@81116[I]:🐳	Create Deployment for "test-searcher-head" with image "jinaai/jina:x.x.x-py38-perf", replicas 1 and init_container False
-deploy_test_searcher@81116[I]:🔋	Create Service for "test-searcher-0" with exposed port "8080"
-deploy_test_searcher@81116[I]:🐳	Create Deployment for "test-searcher-0" with image "jinahub/nflcyqe2:v10-2.1.0", replicas 2 and init_container False
-deploy_test_searcher@81116[I]:🔋	Create Service for "test-searcher-1" with exposed port "8080"
-deploy_test_searcher@81116[I]:🐳	Create Deployment for "test-searcher-1" with image "jinahub/nflcyqe2:v10-2.1.0", replicas 2 and init_container False
-deploy_test_searcher@81116[I]:🔋	Create Service for "test-searcher-2" with exposed port "8080"
-deploy_test_searcher@81116[I]:🐳	Create Deployment for "test-searcher-2" with image "jinahub/nflcyqe2:v10-2.1.0", replicas 2 and init_container False
-deploy_test_searcher@81116[I]:🔋	Create Service for "test-searcher-tail" with exposed port "8080"
-deploy_test_searcher@81116[I]:🐳	Create Deployment for "test-searcher-tail" with image "jinahub/mruax3k7:v6-2.1.0", replicas 1 and init_container False
-  start_gateway@81116[I]:🏝️	Create Namespace "search-flow" for "gateway"
-  start_gateway@81116[I]:🔁	namespaces "search-flow" already exists
- deploy_gateway@81116[I]:🔋	Create Service for "gateway" with exposed port "8080"
- deploy_gateway@81116[I]:🐳	Create Deployment for "gateway" with image "jinaai/jina:x.x.x-py38-standard", replicas 1 and init_container False                                                                                                 
+<div class="highlight-txt notranslate"><div class="highlight"><pre><span></span>create_example-clip@15611[I]:🏝️	Create Namespace "example-clip"
+⠸ 0/2 waiting executor0 gateway to be ready...waiting_for_gateway@15611[L]: gateway has all its replicas ready!!
+⠋ 1/2 waiting executor0 to be ready...waiting_for_executor0@15611[L]: executor0 has all its replicas ready!!                                                                      
 </pre></div>
 </div>
-<p>Use <code class="docutils literal notranslate"><span class="pre">port-forward</span></code> to send requests to the gateway of the search <code class="docutils literal notranslate"><span class="pre">Flow</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl port-forward svc/gateway -n search-flow <span class="m">8081</span>:8080
+<p>Once the <code class="docutils literal notranslate"><span class="pre">Flow</span></code> is deployed, you can expose a service.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl expose deployment gateway --name<span class="o">=</span>gateway-exposed --type LoadBalancer --port <span class="m">80</span> --target-port <span class="m">8080</span> -n example-clip
+sleep <span class="m">60</span> <span class="c1"># wait until the external ip is configured</span>
 </pre></div>
 </div>
-<p>Console output:</p>
-<div class="highlight-txt notranslate"><div class="highlight"><pre><span></span>Forwarding from 127.0.0.1:8081 -&gt; 8080
-Forwarding from [::1]:8081 -&gt; 8080
+<p>Export the external ip which is needed for the client in the next section when sending documents to the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">EXTERNAL_IP</span><span class="o">=</span><span class="sb">`</span>kubectl get service gateway-exposed -n example-clip -o<span class="o">=</span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">'{.status.loadBalancer.ingress[0].ip}'</span><span class="sb">`</span>
 </pre></div>
 </div>
 </section>
-<section id="search-client">
-<h4>Search client<a class="headerlink" href="#search-client" title="Permalink to this headline">¶</a></h4>
-<p>Get search results for a single <code class="docutils literal notranslate"><span class="pre">Document</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<section id="client">
+<h3>Client<a class="headerlink" href="#client" title="Permalink to this headline">¶</a></h3>
+<p>The client sends an image to the exposed <code class="docutils literal notranslate"><span class="pre">Flow</span></code> on <code class="docutils literal notranslate"><span class="pre">$EXTERNAL_IP</span></code> and retrieves the embedding created by the CLIPImageEncoder.
+Finally, it prints the dimensionality of the embedding.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-
-<span class="n">ip</span> <span class="o">=</span> <span class="s1">'127.0.0.1'</span>
-<span class="n">port</span> <span class="o">=</span> <span class="s1">'8081'</span>
-<span class="n">host</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'http://</span><span class="si">{</span><span class="n">ip</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
-
-<span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">Document</span><span class="p">(</span><span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span><span class="o">.</span><span class="n">dict</span><span class="p">()]</span>
-
-<span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s1">/search'</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s1">'data'</span><span class="p">:</span> <span class="n">data</span><span class="p">})</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Len response matches: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">'data'</span><span class="p">][</span><span class="s1">'docs'</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">'matches'</span><span class="p">])</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="n">host</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'EXTERNAL_IP'</span><span class="p">]</span>
+<span class="n">port</span> <span class="o">=</span> <span class="mi">80</span>
+<span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'http://</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s1">'image'</span><span class="p">,</span> <span class="n">blob</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">))</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+<span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s1">/index'</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s1">'data'</span><span class="p">:</span> <span class="p">[</span><span class="n">doc</span><span class="p">]})</span>
+<span class="n">embedding</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span>
+    <span class="n">base64</span><span class="o">.</span><span class="n">decodebytes</span><span class="p">(</span>
+        <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">'data'</span><span class="p">][</span><span class="s1">'docs'</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">'embedding'</span><span class="p">][</span><span class="s1">'dense'</span><span class="p">][</span><span class="s1">'buffer'</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+    <span class="p">),</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'embedding size: '</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">embedding</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>Console output:</p>
-<div class="highlight-txt notranslate"><div class="highlight"><pre><span></span>Len response matches: 15
+<div class="highlight-txt notranslate"><div class="highlight"><pre><span></span>embedding size:  512
 </pre></div>
 </div>
-<div class="caution admonition">
-<p class="admonition-title">Limitations of the Current Implemenation</p>
-<ul class="simple">
-<li><p>each <code class="docutils literal notranslate"><span class="pre">Executor</span></code> has to be containerized</p></li>
-<li><p>only stateless executors are supported when using replicas &gt; 1</p></li>
-</ul>
-</div>
-</section>
 </section>
 </section>
 <section id="scaling-executors-on-kubernetes">
@@ -983,19 +946,17 @@ Forwarding from [::1]:8081 -&gt; 8080
 <li><a class="reference internal" href="#preliminaries">Preliminaries</a></li>
 <li><a class="reference internal" href="#deploy-your-flow">Deploy your <code class="docutils literal notranslate"><span class="pre">Flow</span></code></a></li>
 <li><a class="reference internal" href="#examples">Examples</a><ul>
-<li><a class="reference internal" href="#clip-image-encoder">CLIP image encoder</a><ul>
+<li><a class="reference internal" href="#clip-image-encoder">CLIP image encoder</a></li>
+<li><a class="reference internal" href="#postgres-indexer">Postgres indexer</a><ul>
+<li><a class="reference internal" href="#indexing">Indexing</a></li>
+<li><a class="reference internal" href="#searching">Searching</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#exposing-your-flow">Exposing your <code class="docutils literal notranslate"><span class="pre">Flow</span></code></a><ul>
 <li><a class="reference internal" href="#server">Server</a></li>
 <li><a class="reference internal" href="#client">Client</a></li>
-<li><a class="reference internal" href="#cleanup">Cleanup</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#postgres-indexer">Postgres indexer</a><ul>
-<li><a class="reference internal" href="#index-flow">Index flow</a></li>
-<li><a class="reference internal" href="#index-client">Index client</a></li>
-<li><a class="reference internal" href="#search-server">Search server</a></li>
-<li><a class="reference internal" href="#search-client">Search client</a></li>
-</ul>
-</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#scaling-executors-on-kubernetes">Scaling Executors on Kubernetes</a></li>
