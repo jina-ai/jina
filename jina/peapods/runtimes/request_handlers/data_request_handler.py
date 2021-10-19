@@ -135,7 +135,9 @@ class DataRequestHandler:
                 )
             return
 
-        params = self._parse_params(msg.request.parameters, self._executor.metas.name)
+        params = self._parse_params(
+            msg.request.parameters.dict(), self._executor.metas.name
+        )
         docs = _get_docs_from_msg(
             msg,
             partial_request=partial_requests,
@@ -174,10 +176,7 @@ class DataRequestHandler:
                     # this means the returned DocArray is a completely new one
                     DataRequestHandler.replace_docs(msg, r_docs)
             elif isinstance(r_docs, dict):
-                # TODO(Han): the ideal Jina idiom should be `msg.request.parameters.update(r_docs)`, however the current
-                #    implementation of `parameters` with StructView.dict() gives a read-only view. I see it as a
-                #    bug.
-                msg.request.proto.parameters.update(r_docs)
+                msg.request.parameters.update(r_docs)
             else:
                 raise TypeError(
                     f'return type must be {DocumentArray!r}, `None` or Dict, but getting {r_docs!r}'
