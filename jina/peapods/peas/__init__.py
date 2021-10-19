@@ -96,6 +96,7 @@ def run(
     finally:
         _unset_envs()
         is_shutdown.set()
+        logger.debug(f' Process terminated')
 
 
 class BasePea:
@@ -196,16 +197,22 @@ class BasePea:
         :param args: extra positional arguments to pass to join
         :param kwargs: extra keyword arguments to pass to join
         """
+        self.logger.debug(f' Joining the process')
         self.worker.join(*args, **kwargs)
+        self.logger.debug(f' Successfully joined the process')
 
     def terminate(self):
         """Terminate the Pea.
         This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         """
         if hasattr(self.worker, 'terminate'):
+            self.logger.debug(f' terminating the runtime process')
             self.worker.terminate()
+            self.logger.debug(f' runtime process properly terminated')
         else:
+            self.logger.debug(f' terminating the runtime thread')
             self.worker._stop()
+            self.logger.debug(f' runtime thread properly terminated')
 
     def _retry_control_message(self, command: str, num_retry: int = 3):
         from ..zmq import send_ctrl_message
@@ -355,6 +362,9 @@ class BasePea:
             # sending a SIGTERM inside the container, and JinaDRuntime will send an API call to delete the Pea
             # remotely which will close the Pea which will send the SIGTERM to the local ZEDRuntime or GRPCDataRuntime
             self.terminate()
+            # if it is not daemon, block until the process/thread finish work
+            if not self.args.daemon:
+                self.join()
         elif self.is_shutdown.is_set():
             # here shutdown has been set already, therefore `run` will gracefully finish
             pass
