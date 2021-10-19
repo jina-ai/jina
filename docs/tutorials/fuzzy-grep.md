@@ -8,6 +8,11 @@
 :date: July 15, 2021
 ```
 
+````{admonition} Warning
+:class: warning
+Please do not run this tutorial in jupyter notebook. Some python built-in attributes such as `__file__` does not exist in notebook.
+````
+
 
 Now that you understand all fundamental concepts, let's practice the learnings and build a simple end-to-end demo.
 
