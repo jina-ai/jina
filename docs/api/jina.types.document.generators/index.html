@@ -679,6 +679,39 @@ a JSON string or a Python dict.</p></li>
 </dl>
 </dd></dl>
 <dl class="py function">
+<dt class="sig sig-object py" id="jina.types.document.generators.from_huggingface_datasets">
+<span class="sig-prename descclassname"><span class="pre">jina.types.document.generators.</span></span><span class="sig-name descname"><span class="pre">from_huggingface_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_resolver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">datasets_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/generators/#from_huggingface_datasets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.generators.from_huggingface_datasets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator function for Hugging Face Datasets. Yields documents.</p>
+<p>This function helps to load datasets from Hugging Face Datasets Hub
+(<a class="reference external" href="https://huggingface.co/datasets">https://huggingface.co/datasets</a>) in Jina. Additional parameters can be
+passed to the <code class="docutils literal notranslate"><span class="pre">datasets</span></code> library using keyword arguments. The <code class="docutils literal notranslate"><span class="pre">load_dataset</span></code>
+method from <code class="docutils literal notranslate"><span class="pre">datasets</span></code> library is used to load the datasets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a valid dataset path for Hugging Face Datasets library.</p></li>
+<li><p><strong>field_resolver</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – a map from field names defined in <code class="docutils literal notranslate"><span class="pre">document</span></code> (JSON, dict) to the field
+names defined in Protobuf. This is only used when the given <code class="docutils literal notranslate"><span class="pre">document</span></code> is
+a JSON string or a Python dict.</p></li>
+<li><p><strong>size</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – the maximum number of the documents</p></li>
+<li><p><strong>sampling_rate</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – the sampling rate between [0, 1]</p></li>
+<li><p><strong>filter_fields</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – specifies whether to filter the dataset with the fields
+given in <code class="docutils literal notranslate"><span class="pre">`field_resolver</span></code> argument.</p></li>
+<li><p><strong>**datasets_kwargs</strong> – <p>additional arguments for <code class="docutils literal notranslate"><span class="pre">load_dataset</span></code> method
+from Datasets library. More details at
+<a class="reference external" href="https://huggingface.co/docs/datasets/package_reference/loading_methods.html#datasets.load_dataset">https://huggingface.co/docs/datasets/package_reference/loading_methods.html#datasets.load_dataset</a></p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yield</dt>
+<dd class="field-even"><p>documents</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
 <dt class="sig sig-object py" id="jina.types.document.generators.from_ndjson">
 <span class="sig-prename descclassname"><span class="pre">jina.types.document.generators.</span></span><span class="sig-name descname"><span class="pre">from_ndjson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_resolver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/generators/#from_ndjson"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.generators.from_ndjson" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generator function for line separated JSON. Yields documents.</p>

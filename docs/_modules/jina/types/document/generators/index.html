@@ -589,6 +589,8 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
+<span class="kn">from</span> <span class="nn">...importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
+
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">Document</span>
 
@@ -695,6 +697,65 @@
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">Document</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">field_resolver</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="from_huggingface_datasets"><a class="viewcode-back" href="../../../../../api/jina.types.document.generators/#jina.types.document.generators.from_huggingface_datasets">[docs]</a><span class="k">def</span> <span class="nf">from_huggingface_datasets</span><span class="p">(</span>
+    <span class="n">dataset_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">field_resolver</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">sampling_rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">filter_fields</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">datasets_kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="sd">"""Generator function for Hugging Face Datasets. Yields documents.</span>
+
+<span class="sd">    This function helps to load datasets from Hugging Face Datasets Hub</span>
+<span class="sd">    (https://huggingface.co/datasets) in Jina. Additional parameters can be</span>
+<span class="sd">    passed to the ``datasets`` library using keyword arguments. The ``load_dataset``</span>
+<span class="sd">    method from ``datasets`` library is used to load the datasets.</span>
+
+<span class="sd">    :param dataset_path: a valid dataset path for Hugging Face Datasets library.</span>
+<span class="sd">    :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field</span>
+<span class="sd">            names defined in Protobuf. This is only used when the given ``document`` is</span>
+<span class="sd">            a JSON string or a Python dict.</span>
+<span class="sd">    :param size: the maximum number of the documents</span>
+<span class="sd">    :param sampling_rate: the sampling rate between [0, 1]</span>
+<span class="sd">    :param filter_fields: specifies whether to filter the dataset with the fields</span>
+<span class="sd">            given in ```field_resolver`` argument.</span>
+<span class="sd">    :param **datasets_kwargs: additional arguments for ``load_dataset`` method</span>
+<span class="sd">            from Datasets library. More details at</span>
+<span class="sd">            https://huggingface.co/docs/datasets/package_reference/loading_methods.html#datasets.load_dataset</span>
+<span class="sd">    :yield: documents</span>
+<span class="sd">    """</span>
+    <span class="kn">from</span> <span class="nn">..document</span> <span class="kn">import</span> <span class="n">Document</span>
+
+    <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">datasets</span>
+
+    <span class="c1"># Load the dataset using given arguments</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="n">dataset_path</span><span class="p">,</span> <span class="o">**</span><span class="n">datasets_kwargs</span><span class="p">)</span>
+
+    <span class="c1"># Validate loaded dataset for splits</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">DatasetDict</span><span class="p">,</span> <span class="n">datasets</span><span class="o">.</span><span class="n">IterableDatasetDict</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="s1">'Please provide a split for dataset using "split" argument. '</span>
+                <span class="sa">f</span><span class="s1">'The following splits are available for this dataset: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s1">'</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Filter dataset if needed</span>
+    <span class="k">if</span> <span class="n">filter_fields</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">field_resolver</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s1">'Filter fields option requires "field_resolver" to be provided.'</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">set_format</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">field_resolver</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+
+    <span class="c1"># Return documents from dataset instances with subsampling if required</span>
+    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">_subsample</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">Document</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">field_resolver</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="from_ndjson"><a class="viewcode-back" href="../../../../../api/jina.types.document.generators/#jina.types.document.generators.from_ndjson">[docs]</a><span class="k">def</span> <span class="nf">from_ndjson</span><span class="p">(</span>
