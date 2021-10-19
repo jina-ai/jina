@@ -677,6 +677,7 @@
     <span class="k">finally</span><span class="p">:</span>
         <span class="n">_unset_envs</span><span class="p">()</span>
         <span class="n">is_shutdown</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">' Process terminated'</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="BasePea"><a class="viewcode-back" href="../../../../api/jina.peapods.peas/#jina.peapods.peas.BasePea">[docs]</a><span class="k">class</span> <span class="nc">BasePea</span><span class="p">:</span>
@@ -775,14 +776,18 @@
 <span class="sd">        :param args: extra positional arguments to pass to join</span>
 <span class="sd">        :param kwargs: extra keyword arguments to pass to join</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">' Joining the process'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">' Successfully joined the process'</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BasePea.terminate"><a class="viewcode-back" href="../../../../api/jina.peapods.peas/#jina.peapods.peas.BasePea.terminate">[docs]</a>    <span class="k">def</span> <span class="nf">terminate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Terminate the Pea.</span>
 <span class="sd">        This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="p">,</span> <span class="s1">'terminate'</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">' terminating the runtime process'</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">' runtime process properly terminated'</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_retry_control_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">num_retry</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">..zmq</span> <span class="kn">import</span> <span class="n">send_ctrl_message</span>
@@ -926,11 +931,15 @@
 <span class="sd">        """</span>
         <span class="c1"># if that 1s is not enough, it means the process/thread is still in forever loop, cancel it</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'waiting for ready or shutdown signal from runtime'</span><span class="p">)</span>
+        <span class="n">terminated</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_ready</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
             <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">' Cancel runtime'</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_cancel_runtime</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">' Wait to shutdown'</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout_ctrl</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+                    <span class="n">terminated</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
                     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s1">'Shutdown signal was not received for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout_ctrl</span><span class="si">}</span><span class="s1">'</span>
@@ -943,7 +952,8 @@
                     <span class="k">else</span> <span class="s1">''</span><span class="p">,</span>
                     <span class="n">exc_info</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span><span class="p">,</span>
                 <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">terminated</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
 
             <span class="c1"># if it is not daemon, block until the process/thread finish work</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">daemon</span><span class="p">:</span>
