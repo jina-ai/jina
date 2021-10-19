@@ -1,9 +1,9 @@
 import os
 import time, asyncio
 from typing import List
+from datetime import datetime
 from functools import partial
-from threading import Thread, current_thread
-
+from multiprocessing import Process, current_process
 
 import pytest
 from jina import Flow, Document, DocumentArray, Executor, requests, Client
@@ -13,39 +13,41 @@ INPUT_GEN_SLEEP_TIME = 1
 SLOW_EXECUTOR_SLEEP_TIME = 3
 
 
-def get_document(i):
-    return Document(id=i, tags={'input_gen': time.time()})
+def readable_time_from(t):
+    return datetime.utcfromtimestamp(t).strftime('%M:%S:%f')
 
 
-def gen():
+def get_document(i, name):
+    t = time.time()
+    print(f'in {name}, time: {readable_time_from(t)}', flush=True)
+    return Document(id=i, tags={'input_gen': t})
+
+
+def blocking_gen():
     """Fast synchronous client generator"""
     for i in range(INPUT_LEN):
-        print(f'in gen {i}')
-        yield get_document(i)
+        yield get_document(i, name='blocking_gen')
         time.sleep(0.1)
 
 
 async def async_gen():
     """Fast async client generator"""
     for i in range(INPUT_LEN):
-        print(f'in async_gen {i}')
-        yield get_document(i)
+        yield get_document(i, name='async_gen')
         await asyncio.sleep(0.1)
 
 
 def slow_blocking_gen():
     """Slow synchronous client generator"""
     for i in range(INPUT_LEN):
-        print(f'in sync_slow_gen {i}')
-        yield get_document(i)
+        yield get_document(i, name='slow_blocking_gen')
         time.sleep(INPUT_GEN_SLEEP_TIME)
 
 
 async def slow_async_gen():
     """Slow async client generator"""
     for i in range(INPUT_LEN):
-        print(f'in async_slow_gen {i}')
-        yield get_document(i)
+        yield get_document(i, name='slow_async_gen')
         await asyncio.sleep(INPUT_GEN_SLEEP_TIME)
 
 
@@ -56,7 +58,10 @@ class FastExecutor(Executor):
     def foo(self, docs: DocumentArray, **kwargs):
         for doc in docs:
             doc.tags['executor'] = time.time()
-            print(f'in FastExecutor: {doc.id}')
+            print(
+                f'in FastExecutor: {doc.id}, time: {readable_time_from(doc.tags["executor"])}',
+                flush=True,
+            )
 
 
 class SlowExecutor(Executor):
@@ -67,13 +72,19 @@ class SlowExecutor(Executor):
         time.sleep(SLOW_EXECUTOR_SLEEP_TIME)
         for doc in docs:
             doc.tags['executor'] = time.time()
-            print(f'in SlowExecutor: {doc.id}')
+            print(
+                f'in SlowExecutor: {doc.id}, time: {readable_time_from(doc.tags["executor"])}',
+                flush=True,
+            )
 
 
 def on_done(response, final_da: DocumentArray):
     for doc in response.docs:
-        print(f'in on_done {doc.id}')
         doc.tags['on_done'] = time.time()
+        print(
+            f'in on_done {doc.id}, time: {readable_time_from(doc.tags["on_done"])}',
+            flush=True,
+        )
     final_da.extend(response.docs)
 
 
@@ -116,20 +127,17 @@ def test_disable_prefetch_slow_client_fast_executor(
 
     assert len(final_da) == INPUT_LEN
     # Since the input_gen is slow, order will always be gen -> exec -> on_done for every request
-    assert (
-        final_da[0].tags['input_gen']
-        < final_da[0].tags['executor']
-        < final_da[0].tags['on_done']
-        < final_da[1].tags['input_gen']
-        < final_da[1].tags['executor']
-        < final_da[1].tags['on_done']
-        < final_da[2].tags['input_gen']
-        < final_da[2].tags['executor']
-        < final_da[2].tags['on_done']
-        < final_da[3].tags['input_gen']
-        < final_da[3].tags['executor']
-        < final_da[3].tags['on_done']
-    )
+    assert final_da[0].tags['input_gen'] < final_da[0].tags['executor']
+    assert final_da[0].tags['executor'] < final_da[0].tags['on_done']
+    assert final_da[0].tags['on_done'] < final_da[1].tags['input_gen']
+    assert final_da[1].tags['input_gen'] < final_da[1].tags['executor']
+    assert final_da[1].tags['executor'] < final_da[1].tags['on_done']
+    assert final_da[1].tags['on_done'] < final_da[2].tags['input_gen']
+    assert final_da[2].tags['input_gen'] < final_da[2].tags['executor']
+    assert final_da[2].tags['executor'] < final_da[2].tags['on_done']
+    assert final_da[2].tags['on_done'] < final_da[3].tags['input_gen']
+    assert final_da[3].tags['input_gen'] < final_da[3].tags['executor']
+    assert final_da[3].tags['executor'] < final_da[3].tags['on_done']
 
 
 @pytest.mark.parametrize('grpc_data_requests', [False, True])
@@ -137,23 +145,11 @@ def test_disable_prefetch_slow_client_fast_executor(
     'protocol, inputs',
     [
         ('grpc', async_gen),
-        ('grpc', gen),
+        ('grpc', blocking_gen),
         ('websocket', async_gen),
-        ('websocket', gen),
-        pytest.param(
-            'http',
-            async_gen,
-            marks=pytest.mark.xpass(
-                reason='http protocol + async generator test passes locally, but flaky on CI'
-            ),
-        ),
-        pytest.param(
-            'http',
-            gen,
-            marks=pytest.mark.xpass(
-                reason='http protocol + async generator test passes locally, but flaky on CI'
-            ),
-        ),
+        ('websocket', blocking_gen),
+        ('http', async_gen),
+        ('http', blocking_gen),
     ],
 )
 def test_disable_prefetch_fast_client_slow_executor(
@@ -177,13 +173,10 @@ def test_disable_prefetch_fast_client_slow_executor(
 
     assert len(final_da) == INPUT_LEN
     # since Executor is slow, all client inputs should be read before 1st request exits from Executor.
-    assert (
-        final_da[0].tags['input_gen']
-        < final_da[1].tags['input_gen']
-        < final_da[2].tags['input_gen']
-        < final_da[3].tags['input_gen']
-        < final_da[0].tags['executor']
-    )
+    assert final_da[0].tags['input_gen'] < final_da[1].tags['input_gen']
+    assert final_da[1].tags['input_gen'] < final_da[2].tags['input_gen']
+    assert final_da[2].tags['input_gen'] < final_da[3].tags['input_gen']
+    assert final_da[3].tags['input_gen'] < final_da[0].tags['executor']
     # At least 1 request should reache `on_done` before all requests are processed in the Executor.
     # Validates that the requests are not pending at the Executor
     first_on_done_time = min(i.tags['on_done'] for i in final_da)
@@ -206,19 +199,7 @@ class Indexer(Executor):
 
 
 @pytest.mark.parametrize('prefetch', [0, 5])
-@pytest.mark.parametrize(
-    'protocol',
-    [
-        'websocket',
-        'http',
-        pytest.param(
-            'grpc',
-            marks=pytest.mark.skip(
-                reason='grpc client doesn\'t work with multiple threads'
-            ),
-        ),
-    ],
-)
+@pytest.mark.parametrize('protocol', ['websocket', 'http', 'grpc'])
 @pytest.mark.parametrize('grpc_data_requests', [False, True])
 def test_multiple_clients(prefetch, protocol, grpc_data_requests):
     os.environ['JINA_LOG_LEVEL'] = 'INFO'
@@ -228,7 +209,7 @@ def test_multiple_clients(prefetch, protocol, grpc_data_requests):
 
     def get_document(i):
         return Document(
-            id=f'{current_thread().name}_{i}',
+            id=f'{current_process().name}_{i}',
             buffer=bytes(bytearray(os.urandom(512 * 4))),
         )
 
@@ -243,12 +224,10 @@ def test_multiple_clients(prefetch, protocol, grpc_data_requests):
 
     def client(gen, port, protocol):
         Client(protocol=protocol, port=port).post(
-            on='/index',
-            inputs=gen,
-            request_size=1,
+            on='/index', inputs=gen, request_size=1
         )
 
-    pool: List[Thread] = []
+    pool: List[Process] = []
     f = Flow(
         protocol=protocol, prefetch=prefetch, grpc_data_requests=grpc_data_requests
     ).add(uses=Indexer)
@@ -256,23 +235,23 @@ def test_multiple_clients(prefetch, protocol, grpc_data_requests):
         # We have 5 good clients connecting to the same gateway. They have controlled requests.
         # Each client sends `GOOD_CLIENT_NUM_DOCS` (20) requests and sleeps after each request.
         for i in range(GOOD_CLIENTS):
-            t = Thread(
+            p = Process(
                 target=partial(client, good_client_gen, f.port_expose, protocol),
                 name=f'goodguy_{i}',
             )
-            t.start()
-            pool.append(t)
+            p.start()
+            pool.append(p)
 
         # and 1 malicious client, sending lot of requests (trying to block others)
-        t = Thread(
+        p = Process(
             target=partial(client, malicious_client_gen, f.port_expose, protocol),
             name='badguy',
         )
-        t.start()
-        pool.append(t)
+        p.start()
+        pool.append(p)
 
-        for t in pool:
-            t.join()
+        for p in pool:
+            p.join()
 
         order_of_ids = list(
             Client(protocol=protocol, port=f.port_expose)
