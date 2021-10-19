@@ -688,11 +688,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">poller</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_connect_sock</span><span class="p">,</span> <span class="n">zmq</span><span class="o">.</span><span class="n">POLLIN</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Zmqlet.pause_pollin"><a class="viewcode-back" href="../../../../api/jina.peapods.zmq/#jina.peapods.zmq.Zmqlet.pause_pollin">[docs]</a>    <span class="k">def</span> <span class="nf">pause_pollin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Remove :attr:`in_sock` from the poller """</span>
+        <span class="sd">"""Remove :attr:`in_sock` from the poller"""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">poller</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_sock</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Zmqlet.resume_pollin"><a class="viewcode-back" href="../../../../api/jina.peapods.zmq/#jina.peapods.zmq.Zmqlet.resume_pollin">[docs]</a>    <span class="k">def</span> <span class="nf">resume_pollin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Put :attr:`in_sock` back to the poller """</span>
+        <span class="sd">"""Put :attr:`in_sock` back to the poller"""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">poller</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_sock</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Zmqlet.get_ctrl_address"><a class="viewcode-back" href="../../../../api/jina.peapods.zmq/#jina.peapods.zmq.Zmqlet.get_ctrl_address">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -736,7 +736,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_connect_sock</span>
 
     <span class="k">def</span> <span class="nf">_close_sockets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Close input, output and control sockets of this `Zmqlet`. """</span>
+        <span class="sd">"""Close input, output and control sockets of this `Zmqlet`."""</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">opened_socks</span><span class="p">:</span>
             <span class="n">k</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
@@ -858,7 +858,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">print_stats</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Zmqlet.print_stats"><a class="viewcode-back" href="../../../../api/jina.peapods.zmq/#jina.peapods.zmq.Zmqlet.print_stats">[docs]</a>    <span class="k">def</span> <span class="nf">print_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Print out the network stats of of itself """</span>
+        <span class="sd">"""Print out the network stats of of itself"""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">'#sent: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">msg_sent</span><span class="si">}</span><span class="s1"> '</span>
             <span class="sa">f</span><span class="s1">'#recv: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">msg_recv</span><span class="si">}</span><span class="s1"> '</span>
@@ -963,7 +963,7 @@
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_send_idle_to_router</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Tell the upstream router this dealer is idle """</span>
+        <span class="sd">"""Tell the upstream router this dealer is idle"""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_send_control_to_router</span><span class="p">(</span><span class="s1">'IDLE'</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_send_cancel_to_router</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raise_exception</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -1079,10 +1079,13 @@
     <span class="k">def</span> <span class="nf">_register_pollin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` in poller."""</span>
         <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
             <span class="kn">import</span> <span class="nn">tornado.ioloop</span>
 
-            <span class="n">get_or_reuse_loop</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span> <span class="o">=</span> <span class="n">tornado</span><span class="o">.</span><span class="n">ioloop</span><span class="o">.</span><span class="n">IOLoop</span><span class="o">.</span><span class="n">current</span><span class="p">()</span>
+            <span class="k">assert</span> <span class="n">tornado</span><span class="o">.</span><span class="n">ioloop</span>
+
+        <span class="n">get_or_reuse_loop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span> <span class="o">=</span> <span class="n">tornado</span><span class="o">.</span><span class="n">ioloop</span><span class="o">.</span><span class="n">IOLoop</span><span class="o">.</span><span class="n">current</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">in_sock</span> <span class="o">=</span> <span class="n">ZMQStream</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_sock</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span> <span class="o">=</span> <span class="n">ZMQStream</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ctrl_sock</span> <span class="o">=</span> <span class="n">ZMQStream</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctrl_sock</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span><span class="p">)</span>
@@ -1090,7 +1093,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">in_connect_sock</span> <span class="o">=</span> <span class="n">ZMQStream</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_connect_sock</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">in_sock</span><span class="o">.</span><span class="n">stop_on_recv</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_get_dynamic_out_socket</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_pod</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_dynamic_out_socket</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_pod</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_get_dynamic_out_socket</span><span class="p">(</span><span class="n">target_pod</span><span class="p">,</span> <span class="n">as_streaming</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ZmqStreamlet.close"><a class="viewcode-back" href="../../../../api/jina.peapods.zmq/#jina.peapods.zmq.ZmqStreamlet.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flush</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -1148,12 +1151,12 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'failed to stop. </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ZmqStreamlet.pause_pollin"><a class="viewcode-back" href="../../../../api/jina.peapods.zmq/#jina.peapods.zmq.ZmqStreamlet.pause_pollin">[docs]</a>    <span class="k">def</span> <span class="nf">pause_pollin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Remove :attr:`in_sock` from the poller """</span>
+        <span class="sd">"""Remove :attr:`in_sock` from the poller"""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">in_sock</span><span class="o">.</span><span class="n">stop_on_recv</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_polling_paused</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="ZmqStreamlet.resume_pollin"><a class="viewcode-back" href="../../../../api/jina.peapods.zmq/#jina.peapods.zmq.ZmqStreamlet.resume_pollin">[docs]</a>    <span class="k">def</span> <span class="nf">resume_pollin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Put :attr:`in_sock` back to the poller """</span>
+        <span class="sd">"""Put :attr:`in_sock` back to the poller"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_polling_paused</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">in_sock</span><span class="o">.</span><span class="n">on_recv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_in_sock_callback</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">is_polling_paused</span> <span class="o">=</span> <span class="kc">False</span></div>
@@ -1501,7 +1504,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 18, 2021.
+                    Last updated on Oct 19, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
