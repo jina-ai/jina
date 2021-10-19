@@ -133,6 +133,8 @@ class BasePea:
         # or thread. Control address from Zmqlet has some randomness and therefore we need to make sure Pea knows
         # control address of runtime
         self.runtime_cls = self._get_runtime_cls()
+        if self.runtime_cls == 'GRPCDataRuntime':
+            self.args.socket_in = None
         self._timeout_ctrl = self.args.timeout_ctrl
         self._set_ctrl_adrr()
         test_worker = {
@@ -202,6 +204,8 @@ class BasePea:
         """
         if hasattr(self.worker, 'terminate'):
             self.worker.terminate()
+        else:
+            self.worker._stop()
 
     def _retry_control_message(self, command: str, num_retry: int = 3):
         from ..zmq import send_ctrl_message
@@ -230,21 +234,14 @@ class BasePea:
             timeout_ctrl=self._timeout_ctrl,
         )
 
-    def _cancel_runtime(self, skip_deactivate: bool = False):
-        """
-        Send terminate control message.
-
-        :param skip_deactivate: Mark that the DEACTIVATE signal may be missed if set to True
-        """
+    def _deactivate_runtime(self):
+        """ Send terminate control message. """
         # needs to handle properly wether skip_deactivate should happen or not
-        self.runtime_cls.cancel(
-            cancel_event=self.cancel_event,
+        self.runtime_cls.deactivate(
             logger=self.logger,
             socket_in_type=self.args.socket_in,
             control_address=self.runtime_ctrl_address,
             timeout_ctrl=self._timeout_ctrl,
-            skip_deactivate=skip_deactivate,
-            process=self.worker,
         )
 
     def _wait_for_ready_or_shutdown(self, timeout: Optional[float]):
@@ -338,7 +335,10 @@ class BasePea:
         """Return true if this `Pea` must act as a Dealer responding to a Router
         .. # noqa: DAR201
         """
-        return self.args.socket_in == SocketType.DEALER_CONNECT
+        return (
+            self.args.socket_in is not None
+            and self.args.socket_in == SocketType.DEALER_CONNECT
+        )
 
     def close(self) -> None:
         """Close the Pea
@@ -347,7 +347,8 @@ class BasePea:
         """
         # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
         self.logger.debug('waiting for ready or shutdown signal from runtime')
-        self._cancel_runtime()
+        self._deactivate_runtime()
+        self.terminate()
         self.logger.debug(__stop_msg__)
         self.logger.close()
 

@@ -73,6 +73,7 @@ class ContainerRuntime(BaseRuntime):
         if self._container is not None:
             self._container.kill(signal='SIGTERM')
             self._container.stop()
+            self._container = None
         super().teardown()
 
     def _stream_logs(self):
@@ -319,13 +320,11 @@ class ContainerRuntime(BaseRuntime):
                     raise ex
 
     @staticmethod
-    def cancel(
+    def deactivate(
         control_address: str,
         timeout_ctrl: int,
-        socket_in_type: 'SocketType',
-        skip_deactivate: bool,
+        socket_in_type: Optional['SocketType'],
         logger: 'JinaLogger',
-        process: multiprocessing.Process,
         **kwargs,
     ):
         """
@@ -334,13 +333,11 @@ class ContainerRuntime(BaseRuntime):
         :param control_address: the address where the control message needs to be sent
         :param timeout_ctrl: the timeout to wait for control messages to be processed
         :param socket_in_type: the type of input socket, needed to know if is a dealer
-        :param skip_deactivate: flag to tell if deactivate signal may be missed.
-            This is important when you want to independently kill a Runtime
         :param logger: the JinaLogger to log messages
-        :param process: The process where the ContainerRuntime lives
         :param kwargs: extra keyword arguments
         """
-        if not skip_deactivate and socket_in_type == SocketType.DEALER_CONNECT:
+        # In the case Container uses GRPCDataRuntime, the `socket_in_type` should not be set, hacky ...
+        if socket_in_type is not None and socket_in_type == SocketType.DEALER_CONNECT:
             ContainerRuntime._retry_control_message(
                 ctrl_address=control_address,
                 timeout_ctrl=timeout_ctrl,
@@ -348,13 +345,12 @@ class ContainerRuntime(BaseRuntime):
                 num_retry=3,
                 logger=logger,
             )
-        process.terminate()
 
     @staticmethod
     def activate(
         control_address: str,
         timeout_ctrl: int,
-        socket_in_type: 'SocketType',
+        socket_in_type: Optional['SocketType'],
         logger: 'JinaLogger',
         **kwargs,
     ):
@@ -367,7 +363,8 @@ class ContainerRuntime(BaseRuntime):
         :param logger: the JinaLogger to log messages
         :param kwargs: extra keyword arguments
         """
-        if socket_in_type == SocketType.DEALER_CONNECT:
+        # In the case Container uses GRPCDataRuntime, the `socket_in_type` should not be set, hacky ...
+        if socket_in_type is not None and socket_in_type == SocketType.DEALER_CONNECT:
             ContainerRuntime._retry_control_message(
                 ctrl_address=control_address,
                 timeout_ctrl=timeout_ctrl,

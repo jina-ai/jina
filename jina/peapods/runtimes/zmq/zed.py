@@ -449,43 +449,6 @@ class ZEDRuntime(BaseRuntime):
                     raise ex
 
     @staticmethod
-    def cancel(
-        control_address: str,
-        timeout_ctrl: int,
-        socket_in_type: 'SocketType',
-        skip_deactivate: bool,
-        logger: 'JinaLogger',
-        process: Union['multiprocessing.Process', 'threading.Thread'],
-        **kwargs,
-    ):
-        """
-        Check if the runtime has successfully started
-
-        :param control_address: the address where the control message needs to be sent
-        :param timeout_ctrl: the timeout to wait for control messages to be processed
-        :param socket_in_type: the type of input socket, needed to know if is a dealer
-        :param skip_deactivate: flag to tell if deactivate signal may be missed.
-            This is important when you want to independently kill a Runtime
-        :param logger: the JinaLogger to log messages
-        :param process: The process to terminate
-        :param kwargs: extra keyword arguments
-        """
-        if not skip_deactivate and socket_in_type == SocketType.DEALER_CONNECT:
-            ZEDRuntime._retry_control_message(
-                ctrl_address=control_address,
-                timeout_ctrl=timeout_ctrl,
-                command='DEACTIVATE',
-                num_retry=3,
-                logger=logger,
-            )
-
-        if hasattr(process, 'terminate'):
-            process.terminate()
-        else:
-            # This is to handle threads
-            process._stop()
-
-    @staticmethod
     def activate(
         control_address: str,
         timeout_ctrl: int,
@@ -507,6 +470,32 @@ class ZEDRuntime(BaseRuntime):
                 ctrl_address=control_address,
                 timeout_ctrl=timeout_ctrl,
                 command='ACTIVATE',
+                num_retry=3,
+                logger=logger,
+            )
+
+    @staticmethod
+    def deactivate(
+        control_address: str,
+        timeout_ctrl: int,
+        socket_in_type: 'SocketType',
+        logger: 'JinaLogger',
+        **kwargs,
+    ):
+        """
+        Check if the runtime has successfully started
+
+        :param control_address: the address where the control message needs to be sent
+        :param timeout_ctrl: the timeout to wait for control messages to be processed
+        :param socket_in_type: the type of input socket, needed to know if is a dealer
+        :param logger: the JinaLogger to log messages
+        :param kwargs: extra keyword arguments
+        """
+        if socket_in_type == SocketType.DEALER_CONNECT:
+            ZEDRuntime._retry_control_message(
+                ctrl_address=control_address,
+                timeout_ctrl=timeout_ctrl,
+                command='DEACTIVATE',
                 num_retry=3,
                 logger=logger,
             )
