@@ -5,6 +5,7 @@ import numpy as np
 from ... import Document
 from ...importer import ImportExtensions
 from ...math.helper import top_k, minmax_normalize, update_rows_x_mat_best
+from ...logging.predefined import default_logger
 
 if TYPE_CHECKING:
     from .document import DocumentArray
@@ -75,10 +76,10 @@ class DocumentArrayNeuralOpsMixin:
         if traversal_rdarray:
             rhv = darray.traverse_flat(traversal_rdarray)
 
-            from .document import DocumentArray
-
-            if not isinstance(rhv, DocumentArray):
-                rhv = DocumentArray(rhv)
+        # filter out docs to be matched (rhv) with invalid embeddings
+        # not performing filtering on lhv because if lhv have
+        # invalid embeddings, error should be raised instead
+        rhv = self._filter(rhv)
 
         if not (lhv and rhv):
             return
@@ -317,3 +318,27 @@ class DocumentArrayNeuralOpsMixin:
         return np.frombuffer(x_mat, dtype=self[0].proto.embedding.dense.dtype).reshape(
             (len_slice, self[0].proto.embedding.dense.shape[0])
         )
+
+    @staticmethod
+    def _filter(docs: Union['DocumentArray', 'DocumentArrayMemmap']):
+        if not docs:
+            return
+        from .document import DocumentArray
+
+        filtered_docs, shape = DocumentArray(), None
+        for doc in docs:
+            if doc.embedding is None:
+                default_logger.warning(
+                    f'doc {doc.id} has no embedding, skip matching this doc'
+                )
+                continue
+            if shape is not None and doc.embedding.shape != shape:
+                default_logger.warning(
+                    f'doc {doc.id} embedding shape {doc.embedding.shape} does not match'
+                    f' the expected shape {shape}, skip matching this doc'
+                )
+                continue
+            if shape is None:
+                shape = doc.embedding.shape
+            filtered_docs.append(doc)
+        return filtered_docs
