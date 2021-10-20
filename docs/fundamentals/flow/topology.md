@@ -112,6 +112,97 @@ Each shard returns the top 20 results.
 After the merger there will be 200 results per query Document.
 ```
 
+## Avoiding Bottlenecks on Executors with `parallel`
+Some Executor endpoints can be slower than others. And in order to avoid having bottlenecks because of slow endpoints, 
+you can use the parameter `parallel`.
+
+For example, suppose we have the following Executor:
+
+```python
+import time
+from jina import Executor, requests
+
+
+class MyExecutor(Executor):
+
+    @requests(on='/slow')
+    def foo(self, **kwargs):
+        time.sleep(5)
+
+    @requests(on='/fast')
+    def bar(self, **kwargs):
+        pass
+```
+
+We will simulate parallel requests to both endpoints of the Executor with these utility functions:
+
+```python
+from jina.logging.profile import TimeContext
+from jina import Client
+import multiprocessing
+
+def make_request(endpoint):
+    with TimeContext(f'calling {endpoint} roundtrip'):
+        c = Client(protocol='grpc', port=12345)
+        c.post(endpoint)
+
+
+def simulate(flow):
+    with flow:
+        mp = []
+        
+        # make multiple requests to both endpoints, in parallel
+        for endpoint in ['/slow', '/fast', '/slow', '/fast']:
+            p = multiprocessing.Process(target=make_request, args=(endpoint,))
+            p.start()
+            mp.append(p)
+
+        # 
+        for p in mp:
+            p.join()
+```
+
+If we simply create a Flow with only 1 instance if `MyExecutor`, calls to the slow endpoint will make a bottleneck. 
+However, creating parallel instances will unblock the Flow:
+
+````{tab} with parallel
+```python
+from jina import Flow
+
+scaled_f = Flow(protocol='grpc', port_expose=12345).add(uses=MyExecutor, parallel=2)
+
+with TimeContext('calling scaled flow'):
+    simulate(scaled_f)  # will take around 5 seconds
+```
+
+```text
+calling scaled flow takes 6 seconds (6.11s)
+```
+````
+
+````{tab} without parallel
+```python
+from jina import Flow
+
+f = Flow(protocol='grpc', port_expose=12345).add(uses=MyExecutor)
+
+with TimeContext('calling normal flow'):
+    simulate(f)  # will take around 10 seconds
+```
+
+```text
+calling normal flow takes 11 seconds (11.75s)
+```
+````
+Therefore, by using `parallel`, one can solve the flow enjoys a nonblocking behavior and we can avoid the bottleneck.
+
+````{admonition} Important
+:class: important
+By default, `polling='ANY'`. If `polling` is set to `ALL`, this will not be valid anymore: All instances of the 
+Executor will receive each request and there will be no performance benefits.
+````
+
+
 ## Combining Replicas & Shards
 
 Replicas and Shards can also be combined, which is necessary for Flows with high scalability needs.
