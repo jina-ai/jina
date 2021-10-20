@@ -119,8 +119,8 @@ f = Flow().add(
 ````
 
 ### Executor discovery
-By default, the Flow will attempt to retrieve the Executors' source files and yaml config files from the working 
-directory and other paths set in the `PATH` environment variable. If your Executor's source files and yaml config is 
+By default, the Flow will attempt to retrieve the Executors' source files and YAML config files from the working 
+directory and other paths set in the `PATH` environment variable. If your Executor's source files and YAML config is 
 located elsewhere, you can specify the locations to be used in order to retrieve it using the parameter 
 `extra_search_paths`.
 
@@ -137,7 +137,7 @@ For example, suppose we have the following project structure where `app/` repres
 ```python
 from jina import Executor, DocumentArray, requests
 
-class CustomExec(Executor):
+class MyExecutor(Executor):
     @requests
     def foo(self, docs: DocumentArray, **kwargs):
         pass
@@ -145,7 +145,7 @@ class CustomExec(Executor):
 
 `executor/config.yml`:
 ```yaml
-jtype: CustomExec
+jtype: MyExecutor
 metas:
   py_modules:
     - executor.py
@@ -162,14 +162,14 @@ with f:
     r = f.post('/', inputs=Document())
 ```
 
-`extra_search_paths` will also be useful if you're specifying the Executor's config yaml directly in `main.py`:
+`extra_search_paths` will also be useful if you're specifying the Executor's config YAML directly in `main.py`:
 ```{code-block} python
 ---
 emphasize-lines: 2, 3, 4, 5, 6, 7
 ---
 from jina import Flow, Document
 f = Flow(extra_search_paths=['../executor']).add(uses="""
-    jtype: CustomExec
+    jtype: MyExecutor
     metas:
       py_modules:
         - executor.py
@@ -180,8 +180,8 @@ with f:
 
 ````{admonition} Important
 :class: important
-If you are creating a Flow from a yaml config file which is located outside the working directory, you just need to 
-specify a correct relative or absolute path of the Flow's yaml config file and make all paths to Executor config files 
+If you are creating a Flow from a YAML config file which is located outside the working directory, you just need to 
+specify a correct relative or absolute path of the Flow's YAML config file and make all paths to Executor config files 
 relative to the Flow config file. The Flow will infer its config file location and add it to `extra_search_paths`:
 ```
 .
