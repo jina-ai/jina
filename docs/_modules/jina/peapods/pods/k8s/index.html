@@ -594,7 +594,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Iterable</span>
 
 <span class="kn">import</span> <span class="nn">jina</span>
 <span class="kn">from</span> <span class="nn">.k8slib</span> <span class="kn">import</span> <span class="n">kubernetes_deployment</span><span class="p">,</span> <span class="n">kubernetes_client</span>
@@ -777,12 +777,15 @@
                 <span class="n">fail_msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">': </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">exception_to_raise</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
             <span class="k">raise</span> <span class="n">RuntimeFailToStart</span><span class="p">(</span><span class="n">fail_msg</span><span class="p">)</span>
 
-        <span class="k">async</span> <span class="k">def</span> <span class="nf">wait_restart_success</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">wait_restart_success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">previous_uids</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
             <span class="n">_timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">common_args</span><span class="o">.</span><span class="n">timeout_ready</span>
             <span class="k">if</span> <span class="n">_timeout</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">_timeout</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">_timeout</span> <span class="o">/=</span> <span class="mf">1e3</span>
+
+            <span class="k">if</span> <span class="n">previous_uids</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">previous_uids</span> <span class="o">=</span> <span class="p">[]</span>
 
             <span class="kn">from</span> <span class="nn">kubernetes</span> <span class="kn">import</span> <span class="n">client</span>
             <span class="kn">import</span> <span class="nn">asyncio</span>
@@ -806,11 +809,14 @@
                             <span class="sa">f</span><span class="s1">' Replicas: </span><span class="si">{</span><span class="n">api_response</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">replicas</span><span class="si">}</span><span class="s1">.'</span>
                             <span class="sa">f</span><span class="s1">' Expected Replicas </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_replicas</span><span class="si">}</span><span class="s1">'</span>
                         <span class="p">)</span>
+
+                        <span class="n">has_pod_with_uid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_pod_with_uid</span><span class="p">(</span><span class="n">previous_uids</span><span class="p">)</span>
                         <span class="k">if</span> <span class="p">(</span>
                             <span class="n">api_response</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">updated_replicas</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
                             <span class="ow">and</span> <span class="n">api_response</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">updated_replicas</span>
                             <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_replicas</span>
                             <span class="ow">and</span> <span class="n">api_response</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">replicas</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_replicas</span>
+                            <span class="ow">and</span> <span class="ow">not</span> <span class="n">has_pod_with_uid</span>
                         <span class="p">):</span>
                             <span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
                                 <span class="sa">f</span><span class="s1">' </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> has all its replicas updated!!'</span>
@@ -822,6 +828,10 @@
                             <span class="k">if</span> <span class="n">updated_replicas</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_replicas</span><span class="p">:</span>
                                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                                     <span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1">Number of updated replicas </span><span class="si">{</span><span class="n">updated_replicas</span><span class="si">}</span><span class="s1">, waiting for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_replicas</span> <span class="o">-</span> <span class="n">updated_replicas</span><span class="si">}</span><span class="s1"> replicas to be updated'</span>
+                                <span class="p">)</span>
+                            <span class="k">elif</span> <span class="n">has_pod_with_uid</span><span class="p">:</span>
+                                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                                    <span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1">Waiting for old replicas to be terminated'</span>
                                 <span class="p">)</span>
                             <span class="k">else</span><span class="p">:</span>
                                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
@@ -891,6 +901,27 @@
             <span class="k">return</span> <span class="n">kubernetes_client</span><span class="o">.</span><span class="n">K8sClients</span><span class="p">()</span><span class="o">.</span><span class="n">apps_v1</span><span class="o">.</span><span class="n">read_namespaced_deployment</span><span class="p">(</span>
                 <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dns_name</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span>
             <span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">get_pod_uids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+            <span class="sd">"""Get the UIDs for all Pods in this deployment</span>
+
+<span class="sd">            :return: list of uids as strings for all pods in the deployment</span>
+<span class="sd">            """</span>
+            <span class="n">pods</span> <span class="o">=</span> <span class="n">kubernetes_client</span><span class="o">.</span><span class="n">K8sClients</span><span class="p">()</span><span class="o">.</span><span class="n">core_v1</span><span class="o">.</span><span class="n">list_namespaced_pod</span><span class="p">(</span>
+                <span class="n">namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span><span class="p">,</span> <span class="n">label_selector</span><span class="o">=</span><span class="sa">f</span><span class="s1">'app=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dns_name</span><span class="si">}</span><span class="s1">'</span>
+            <span class="p">)</span>
+
+            <span class="k">return</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">uid</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">pods</span><span class="o">.</span><span class="n">items</span><span class="p">]</span>
+
+        <span class="k">def</span> <span class="nf">_has_pod_with_uid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uids</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="sd">"""Check if this deployment has any Pod with a UID contained in uids</span>
+
+<span class="sd">            :param uids: list of UIDs to check</span>
+<span class="sd">            :return: True if any Pod has a UID in uids</span>
+<span class="sd">            """</span>
+            <span class="n">current_pods_uids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_pod_uids</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">uid</span> <span class="ow">in</span> <span class="n">current_pods_uids</span> <span class="k">for</span> <span class="n">uid</span> <span class="ow">in</span> <span class="n">uids</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
@@ -1025,11 +1056,13 @@
 <span class="sd">        :param dump_path: **backwards compatibility** This function was only accepting dump_path as the only potential arg to override</span>
 <span class="sd">        :param uses_with: a Dictionary of arguments to restart the executor with</span>
 <span class="sd">        """</span>
+        <span class="n">old_uids</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">deployment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">k8s_deployments</span><span class="p">:</span>
+            <span class="n">old_uids</span><span class="p">[</span><span class="n">deployment</span><span class="o">.</span><span class="n">dns_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">deployment</span><span class="o">.</span><span class="n">get_pod_uids</span><span class="p">()</span>
             <span class="n">deployment</span><span class="o">.</span><span class="n">rolling_update</span><span class="p">(</span><span class="n">dump_path</span><span class="o">=</span><span class="n">dump_path</span><span class="p">,</span> <span class="n">uses_with</span><span class="o">=</span><span class="n">uses_with</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">deployment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">k8s_deployments</span><span class="p">:</span>
-            <span class="k">await</span> <span class="n">deployment</span><span class="o">.</span><span class="n">wait_restart_success</span><span class="p">()</span></div>
+            <span class="k">await</span> <span class="n">deployment</span><span class="o">.</span><span class="n">wait_restart_success</span><span class="p">(</span><span class="n">old_uids</span><span class="p">[</span><span class="n">deployment</span><span class="o">.</span><span class="n">dns_name</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="K8sPod.start"><a class="viewcode-back" href="../../../../../api/jina.peapods.pods.k8s/#jina.peapods.pods.k8s.K8sPod.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'K8sPod'</span><span class="p">:</span>
         <span class="sd">"""Deploy the kubernetes pods via k8s Deployment and k8s Service.</span>

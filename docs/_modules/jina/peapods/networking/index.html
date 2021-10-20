@@ -857,11 +857,17 @@
     <span class="k">def</span> <span class="nf">_pod_is_up</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">pod_ip</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">phase</span> <span class="o">==</span> <span class="s1">'Running'</span>
 
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_pod_is_ready</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">container_statuses</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span>
+            <span class="n">cs</span><span class="o">.</span><span class="n">ready</span> <span class="k">for</span> <span class="n">cs</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">container_statuses</span>
+        <span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">_process_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="n">deployment_name</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="s2">"app"</span><span class="p">]</span>
         <span class="n">is_deleted</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">deletion_timestamp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_deleted</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_is_up</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_deleted</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_is_up</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_is_ready</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">deployment_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_clusteraddresses</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_add_pod_connection</span><span class="p">(</span><span class="n">deployment_name</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
