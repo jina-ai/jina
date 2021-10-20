@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Iterable, Sequence, TYPE_CHECKING, Optional, Generator
+from typing import Iterable, Sequence, TYPE_CHECKING, Optional, Generator, Callable
 
 if TYPE_CHECKING:
     from .document import DocumentArray
@@ -22,13 +22,16 @@ class TraversableSequence:
     """
 
     def traverse(
-        self, traversal_paths: Sequence[str]
+        self,
+        traversal_paths: Sequence[str],
+        filter_fn: Optional[Callable] = None,
     ) -> Iterable['TraversableSequence']:
         """
         Return an Iterator of :class:``TraversableSequence`` of the leaves when applying the traversal_paths.
         Each :class:``TraversableSequence`` is either the root Documents, a ChunkArray or a MatchArray.
 
         :param traversal_paths: a list of string that represents the traversal path
+        :param filter_fn: function to filter docs during traversal
         :yield: :class:``TraversableSequence`` of the leaves when applying the traversal_paths.
 
         Example on ``traversal_paths``:
@@ -45,26 +48,34 @@ class TraversableSequence:
         _check_traversal_path_type(traversal_paths)
 
         for p in traversal_paths:
-            yield from self._traverse(self, p)
+            yield from self._traverse(self, p, filter_fn)
 
     @staticmethod
-    def _traverse(docs: 'TraversableSequence', path: str):
+    def _traverse(
+        docs: 'TraversableSequence', path: str, filter_fn: Optional[Callable] = None
+    ):
         if path:
             loc = path[0]
             if loc == 'r':
-                yield from TraversableSequence._traverse(docs, path[1:])
+                yield from TraversableSequence._traverse(docs, path[1:], filter_fn)
             elif loc == 'm':
                 for d in docs:
-                    yield from TraversableSequence._traverse(d.matches, path[1:])
+                    yield from TraversableSequence._traverse(
+                        d.matches, path[1:], filter_fn
+                    )
             elif loc == 'c':
                 for d in docs:
-                    yield from TraversableSequence._traverse(d.chunks, path[1:])
+                    yield from TraversableSequence._traverse(
+                        d.chunks, path[1:], filter_fn
+                    )
             else:
                 raise ValueError(
                     f'`path`:{loc} is invalid, must be one of `c`, `r`, `m`'
                 )
         else:
-            yield docs
+            yield type(docs)(
+                [doc for doc in docs if filter_fn(doc)]
+            ) if filter_fn else docs
 
     def traverse_flat_per_path(self, traversal_paths: Sequence[str]):
         """
@@ -79,7 +90,9 @@ class TraversableSequence:
         for p in traversal_paths:
             yield self._flatten(self._traverse(self, p))
 
-    def traverse_flat(self, traversal_paths: Sequence[str]) -> Iterable['Document']:
+    def traverse_flat(
+        self, traversal_paths: Sequence[str], filter_fn: Optional[Callable] = None
+    ) -> Iterable['Document']:
         """
         Returns a single flattened :class:``TraversableSequence`` with all Documents, that are reached
         via the :param:``traversal_paths``.
@@ -90,13 +103,11 @@ class TraversableSequence:
             behavior then in :method:``traverse`` and :method:``traverse_flattened_per_path``!
 
         :param traversal_paths: a list of string that represents the traversal path
+        :param filter_fn: function to filter docs during traversal
         :return: a single :class:``TraversableSequence`` containing the document of all leaves when applying the traversal_paths.
         """
         _check_traversal_path_type(traversal_paths)
-        if len(traversal_paths) == 1 and traversal_paths[0] == 'r':
-            return self
-
-        leaves = self.traverse(traversal_paths)
+        leaves = self.traverse(traversal_paths, filter_fn)
         return self._flatten(leaves)
 
     def batch(

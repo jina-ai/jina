@@ -28,10 +28,13 @@ def doc_req():
     yield req
 
 
-def test_traverse_type(doc_req):
-    ds = doc_req.docs.traverse(['r'])
+@pytest.mark.parametrize('filter_fn', [(lambda d: True), None])
+def test_traverse_type(doc_req, filter_fn):
+    ds = doc_req.docs.traverse(['r'], filter_fn)
     assert isinstance(ds, types.GeneratorType)
-    assert isinstance(list(ds)[0], DocumentArray)
+    res = list(ds)[0]
+    print(res)
+    assert isinstance(res, DocumentArray)
 
 
 def test_traverse_root(doc_req):

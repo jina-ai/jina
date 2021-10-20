@@ -86,7 +86,9 @@ class DocumentArrayNeuralOpsMixin:
 
         rhv = darray
         if traversal_rdarray:
-            rhv = darray.traverse_flat(traversal_rdarray)
+            rhv = darray.traverse_flat(
+                traversal_rdarray, lambda doc: doc.embedding is not None
+            )
 
             from .document import DocumentArray
 
