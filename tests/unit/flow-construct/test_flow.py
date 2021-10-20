@@ -902,3 +902,10 @@ def test_flow_load_executor_yaml_extra_search_paths():
     with f:
         r = f.post('/', inputs=Document(), return_results=True)
     assert r[0].docs[0].text == 'done'
+
+
+def test_flow_load_yaml_extra_search_paths():
+    f = Flow.load_config(os.path.join(cur_dir, 'flow/flow.yml'))
+    with f:
+        r = f.post('/', inputs=Document(), return_results=True)
+    assert r[0].docs[0].text == 'done'
