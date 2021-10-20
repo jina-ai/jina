@@ -39,7 +39,7 @@ torch>=1.1.0:               demo
 transformers>=2.6.0:        demo
 tensorflow>=2.0:            cicd
 torchvision>=0.3.0:         demo
-Pillow:                     demo
+Pillow:                     standard
 lz4<3.1.2:                  perf, standard, daemon, devel
 uvloop:                     perf, standard, daemon, devel
 numpy:                      core
