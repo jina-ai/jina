@@ -151,14 +151,6 @@ cli/index
 proto/index
 ```
 
-```{toctree}
-:caption: Link
-:hidden:
-
-Jina Hub <https://hub.jina.ai>
-Benchmark <https://benchmark.jina.ai>
-```
-
 
 ---
 {ref}`genindex` | {ref}`modindex`

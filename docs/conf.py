@@ -176,6 +176,8 @@ ogp_custom_meta_tags = [
 
   gtag('config', 'G-48ZDWC8GT6');
 </script>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
     ''',
 ]
 

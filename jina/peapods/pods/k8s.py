@@ -402,7 +402,10 @@ class K8sPod(BasePod, ExitFIFO):
                 args.uses_after or __default_executor__
             )
 
-        parsed_args['deployments'] = [args] * shards
+        for i in range(shards):
+            cargs = copy.deepcopy(args)
+            cargs.shard_id = i
+            parsed_args['deployments'].append(cargs)
         return parsed_args
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:

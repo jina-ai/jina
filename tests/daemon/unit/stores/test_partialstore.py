@@ -14,11 +14,6 @@ from jina.parsers.flow import set_flow_parser
 cur_dir = Path(__file__).parent
 
 
-@pytest.fixture(autouse=True)
-def patch_os_kill(monkeypatch):
-    monkeypatch.setattr(os, "kill", lambda *args, **kwargs: None)
-
-
 @pytest.fixture()
 def partial_pea_store():
     partial_pea_store = PartialPeaStore()
