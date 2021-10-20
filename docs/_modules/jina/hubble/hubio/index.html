@@ -1155,7 +1155,6 @@
 <span class="sd">            The `name` and `tag` should be passed via ``args`` and `force` and `secret` as ``kwargs``, otherwise,</span>
 <span class="sd">            cache does not work.</span>
 <span class="sd">        """</span>
-
         <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
             <span class="kn">import</span> <span class="nn">requests</span>
 
@@ -1324,6 +1323,11 @@
                             <span class="n">need_pull</span> <span class="o">=</span> <span class="kc">True</span>
 
                         <span class="k">if</span> <span class="n">need_pull</span><span class="p">:</span>
+                            <span class="c1"># pull the latest executor meta, as the cached data would expire</span>
+                            <span class="n">executor</span> <span class="o">=</span> <span class="n">HubIO</span><span class="o">.</span><span class="n">fetch_meta</span><span class="p">(</span>
+                                <span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="n">secret</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span>
+                            <span class="p">)</span>
+
                             <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
                                 <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                                     <span class="s1">'JINA_HUB_CACHE_DIR'</span><span class="p">,</span>
