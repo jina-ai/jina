@@ -121,6 +121,21 @@ def _patch_configmap_yaml(template: str, params: Dict):
     return json.dumps(config_map)
 
 
+def _patch_device_plugins(params: Dict):
+    import yaml
+
+    path = os.path.join(DEFAULT_RESOURCE_DIR, 'device-plugins.yml')
+
+    with open(path) as f:
+        device_plugins = yaml.safe_load(f)
+
+    data = {}
+    for key, value in params.items():
+        data[key] = value
+    device_plugins['resources']['limits'] = data
+    return json.dumps(device_plugins)
+
+
 def _get_gateway_pod_name(namespace, k8s_clients):
     gateway_pod = k8s_clients.core_v1.list_namespaced_pod(
         namespace=namespace, label_selector='app=gateway'
