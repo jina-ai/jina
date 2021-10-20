@@ -70,7 +70,7 @@ Leveraging these three components, let's build an app that **find lines from a c
 
 1️⃣ Copy-paste the minimum example below and run it:
 
-<img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/simple-arch.svg" alt="The architecture of a simple neural search system powered by Jina">
+<img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/simple-arch.svg?raw=true" alt="The architecture of a simple neural search system powered by Jina">
 
 <!-- README-SERVER-START -->
 ```python
