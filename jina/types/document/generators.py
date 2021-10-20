@@ -73,7 +73,7 @@ def from_files(
 
     def _iter_file_exts(ps):
         return itertools.chain.from_iterable(
-            glob.iglob(p, recursive=recursive) for p in ps
+            glob.iglob(os.path.expanduser(p), recursive=recursive) for p in ps
         )
 
     num_docs = 0

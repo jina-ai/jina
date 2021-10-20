@@ -298,6 +298,12 @@ def test_from_files_with_uri():
         assert d.uri.startswith('data:')
 
 
+def test_from_files_with_tilde():
+    generator = from_files(patterns='~/*.*', to_dataturi=True, size=10)
+    first = next(generator)
+    assert first
+
+
 @pytest.mark.parametrize(
     'array', [np.random.random([100, 4, 2]), ['asda', 'dsadas asdasd']]
 )
