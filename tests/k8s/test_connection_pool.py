@@ -85,7 +85,6 @@ async def test_wait_for_ready(slow_init_executor_image):
                 slow_executor_connections = pool._connections[
                     pool._deployment_clusteraddresses['slow-init-executor']
                 ]
-                first = False
                 assert len(slow_executor_connections._connections) == 1
             await asyncio.sleep(1.0)
         pool.close()
