@@ -531,7 +531,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :param override_with: dictionary of parameters to overwrite from the default config's with field
         :param override_metas: dictionary of parameters to overwrite from the default config's metas field
         :param override_requests: dictionary of parameters to overwrite from the default config's requests field
-        :param extra_search_paths: extra paths to search for
+        :param extra_search_paths: extra paths used when looking for executor yaml files
         :param kwargs: kwargs for parse_config_source
         :return: :class:`JAMLCompatible` object
         """
