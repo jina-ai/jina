@@ -79,18 +79,21 @@ class TraversableSequence:
 
             yield DocumentArray([doc for doc in docs if filter_fn(doc)])
 
-    def traverse_flat_per_path(self, traversal_paths: Sequence[str]):
+    def traverse_flat_per_path(
+        self, traversal_paths: Sequence[str], filter_fn: Optional[Callable] = None
+    ):
         """
         Returns a flattened :class:``TraversableSequence`` per path in :param:``traversal_paths``
         with all Documents, that are reached by the path.
 
         :param traversal_paths: a list of string that represents the traversal path
+        :param filter_fn: function to filter docs during traversal
         :yield: :class:``TraversableSequence`` containing the document of all leaves per path.
         """
         _check_traversal_path_type(traversal_paths)
 
         for p in traversal_paths:
-            yield self._flatten(self._traverse(self, p))
+            yield self._flatten(self._traverse(self, p, filter_fn))
 
     def traverse_flat(
         self, traversal_paths: Sequence[str], filter_fn: Optional[Callable] = None

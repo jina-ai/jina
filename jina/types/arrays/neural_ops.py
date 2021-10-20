@@ -26,10 +26,10 @@ class DocumentArrayNeuralOpsMixin:
         batch_size: Optional[int] = None,
         traversal_ldarray: Optional[Sequence[str]] = None,
         traversal_rdarray: Optional[Sequence[str]] = None,
-        filter_fn: Optional[Callable] = None,
         use_scipy: bool = False,
         exclude_self: bool = False,
         is_sparse: bool = False,
+        filter_fn: Optional[Callable] = None,
     ) -> None:
         """Compute embedding based nearest neighbour in `another` for each Document in `self`,
         and store results in `matches`.
@@ -57,7 +57,7 @@ class DocumentArrayNeuralOpsMixin:
                 left-hand ``DocumentArray``.
         :param traversal_rdarray: if set, then matching is applied along the `traversal_path` of the
                 right-hand ``DocumentArray``.
-        :param filter_fn: if set, apply the filter function filter docs to match
+        :param filter_fn: if set, apply the filter function to filter docs on the right hand side (rhv) to be matched
         :param use_scipy: if set, use ``scipy`` as the computation backend
         :param exclude_self: if set, Documents in ``darray`` with same ``id`` as the left-hand values will not be
                         considered as matches.
