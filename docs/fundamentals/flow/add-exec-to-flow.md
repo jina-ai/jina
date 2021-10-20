@@ -120,8 +120,8 @@ f = Flow().add(
 
 ### Executor discovery
 By default, the Flow will attempt to retrieve the Executors' source files and YAML config files from the working 
-directory and other paths set in the `PATH` environment variable. If your Executor's source files and YAML config is 
-located elsewhere, you can specify the locations to be used in order to retrieve it using the parameter 
+directory and other paths set in the `PATH` environment variable. If your Executor's source files and YAML config are 
+located elsewhere, you can specify their locations using the parameter 
 `extra_search_paths`.
 
 For example, suppose we have the following project structure where `app/` represents the working directory:
