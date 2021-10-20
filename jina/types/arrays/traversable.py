@@ -72,10 +72,12 @@ class TraversableSequence:
                 raise ValueError(
                     f'`path`:{loc} is invalid, must be one of `c`, `r`, `m`'
                 )
+        elif filter_fn is None:
+            yield docs
         else:
-            yield type(docs)(
-                [doc for doc in docs if filter_fn(doc)]
-            ) if filter_fn else docs
+            from .document import DocumentArray
+
+            yield DocumentArray([doc for doc in docs if filter_fn(doc)])
 
     def traverse_flat_per_path(self, traversal_paths: Sequence[str]):
         """
