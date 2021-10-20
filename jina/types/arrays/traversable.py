@@ -107,6 +107,13 @@ class TraversableSequence:
         :return: a single :class:``TraversableSequence`` containing the document of all leaves when applying the traversal_paths.
         """
         _check_traversal_path_type(traversal_paths)
+        if (
+            len(traversal_paths) == 1
+            and traversal_paths[0] == 'r'
+            and filter_fn is None
+        ):
+            return self
+
         leaves = self.traverse(traversal_paths, filter_fn)
         return self._flatten(leaves)
 
