@@ -48,7 +48,7 @@ class TraversableSequence:
         _check_traversal_path_type(traversal_paths)
 
         for p in traversal_paths:
-            yield from self._traverse(self, p, filter_fn)
+            yield from self._traverse(self, p, filter_fn=filter_fn)
 
     @staticmethod
     def _traverse(
@@ -57,16 +57,18 @@ class TraversableSequence:
         if path:
             loc = path[0]
             if loc == 'r':
-                yield from TraversableSequence._traverse(docs, path[1:], filter_fn)
+                yield from TraversableSequence._traverse(
+                    docs, path[1:], filter_fn=filter_fn
+                )
             elif loc == 'm':
                 for d in docs:
                     yield from TraversableSequence._traverse(
-                        d.matches, path[1:], filter_fn
+                        d.matches, path[1:], filter_fn=filter_fn
                     )
             elif loc == 'c':
                 for d in docs:
                     yield from TraversableSequence._traverse(
-                        d.chunks, path[1:], filter_fn
+                        d.chunks, path[1:], filter_fn=filter_fn
                     )
             else:
                 raise ValueError(
@@ -93,7 +95,7 @@ class TraversableSequence:
         _check_traversal_path_type(traversal_paths)
 
         for p in traversal_paths:
-            yield self._flatten(self._traverse(self, p, filter_fn))
+            yield self._flatten(self._traverse(self, p, filter_fn=filter_fn))
 
     def traverse_flat(
         self, traversal_paths: Sequence[str], filter_fn: Optional[Callable] = None
@@ -119,7 +121,7 @@ class TraversableSequence:
         ):
             return self
 
-        leaves = self.traverse(traversal_paths, filter_fn)
+        leaves = self.traverse(traversal_paths, filter_fn=filter_fn)
         return self._flatten(leaves)
 
     def batch(
