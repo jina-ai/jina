@@ -879,3 +879,26 @@ def test_flow_change_parameters():
         assert r[0].parameters['a'] == 1.0
         r = f.post('/', parameters={}, return_results=True)
         assert r[0].parameters['a'] == 1.0
+
+
+def test_flow_load_executor_extra_search_paths():
+    f = Flow(extra_search_paths=[os.path.join(cur_dir, 'executor')]).add(
+        uses="""
+    jtype: CustomExec
+    metas:
+      py_modules:
+        - executor.py
+    """
+    )
+    with f:
+        r = f.post('/', inputs=Document(), return_results=True)
+    assert r[0].docs[0].text == 'done'
+
+
+def test_flow_load_executor_yaml_extra_search_paths():
+    f = Flow(extra_search_paths=[os.path.join(cur_dir, 'executor')]).add(
+        uses='config.yml'
+    )
+    with f:
+        r = f.post('/', inputs=Document(), return_results=True)
+    assert r[0].docs[0].text == 'done'
