@@ -96,7 +96,7 @@ def test_traverse_flatten_embedding(doc_req, filter_fn):
 
 @pytest.mark.parametrize('filter_fn', [(lambda d: True), None])
 def test_traverse_flatten_root(doc_req, filter_fn):
-    ds = list(doc_req.docs.traverse_flat(['r']))
+    ds = list(doc_req.docs.traverse_flat(['r'], filter_fn))
     assert len(ds) == num_docs
 
 
@@ -114,7 +114,7 @@ def test_traverse_flatten_root_plus_chunk(doc_req, filter_fn):
 
 @pytest.mark.parametrize('filter_fn', [(lambda d: True), None])
 def test_traverse_flatten_match(doc_req, filter_fn):
-    ds = list(doc_req.docs.traverse_flat(['m']))
+    ds = list(doc_req.docs.traverse_flat(['m'], filter_fn))
     assert len(ds) == num_docs * num_matches_per_doc
 
 
