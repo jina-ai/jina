@@ -138,12 +138,12 @@ The next table shows the difference between shards and replicas.
 |---|---|---|
 |Create multiple copies of an executor| ✅ | ✅ |
 |Partition data into several parts | ❌ | ✅ |
-|Request handeled by one of the executors | ✅ | ✅, if `polling = 'any'` |
-|Request handeled by all of the executors | ❌ | ✅, if `polling = 'all'` |
+|Request handled by one of the executors | ✅ | ✅, if `polling = 'any'` |
+|Request handled by all of the executors | ❌ | ✅, if `polling = 'all'` |
 
 Notes :
- - `parallel` is equivalent to `shards` , they both behave similarly (for backwards compatibility `parallel` is kept)  
- - You can combine `replica` and  `parallel` as well as `replica` and `shards`, this will behave like the example above. 
+
+ - You can combine `replicas` and  `parallel` as well as `replicas` and `shards`, this will behave like the example above. 
  - If you combine `parallel` and `shards` the latter argument will be used. In example :
 
 ```python
@@ -153,3 +153,6 @@ from jina import Flow
      .add(name='shards_with_replicas', shards=2, parallel=3))
 ```     
 In this case 3 shards will be created.
+
+Warining :
+ - `parallel` is equivalent to `shards` , they both behave similarly (for backwards compatibility `parallel` is kept)  
