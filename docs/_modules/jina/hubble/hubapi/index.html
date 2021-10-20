@@ -758,10 +758,11 @@
 <span class="sd">    """</span>
     <span class="c1"># install the dependencies included in requirements.txt</span>
     <span class="n">requirements_file</span> <span class="o">=</span> <span class="n">pkg_path</span> <span class="o">/</span> <span class="s1">'requirements.txt'</span>
-    <span class="k">if</span> <span class="n">pkg_path</span> <span class="o">!=</span> <span class="n">pkg_dist_path</span><span class="p">:</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">requirements_file</span><span class="p">,</span> <span class="n">pkg_dist_path</span> <span class="o">/</span> <span class="s1">'requirements.txt'</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">requirements_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">pkg_path</span> <span class="o">!=</span> <span class="n">pkg_dist_path</span><span class="p">:</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">requirements_file</span><span class="p">,</span> <span class="n">pkg_dist_path</span> <span class="o">/</span> <span class="s1">'requirements.txt'</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">install_deps</span><span class="p">:</span>
             <span class="n">install_requirements</span><span class="p">(</span><span class="n">requirements_file</span><span class="p">)</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="n">is_requirements_installed</span><span class="p">(</span><span class="n">requirements_file</span><span class="p">,</span> <span class="n">show_warning</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
