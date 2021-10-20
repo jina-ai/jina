@@ -172,10 +172,11 @@ def install_package_dependencies(
     """
     # install the dependencies included in requirements.txt
     requirements_file = pkg_path / 'requirements.txt'
-    if pkg_path != pkg_dist_path:
-        shutil.copyfile(requirements_file, pkg_dist_path / 'requirements.txt')
 
     if requirements_file.exists():
+        if pkg_path != pkg_dist_path:
+            shutil.copyfile(requirements_file, pkg_dist_path / 'requirements.txt')
+
         if install_deps:
             install_requirements(requirements_file)
         elif not is_requirements_installed(requirements_file, show_warning=True):
