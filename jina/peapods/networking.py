@@ -265,11 +265,17 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
     def _pod_is_up(item):
         return item.status.pod_ip is not None and item.status.phase == 'Running'
 
+    @staticmethod
+    def _pod_is_ready(item):
+        return item.status.container_statuses is not None and all(
+            cs.ready for cs in item.status.container_statuses
+        )
+
     def _process_item(self, item):
         deployment_name = item.metadata.labels["app"]
         is_deleted = item.metadata.deletion_timestamp is not None
 
-        if not is_deleted and self._pod_is_up(item):
+        if not is_deleted and self._pod_is_up(item) and self._pod_is_ready(item):
             if deployment_name in self._deployment_clusteraddresses:
                 self._add_pod_connection(deployment_name, item)
             else:
