@@ -589,7 +589,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
 
             from ..flow.base import Flow
 
-            if issubclass(cls, Flow):
+            if issubclass(cls, Flow) and no_tag_yml.get('jtype') != 'Flow {}':
                 # only needed for Flow
                 if no_tag_yml.get('with') is None:
                     no_tag_yml['with'] = {}
