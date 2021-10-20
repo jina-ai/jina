@@ -99,6 +99,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -10909,4 +10910,28 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```d5e7731a```](https://github.com/jina-ai/jina/commit/d5e7731ac6388d94d49ac1d5ed4056871b04ad5c)] __-__ __docs__: fix structure on docs and readme (*Han Xiao*)
  - [[```fd71c9b5```](https://github.com/jina-ai/jina/commit/fd71c9b57db41b921b194ff0722500498100ab4d)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```9172f2af```](https://github.com/jina-ai/jina/commit/9172f2afe9e9fcee0859b0a81fad0091b11b532a)] __-__ __version__: the next version will be 2.1.9 (*Jina Dev Bot*)
+
+<a name=release-note-2-1-10></a>
+## Release Note (`2.1.10`)
+
+> Release time: 2021-10-20 09:38:15
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```37210f8d```](https://github.com/jina-ai/jina/commit/37210f8dd842fcb0f5d55c65933fa1a74c041502)] __-__ __requirements__: add pillow to standard (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```e9474f6c```](https://github.com/jina-ai/jina/commit/e9474f6c9b42986cb28258f6860fc73971ef4fbd)] __-__ add finetuner links to ecosystem (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```bceeeef5```](https://github.com/jina-ai/jina/commit/bceeeef5040904f14639a41ed7a16f0d6e16aed8)] __-__ fix pillow dependencies (*Han Xiao*)
+ - [[```101794f8```](https://github.com/jina-ai/jina/commit/101794f8026e936d3ce3e936d05d8f41aff76160)] __-__ __version__: the next version will be 2.1.10 (*Jina Dev Bot*)
 
