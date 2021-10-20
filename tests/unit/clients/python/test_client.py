@@ -12,7 +12,12 @@ from jina.excepts import BadClientInput
 from jina.parsers import set_gateway_parser
 from jina.peapods import Pea
 from jina.proto.jina_pb2 import DocumentProto
-from jina.types.document.generators import from_csv, from_ndjson, from_files
+from jina.types.document.generators import (
+    from_csv,
+    from_ndjson,
+    from_files,
+    from_huggingface_datasets,
+)
 from tests import random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -131,6 +136,25 @@ def test_client_csv(protocol, mocker, func_name):
     ) as fp:
         mock = mocker.Mock()
         getattr(f, f'{func_name}')(from_csv(fp), on_done=mock)
+        mock.assert_called_once()
+
+
+@pytest.mark.slow
+@pytest.mark.parametrize('func_name', ['index', 'search'])
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_client_huggingface_datasets(protocol, mocker, func_name):
+    with Flow(protocol=protocol).add() as f:
+        mock = mocker.Mock()
+        getattr(f, f'{func_name}')(
+            from_huggingface_datasets(
+                dataset_path='adversarial_qa',
+                size=2,
+                name='adversarialQA',
+                split='test',
+                field_resolver={'question': 'text'},
+            ),
+            on_done=mock,
+        )
         mock.assert_called_once()
 
 

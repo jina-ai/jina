@@ -3,6 +3,7 @@ import tempfile
 import json
 from typing import Dict, Optional, Generator
 
+from .kubernetes_client import K8sClients
 from ....importer import ImportExtensions
 from ....logging.logger import JinaLogger
 from ....logging.predefined import default_logger
@@ -11,93 +12,6 @@ cur_dir = os.path.dirname(__file__)
 DEFAULT_RESOURCE_DIR = os.path.join(
     cur_dir, '..', '..', '..', 'resources', 'k8s', 'template'
 )
-
-
-class K8sClients:
-    """
-    The Kubernetes api is wrapped into a class to have a lazy reading of the cluster configuration.
-
-    """
-
-    def __init__(self):
-        self._k8s_client = None
-        self._core_v1 = None
-        self._apps_v1 = None
-        self._beta = None
-        self._networking_v1_beta1_api = None
-
-    def _instantiate(self):
-        # this import reads the `KUBECONFIG` env var. Lazy load to postpone the reading
-        from kubernetes import config, client
-
-        try:
-            # try loading kube config from disk first
-            config.load_kube_config()
-        except config.config_exception.ConfigException:
-            # if the config could not be read from disk, try loading in cluster config
-            # this works if we are running inside k8s
-            config.load_incluster_config()
-
-        self._k8s_client = client.ApiClient()
-        self._core_v1 = client.CoreV1Api(api_client=self._k8s_client)
-        self._apps_v1 = client.AppsV1Api(api_client=self._k8s_client)
-        self._beta = client.ExtensionsV1beta1Api(api_client=self._k8s_client)
-        self._networking_v1_beta1_api = client.NetworkingV1beta1Api(
-            api_client=self._k8s_client
-        )
-
-    @property
-    def k8s_client(self):
-        """Client for making requests to Kubernetes
-
-        :return: k8s client
-        """
-        if self._k8s_client is None:
-            self._instantiate()
-        return self._k8s_client
-
-    @property
-    def core_v1(self):
-        """V1 client for core
-
-        :return: v1 client
-        """
-        if self._core_v1 is None:
-            self._instantiate()
-        return self._core_v1
-
-    @property
-    def apps_v1(self):
-        """V1 client for core
-
-        :return: v1 client
-        """
-        if self._apps_v1 is None:
-            self._instantiate()
-        return self._apps_v1
-
-    @property
-    def beta(self):
-        """Beta client for using beta features
-
-        :return: beta client
-        """
-        if self._beta is None:
-            self._instantiate()
-        return self._beta
-
-    @property
-    def networking_v1_beta1_api(self):
-        """Networking client used for creating the ingress
-
-        :return: networking client
-        """
-        if self._networking_v1_beta1_api is None:
-            self._instantiate()
-        return self._networking_v1_beta1_api
-
-
-_k8s_clients = K8sClients()
 
 
 def create(
@@ -118,6 +32,7 @@ def create(
     from kubernetes.utils import FailToCreateError
     from kubernetes import utils
 
+    clients = K8sClients()
     if template == 'configmap':
         yaml = _patch_configmap_yaml(template, params)
     else:
@@ -127,7 +42,7 @@ def create(
         with os.fdopen(fd, 'w') as tmp:
             tmp.write(yaml)
         try:
-            utils.create_from_yaml(_k8s_clients.k8s_client, path)
+            utils.create_from_yaml(clients.k8s_client, path)
         except FailToCreateError as e:
             for api_exception in e.api_exceptions:
                 if api_exception.status == 409:
@@ -170,7 +85,8 @@ def replace(
             tmp.write(yaml_file_path)
         with open(os.path.abspath(path)) as f:
             yml_document_all = yaml.safe_load(f)
-        _k8s_clients.apps_v1.replace_namespaced_deployment(
+        clients = K8sClients()
+        clients.apps_v1.replace_namespaced_deployment(
             deployment_name, namespace_name, yml_document_all
         )
     finally:
@@ -205,8 +121,8 @@ def _patch_configmap_yaml(template: str, params: Dict):
     return json.dumps(config_map)
 
 
-def _get_gateway_pod_name(namespace):
-    gateway_pod = _k8s_clients.core_v1.list_namespaced_pod(
+def _get_gateway_pod_name(namespace, k8s_clients):
+    gateway_pod = k8s_clients.core_v1.list_namespaced_pod(
         namespace=namespace, label_selector='app=gateway'
     )
     return gateway_pod.items[0].metadata.name
@@ -231,7 +147,8 @@ def get_port_forward_contextmanager(
     ):
         import portforward
 
-    gateway_pod_name = _get_gateway_pod_name(namespace)
+    clients = K8sClients()
+    gateway_pod_name = _get_gateway_pod_name(namespace, k8s_clients=clients)
     if config_path is None and 'KUBECONFIG' in os.environ:
         config_path = os.environ['KUBECONFIG']
     return portforward.forward(

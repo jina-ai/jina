@@ -59,23 +59,23 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         )
 
     if args.grpc_data_requests:
-        from ...prefetch.gateway import GrpcGatewayPrefetcher
+        from ....stream.gateway import GrpcGatewayStreamer
 
         iolet = Grpclet(
             args=args,
             message_callback=None,
             logger=logger,
         )
-        prefetcher = GrpcGatewayPrefetcher(args, iolet)
+        streamer = GrpcGatewayStreamer(args, iolet)
     else:
-        from ...prefetch.gateway import ZmqGatewayPrefetcher
+        from ....stream.gateway import ZmqGatewayStreamer
 
         iolet = AsyncZmqlet(args, logger)
-        prefetcher = ZmqGatewayPrefetcher(args, iolet)
+        streamer = ZmqGatewayStreamer(args, iolet)
 
     @app.on_event('shutdown')
     async def _shutdown():
-        await prefetcher.close()
+        await streamer.close()
         if inspect.iscoroutine(iolet.close):
             await iolet.close()
         else:
@@ -214,7 +214,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         :param request_iterator: request iterator, with length of 1
         :return: the first result from the request iterator
         """
-        async for k in prefetcher.send(request_iterator=request_iterator):
+        async for k in streamer.stream(request_iterator=request_iterator):
             return MessageToDict(
                 k, including_default_value_fields=True, use_integers_for_enums=True
             )  # DO NOT customize other serialization here. Scheme is handled by Pydantic in `models.py`

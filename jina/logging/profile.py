@@ -274,7 +274,7 @@ class ProgressBar(TimeContext):
         if first_enter:
             speed_str = 'estimating...'
         elif self._total_length:
-            _prog = self._num_update_called / self._total_length
+            _prog = max(self._num_update_called, 1) / self._total_length
             speed_str = f'{(_prog * 100):.0f}% ETA: {get_readable_time(seconds=self.now() / (_prog + 1e-6) * (1 - _prog + 1e-6))}'
         else:
             speed_str = f'{self._num_update_called / elapsed:4.1f} step/s'
@@ -348,7 +348,6 @@ class ProgressBar(TimeContext):
             self._stop_event.set()
             self.update(0, status=ProgressBarStatus.CANCELED)
             self._print_bar(self._bar_info)
-            return True  # prevent it from being propagated
         elif exc_type and issubclass(exc_type, Exception):
             self._stop_event.set()
             self.update(0, status=ProgressBarStatus.ERROR)

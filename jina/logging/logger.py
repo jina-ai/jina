@@ -94,6 +94,7 @@ class JinaLogger:
         self.critical = self.logger.critical
         self.error = self.logger.error
         self.info = self.logger.info
+        self._is_closed = False
         self.debug_enabled = self.logger.isEnabledFor(logging.DEBUG)
 
     @property
@@ -113,8 +114,10 @@ class JinaLogger:
 
     def close(self):
         """Close all the handlers."""
-        for handler in self.logger.handlers:
-            handler.close()
+        if not self._is_closed:
+            for handler in self.logger.handlers:
+                handler.close()
+            self._is_closed = True
 
     def add_handlers(self, config_path: Optional[str] = None, **kwargs):
         """

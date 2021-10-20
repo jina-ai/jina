@@ -23,7 +23,7 @@ import numpy as np
 from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 
-from .converters import png_to_buffer, to_datauri, to_image_blob
+from .converters import png_to_buffer, to_datauri, to_image_blob, uri_to_buffer
 from .helper import versioned, VersionedMixin
 from ..mixin import ProtoTypeMixin
 from ..ndarray.generic import NdArray, BaseSparseNdArray
@@ -1077,17 +1077,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
         Internally it downloads from the URI and set :attr:`buffer`.
 
         """
-        if urllib.parse.urlparse(self.uri).scheme in {'http', 'https', 'data'}:
-            req = urllib.request.Request(
-                self.uri, headers={'User-Agent': 'Mozilla/5.0'}
-            )
-            with urllib.request.urlopen(req) as fp:
-                self.buffer = fp.read()
-        elif os.path.exists(self.uri):
-            with open(self.uri, 'rb') as fp:
-                self.buffer = fp.read()
-        else:
-            raise FileNotFoundError(f'{self.uri} is not a URL or a valid local path')
+        self.buffer = uri_to_buffer(self.uri)
 
     def convert_uri_to_datauri(self, charset: str = 'utf-8', base64: bool = False):
         """Convert uri to data uri.
@@ -1097,10 +1087,8 @@ class Document(ProtoTypeMixin, VersionedMixin):
         :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit. Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that frequently uses non-US-ASCII characters.
         """
         if not _is_datauri(self.uri):
-            self.convert_uri_to_buffer()
-            self.uri = to_datauri(
-                self.mime_type, self.buffer, charset, base64, binary=True
-            )
+            buffer = uri_to_buffer(self.uri)
+            self.uri = to_datauri(self.mime_type, buffer, charset, base64, binary=True)
 
     def convert_buffer_to_uri(self, charset: str = 'utf-8', base64: bool = False):
         """Convert buffer to data uri.

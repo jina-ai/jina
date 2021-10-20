@@ -614,22 +614,22 @@ def test_bad_pod_graceful_termination():
                 assert f._build_level == FlowBuildLevel.EMPTY
 
     # bad remote pod
-    asset_bad_flow(Flow().add(host='hello-there'))
+    asset_bad_flow(Flow().add(name='exec1', host='hello-there'))
 
     # bad local pod
-    asset_bad_flow(Flow().add(uses='hello-there'))
+    asset_bad_flow(Flow().add(name='exec2', uses='hello-there'))
 
     # bad local pod at second
-    asset_bad_flow(Flow().add().add(uses='hello-there'))
+    asset_bad_flow(Flow().add().add(name='exec3', uses='hello-there'))
 
     # bad remote pod at second
-    asset_bad_flow(Flow().add().add(host='hello-there'))
+    asset_bad_flow(Flow().add().add(name='exec4', host='hello-there'))
 
     # bad local pod at second, with correct pod at last
-    asset_bad_flow(Flow().add().add(uses='hello-there').add())
+    asset_bad_flow(Flow().add().add(name='exec5', uses='hello-there').add())
 
     # bad remote pod at second, with correct pod at last
-    asset_bad_flow(Flow().add().add(host='hello-there').add())
+    asset_bad_flow(Flow().add().add(name='exec6', host='hello-there').add())
 
 
 def test_socket_types_2_remote_one_local():
@@ -865,3 +865,17 @@ def test_flow_auto_polling():
     assert f['pod_shards_default_polling_any'].args.polling == PollingType.ANY
     assert f['pod_replicas_shards_manual_polling_any'].args.polling == PollingType.ANY
     assert f['pod_replicas_shards_manual_polling_all'].args.polling == PollingType.ALL
+
+
+def test_flow_change_parameters():
+    class MyExec(Executor):
+        @requests
+        def foo(self, **kwargs):
+            return {'a': 1}
+
+    f = Flow().add(uses=MyExec)
+    with f:
+        r = f.post('/', parameters={'a': 2}, return_results=True)
+        assert r[0].parameters['a'] == 1.0
+        r = f.post('/', parameters={}, return_results=True)
+        assert r[0].parameters['a'] == 1.0

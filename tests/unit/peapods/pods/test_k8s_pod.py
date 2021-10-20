@@ -2,12 +2,13 @@ from typing import Union, Dict, Tuple, List, Optional, Set
 from unittest.mock import Mock
 
 import pytest
+from kubernetes import client
 
 import jina
 from jina.helper import Namespace
 from jina.parsers import set_pod_parser, set_gateway_parser
 from jina.peapods.pods.k8s import K8sPod
-from jina.peapods.pods.k8slib import kubernetes_tools, kubernetes_deployment
+from jina.peapods.pods.k8slib import kubernetes_deployment, kubernetes_client
 from jina.peapods.pods.k8slib.kubernetes_deployment import dictionary_to_cli_param
 
 
@@ -63,7 +64,12 @@ def test_parse_args(shards: int):
     assert namespace_equal(
         pod.deployment_args['tail_deployment'], None if shards == 1 else args
     )
-    assert pod.deployment_args['deployments'] == [args] * shards
+    for i, depl_arg in enumerate(pod.deployment_args['deployments']):
+        import copy
+
+        cargs = copy.deepcopy(args)
+        cargs.shard_id = i
+        assert depl_arg == cargs
 
 
 @pytest.mark.parametrize('shards', [2, 3, 4, 5])
@@ -90,7 +96,12 @@ def test_parse_args_custom_executor(shards: int):
         args, pod.deployment_args['tail_deployment'], skip_attr=('uses',)
     )
     assert pod.deployment_args['tail_deployment'].uses == uses_after
-    assert pod.deployment_args['deployments'] == [args] * shards
+    for i, depl_arg in enumerate(pod.deployment_args['deployments']):
+        import copy
+
+        cargs = copy.deepcopy(args)
+        cargs.shard_id = i
+        assert depl_arg == cargs
 
 
 @pytest.mark.parametrize(
@@ -338,3 +349,158 @@ def test_uses_before_and_uses_after(
 
     actual_executors = [executor[0][0] for executor in deploy_mock.call_args_list]
     assert actual_executors == expected_executors
+
+
+@pytest.mark.parametrize(
+    'name, k8s_namespace, shards, replicas, needs, uses_before',
+    [
+        (
+            'test-with-multiple-shards',
+            'test-namespace',
+            '2',
+            '1',
+            [],
+            False,
+        ),  # shards > 1
+        (
+            'test-with-replicas-needs',
+            'test-namespace',
+            '1',
+            '2',
+            [1, 2],
+            False,
+        ),  # replicas > 1 and needs
+        ('test-with-uses-before', 'test-namespace', '1', '1', [], True),  # uses before
+    ],
+)
+def test_pod_start_close_given_head_deployment(
+    name, k8s_namespace, shards, replicas, mocker, needs, uses_before
+):
+    args_list = [
+        '--name',
+        name,
+        '--k8s-namespace',
+        k8s_namespace,
+        '--shards',
+        shards,
+        '--replicas',
+        replicas,
+        '--noblock-on-start',
+    ]
+    if uses_before:
+        args_list.extend(['--uses-before', 'custom-executor-before'])
+    args = set_pod_parser().parse_args(args_list)
+    mocker.patch(
+        'jina.peapods.pods.k8slib.kubernetes_deployment.deploy_service',
+        return_value=f'{name}.{k8s_namespace}.svc',
+    )
+    mocker.patch(
+        'jina.peapods.pods.k8s.K8sPod._K8sDeployment._delete_namespaced_deployment',
+        return_value=client.V1Status(status=200),
+    )
+    with K8sPod(args, needs=needs) as pod:
+        # enter `_deploy_runtime`
+        assert isinstance(pod.k8s_head_deployment, K8sPod._K8sDeployment)
+        assert pod.k8s_head_deployment.name == name + '-head'
+        assert pod.args.noblock_on_start
+
+
+@pytest.mark.parametrize(
+    'name, k8s_namespace, shards, uses_after',
+    [
+        (
+            'test-with-multiple-shards',
+            'test-namespace',
+            '2',
+            False,
+        ),  # shards > 1
+        (
+            'test-with-uses-after',
+            'test-namespace',
+            '1',
+            True,
+        ),  # uses-after
+    ],
+)
+def test_pod_start_close_given_tail_deployment(
+    name, k8s_namespace, shards, mocker, uses_after
+):
+    args_list = [
+        '--name',
+        name,
+        '--k8s-namespace',
+        k8s_namespace,
+        '--shards',
+        shards,
+        '--noblock-on-start',
+    ]
+    if uses_after:
+        args_list.extend(['--uses-after', 'custom-executor-after'])
+    args = set_pod_parser().parse_args(args_list)
+    mocker.patch(
+        'jina.peapods.pods.k8slib.kubernetes_deployment.deploy_service',
+        return_value=f'{name}.{k8s_namespace}.svc',
+    )
+    mocker.patch(
+        'jina.peapods.pods.k8s.K8sPod._K8sDeployment._delete_namespaced_deployment',
+        return_value=client.V1Status(status=200),
+    )
+    with K8sPod(args) as pod:
+        # enter `_deploy_runtime`
+        assert isinstance(pod.k8s_tail_deployment, K8sPod._K8sDeployment)
+        assert pod.k8s_tail_deployment.name == name + '-tail'
+        assert pod.args.noblock_on_start
+
+
+@pytest.mark.parametrize(
+    'all_replicas_ready',
+    [
+        True,  # enter wait-until-success and ready replicas = num of replicas
+        False,  # enter wait-until-success and ready replicas < num of replicas
+    ],
+)
+def test_pod_wait_for_success(all_replicas_ready, mocker, caplog):
+    args_list = [
+        '--name',
+        'test-wait-success',
+        '--k8s-namespace',
+        'test-namespace',
+        '--shards',
+        '1',
+        '--replicas',
+        '3',
+        '--timeout-ready',
+        '100',
+    ]
+    if all_replicas_ready:
+        mocker.patch(
+            'jina.peapods.pods.k8s.K8sPod._K8sDeployment._read_namespaced_deployment',
+            return_value=client.V1Deployment(
+                status=client.V1DeploymentStatus(replicas=3, ready_replicas=3)
+            ),
+        )  # all ready
+    else:
+        mocker.patch(
+            'jina.peapods.pods.k8s.K8sPod._K8sDeployment._read_namespaced_deployment',
+            return_value=client.V1Deployment(
+                status=client.V1DeploymentStatus(replicas=3, ready_replicas=1)
+            ),
+        )  # not all peas ready
+    args = set_pod_parser().parse_args(args_list)
+    mocker.patch(
+        'jina.peapods.pods.k8slib.kubernetes_deployment.deploy_service',
+        return_value=f'test-wait-success.test-namespace.svc',
+    )
+    mocker.patch(
+        'jina.peapods.pods.k8s.K8sPod._K8sDeployment._delete_namespaced_deployment',
+        return_value=client.V1Status(status=200),
+    )
+    if all_replicas_ready:
+        with K8sPod(args):
+            pass
+    else:
+        # expect Number of ready replicas 1, waiting for 2 replicas to be available
+        # keep waiting, and we set a small timeout-ready, raise the exception
+        with pytest.raises(jina.excepts.RuntimeFailToStart):
+            with K8sPod(args):
+                pass

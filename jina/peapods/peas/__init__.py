@@ -96,6 +96,7 @@ def run(
     finally:
         _unset_envs()
         is_shutdown.set()
+        logger.debug(f' Process terminated')
 
 
 class BasePea:
@@ -194,14 +195,18 @@ class BasePea:
         :param args: extra positional arguments to pass to join
         :param kwargs: extra keyword arguments to pass to join
         """
+        self.logger.debug(f' Joining the process')
         self.worker.join(*args, **kwargs)
+        self.logger.debug(f' Successfully joined the process')
 
     def terminate(self):
         """Terminate the Pea.
         This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         """
         if hasattr(self.worker, 'terminate'):
+            self.logger.debug(f' terminating the runtime process')
             self.worker.terminate()
+            self.logger.debug(f' runtime process properly terminated')
 
     def _retry_control_message(self, command: str, num_retry: int = 3):
         from ..zmq import send_ctrl_message
@@ -345,11 +350,15 @@ class BasePea:
         """
         # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
         self.logger.debug('waiting for ready or shutdown signal from runtime')
+        terminated = False
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
             try:
+                self.logger.warning(f' Cancel runtime')
                 self._cancel_runtime()
+                self.logger.warning(f' Wait to shutdown')
                 if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
                     self.terminate()
+                    terminated = True
                     time.sleep(0.1)
                     raise Exception(
                         f'Shutdown signal was not received for {self._timeout_ctrl}'
@@ -362,6 +371,8 @@ class BasePea:
                     else '',
                     exc_info=not self.args.quiet_error,
                 )
+                if not terminated:
+                    self.terminate()
 
             # if it is not daemon, block until the process/thread finish work
             if not self.args.daemon:

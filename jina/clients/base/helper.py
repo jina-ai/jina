@@ -14,7 +14,7 @@ class AioHttpClientlet(ABC):
     """aiohttp session manager"""
 
     def __init__(self, url: str, logger: 'JinaLogger') -> None:
-        """HTTP Client to be used with prefetcher
+        """HTTP Client to be used with the streamer
 
         :param url: url to send http/websocket request to
         :param logger: jina logger
@@ -66,7 +66,7 @@ class AioHttpClientlet(ABC):
 
 
 class HTTPClientlet(AioHttpClientlet):
-    """HTTP Client to be used with prefetcher"""
+    """HTTP Client to be used with the streamer"""
 
     async def send_message(self, request: 'Request'):
         """Sends a POST request to the server
@@ -88,7 +88,7 @@ class HTTPClientlet(AioHttpClientlet):
 
 
 class WebsocketClientlet(AioHttpClientlet):
-    """Websocket Client to be used with prefetcher"""
+    """Websocket Client to be used with the streamer"""
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)

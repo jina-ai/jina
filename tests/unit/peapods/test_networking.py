@@ -1,4 +1,6 @@
+import multiprocessing
 import time
+from multiprocessing import Process
 from threading import Thread, Event
 
 import pytest
@@ -87,24 +89,23 @@ def test_connection_pool_same_host(mocker):
 @pytest.mark.asyncio
 @pytest.mark.slow
 @pytest.mark.timeout(5)
-async def test_grpc_connection_pool(mocker):
+async def test_grpc_connection_pool():
     args = set_pea_parser().parse_args([])
-    handle_mock = mocker.Mock()
+    is_called = multiprocessing.Event()
+    is_cancel = Event()
 
-    def start_runtime(args, handle_mock):
-        with GRPCDataRuntime(args) as runtime:
-            runtime._data_request_handler.handle = handle_mock
+    def start_runtime(args, is_called, is_cancel):
+        with GRPCDataRuntime(args, is_cancel) as runtime:
+            runtime._data_request_handler.handle = (
+                lambda *args, **kwargs: is_called.set()
+            )
             runtime.run_forever()
 
-    runtime_thread = Thread(
+    runtime_process = Process(
         target=start_runtime,
-        args=(
-            args,
-            handle_mock,
-        ),
-        daemon=True,
+        args=(args, is_called, is_cancel),
     )
-    runtime_thread.start()
+    runtime_process.start()
 
     assert GRPCDataRuntime.wait_for_ready_or_shutdown(
         timeout=3.0, ctrl_address=f'{args.host}:{args.port_in}', shutdown_event=Event()
@@ -117,10 +118,11 @@ async def test_grpc_connection_pool(mocker):
 
     time.sleep(0.1)
 
-    handle_mock.assert_called()
+    assert is_called.is_set()
     pool.close()
-    GRPCDataRuntime.cancel(f'{args.host}:{args.port_in}')
-    runtime_thread.join()
+    GRPCDataRuntime.cancel(cancel_event=is_cancel)
+    runtime_process.terminate()
+    runtime_process.join()
 
 
 def _create_test_data_message():
