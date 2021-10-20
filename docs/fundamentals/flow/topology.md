@@ -129,3 +129,27 @@ f = (Flow()
 ```
 
 This Flow has a single Executor with 2 Shards and 3 Replicas, which means it gets split into 2 Shards with 3 Replicas each. In total this Flow has 2*3=6 workers and could be distributed to six different machines if necessary.
+
+## Replica vs Shards
+
+The next table shows the difference between shards and replicas.
+
+||Replica|Shards|
+|---|---|---|
+|Create multiple copies of an executor| ✅ | ✅ |
+|Partition data into several parts | ❌ | ✅ |
+|Request handeled by one of the executors | ✅ | ✅, if `polling = 'any'` |
+|Request handeled by all of the executors | ❌ | ✅, if `polling = 'all'` |
+
+Notes :
+ - `parallel` is equivalent to `shards` , they both behave similarly (for backwards compatibility `parallel` is kept)  
+ - You can combine `replica` and  `parallel` as well as `replica` and `shards`, this will behave like the example above. 
+ - If you combine `parallel` and `shards` the latter argument will be used. In example :
+
+```python
+from jina import Flow
+
+ f = (Flow()
+     .add(name='shards_with_replicas', shards=2, parallel=3))
+```     
+In this case 3 shards will be created.
