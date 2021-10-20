@@ -79,7 +79,7 @@ class TraversableSequence:
         else:
             from .document import DocumentArray
 
-            yield DocumentArray([doc for doc in docs if filter_fn(doc)])
+            yield DocumentArray(list(filter(filter_fn, docs)))
 
     def traverse_flat_per_path(
         self, traversal_paths: Sequence[str], filter_fn: Optional[Callable] = None
