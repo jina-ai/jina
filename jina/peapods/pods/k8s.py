@@ -186,12 +186,15 @@ class K8sPod(BasePod, ExitFIFO):
                 fail_msg += f': {repr(exception_to_raise)}'
             raise RuntimeFailToStart(fail_msg)
 
-        async def wait_restart_success(self):
+        async def wait_restart_success(self, previous_uids: Iterable[str] = None):
             _timeout = self.common_args.timeout_ready
             if _timeout <= 0:
                 _timeout = None
             else:
                 _timeout /= 1e3
+
+            if previous_uids is None:
+                previous_uids = []
 
             from kubernetes import client
             import asyncio
@@ -215,11 +218,14 @@ class K8sPod(BasePod, ExitFIFO):
                             f' Replicas: {api_response.status.replicas}.'
                             f' Expected Replicas {self.num_replicas}'
                         )
+
+                        has_pod_with_uid = self._has_pod_with_uid(previous_uids)
                         if (
                             api_response.status.updated_replicas is not None
                             and api_response.status.updated_replicas
                             == self.num_replicas
                             and api_response.status.replicas == self.num_replicas
+                            and not has_pod_with_uid
                         ):
                             logger.success(
                                 f' {self.name} has all its replicas updated!!'
@@ -231,6 +237,10 @@ class K8sPod(BasePod, ExitFIFO):
                             if updated_replicas < self.num_replicas:
                                 logger.debug(
                                     f'\nNumber of updated replicas {updated_replicas}, waiting for {self.num_replicas - updated_replicas} replicas to be updated'
+                                )
+                            elif has_pod_with_uid:
+                                logger.debug(
+                                    f'\nWaiting for old replicas to be terminated'
                                 )
                             else:
                                 logger.debug(
@@ -312,7 +322,7 @@ class K8sPod(BasePod, ExitFIFO):
 
             return [item.metadata.uid for item in pods.items]
 
-        def has_pod_with_uid(self, uids: Iterable[str]) -> bool:
+        def _has_pod_with_uid(self, uids: Iterable[str]) -> bool:
             """Check if this deployment has any Pod with a UID contained in uids
 
             :param uids: list of UIDs to check
@@ -461,9 +471,7 @@ class K8sPod(BasePod, ExitFIFO):
             deployment.rolling_update(dump_path=dump_path, uses_with=uses_with)
 
         for deployment in self.k8s_deployments:
-            while deployment.has_pod_with_uid(old_uids[deployment.dns_name]):
-                await asyncio.sleep(1.0)
-            await deployment.wait_restart_success()
+            await deployment.wait_restart_success(old_uids[deployment.dns_name])
 
     def start(self) -> 'K8sPod':
         """Deploy the kubernetes pods via k8s Deployment and k8s Service.
