@@ -45,9 +45,9 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
             self._routing_table = None
             self._next_targets = None
 
-    async def send_message(self, msg: 'Message', **kwargs):
+    def send_message(self, msg: 'Message', **kwargs):
         """
-        Sends a message via gRPC to the target indicated in the message's routing table
+        Schedules the sending of a message via gRPC to the target indicated in the message's routing table
         :param msg: the protobuf message to send
         :param kwargs: Additional arguments.
         """

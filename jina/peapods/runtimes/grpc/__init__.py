@@ -140,7 +140,7 @@ class GRPCDataRuntime(AsyncNewLoopRuntime, ABC):
         try:
             msg = self._post_hook(self._handle(self._pre_hook(msg)))
             if msg.is_data_request:
-                asyncio.create_task(self._grpclet.send_message(msg))
+                self._grpclet.send_message(msg)
         except RuntimeTerminated:
             GRPCDataRuntime.cancel(self.is_cancel)
         except NoExplicitMessage:
@@ -166,8 +166,7 @@ class GRPCDataRuntime(AsyncNewLoopRuntime, ABC):
                 )
 
             if msg.is_data_request:
-                asyncio.create_task(self._grpclet.send_message(msg))
-            asyncio.create_task(self._grpclet.send_message(msg))
+                self._grpclet.send_message(msg)
 
     def _handle(self, msg: Message) -> Message:
         """Register the current message to this pea, so that all message-related properties are up-to-date, including
