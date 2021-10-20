@@ -20,7 +20,7 @@
             <p>
                 <a href="https://github.com/jina-ai/finetuner">
                     <!--startmsg-->
-Check out Finetuner - tuning any DNN for better embedding on neural search tasks
+Check out <b>Finetuner</b> - tuning any DNN for better embedding on neural search tasks
                     <!--endmsg-->
                 </a>
             </p>
