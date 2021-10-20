@@ -177,7 +177,6 @@ def deploy_service(
             'port_out': port_out,
             'port_ctrl': port_ctrl,
             'pull_policy': pull_policy,
-            'num_gpus': 0,
         },
     )
 
@@ -187,7 +186,7 @@ def deploy_service(
     else:
         template_name = 'deployment'
     if gpus:
-        deployment_params.update({'num_gpus': gpus})
+        device_plugins_params = {'nvidia.com/gpu': gpus}
     kubernetes_tools.create(
         template_name,
         deployment_params,
