@@ -241,6 +241,7 @@ class DocumentArrayNeuralOpsMixin:
         colormap: str = 'rainbow',
         method: str = 'pca',
         show_axis: bool = False,
+        **kwargs,
     ):
         """Visualize embeddings in a 2D projection with the PCA algorithm. This function requires ``matplotlib`` installed.
 
@@ -256,7 +257,7 @@ class DocumentArrayNeuralOpsMixin:
                 nonlinear relationship of high-dimensional data. `tsne` requires scikit-learn to be installed and is
                 much slower.
         :param show_axis: If set, axis and bounding box of the plot will be printed.
-
+        :param kwargs: extra kwargs pass to matplotlib.plot
         """
 
         x_mat = self.embeddings
@@ -298,6 +299,9 @@ class DocumentArrayNeuralOpsMixin:
             tag_to_num = {tag: num for num, tag in enumerate(set(tags))}
             plt_kwargs['c'] = np.array([tag_to_num[ni] for ni in tags])
             plt_kwargs['cmap'] = plt.get_cmap(colormap)
+
+        # update the plt_kwargs
+        plt_kwargs.update(kwargs)
 
         plt.scatter(**plt_kwargs)
 

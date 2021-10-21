@@ -342,7 +342,8 @@ def test_pca_projection(embeddings, whiten):
 
 
 @pytest.mark.parametrize('colored_tag', [None, 'tags__label', 'id', 'mime_type'])
-def test_pca_plot_generated(embeddings, tmpdir, colored_tag):
+@pytest.mark.parametrize('kwargs', [{}, dict(s=100, marker='^')])
+def test_pca_plot_generated(embeddings, tmpdir, colored_tag, kwargs):
     doc_array = DocumentArray(
         [
             Document(embedding=x, tags={'label': random.randint(0, 5)})
@@ -350,7 +351,7 @@ def test_pca_plot_generated(embeddings, tmpdir, colored_tag):
         ]
     )
     file_path = os.path.join(tmpdir, 'pca_plot.png')
-    doc_array.visualize(output=file_path, colored_attr=colored_tag)
+    doc_array.visualize(file_path, colored_attr=colored_tag, **kwargs)
     assert os.path.exists(file_path)
 
 
