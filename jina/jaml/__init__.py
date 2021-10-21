@@ -582,7 +582,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                     no_tag_yml,
                     extra_search_paths=(_extra_search_paths + [os.path.dirname(s_path)])
                     if s_path
-                    else _extra_search_paths,
+                    else None,
                 )
 
             from ..flow.base import Flow

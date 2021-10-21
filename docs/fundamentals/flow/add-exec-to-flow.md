@@ -162,21 +162,6 @@ with f:
     r = f.post('/', inputs=Document())
 ```
 
-`extra_search_paths` will also be useful if you're specifying the Executor's config YAML directly in `main.py`:
-```{code-block} python
----
-emphasize-lines: 2, 3, 4, 5, 6, 7
----
-from jina import Flow, Document
-f = Flow(extra_search_paths=['../executor']).add(uses="""
-    jtype: MyExecutor
-    metas:
-      py_modules:
-        - executor.py
-    """)
-with f:
-    r = f.post('/', inputs=Document())
-```
 
 ````{admonition} Important
 :class: important
