@@ -595,7 +595,6 @@
 <span class="kn">import</span> <span class="nn">multiprocessing</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">traceback</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
@@ -609,7 +608,7 @@
 <span class="kn">from</span> <span class="nn">...grpc</span> <span class="kn">import</span> <span class="n">Grpclet</span>
 <span class="kn">from</span> <span class="nn">....enums</span> <span class="kn">import</span> <span class="n">OnErrorStrategy</span>
 <span class="kn">from</span> <span class="nn">....excepts</span> <span class="kn">import</span> <span class="n">NoExplicitMessage</span><span class="p">,</span> <span class="n">ChainedPodException</span><span class="p">,</span> <span class="n">RuntimeTerminated</span>
-<span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">get_or_reuse_loop</span><span class="p">,</span> <span class="n">random_identity</span>
+<span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">random_identity</span>
 <span class="kn">from</span> <span class="nn">....proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
 <span class="kn">from</span> <span class="nn">....types.message</span> <span class="kn">import</span> <span class="n">Message</span>
 <span class="kn">from</span> <span class="nn">....types.routing.table</span> <span class="kn">import</span> <span class="n">RoutingTable</span>
@@ -697,7 +696,7 @@
 <span class="sd">        """</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="n">Grpclet</span><span class="o">.</span><span class="n">send_ctrl_msg</span><span class="p">(</span><span class="n">ctrl_address</span><span class="p">,</span> <span class="s1">'STATUS'</span><span class="p">)</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">Grpclet</span><span class="o">.</span><span class="n">send_ctrl_msg</span><span class="p">(</span><span class="n">ctrl_address</span><span class="p">,</span> <span class="s1">'STATUS'</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">RpcError</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
 

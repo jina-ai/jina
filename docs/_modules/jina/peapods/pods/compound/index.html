@@ -594,18 +594,17 @@
 <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">cycle</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Set</span>
-<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">ExitStack</span>
 
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">BasePod</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">Pea</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">Pod</span>
 <span class="kn">from</span> <span class="nn">..networking</span> <span class="kn">import</span> <span class="n">get_connect_host</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">helper</span>
-<span class="kn">from</span> <span class="nn">...enums</span> <span class="kn">import</span> <span class="n">SocketType</span><span class="p">,</span> <span class="n">SchedulerType</span><span class="p">,</span> <span class="n">PollingType</span>
+<span class="kn">from</span> <span class="nn">...enums</span> <span class="kn">import</span> <span class="n">SocketType</span><span class="p">,</span> <span class="n">SchedulerType</span>
 <span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">random_identity</span>
 
 
-<div class="viewcode-block" id="CompoundPod"><a class="viewcode-back" href="../../../../../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod">[docs]</a><span class="k">class</span> <span class="nc">CompoundPod</span><span class="p">(</span><span class="n">BasePod</span><span class="p">,</span> <span class="n">ExitStack</span><span class="p">):</span>
+<div class="viewcode-block" id="CompoundPod"><a class="viewcode-back" href="../../../../../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod">[docs]</a><span class="k">class</span> <span class="nc">CompoundPod</span><span class="p">(</span><span class="n">BasePod</span><span class="p">):</span>
     <span class="sd">"""A CompoundPod is a immutable set of pods, which run in parallel.</span>
 <span class="sd">    A CompoundPod is an abstraction using a composable pattern to abstract the usage of parallel Pods that act as shards.</span>
 

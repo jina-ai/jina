@@ -599,7 +599,7 @@
 
 <span class="kn">from</span> <span class="nn">...jaml</span> <span class="kn">import</span> <span class="n">JAML</span>
 <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">_get_event</span><span class="p">,</span> <span class="n">ConditionalEvent</span>
-<span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">__stop_msg__</span><span class="p">,</span> <span class="n">__ready_msg__</span><span class="p">,</span> <span class="n">__default_host__</span>
+<span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">__stop_msg__</span><span class="p">,</span> <span class="n">__ready_msg__</span>
 <span class="kn">from</span> <span class="nn">...enums</span> <span class="kn">import</span> <span class="n">PeaRoleType</span><span class="p">,</span> <span class="n">RuntimeBackendType</span><span class="p">,</span> <span class="n">SocketType</span>
 <span class="kn">from</span> <span class="nn">...excepts</span> <span class="kn">import</span> <span class="n">RuntimeFailToStart</span><span class="p">,</span> <span class="n">RuntimeRunForeverEarlyError</span>
 <span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">typename</span>
@@ -700,7 +700,6 @@
 <span class="sd">    """</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>  <span class="c1">#: required here to call process/thread __init__</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
         <span class="c1"># BACKWARDS COMPATIBILITY</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">pea_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">shard_id</span>

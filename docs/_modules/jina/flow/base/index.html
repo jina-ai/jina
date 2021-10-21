@@ -1385,6 +1385,7 @@
 
         <span class="n">args</span><span class="o">.</span><span class="n">k8s_namespace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span>
         <span class="n">args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">zmq_identity</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># BACKWARDS COMPATIBILITY:</span>
         <span class="c1"># We assume that this is used in a search Flow if replicas and shards are used</span>

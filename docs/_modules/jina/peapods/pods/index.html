@@ -674,7 +674,7 @@
         <span class="k">return</span> <span class="n">received_exc</span> <span class="ow">and</span> <span class="n">suppressed_exc</span></div>
 
 
-<div class="viewcode-block" id="BasePod"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.BasePod">[docs]</a><span class="k">class</span> <span class="nc">BasePod</span><span class="p">:</span>
+<div class="viewcode-block" id="BasePod"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.BasePod">[docs]</a><span class="k">class</span> <span class="nc">BasePod</span><span class="p">(</span><span class="n">ExitFIFO</span><span class="p">):</span>
     <span class="sd">"""A BasePod is an immutable set of peas. They share the same input and output socket.</span>
 <span class="sd">    Internally, the peas can run with the process/thread backend.</span>
 <span class="sd">    They can be also run in their own containers on remote machines.</span>
@@ -914,7 +914,7 @@
         <span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="Pod"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.Pod">[docs]</a><span class="k">class</span> <span class="nc">Pod</span><span class="p">(</span><span class="n">BasePod</span><span class="p">,</span> <span class="n">ExitFIFO</span><span class="p">):</span>
+<div class="viewcode-block" id="Pod"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.Pod">[docs]</a><span class="k">class</span> <span class="nc">Pod</span><span class="p">(</span><span class="n">BasePod</span><span class="p">):</span>
     <span class="sd">"""A Pod is an immutable set of peas, which run in replicas. They share the same input and output socket.</span>
 <span class="sd">    Internally, the peas can run with the process/thread backend. They can be also run in their own containers</span>
 <span class="sd">    :param args: arguments parsed from the CLI</span>
