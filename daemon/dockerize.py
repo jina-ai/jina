@@ -272,7 +272,7 @@ class Dockerizer:
                 'Docker image not built properly, cannot proceed for run'
             )
         except docker.errors.APIError as e:
-            msg = f'API Error while starting the docker container{e}'
+            msg = f'API Error while starting the docker container {e}'
             if _validate_device_request(str(e)):
                 # It might not be possible for local to know remote machine's gpu status.
                 # For few cases (Flow creation), we always set `gpus='all'`, which might fail
@@ -289,7 +289,7 @@ class Dockerizer:
                 run_kwargs.pop('device_requests')
                 container: 'Container' = cls.client.containers.run(**run_kwargs)
             else:
-                msg += _validate_port_conflict(str(e))
+                msg += ' ' + _validate_port_conflict(str(e))
                 raise DockerContainerException(msg)
         except docker.errors.APIError as e:
             msg = f'API Error while starting the docker container{e}'

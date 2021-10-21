@@ -1,4 +1,4 @@
-from typing import Dict
+import os
 
 from jina import Executor, requests, DocumentArray
 
@@ -12,7 +12,7 @@ class TestExecutor(Executor):
         self._name = self.runtime_args.name
 
     @requests(on='/index')
-    def debug(self, docs: DocumentArray, parameters: Dict, **kwargs):
+    def debug(self, docs: DocumentArray, **kwargs):
         self.logger.debug(
             f'Received doc array in test-executor {self._name} with length {len(docs)}.'
         )
@@ -24,9 +24,25 @@ class TestExecutor(Executor):
             traversed = list(doc.tags.get(key))
             traversed.append(self._name)
             doc.tags[key] = traversed
+            doc.tags['parallel'] = self.runtime_args.parallel
+            doc.tags['shards'] = self.runtime_args.shards
+            doc.tags['shard_id'] = self.runtime_args.shard_id
+            doc.tags['pea_id'] = self.runtime_args.pea_id
+
+    @requests(on='/env')
+    def env(self, docs: DocumentArray, **kwargs):
+        self.logger.debug(
+            f'Received doc array in test-executor {self._name} with length {len(docs)}.'
+        )
+
+        for doc in docs:
+            doc.tags['k1'] = os.environ.get('k1')
+            doc.tags['k2'] = os.environ.get('k2')
+            doc.tags['JINA_LOG_LEVEL'] = os.environ.get('JINA_LOG_LEVEL')
+            doc.tags['env'] = {'k1': os.environ.get('k1'), 'k2': os.environ.get('k2')}
 
     @requests(on='/search')
-    def read_file(self, docs: DocumentArray, parameters: Dict, **kwargs):
+    def read_file(self, docs: DocumentArray, **kwargs):
         self.logger.debug(
             f'Received doc array in test-executor {self._name} with length {len(docs)}.'
         )

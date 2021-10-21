@@ -7,11 +7,14 @@ from jina.peapods.pods.k8s import K8sPod
 
 
 def test_pod_factory_pod():
-    args_no_replicas = set_pod_parser().parse_args(['--replicas', '1'])
+    args_no_replicas = set_pod_parser().parse_args(['--shards', '1'])
     assert isinstance(PodFactory.build_pod(args_no_replicas), Pod)
 
-    args_replicas = set_pod_parser().parse_args(['--replicas', '2'])
+    args_replicas = set_pod_parser().parse_args(['--shards', '2'])
     assert isinstance(PodFactory.build_pod(args_replicas), CompoundPod)
+
+    args_no_replicas = set_pod_parser().parse_args(['--replicas', '2'])
+    assert isinstance(PodFactory.build_pod(args_no_replicas), Pod)
 
 
 def test_pod_factory_k8s():

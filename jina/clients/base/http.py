@@ -1,63 +1,14 @@
-from typing import Callable, Dict, Optional
+from typing import Callable, Optional
 from contextlib import nullcontext, AsyncExitStack
 
-from ..base import BaseClient, InputType
-from ..helper import callback_exec
 from ...excepts import BadClient
-from ...importer import ImportExtensions
-from ...logging.profile import ProgressBar
+from .helper import HTTPClientlet
+from ..helper import callback_exec
 from ...types.request import Request
-from ...peapods.runtimes.prefetch.client import HTTPClientPrefetcher
-
-
-class HTTPClientlet:
-    """HTTP Client to be used with prefetcher"""
-
-    def __init__(self, url: str) -> None:
-        """HTTP Client to be used with prefetcher
-
-        :param url: url to send POST request to
-        """
-        self.url = url
-        self.msg_recv = 0
-        self.msg_sent = 0
-        self.session = None
-
-    async def send_message(self, request: Dict):
-        """Sends a POST request to the server
-
-        :param request: request as dict
-        :return: send post message
-        """
-        return await self.session.post(url=self.url, json=request).__aenter__()
-
-    async def __aenter__(self):
-        """enter async context
-
-        :return: start self
-        """
-        return await self.start()
-
-    async def start(self):
-        """Create ClientSession and enter context
-
-        :return: self
-        """
-        import aiohttp
-
-        self.session = aiohttp.ClientSession()
-        await self.session.__aenter__()
-        return self
-
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
-        await self.close(exc_type, exc_val, exc_tb)
-
-    async def close(self, *args, **kwargs):
-        """Close ClientSession
-
-        :param args: positional args
-        :param kwargs: keyword args"""
-        await self.session.__aexit__(*args, **kwargs)
+from ...importer import ImportExtensions
+from ..base import BaseClient, InputType
+from ...logging.profile import ProgressBar
+from ...peapods.stream.client import HTTPClientStreamer
 
 
 class HTTPBaseClient(BaseClient):
@@ -87,15 +38,21 @@ class HTTPBaseClient(BaseClient):
 
         async with AsyncExitStack() as stack:
             try:
-                cm1 = ProgressBar() if self.show_progress else nullcontext()
+                cm1 = (
+                    ProgressBar(total_length=self._inputs_length)
+                    if self.show_progress
+                    else nullcontext()
+                )
+                p_bar = stack.enter_context(cm1)
+
                 proto = 'https' if self.args.https else 'http'
                 url = f'{proto}://{self.args.host}:{self.args.port}/post'
+                iolet = await stack.enter_async_context(
+                    HTTPClientlet(url=url, logger=self.logger)
+                )
 
-                p_bar = stack.enter_context(cm1)
-                iolet = await stack.enter_async_context(HTTPClientlet(url=url))
-
-                prefetcher = HTTPClientPrefetcher(self.args, iolet=iolet)
-                async for response in prefetcher.send(request_iterator):
+                streamer = HTTPClientStreamer(self.args, iolet=iolet)
+                async for response in streamer.stream(request_iterator):
                     r_status = response.status
                     r_str = await response.json()
                     if r_status == 404:
@@ -116,5 +73,7 @@ class HTTPBaseClient(BaseClient):
                     if self.show_progress:
                         p_bar.update()
                     yield resp
-            except aiohttp.client_exceptions.ClientConnectorError:
-                self.logger.warning(f'Client got disconnected from the HTTP server')
+            except aiohttp.ClientError as e:
+                self.logger.error(
+                    f'Error while fetching response from HTTP server {e!r}'
+                )

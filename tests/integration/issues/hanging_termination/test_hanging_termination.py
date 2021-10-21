@@ -33,10 +33,10 @@ class ErrorExecutor(Executor):
 
 
 class ReloadExecutor(Executor):
-    def __init__(self, metas, **kwargs):
-        super().__init__(**kwargs)
-        dump_path = kwargs['runtime_args'].get('dump_path', None)
-
+    def __init__(self, dump_path=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # backwards compatibility
+        assert 'dump_path' in kwargs['runtime_args'].keys()
         if dump_path is not None:
             shard_id = getattr(self.runtime_args, 'pea_id', None)
             shard_dump_path = os.path.join(dump_path, f'{shard_id}.ndjson')

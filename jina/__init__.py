@@ -15,7 +15,6 @@ import sys as _sys
 import types as _types
 import warnings as _warnings
 
-
 if _sys.version_info < (3, 7, 0) or _sys.version_info >= (3, 10, 0):
     raise OSError(f'Jina requires Python 3.7/3.8/3.9, but yours is {_sys.version_info}')
 
@@ -58,7 +57,7 @@ elif _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
 
-__version__ = '2.1.6'
+__version__ = '2.1.11'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
@@ -74,22 +73,24 @@ __jina_env__ = (
     'JINA_ARRAY_QUANT',
     'JINA_CONTROL_PORT',
     'JINA_DEFAULT_HOST',
+    'JINA_DEFAULT_TIMEOUT_CTRL',
     'JINA_DISABLE_UVLOOP',
     'JINA_FULL_CLI',
     'JINA_HUBBLE_REGISTRY',
     'JINA_HUB_CACHE_DIR',
     'JINA_HUB_ROOT',
+    'JINA_K8S_USE_TEST_PIP',
     'JINA_LOG_CONFIG',
     'JINA_LOG_ID',
     'JINA_LOG_LEVEL',
     'JINA_LOG_NO_COLOR',
     'JINA_LOG_WORKSPACE',
+    'JINA_MP_START_METHOD',
     'JINA_OPTIMIZER_TRIAL_WORKSPACE',
     'JINA_POD_NAME',
     'JINA_RANDOM_PORT_MAX',
     'JINA_RANDOM_PORT_MIN',
     'JINA_VCS_VERSION',
-    'JINA_MP_START_METHOD',
 )
 
 __default_host__ = _os.environ.get(

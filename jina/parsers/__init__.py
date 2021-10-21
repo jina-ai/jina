@@ -102,15 +102,6 @@ def set_gateway_parser(parser=None):
         pod_role=PodRoleType.GATEWAY,
     )
 
-    parser.add_argument(
-        '--dynamic-routing',
-        action='store_true',
-        default=True,
-        help='The Pod will setup the socket types of the HeadPea and TailPea depending on this argument.'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
-    )
-
     return parser
 
 
@@ -127,14 +118,12 @@ def set_client_cli_parser(parser=None):
 
     from .peapods.runtimes.remote import (
         mixin_client_gateway_parser,
-        mixin_prefetch_parser,
     )
     from .client import mixin_client_features_parser, mixin_comm_protocol_parser
 
     mixin_client_gateway_parser(parser)
     mixin_client_features_parser(parser)
     mixin_comm_protocol_parser(parser)
-    mixin_prefetch_parser(parser)
 
     return parser
 

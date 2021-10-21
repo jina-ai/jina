@@ -64,6 +64,7 @@ def mixin_pea_parser(parser):
     # hidden CLI used for internal only
 
     gp.add_argument(
+        '--shard-id',
         '--pea-id',
         type=int,
         default=0,
@@ -88,4 +89,23 @@ def mixin_pea_parser(parser):
         '`wait_start_success` at outer function for the postpone check.'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
+    )
+
+    gp.add_argument(
+        '--shards',
+        '--parallel',
+        type=int,
+        default=1,
+        help='The number of shards in the pod running at the same time, '
+        '`port_in` and `port_out` will be set to random, '
+        'and routers will be added automatically when necessary',
+    )
+
+    gp.add_argument(
+        '--replicas',
+        type=int,
+        default=1,
+        help='The number of replicas in the pod, '
+        '`port_in` and `port_out` will be set to random, '
+        'and routers will be added automatically when necessary',
     )

@@ -7,13 +7,13 @@ from typing import Union, Optional, Dict, TYPE_CHECKING
 from pathlib import Path
 from platform import uname
 
-from ..zmq.base import ZMQRuntime
+from ..base import BaseRuntime
 from ...zmq import Zmqlet
 from .... import __docker_host__
 from .helper import get_docker_network, get_gpu_device_requests
 from ....excepts import BadImageNameError, DockerVersionError
 from ...zmq import send_ctrl_message
-from ....helper import ArgNamespace, slugify
+from ....helper import ArgNamespace, slugify, random_name
 from ....enums import SocketType
 
 if TYPE_CHECKING:
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from ....logging.logger import JinaLogger
 
 
-class ContainerRuntime(ZMQRuntime):
+class ContainerRuntime(BaseRuntime):
     """Runtime procedure for container."""
 
     def __init__(self, args: 'argparse.Namespace', **kwargs):
@@ -196,6 +196,10 @@ class ContainerRuntime(ZMQRuntime):
         _args = ArgNamespace.kwargs2list(non_defaults)
         ports = {f'{v}/tcp': v for v in _expose_port} if not self._net_mode else None
 
+        # WORKAROUND: we cant automatically find these true/false flags, this needs to be fixed
+        if 'dynamic_routing' in non_defaults and not non_defaults['dynamic_routing']:
+            _args.append('--no-dynamic-routing')
+
         docker_kwargs = self.args.docker_kwargs or {}
         self._container = client.containers.run(
             uses_img,
@@ -203,7 +207,7 @@ class ContainerRuntime(ZMQRuntime):
             detach=True,
             auto_remove=True,
             ports=ports,
-            name=slugify(self.name),
+            name=slugify(f'{self.name}/{random_name()}'),
             volumes=_volumes,
             network_mode=self._net_mode,
             entrypoint=self.args.entrypoint,

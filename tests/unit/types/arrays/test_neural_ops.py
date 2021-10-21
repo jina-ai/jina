@@ -587,3 +587,22 @@ def test_exclude_self_should_keep_limit(limit, exclude_self):
         if exclude_self:
             for m in d.matches:
                 assert d.id != m.id
+
+
+@pytest.mark.parametrize('limit', [1, 2, 1.0, 2.0, None])
+def test_match_handle_different_limit(get_two_docarray, limit, tmpdir):
+    da1, da2 = get_two_docarray
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend(da2)
+    da1.match(dam, limit=limit)
+    expected_length = limit if limit not in [None, -1] else len(da2)
+    assert len(da1[0].matches) == expected_length
+
+
+@pytest.mark.parametrize('limit', [0, -1])
+def test_match_assert_limit(get_two_docarray, limit, tmpdir):
+    da1, da2 = get_two_docarray
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend(da2)
+    with pytest.raises(ValueError):
+        da1.match(dam, limit=limit)

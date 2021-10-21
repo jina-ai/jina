@@ -91,3 +91,9 @@ table code {
     color: inherit;
     text-decoration: underline;
 }
+
+.sidebar-ecosys-logo {
+    width: 1.2em;
+    margin-right: .5em;
+    vertical-align: middle
+}

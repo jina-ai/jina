@@ -1,26 +1,50 @@
 import time
 
-from jina import __default_executor__
 from jina.helper import random_identity
 from jina.logging.predefined import default_logger
 from jina.parsers import set_pea_parser
+from jina.peapods.runtimes.zmq.zed import ZEDRuntime
 from jina.peapods.peas import BasePea
 from jina.peapods.zmq import Zmqlet
 from jina.types.message import Message
 from jina.types.request import Request
+from jina import Executor, requests
 from tests import validate_callback
 
 
-class MockBasePeaNotRead(BasePea):
-    def _post_hook(self, msg: 'Message') -> 'BasePea':
-        super()._post_hook(msg)
-        assert not msg.request.is_decompressed
+class DecompressExec(Executor):
+    @requests()
+    def func(self, docs, **kwargs):
+        for doc in docs:
+            doc.text = 'used'
 
 
-class MockBasePeaRead(BasePea):
-    def _post_hook(self, msg: 'Message') -> 'BasePea':
+class MockRuntimeNotDecompressed(ZEDRuntime):
+    def _post_hook(self, msg: 'Message'):
         super()._post_hook(msg)
-        assert msg.request.is_decompressed
+        if msg is not None:
+            decompressed = msg.request.is_decompressed
+            if msg.is_data_request:
+                assert not decompressed
+        return msg
+
+
+class MockRuntimeDecompressed(ZEDRuntime):
+    def _post_hook(self, msg: 'Message'):
+        super()._post_hook(msg)
+        if msg is not None:
+            decompressed = msg.request.is_decompressed
+            if msg.is_data_request:
+                assert decompressed
+        return msg
+
+
+class MockPea(BasePea):
+    def _get_runtime_cls(self):
+        if self.args.runtime_cls == 'MockRuntimeNotDecompressed':
+            return MockRuntimeNotDecompressed
+        else:
+            return MockRuntimeDecompressed
 
 
 args1 = set_pea_parser().parse_args(
@@ -33,8 +57,6 @@ args1 = set_pea_parser().parse_args(
         'PULL_CONNECT',
         '--socket-out',
         'PUSH_CONNECT',
-        '--timeout-ctrl',
-        '-1',
     ]
 )
 
@@ -52,8 +74,8 @@ args2 = set_pea_parser().parse_args(
         'PULL_BIND',
         '--socket-out',
         'PUSH_BIND',
-        '--timeout-ctrl',
-        '-1',
+        '--runtime-cls',
+        'MockRuntimeNotDecompressed',
     ]
 )
 
@@ -72,31 +94,54 @@ args3 = set_pea_parser().parse_args(
         '--socket-out',
         'PUSH_BIND',
         '--uses',
-        __default_executor__,  # will NOT trigger use
-        '--timeout-ctrl',
-        '-1',
+        'DecompressExec',
+        '--runtime-cls',
+        'MockRuntimeDecompressed',
     ]
 )
 
 
-def test_read_zmqlet():
-    with MockBasePeaRead(args2), Zmqlet(args1, default_logger) as z:
+def test_not_decompressed_zmqlet(mocker):
+    with MockPea(args2) as pea, Zmqlet(args1, default_logger) as z:
         req = Request()
         req.request_id = random_identity()
         d = req.data.docs.add()
         d.tags['id'] = 2
         msg = Message(None, req, 'tmp', '')
+        mock = mocker.Mock()
         z.send_message(msg)
+        time.sleep(1)
+        z.recv_message(mock)
+
+    def callback(msg_):
+        pass
+
+    validate_callback(mock, callback)
+    print(f' joining pea')
+    pea.join()
+    print(f' joined pea')
 
 
-def test_not_read_zmqlet():
-    with MockBasePeaNotRead(args3), Zmqlet(args1, default_logger) as z:
+def test_decompressed_zmqlet(mocker):
+    with MockPea(args3) as pea, Zmqlet(args1, default_logger) as z:
         req = Request()
         req.request_id = random_identity()
         d = req.data.docs.add()
         d.tags['id'] = 2
         msg = Message(None, req, 'tmp', '')
+
+        mock = mocker.Mock()
         z.send_message(msg)
+        time.sleep(1)
+        z.recv_message(mock)
+
+    def callback(msg_):
+        pass
+
+    validate_callback(mock, callback)
+    print(f' joining pea')
+    pea.join()
+    print(f' joined pea')
 
 
 def test_recv_message_zmqlet(mocker):

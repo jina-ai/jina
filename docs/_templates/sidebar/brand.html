@@ -1,0 +1,21 @@
+<a class="sidebar-brand{% if logo %} centered{% endif %}" href="{{ pathto(master_doc) }}">
+  {% block brand_content %}
+  {%- if logo_url %}
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="{{ logo_url }}" alt="Logo"/>
+  </div>
+  {%- endif %}
+  {%- if theme_light_logo and theme_dark_logo %}
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="{{ pathto('_static/' + theme_light_logo, 1) }}" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="{{ pathto('_static/' + theme_dark_logo, 1) }}" alt="Dark Logo"/>
+  </div>
+  {%- endif %}
+  <div class="sd-text-center">
+  <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub">Star</a>
+  </div>
+  {% if not theme_sidebar_hide_name %}
+  <span class="sidebar-brand-text">{{ docstitle if docstitle else project }}</span>
+  {%- endif %}
+  {% endblock brand_content %}
+</a>

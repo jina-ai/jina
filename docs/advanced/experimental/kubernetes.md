@@ -24,102 +24,50 @@ Here are some managed `Kubernetes` cluster solutions you could use:
 ## Deploy your `Flow`
 
 To deploy a `Flow` on `Kubernetes`, you have to set `infrastructure='K8S'` when creating the `Flow`.
+The context manager makes sure to deploy the `Flow` when entering the context and to clean it up when leaving the context.
 
 ```{caution}
-All Executors in the Flow should be used with `jinahub+docker://`.
+All Executors in the Flow should be used with `jinahub+docker://...` or `docker://...`.
 ```
 
 ## Examples
 
 ### CLIP image encoder
 
-#### Server
-
 The following code deploys a simple `Flow` with just a single `Executor`.
+It does the following:
+- deploying the `CLIP Executor` and the `Gateway` when entering the context of the `Flow`
+- sending an example image to the `Flow` using `port-forward`
+- printing the dimension of the resulting embedding
+- cleaning up the deployment when leaving the context of the `Flow`
 
 ```python
-from jina import Flow
+import numpy as np
+from jina import Flow, Document
 
-f = Flow(name='index-flow', port_expose=8080, infrastructure='K8S', protocol='http').add(
+f = Flow(name='example-clip', port_expose=8080, infrastructure='K8S', protocol='http').add(
     uses='jinahub+docker://CLIPImageEncoder'
 )
 
 with f:
-    f.block()
+    resp = f.index(Document(id=f'image', blob=np.random.rand(3, 16, 16)), return_results=True)
+    print('embedding size: ', len(resp[0].docs[0].embedding))
 ```
 Console output:
 ```txt
-start_executor0@65952[I]:🏝️	Create Namespace "index-flow" for "executor0"
-deploy_executor0@65952[I]:🔋	Create Service for "executor0" with exposed port "8080"
-deploy_executor0@65952[I]:🐳	Create Deployment for "executor0" with image "jinahub/0hnlmu3q:v33-2.1.0", replicas 1 and init_container False
-  start_gateway@65952[I]:🏝️	Create Namespace "index-flow" for "gateway"
-  start_gateway@65952[I]:🔁	namespaces "index-flow" already exists
- deploy_gateway@65952[I]:🔋	Create Service for "gateway" with exposed port "8080"
- deploy_gateway@65952[I]:🐳	Create Deployment for "gateway" with image "jinaai/jina:master-py38-standard", replicas 1 and init_container False                                                                                               
-```
-
-After the deployment finished, set up port forwarding to enable the client to send requests to the `Flow`.
-
-```bash
-kubectl port-forward svc/gateway -n index-flow 8080:8080
-```
-
-Console output:
-```txt
+create_example-clip@15611[I]:🏝️	Create Namespace "example-clip"
+⠸ 0/2 waiting executor0 gateway to be ready...waiting_for_gateway@15611[L]: gateway has all its replicas ready!!
+⠋ 1/2 waiting executor0 to be ready...waiting_for_executor0@15611[L]: executor0 has all its replicas ready!!
 Forwarding from 127.0.0.1:8080 -> 8080
 Forwarding from [::1]:8080 -> 8080
-```
-
-
-#### Client
-
-Once the port forward is set up, you can request embeddings for images.
-
-```python
-import base64
-
-import numpy as np
-import requests
-from jina import Document
-
-# since port forwarding is running, you can run requests to localhost on 8080
-host = '127.0.0.1'
-port = 8080
-
-url = f'http://{host}:{port}'
-
-doc = Document(id=f'image', blob=np.random.rand(3, 16, 16)).dict()
-
-resp = requests.post(f'{url}/index', json={'data': [doc]})
-embedding = np.frombuffer(
-    base64.decodebytes(
-        resp.json()['data']['docs'][0]['embedding']['dense']['buffer'].encode()
-    ),
-    np.float32,
-)
-
-print('embedding size: ', len(embedding))
-```
-
-Console output:
-```txt
-embedding size:  512
-```
-
-#### Cleanup
-```bash
-kubectl delete ns index-flow
-```
-
-Console output:
-```txt
-namespace "index-flow" deleted
+embedding size:  512                                                                                       
 ```
 
 
 ### Postgres indexer
 
-This example deploys the index `Flow` on `Kubernetes`
+This example deploys and index `Flow` and a search `Flow` on `Kubernetes`.
+Having two flows deployed independently allows query while indexing.
 You can use any `postgres` database which is reachable from within the `Kubernetes` cluster.
 Here is an example on how to create a `postgres` database on the cluster directly:
 ```bash
@@ -131,10 +79,12 @@ You can get the password like this:
 export POSTGRES_PASSWORD=$(kubectl get secret --namespace default my-release-postgresql -o jsonpath="{.data.postgresql-password}" | base64 --decode)
 ```
 
-#### Index flow
+#### Indexing
 
 ```python
-from jina import Flow
+from jina import Flow, Document
+import os
+import numpy as np
 
 f = Flow(
     name='index-flow', port_expose=8080, infrastructure='K8S', protocol='http'
@@ -147,74 +97,35 @@ f = Flow(
     uses_with={
         'hostname': f'my-release-postgresql.default.svc.cluster.local',
         'username': 'postgres',
-        'password': 'QJgNIt10Rm', # example password - should be an environment variable
+        'password': os.environ['POSTGRES_PASSWORD'],
         'database': 'postgres',
         'table': 'test_searcher',
     },
 )
 
 with f:
-    f.block()
+    print('start indexing')
+    f.post(
+        '/index',
+        [Document(id=f'item {i}', embedding=np.random.rand(128)) for i in range(100)],
+    )
+    print('indexing done')
 ```
 
 Console output:
 ```txt
-start_test_searcher@80992[I]:🏝️	Create Namespace "index-flow" for "test_searcher"
-deploy_test_searcher@80992[I]:🔋	Create Service for "test-searcher" with exposed port "8080"
-deploy_test_searcher@80992[I]:🐳	Create Deployment for "test-searcher" with image "jinahub/nflcyqe2:v10-2.1.0", replicas 1 and init_container False
-  start_gateway@80992[I]:🏝️	Create Namespace "index-flow" for "gateway"
-  start_gateway@80992[I]:🔁	namespaces "index-flow" already exists
- deploy_gateway@80992[I]:🔋	Create Service for "gateway" with exposed port "8080"
- deploy_gateway@80992[I]:🐳	Create Deployment for "gateway" with image "jinaai/jina:2.1.4-py38-standard", replicas 1 and init_container False
-```
-
-Use `port-forward` to send requests to the gateway of the index `Flow`:
-
-```bash
-kubectl port-forward svc/gateway -n index-flow 8080:8080
-```
-
-Console output:
-```txt
+create_index-flow@19114[I]:🏝️	Create Namespace "index-flow"
+⠸ 0/2 waiting test_searcher gateway to be ready...waiting_for_gateway@19114[L]: gateway has all its replicas ready!!
+⠦ 1/2 waiting test_searcher to be ready...waiting_for_test_searcher@19114[L]: test_searcher has all its replicas ready!!
+start indexing
 Forwarding from 127.0.0.1:8080 -> 8080
 Forwarding from [::1]:8080 -> 8080
-
+indexing done
+  close_gateway@19114[L]: Successful deletion of deployment gateway
+close_test_searcher@19114[L]: Successful deletion of deployment test_searcher
 ```
 
-#### Index client
-
-On the client side, let's index 100 `Documents`:
-
-```python
-import numpy as np
-import requests
-from jina import Document
-
-ip = '127.0.0.1'
-port = 8080
-host = f'http://{ip}:{port}'
-
-docs = [
-    Document(id=f'item {i}', embedding=np.random.rand(128).astype(np.float32)).dict()
-    for i in range(100)
-]
-for d in docs:
-    print('index document:', d['id'])
-    resp = requests.post(f'{host}/index', json={'data': [d]})
-    print(resp.text)
-```
-
-Console output:
-```txt
-index document: item 0
-{"requestId":"a133c678-99cc-4903-ae34-1524d3fb3cc4",...}
-index document: item 1
-...
-index document: item 99
-{"requestId":"02a9041b-d5e8-4625-8e97-6dffb5da2e96",...}
-```
-
-#### Search server
+#### Searching
 
 The following code deploys a search `Flow` on `Kubernetes`. In total, there are 9 `Kubernetes` deployments and services
 created.
@@ -237,7 +148,9 @@ gateway - head - shard1_replica0, shard1_replica1 - tail
 Deploy search `Flow`:
 
 ```python
-from jina import Flow
+from jina import Flow, Document
+import os
+import numpy as np
 
 shards = 3
 
@@ -254,7 +167,7 @@ f = Flow(
         'total_shards': shards,
         'hostname': f'my-release-postgresql.default.svc.cluster.local',
         'username': 'postgres',
-        'password': 'QJgNIt10Rm', # example password - should be an environment variable
+        'password': os.environ['POSTGRES_PASSWORD'],
         'database': 'postgres',
         'table': 'test_searcher',
     },
@@ -262,141 +175,111 @@ f = Flow(
 )
 
 with f:
+    resp = f.post('/search', Document(embedding=np.random.rand(128)), return_results=True)
+    print(f"Len response matches: {len(resp[0].docs[0].matches)}")
+```
+Console output:
+```txt
+create_search-flow2@19273[I]:🏝️	Create Namespace "search-flow2"
+           JINA@19273[W]:🔁	roles.rbac.authorization.k8s.io "connection-pool" already exists
+           JINA@19273[W]:🔁	rolebindings.rbac.authorization.k8s.io "connection-pool-binding" already exists
+           JINA@19273[W]:🔁	roles.rbac.authorization.k8s.io "connection-pool" already exists
+           JINA@19273[W]:🔁	rolebindings.rbac.authorization.k8s.io "connection-pool-binding" already exists
+           JINA@19273[W]:🔁	roles.rbac.authorization.k8s.io "connection-pool" already exists
+           JINA@19273[W]:🔁	rolebindings.rbac.authorization.k8s.io "connection-pool-binding" already exists
+           JINA@19273[W]:🔁	roles.rbac.authorization.k8s.io "connection-pool" already exists
+           JINA@19273[W]:🔁	rolebindings.rbac.authorization.k8s.io "connection-pool-binding" already exists
+           JINA@19273[W]:🔁	roles.rbac.authorization.k8s.io "connection-pool" already exists
+           JINA@19273[W]:🔁	rolebindings.rbac.authorization.k8s.io "connection-pool-binding" already exists
+⠋ 0/2 waiting test_searcher gateway to be ready...waiting_for_test_searcher-head@19273[L]: test_searcher-head has all its replicas ready!!
+⠋ 0/2 waiting test_searcher gateway to be ready...waiting_for_test_searcher-0@19273[L]: test_searcher-0 has all its replicas ready!!
+⠦ 0/2 waiting test_searcher gateway to be ready...waiting_for_test_searcher-1@19273[L]: test_searcher-1 has all its replicas ready!!
+⠇ 0/2 waiting test_searcher gateway to be ready...waiting_for_test_searcher-2@19273[L]: test_searcher-2 has all its replicas ready!!
+⠙ 0/2 waiting test_searcher gateway to be ready...waiting_for_test_searcher-tail@19273[L]: test_searcher-tail has all its replicas ready!!
+⠹ 1/2 waiting gateway to be ready...waiting_for_gateway@19273[L]: gateway has all its replicas ready!!
+Forwarding from 127.0.0.1:8080 -> 8080
+Forwarding from [::1]:8080 -> 8080
+Len response matches: 15
+  close_gateway@19273[L]: Successful deletion of deployment gateway
+close_test_searcher-head@19273[L]: Successful deletion of deployment test_searcher-head
+close_test_searcher-0@19273[L]: Successful deletion of deployment test_searcher-0
+close_test_searcher-1@19273[L]: Successful deletion of deployment test_searcher-1
+close_test_searcher-2@19273[L]: Successful deletion of deployment test_searcher-2
+close_test_searcher-tail@19273[L]: Successful deletion of deployment test_searcher-tail
+```
+## Exposing your `Flow`
+The previous examples use port-forwarding to send documents to the `Flow`. 
+Thinking about real world applications, 
+you might want to expose your service to make it reachable by the users.
+
+```{caution}
+Exposing your `Flow` only works if the environment of your `Kubernetes cluster` supports `External Loadbalancers`.
+```
+
+### Server
+Use the context manager and `f.block()` to make sure the `Flow` is deployed and cleaned up after termination.
+```python
+from jina import Flow
+
+f = Flow(name='example-clip', port_expose=8080, infrastructure='K8S', protocol='http').add(
+    uses='jinahub+docker://CLIPImageEncoder'
+)
+with f:
     f.block()
 ```
+
 Console output:
 ```txt
-start_test_searcher@81116[I]:🏝️	Create Namespace "search-flow" for "test_searcher"
-deploy_test_searcher@81116[I]:🔋	Create Service for "test-searcher-head" with exposed port "8080"
-deploy_test_searcher@81116[I]:🐳	Create Deployment for "test-searcher-head" with image "jinaai/jina:2.1.4-py38-standard", replicas 1 and init_container False
-deploy_test_searcher@81116[I]:🔋	Create Service for "test-searcher-0" with exposed port "8080"
-deploy_test_searcher@81116[I]:🐳	Create Deployment for "test-searcher-0" with image "jinahub/nflcyqe2:v10-2.1.0", replicas 2 and init_container False
-deploy_test_searcher@81116[I]:🔋	Create Service for "test-searcher-1" with exposed port "8080"
-deploy_test_searcher@81116[I]:🐳	Create Deployment for "test-searcher-1" with image "jinahub/nflcyqe2:v10-2.1.0", replicas 2 and init_container False
-deploy_test_searcher@81116[I]:🔋	Create Service for "test-searcher-2" with exposed port "8080"
-deploy_test_searcher@81116[I]:🐳	Create Deployment for "test-searcher-2" with image "jinahub/nflcyqe2:v10-2.1.0", replicas 2 and init_container False
-deploy_test_searcher@81116[I]:🔋	Create Service for "test-searcher-tail" with exposed port "8080"
-deploy_test_searcher@81116[I]:🐳	Create Deployment for "test-searcher-tail" with image "jinahub/mruax3k7:v6-2.1.0", replicas 1 and init_container False
-  start_gateway@81116[I]:🏝️	Create Namespace "search-flow" for "gateway"
-  start_gateway@81116[I]:🔁	namespaces "search-flow" already exists
- deploy_gateway@81116[I]:🔋	Create Service for "gateway" with exposed port "8080"
- deploy_gateway@81116[I]:🐳	Create Deployment for "gateway" with image "jinaai/jina:2.1.4-py38-standard", replicas 1 and init_container False                                                                                                 
+create_example-clip@15611[I]:🏝️	Create Namespace "example-clip"
+⠸ 0/2 waiting executor0 gateway to be ready...waiting_for_gateway@15611[L]: gateway has all its replicas ready!!
+⠋ 1/2 waiting executor0 to be ready...waiting_for_executor0@15611[L]: executor0 has all its replicas ready!!                                                                      
 ```
-
-Use `port-forward` to send requests to the gateway of the search `Flow`:
-
+Once the `Flow` is deployed, you can expose a service.
 ```bash
-kubectl port-forward svc/gateway -n search-flow 8081:8080
-```
-Console output:
-```txt
-Forwarding from 127.0.0.1:8081 -> 8080
-Forwarding from [::1]:8081 -> 8080
+kubectl expose deployment gateway --name=gateway-exposed --type LoadBalancer --port 80 --target-port 8080 -n example-clip
+sleep 60 # wait until the external ip is configured
 ```
 
-#### Search client
+Export the external ip which is needed for the client in the next section when sending documents to the `Flow`. 
+```bash
+export EXTERNAL_IP=`kubectl get service gateway-exposed -n example-clip -o=jsonpath='{.status.loadBalancer.ingress[0].ip}'`
+```
 
-Get search results for a single `Document`:
-
+### Client
+The client sends an image to the exposed `Flow` on `$EXTERNAL_IP` and retrieves the embedding created by the CLIPImageEncoder.
+Finally, it prints the dimensionality of the embedding.
 ```python
+import base64
 import numpy as np
 import requests
 from jina import Document
-
-ip = '127.0.0.1'
-port = '8081'
-host = f'http://{ip}:{port}'
-
-data = [Document(embedding=np.random.rand(128).astype(np.float32)).dict()]
-
-resp = requests.post(f'{host}/search', json={'data': data})
-print(f"Len response matches: {len(resp.json()['data']['docs'][0]['matches'])}")
+import os
+host = os.environ['EXTERNAL_IP']
+port = 80
+url = f'http://{host}:{port}'
+doc = Document(id=f'image', blob=np.random.rand(3, 16, 16)).dict()
+resp = requests.post(f'{url}/index', json={'data': [doc]})
+embedding = np.frombuffer(
+    base64.decodebytes(
+        resp.json()['data']['docs'][0]['embedding']['dense']['buffer'].encode()
+    ),
+    np.float32,
+)
+print('embedding size: ', len(embedding))
 ```
 
 Console output:
 ```txt
-Len response matches: 15
-```
-
-```{admonition} Limitations of the Current Implemenation
-:class: caution
-
-- each `Executor` has to be containerized
-- only stateless executors are supported when using replicas > 1
+embedding size:  512
 ```
 
 ## Scaling Executors on Kubernetes
 
 In Jina we support two ways of scaling:
-- **Replicas** can be used with any Executor type.
-- **Shards** should only be used with Indexers, since they store a state.
+- **Replicas** can be used with any Executor type and is typically used for performance and availability.
+- **Shards** are used for partitioning data and should only be used with Indexers since they store a state.
 
-```{admonition} Important
-:class: important
-This page describes Jina's behavior with kubernetes deployment for now.
-When using `shards` and `replicas` without kubernetes, Jina will behave slightly different.
-It is discouraged to use the `parallel` argument when deploying to kubernetes.
-```
+Check {ref}`here <flow-topology>` for more information.
 
-(replicas)=
-### Replicas
-
-Replication (or horizontal scaling) means duplicating an Executor and its state.
-It allows more requests to be served in parallel.
-A single request to Jina is only send to one of the replicas.
-Furthermore, it increases the failure tolerance.
-When one replica dies, another will immediately take over.
-In a cloud environment any machine might die at any point in time.
-Thus, using replicas is important for reliable services.
-Replicas are currently only supported, when deploying Jina with kubernetes.
-
-```python Usage
-from jina import Flow
-
-f = Flow().add(name='ExecutorWithReplicas', replicas=3)
-```
-
-(shards)=
-### Shards
-
-Sharding means splitting the content of an Indexer into several parts.
-These parts are then put on different machines.
-This is helpful in two situations:
-
-- When the full data does not fit onto one machine.
-- When the latency of a single request becomes too slow.
-  Then splitting the load across two or more machines yields better results.
-
-When you shard your index, the request handling usually differes for index and search requests:
-
-- Index (and update, delete) will just be handled by a single shard => `polling='any'`
-- Search requests are handled by all shards => `polling='all'`
-
-```python Usage
-from jina import Flow
-
-index_flow = Flow().add(name='ExecutorWithShards', shards=3, polling='any')
-search_flow = Flow().add(name='ExecutorWithShards', shards=3, polling='all', uses_after='MatchMerger')
-```
-
-### Merging search results via `uses_after`
-
-Each shard of a search Flow returns one set of results for each query Document.
-A merger Executor combines them afterwards.
-You can use the pre-build [MatchMerger](https://hub.jina.ai/executor/mruax3k7) or define your own merger.
-
-```{admonition} Example
-:class: example
-A search Flow has 10 shards for an Indexer.
-Each shard returns the top 20 results.
-After the merger there will be 200 results per query Document.
-```
-
-## Combining replicas & shards
-
-Combining both gives all the advantages mentioned above.
-When deploying to kubernetes, Jina replicates each single shard.
-Thus, shards can scale independently.
-The data syncronisation across replicas must be handled by the respective Indexer.
-For more detailed see {ref}`Dump and rolling update <dump-rolling-restart>`.
+Jina creates a separate Deployment in Kubernetes per Shard and uses [Kubernetes native replica scaling](https://kubernetes.io/docs/tutorials/kubernetes-basics/scale/scale-intro/) to create multiple Replicas per Shard.
 

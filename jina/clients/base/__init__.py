@@ -91,6 +91,11 @@ class BaseClient(ABC):
         # override by the caller-specific kwargs
         _kwargs.update(kwargs)
 
+        if hasattr(self._inputs, '__len__'):
+            self._inputs_length = max(1, len(self._inputs) / _kwargs['request_size'])
+        else:
+            self._inputs_length = None
+
         if inspect.isasyncgen(self.inputs):
             from ..request.asyncio import request_generator
 

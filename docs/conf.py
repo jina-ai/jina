@@ -61,7 +61,16 @@ html_theme_options = {
         "color-brand-primary": "#FBCB67",
         "color-brand-content": "#FBCB67",
     },
+
+    # PLEASE DO NOT DELETE the empty line between `start-announce` and `end-announce`
+    # PLEASE DO NOT DELETE `start-announce`/ `end-announce` it is used for our dev bot to inject announcement from GH
+
     # start-announce
+
+    "announcement": '''
+    <a href="https://github.com/jina-ai/finetuner">Check out <b>Finetuner</b> - tuning any DNN for better embedding on neural search tasks</a>
+    ''',
+        
     # end-announce
 }
 
@@ -176,6 +185,8 @@ ogp_custom_meta_tags = [
 
   gtag('config', 'G-48ZDWC8GT6');
 </script>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
     ''',
 ]
 

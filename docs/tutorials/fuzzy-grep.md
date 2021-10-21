@@ -8,6 +8,11 @@
 :date: July 15, 2021
 ```
 
+````{admonition} Different behavior on Jupyter Notebook
+:class: warning
+Be aware of the following when running this tutorial in jupyter notebook. Some python built-in attributes such as `__file__` do not exist. You can change `__file__` for any other file path existing in your system.
+````
+
 
 Now that you understand all fundamental concepts, let's practice the learnings and build a simple end-to-end demo.
 

@@ -5,7 +5,6 @@ import hashlib
 import json
 import os
 import random
-import warnings
 from pathlib import Path
 from typing import Optional, Dict
 from urllib.parse import urlencode
@@ -19,13 +18,13 @@ from .helper import (
     upload_file,
     disk_cache_offline,
 )
-from .helper import install_requirements
 from .hubapi import (
     install_local,
     get_dist_path_of_executor,
     load_secret,
     dump_secret,
     get_lockfile,
+    install_package_dependencies,
 )
 from .. import __resources_path__
 from ..helper import get_full_version, ArgNamespace
@@ -564,7 +563,6 @@ with f:
             The `name` and `tag` should be passed via ``args`` and `force` and `secret` as ``kwargs``, otherwise,
             cache does not work.
         """
-
         with ImportExtensions(required=True):
             import requests
 
@@ -721,15 +719,23 @@ with f:
                                 raise FileNotFoundError(
                                     f'{pkg_path} need to be upgraded'
                                 )
-                            if self.args.install_requirements:
-                                st.update('Installing [bold]requirements.txt[/bold]...')
-                                requirements_file = pkg_dist_path / 'requirements.txt'
-                                if requirements_file.exists():
-                                    install_requirements(requirements_file)
+
+                            st.update('Installing [bold]requirements.txt[/bold]...')
+                            install_package_dependencies(
+                                install_deps=self.args.install_requirements,
+                                pkg_dist_path=pkg_dist_path,
+                                pkg_path=pkg_dist_path,
+                            )
+
                         except FileNotFoundError:
                             need_pull = True
 
                         if need_pull:
+                            # pull the latest executor meta, as the cached data would expire
+                            executor = HubIO.fetch_meta(
+                                name, tag, secret=secret, force=True
+                            )
+
                             cache_dir = Path(
                                 os.environ.get(
                                     'JINA_HUB_CACHE_DIR',
@@ -761,10 +767,9 @@ with f:
                     raise ValueError(f'{self.args.uri} is not a valid scheme')
         except KeyboardInterrupt:
             executor_name = None
-        except Exception as e:
-            self.logger.error(f'Error while pulling {self.args.uri}: \n{e!r}')
+        except Exception:
             executor_name = None
-            raise e
+            raise
         finally:
             # delete downloaded zip package if existed
             if cached_zip_file is not None:
