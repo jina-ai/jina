@@ -120,7 +120,6 @@ async def test_grpc_connection_pool():
 
     assert is_called.is_set()
     pool.close()
-    GRPCDataRuntime.cancel(cancel_event=is_cancel)
     runtime_process.terminate()
     runtime_process.join()
 

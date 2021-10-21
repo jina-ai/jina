@@ -747,7 +747,7 @@ def test_flow_set_asyncio_switch_post(is_async):
     assert inspect.isasyncgenfunction(f.post) == is_async
 
 
-async def delayed_send_message_via(self, socket, msg):
+async def delayed_send_message_via(self, socket, msg, *args, **kwargs):
     try:
         if self.msg_sent > 0:
             import asyncio

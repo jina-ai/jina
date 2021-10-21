@@ -1,10 +1,11 @@
 import argparse
+from abc import ABC, abstractmethod
 
 from ...excepts import RuntimeTerminated
 from ...logging.logger import JinaLogger
 
 
-class BaseRuntime:
+class BaseRuntime(ABC):
     """A Jina Runtime is a procedure that blocks the main process once running (i.e. :meth:`run_forever`),
     therefore should be put into a separated thread/process, or inside the main process of a docker container.
      Any program/library/package/module that blocks the main process, can be formulated into a :class:`BaseRuntime` class
@@ -119,3 +120,37 @@ class BaseRuntime:
         # from being propagated), it should return a true value. Otherwise, the exception will be processed normally
         # upon exit from this method.
         return True
+
+    @staticmethod
+    def activate(*args, **kwargs):
+        """
+        Activate the runtime, this is useful when there needs to be a special operation to make the Runtime useful after start.
+        In ZEDRuntime involved runtimes, the Runtime may need to send to the ROUTER that is ready to receive messages
+
+        :param args: Additional positional arguments
+        :param kwargs: Additional keyword arguments
+        """
+        pass
+
+    @staticmethod
+    def deactivate(*args, **kwargs):
+        """
+        Deactivate the runtime, this is useful when there needs to be a special operation to make sure that the rest of runtimes in the Flow do not send
+        messages to this one..
+        In ZEDRuntime involved runtimes, the Runtime may need to send to the ROUTER that is unable to receive messages.
+
+        :param args: Additional positional arguments
+        :param kwargs: Additional keyword arguments
+        """
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def wait_for_ready_or_shutdown(*args, **kwargs):
+        """
+        Wait for the runtime to be ready, or to know that it has failed to start.
+
+        :param args: Additional positional arguments
+        :param kwargs: Additional keyword arguments
+        """
+        ...

@@ -10,6 +10,7 @@ from ..networking import get_connect_host
 from ... import helper
 from ...enums import SocketType, SchedulerType
 from ...helper import random_identity
+from ...logging.logger import JinaLogger
 
 
 class CompoundPod(BasePod):
@@ -31,6 +32,7 @@ class CompoundPod(BasePod):
         super().__init__()
         args.upload_files = BasePod._set_upload_files(args)
         self.args = args
+        self.logger = JinaLogger(self.args.name or self.__class__.__name__)
         self.needs = (
             needs or set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
@@ -270,6 +272,7 @@ class CompoundPod(BasePod):
         :param dump_path: **backwards compatibility** This function was only accepting dump_path as the only potential arg to override
         :param uses_with: a Dictionary of arguments to restart the executor with
         """
+        self.logger.debug(f' Starting rolling update')
         tasks = []
         try:
             import asyncio
@@ -282,6 +285,7 @@ class CompoundPod(BasePod):
             ]
             for future in asyncio.as_completed(tasks):
                 _ = await future
+            self.logger.debug(f' Successful rolling update')
         except:
             for task in tasks:
                 if not task.done():

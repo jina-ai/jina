@@ -64,8 +64,7 @@ def test_container_runtime_bad_entrypoint(runtime):
 
 
 @pytest.mark.skipif(__windows__, reason='Windows containers are not supported yet')
-@pytest.mark.parametrize('runtime', ['thread', 'process'])
-def test_container_runtime_good_entrypoint(runtime):
+def test_container_runtime_good_entrypoint():
     class Pea1(BasePea):
         runtime_cls = ContainerRuntime
 
@@ -74,9 +73,7 @@ def test_container_runtime_good_entrypoint(runtime):
             '--uses',
             'docker://jinaai/jina:test-pip',
             '--entrypoint',
-            'jina pod',
-            '--runtime-backend',
-            runtime,
+            'jina executor',
         ]
     )
     with Pea1(arg):
@@ -97,21 +94,24 @@ def test_address_in_use(runtime):
 
 
 @pytest.mark.skipif(__windows__, reason='Windows containers are not supported yet')
-@pytest.mark.parametrize('runtime', ['thread', 'process'])
 @pytest.mark.parametrize(
     'parser, args',
     [
         (
             set_pea_parser,
-            ['--uses', 'docker://jinaai/jina:test-pip', '--entrypoint', 'jina pod'],
+            [
+                '--uses',
+                'docker://jinaai/jina:test-pip',
+                '--entrypoint',
+                'jina executor',
+            ],
         ),
         (set_gateway_parser, ['--protocol', 'websocket']),
         (set_gateway_parser, ['--protocol', 'http']),
         (set_pea_parser, []),
     ],
 )
-def test_runtime_thread_process(runtime, parser, args):
-    args.extend(['--runtime-backend', runtime])
+def test_runtime_process(parser, args):
     arg = parser().parse_args(args)
     with BasePea(arg):
         pass

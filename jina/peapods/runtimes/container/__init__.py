@@ -6,7 +6,9 @@ import warnings
 from typing import Union, Optional, Dict, TYPE_CHECKING
 from pathlib import Path
 from platform import uname
+import signal
 
+from .... import __windows__
 from ..base import BaseRuntime
 from ...zmq import Zmqlet
 from .... import __docker_host__
@@ -27,6 +29,18 @@ class ContainerRuntime(BaseRuntime):
 
     def __init__(self, args: 'argparse.Namespace', **kwargs):
         super().__init__(args, **kwargs)
+        self._container = None
+        if not __windows__:
+            try:
+                signal.signal(signal.SIGTERM, self._handle_sig_term)
+            except ValueError:
+                self.logger.warning(
+                    'Runtime is being run in a thread. Threads can not receive signals and may not shutdown as expected.'
+                )
+        else:
+            import win32api
+
+            win32api.SetConsoleCtrlHandler(self._handle_sig_term)
         self.ctrl_addr = self.get_control_address(
             args.host,
             args.port_ctrl,
@@ -50,14 +64,27 @@ class ContainerRuntime(BaseRuntime):
                 'the container fails to start, check the arguments or entrypoint'
             )
 
+    def _handle_sig_term(self, *args, **kwargs):
+        self.teardown()
+
     def teardown(self):
         """Stop the container."""
-        self._container.stop()
+        # Send termination command to container
+        if self._container is not None:
+            timeout = int(self.args.timeout_ctrl / 1000)
+            if timeout == 0:
+                timeout = 1
+            self._container.stop(timeout=timeout)
+            self._container.wait(timeout=timeout)
+            self._container = None
         super().teardown()
 
     def _stream_logs(self):
-        for line in self._container.logs(stream=True):
-            self.logger.info(line.strip().decode())
+        try:
+            for line in self._container.logs(stream=True):
+                self.logger.info(line.strip().decode())
+        except Exception as ex:
+            self.logger.warning(f' Container logs returned {ex!r}')
 
     def run_forever(self):
         """Stream the logs while running."""
@@ -213,6 +240,7 @@ class ContainerRuntime(BaseRuntime):
             entrypoint=self.args.entrypoint,
             extra_hosts={__docker_host__: 'host-gateway'},
             device_requests=device_requests,
+            stop_signal='SIGTERM',
             **docker_kwargs,
         )
 
@@ -273,36 +301,10 @@ class ContainerRuntime(BaseRuntime):
         return ready_or_shutdown_event.wait(timeout)
 
     @staticmethod
-    def _retry_control_message(
-        ctrl_address: str,
-        timeout_ctrl: int,
-        command: str,
-        num_retry: int,
-        logger: 'JinaLogger',
-    ):
-        from ...zmq import send_ctrl_message
-
-        for retry in range(1, num_retry + 1):
-            logger.debug(f'Sending {command} command for the {retry}th time')
-            try:
-                send_ctrl_message(
-                    ctrl_address,
-                    command,
-                    timeout=timeout_ctrl,
-                    raise_exception=True,
-                )
-                break
-            except Exception as ex:
-                logger.warning(f'{ex!r}')
-                if retry == num_retry:
-                    raise ex
-
-    @staticmethod
-    def cancel(
+    def deactivate(
         control_address: str,
         timeout_ctrl: int,
-        socket_in_type: 'SocketType',
-        skip_deactivate: bool,
+        socket_in_type: Optional['SocketType'],
         logger: 'JinaLogger',
         **kwargs,
     ):
@@ -312,32 +314,25 @@ class ContainerRuntime(BaseRuntime):
         :param control_address: the address where the control message needs to be sent
         :param timeout_ctrl: the timeout to wait for control messages to be processed
         :param socket_in_type: the type of input socket, needed to know if is a dealer
-        :param skip_deactivate: flag to tell if deactivate signal may be missed.
-            This is important when you want to independently kill a Runtime
         :param logger: the JinaLogger to log messages
         :param kwargs: extra keyword arguments
         """
-        if not skip_deactivate and socket_in_type == SocketType.DEALER_CONNECT:
-            ContainerRuntime._retry_control_message(
-                ctrl_address=control_address,
+        # In the case Container uses GRPCDataRuntime, the `socket_in_type` should not be set, hacky ...
+        if socket_in_type is not None and socket_in_type == SocketType.DEALER_CONNECT:
+            from ..zmq.zed import ZEDRuntime
+
+            ZEDRuntime.deactivate(
+                control_address=control_address,
                 timeout_ctrl=timeout_ctrl,
-                command='DEACTIVATE',
-                num_retry=3,
+                socket_in_type=socket_in_type,
                 logger=logger,
             )
-        ContainerRuntime._retry_control_message(
-            ctrl_address=control_address,
-            timeout_ctrl=timeout_ctrl,
-            command='TERMINATE',
-            num_retry=3,
-            logger=logger,
-        )
 
     @staticmethod
     def activate(
         control_address: str,
         timeout_ctrl: int,
-        socket_in_type: 'SocketType',
+        socket_in_type: Optional['SocketType'],
         logger: 'JinaLogger',
         **kwargs,
     ):
@@ -350,12 +345,14 @@ class ContainerRuntime(BaseRuntime):
         :param logger: the JinaLogger to log messages
         :param kwargs: extra keyword arguments
         """
-        if socket_in_type == SocketType.DEALER_CONNECT:
-            ContainerRuntime._retry_control_message(
-                ctrl_address=control_address,
+        # In the case Container uses GRPCDataRuntime, the `socket_in_type` should not be set, hacky ...
+        if socket_in_type is not None and socket_in_type == SocketType.DEALER_CONNECT:
+            from ..zmq.zed import ZEDRuntime
+
+            ZEDRuntime.activate(
+                control_address=control_address,
                 timeout_ctrl=timeout_ctrl,
-                command='ACTIVATE',
-                num_retry=3,
+                socket_in_type=socket_in_type,
                 logger=logger,
             )
 

@@ -46,7 +46,7 @@ def test_grpc_data_runtime(mocker):
     time.sleep(0.1)
     assert handle_mock.is_set()
 
-    GRPCDataRuntime.cancel(cancel_event)
+    runtime_thread.terminate()
     runtime_thread.join()
 
     assert not GRPCDataRuntime.is_ready(f'{args.host}:{args.port_in}')
@@ -54,8 +54,7 @@ def test_grpc_data_runtime(mocker):
 
 @pytest.mark.slow
 @pytest.mark.timeout(10)
-@pytest.mark.parametrize('close_method', ['TERMINATE', 'CANCEL'])
-def test_grpc_data_runtime_graceful_shutdown(close_method):
+def test_grpc_data_runtime_graceful_shutdown():
     args = set_pea_parser().parse_args([])
 
     cancel_event = multiprocessing.Event()
@@ -98,10 +97,7 @@ def test_grpc_data_runtime_graceful_shutdown(close_method):
         )
     time.sleep(0.1)
 
-    if close_method == 'TERMINATE':
-        runtime_thread.terminate()
-    else:
-        GRPCDataRuntime.cancel(cancel_event)
+    runtime_thread.terminate()
     assert not handler_closed_event.is_set()
     runtime_thread.join()
 

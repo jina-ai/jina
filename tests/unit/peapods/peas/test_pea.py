@@ -24,7 +24,7 @@ def test_base_pea_with_runtime_bad_init(mocker):
     arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
     mocker.patch.object(ZEDRuntime, '__init__', bad_func)
     teardown_spy = mocker.spy(ZEDRuntime, 'teardown')
-    cancel_spy = mocker.spy(Pea, '_cancel_runtime')
+    deactivate_spy = mocker.spy(Pea, '_deactivate_runtime')
     run_spy = mocker.spy(ZEDRuntime, 'run_forever')
 
     with pytest.raises(RuntimeFailToStart):
@@ -35,7 +35,7 @@ def test_base_pea_with_runtime_bad_init(mocker):
 
     teardown_spy.assert_not_called()
     run_spy.assert_not_called()
-    cancel_spy.assert_not_called()
+    deactivate_spy.assert_not_called()
 
 
 @pytest.mark.slow
@@ -50,7 +50,7 @@ def test_base_pea_with_runtime_bad_run_forever(mocker):
     arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
     mocker.patch.object(ZEDRuntime, 'run_forever', mock_run_forever)
     teardown_spy = mocker.spy(ZEDRuntime, 'teardown')
-    cancel_spy = mocker.spy(Pea, '_cancel_runtime')
+    deactivate_spy = mocker.spy(Pea, '_deactivate_runtime')
     run_spy = mocker.spy(ZEDRuntime, 'run_forever')
 
     with pytest.raises(RuntimeRunForeverEarlyError):
@@ -60,72 +60,7 @@ def test_base_pea_with_runtime_bad_run_forever(mocker):
     # teardown should be called, cancel should not be called
     teardown_spy.assert_called()
     run_spy.assert_called()
-    cancel_spy.assert_not_called()
-
-
-@pytest.mark.slow
-def test_base_pea_with_runtime_bad_teardown(mocker):
-    class Pea1(Pea):
-        def __init__(self, args):
-            super().__init__(args)
-
-    def mock_run_forever(*args, **kwargs):
-        time.sleep(3)
-
-    def mock_is_ready(*args, **kwargs):
-        return True
-
-    def mock_cancel(*args, **kwargs):
-        pass
-
-    mocker.patch.object(ZEDRuntime, 'run_forever', mock_run_forever)
-    mocker.patch.object(ZEDRuntime, 'is_ready', mock_is_ready)
-    mocker.patch.object(ZEDRuntime, 'teardown', lambda x: bad_func)
-    mocker.patch.object(ZEDRuntime, 'cancel', lambda *args, **kwargs: mock_cancel)
-    teardown_spy = mocker.spy(ZEDRuntime, 'teardown')
-    cancel_spy = mocker.spy(Pea, '_cancel_runtime')
-    run_spy = mocker.spy(ZEDRuntime, 'run_forever')
-
-    arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
-    with Pea1(arg):
-        pass
-
-    teardown_spy.assert_called()
-    run_spy.assert_called()
-    cancel_spy.assert_called_once()  # 3s > .join(1), need to cancel
-
-    # run_forever cancel should all be called
-
-
-def test_base_pea_with_runtime_bad_cancel(mocker):
-    class Pea1(Pea):
-        def __init__(self, args):
-            super().__init__(args)
-
-    def mock_run_forever(runtime):
-        time.sleep(3)
-
-    def mock_is_ready(*args, **kwargs):
-        return True
-
-    mocker.patch.object(ZEDRuntime, 'run_forever', mock_run_forever)
-    mocker.patch.object(ZEDRuntime, 'is_ready', mock_is_ready)
-    mocker.patch.object(Pea, '_cancel_runtime', bad_func)
-
-    teardown_spy = mocker.spy(ZEDRuntime, 'teardown')
-    cancel_spy = mocker.spy(Pea, '_cancel_runtime')
-    run_spy = mocker.spy(ZEDRuntime, 'run_forever')
-
-    arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
-    with Pea1(arg):
-        time.sleep(0.1)
-        pass
-
-    teardown_spy.assert_called()
-    run_spy.assert_called()
-    cancel_spy.assert_called_once()
-
-    # run_forever cancel should all be called
+    deactivate_spy.assert_not_called()
 
 
 @pytest.fixture()

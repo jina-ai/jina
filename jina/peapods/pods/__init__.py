@@ -19,16 +19,15 @@ from ...enums import (
 )
 from ...helper import random_identity, CatchAllCleanupContextManager
 from ...jaml.helper import complete_path
+from ...logging.logger import JinaLogger
 
 
 class ExitFIFO(ExitStack):
     """
     ExitFIFO changes the exiting order of exitStack to turn it into FIFO.
-
     .. note::
     The `__exit__` method is copied literally from `ExitStack` and changed the call:
     `is_sync, cb = self._exit_callbacks.pop()` to `is_sync, cb = self._exit_callbacks.popleft()`
-
     """
 
     def __exit__(self, *exc_details):
@@ -329,6 +328,46 @@ class Pod(BasePod):
     :param needs: pod names of preceding pods, the output of these pods are going into the input of this pod
     """
 
+    class _ReplicaSet:
+        def __init__(self, pod_args: Namespace, args: List[Namespace]):
+            super().__init__()
+            self.pod_args = pod_args
+            self._exit_fifo = ExitFIFO()
+            self.args = args
+            self.peas = []
+
+        async def rolling_update(
+            self, dump_path: Optional[str] = None, *, uses_with: Optional[Dict] = None
+        ):
+            new_exit_fifo = ExitFIFO()
+            for i in range(len(self.peas)):
+                old_pea = self.peas[i]
+                old_pea.close()
+                _args = self.args[i]
+                _args.noblock_on_start = True
+                ### BACKWARDS COMPATIBILITY, so THAT DUMP_PATH is in runtime_args
+                _args.dump_path = dump_path
+                ###
+                _args.uses_with = uses_with
+                new_pea = BasePea(_args)
+                new_exit_fifo.enter_context(new_pea)
+                self.peas[i] = new_pea
+                await new_pea.async_wait_start_success()
+                new_pea.activate_runtime()
+            self._exit_fifo = new_exit_fifo
+
+        def __enter__(self):
+            for _args in self.args:
+                if getattr(self.pod_args, 'noblock_on_start', False):
+                    _args.noblock_on_start = True
+                pea = BasePea(_args)
+                self.peas.append(pea)
+                self._exit_fifo.enter_context(pea)
+            return self
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            self._exit_fifo.__exit__(exc_type, exc_val, exc_tb)
+
     def __init__(
         self,
         args: Union['Namespace', Dict],
@@ -337,23 +376,37 @@ class Pod(BasePod):
         super().__init__()
         args.upload_files = BasePod._set_upload_files(args)
         self.args = args
+        self.logger = JinaLogger(self.args.name or self.__class__.__name__)
+
         # a pod only can have replicas and they can only have polling ANY
         self.args.polling = PollingType.ANY
         self.needs = (
             needs or set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
 
+        self.head_pea = None
+        self.tail_pea = None
+        self.replica_set = None
         self.is_head_router = False
         self.is_tail_router = False
         self.deducted_head = None
         self.deducted_tail = None
-        self.peas = []  # type: List['BasePea']
         self.update_pea_args()
         self._activated = False
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
         self.join()
+
+    @property
+    def peas(self):
+        """List of peas in this Pod
+        :return: Return all the concatenated list of peas
+        """
+        _peas = [self.head_pea] if self.head_pea is not None else []
+        _peas.extend(self.replica_set.peas if self.replica_set is not None else [])
+        _peas.extend([self.tail_pea] if self.tail_pea is not None else [])
+        return _peas
 
     def update_pea_args(self):
         """ Update args of all its peas based on Pod args. Including head/tail"""
@@ -493,10 +546,6 @@ class Pod(BasePod):
     def __eq__(self, other: 'BasePod'):
         return self.num_peas == other.num_peas and self.name == other.name
 
-    def _enter_pea(self, pea: 'BasePea') -> None:
-        self.peas.append(pea)
-        self.enter_context(pea)
-
     def activate(self):
         """
         Activate all peas in this pod
@@ -517,10 +566,21 @@ class Pod(BasePod):
             If one of the :class:`BasePea` fails to start, make sure that all of them
             are properly closed.
         """
-        for _args in self._fifo_args:
+        if self.peas_args['head'] is not None:
+            _args = self.peas_args['head']
             if getattr(self.args, 'noblock_on_start', False):
                 _args.noblock_on_start = True
-            self._enter_pea(BasePea(_args))
+            self.head_pea = BasePea(_args)
+            self.enter_context(self.head_pea)
+        self.replica_set = self._ReplicaSet(self.args, self.peas_args['peas'])
+        self.enter_context(self.replica_set)
+        if self.peas_args['tail'] is not None:
+            _args = self.peas_args['tail']
+            if getattr(self.args, 'noblock_on_start', False):
+                _args.noblock_on_start = True
+            self.tail_pea = BasePea(_args)
+            self.enter_context(self.tail_pea)
+
         if not getattr(self.args, 'noblock_on_start', False):
             self.activate()
         return self
@@ -551,7 +611,6 @@ class Pod(BasePod):
         except KeyboardInterrupt:
             pass
         finally:
-            self.peas.clear()
             self._activated = False
 
     @property
@@ -575,29 +634,16 @@ class Pod(BasePod):
         :param uses_with: a Dictionary of arguments to restart the executor with
         """
         # BACKWARDS COMPATIBILITY
+        self.logger.debug(f' Starting rolling update')
         if dump_path is not None:
             if uses_with is not None:
                 uses_with['dump_path'] = dump_path
             else:
                 uses_with = {'dump_path': dump_path}
         try:
-            pea_args_idx = 0
-            for i in range(len(self.peas)):
-                pea = self.peas[i]
-                if pea.role == PeaRoleType.PARALLEL:
-                    pea.close()
-                    _args = self.peas_args['peas'][pea_args_idx]
-                    _args.noblock_on_start = True
-                    ### BACKWARDS COMPATIBILITY, so THAT DUMP_PATH is in runtime_args
-                    _args.dump_path = dump_path
-                    ###
-                    _args.uses_with = uses_with
-                    new_pea = BasePea(_args)
-                    self.enter_context(new_pea)
-                    await new_pea.async_wait_start_success()
-                    new_pea.activate_runtime()
-                    self.peas[i] = new_pea
-                    pea_args_idx += 1
+            await self.replica_set.rolling_update(
+                dump_path=dump_path, uses_with=uses_with
+            )
         except:
             raise
 
