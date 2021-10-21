@@ -202,7 +202,14 @@ class BasePea:
         :param kwargs: extra keyword arguments to pass to join
         """
         self.logger.debug(f' Joining the process')
-        self.worker.join(*args, **kwargs)
+        if isinstance(self.worker, multiprocessing.Process):
+            try:
+                self.worker.join(*args, **kwargs)
+                self.worker.close()
+            except:
+                pass
+        else:
+            self.worker.join()
         self.logger.debug(f' Successfully joined the process')
 
     def terminate(self):
@@ -211,7 +218,7 @@ class BasePea:
         """
         if hasattr(self.worker, 'terminate'):
             self.logger.debug(
-                f' terminating the runtime process with PID {self.worker.pid}'
+                f' terminating the runtime process with PID {self.worker.pid} => {self.worker}'
             )
             self.worker.terminate()
         else:
@@ -222,24 +229,6 @@ class BasePea:
                 timeout_ctrl=self._timeout_ctrl,
                 cancel_event=self.cancel_event,
             )
-
-    def _retry_control_message(self, command: str, num_retry: int = 3):
-        from ..zmq import send_ctrl_message
-
-        for retry in range(1, num_retry + 1):
-            self.logger.debug(f'Sending {command} command for the {retry}th time')
-            try:
-                send_ctrl_message(
-                    self.runtime_ctrl_address,
-                    command,
-                    timeout=self._timeout_ctrl,
-                    raise_exception=True,
-                )
-                break
-            except Exception as ex:
-                self.logger.warning(f'{ex!r}')
-                if retry == num_retry:
-                    raise ex
 
     def activate_runtime(self):
         """ Send activate control message. """
@@ -355,8 +344,10 @@ class BasePea:
             and self.args.socket_in == SocketType.DEALER_CONNECT
         )
 
-    def close(self) -> None:
+    def close(self, skip_deactivate=True) -> None:
         """Close the Pea
+
+        :param skip_deactivate: Skip the deactivate step, only needed to disable when rolling update
 
         This method makes sure that the `Process/thread` is properly finished and its resources properly released
         """
@@ -364,7 +355,8 @@ class BasePea:
         self.logger.debug('waiting for ready or shutdown signal from runtime')
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
             try:
-                self._deactivate_runtime()
+                if not skip_deactivate:
+                    self._deactivate_runtime()
             except Exception as ex:
                 self.logger.warning(
                     f'Exception raised when deactivating runtime {ex!r} '
