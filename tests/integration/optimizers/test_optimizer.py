@@ -46,6 +46,64 @@ def document_generator(num_doc):
         yield doc, groundtruth_doc
 
 
+def test_optimizer_search_space(tmpdir, config):
+    eval_flow_runner = SingleFlowRunner(
+        flow_yaml=os.path.join(cur_dir, "flow.yml"),
+        documents=document_generator(10),
+        request_size=1,
+        execution_endpoint="search",
+    )
+    _opt_kwargs = dict(
+        flow_runner=eval_flow_runner,
+        evaluation_callback=EvaluationCallback(),
+        workspace_base_dir=str(tmpdir),
+        n_trials=5,
+        sampler="GridSampler",
+    )
+
+    # check the search space construction with valid parameters
+    opt = FlowOptimizer(
+        **_opt_kwargs,
+        parameter_yaml=os.path.join(cur_dir, "parameters_search_space.yml"),
+    )
+    assert "JINA_PARAM1" in opt._search_space
+    assert opt._search_space["JINA_PARAM1"] == [0, 1, 2]
+    assert "JINA_PARAM2" in opt._search_space
+    assert opt._search_space["JINA_PARAM2"] == ["foo", "bar"]
+    assert "JINA_PARAM3" in opt._search_space
+    assert opt._search_space["JINA_PARAM3"] == [1.0, 1.5, 2.0]
+    assert "JINA_PARAM4" in opt._search_space
+    assert opt._search_space["JINA_PARAM4"] == ["spam", "ham"]
+    assert "JINA_PARAM4_SPAM_PARAM5" in opt._search_space
+    assert opt._search_space["JINA_PARAM4_SPAM_PARAM5"] == [0, 1, 2]
+    assert "JINA_PARAM4_HAM_PARAM56" in opt._search_space
+    assert opt._search_space["JINA_PARAM4_HAM_PARAM56"] == [0, 1, 2]
+
+    # check the search space construction with invalid uniform parameter
+    _raised = False
+    try:
+        _ = FlowOptimizer(
+            **_opt_kwargs,
+            parameter_yaml=os.path.join(cur_dir, "parameters_search_space_uniform.yml"),
+        )
+    except NotImplementedError:
+        _raised = True
+    assert _raised
+
+    # check the search space construction with invalid loguniform parameter
+    _raised = False
+    try:
+        _ = FlowOptimizer(
+            **_opt_kwargs,
+            parameter_yaml=os.path.join(
+                cur_dir, "parameters_search_space_loguniform.yml"
+            ),
+        )
+    except NotImplementedError:
+        _raised = True
+    assert _raised
+
+
 @pytest.mark.parametrize('sampler', ['TPESampler', 'GridSampler', 'RandomSampler'])
 def test_optimizer_single_flow(tmpdir, config, sampler):
     eval_flow_runner = SingleFlowRunner(
@@ -54,11 +112,6 @@ def test_optimizer_single_flow(tmpdir, config, sampler):
         request_size=1,
         execution_endpoint='search',
     )
-    grid_sampler_search_space = {
-        'JINA_DUMMYCRAFTER_PARAM1': [0, 1],
-        'JINA_DUMMYCRAFTER_PARAM2': [0, 1, 2],
-        'JINA_DUMMYCRAFTER_PARAM3': [1],
-    }
     opt = FlowOptimizer(
         flow_runner=eval_flow_runner,
         parameter_yaml=os.path.join(cur_dir, 'parameter.yml'),
@@ -67,10 +120,7 @@ def test_optimizer_single_flow(tmpdir, config, sampler):
         n_trials=5,
         sampler=sampler,
     )
-    if sampler == 'GridSampler':
-        result = opt.optimize_flow(search_space=grid_sampler_search_space)
-    else:
-        result = opt.optimize_flow()
+    result = opt.optimize_flow()
     validate_result(result, tmpdir)
 
 

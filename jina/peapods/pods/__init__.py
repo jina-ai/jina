@@ -330,9 +330,8 @@ class Pod(BasePod):
 
     class _ReplicaSet:
         def __init__(self, pod_args: Namespace, args: List[Namespace]):
-            super().__init__()
-            self.pod_args = pod_args
             self._exit_fifo = ExitFIFO()
+            self.pod_args = pod_args
             self.args = args
             self.peas = []
 
@@ -611,6 +610,10 @@ class Pod(BasePod):
         except KeyboardInterrupt:
             pass
         finally:
+            self.head_pea = None
+            self.tail_pea = None
+            if self.replica_set is not None:
+                self.replica_set.peas.clear()
             self._activated = False
 
     @property
