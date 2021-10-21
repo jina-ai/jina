@@ -163,21 +163,19 @@ def deploy_service(
         f'🐳\tCreate Deployment for "{name}" with image "{image_name}", replicas {replicas} and init_container {init_container is not None}'
     )
 
-    deployment_params = (
-        {
-            'name': name,
-            'namespace': namespace,
-            'image': image_name,
-            'replicas': replicas,
-            'command': container_cmd,
-            'args': container_args,
-            'port_expose': port_expose,
-            'port_in': port_in,
-            'port_out': port_out,
-            'port_ctrl': port_ctrl,
-            'pull_policy': pull_policy,
-        },
-    )
+    deployment_params = {
+        'name': name,
+        'namespace': namespace,
+        'image': image_name,
+        'replicas': replicas,
+        'command': container_cmd,
+        'args': container_args,
+        'port_expose': port_expose,
+        'port_in': port_in,
+        'port_out': port_out,
+        'port_ctrl': port_ctrl,
+        'pull_policy': pull_policy,
+    }
 
     if init_container:
         template_name = 'deployment-init'

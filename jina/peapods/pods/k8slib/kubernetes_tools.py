@@ -136,7 +136,7 @@ def _patch_deployment_with_device_plugins(yaml_content: str, params: Dict):
 
     device_plugins = _create_device_plugins(params['device_plugins'])
 
-    deployment = yaml.load(yaml_content)
+    deployment = yaml.safe_load(yaml_content)
     deployment['spec']['template']['spec']['containers'][0][
         'resources'
     ] = device_plugins
