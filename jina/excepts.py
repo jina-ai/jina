@@ -138,3 +138,7 @@ class DockerVersionError(SystemError):
 
 class DaemonInvalidDockerfile(FileNotFoundError):
     """Raised when invalid dockerfile is passed to JinaD"""
+
+
+class GRPCCLientThreadingError(FileNotFoundError):
+    """Raised when user is trying to use GRPCLient from a non-main thread"""
