@@ -88,9 +88,7 @@ class DocumentArrayNeuralOpsMixin:
 
         rhv = darray
         if traversal_rdarray or filter_fn:
-            if traversal_rdarray is None:
-                traversal_rdarray = ['r']
-            rhv = darray.traverse_flat(traversal_rdarray, filter_fn=filter_fn)
+            rhv = darray.traverse_flat(traversal_rdarray or ['r'], filter_fn=filter_fn)
 
             from .document import DocumentArray
 
