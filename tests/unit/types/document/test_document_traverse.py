@@ -33,9 +33,7 @@ def doc_req():
 def test_traverse_type(doc_req, filter_fn):
     ds = doc_req.docs.traverse(['r'], filter_fn=filter_fn)
     assert isinstance(ds, types.GeneratorType)
-    res = list(ds)[0]
-    print(res)
-    assert isinstance(res, DocumentArray)
+    assert isinstance(list(ds)[0], DocumentArray)
 
 
 @pytest.mark.parametrize('filter_fn', [(lambda d: True), None])
