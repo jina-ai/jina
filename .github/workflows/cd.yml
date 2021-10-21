@@ -116,7 +116,7 @@ jobs:
         with:
           repo: jina-ai/jina-docs-bot
           workflow: E2E pipeline
-          inputs: '{ "environment": "prod" }'
+          inputs: '{ "project": "JINA", "environment": "prod" }'
           ref: main
           token: ${{ secrets.JINA_DEV_BOT }}
 
