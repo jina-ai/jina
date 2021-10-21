@@ -151,7 +151,7 @@ metas:
     - executor.py
 ```
 
-Now, in `app/main.py`, you can specify the directory of the Executor like so:
+Now, in `app/main.py`, to correctly load the Executor, you can specify the directory of the Executor like so:
 ```{code-block} python
 ---
 emphasize-lines: 2
