@@ -330,8 +330,9 @@ class Pod(BasePod):
     """
 
     class _ReplicaSet:
-        def __init__(self, args: List[Namespace]):
+        def __init__(self, pod_args: Namespace, args: List[Namespace]):
             super().__init__()
+            self.pod_args = pod_args
             self._exit_fifo = ExitFIFO()
             self.args = args
             self.peas = []
@@ -358,8 +359,10 @@ class Pod(BasePod):
             self._exit_fifo = new_exit_fifo
 
         def __enter__(self):
-            for arg in self.args:
-                pea = BasePea(arg)
+            for _args in self.args:
+                if getattr(self.pod_args, 'noblock_on_start', False):
+                    _args.noblock_on_start = True
+                pea = BasePea(_args)
                 self.peas.append(pea)
                 self._exit_fifo.enter_context(pea)
             return self
@@ -388,10 +391,8 @@ class Pod(BasePod):
         self.is_tail_router = False
         self.deducted_head = None
         self.deducted_tail = None
-        self._ctxt_managers = []
         self.update_pea_args()
         self._activated = False
-        self.replica_set = self._ReplicaSet(self.peas_args['peas'])
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
@@ -402,15 +403,10 @@ class Pod(BasePod):
         """List of peas in this Pod
         :return: Return all the concatenated list of peas
         """
-        return (
-            [self.head_pea]
-            if self.head_pea is not None
-            else [] + self.replica_set.peas
-            if self.replica_set is not None
-            else [] + [self.tail_pea]
-            if self.tail_pea is not None
-            else []
-        )
+        _peas = [self.head_pea] if self.head_pea is not None else []
+        _peas.extend(self.replica_set.peas if self.replica_set is not None else [])
+        _peas.extend([self.tail_pea] if self.tail_pea is not None else [])
+        return _peas
 
     def update_pea_args(self):
         """ Update args of all its peas based on Pod args. Including head/tail"""
@@ -427,7 +423,6 @@ class Pod(BasePod):
             head_args=self.peas_args['head'],
             tail_args=self.peas_args['tail'],
         )
-        self.replica_set.args = self.peas_args['peas']
 
     @property
     def first_pea_args(self) -> Namespace:
@@ -577,7 +572,7 @@ class Pod(BasePod):
                 _args.noblock_on_start = True
             self.head_pea = BasePea(_args)
             self.enter_context(self.head_pea)
-        self.replica_set = self._ReplicaSet(self.peas_args['peas'])
+        self.replica_set = self._ReplicaSet(self.args, self.peas_args['peas'])
         self.enter_context(self.replica_set)
         if self.peas_args['tail'] is not None:
             _args = self.peas_args['tail']
@@ -585,6 +580,9 @@ class Pod(BasePod):
                 _args.noblock_on_start = True
             self.tail_pea = BasePea(_args)
             self.enter_context(self.tail_pea)
+
+        if not getattr(self.args, 'noblock_on_start', False):
+            self.activate()
         return self
 
     def wait_start_success(self) -> None:
@@ -613,7 +611,6 @@ class Pod(BasePod):
         except KeyboardInterrupt:
             pass
         finally:
-            self.peas.clear()
             self._activated = False
 
     @property
