@@ -24,6 +24,7 @@ from ....logging.profile import used_memory
 from ....proto import jina_pb2
 from ....types.message import Message
 from ....types.routing.table import RoutingTable
+from ....importer import ImportExtensions
 
 if TYPE_CHECKING:
     import multiprocessing
@@ -49,7 +50,13 @@ class ZEDRuntime(BaseRuntime):
                     'Runtime is being run in a thread. Threads can not receive signals and may not shutdown as expected.'
                 )
         else:
-            import win32api
+            with ImportExtensions(
+                required=True,
+                logger=self.logger,
+                help_text='''If you see a 'DLL load failed' error, please reinstall `pywin32`.
+                If you're using conda, please use the command `conda install -c anaconda pywin32`''',
+            ):
+                import win32api
 
             win32api.SetConsoleCtrlHandler(self._handle_sig_term)
         self._id = random_identity()

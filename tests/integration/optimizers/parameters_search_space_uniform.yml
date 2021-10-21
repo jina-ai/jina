@@ -1,0 +1,5 @@
+- !UniformParameter
+  jaml_variable: JINA_PARAM7
+  parameter_name: param7
+  high: 1.0
+  low: 0.0
