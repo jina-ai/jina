@@ -24,6 +24,9 @@ def test_integer_parameter(optuna_sampler):
         step_size=1,
         parameter_name='integer',
     )
+    search_space = parameter.search_space
+    assert 'JINA_DUMMY' in search_space
+    assert len(search_space['JINA_DUMMY']) == 11
 
     def objective(trial):
         trial_parameters = {}
@@ -40,6 +43,12 @@ def test_uniform_parameter(optuna_sampler):
     parameter = UniformParameter(
         jaml_variable='JINA_DUMMY', high=10, low=0, parameter_name='uniform'
     )
+    _raised = False
+    try:
+        _ = parameter.search_space
+    except NotImplementedError:
+        _raised = True
+    assert _raised
 
     def objective(trial):
         trial_parameters = {}
@@ -56,6 +65,12 @@ def test_log_uniform_parameter(optuna_sampler):
     parameter = LogUniformParameter(
         jaml_variable='JINA_DUMMY', high=10, low=1, parameter_name='loguniform'
     )
+    _raised = False
+    try:
+        _ = parameter.search_space
+    except NotImplementedError:
+        _raised = True
+    assert _raised
 
     def objective(trial):
         trial_parameters = {}
@@ -74,6 +89,9 @@ def test_categorical_parameter(optuna_sampler):
         choices=[f'choice-{i}' for i in range(10)],
         parameter_name='categorical',
     )
+    search_space = parameter.search_space
+    assert 'JINA_DUMMY' in search_space
+    assert len(search_space['JINA_DUMMY']) == 10
 
     def objective(trial):
         trial_parameters = {}
@@ -94,6 +112,9 @@ def test_discrete_uniform_parameter(optuna_sampler):
         q=1,
         parameter_name='discreteuniform',
     )
+    search_space = parameter.search_space
+    assert 'JINA_DUMMY' in search_space
+    assert len(search_space['JINA_DUMMY']) == 11
 
     def objective(trial):
         trial_parameters = {}
@@ -141,6 +162,17 @@ def test_pod_alternative_parameter(optuna_sampler):
         inner_parameters=inner_parameters,
         parameter_name='executoralternative',
     )
+    search_space = parameter.search_space
+    assert 'JINA_DUMMY' in search_space
+    assert 'JINA_INTEGER_DUMMY_EXECUTOR1' in search_space
+    assert 'JINA_CAT_DUMMY_EXECUTOR1' in search_space
+    assert 'JINA_INTEGER_DUMMY_EXECUTOR2' in search_space
+    assert 'JINA_CAT_DUMMY_EXECUTOR2' in search_space
+    assert len(search_space['JINA_DUMMY']) == 2
+    assert len(search_space['JINA_INTEGER_DUMMY_EXECUTOR1']) == 11
+    assert len(search_space['JINA_CAT_DUMMY_EXECUTOR1']) == 10
+    assert len(search_space['JINA_INTEGER_DUMMY_EXECUTOR2']) == 11
+    assert len(search_space['JINA_CAT_DUMMY_EXECUTOR2']) == 10
 
     def objective(trial):
         trial_parameters = {}

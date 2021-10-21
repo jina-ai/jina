@@ -351,9 +351,9 @@ class Pod(BasePod):
                 _args.uses_with = uses_with
                 new_pea = BasePea(_args)
                 new_exit_fifo.enter_context(new_pea)
-                self.peas[i] = new_pea
                 await new_pea.async_wait_start_success()
                 new_pea.activate_runtime()
+                self.peas[i] = new_pea
             self._exit_fifo = new_exit_fifo
 
         def __enter__(self):
