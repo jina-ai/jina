@@ -3,7 +3,6 @@ from typing import Optional, Union, Callable, Tuple, Sequence, TYPE_CHECKING
 import numpy as np
 
 from ... import Document
-from ...helper import dunder_get
 from ...importer import ImportExtensions
 from ...math.helper import top_k, minmax_normalize, update_rows_x_mat_best
 
