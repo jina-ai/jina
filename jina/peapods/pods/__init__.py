@@ -633,7 +633,6 @@ class Pod(BasePod):
         :param dump_path: the dump from which to read the data
         :param uses_with: a Dictionary of arguments to restart the executor with
         """
-        print(f' \n\n\n JOAN ROLLING UPDATE HERE \n\n\n')
         # BACKWARDS COMPATIBILITY
         if dump_path is not None:
             if uses_with is not None:
