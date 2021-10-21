@@ -101,7 +101,7 @@ def test_create_deployment_with_device_plugin(template, monkeypatch):
     path_to_config_file = remove_mock.call_args[0][0]
 
     with open(path_to_config_file, 'r') as f:
-        config = yaml.load(f)
+        config = yaml.safe_load(f)
         assert config['spec']['template']['spec']['containers'][0]['resources'] == {
             'limits': {'hardware-vendor.example/foo': 2, 'nvidia.com/gpu:': 3}
         }
