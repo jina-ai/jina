@@ -152,8 +152,8 @@ def deploy_service(
     )
 
     if gpus:
-        # First deploy DaemonSet, then request resources.
-        # Second path deployment resource limit section.
+        # Firstly deploy DaemonSet, then request resources.
+        # Secondly patch deployment with `resources limit`.
         logger.debug(f'🐳\tCreate DaemonSet for gpu resource deployment.')
         kubernetes_tools.create(
             'nvidia-device-plugin',
