@@ -293,7 +293,7 @@ class DocumentArrayNeuralOpsMixin:
             for x in self:
                 try:
                     tags.append(getattr(x, colored_attr))
-                except (KeyError, AttributeError):
+                except (KeyError, AttributeError, ValueError):
                     tags.append(None)
             tag_to_num = {tag: num for num, tag in enumerate(set(tags))}
             plt_kwargs['c'] = np.array([tag_to_num[ni] for ni in tags])
