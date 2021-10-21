@@ -95,7 +95,6 @@ def run(
             runtime.run_forever()
     finally:
         _unset_envs()
-        logger.debug(f' Process terminated')
         is_shutdown.set()
         logger.debug(f' Process terminated')
 
@@ -107,10 +106,6 @@ class BasePea:
 
     A :class:`BasePea` must be equipped with a proper :class:`Runtime` class to work.
     """
-
-    def __eq__(self, other):
-        # Needed to remove this Pea from the ExitFIFO
-        return self.name == other.name
 
     def __init__(self, args: 'argparse.Namespace'):
         self.args = args
@@ -352,8 +347,6 @@ class BasePea:
 
         This method makes sure that the `Process/thread` is properly finished and its resources properly released
         """
-        import traceback
-
         # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
         self.logger.debug('waiting for ready or shutdown signal from runtime')
         terminated = False
