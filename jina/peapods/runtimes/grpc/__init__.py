@@ -3,7 +3,6 @@ import asyncio
 import multiprocessing
 import threading
 import time
-import traceback
 from abc import ABC
 from collections import defaultdict
 from typing import Dict, List, Optional, Union
@@ -17,7 +16,7 @@ from ..zmq.asyncio import AsyncNewLoopRuntime
 from ...grpc import Grpclet
 from ....enums import OnErrorStrategy
 from ....excepts import NoExplicitMessage, ChainedPodException, RuntimeTerminated
-from ....helper import get_or_reuse_loop, random_identity
+from ....helper import random_identity
 from ....proto import jina_pb2
 from ....types.message import Message
 from ....types.routing.table import RoutingTable
@@ -105,7 +104,7 @@ class GRPCDataRuntime(AsyncNewLoopRuntime, ABC):
         """
 
         try:
-            response = Grpclet.send_ctrl_msg(ctrl_address, 'STATUS')
+            _ = Grpclet.send_ctrl_msg(ctrl_address, 'STATUS')
         except RpcError:
             return False
 

@@ -7,7 +7,7 @@ from typing import Any, Tuple, Union, Dict, Optional
 
 from ...jaml import JAML
 from .helper import _get_event, ConditionalEvent
-from ... import __stop_msg__, __ready_msg__, __default_host__
+from ... import __stop_msg__, __ready_msg__
 from ...enums import PeaRoleType, RuntimeBackendType, SocketType
 from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
 from ...helper import typename
@@ -108,7 +108,6 @@ class BasePea:
     """
 
     def __init__(self, args: 'argparse.Namespace'):
-        super().__init__()  #: required here to call process/thread __init__
         self.args = args
         # BACKWARDS COMPATIBILITY
         self.args.pea_id = self.args.shard_id
