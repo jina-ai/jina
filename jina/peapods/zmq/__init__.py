@@ -390,7 +390,11 @@ class Zmqlet:
     def _send_control_to_router(self, command, flags=0, raise_exception=False):
         msg = ControlMessage(command, pod_name=self.name, identity=self.identity)
         self.bytes_sent += send_message(
-            self.in_sock, msg, raise_exception=raise_exception, flags=flags, **self.send_recv_kwargs
+            self.in_sock,
+            msg,
+            raise_exception=raise_exception,
+            flags=flags,
+            **self.send_recv_kwargs,
         )
         self.msg_sent += 1
         self.logger.debug(
@@ -408,10 +412,12 @@ class Zmqlet:
         :param raise_exception: if true: raise an exception which might occur during send, if false: log error
         """
         self._active = False
-        self._send_control_to_router('CANCEL', flags=zmq.NOBLOCK, raise_exception=raise_exception)
+        self._send_control_to_router(
+            'CANCEL', flags=zmq.NOBLOCK, raise_exception=raise_exception
+        )
 
     def recv_message(
-            self, callback: Optional[Callable[['Message'], 'Message']] = None
+        self, callback: Optional[Callable[['Message'], 'Message']] = None
     ) -> 'Message':
         """Receive a protobuf message from the input socket
 
@@ -480,8 +486,8 @@ class AsyncZmqlet(Zmqlet):
             self.logger.error(f'sending message error: {ex!r}, gateway cancelled?')
 
     async def recv_message(
-            self,
-            callback: Optional[Callable[['Message'], Union['Message', 'Request']]] = None,
+        self,
+        callback: Optional[Callable[['Message'], Union['Message', 'Request']]] = None,
     ) -> Optional['Message']:
         """
         Receive a protobuf message in async manner.
@@ -519,9 +525,9 @@ class ZmqStreamlet(Zmqlet):
     """
 
     def __init__(
-            self,
-            *args,
-            **kwargs,
+        self,
+        *args,
+        **kwargs,
     ):
         super().__init__(**kwargs)
 
@@ -557,9 +563,9 @@ class ZmqStreamlet(Zmqlet):
 
         # if Address already in use `self.in_sock_type` is not set
         if (
-                not self.is_closed
-                and hasattr(self, 'in_sock_type')
-                and self.in_sock_type == zmq.DEALER
+            not self.is_closed
+            and hasattr(self, 'in_sock_type')
+            and self.in_sock_type == zmq.DEALER
         ):
             try:
                 if self._active:
@@ -647,7 +653,7 @@ class ZmqStreamlet(Zmqlet):
 
 
 def send_ctrl_message(
-        address: str, cmd: Union[str, Message], timeout: int, raise_exception: bool = False
+    address: str, cmd: Union[str, Message], timeout: int, raise_exception: bool = False
 ) -> 'Message':
     """Send a control message to a specific address and wait for the response
 
@@ -682,12 +688,12 @@ def send_ctrl_message(
 
 
 def send_message(
-        sock: Union['zmq.Socket', 'ZMQStream'],
-        msg: 'Message',
-        raise_exception: bool = False,
-        timeout: int = -1,
-        flags: int = 0,
-        **kwargs,
+    sock: Union['zmq.Socket', 'ZMQStream'],
+    msg: 'Message',
+    raise_exception: bool = False,
+    timeout: int = -1,
+    flags: int = 0,
+    **kwargs,
 ) -> int:
     """Send a protobuf message to a socket
 
@@ -695,6 +701,7 @@ def send_message(
     :param msg: the protobuf message
     :param raise_exception: if true: raise an exception which might occur during send, if false: log error
     :param timeout: waiting time (in seconds) for sending
+    :param flags: extra flags to pass to the send_multipart message. Needed to pass NOBLOCK
     :param kwargs: keyword arguments
     :return: the size (in bytes) of the sent message
     """
@@ -731,7 +738,7 @@ def _prep_recv_socket(sock, timeout):
 
 
 async def send_message_async(
-        sock: 'zmq.Socket', msg: 'Message', timeout: int = -1, **kwargs
+    sock: 'zmq.Socket', msg: 'Message', timeout: int = -1, **kwargs
 ) -> int:
     """Send a protobuf message to a socket in async manner
 
@@ -791,7 +798,7 @@ def recv_message(sock: 'zmq.Socket', timeout: int = -1, **kwargs) -> 'Message':
 
 
 async def recv_message_async(
-        sock: 'zmq.Socket', timeout: int = -1, **kwargs
+    sock: 'zmq.Socket', timeout: int = -1, **kwargs
 ) -> 'Message':
     """Receive a protobuf message from a socket in async manner
 
@@ -864,15 +871,15 @@ def _get_random_ipc() -> str:
 
 
 def _init_socket(
-        ctx: 'zmq.Context',
-        host: str,
-        port: Optional[int],
-        socket_type: 'SocketType',
-        identity: Optional[str] = None,
-        use_ipc: bool = False,
-        ssh_server: Optional[str] = None,
-        ssh_keyfile: Optional[str] = None,
-        ssh_password: Optional[str] = None,
+    ctx: 'zmq.Context',
+    host: str,
+    port: Optional[int],
+    socket_type: 'SocketType',
+    identity: Optional[str] = None,
+    use_ipc: bool = False,
+    ssh_server: Optional[str] = None,
+    ssh_keyfile: Optional[str] = None,
+    ssh_password: Optional[str] = None,
 ) -> Tuple['zmq.Socket', str]:
     sock = {
         SocketType.PULL_BIND: lambda: ctx.socket(zmq.PULL),
@@ -935,11 +942,11 @@ def _init_socket(
 
 
 def _connect_socket(
-        sock,
-        address,
-        ssh_server: Optional[str] = None,
-        ssh_keyfile: Optional[str] = None,
-        ssh_password: Optional[str] = None,
+    sock,
+    address,
+    ssh_server: Optional[str] = None,
+    ssh_keyfile: Optional[str] = None,
+    ssh_password: Optional[str] = None,
 ):
     if ssh_server is not None:
         tunnel_connection(sock, address, ssh_server, ssh_keyfile, ssh_password)

@@ -270,7 +270,9 @@ class ZEDRuntime(BaseRuntime):
             try:
                 self._zmqstreamlet._send_cancel_to_router()
             except TimeoutError:
-                self.logger.debug(f' TimeoutError raised. Most likely the router is down and cancel cannot be properly sent.')
+                self.logger.debug(
+                    f' TimeoutError raised. Most likely the router is down and cancel cannot be properly sent.'
+                )
                 pass
         else:
             raise UnknownControlCommand(

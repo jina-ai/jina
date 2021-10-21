@@ -241,7 +241,6 @@ class BasePea:
 
     def _deactivate_runtime(self):
         """ Send terminate control message. """
-        # needs to handle properly wether skip_deactivate should happen or not
         self.runtime_cls.deactivate(
             logger=self.logger,
             socket_in_type=self.args.socket_in,
@@ -346,8 +345,6 @@ class BasePea:
 
     def close(self) -> None:
         """Close the Pea
-
-        :param skip_deactivate: Skip the deactivate step, only needed to disable when rolling update
 
         This method makes sure that the `Process/thread` is properly finished and its resources properly released
         """
