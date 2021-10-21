@@ -2,18 +2,17 @@ import copy
 from argparse import Namespace
 from itertools import cycle
 from typing import Optional, Dict, List, Union, Set
-from contextlib import ExitStack
 
 from .. import BasePod
 from .. import Pea
 from .. import Pod
 from ..networking import get_connect_host
 from ... import helper
-from ...enums import SocketType, SchedulerType, PollingType
+from ...enums import SocketType, SchedulerType
 from ...helper import random_identity
 
 
-class CompoundPod(BasePod, ExitStack):
+class CompoundPod(BasePod):
     """A CompoundPod is a immutable set of pods, which run in parallel.
     A CompoundPod is an abstraction using a composable pattern to abstract the usage of parallel Pods that act as shards.
 

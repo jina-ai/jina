@@ -82,7 +82,7 @@ class ExitFIFO(ExitStack):
         return received_exc and suppressed_exc
 
 
-class BasePod:
+class BasePod(ExitFIFO):
     """A BasePod is an immutable set of peas. They share the same input and output socket.
     Internally, the peas can run with the process/thread backend.
     They can be also run in their own containers on remote machines.
@@ -322,7 +322,7 @@ class BasePod:
         ]
 
 
-class Pod(BasePod, ExitFIFO):
+class Pod(BasePod):
     """A Pod is an immutable set of peas, which run in replicas. They share the same input and output socket.
     Internally, the peas can run with the process/thread backend. They can be also run in their own containers
     :param args: arguments parsed from the CLI
