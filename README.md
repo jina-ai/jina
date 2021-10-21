@@ -1,6 +1,6 @@
 <p align="center">
 <!--startmsg-->
-
+<a href="https://github.com/jina-ai/finetuner"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/meetup.svg?raw=true"></a>
 <!--endmsg-->
 </p>
 <p align="center">

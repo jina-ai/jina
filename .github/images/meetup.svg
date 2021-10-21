@@ -18,9 +18,9 @@
             }
             </style>
             <p>
-                <a href="https://jina-ai.zoom.us/webinar/register/WN_US7_9uQMRXiYaKBXJw4vYA">
+                <a href="https://github.com/jina-ai/finetuner">
                     <!--startmsg-->
-📢 28 Sep 2021: We're revealing big news at our <strong>exclusive community webinar</strong>. Join us on Zoom! 🔍
+Check out <b>Finetuner</b> - tuning any DNN for better embedding on neural search tasks
                     <!--endmsg-->
                 </a>
             </p>
