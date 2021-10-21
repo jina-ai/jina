@@ -1,6 +1,6 @@
 import json
 from argparse import Namespace
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional, Tuple, Union
 
 from jina.hubble.helper import parse_hub_uri
 from jina.hubble.hubio import HubIO
@@ -91,7 +91,7 @@ def deploy_service(
     custom_resource_dir: Optional[str] = None,
     port_expose: Optional[int] = None,
     env: Optional[Dict] = None,
-    gpus: Optional[int] = None,
+    gpus: Optional[Union[int, str]] = None,
 ) -> str:
     """Deploy service on Kubernetes.
 
