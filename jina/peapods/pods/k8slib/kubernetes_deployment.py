@@ -108,8 +108,7 @@ def deploy_service(
         Defaults to the standard location jina.resources if not specified.
     :param port_expose: port which will be exposed by the deployed containers
     :param env: environment variables to be passed into configmap.
-    :param gpus: number of gpus to use, for k8s requires you pass an int number,
-      refers to the number of requested gpus. Only support Nvidia.
+    :param gpus: number of gpus to use, for k8s requires you pass an int number, refers to the number of requested gpus.
     :return: dns name of the created service
     """
 
