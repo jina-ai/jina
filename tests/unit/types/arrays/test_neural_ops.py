@@ -1,5 +1,6 @@
 import copy
 import os
+import random
 
 import numpy as np
 import pytest
@@ -340,10 +341,17 @@ def test_pca_projection(embeddings, whiten):
     assert embeddings_transformed.shape[1] == n_components
 
 
-def test_pca_plot_generated(embeddings, tmpdir):
-    doc_array = DocumentArray([Document(embedding=x) for x in embeddings])
+@pytest.mark.parametrize('colored_tag', [None, 'tags__label', 'id', 'mime_type'])
+@pytest.mark.parametrize('kwargs', [{}, dict(s=100, marker='^')])
+def test_pca_plot_generated(embeddings, tmpdir, colored_tag, kwargs):
+    doc_array = DocumentArray(
+        [
+            Document(embedding=x, tags={'label': random.randint(0, 5)})
+            for x in embeddings
+        ]
+    )
     file_path = os.path.join(tmpdir, 'pca_plot.png')
-    doc_array.visualize(output=file_path)
+    doc_array.visualize(file_path, colored_attr=colored_tag, **kwargs)
     assert os.path.exists(file_path)
 
 

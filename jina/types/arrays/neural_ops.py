@@ -236,10 +236,11 @@ class DocumentArrayNeuralOpsMixin:
         self,
         output: Optional[str] = None,
         title: Optional[str] = None,
-        colored_tag: Optional[str] = None,
+        colored_attr: Optional[str] = None,
         colormap: str = 'rainbow',
         method: str = 'pca',
         show_axis: bool = False,
+        **kwargs,
     ):
         """Visualize embeddings in a 2D projection with the PCA algorithm. This function requires ``matplotlib`` installed.
 
@@ -248,13 +249,14 @@ class DocumentArrayNeuralOpsMixin:
 
         :param output: Optional path to store the visualization. If not given, show in UI
         :param title: Optional title of the plot. When not given, the default title is used.
-        :param colored_tag: Optional str that specifies tag used to color the plot
+        :param colored_attr: Optional str that specifies attribute used to color the plot, it supports dunder expression
+            such as `tags__label`, `matches__0__id`.
         :param colormap: the colormap string supported by matplotlib.
         :param method: the visualization method, available `pca`, `tsne`. `pca` is fast but may not well represent
                 nonlinear relationship of high-dimensional data. `tsne` requires scikit-learn to be installed and is
                 much slower.
         :param show_axis: If set, axis and bounding box of the plot will be printed.
-
+        :param kwargs: extra kwargs pass to matplotlib.plot
         """
 
         x_mat = self.embeddings
@@ -285,11 +287,20 @@ class DocumentArrayNeuralOpsMixin:
 
         plt.title(title or f'{len(x_mat)} Documents with PCA')
 
-        if colored_tag:
-            tags = [x[colored_tag] for x in self.get_attributes('tags')]
+        if colored_attr:
+            tags = []
+
+            for x in self:
+                try:
+                    tags.append(getattr(x, colored_attr))
+                except (KeyError, AttributeError, ValueError):
+                    tags.append(None)
             tag_to_num = {tag: num for num, tag in enumerate(set(tags))}
             plt_kwargs['c'] = np.array([tag_to_num[ni] for ni in tags])
             plt_kwargs['cmap'] = plt.get_cmap(colormap)
+
+        # update the plt_kwargs
+        plt_kwargs.update(kwargs)
 
         plt.scatter(**plt_kwargs)
 
