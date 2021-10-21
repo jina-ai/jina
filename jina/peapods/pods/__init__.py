@@ -566,6 +566,14 @@ class Pod(BasePod):
         """
         return all(p.is_ready.is_set() for p in self.peas) and self._activated
 
+    def _remove_pea_from_ctxt_managers(self, pea: 'BasePea'):
+        found_i = 0
+        for i, (_, ctx) in enumerate(self._exit_callbacks):
+            if ctx == pea:
+                found_i = i
+
+        del self._exit_callbacks[found_i]
+
     async def rolling_update(
         self, dump_path: Optional[str] = None, *, uses_with: Optional[Dict] = None
     ):
@@ -586,7 +594,7 @@ class Pod(BasePod):
                 pea = self.peas[i]
                 if pea.role == PeaRoleType.PARALLEL:
                     pea.close()
-                    del self._exit_callbacks[self._exit_callbacks.index(pea)]
+                    self._remove_pea_from_ctxt_managers(pea)
                     _args = self.peas_args['peas'][pea_args_idx]
                     _args.noblock_on_start = True
                     ### BACKWARDS COMPATIBILITY, so THAT DUMP_PATH is in runtime_args
