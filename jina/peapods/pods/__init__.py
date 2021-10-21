@@ -341,7 +341,7 @@ class Pod(BasePod):
             new_exit_fifo = ExitFIFO()
             for i in range(len(self.peas)):
                 old_pea = self.peas[i]
-                old_pea.close(skip_deactivate=False)
+                old_pea.close()
                 _args = self.args[i]
                 _args.noblock_on_start = True
                 ### BACKWARDS COMPATIBILITY, so THAT DUMP_PATH is in runtime_args
@@ -350,9 +350,9 @@ class Pod(BasePod):
                 _args.uses_with = uses_with
                 new_pea = BasePea(_args)
                 new_exit_fifo.enter_context(new_pea)
-                self.peas[i] = new_pea
                 await new_pea.async_wait_start_success()
                 new_pea.activate_runtime()
+                self.peas[i] = new_pea
             self._exit_fifo = new_exit_fifo
 
         def __enter__(self):

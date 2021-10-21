@@ -267,7 +267,11 @@ class ZEDRuntime(BaseRuntime):
         elif msg.request.command == 'ACTIVATE':
             self._zmqstreamlet._send_idle_to_router()
         elif msg.request.command == 'DEACTIVATE':
-            self._zmqstreamlet._send_cancel_to_router()
+            try:
+                self._zmqstreamlet._send_cancel_to_router()
+            except TimeoutError:
+                self.logger.debug(f' TimeoutError raised. Most likely the router is down and cancel cannot be properly sent.')
+                pass
         else:
             raise UnknownControlCommand(
                 f'don\'t know how to handle {msg.request.command}'
@@ -454,13 +458,12 @@ class ZEDRuntime(BaseRuntime):
         for retry in range(1, num_retry + 1):
             logger.debug(f'Sending {command} command for the {retry}th time')
             try:
-                r = send_ctrl_message(
+                send_ctrl_message(
                     ctrl_address,
                     command,
                     timeout=timeout_ctrl,
                     raise_exception=True,
                 )
-                logger.debug(f' Got response {r.proto}')
                 break
             except Exception as ex:
                 logger.warning(f'{ex!r}')

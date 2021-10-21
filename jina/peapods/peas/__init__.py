@@ -344,7 +344,7 @@ class BasePea:
             and self.args.socket_in == SocketType.DEALER_CONNECT
         )
 
-    def close(self, skip_deactivate=True) -> None:
+    def close(self) -> None:
         """Close the Pea
 
         :param skip_deactivate: Skip the deactivate step, only needed to disable when rolling update
@@ -355,8 +355,7 @@ class BasePea:
         self.logger.debug('waiting for ready or shutdown signal from runtime')
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
             try:
-                if not skip_deactivate:
-                    self._deactivate_runtime()
+                self._deactivate_runtime()
             except Exception as ex:
                 self.logger.warning(
                     f'Exception raised when deactivating runtime {ex!r} '
