@@ -6,6 +6,7 @@ from typing import Union, Optional, TYPE_CHECKING
 
 from ..base import BaseRuntime
 from .... import __windows__
+from ....importer import ImportExtensions
 
 if TYPE_CHECKING:
     import multiprocessing
@@ -44,7 +45,13 @@ class AsyncNewLoopRuntime(BaseRuntime, ABC):
                     f' {repr(exc)}'
                 )
         else:
-            import win32api
+            with ImportExtensions(
+                required=True,
+                logger=self.logger,
+                help_text='''If you see a 'DLL load failed' error, please reinstall `pywin32`.
+                If you're using conda, please use the command `conda install -c anaconda pywin32`''',
+            ):
+                import win32api
 
             win32api.SetConsoleCtrlHandler(
                 lambda *args, **kwargs: self.is_cancel.set(), True
