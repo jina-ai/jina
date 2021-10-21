@@ -598,6 +598,7 @@
 
 <span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">BaseRuntime</span>
 <span class="kn">from</span> <span class="nn">....</span> <span class="kn">import</span> <span class="n">__windows__</span>
+<span class="kn">from</span> <span class="nn">....importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">multiprocessing</span>
@@ -636,7 +637,13 @@
                     <span class="sa">f</span><span class="s1">' </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">win32api</span>
+            <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
+                <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+                <span class="n">help_text</span><span class="o">=</span><span class="s1">'''If you see a 'DLL load failed' error, please reinstall `pywin32`.</span>
+<span class="s1">                If you're using conda, please use the command `conda install -c anaconda pywin32`'''</span><span class="p">,</span>
+            <span class="p">):</span>
+                <span class="kn">import</span> <span class="nn">win32api</span>
 
             <span class="n">win32api</span><span class="o">.</span><span class="n">SetConsoleCtrlHandler</span><span class="p">(</span>
                 <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">set</span><span class="p">(),</span> <span class="kc">True</span>

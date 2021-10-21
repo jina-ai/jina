@@ -616,6 +616,7 @@
 <span class="kn">from</span> <span class="nn">....proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
 <span class="kn">from</span> <span class="nn">....types.message</span> <span class="kn">import</span> <span class="n">Message</span>
 <span class="kn">from</span> <span class="nn">....types.routing.table</span> <span class="kn">import</span> <span class="n">RoutingTable</span>
+<span class="kn">from</span> <span class="nn">....importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">multiprocessing</span>
@@ -641,7 +642,13 @@
                     <span class="s1">'Runtime is being run in a thread. Threads can not receive signals and may not shutdown as expected.'</span>
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">win32api</span>
+            <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
+                <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+                <span class="n">help_text</span><span class="o">=</span><span class="s1">'''If you see a 'DLL load failed' error, please reinstall `pywin32`.</span>
+<span class="s1">                If you're using conda, please use the command `conda install -c anaconda pywin32`'''</span><span class="p">,</span>
+            <span class="p">):</span>
+                <span class="kn">import</span> <span class="nn">win32api</span>
 
             <span class="n">win32api</span><span class="o">.</span><span class="n">SetConsoleCtrlHandler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle_sig_term</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">random_identity</span><span class="p">()</span>
