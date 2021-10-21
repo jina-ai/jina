@@ -141,18 +141,12 @@ The next table shows the difference between shards and replicas.
 |Request handled by one of the executors | ✅ | ✅, if `polling = 'any'` |
 |Request handled by all of the executors | ❌ | ✅, if `polling = 'all'` |
 
-Notes :
+Think of using `replicas` when you have slow Executors and you want to be able to process multiple requests in parallel. 
+Also replicas provide high availability in case some executors are taken down (for updates, failures, etc)
 
- - You can combine `replicas` and  `parallel` as well as `replicas` and `shards`, this will behave like the example above. 
- - If you combine `parallel` and `shards` the latter argument will be used. In example :
+On the other hand, when your data  is too large to fit in one machine or if the latency of a request is too large `shards` is your best option since it allows you to split your data across multiple machines.
 
-```python
-from jina import Flow
-
- f = (Flow()
-     .add(name='shards_with_replicas', shards=2, parallel=3))
-```     
-In this case 3 shards will be created.
-
-Warining :
- - `parallel` is equivalent to `shards` , they both behave similarly (for backwards compatibility `parallel` is kept)  
+````{admonition} Warning
+:class: warning
+Sometimes you'll also encouter `parallel`, this is equivalent to `shards` and is only kept for backwards compatibility.
+````
