@@ -72,7 +72,7 @@ def png_to_buffer(
     width: Optional[int] = None,
     height: Optional[int] = None,
     resize_method: str = 'BILINEAR',
-    color_axis: int = -1,
+    channel_axis: int = -1,
 ):
     """
     Convert png to buffer bytes.
@@ -81,7 +81,7 @@ def png_to_buffer(
     :param width: the width of the :attr:`arr`, if None, interpret from :attr:`arr` shape.
     :param height: the height of the :attr:`arr`, if None, interpret from :attr:`arr` shape.
     :param resize_method: Resize methods (e.g. `NEAREST`, `BILINEAR`, `BICUBIC`, and `LANCZOS`).
-    :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+    :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
     :return: Png in buffer bytes.
 
     ..note::
@@ -108,8 +108,8 @@ def png_to_buffer(
     elif arr.ndim == 3:
         from PIL import Image
 
-        if color_axis != -1:
-            arr = np.moveaxis(arr, color_axis, -1)
+        if channel_axis != -1:
+            arr = np.moveaxis(arr, channel_axis, -1)
 
         if not is_height_width_set:
             height, width, num_channels = arr.shape
@@ -131,20 +131,20 @@ def png_to_buffer(
     return png_bytes
 
 
-def to_image_blob(source, color_axis: int = -1) -> 'np.ndarray':
+def to_image_blob(source, channel_axis: int = -1) -> 'np.ndarray':
     """
     Convert an image buffer to blob
 
     :param source: image bytes buffer
-    :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+    :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
     :return: image blob
     """
     from PIL import Image
 
     raw_img = Image.open(source).convert('RGB')
     img = np.array(raw_img).astype('float32')
-    if color_axis != -1:
-        img = np.moveaxis(img, -1, color_axis)
+    if channel_axis != -1:
+        img = np.moveaxis(img, -1, channel_axis)
     return img
 
 

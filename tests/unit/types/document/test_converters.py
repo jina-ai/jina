@@ -50,7 +50,7 @@ def test_convert_buffer_to_blob():
 
 @pytest.mark.parametrize('resize_method', ['BILINEAR', 'NEAREST', 'BICUBIC', 'LANCZOS'])
 @pytest.mark.parametrize(
-    'arr_size, color_axis, height, width',
+    'arr_size, channel_axis, height, width',
     [
         ((32 * 28), -1, None, None),  # single line
         ([32, 28], -1, None, None),  # without channel info
@@ -66,12 +66,12 @@ def test_convert_buffer_to_blob():
         ([32, 28, 1], -1, 32, 28),  # h, w, c, (greyscale)
     ],
 )
-def test_convert_image_blob_to_uri(arr_size, color_axis, width, height, resize_method):
+def test_convert_image_blob_to_uri(arr_size, channel_axis, width, height, resize_method):
     doc = Document(content=np.random.randint(0, 255, arr_size))
     assert doc.blob.any()
     assert not doc.uri
     doc.convert_image_blob_to_uri(
-        color_axis=color_axis, width=width, height=height, resize_method=resize_method
+        channel_axis=channel_axis, width=width, height=height, resize_method=resize_method
     )
     assert doc.uri.startswith('data:image/png;base64,')
     assert doc.mime_type == 'image/png'

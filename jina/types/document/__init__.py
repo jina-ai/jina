@@ -1006,54 +1006,54 @@ class Document(ProtoTypeMixin, VersionedMixin):
         for k, v in value.items():
             scores[k] = v
 
-    def convert_image_buffer_to_blob(self, color_axis: int = -1):
+    def convert_image_buffer_to_blob(self, channel_axis: int = -1):
         """Convert an image buffer to blob
 
-        :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
         """
-        self.blob = to_image_blob(io.BytesIO(self.buffer), color_axis)
+        self.blob = to_image_blob(io.BytesIO(self.buffer), channel_axis)
 
     def convert_image_blob_to_uri(
         self,
         width: Optional[int] = None,
         height: Optional[int] = None,
         resize_method: str = 'BILINEAR',
-        color_axis: int = -1,
+        channel_axis: int = -1,
     ):
         """Assuming :attr:`blob` is a _valid_ image, set :attr:`uri` accordingly
         :param width: the width of the blob, if None, interpret from :attr:`blob` shape.
         :param height: the height of the blob, if None, interpret from :attr:`blob` shape.
         :param resize_method: the resize method name
-        :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
 
         ..note::
             if both :attr:`width` and :attr:`height` were provided, will not resize. Otherwise, will get image size
             by :attr:`self.blob` shape and apply resize method :attr:`resize_method`.
         """
-        png_bytes = png_to_buffer(self.blob, width, height, resize_method, color_axis)
+        png_bytes = png_to_buffer(self.blob, width, height, resize_method, channel_axis)
         self.uri = 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
 
     def convert_image_uri_to_blob(
-        self, color_axis: int = -1, uri_prefix: Optional[str] = None
+        self, channel_axis: int = -1, uri_prefix: Optional[str] = None
     ):
         """Convert uri to blob
 
-        :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
         :param uri_prefix: the prefix of the uri
         """
         self.blob = to_image_blob(
-            (uri_prefix + self.uri) if uri_prefix else self.uri, color_axis
+            (uri_prefix + self.uri) if uri_prefix else self.uri, channel_axis
         )
 
-    def convert_image_datauri_to_blob(self, color_axis: int = -1):
+    def convert_image_datauri_to_blob(self, channel_axis: int = -1):
         """Convert data URI to image blob
 
-        :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
         """
         req = urllib.request.Request(self.uri, headers={'User-Agent': 'Mozilla/5.0'})
         with urllib.request.urlopen(req) as fp:
             buffer = fp.read()
-        self.blob = to_image_blob(io.BytesIO(buffer), color_axis)
+        self.blob = to_image_blob(io.BytesIO(buffer), channel_axis)
 
     def convert_buffer_to_blob(self, dtype=None, count=-1, offset=0):
         """Assuming the :attr:`buffer` is a _valid_ buffer of Numpy ndarray,
