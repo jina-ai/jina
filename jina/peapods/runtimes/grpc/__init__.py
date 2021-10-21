@@ -39,7 +39,6 @@ class GRPCDataRuntime(AsyncNewLoopRuntime, ABC):
         :param kwargs: keyword args
         """
         super().__init__(args, cancel_event, **kwargs)
-
         self._id = random_identity()
         self._last_active_time = time.perf_counter()
 

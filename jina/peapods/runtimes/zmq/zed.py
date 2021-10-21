@@ -24,6 +24,7 @@ from ....logging.profile import used_memory
 from ....proto import jina_pb2
 from ....types.message import Message
 from ....types.routing.table import RoutingTable
+from ....importer import ImportExtensions
 
 if TYPE_CHECKING:
     import multiprocessing
@@ -41,17 +42,6 @@ class ZEDRuntime(BaseRuntime):
         :param kwargs: extra keyword arguments
         """
         super().__init__(args, **kwargs)
-        if not __windows__:
-            try:
-                signal.signal(signal.SIGTERM, self._handle_sig_term)
-            except ValueError:
-                self.logger.warning(
-                    'Runtime is being run in a thread. Threads can not receive signals and may not shutdown as expected.'
-                )
-        else:
-            import win32api
-
-            win32api.SetConsoleCtrlHandler(self._handle_sig_term)
         self._id = random_identity()
         self._last_active_time = time.perf_counter()
         self.ctrl_addr = self.get_control_address(args.host, args.port_ctrl)
@@ -66,12 +56,36 @@ class ZEDRuntime(BaseRuntime):
         self._static_routing_table = args.static_routing_table
 
         self._load_zmqstreamlet()
+        if not __windows__:
+            try:
+                for signum in {signal.SIGINT, signal.SIGTERM}:
+                    signal.signal(
+                        signum,
+                        lambda *args, **kwargs: self._zmqstreamlet.io_loop.add_callback_from_signal(
+                            self._handle_sig_term
+                        ),
+                    )
+            except ValueError:
+                self.logger.warning(
+                    'Runtime is being run in a thread. Threads can not receive signals and may not shutdown as expected.'
+                )
+        else:
+            with ImportExtensions(
+                required=True,
+                logger=self.logger,
+                help_text='''If you see a 'DLL load failed' error, please reinstall `pywin32`.
+                If you're using conda, please use the command `conda install -c anaconda pywin32`''',
+            ):
+                import win32api
+
+            win32api.SetConsoleCtrlHandler(self._handle_sig_term)
 
     def run_forever(self):
         """Start the `ZmqStreamlet`."""
         self._zmqstreamlet.start(self._msg_callback)
 
-    def _handle_sig_term(self, *args):
+    def _handle_sig_term(self, *args, **kwargs):
+        self.logger.debug(f' Received terminate signal')
         self.teardown()
 
     def teardown(self):
@@ -277,10 +291,11 @@ class ZEDRuntime(BaseRuntime):
             # generally unless executor throws an OSError, the exception are caught and solved inplace
             processed_msg = self._callback(msg)
             # dont sent responses for CANCEL and IDLE control requests
-            if msg.is_data_request or msg.request.command not in ['CANCEL', 'IDLE']:
+            if msg.is_data_request or msg.request.command not in ['IDLE', 'CANCEL']:
                 self._zmqstreamlet.send_message(processed_msg)
         except RuntimeTerminated:
             # this is the proper way to end when a terminate signal is sent
+            self.logger.debug(f' RuntimeTerminated exception')
             self._zmqstreamlet.send_message(msg)
             self._zmqstreamlet.close()
         except KeyboardInterrupt as kbex:
@@ -325,6 +340,10 @@ class ZEDRuntime(BaseRuntime):
                 )
 
             self._zmqstreamlet.send_message(msg)
+        finally:
+            self.logger.debug(
+                f' Message callback finished with pending signals {signal.sigpending()}'
+            )
 
     #: Some class-specific properties
 
@@ -435,53 +454,18 @@ class ZEDRuntime(BaseRuntime):
         for retry in range(1, num_retry + 1):
             logger.debug(f'Sending {command} command for the {retry}th time')
             try:
-                send_ctrl_message(
+                r = send_ctrl_message(
                     ctrl_address,
                     command,
                     timeout=timeout_ctrl,
                     raise_exception=True,
                 )
+                logger.debug(f' Got response {r.proto}')
                 break
             except Exception as ex:
                 logger.warning(f'{ex!r}')
                 if retry == num_retry:
                     raise ex
-
-    @staticmethod
-    def cancel(
-        control_address: str,
-        timeout_ctrl: int,
-        socket_in_type: 'SocketType',
-        skip_deactivate: bool,
-        logger: 'JinaLogger',
-        **kwargs,
-    ):
-        """
-        Check if the runtime has successfully started
-
-        :param control_address: the address where the control message needs to be sent
-        :param timeout_ctrl: the timeout to wait for control messages to be processed
-        :param socket_in_type: the type of input socket, needed to know if is a dealer
-        :param skip_deactivate: flag to tell if deactivate signal may be missed.
-            This is important when you want to independently kill a Runtime
-        :param logger: the JinaLogger to log messages
-        :param kwargs: extra keyword arguments
-        """
-        if not skip_deactivate and socket_in_type == SocketType.DEALER_CONNECT:
-            ZEDRuntime._retry_control_message(
-                ctrl_address=control_address,
-                timeout_ctrl=timeout_ctrl,
-                command='DEACTIVATE',
-                num_retry=3,
-                logger=logger,
-            )
-        ZEDRuntime._retry_control_message(
-            ctrl_address=control_address,
-            timeout_ctrl=timeout_ctrl,
-            command='TERMINATE',
-            num_retry=3,
-            logger=logger,
-        )
 
     @staticmethod
     def activate(
@@ -508,6 +492,55 @@ class ZEDRuntime(BaseRuntime):
                 num_retry=3,
                 logger=logger,
             )
+
+    @staticmethod
+    def deactivate(
+        control_address: str,
+        timeout_ctrl: int,
+        socket_in_type: 'SocketType',
+        logger: 'JinaLogger',
+        **kwargs,
+    ):
+        """
+        Check if the runtime has successfully started
+
+        :param control_address: the address where the control message needs to be sent
+        :param timeout_ctrl: the timeout to wait for control messages to be processed
+        :param socket_in_type: the type of input socket, needed to know if is a dealer
+        :param logger: the JinaLogger to log messages
+        :param kwargs: extra keyword arguments
+        """
+        if socket_in_type == SocketType.DEALER_CONNECT:
+            ZEDRuntime._retry_control_message(
+                ctrl_address=control_address,
+                timeout_ctrl=timeout_ctrl,
+                command='DEACTIVATE',
+                num_retry=3,
+                logger=logger,
+            )
+
+    @staticmethod
+    def thread_terminate(
+        control_address: str,
+        timeout_ctrl: int,
+        logger: 'JinaLogger',
+        **kwargs,
+    ):
+        """
+        Send terminate signal to control port
+
+        :param control_address: the address where the control message needs to be sent
+        :param timeout_ctrl: the timeout to wait for control messages to be processed
+        :param logger: the JinaLogger to log messages
+        :param kwargs: extra keyword arguments
+        """
+        ZEDRuntime._retry_control_message(
+            ctrl_address=control_address,
+            timeout_ctrl=timeout_ctrl,
+            command='TERMINATE',
+            num_retry=3,
+            logger=logger,
+        )
 
     @staticmethod
     def get_control_address(host: str, port: str, **kwargs):

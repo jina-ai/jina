@@ -9,7 +9,6 @@ import sys
 import threading
 import time
 import uuid
-import warnings
 from collections import OrderedDict
 from contextlib import ExitStack
 from typing import Optional, Union, Tuple, List, Set, Dict, overload, Type
@@ -1794,6 +1793,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param uses_with: a Dictionary of arguments to restart the executor with
         """
         from ..helper import run_async
+
+        self.logger.debug(f' Call rolling update for {pod_name}')
 
         run_async(
             self._pod_nodes[pod_name].rolling_update,

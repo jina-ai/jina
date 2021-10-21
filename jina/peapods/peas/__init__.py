@@ -113,7 +113,6 @@ class BasePea:
         self.args.pea_id = self.args.shard_id
         self.args.parallel = self.args.shards
         self.name = self.args.name or self.__class__.__name__
-
         self.logger = JinaLogger(self.name, **vars(self.args))
 
         if self.args.runtime_backend == RuntimeBackendType.THREAD:
@@ -133,12 +132,15 @@ class BasePea:
         # or thread. Control address from Zmqlet has some randomness and therefore we need to make sure Pea knows
         # control address of runtime
         self.runtime_cls = self._get_runtime_cls()
+        if self.runtime_cls == 'GRPCDataRuntime':
+            self.args.socket_in = None
         self._timeout_ctrl = self.args.timeout_ctrl
         self._set_ctrl_adrr()
         test_worker = {
             RuntimeBackendType.THREAD: threading.Thread,
             RuntimeBackendType.PROCESS: multiprocessing.Process,
         }.get(getattr(args, 'runtime_backend', RuntimeBackendType.THREAD))()
+
         self.is_ready = _get_event(test_worker)
         self.is_shutdown = _get_event(test_worker)
         self.cancel_event = _get_event(test_worker)
@@ -164,6 +166,11 @@ class BasePea:
                 'jaml_classes': JAML.registered_classes(),
             },
         )
+        assert not (
+            getattr(args, 'runtime_backend', RuntimeBackendType.THREAD)
+            == RuntimeBackendType.THREAD
+            and self.runtime_cls.__name__ in ['ContainerRuntime', 'JinadRuntime']
+        ), 'RuntimeBackend THREAD is not supported for Jinad and ContainerRuntime runtime_cls'
         self.daemon = self.args.daemon  #: required here to set process/thread daemon
 
     def _set_ctrl_adrr(self):
@@ -203,9 +210,18 @@ class BasePea:
         This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         """
         if hasattr(self.worker, 'terminate'):
-            self.logger.debug(f' terminating the runtime process')
+            self.logger.debug(
+                f' terminating the runtime process with PID {self.worker.pid}'
+            )
             self.worker.terminate()
-            self.logger.debug(f' runtime process properly terminated')
+        else:
+            self.logger.debug(f' terminating the runtime thread')
+            self.runtime_cls.thread_terminate(
+                logger=self.logger,
+                control_address=self.runtime_ctrl_address,
+                timeout_ctrl=self._timeout_ctrl,
+                cancel_event=self.cancel_event,
+            )
 
     def _retry_control_message(self, command: str, num_retry: int = 3):
         from ..zmq import send_ctrl_message
@@ -234,19 +250,14 @@ class BasePea:
             timeout_ctrl=self._timeout_ctrl,
         )
 
-    def _cancel_runtime(self, skip_deactivate: bool = False):
-        """
-        Send terminate control message.
-
-        :param skip_deactivate: Mark that the DEACTIVATE signal may be missed if set to True
-        """
-        self.runtime_cls.cancel(
-            cancel_event=self.cancel_event,
+    def _deactivate_runtime(self):
+        """ Send terminate control message. """
+        # needs to handle properly wether skip_deactivate should happen or not
+        self.runtime_cls.deactivate(
             logger=self.logger,
             socket_in_type=self.args.socket_in,
             control_address=self.runtime_ctrl_address,
             timeout_ctrl=self._timeout_ctrl,
-            skip_deactivate=skip_deactivate,
         )
 
     def _wait_for_ready_or_shutdown(self, timeout: Optional[float]):
@@ -302,7 +313,6 @@ class BasePea:
             _timeout = None
         else:
             _timeout /= 1e3
-
         if self._wait_for_ready_or_shutdown(_timeout):
             self._check_failed_to_start()
             self.logger.debug(__ready_msg__)
@@ -340,7 +350,10 @@ class BasePea:
         """Return true if this `Pea` must act as a Dealer responding to a Router
         .. # noqa: DAR201
         """
-        return self.args.socket_in == SocketType.DEALER_CONNECT
+        return (
+            self.args.socket_in is not None
+            and self.args.socket_in == SocketType.DEALER_CONNECT
+        )
 
     def close(self) -> None:
         """Close the Pea
@@ -349,65 +362,33 @@ class BasePea:
         """
         # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
         self.logger.debug('waiting for ready or shutdown signal from runtime')
-        terminated = False
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
             try:
-                self.logger.warning(f' Cancel runtime')
-                self._cancel_runtime()
-                self.logger.warning(f' Wait to shutdown')
-                if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
-                    self.terminate()
-                    terminated = True
-                    time.sleep(0.1)
-                    raise Exception(
-                        f'Shutdown signal was not received for {self._timeout_ctrl}'
-                    )
+                self._deactivate_runtime()
             except Exception as ex:
-                self.logger.error(
-                    f'{ex!r} during {self.close!r}'
-                    + f'\n add "--quiet-error" to suppress the exception details'
-                    if not self.args.quiet_error
-                    else '',
-                    exc_info=not self.args.quiet_error,
+                self.logger.warning(
+                    f'Exception raised when deactivating runtime {ex!r} '
                 )
-                if not terminated:
-                    self.terminate()
-
-            # if it is not daemon, block until the process/thread finish work
-            if not self.args.daemon:
-                self.join()
+            finally:
+                # This should fire a chain of SIGTERM passing, if local, ZEDRuntime, GRPCDataRuntime and all the Gateway
+                # Runtimes are ready to properly handle SIGTERM. If ContainerRuntime or JinaDRuntime, they are also
+                # ready, and they will propagate the required termination, ContainerRuntime will `kill` the container,
+                # sending a SIGTERM inside the container, and JinaDRuntime will send an API call to delete the Pea
+                # remotely which will close the Pea which will send the SIGTERM to the local ZEDRuntime or GRPCDataRuntime
+                self.terminate()
+                # if it is not daemon, block until the process/thread finish work
+                if not self.args.daemon:
+                    self.join()
         elif self.is_shutdown.is_set():
             # here shutdown has been set already, therefore `run` will gracefully finish
+            self.logger.debug(
+                'shutdown is already set. Runtime will end gracefully on its own'
+            )
             pass
         else:
-            # sometimes, we arrive to the close logic before the `is_ready` is even set.
-            # Observed with `gateway` when Pods fail to start
-            self.logger.warning(
-                'Pea is being closed before being ready. Most likely some other Pea in the Flow or Pod '
-                'failed to start'
-            )
-            _timeout = self.args.timeout_ready
-            if _timeout <= 0:
-                _timeout = None
-            else:
-                _timeout /= 1e3
-            self.logger.debug('waiting for ready or shutdown signal from runtime')
-            if self._wait_for_ready_or_shutdown(_timeout):
-                if not self.is_shutdown.is_set():
-                    self._cancel_runtime(skip_deactivate=True)
-                    if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
-                        self.terminate()
-                        time.sleep(0.1)
-                        raise Exception(
-                            f'Shutdown signal was not received for {self._timeout_ctrl}'
-                        )
-            else:
-                self.logger.warning(
-                    'Terminating process after waiting for readiness signal for graceful shutdown'
-                )
-                # Just last resource, terminate it
-                self.terminate()
-                time.sleep(0.1)
+            self.terminate()
+            if not self.args.daemon:
+                self.join()
         self.logger.debug(__stop_msg__)
         self.logger.close()
 
