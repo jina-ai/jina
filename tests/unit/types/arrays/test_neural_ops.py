@@ -606,3 +606,50 @@ def test_match_assert_limit(get_two_docarray, limit, tmpdir):
     dam.extend(da2)
     with pytest.raises(ValueError):
         da1.match(dam, limit=limit)
+
+
+@pytest.mark.parametrize('first_memmap', [True, False])
+@pytest.mark.parametrize('second_memmap', [True, False])
+@pytest.mark.parametrize('buffer_pool_size', [1000, 3])
+def test_filter_fn(doc_lists, tmp_path, first_memmap, second_memmap, buffer_pool_size):
+    def filter_fn():
+        shape = None
+
+        def valid(doc):
+            nonlocal shape
+            if doc.embedding is None:
+                return False
+            if shape is None:
+                shape = doc.embedding.shape
+            return shape == doc.embedding.shape
+
+        return valid
+
+    docs1, docs2 = doc_lists_to_doc_arrays(
+        doc_lists, tmp_path, first_memmap, second_memmap, buffer_pool_size
+    )
+    expected_len = len(docs2)
+
+    # match valid docs1 against valid docs2
+    docs1.match(docs2, filter_fn=filter_fn(), limit=len(docs2))
+    assert all(len(d1.matches) == expected_len for d1 in docs1)
+
+    # insert a doc with no embedding and a doc with wrong embedding shape into docs2
+    docs2.extend([Document(), Document(embedding=np.array([1]))])
+    docs1.match(docs2, filter_fn=filter_fn(), limit=len(docs2))
+    assert all(len(d1.matches) == expected_len for d1 in docs1)
+
+    # match docs1 with a doc without embedding against docs2
+    docs1.append(Document())
+    with pytest.raises(ValueError, match='cannot reshape array'):
+        docs1.match(docs2, filter_fn=filter_fn(), limit=len(docs2))
+
+    # match docs1 with a doc that has invalid embedding shape against docs2
+    docs1[len(docs1) - 1] = Document(embedding=np.array([1]))
+    with pytest.raises(ValueError, match='cannot reshape array'):
+        docs1.match(docs2, filter_fn=filter_fn(), limit=len(docs2))
+
+    # sanity check; if docs1 have valid embeddings, the following should work
+    docs1[len(docs1) - 1] = Document(embedding=np.array([1, 0, 1]))
+    docs1.match(docs2, filter_fn=filter_fn(), limit=len(docs2))
+    assert all(len(d1.matches) == expected_len for d1 in docs1)
