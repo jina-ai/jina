@@ -15,11 +15,11 @@ if TYPE_CHECKING:
 
 
 def from_ndarray(
-    array: 'np.ndarray',
+    array: "np.ndarray",
     axis: int = 0,
     size: Optional[int] = None,
     shuffle: bool = False,
-) -> Generator['Document', None, None]:
+) -> Generator["Document", None, None]:
     """Create a generator for a given dimension of a numpy array.
 
     :param array: the numpy ndarray data source
@@ -49,7 +49,7 @@ def from_files(
     sampling_rate: Optional[float] = None,
     read_mode: Optional[str] = None,
     to_dataturi: bool = False,
-) -> Generator['Document', None, None]:
+) -> Generator["Document", None, None]:
     """Creates an iterator over a list of file path or the content of the files.
 
     :param patterns: The pattern may contain simple shell-style wildcards, e.g. '\*.py', '[\*.zip, \*.gz]'
@@ -68,7 +68,7 @@ def from_files(
     """
     from ..document import Document
 
-    if read_mode not in {'r', 'rb', None}:
+    if read_mode not in {"r", "rb", None}:
         raise RuntimeError(f'read_mode should be "r", "rb" or None, got {read_mode}')
 
     def _iter_file_exts(ps):
@@ -88,7 +88,7 @@ def from_files(
                 if to_dataturi:
                     d.convert_uri_to_datauri()
                 yield d
-            elif read_mode in {'r', 'rb'}:
+            elif read_mode in {"r", "rb"}:
                 with open(g, read_mode) as fp:
                     d = Document(content=fp.read(), uri=g)
                     if to_dataturi:
@@ -104,7 +104,7 @@ def from_csv(
     field_resolver: Optional[Dict[str, str]] = None,
     size: Optional[int] = None,
     sampling_rate: Optional[float] = None,
-) -> Generator['Document', None, None]:
+) -> Generator["Document", None, None]:
     """Generator function for CSV. Yields documents.
 
     :param fp: file paths
@@ -120,9 +120,9 @@ def from_csv(
 
     lines = csv.DictReader(fp)
     for value in _subsample(lines, size, sampling_rate):
-        if 'groundtruth' in value and 'document' in value:
-            yield Document(value['document'], field_resolver), Document(
-                value['groundtruth'], field_resolver
+        if "groundtruth" in value and "document" in value:
+            yield Document(value["document"], field_resolver), Document(
+                value["groundtruth"], field_resolver
             )
         else:
             yield Document(value, field_resolver)
@@ -135,7 +135,7 @@ def from_huggingface_datasets(
     sampling_rate: Optional[float] = None,
     filter_fields: bool = False,
     **datasets_kwargs,
-) -> Generator['Document', None, None]:
+) -> Generator["Document", None, None]:
     """Generator function for Hugging Face Datasets. Yields documents.
 
     This function helps to load datasets from Hugging Face Datasets Hub
@@ -169,7 +169,7 @@ def from_huggingface_datasets(
         raise ValueError(
             (
                 'Please provide a split for dataset using "split" argument. '
-                f'The following splits are available for this dataset: {list(data.keys())}'
+                f"The following splits are available for this dataset: {list(data.keys())}"
             )
         )
 
@@ -192,7 +192,7 @@ def from_ndjson(
     field_resolver: Optional[Dict[str, str]] = None,
     size: Optional[int] = None,
     sampling_rate: Optional[float] = None,
-) -> Generator['Document', None, None]:
+) -> Generator["Document", None, None]:
     """Generator function for line separated JSON. Yields documents.
 
     :param fp: file paths
@@ -208,9 +208,9 @@ def from_ndjson(
 
     for line in _subsample(fp, size, sampling_rate):
         value = json.loads(line)
-        if 'groundtruth' in value and 'document' in value:
-            yield Document(value['document'], field_resolver), Document(
-                value['groundtruth'], field_resolver
+        if "groundtruth" in value and "document" in value:
+            yield Document(value["document"], field_resolver), Document(
+                value["groundtruth"], field_resolver
             )
         else:
             yield Document(value, field_resolver)
@@ -219,12 +219,12 @@ def from_ndjson(
 def from_lines(
     lines: Optional[Iterable[str]] = None,
     filepath: Optional[str] = None,
-    read_mode: str = 'r',
-    line_format: str = 'json',
+    read_mode: str = "r",
+    line_format: str = "json",
     field_resolver: Optional[Dict[str, str]] = None,
     size: Optional[int] = None,
     sampling_rate: Optional[float] = None,
-) -> Generator['Document', None, None]:
+) -> Generator["Document", None, None]:
     """Generator function for lines, json and csv. Yields documents or strings.
 
     :param lines: a list of strings, each is considered as a document
@@ -242,7 +242,7 @@ def from_lines(
     """
     if filepath:
         file_type = os.path.splitext(filepath)[1]
-        with open(filepath, read_mode) as f:
+        with open(os.path.expanduser(filepath), read_mode) as f:
             if file_type in _jsonl_ext:
                 yield from from_ndjson(f, field_resolver, size, sampling_rate)
             elif file_type in _csv_ext:
@@ -250,9 +250,9 @@ def from_lines(
             else:
                 yield from _subsample(f, size, sampling_rate)
     elif lines:
-        if line_format == 'json':
+        if line_format == "json":
             yield from from_ndjson(lines, field_resolver, size, sampling_rate)
-        elif line_format == 'csv':
+        elif line_format == "csv":
             yield from from_csv(lines, field_resolver, size, sampling_rate)
         else:
             yield from _subsample(lines, size, sampling_rate)
@@ -261,8 +261,8 @@ def from_lines(
 
 
 # https://github.com/ndjson/ndjson.github.io/issues/1#issuecomment-109935996
-_jsonl_ext = {'.jsonlines', '.ndjson', '.jsonl', '.jl', '.ldjson'}
-_csv_ext = {'.csv', '.tcsv'}
+_jsonl_ext = {".jsonlines", ".ndjson", ".jsonl", ".jl", ".ldjson"}
+_csv_ext = {".csv", ".tcsv"}
 
 
 def _sample(iterable, sampling_rate: Optional[float] = None):
