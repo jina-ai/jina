@@ -331,9 +331,8 @@ class Pod(BasePod):
 
     class _ReplicaSet:
         def __init__(self, pod_args: Namespace, args: List[Namespace]):
-            super().__init__()
-            self.pod_args = pod_args
             self._exit_fifo = ExitFIFO()
+            self.pod_args = pod_args
             self.args = args
             self.peas = []
 
@@ -342,8 +341,8 @@ class Pod(BasePod):
         ):
             new_exit_fifo = ExitFIFO()
             for i in range(len(self.peas)):
-                pea = self.peas[i]
-                pea.close()
+                old_pea = self.peas[i]
+                old_pea.close()
                 _args = self.args[i]
                 _args.noblock_on_start = True
                 ### BACKWARDS COMPATIBILITY, so THAT DUMP_PATH is in runtime_args
@@ -355,7 +354,6 @@ class Pod(BasePod):
                 self.peas[i] = new_pea
                 await new_pea.async_wait_start_success()
                 new_pea.activate_runtime()
-            self._exit_fifo.close()
             self._exit_fifo = new_exit_fifo
 
         def __enter__(self):
@@ -611,6 +609,10 @@ class Pod(BasePod):
         except KeyboardInterrupt:
             pass
         finally:
+            self.head_pea = None
+            self.tail_pea = None
+            if self.replica_set is not None:
+                self.replica_set.peas.clear()
             self._activated = False
 
     @property
@@ -640,12 +642,6 @@ class Pod(BasePod):
             else:
                 uses_with = {'dump_path': dump_path}
         try:
-            assert (
-                self.head_pea is not None
-            ), 'Rolling update is not supported without a head Pea'
-            assert (
-                self.tail_pea is not None
-            ), 'Rolling update is not supported without a head Pea'
             await self.replica_set.rolling_update(
                 dump_path=dump_path, uses_with=uses_with
             )
