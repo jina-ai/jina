@@ -621,6 +621,21 @@
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.optimizers.parameters.</span></span><span class="sig-name descname"><span class="pre">OptimizationParameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">executor_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'JINA'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jaml_variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/optimizers/parameters/#OptimizationParameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.optimizers.parameters.OptimizationParameter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../jina.jaml/#jina.jaml.JAMLCompatible" title="jina.jaml.JAMLCompatible"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.jaml.JAMLCompatible</span></code></a></p>
 <p>Base class for all optimization parameters.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.optimizers.parameters.OptimizationParameter.search_space">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">search_space</span></span><em class="property"><span class="pre">:</span> <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.optimizers.parameters.OptimizationParameter.search_space" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the parameter’s search space, i.e. a dictionary mapping the parameter name to a list of
+possible values for the parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>NotImplementedError</strong> – <a class="reference internal" href="#jina.optimizers.parameters.OptimizationParameter" title="jina.optimizers.parameters.OptimizationParameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">OptimizationParameter</span></code></a> is just an interface. Please
+use any implemented subclass.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.optimizers.parameters.OptimizationParameter.update_trial_params">
 <span class="sig-name descname"><span class="pre">update_trial_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trial_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/optimizers/parameters/#OptimizationParameter.update_trial_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.optimizers.parameters.OptimizationParameter.update_trial_params" title="Permalink to this definition">¶</a></dt>
@@ -643,6 +658,21 @@
 <p>Used for optimizing integer parameters with the FlowOptimizer.
 For detailed information about sampling and usage see
 <a class="reference external" href="https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_int">https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_int</a></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.optimizers.parameters.IntegerParameter.search_space">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">search_space</span></span><em class="property"><span class="pre">:</span> <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.optimizers.parameters.IntegerParameter.search_space" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the parameter’s search space, i.e. a dictionary mapping the parameter name to a list of
+possible values for the parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]]</p>
+</dd>
+<dt class="field-even">Return:</dt>
+<dd class="field-even"><p>The parameter’s search space in dictionary form with the parameter name as key
+and a list of values as value</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.optimizers.parameters.UniformParameter">
@@ -651,6 +681,21 @@ For detailed information about sampling and usage see
 <p>Used for optimizing float parameters with the FlowOptimizer with uniform sampling.
 For detailed information about sampling and usage see
 <a class="reference external" href="https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_discrete_uniform">https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_discrete_uniform</a></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.optimizers.parameters.UniformParameter.search_space">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">search_space</span></span><em class="property"><span class="pre">:</span> <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.optimizers.parameters.UniformParameter.search_space" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the parameter’s search space, i.e. a dictionary mapping the parameter name to a list of
+possible values for the parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>NotImplementedError</strong> – search space is not defined for parameter type
+<a class="reference internal" href="#jina.optimizers.parameters.UniformParameter" title="jina.optimizers.parameters.UniformParameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">UniformParameter</span></code></a>.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.optimizers.parameters.LogUniformParameter">
@@ -659,6 +704,21 @@ For detailed information about sampling and usage see
 <p>Used for optimizing float parameters with the FlowOptimizer with loguniform sampling.
 For detailed information about sampling and usage see
 <a class="reference external" href="https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_loguniform">https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_loguniform</a></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.optimizers.parameters.LogUniformParameter.search_space">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">search_space</span></span><em class="property"><span class="pre">:</span> <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.optimizers.parameters.LogUniformParameter.search_space" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the parameter’s search space, i.e. a dictionary mapping the parameter name to a list of
+possible values for the parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>NotImplementedError</strong> – search space is not defined for parameter type
+<a class="reference internal" href="#jina.optimizers.parameters.LogUniformParameter" title="jina.optimizers.parameters.LogUniformParameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">LogUniformParameter</span></code></a>.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.optimizers.parameters.CategoricalParameter">
@@ -667,6 +727,21 @@ For detailed information about sampling and usage see
 <p>Used for optimizing categorical parameters with the FlowOptimizer.
 For detailed information about sampling and usage see
 <a class="reference external" href="https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_categorical">https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_categorical</a></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.optimizers.parameters.CategoricalParameter.search_space">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">search_space</span></span><em class="property"><span class="pre">:</span> <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">,</span> </span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">float</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.optimizers.parameters.CategoricalParameter.search_space" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the parameter’s search space, i.e. a dictionary mapping the parameter name to a list of
+possible values for the parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]]]</p>
+</dd>
+<dt class="field-even">Return:</dt>
+<dd class="field-even"><p>The parameter’s search space in dictionary form with the parameter name as key
+and a list of values as value</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.optimizers.parameters.DiscreteUniformParameter">
@@ -675,6 +750,21 @@ For detailed information about sampling and usage see
 <p>Used for optimizing discrete parameters with the FlowOptimizer with uniform sampling.
 For detailed information about sampling and usage it is used by Jina with optuna see
 <a class="reference external" href="https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_discrete_uniform">https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_discrete_uniform</a></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.optimizers.parameters.DiscreteUniformParameter.search_space">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">search_space</span></span><em class="property"><span class="pre">:</span> <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.optimizers.parameters.DiscreteUniformParameter.search_space" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the parameter’s search space, i.e. a dictionary mapping the parameter name to a list of
+possible values for the parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]</p>
+</dd>
+<dt class="field-even">Return:</dt>
+<dd class="field-even"><p>The parameter’s search space in dictionary form with the parameter name as key
+and a list of values as value</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.optimizers.parameters.ExecutorAlternativeParameter">
@@ -696,6 +786,21 @@ that expose different <cite>OptimizationParameters</cite> for each of the specif
 </pre></div>
 </div>
 </div></blockquote>
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.optimizers.parameters.ExecutorAlternativeParameter.search_space">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">search_space</span></span><em class="property"><span class="pre">:</span> <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.optimizers.parameters.ExecutorAlternativeParameter.search_space" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the parameter’s search space, i.e. a dictionary mapping the parameter name to a list of
+possible values for the parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</p>
+</dd>
+<dt class="field-even">Return:</dt>
+<dd class="field-even"><p>The parameter’s search space in dictionary form with the parameter name as key
+and a list of values as value</p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.optimizers.parameters.ExecutorAlternativeParameter.update_trial_params">
 <span class="sig-name descname"><span class="pre">update_trial_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trial_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/optimizers/parameters/#ExecutorAlternativeParameter.update_trial_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.optimizers.parameters.ExecutorAlternativeParameter.update_trial_params" title="Permalink to this definition">¶</a></dt>

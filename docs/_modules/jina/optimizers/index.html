@@ -592,7 +592,7 @@
                 <h1>Source code for jina.optimizers</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">yaml</span>
@@ -797,6 +797,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_seed</span> <span class="o">=</span> <span class="n">seed</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">load_optimization_parameters</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parameter_yaml</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_search_space</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_search_space</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">parameter</span><span class="o">.</span><span class="n">search_space</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">_trial_parameter_sampler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trial</span><span class="p">:</span> <span class="s1">'Trial'</span><span class="p">):</span>
         <span class="n">trial_parameters</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span>
@@ -832,7 +836,9 @@
         <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
             <span class="kn">import</span> <span class="nn">optuna</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sampler</span> <span class="o">==</span> <span class="s1">'GridSampler'</span><span class="p">:</span>
-            <span class="n">sampler</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">optuna</span><span class="o">.</span><span class="n">samplers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sampler</span><span class="p">)(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">sampler</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">optuna</span><span class="o">.</span><span class="n">samplers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sampler</span><span class="p">)(</span>
+                <span class="n">search_space</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_search_space</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">sampler</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">optuna</span><span class="o">.</span><span class="n">samplers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sampler</span><span class="p">)(</span><span class="n">seed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_seed</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">study</span> <span class="o">=</span> <span class="n">optuna</span><span class="o">.</span><span class="n">create_study</span><span class="p">(</span><span class="n">direction</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_direction</span><span class="p">,</span> <span class="n">sampler</span><span class="o">=</span><span class="n">sampler</span><span class="p">)</span>
