@@ -34,13 +34,15 @@ To encode video frames and query texts into the same space, we choose the pretra
 
 ```{admonition} What is CLIP?
 :class: info
+
 The CLIP model is trained to learn the visual concepts from the natural languages by using text snippet and the image pairs across the internet. In the original CLIP paper, the model is used to perform Zero Shot Learning by encoding the text labels and the images with seperated models and later calculated the similarities between the encoded vectors. 
 ```
 
 In this tutorial, we use the image and the text encoding parts from CLIP to calculate the embeddings. 
 
 ```{admonition} How CLIP helps?
-:class: infor
+:class: info
+
 Given a short text `this is a dog`, the CLIP text model can encode it into a vector. Meanwhile, the CLIP image model can encode one image of a dog and one image of a cat into the same vector space.
 We can further find the distance between the text vector and the vectors of the dog image is smaller than that between the same text and an image of a cat. 
 ```
@@ -48,9 +50,10 @@ We can further find the distance between the text vector and the vectors of the 
 As for the indexer, considering this is for demonstration purpose, we choose `SimpleIndexer` as our indexer. It stores both vectors and meta-information at one shot. The search is done by using the built-in `match` function of the `DocumentArrayMemmap`
 
 ## Go through the Flow
+Although there is only one Flow defined in this example, it handles the requests to `/index` and `/search` differently by setting the `requests` decorators for the executors. 
 
 ### Index
-In the indexing part, there are three executors involved, namely `VideoLoader`, `CLIPImageEncoder` and `SimpleIndexer`. The inputs to the Flow are Documents with video URIs stored in the `uri` attributes. They are the file locations either remotely on the cloud or at your local file system. The `VideoLoader` extracts the frames from the video and stores them as image arrays into the `blob` attribute of the Chunks. The Documents after `VideoLoader` have the following format,
+As for the requests to the `/index` endpoint, there are three executors involved, namely `VideoLoader`, `CLIPImageEncoder` and `SimpleIndexer`. The inputs to the Flow are Documents with video URIs stored in the `uri` attributes. They are the file locations either remotely on the cloud or at your local file system. The `VideoLoader` extracts the frames from the video and stores them as image arrays into the `blob` attribute of the Chunks. The Documents after `VideoLoader` have the following format,
 
 <!--document.png-->
 
@@ -62,7 +65,7 @@ Afterwards, the `SimpleIndexer` stores all the Documents with a memory map.
 
 ### Query
 
-When being posted to the `search` endpoint, the requests go through `CLIPTextEncoder`, `SimpleIndexer` and `SimpleRanker`.
+When being posted to the `/search` endpoint, the requests go through `CLIPTextEncoder`, `SimpleIndexer` and `SimpleRanker`.
 The requests have the text descriptions stored in the `text` attributes of the Documents. These texts are further encoded into vectors by `CLIPTextEncoder`. The vectors are stored in the `embedding` attribute and used to retrieve the related vectors of the video frames with the `SimpleRanker`. Last but not the least, `SimpleRanker` find out the corresponding videos based on the retrieved frames. 
 
 ### Use the executors from Jina Hub
