@@ -242,7 +242,7 @@ def from_lines(
     """
     if filepath:
         file_type = os.path.splitext(filepath)[1]
-        with open(filepath, read_mode) as f:
+        with open(os.path.expanduser(filepath), read_mode) as f:
             if file_type in _jsonl_ext:
                 yield from from_ndjson(f, field_resolver, size, sampling_rate)
             elif file_type in _csv_ext:

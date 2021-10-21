@@ -1,4 +1,5 @@
 import os
+import shutil
 
 import numpy as np
 import pytest
@@ -302,6 +303,25 @@ def test_from_files_with_tilde():
     generator = from_files(patterns='~/*.*', to_dataturi=True, size=10)
     first = next(generator)
     assert first
+
+
+@pytest.mark.skipif(
+    'GITHUB_WORKFLOW' not in os.environ, reason='this test is only validate on CI'
+)
+def test_from_lines_with_tilde():
+
+    if not os.path.exists(os.path.expanduser("~/.jina")):
+        os.mkdir(os.path.expanduser("~/.jina"))
+    shutil.copy(
+        os.path.join(cur_dir, "docs_groundtruth.jsonlines"),
+        os.path.expanduser("~/.jina"),
+    )
+    result = list(from_lines(filepath="~/.jina/docs_groundtruth.jsonlines"))
+    assert len(result) == 2
+    assert result[0][0].text == "a"
+    assert result[0][1].text == "b"
+    assert result[1][0].text == "c"
+    assert result[1][1].text == "d"
 
 
 @pytest.mark.parametrize(
