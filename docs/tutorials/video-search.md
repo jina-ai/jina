@@ -16,14 +16,36 @@ In this tutorial, we create a video search system that retrieves the videos base
 
 ## Build the Flow
 
-Considering there is no text information available, we need find a way to match videos and texts. 
-One way to find such matches is to use the video frames because the information of the videos can be represented by the frames. To be more concrete, we can find the related frames with similar semantics based on the query texts and afterward return the videos containing these frames. This requires the models to encode the video frames into the same space as the query texts. In this case, the pretrained cross-modal models can help us out.
+Given that there is no text available, we can not use the text information of the video to match the query text directly. Instead, we need figure out another way to match videos and texts. 
+One way to find such matches is to use the video frames because part of the information in the videos can be captured by the frames. To be more concrete, we can find the related frames with similar semantics to the query texts and afterwards return the videos containing these frames. This requires models to encode the video frames and the query texts into the same space. In this case, the pretrained cross-modal models can help us out.
+
+```{admonition} Use the other information of videos
+:class: tip
+
+Generally, videos contain three sources of information, namely text, image, and audio information. The ratio of information from different sources varies from video to video. In this example, only the image information is used and this assumes that the frame images are representative for the video and can match the query needs of the user. In other words, this example only works when a video contains various frames and the user's query needs is to search the video frames via text. 
+
+If a video only contains texts or a video only has a single static image, this example won't work well. In such cases, the main information of the video is represented by either text or audio and therefore can not be searchable with the video frames. 
+
+Another pitfall of this tutorial is that the user might want to search with a description of the story, for example, `Padmé Amidala and C-3PO are taken hostage by General Grievous`. This information can not be described by a single frame and the query needs further understanding of the video. This is beyond the scope of this tutorial.
+```
 
 ### Choose Executors
-To encode video frames and query texts into the same space, we choose the pretrained CLIP models from OpenAI. There is one model for images and one model for texts. Given a short text `this is a dog`, the CLIP text model can encode it into a vector. Meanwhile, the CLIP image model can encode one image of a dog and one image of a cat into the same vector space.
-We can further find the distance between the text vector and the vectors of the dog image is smaller than that between the same text and an image of a cat. 
+To encode video frames and query texts into the same space, we choose the pretrained CLIP models from OpenAI. 
 
-As for the indexer, considering this is for demonstration purpose, we choose `SimpleIndexer` as our indexer. It is a mixture of vector indexer and key-value indexer and therefore can store both vectors and meta-information at one shot.
+```{admonition} What is CLIP?
+:class: info
+The CLIP model is trained to learn the visual concepts from the natural languages by using text snippet and the image pairs across the internet. In the original CLIP paper, the model is used to perform Zero Shot Learning by encoding the text labels and the images with seperated models and later calculated the similarities between the encoded vectors. 
+```
+
+In this tutorial, we use the image and the text encoding parts from CLIP to calculate the embeddings. 
+
+```{admonition} How CLIP helps?
+:class: infor
+Given a short text `this is a dog`, the CLIP text model can encode it into a vector. Meanwhile, the CLIP image model can encode one image of a dog and one image of a cat into the same vector space.
+We can further find the distance between the text vector and the vectors of the dog image is smaller than that between the same text and an image of a cat. 
+```
+
+As for the indexer, considering this is for demonstration purpose, we choose `SimpleIndexer` as our indexer. It stores both vectors and meta-information at one shot. The search is done by using the built-in `match` function of the `DocumentArrayMemmap`
 
 ## Go through the Flow
 
@@ -54,7 +76,10 @@ Except the `SimpleRanker`, all the other executors used in this tutorial are ava
 Note that by default the `CLIPImageEncoder` encodes the `blob` of the Documents at the root level. In this example, the Document at the root level represents the video and its chunks represent the video frames that the CLIP model should encode. To override this default configuration in the YAML file, we set `traversal_paths: ['c']` under the `uses_with` field. Instead of encoding the Document at the root level, the embeddings is calculated based on the `blob` of each 
 chunk. 
 
-```yaml
+```{code-block} yaml
+---
+emphasize-lines: 5, 6
+---
 ...
 executors:
   ...
@@ -68,7 +93,7 @@ executors:
 Similar as overriding the `traversal_paths`, we need configurate the `@requests` for the executors to ensure the requests to `/index` and `/search` endpoints can be handled as expected. The `VideoLoader` and `CLIPImageEncoder` only process the requests to the `/index` endpoint. In contrary, the `CLIPTextEncoder` is only used to handle the requests to the `/search` endpoint.
 
 
-```yaml
+```{code-block} yaml
 ...
 executors:
   - uses: jinahub://VideoLoader/v0.1
