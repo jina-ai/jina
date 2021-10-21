@@ -623,12 +623,15 @@
 <p>A mixin used for traversing a <cite>Sequence[Traversable]</cite>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.arrays.traversable.TraversableSequence.traverse">
-<span class="sig-name descname"><span class="pre">traverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traversal_paths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/traversable/#TraversableSequence.traverse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.traversable.TraversableSequence.traverse" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">traverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traversal_paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/traversable/#TraversableSequence.traverse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.traversable.TraversableSequence.traverse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an Iterator of :class:<code class="docutils literal notranslate"><span class="pre">TraversableSequence</span></code> of the leaves when applying the traversal_paths.
 Each :class:<code class="docutils literal notranslate"><span class="pre">TraversableSequence</span></code> is either the root Documents, a ChunkArray or a MatchArray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>traversal_paths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – a list of string that represents the traversal path</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>traversal_paths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – a list of string that represents the traversal path</p></li>
+<li><p><strong>filter_fn</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]) – function to filter docs during traversal</p></li>
+</ul>
 </dd>
 <dt class="field-even">Yield</dt>
 <dd class="field-even"><p>:class:<code class="docutils literal notranslate"><span class="pre">TraversableSequence</span></code> of the leaves when applying the traversal_paths.</p>
@@ -654,12 +657,15 @@ Each :class:<code class="docutils literal notranslate"><span class="pre">Travers
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.arrays.traversable.TraversableSequence.traverse_flat_per_path">
-<span class="sig-name descname"><span class="pre">traverse_flat_per_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traversal_paths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/traversable/#TraversableSequence.traverse_flat_per_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.traversable.TraversableSequence.traverse_flat_per_path" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">traverse_flat_per_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traversal_paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/traversable/#TraversableSequence.traverse_flat_per_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.traversable.TraversableSequence.traverse_flat_per_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a flattened :class:<code class="docutils literal notranslate"><span class="pre">TraversableSequence</span></code> per path in :param:<code class="docutils literal notranslate"><span class="pre">traversal_paths</span></code>
 with all Documents, that are reached by the path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>traversal_paths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – a list of string that represents the traversal path</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>traversal_paths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – a list of string that represents the traversal path</p></li>
+<li><p><strong>filter_fn</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]) – function to filter docs during traversal</p></li>
+</ul>
 </dd>
 <dt class="field-even">Yield</dt>
 <dd class="field-even"><p>:class:<code class="docutils literal notranslate"><span class="pre">TraversableSequence</span></code> containing the document of all leaves per path.</p>
@@ -668,7 +674,7 @@ with all Documents, that are reached by the path.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.arrays.traversable.TraversableSequence.traverse_flat">
-<span class="sig-name descname"><span class="pre">traverse_flat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traversal_paths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/traversable/#TraversableSequence.traverse_flat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.traversable.TraversableSequence.traverse_flat" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">traverse_flat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traversal_paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/traversable/#TraversableSequence.traverse_flat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.traversable.TraversableSequence.traverse_flat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a single flattened :class:<code class="docutils literal notranslate"><span class="pre">TraversableSequence</span></code> with all Documents, that are reached
 via the :param:<code class="docutils literal notranslate"><span class="pre">traversal_paths</span></code>.</p>
 <div class="admonition warning">
@@ -679,7 +685,10 @@ behavior then in :method:<code class="docutils literal notranslate"><span class=
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>traversal_paths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – a list of string that represents the traversal path</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>traversal_paths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – a list of string that represents the traversal path</p></li>
+<li><p><strong>filter_fn</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]) – function to filter docs during traversal</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>]</p>
@@ -747,7 +756,7 @@ Note, that the last batch might be smaller than <cite>batch_size</cite>.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 20, 2021.
+                    Last updated on Oct 21, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
