@@ -586,6 +586,7 @@ class Pod(BasePod):
                 pea = self.peas[i]
                 if pea.role == PeaRoleType.PARALLEL:
                     pea.close()
+                    del self._exit_callbacks[self._exit_callbacks.index(pea)]
                     _args = self.peas_args['peas'][pea_args_idx]
                     _args.noblock_on_start = True
                     ### BACKWARDS COMPATIBILITY, so THAT DUMP_PATH is in runtime_args
