@@ -301,7 +301,7 @@ class ContainerRuntime(BaseRuntime):
     def cancel(
         control_address: str,
         timeout_ctrl: int,
-        socket_in_type: 'SocketType',
+        socket_in_type: Optional['SocketType'],
         skip_deactivate: bool,
         logger: 'JinaLogger',
         **kwargs,
@@ -317,7 +317,11 @@ class ContainerRuntime(BaseRuntime):
         :param logger: the JinaLogger to log messages
         :param kwargs: extra keyword arguments
         """
-        if not skip_deactivate and socket_in_type == SocketType.DEALER_CONNECT:
+        if (
+            not skip_deactivate
+            and socket_in_type is not None
+            and socket_in_type == SocketType.DEALER_CONNECT
+        ):
             ContainerRuntime._retry_control_message(
                 ctrl_address=control_address,
                 timeout_ctrl=timeout_ctrl,
@@ -337,7 +341,7 @@ class ContainerRuntime(BaseRuntime):
     def activate(
         control_address: str,
         timeout_ctrl: int,
-        socket_in_type: 'SocketType',
+        socket_in_type: Optional['SocketType'],
         logger: 'JinaLogger',
         **kwargs,
     ):
@@ -350,7 +354,7 @@ class ContainerRuntime(BaseRuntime):
         :param logger: the JinaLogger to log messages
         :param kwargs: extra keyword arguments
         """
-        if socket_in_type == SocketType.DEALER_CONNECT:
+        if socket_in_type is not None and socket_in_type == SocketType.DEALER_CONNECT:
             ContainerRuntime._retry_control_message(
                 ctrl_address=control_address,
                 timeout_ctrl=timeout_ctrl,

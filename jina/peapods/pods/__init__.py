@@ -19,6 +19,7 @@ from ...enums import (
 )
 from ...helper import random_identity, CatchAllCleanupContextManager
 from ...jaml.helper import complete_path
+from ...logging.logger import JinaLogger
 
 
 class ExitFIFO(ExitStack):
@@ -330,7 +331,10 @@ class Pod(BasePod):
     """
 
     class _ReplicaSet:
-        def __init__(self, pod_args: Namespace, args: List[Namespace]):
+        def __init__(
+            self, pod_args: Namespace, args: List[Namespace], logger: 'JinaLogger'
+        ):
+            self.logger = logger
             self._exit_fifo = ExitFIFO()
             self.pod_args = pod_args
             self.args = args
@@ -339,6 +343,7 @@ class Pod(BasePod):
         async def rolling_update(
             self, dump_path: Optional[str] = None, *, uses_with: Optional[Dict] = None
         ):
+            self.logger.debug(f' Starting ReplicaSet rolling update')
             new_exit_fifo = ExitFIFO()
             for i in range(len(self.peas)):
                 old_pea = self.peas[i]
@@ -355,8 +360,10 @@ class Pod(BasePod):
                 new_pea.activate_runtime()
                 self.peas[i] = new_pea
             self._exit_fifo = new_exit_fifo
+            self.logger.debug(f' Successfully applied ReplicaSet rolling update')
 
         def __enter__(self):
+            self.logger.debug(f' Entering the ReplicaSet')
             for _args in self.args:
                 if getattr(self.pod_args, 'noblock_on_start', False):
                     _args.noblock_on_start = True
@@ -366,6 +373,7 @@ class Pod(BasePod):
             return self
 
         def __exit__(self, exc_type, exc_val, exc_tb):
+            self.logger.debug(f' Exiting the ReplicaSet')
             self._exit_fifo.__exit__(exc_type, exc_val, exc_tb)
 
     def __init__(
@@ -381,6 +389,9 @@ class Pod(BasePod):
         self.needs = (
             needs or set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
+        self.logger = JinaLogger(
+            self.args.name or self.__class__.__name__, **vars(args)
+        )
 
         self.head_pea = None
         self.tail_pea = None
@@ -393,8 +404,10 @@ class Pod(BasePod):
         self._activated = False
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        self.logger.debug('Exiting the Pod')
         super().__exit__(exc_type, exc_val, exc_tb)
         self.join()
+        self.logger.debug('Successfully exited the Pod')
 
     @property
     def peas(self):
@@ -564,13 +577,16 @@ class Pod(BasePod):
             If one of the :class:`BasePea` fails to start, make sure that all of them
             are properly closed.
         """
+        self.logger.debug('Starting the Pod')
         if self.peas_args['head'] is not None:
             _args = self.peas_args['head']
             if getattr(self.args, 'noblock_on_start', False):
                 _args.noblock_on_start = True
             self.head_pea = BasePea(_args)
             self.enter_context(self.head_pea)
-        self.replica_set = self._ReplicaSet(self.args, self.peas_args['peas'])
+        self.replica_set = self._ReplicaSet(
+            self.args, self.peas_args['peas'], self.logger
+        )
         self.enter_context(self.replica_set)
         if self.peas_args['tail'] is not None:
             _args = self.peas_args['tail']
@@ -635,6 +651,7 @@ class Pod(BasePod):
         :param dump_path: the dump from which to read the data
         :param uses_with: a Dictionary of arguments to restart the executor with
         """
+        self.logger.debug(f' Starting rolling update')
         # BACKWARDS COMPATIBILITY
         if dump_path is not None:
             if uses_with is not None:

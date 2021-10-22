@@ -133,6 +133,8 @@ class BasePea:
         # or thread. Control address from Zmqlet has some randomness and therefore we need to make sure Pea knows
         # control address of runtime
         self.runtime_cls = self._get_runtime_cls()
+        if self.runtime_cls.__class__.__name__ == 'GRPCDataRuntime':
+            self.args.socket_in = None
         self._timeout_ctrl = self.args.timeout_ctrl
         self._set_ctrl_adrr()
         test_worker = {
@@ -182,9 +184,11 @@ class BasePea:
         This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         .. #noqa: DAR201
         """
+        self.logger.debug('Starting the Runtime Process')
         self.worker.start()
         if not self.args.noblock_on_start:
             self.wait_start_success()
+        self.logger.debug('Successfully started the runtime process')
         return self
 
     def join(self, *args, **kwargs):
@@ -334,13 +338,6 @@ class BasePea:
                 await asyncio.sleep(0.1)
 
         self._fail_start_timeout(_timeout)
-
-    @property
-    def _is_dealer(self):
-        """Return true if this `Pea` must act as a Dealer responding to a Router
-        .. # noqa: DAR201
-        """
-        return self.args.socket_in == SocketType.DEALER_CONNECT
 
     def close(self) -> None:
         """Close the Pea

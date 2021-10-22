@@ -352,6 +352,9 @@ class K8sPod(BasePod):
         super().__init__()
         self.args = args
         self.needs = needs or set()
+        self.logger = JinaLogger(
+            self.args.name or self.__class__.__name__, **vars(args)
+        )
         self.deployment_args = self._parse_args(args)
         self.version = self._get_base_executor_version()
 
@@ -440,8 +443,10 @@ class K8sPod(BasePod):
         return parsed_args
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        self.logger.debug('Exiting the K8sPod')
         super().__exit__(exc_type, exc_val, exc_tb)
         self.join()
+        self.logger.debug('Successfully exited the K8sPod')
 
     @property
     def port_expose(self) -> int:
@@ -464,6 +469,7 @@ class K8sPod(BasePod):
         :param dump_path: **backwards compatibility** This function was only accepting dump_path as the only potential arg to override
         :param uses_with: a Dictionary of arguments to restart the executor with
         """
+        self.logger.debug(f' Starting rolling update')
         old_uids = {}
         for deployment in self.k8s_deployments:
             old_uids[deployment.dns_name] = deployment.get_pod_uids()
@@ -471,6 +477,7 @@ class K8sPod(BasePod):
 
         for deployment in self.k8s_deployments:
             await deployment.wait_restart_success(old_uids[deployment.dns_name])
+        self.logger.debug(f' Successful rolling update')
 
     def start(self) -> 'K8sPod':
         """Deploy the kubernetes pods via k8s Deployment and k8s Service.
