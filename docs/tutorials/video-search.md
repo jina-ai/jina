@@ -8,7 +8,7 @@
 :date: Oct. 19, 2021
 ```
 
-## Search videos via Text
+## Search Videos via Text
 
 In this tutorial, we create a video search system that retrieves the videos based on short text descriptions of the scenes. The main challenge is to enable the user to search videos _**without**_ using any labels or text information about the videos.
 
@@ -142,6 +142,6 @@ executors:
 ...
 ```
 
-## Get the Full Example Codes
+## Get the Source Code
 
 You can find the codes at [example-video-search](https://github.com/jina-ai/example-video-search). 
