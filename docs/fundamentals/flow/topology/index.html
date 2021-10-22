@@ -723,6 +723,48 @@ In this case Jina will shard the Executor and create Replicas for each shard.</p
 <img alt="../../../_images/replica_shards_example.svg" src="../../../_images/replica_shards_example.svg"/></figure>
 <p>This Flow has a single Executor with 2 Shards and 3 Replicas, which means it gets split into 2 Shards with 3 Replicas each. In total this Flow has 2*3=6 workers and could be distributed to six different machines if necessary.</p>
 </section>
+<section id="replica-vs-shards">
+<h2>Replica vs Shards<a class="headerlink" href="#replica-vs-shards" title="Permalink to this headline">¶</a></h2>
+<p>The next table shows the difference between shards and replicas.</p>
+<div class="table-wrapper"><table border="1" class="docutils">
+<thead>
+<tr>
+<th></th>
+<th>Replica</th>
+<th>Shards</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Create multiple copies of an executor</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Partition data into several parts</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Request handled by one of the executors</td>
+<td>✅</td>
+<td>✅, if <code>polling = 'any'</code></td>
+</tr>
+<tr>
+<td>Request handled by all of the executors</td>
+<td>❌</td>
+<td>✅, if <code>polling = 'all'</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Think of using <code class="docutils literal notranslate"><span class="pre">replicas</span></code> when you have slow Executors and you want to be able to process multiple requests in parallel.
+Also replicas provide high availability in case some executors are taken down (for updates, failures, etc)</p>
+<p>On the other hand, when your data  is too large to fit in one machine or if the latency of a request is too large <code class="docutils literal notranslate"><span class="pre">shards</span></code> is your best option since it allows you to split your data across multiple machines.</p>
+<div class="warning admonition">
+<p class="admonition-title">Warning</p>
+<p>Sometimes you’ll also encouter <code class="docutils literal notranslate"><span class="pre">parallel</span></code>, this is equivalent to <code class="docutils literal notranslate"><span class="pre">shards</span></code> and is only kept for backwards compatibility.</p>
+</div>
+</section>
 </section>
 
             </article>
@@ -790,6 +832,7 @@ In this case Jina will shard the Executor and create Replicas for each shard.</p
 </ul>
 </li>
 <li><a class="reference internal" href="#combining-replicas-shards">Combining Replicas &amp; Shards</a></li>
+<li><a class="reference internal" href="#replica-vs-shards">Replica vs Shards</a></li>
 </ul>
 </li>
 </ul>
