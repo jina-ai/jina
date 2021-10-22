@@ -49,15 +49,12 @@ def test_gateway_runtime(cls, runtime):
 
 
 @pytest.mark.skipif(__windows__, reason='Windows containers are not supported yet')
-@pytest.mark.parametrize('runtime', ['thread', 'process'])
-def test_container_runtime_bad_entrypoint(runtime):
+def test_container_runtime_bad_entrypoint():
     class Pea1(BasePea):
         runtime_cls = ContainerRuntime
 
     # without correct entrypoint this will fail
-    arg = set_pea_parser().parse_args(
-        ['--uses', 'docker://jinaai/jina:test-pip', '--runtime-backend', runtime]
-    )
+    arg = set_pea_parser().parse_args(['--uses', 'docker://jinaai/jina:test-pip'])
     with pytest.raises(RuntimeFailToStart):
         with Pea1(arg):
             pass

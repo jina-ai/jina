@@ -1115,6 +1115,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             return self.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        self.logger.debug('Exiting the Flow!')
         super().__exit__(exc_type, exc_val, exc_tb)
 
         # unset all envs to avoid any side-effect

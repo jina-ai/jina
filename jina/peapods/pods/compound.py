@@ -32,7 +32,9 @@ class CompoundPod(BasePod):
         super().__init__()
         args.upload_files = BasePod._set_upload_files(args)
         self.args = args
-        self.logger = JinaLogger(self.args.name or self.__class__.__name__)
+        self.logger = JinaLogger(
+            self.args.name or self.__class__.__name__, **vars(args)
+        )
         self.needs = (
             needs or set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
@@ -61,6 +63,7 @@ class CompoundPod(BasePod):
             self.shards.append(Pod(_args))
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        self.logger.debug('Exiting the CompoundPod!')
         super().__exit__(exc_type, exc_val, exc_tb)
         self.join()
 

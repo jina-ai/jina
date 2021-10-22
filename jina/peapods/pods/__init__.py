@@ -329,7 +329,10 @@ class Pod(BasePod):
     """
 
     class _ReplicaSet:
-        def __init__(self, pod_args: Namespace, args: List[Namespace]):
+        def __init__(
+            self, pod_args: Namespace, args: List[Namespace], logger: 'JinaLogger'
+        ):
+            self.logger = logger
             self._exit_fifo = ExitFIFO()
             self.pod_args = pod_args
             self.args = args
@@ -365,6 +368,7 @@ class Pod(BasePod):
             return self
 
         def __exit__(self, exc_type, exc_val, exc_tb):
+            self.logger.debug(f' Exiting the ReplicaSet')
             self._exit_fifo.__exit__(exc_type, exc_val, exc_tb)
 
     def __init__(
@@ -375,7 +379,9 @@ class Pod(BasePod):
         super().__init__()
         args.upload_files = BasePod._set_upload_files(args)
         self.args = args
-        self.logger = JinaLogger(self.args.name or self.__class__.__name__)
+        self.logger = JinaLogger(
+            self.args.name or self.__class__.__name__, **vars(args)
+        )
 
         # a pod only can have replicas and they can only have polling ANY
         self.args.polling = PollingType.ANY
@@ -394,6 +400,7 @@ class Pod(BasePod):
         self._activated = False
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        self.logger.debug('Exiting the Pod!')
         super().__exit__(exc_type, exc_val, exc_tb)
         self.join()
 
@@ -571,7 +578,9 @@ class Pod(BasePod):
                 _args.noblock_on_start = True
             self.head_pea = BasePea(_args)
             self.enter_context(self.head_pea)
-        self.replica_set = self._ReplicaSet(self.args, self.peas_args['peas'])
+        self.replica_set = self._ReplicaSet(
+            self.args, self.peas_args['peas'], self.logger
+        )
         self.enter_context(self.replica_set)
         if self.peas_args['tail'] is not None:
             _args = self.peas_args['tail']
