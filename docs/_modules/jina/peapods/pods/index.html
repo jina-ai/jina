@@ -921,6 +921,45 @@
 <span class="sd">    :param needs: pod names of preceding pods, the output of these pods are going into the input of this pod</span>
 <span class="sd">    """</span>
 
+    <span class="k">class</span> <span class="nc">_ReplicaSet</span><span class="p">:</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pod_args</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Namespace</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_exit_fifo</span> <span class="o">=</span> <span class="n">ExitFIFO</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span> <span class="o">=</span> <span class="n">pod_args</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">peas</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">rolling_update</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">dump_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="n">new_exit_fifo</span> <span class="o">=</span> <span class="n">ExitFIFO</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">peas</span><span class="p">)):</span>
+                <span class="n">old_pea</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">old_pea</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="n">_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="c1">### BACKWARDS COMPATIBILITY, so THAT DUMP_PATH is in runtime_args</span>
+                <span class="n">_args</span><span class="o">.</span><span class="n">dump_path</span> <span class="o">=</span> <span class="n">dump_path</span>
+                <span class="c1">###</span>
+                <span class="n">_args</span><span class="o">.</span><span class="n">uses_with</span> <span class="o">=</span> <span class="n">uses_with</span>
+                <span class="n">new_pea</span> <span class="o">=</span> <span class="n">BasePea</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
+                <span class="n">new_exit_fifo</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">new_pea</span><span class="p">)</span>
+                <span class="k">await</span> <span class="n">new_pea</span><span class="o">.</span><span class="n">async_wait_start_success</span><span class="p">()</span>
+                <span class="n">new_pea</span><span class="o">.</span><span class="n">activate_runtime</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">peas</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_pea</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_exit_fifo</span> <span class="o">=</span> <span class="n">new_exit_fifo</span>
+
+        <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">_args</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">,</span> <span class="s1">'noblock_on_start'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                    <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">pea</span> <span class="o">=</span> <span class="n">BasePea</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">peas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pea</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_exit_fifo</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">pea</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span>
+
+        <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_exit_fifo</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'Namespace'</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span>
@@ -935,17 +974,29 @@
             <span class="n">needs</span> <span class="ow">or</span> <span class="nb">set</span><span class="p">()</span>
         <span class="p">)</span>  <span class="c1">#: used in the :class:`jina.flow.Flow` to build the graph</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">head_pea</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tail_pea</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">replica_set</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_head_router</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_tail_router</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">deducted_head</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">deducted_tail</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">peas</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: List['BasePea']</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_pea_args</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_activated</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">peas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""List of peas in this Pod</span>
+<span class="sd">        :return: Return all the concatenated list of peas</span>
+<span class="sd">        """</span>
+        <span class="n">_peas</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pea</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_pea</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="n">_peas</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">replica_set</span><span class="o">.</span><span class="n">peas</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">replica_set</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[])</span>
+        <span class="n">_peas</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">tail_pea</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail_pea</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[])</span>
+        <span class="k">return</span> <span class="n">_peas</span>
 
 <div class="viewcode-block" id="Pod.update_pea_args"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.Pod.update_pea_args">[docs]</a>    <span class="k">def</span> <span class="nf">update_pea_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">""" Update args of all its peas based on Pod args. Including head/tail"""</span>
@@ -1085,10 +1136,6 @@
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s1">'BasePod'</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_peas</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">num_peas</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">name</span>
 
-    <span class="k">def</span> <span class="nf">_enter_pea</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pea</span><span class="p">:</span> <span class="s1">'BasePea'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">peas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pea</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">pea</span><span class="p">)</span>
-
 <div class="viewcode-block" id="Pod.activate"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.Pod.activate">[docs]</a>    <span class="k">def</span> <span class="nf">activate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Activate all peas in this pod</span>
@@ -1109,10 +1156,21 @@
 <span class="sd">            If one of the :class:`BasePea` fails to start, make sure that all of them</span>
 <span class="sd">            are properly closed.</span>
 <span class="sd">        """</span>
-        <span class="k">for</span> <span class="n">_args</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fifo_args</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]</span>
             <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'noblock_on_start'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
                 <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_enter_pea</span><span class="p">(</span><span class="n">BasePea</span><span class="p">(</span><span class="n">_args</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">head_pea</span> <span class="o">=</span> <span class="n">BasePea</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pea</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">replica_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ReplicaSet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'peas'</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">replica_set</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'tail'</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'tail'</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'noblock_on_start'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tail_pea</span> <span class="o">=</span> <span class="n">BasePea</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tail_pea</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'noblock_on_start'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">activate</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span></div>
@@ -1143,7 +1201,10 @@
         <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">finally</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">peas</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">head_pea</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tail_pea</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">replica_set</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">replica_set</span><span class="o">.</span><span class="n">peas</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_activated</span> <span class="o">=</span> <span class="kc">False</span></div>
 
     <span class="nd">@property</span>
@@ -1173,23 +1234,9 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">uses_with</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'dump_path'</span><span class="p">:</span> <span class="n">dump_path</span><span class="p">}</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">pea_args_idx</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">peas</span><span class="p">)):</span>
-                <span class="n">pea</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">pea</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="n">PeaRoleType</span><span class="o">.</span><span class="n">PARALLEL</span><span class="p">:</span>
-                    <span class="n">pea</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-                    <span class="n">_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'peas'</span><span class="p">][</span><span class="n">pea_args_idx</span><span class="p">]</span>
-                    <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="c1">### BACKWARDS COMPATIBILITY, so THAT DUMP_PATH is in runtime_args</span>
-                    <span class="n">_args</span><span class="o">.</span><span class="n">dump_path</span> <span class="o">=</span> <span class="n">dump_path</span>
-                    <span class="c1">###</span>
-                    <span class="n">_args</span><span class="o">.</span><span class="n">uses_with</span> <span class="o">=</span> <span class="n">uses_with</span>
-                    <span class="n">new_pea</span> <span class="o">=</span> <span class="n">BasePea</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">new_pea</span><span class="p">)</span>
-                    <span class="k">await</span> <span class="n">new_pea</span><span class="o">.</span><span class="n">async_wait_start_success</span><span class="p">()</span>
-                    <span class="n">new_pea</span><span class="o">.</span><span class="n">activate_runtime</span><span class="p">()</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">peas</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_pea</span>
-                    <span class="n">pea_args_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">replica_set</span><span class="o">.</span><span class="n">rolling_update</span><span class="p">(</span>
+                <span class="n">dump_path</span><span class="o">=</span><span class="n">dump_path</span><span class="p">,</span> <span class="n">uses_with</span><span class="o">=</span><span class="n">uses_with</span>
+            <span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="k">raise</span></div>
 
@@ -1369,7 +1416,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 21, 2021.
+                    Last updated on Oct 22, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
