@@ -610,7 +610,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                     logger.debug(' JAML.unescaped done')
             # load into object, no more substitute
             if logger:
-                logger.debug(' JAML.load no substitute')
+                logger.debug(f' JAML.load no substitute {tag_yml}')
             return JAML.load(tag_yml, substitute=False)
 
     @classmethod
