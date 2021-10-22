@@ -40,12 +40,12 @@ def test_dir() -> str:
     return cur_dir
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture()
 def k8s_cluster(kind_cluster: KindCluster, logger: JinaLogger) -> KindClusterWrapper:
     return KindClusterWrapper(kind_cluster, logger)
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture()
 def reload_executor_image(logger: JinaLogger):
     image, build_logs = client.images.build(
         path=os.path.join(cur_dir, 'reload-executor'), tag='reload-executor:0.13.1'
@@ -57,7 +57,7 @@ def reload_executor_image(logger: JinaLogger):
     return image.tags[-1]
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture()
 def test_executor_image(logger: JinaLogger):
     image, build_logs = client.images.build(
         path=os.path.join(cur_dir, 'test-executor'), tag='test-executor:0.13.1'
@@ -69,7 +69,7 @@ def test_executor_image(logger: JinaLogger):
     return image.tags[-1]
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture()
 def executor_merger_image(logger: JinaLogger):
     image, build_logs = client.images.build(
         path=os.path.join(cur_dir, 'executor-merger'), tag='merger-executor:0.1.1'
@@ -81,7 +81,7 @@ def executor_merger_image(logger: JinaLogger):
     return image.tags[-1]
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture()
 def dummy_dumper_image(logger: JinaLogger):
     image, build_logs = client.images.build(
         path=os.path.join(cur_dir, 'dummy-dumper'), tag='dummy-dumper:0.1.1'
@@ -93,7 +93,7 @@ def dummy_dumper_image(logger: JinaLogger):
     return image.tags[-1]
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture()
 def slow_process_executor_image(logger: JinaLogger):
     image, build_logs = client.images.build(
         path=os.path.join(cur_dir, 'slow-process-executor'),
@@ -106,7 +106,7 @@ def slow_process_executor_image(logger: JinaLogger):
     return image.tags[-1]
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture()
 def slow_init_executor_image(logger: JinaLogger):
     image, build_logs = client.images.build(
         path=os.path.join(cur_dir, 'slow-init-executor'),
@@ -119,7 +119,7 @@ def slow_init_executor_image(logger: JinaLogger):
     return image.tags[-1]
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture()
 def load_images_in_kind(
     logger,
     test_executor_image,
