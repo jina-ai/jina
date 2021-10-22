@@ -11,12 +11,22 @@ In this guide, we're going to go through the steps for each kind of contribution
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-- [🐞 Bugs and Issues](#-bugs-and-issues)
-- [🥇 Making Your First Submission](#-making-your-first-submission)
-- [☑️ Naming Conventions](#-naming-conventions)
-- [💥 Testing Jina Locally and on CI](#-testing-jina-locally-and-on-ci)
-- [📖 Contributing Documentation](#-contributing-documentation)
-- [🙏 Thank You](#-thank-you)
+- [Contributing to Jina](#contributing-to-jina)
+  - [🐞 Bugs and Issues](#-bugs-and-issues)
+    - [Submitting Issues](#submitting-issues)
+  - [🥇 Making Your First Submission](#-making-your-first-submission)
+    - [Associate with Github Account](#associate-with-github-account)
+    - [Install pre-commit hooks](#install-pre-commit-hooks)
+      - [Restoring correct git blame](#restoring-correct-git-blame)
+  - [☑️ Naming Conventions](#️-naming-conventions)
+    - [Specify the correct types](#specify-the-correct-types)
+    - [Naming your Branch](#naming-your-branch)
+    - [Writing your Commit Message](#writing-your-commit-message)
+      - [What if I Mess Up?](#what-if-i-mess-up)
+    - [Naming your Pull Request](#naming-your-pull-request)
+  - [💥 Testing Jina Locally and on CI](#-testing-jina-locally-and-on-ci)
+  - [📖 Contributing Documentation](#-contributing-documentation)
+  - [🙏 Thank You](#-thank-you)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -32,7 +42,7 @@ We love to get issue reports. But we love it even more if they're in the right f
 
 There are also a couple of nice to haves:
 
-* **Environment:** You can find this with `jina -vf
+* **Environment:** You can find this with `jina -vf`
 * **Screenshots:** If they're relevant
 
 To understand how our issues are labeled, check out our [issue label guide](.github/github-issue-label-guide.md).
@@ -72,6 +82,8 @@ git commit --amend --author="YOUR-GITHUB-NAME <YOUR-GITHUB-EMAIL>" --no-edit
 git log  # to confirm the change is effective
 git push --force
 ```
+
+- Note: Github recommends using [Token Based Authentication](https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations/) for git operations, which incude `push`ing code to repositories. Here's how to [set up SSH Keys for your Github account](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent).
 
 What happens after the merge? [Understand the development stage and release cycles here.](RELEASE.md)
 
