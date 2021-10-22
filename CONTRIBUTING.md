@@ -83,7 +83,7 @@ git log  # to confirm the change is effective
 git push --force
 ```
 
-- Note: Github recommends using [Token Based Authentication](https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations/) for git operations, which incude `push`ing code to repositories. Here's how to [set up SSH Keys for your Github account](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent).
+- Note: Github recommends using [Token Based Authentication](https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations/) for git operations, which include `push`ing code to repositories. Here's how to [set up SSH Keys for your Github account](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent).
 
 What happens after the merge? [Understand the development stage and release cycles here.](RELEASE.md)
 
