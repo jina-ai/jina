@@ -9,6 +9,7 @@ import docker
 import pytest
 
 from jina import Flow, Document
+from jina.peapods.pods.k8slib import kubernetes_tools
 from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
 
 client = docker.from_env()
@@ -22,6 +23,7 @@ def send_requests(
     received_resposes: multiprocessing.Queue,
     response_arrival_times: multiprocessing.Queue,
     logger,
+    namespace,
 ):
     from jina.clients import Client
 
@@ -58,13 +60,16 @@ def send_requests(
             else:
                 await asyncio.sleep(1.0 if scale_event.is_set() else 0.05)
 
-    client.post(
-        '/',
-        inputs=async_inputs,
-        request_size=1,
-        port_expose=9090,
-        on_done=validator.process_response,
-    )
+    with kubernetes_tools.get_port_forward_contextmanager(
+        namespace, client_kwargs['port']
+    ):
+        client.post(
+            '/',
+            inputs=async_inputs,
+            request_size=1,
+            port_expose=9090,
+            on_done=validator.process_response,
+        )
 
 
 @pytest.mark.asyncio
@@ -108,6 +113,7 @@ async def test_no_message_lost_during_scaling(
                 'scale_event': scale_event,
                 'received_resposes': received_resposes,
                 'logger': logger,
+                'namespace': 'test-flow-slow-process-executor',
             },
             daemon=True,
         )
@@ -192,6 +198,7 @@ async def test_no_message_lost_during_kill(
                 'scale_event': scale_event,
                 'received_resposes': received_resposes,
                 'logger': logger,
+                'namespace': 'test-flow-slow-process-executor',
             },
             daemon=True,
         )
@@ -288,6 +295,7 @@ async def test_linear_processing_time_scaling(
                 'received_resposes': received_resposes,
                 'response_arrival_times': response_arrival_times,
                 'logger': logger,
+                'namespace': 'test-flow-slow-process-executor',
             },
             daemon=True,
         )
