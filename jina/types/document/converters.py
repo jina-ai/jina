@@ -1,13 +1,205 @@
+import base64
+import io
 import os
 import struct
-import zlib
-from typing import Optional
 import urllib.parse
 import urllib.request
+from contextlib import nullcontext
+from typing import Optional, overload, Union, BinaryIO
+
 import numpy as np
 
+from ... import __windows__
 
-def uri_to_buffer(uri: str) -> bytes:
+
+class ContentConversionMixin:
+    """A mixin class for converting, dumping and resizing :attr:`.content` in :class:`Document`."""
+
+    def set_image_blob_channel_axis(
+        self, original_channel_axis: int, new_channel_axis: int
+    ):
+        """Move the channel axis of the image :attr:`.blob` inplace.
+
+        :param original_channel_axis: the original axis of the channel
+        :param new_channel_axis: the new axis of the channel
+        """
+        self.blob = _set_channel_axis(
+            self.blob, original_channel_axis, new_channel_axis
+        )
+
+    def convert_image_buffer_to_blob(
+        self,
+        width: Optional[int] = None,
+        height: Optional[int] = None,
+        channel_axis: int = -1,
+    ):
+        """Convert an image :attr:`.buffer` to a ndarray :attr:`.blob`.
+
+        :param width: the width of the image blob.
+        :param height: the height of the blob.
+        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+        """
+        blob = _to_image_blob(io.BytesIO(self.buffer), width=width, height=height)
+        blob = _set_channel_axis(blob, original_channel_axis=channel_axis)
+        self.blob = blob
+
+    def convert_image_blob_to_uri(self):
+        """Assuming :attr:`.blob` is a _valid_ image, set :attr:`uri` accordingly"""
+        png_bytes = _to_png_buffer(self.blob)
+        self.uri = 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
+
+    def resize_image_blob(
+        self,
+        width: Optional[int] = None,
+        height: Optional[int] = None,
+        channel_axis: int = -1,
+    ):
+        """Resize the image :attr:`.blob` inplace.
+
+        :param width: the width of the image blob.
+        :param height: the height of the blob.
+        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+        """
+        blob = _set_channel_axis(self.blob, original_channel_axis=channel_axis)
+        buffer = _to_png_buffer(blob)
+        self.blob = _to_image_blob(io.BytesIO(buffer), width=width, height=height)
+
+    def dump_buffer_to_file(self, file: Union[str, BinaryIO]):
+        """Save :attr:`.buffer` into a file
+
+        :param file: File or filename to which the data is saved.
+        """
+        fp = _get_file_context(file)
+        with fp:
+            fp.write(self.buffer)
+
+    def dump_image_blob_to_file(self, file: Union[str, BinaryIO]):
+        """Save :attr:`.blob` into a file
+
+        :param file: File or filename to which the data is saved.
+        """
+        fp = _get_file_context(file)
+        with fp:
+            buffer = _to_png_buffer(self.blob)
+            fp.write(buffer)
+
+    def dump_uri_to_file(self, file: Union[str, BinaryIO]):
+        """Save :attr:`.uri` into a file
+
+        :param file: File or filename to which the data is saved.
+        """
+        fp = _get_file_context(file)
+        with fp:
+            buffer = _uri_to_buffer(self.uri)
+            fp.write(buffer)
+
+    def convert_image_uri_to_blob(
+        self,
+        width: Optional[int] = None,
+        height: Optional[int] = None,
+        channel_axis: int = -1,
+    ):
+        """Convert the image-like :attr:`.uri` into :attr:`.blob`
+
+        :param width: the width of the image blob.
+        :param height: the height of the blob.
+        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+        """
+
+        buffer = _uri_to_buffer(self.uri)
+        blob = _to_image_blob(io.BytesIO(buffer), width=width, height=height)
+        self.blob = _set_channel_axis(blob, original_channel_axis=channel_axis)
+
+    @overload
+    def convert_buffer_to_blob(
+        self, dtype: Optional[str] = None, count: int = -1, offset: int = 0
+    ):
+        """Assuming the :attr:`buffer` is a _valid_ buffer of Numpy ndarray,
+        set :attr:`blob` accordingly.
+
+        :param dtype: Data-type of the returned array; default: float.
+        :param count: Number of items to read. ``-1`` means all data in the buffer.
+        :param offset: Start reading the buffer from this offset (in bytes); default: 0.
+
+        .. note::
+            One can only recover values not shape information from pure buffer.
+        """
+        ...
+
+    def convert_buffer_to_blob(self, *args, **kwargs):
+        """Convert :attr:`.buffer` to :attr:`.blob` inplace.
+
+        # noqa: DAR101
+        """
+        self.blob = np.frombuffer(self.buffer, *args, **kwargs)
+
+    def convert_blob_to_buffer(self):
+        """Convert :attr:`.blob` to :attr:`.buffer` inplace. """
+        self.buffer = self.blob.tobytes()
+
+    def convert_uri_to_buffer(self):
+        """Convert :attr:`.uri` to :attr:`.buffer` inplace.
+        Internally it downloads from the URI and set :attr:`buffer`.
+
+        """
+        self.buffer = _uri_to_buffer(self.uri)
+
+    def convert_uri_to_datauri(self, charset: str = 'utf-8', base64: bool = False):
+        """Convert :attr:`.uri` to dataURI and store it in :attr:`.uri` inplace.
+
+        :param charset: charset may be any character set registered with IANA
+        :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit. Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that frequently uses non-US-ASCII characters.
+        """
+        if not _is_datauri(self.uri):
+            buffer = _uri_to_buffer(self.uri)
+            self.uri = _to_datauri(self.mime_type, buffer, charset, base64, binary=True)
+
+    def convert_buffer_to_uri(self, charset: str = 'utf-8', base64: bool = False):
+        """Convert :attr:`.buffer` to data :attr:`.uri` in place.
+        Internally it first reads into buffer and then converts it to data URI.
+
+        :param charset: charset may be any character set registered with IANA
+        :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit.
+            Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that
+            frequently uses non-US-ASCII characters.
+        """
+
+        if not self.mime_type:
+            raise ValueError(
+                f'{self.mime_type} is unset, can not convert it to data uri'
+            )
+
+        self.uri = _to_datauri(
+            self.mime_type, self.buffer, charset, base64, binary=True
+        )
+
+    def convert_text_to_uri(self, charset: str = 'utf-8', base64: bool = False):
+        """Convert :attr:`.text` to data :attr:`.uri`.
+
+        :param charset: charset may be any character set registered with IANA
+        :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit.
+            Designed to be efficient for non-text 8 bit and binary data.
+            Sometimes used for text data that frequently uses non-US-ASCII characters.
+        """
+
+        self.uri = _to_datauri(self.mime_type, self.text, charset, base64, binary=False)
+
+    def convert_uri_to_text(self):
+        """Convert :attr:`.uri` to :attr`.text` inplace."""
+        buffer = _uri_to_buffer(self.uri)
+        self.text = buffer.decode()
+
+    def convert_content_to_uri(self):
+        """Convert :attr:`.content` in :attr:`.uri` inplace with best effort"""
+        if self.text:
+            self.convert_text_to_uri()
+        elif self.buffer:
+            self.convert_buffer_to_uri()
+        elif self.content_type:
+            raise NotImplementedError
+
+
+def _uri_to_buffer(uri: str) -> bytes:
     """Convert uri to buffer
     Internally it reads uri into buffer.
 
@@ -26,6 +218,8 @@ def uri_to_buffer(uri: str) -> bytes:
 
 
 def _png_to_buffer_1d(arr: 'np.ndarray', width: int, height: int) -> bytes:
+    import zlib
+
     pixels = []
     for p in arr[::-1]:
         pixels.extend([p, p, p, 255])
@@ -59,98 +253,86 @@ def _png_to_buffer_1d(arr: 'np.ndarray', width: int, height: int) -> bytes:
 
 
 def _pillow_image_to_buffer(image, image_format: str) -> bytes:
-    import io
-
     img_byte_arr = io.BytesIO()
     image.save(img_byte_arr, format=image_format)
     img_byte_arr = img_byte_arr.getvalue()
     return img_byte_arr
 
 
-def png_to_buffer(
-    arr: 'np.ndarray',
-    width: Optional[int] = None,
-    height: Optional[int] = None,
-    resize_method: str = 'BILINEAR',
-    color_axis: int = -1,
-):
+def _to_png_buffer(arr: 'np.ndarray') -> bytes:
     """
     Convert png to buffer bytes.
 
     :param arr: Data representations of the png.
-    :param width: the width of the :attr:`arr`, if None, interpret from :attr:`arr` shape.
-    :param height: the height of the :attr:`arr`, if None, interpret from :attr:`arr` shape.
-    :param resize_method: Resize methods (e.g. `NEAREST`, `BILINEAR`, `BICUBIC`, and `LANCZOS`).
-    :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
     :return: Png in buffer bytes.
 
     ..note::
         if both :attr:`width` and :attr:`height` were provided, will not resize. Otherwise, will get image size
         by :attr:`arr` shape and apply resize method :attr:`resize_method`.
     """
-    arr = arr.astype(np.uint8)
-    is_height_width_set = bool(height and width)
+    arr = arr.astype(np.uint8).squeeze()
 
     if arr.ndim == 1:
-        if not is_height_width_set:
-            height, width = arr.shape[0], 1
-        png_bytes = _png_to_buffer_1d(arr, width, height)
+        # note this should be only used for MNIST/FashionMNIST dataset, because of the nature of these two datasets
+        # no other image data should flattened into 1-dim array.
+        png_bytes = _png_to_buffer_1d(arr, 28, 28)
     elif arr.ndim == 2:
         from PIL import Image
 
-        if not is_height_width_set:
-            height, width = arr.shape
-            im = Image.fromarray(arr).convert('L')
-            im = im.resize((width, height), getattr(Image, resize_method))
-        else:
-            im = Image.fromarray(arr).convert('L')
+        im = Image.fromarray(arr).convert('L')
         png_bytes = _pillow_image_to_buffer(im, image_format='PNG')
     elif arr.ndim == 3:
         from PIL import Image
 
-        if color_axis != -1:
-            arr = np.moveaxis(arr, color_axis, -1)
-
-        if not is_height_width_set:
-            height, width, num_channels = arr.shape
-        else:
-            _, _, num_channels = arr.shape
-
-        if num_channels == 1:  # greyscale image
-            im = Image.fromarray((arr[0] * 255).astype(np.uint8))
-        else:
-            im = Image.fromarray(arr).convert('RGB')
-
-        if not is_height_width_set:
-            im = im.resize((width, height), getattr(Image, resize_method))
-
+        im = Image.fromarray(arr).convert('RGB')
         png_bytes = _pillow_image_to_buffer(im, image_format='PNG')
     else:
-        raise ValueError(f'ndim={len(arr.shape)} array is not supported')
+        raise ValueError(
+            f'{arr.shape} ndarray can not be converted into an image buffer.'
+        )
 
     return png_bytes
 
 
-def to_image_blob(source, color_axis: int = -1) -> 'np.ndarray':
+def _set_channel_axis(
+    blob: np.ndarray, original_channel_axis: int = -1, target_channel_axis: int = -1
+) -> np.ndarray:
+    """This will always make the channel axis to the last of the :attr:`.blob`
+
+    #noqa: DAR101
+    #noqa: DAR201
+    """
+    if original_channel_axis != target_channel_axis:
+        blob = np.moveaxis(blob, original_channel_axis, target_channel_axis)
+    return blob
+
+
+def _to_image_blob(
+    source,
+    width: Optional[int] = None,
+    height: Optional[int] = None,
+) -> 'np.ndarray':
     """
     Convert an image buffer to blob
 
-    :param source: image bytes buffer
-    :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+    :param source: binary buffer or file path
+    :param width: the width of the image blob.
+    :param height: the height of the blob.
     :return: image blob
     """
     from PIL import Image
 
-    raw_img = Image.open(source).convert('RGB')
-    img = np.array(raw_img).astype('float32')
-    if color_axis != -1:
-        img = np.moveaxis(img, -1, color_axis)
-    return img
+    raw_img = Image.open(source)
+    if width or height:
+        new_width = width or raw_img.width
+        new_height = height or raw_img.height
+        raw_img = raw_img.resize((new_width, new_height))
+    return np.array(raw_img)
 
 
-def to_datauri(
+def _to_datauri(
     mimetype, data, charset: str = 'utf-8', base64: bool = False, binary: bool = True
-):
+) -> str:
     """
     Convert data to data URI.
 
@@ -181,3 +363,30 @@ def to_datauri(
             encoded_data = quote(data)
     parts.extend([',', encoded_data])
     return ''.join(parts)
+
+
+def _is_uri(value: str) -> bool:
+    scheme = urllib.parse.urlparse(value).scheme
+    return (
+        (scheme in {'http', 'https'})
+        or (scheme in {'data'})
+        or os.path.exists(value)
+        or os.access(os.path.dirname(value), os.W_OK)
+    )
+
+
+def _is_datauri(value: str) -> bool:
+    scheme = urllib.parse.urlparse(value).scheme
+    return scheme in {'data'}
+
+
+def _get_file_context(file):
+    if hasattr(file, 'write'):
+        file_ctx = nullcontext(file)
+    else:
+        if __windows__:
+            file_ctx = open(file, 'wb', newline='')
+        else:
+            file_ctx = open(file, 'wb')
+
+    return file_ctx
