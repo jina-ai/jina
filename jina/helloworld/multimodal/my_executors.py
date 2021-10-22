@@ -130,13 +130,9 @@ class ImageCrafter(Executor):
             doc.blob = img
         return filtered_docs
 
-    @requests(on='/index')
+    @requests(on=['/index', '/search'])
     def craft_index(self, docs: DocumentArray, **kwargs):
         return self.craft(docs, 'convert_image_uri_to_blob')
-
-    @requests(on='/search')
-    def craft_search(self, docs: DocumentArray, **kwargs):
-        return self.craft(docs, 'convert_image_datauri_to_blob')
 
     def _normalize(self, img):
         img = _resize_short(img, target_size=self.resize_dim)
