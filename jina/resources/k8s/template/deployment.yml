@@ -33,6 +33,12 @@ spec:
         envFrom:
           - configMapRef:
               name: {name}-configmap
+        env:
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+
         readinessProbe:
           tcpSocket:
             port: {port_in}
