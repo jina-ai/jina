@@ -63,7 +63,7 @@ Creating multiple flows through process-based parallelism is supported for all p
 However, using thread-based parallelism to create multiple Flows is not supported for the gRPC protocol. This 
 limitation comes from the fact that multi-threading is not supported for asyncio gRPC clients. In general, 
 multi-threaded use of the Flow gRPC Client is not supported and any usage outside the main thread will result in a 
-`GRPCCLientThreadingError`:
+`GRPCClientThreadingError`:
 
 ````{tab} ❌ GRPC Flows with threads
 ```{code-block} python
@@ -82,7 +82,7 @@ for _ in range(4):
 ```
 
 ```text
-jina.excepts.GRPCCLientThreadingError: Using GRPCCLient outside the main thread is not allowed. Please opt for 
+jina.excepts.GRPCClientThreadingError: Using GRPCCLient outside the main thread is not allowed. Please opt for 
 multi-processing instead.
 ```
 ````

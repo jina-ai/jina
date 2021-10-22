@@ -9,7 +9,7 @@ import grpc
 from ..base import BaseClient
 from ..helper import callback_exec
 from ..request import GeneratorSourceType
-from ...excepts import BadClient, BadClientInput, GRPCCLientThreadingError
+from ...excepts import BadClient, BadClientInput, GRPCClientThreadingError
 from ...logging.profile import ProgressBar
 from ...proto import jina_pb2_grpc
 from ...types.request import Response
@@ -33,7 +33,7 @@ class GRPCBaseClient(BaseClient):
         **kwargs,
     ):
         if threading.current_thread() is not threading.main_thread():
-            raise GRPCCLientThreadingError(
+            raise GRPCClientThreadingError(
                 'Using GRPCCLient outside the main thread is not allowed. Please opt for multi-processing instead.'
             )
         try:
