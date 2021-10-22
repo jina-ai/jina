@@ -22,11 +22,22 @@ One way to find such matches is to use the video frames because part of the info
 ```{admonition} Use the other information of videos
 :class: tip
 
-Generally, videos contain three sources of information, namely text, image, and audio information. The ratio of information from different sources varies from video to video. In this example, only the image information is used and this assumes that the frame images are representative for the video and can match the query needs of the user. In other words, this example only works when a video contains various frames and the user's query needs is to search the video frames via text. 
+Generally, videos contain three sources of information, namely text, image, and audio information. 
+The ratio of information from different sources varies from video to video. 
+In this example, only the image information is used and this assumes that the frame images are 
+representative for the video and can match the query needs of the user. 
+In other words, this example only works when a video contains various frames and the user's 
+query needs is to search the video frames via text. 
 
-If a video only contains texts or a video only has a single static image, this example won't work well. In such cases, the main information of the video is represented by either text or audio and therefore can not be searchable with the video frames. 
+If a video only contains texts or a video only has a single static image, 
+this example won't work well. In such cases,
+ the main information of the video is represented by either text or audio and therefore can 
+ not be searchable with the video frames. 
 
-Another pitfall of this tutorial is that the user might want to search with a description of the story, for example, `Padmé Amidala and C-3PO are taken hostage by General Grievous`. This information can not be described by a single frame and the query needs further understanding of the video. This is beyond the scope of this tutorial.
+Another pitfall of this tutorial is that the user might want to search with a description of 
+the story, for example, `Padmé Amidala and C-3PO are taken hostage by General Grievous`. 
+This information can not be described by a single frame and the query needs further understanding of 
+the video. This is beyond the scope of this tutorial.
 ```
 
 ### Choose Executors
@@ -52,8 +63,16 @@ As for the indexer, considering this is for demonstration purpose, we choose `Si
 ## Go through the Flow
 Although there is only one Flow defined in this example, it handles the requests to `/index` and `/search` differently by setting the `requests` decorators for the executors. 
 
+```{figure} ../../.github/images/tutorial-video-search.png
+:align: center
+```
+
 ### Index
-As for the requests to the `/index` endpoint, there are three executors involved, namely `VideoLoader`, `CLIPImageEncoder` and `SimpleIndexer`. The inputs to the Flow are Documents with video URIs stored in the `uri` attributes. They are the file locations either remotely on the cloud or at your local file system. The `VideoLoader` extracts the frames from the video and stores them as image arrays into the `blob` attribute of the Chunks. The Documents after `VideoLoader` have the following format,
+As for the requests to the `/index` endpoint, there are three executors involved, namely `VideoLoader`, `CLIPImageEncoder` and `SimpleIndexer`. The inputs to the Flow are Documents with video URIs stored in the `uri` attributes. They are the file locations either remotely on the cloud or at your local file system. 
+
+The `VideoLoader` extracts the frames from the video and stores them as image arrays into the `blob` attribute of the Chunks. 
+
+The Documents after `VideoLoader` have the following format,
 
 <!--document.png-->
 
@@ -72,9 +91,10 @@ The requests have the text descriptions stored in the `text` attributes of the D
 
 Except the `SimpleRanker`, all the other executors used in this tutorial are available at [hub.jina.ai](https://hub.jina.ai/). We can use them off-the-shelf. 
 
-- `CLIPImageEncoder` 
-- `CLIPTextEncoder` 
-- `SimpleIndexer`
+- [`VideoLoader`](https://hub.jina.ai/executor/i6gp4vwu)
+- [`CLIPImageEncoder`](https://hub.jina.ai/executor/0hnlmu3q)
+- [`CLIPTextEncoder`](https://hub.jina.ai/executor/livtkbkg)
+- [`SimpleIndexer`](https://hub.jina.ai/executor/zb38xlt4)
 
 Note that by default the `CLIPImageEncoder` encodes the `blob` of the Documents at the root level. In this example, the Document at the root level represents the video and its chunks represent the video frames that the CLIP model should encode. To override this default configuration in the YAML file, we set `traversal_paths: ['c']` under the `uses_with` field. Instead of encoding the Document at the root level, the embeddings is calculated based on the `blob` of each 
 chunk. 
@@ -114,11 +134,6 @@ executors:
 ...
 ```
 
+## Get the Full Example Codes
 
-
-## Next Steps
-
-To further explore the power of cross-modal search, you can extend this example to enable
-- Find the videos containing related audio tracks based on text descriptions
-- Find the videos containing similar frames to the query image
-- Find the videos containing 
+You can find the codes at [example-video-search](https://github.com/jina-ai/example-video-search). 
