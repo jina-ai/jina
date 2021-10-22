@@ -356,7 +356,7 @@ class BasePea:
             try:
                 self.logger.warning(f' Cancel runtime')
                 self._cancel_runtime()
-                self.logger.warning(f' Wait to shutdown')
+                self.logger.warning(f' Wait to shutdown for {self._timeout_ctrl}')
                 if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
                     self.terminate()
                     terminated = True
