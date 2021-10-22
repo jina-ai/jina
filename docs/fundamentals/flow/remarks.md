@@ -57,3 +57,65 @@ class C(Executor):
             d.text += '!!!'
         return docs
 ```
+
+## Multiple Flows and Parallelism
+Creating multiple flows through process-based parallelism is supported for all protocols of the Flow client.
+However, using thread-based parallelism to create multiple Flows is not supported for the gRPC protocol. This 
+limitation comes from the fact that multi-threading is not supported for asyncio gRPC clients. In general, 
+multi-threaded use of the Flow gRPC Client is not supported and any usage outside the main thread will result in a 
+`GRPCCLientThreadingError`:
+
+````{tab} ❌ GRPC Flows with threads
+```{code-block} python
+from threading import Thread
+from jina import Flow
+
+def start_f():
+    f = Flow(protocol='grpc').add(uses=DummyExecutor, parallel=3, polling='ALL')
+    with f:
+        f.post('/')
+
+
+for _ in range(4):
+    t = Thread(target=start_f)
+    t.start()
+```
+
+```text
+jina.excepts.GRPCCLientThreadingError: Using GRPCCLient outside the main thread is not allowed. Please opt for 
+multi-processing instead.
+```
+````
+
+````{tab} ✅ GRPC Flows with processes
+```{code-block} python
+from multiprocessing import Process
+from jina import Flow
+
+def start_f():
+    f = Flow(protocol='grpc').add(uses=DummyExecutor, parallel=3, polling='ALL')
+    with f:
+        f.post('/')
+
+
+for _ in range(4):
+    t = Process(target=start_f)
+    t.start()
+```
+````
+
+````{tab} ✅ HTTP Flows with threads
+```{code-block} python
+from threading import Thread
+from jina import Flow
+
+def start_f():
+    f = Flow(protocol='http').add(uses=DummyExecutor, parallel=3, polling='ALL')
+    with f:
+        f.post('/')
+
+
+for _ in range(4):
+    t = Thread(target=start_f)
+    t.start()
+```
