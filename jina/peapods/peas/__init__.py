@@ -378,6 +378,9 @@ class BasePea:
                 self.join()
         elif self.is_shutdown.is_set():
             # here shutdown has been set already, therefore `run` will gracefully finish
+            self.logger.debug(
+                'shutdown is already set. Runtime will end gracefully on its own'
+            )
             pass
         else:
             # sometimes, we arrive to the close logic before the `is_ready` is even set.
