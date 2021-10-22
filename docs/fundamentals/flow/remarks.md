@@ -82,7 +82,7 @@ for _ in range(4):
 ```
 
 ```text
-jina.excepts.GRPCClientThreadingError: Using GRPCCLient outside the main thread is not allowed. Please opt for 
+jina.excepts.GRPCClientThreadingError: Using GRPCClient outside the main thread is not allowed. Please opt for 
 multi-processing instead.
 ```
 ````

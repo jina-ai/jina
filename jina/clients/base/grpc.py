@@ -34,7 +34,7 @@ class GRPCBaseClient(BaseClient):
     ):
         if threading.current_thread() is not threading.main_thread():
             raise GRPCClientThreadingError(
-                'Using GRPCCLient outside the main thread is not allowed. Please opt for multi-processing instead.'
+                'Using GRPCClient outside the main thread is not allowed. Please opt for multi-processing instead.'
             )
         try:
             self.inputs = inputs
