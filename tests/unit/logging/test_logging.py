@@ -43,13 +43,7 @@ def test_logging_syslog():
 def test_logging_default():
     with JinaLogger('test_logger') as logger:
         log(logger)
-        try:
-            import fluent
-
-            assert len(logger.handlers) == 2
-        except (ModuleNotFoundError, ImportError):
-            # if fluent not installed
-            assert len(logger.handlers) == 2
+        assert len(logger.handlers) == 1
 
 
 def test_logging_level_yaml(monkeypatch):
