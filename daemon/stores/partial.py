@@ -216,7 +216,7 @@ class PartialFlowStore(PartialStore):
             if kind == UpdateOperation.ROLLING_UPDATE:
                 self.object.rolling_update(pod_name=pod_name, dump_path=dump_path)
             else:
-                self._logger.error(f'unsupoorted kind: {kind}, no changes done')
+                self._logger.error(f'unsupported kind: {kind}, no changes done')
                 return self.item
         except Exception as e:
             self._logger.error(f'{e!r}')
