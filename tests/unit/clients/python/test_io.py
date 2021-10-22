@@ -299,7 +299,18 @@ def test_from_files_with_uri():
         assert d.uri.startswith('data:')
 
 
+@pytest.mark.skipif(
+    'GITHUB_WORKFLOW' not in os.environ, reason='this test is only validate on CI'
+)
 def test_from_files_with_tilde():
+    shutil.copy(
+        os.path.join(cur_dir, "docs_groundtruth.jsonlines"),
+        os.path.expanduser("~/"),
+    )
+    shutil.copy(
+        os.path.join(cur_dir, "docs.csv"),
+        os.path.expanduser("~/"),
+    )
     generator = from_files(patterns='~/*.*', to_dataturi=True, size=10)
     first = next(generator)
     assert first
