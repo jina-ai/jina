@@ -365,7 +365,9 @@ class Zmqlet:
         self._send_message_via(out_sock, msg)
 
     def _send_message_via(self, socket, msg):
-        self.bytes_sent += send_message(socket, msg, **self.send_recv_kwargs)
+        self.bytes_sent += send_message(
+            socket, msg, flags=zmq.NOBLOCK, **self.send_recv_kwargs
+        )
         self.msg_sent += 1
 
         if self._active and socket == self.out_sock and self.in_sock_type == zmq.DEALER:
@@ -374,7 +376,11 @@ class Zmqlet:
     def _send_control_to_router(self, command, raise_exception=False):
         msg = ControlMessage(command, pod_name=self.name, identity=self.identity)
         self.bytes_sent += send_message(
-            self.in_sock, msg, raise_exception=raise_exception, **self.send_recv_kwargs
+            self.in_sock,
+            msg,
+            flags=zmq.NOBLOCK,
+            raise_exception=raise_exception,
+            **self.send_recv_kwargs,
         )
         self.msg_sent += 1
         self.logger.debug(
@@ -443,7 +449,9 @@ class AsyncZmqlet(Zmqlet):
 
     async def _send_message_via(self, socket, msg):
         try:
-            num_bytes = await send_message_async(socket, msg, **self.send_recv_kwargs)
+            num_bytes = await send_message_async(
+                socket, msg, flags=zmq.NOBLOCK, **self.send_recv_kwargs
+            )
             self.bytes_sent += num_bytes
             self.msg_sent += 1
         except (asyncio.CancelledError, TypeError) as ex:
@@ -648,6 +656,7 @@ def send_message(
     msg: 'Message',
     raise_exception: bool = False,
     timeout: int = -1,
+    flags: int = 0,
     **kwargs,
 ) -> int:
     """Send a protobuf message to a socket
@@ -656,13 +665,14 @@ def send_message(
     :param msg: the protobuf message
     :param raise_exception: if true: raise an exception which might occur during send, if false: log error
     :param timeout: waiting time (in seconds) for sending
+    :param flags: flags to send to send method
     :param kwargs: keyword arguments
     :return: the size (in bytes) of the sent message
     """
     num_bytes = 0
     try:
         _prep_send_socket(sock, timeout)
-        sock.send_multipart(msg.dump())
+        sock.send_multipart(msg.dump(), flags=flags)
         num_bytes = msg.size
     except zmq.error.Again:
         raise TimeoutError(
@@ -698,19 +708,20 @@ def _prep_recv_socket(sock, timeout):
 
 
 async def send_message_async(
-    sock: 'zmq.Socket', msg: 'Message', timeout: int = -1, **kwargs
+    sock: 'zmq.Socket', msg: 'Message', timeout: int = -1, flags: int = 0, **kwargs
 ) -> int:
     """Send a protobuf message to a socket in async manner
 
     :param sock: the target socket to send
     :param msg: the protobuf message
     :param timeout: waiting time (in seconds) for sending
+    :param flags: flags to send to send method
     :param kwargs: keyword arguments
     :return: the size (in bytes) of the sent message
     """
     try:
         _prep_send_socket(sock, timeout)
-        await sock.send_multipart(msg.dump())
+        await sock.send_multipart(msg.dump(), flags=flags)
         return msg.size
     except zmq.error.Again:
         raise TimeoutError(
