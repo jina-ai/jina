@@ -504,3 +504,42 @@ def test_pod_wait_for_success(all_replicas_ready, mocker, caplog):
         with pytest.raises(jina.excepts.RuntimeFailToStart):
             with K8sPod(args):
                 pass
+
+
+def test_pod_with_gpus(mocker):
+    args_list = [
+        '--name',
+        'test-wait-success',
+        '--k8s-namespace',
+        'test-namespace',
+        '--shards',
+        '1',
+        '--replicas',
+        '1',
+        '--gpus',
+        '3',
+    ]
+    args = set_pod_parser().parse_args(args_list)
+    container = client.V1Container(
+        name='test-container',
+        resources=client.V1ResourceRequirements(limits={'nvidia.com/gpu': 3}),
+    )
+    spec = client.V1PodSpec(containers=[container])
+    mocker.patch(
+        'jina.peapods.pods.k8s.K8sPod._K8sDeployment._read_namespaced_deployment',
+        return_value=client.V1Deployment(
+            status=client.V1DeploymentStatus(replicas=1, ready_replicas=1), spec=spec
+        ),
+    )
+    mocker.patch(
+        'jina.peapods.pods.k8slib.kubernetes_deployment.deploy_service',
+        return_value=f'test-wait-success.test-namespace.svc',
+    )
+    mocker.patch(
+        'jina.peapods.pods.k8s.K8sPod._K8sDeployment._delete_namespaced_deployment',
+        return_value=client.V1Status(status=200),
+    )
+    with K8sPod(args) as pod:
+        assert pod.args.gpus == '3'
+        resp = pod._K8sDeployment._read_namespaced_deployment()
+        assert resp.spec.containers[0].resources.limits == {'nvidia.com/gpu': 3}

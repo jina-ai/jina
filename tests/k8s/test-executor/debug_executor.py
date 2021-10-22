@@ -52,7 +52,7 @@ class TestExecutor(Executor):
         client = K8sClients().core_v1
         pods = client.list_namespaced_pod('test-gpu')  # List[V1Pod]
         pod_spec = pods[0].spec  # V1PodSpec
-        pod_container = pod_spec.containers  # V1Container
+        pod_container = pod_spec.containers[0]  # V1Container
         pod_resources = pod_container.resources  # V1ResourceRequirements
 
         for doc in docs:
