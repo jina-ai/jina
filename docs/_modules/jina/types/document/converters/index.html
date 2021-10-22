@@ -590,16 +590,208 @@
                     </label>
                 </div>
                 <h1>Source code for jina.types.document.converters</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">struct</span>
-<span class="kn">import</span> <span class="nn">zlib</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 <span class="kn">import</span> <span class="nn">urllib.parse</span>
 <span class="kn">import</span> <span class="nn">urllib.request</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">nullcontext</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">overload</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">BinaryIO</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
+<span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">__windows__</span>
 
-<div class="viewcode-block" id="uri_to_buffer"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.uri_to_buffer">[docs]</a><span class="k">def</span> <span class="nf">uri_to_buffer</span><span class="p">(</span><span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+
+<div class="viewcode-block" id="ContentConversionMixin"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin">[docs]</a><span class="k">class</span> <span class="nc">ContentConversionMixin</span><span class="p">:</span>
+    <span class="sd">"""A mixin class for converting, dumping and resizing :attr:`.content` in :class:`Document`."""</span>
+
+<div class="viewcode-block" id="ContentConversionMixin.set_image_blob_channel_axis"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.set_image_blob_channel_axis">[docs]</a>    <span class="k">def</span> <span class="nf">set_image_blob_channel_axis</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">original_channel_axis</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">new_channel_axis</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">):</span>
+        <span class="sd">"""Move the channel axis of the image :attr:`.blob` inplace.</span>
+
+<span class="sd">        :param original_channel_axis: the original axis of the channel</span>
+<span class="sd">        :param new_channel_axis: the new axis of the channel</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">_set_channel_axis</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="p">,</span> <span class="n">original_channel_axis</span><span class="p">,</span> <span class="n">new_channel_axis</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="ContentConversionMixin.convert_image_buffer_to_blob"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.convert_image_buffer_to_blob">[docs]</a>    <span class="k">def</span> <span class="nf">convert_image_buffer_to_blob</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">width</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">height</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">channel_axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">"""Convert an image :attr:`.buffer` to a ndarray :attr:`.blob`.</span>
+
+<span class="sd">        :param width: the width of the image blob.</span>
+<span class="sd">        :param height: the height of the blob.</span>
+<span class="sd">        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis</span>
+<span class="sd">        """</span>
+        <span class="n">blob</span> <span class="o">=</span> <span class="n">_to_image_blob</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">)</span>
+        <span class="n">blob</span> <span class="o">=</span> <span class="n">_set_channel_axis</span><span class="p">(</span><span class="n">blob</span><span class="p">,</span> <span class="n">original_channel_axis</span><span class="o">=</span><span class="n">channel_axis</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">blob</span></div>
+
+<div class="viewcode-block" id="ContentConversionMixin.convert_image_blob_to_uri"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.convert_image_blob_to_uri">[docs]</a>    <span class="k">def</span> <span class="nf">convert_image_blob_to_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Assuming :attr:`.blob` is a _valid_ image, set :attr:`uri` accordingly"""</span>
+        <span class="n">png_bytes</span> <span class="o">=</span> <span class="n">_to_png_buffer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uri</span> <span class="o">=</span> <span class="s1">'data:image/png;base64,'</span> <span class="o">+</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">png_bytes</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ContentConversionMixin.resize_image_blob"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.resize_image_blob">[docs]</a>    <span class="k">def</span> <span class="nf">resize_image_blob</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">width</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">height</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">channel_axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">"""Resize the image :attr:`.blob` inplace.</span>
+
+<span class="sd">        :param width: the width of the image blob.</span>
+<span class="sd">        :param height: the height of the blob.</span>
+<span class="sd">        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis</span>
+<span class="sd">        """</span>
+        <span class="n">blob</span> <span class="o">=</span> <span class="n">_set_channel_axis</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="p">,</span> <span class="n">original_channel_axis</span><span class="o">=</span><span class="n">channel_axis</span><span class="p">)</span>
+        <span class="n">buffer</span> <span class="o">=</span> <span class="n">_to_png_buffer</span><span class="p">(</span><span class="n">blob</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">_to_image_blob</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">buffer</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ContentConversionMixin.dump_buffer_to_file"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.dump_buffer_to_file">[docs]</a>    <span class="k">def</span> <span class="nf">dump_buffer_to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BinaryIO</span><span class="p">]):</span>
+        <span class="sd">"""Save :attr:`.buffer` into a file</span>
+
+<span class="sd">        :param file: File or filename to which the data is saved.</span>
+<span class="sd">        """</span>
+        <span class="n">fp</span> <span class="o">=</span> <span class="n">_get_file_context</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ContentConversionMixin.dump_image_blob_to_file"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.dump_image_blob_to_file">[docs]</a>    <span class="k">def</span> <span class="nf">dump_image_blob_to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BinaryIO</span><span class="p">]):</span>
+        <span class="sd">"""Save :attr:`.blob` into a file</span>
+
+<span class="sd">        :param file: File or filename to which the data is saved.</span>
+<span class="sd">        """</span>
+        <span class="n">fp</span> <span class="o">=</span> <span class="n">_get_file_context</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">buffer</span> <span class="o">=</span> <span class="n">_to_png_buffer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="p">)</span>
+            <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ContentConversionMixin.dump_uri_to_file"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.dump_uri_to_file">[docs]</a>    <span class="k">def</span> <span class="nf">dump_uri_to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BinaryIO</span><span class="p">]):</span>
+        <span class="sd">"""Save :attr:`.uri` into a file</span>
+
+<span class="sd">        :param file: File or filename to which the data is saved.</span>
+<span class="sd">        """</span>
+        <span class="n">fp</span> <span class="o">=</span> <span class="n">_get_file_context</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">buffer</span> <span class="o">=</span> <span class="n">_uri_to_buffer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+            <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ContentConversionMixin.convert_image_uri_to_blob"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.convert_image_uri_to_blob">[docs]</a>    <span class="k">def</span> <span class="nf">convert_image_uri_to_blob</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">width</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">height</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">channel_axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">"""Convert the image-like :attr:`.uri` into :attr:`.blob`</span>
+
+<span class="sd">        :param width: the width of the image blob.</span>
+<span class="sd">        :param height: the height of the blob.</span>
+<span class="sd">        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis</span>
+<span class="sd">        """</span>
+
+        <span class="n">buffer</span> <span class="o">=</span> <span class="n">_uri_to_buffer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+        <span class="n">blob</span> <span class="o">=</span> <span class="n">_to_image_blob</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">buffer</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">_set_channel_axis</span><span class="p">(</span><span class="n">blob</span><span class="p">,</span> <span class="n">original_channel_axis</span><span class="o">=</span><span class="n">channel_axis</span><span class="p">)</span></div>
+
+    <span class="nd">@overload</span>
+    <span class="k">def</span> <span class="nf">convert_buffer_to_blob</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="p">):</span>
+        <span class="sd">"""Assuming the :attr:`buffer` is a _valid_ buffer of Numpy ndarray,</span>
+<span class="sd">        set :attr:`blob` accordingly.</span>
+
+<span class="sd">        :param dtype: Data-type of the returned array; default: float.</span>
+<span class="sd">        :param count: Number of items to read. ``-1`` means all data in the buffer.</span>
+<span class="sd">        :param offset: Start reading the buffer from this offset (in bytes); default: 0.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            One can only recover values not shape information from pure buffer.</span>
+<span class="sd">        """</span>
+        <span class="o">...</span>
+
+<div class="viewcode-block" id="ContentConversionMixin.convert_buffer_to_blob"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.convert_buffer_to_blob">[docs]</a>    <span class="k">def</span> <span class="nf">convert_buffer_to_blob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""Convert :attr:`.buffer` to :attr:`.blob` inplace.</span>
+
+<span class="sd">        # noqa: DAR101</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ContentConversionMixin.convert_blob_to_buffer"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.convert_blob_to_buffer">[docs]</a>    <span class="k">def</span> <span class="nf">convert_blob_to_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Convert :attr:`.blob` to :attr:`.buffer` inplace. """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ContentConversionMixin.convert_uri_to_buffer"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.convert_uri_to_buffer">[docs]</a>    <span class="k">def</span> <span class="nf">convert_uri_to_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Convert :attr:`.uri` to :attr:`.buffer` inplace.</span>
+<span class="sd">        Internally it downloads from the URI and set :attr:`buffer`.</span>
+
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="n">_uri_to_buffer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ContentConversionMixin.convert_uri_to_datauri"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.convert_uri_to_datauri">[docs]</a>    <span class="k">def</span> <span class="nf">convert_uri_to_datauri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">charset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'utf-8'</span><span class="p">,</span> <span class="n">base64</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">"""Convert :attr:`.uri` to dataURI and store it in :attr:`.uri` inplace.</span>
+
+<span class="sd">        :param charset: charset may be any character set registered with IANA</span>
+<span class="sd">        :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit. Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that frequently uses non-US-ASCII characters.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_datauri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">):</span>
+            <span class="n">buffer</span> <span class="o">=</span> <span class="n">_uri_to_buffer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span> <span class="o">=</span> <span class="n">_to_datauri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mime_type</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">charset</span><span class="p">,</span> <span class="n">base64</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ContentConversionMixin.convert_buffer_to_uri"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.convert_buffer_to_uri">[docs]</a>    <span class="k">def</span> <span class="nf">convert_buffer_to_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">charset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'utf-8'</span><span class="p">,</span> <span class="n">base64</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">"""Convert :attr:`.buffer` to data :attr:`.uri` in place.</span>
+<span class="sd">        Internally it first reads into buffer and then converts it to data URI.</span>
+
+<span class="sd">        :param charset: charset may be any character set registered with IANA</span>
+<span class="sd">        :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit.</span>
+<span class="sd">            Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that</span>
+<span class="sd">            frequently uses non-US-ASCII characters.</span>
+<span class="sd">        """</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">mime_type</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mime_type</span><span class="si">}</span><span class="s1"> is unset, can not convert it to data uri'</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">uri</span> <span class="o">=</span> <span class="n">_to_datauri</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mime_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">,</span> <span class="n">charset</span><span class="p">,</span> <span class="n">base64</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="ContentConversionMixin.convert_text_to_uri"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.convert_text_to_uri">[docs]</a>    <span class="k">def</span> <span class="nf">convert_text_to_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">charset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'utf-8'</span><span class="p">,</span> <span class="n">base64</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">"""Convert :attr:`.text` to data :attr:`.uri`.</span>
+
+<span class="sd">        :param charset: charset may be any character set registered with IANA</span>
+<span class="sd">        :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit.</span>
+<span class="sd">            Designed to be efficient for non-text 8 bit and binary data.</span>
+<span class="sd">            Sometimes used for text data that frequently uses non-US-ASCII characters.</span>
+<span class="sd">        """</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">uri</span> <span class="o">=</span> <span class="n">_to_datauri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mime_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="n">charset</span><span class="p">,</span> <span class="n">base64</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ContentConversionMixin.convert_uri_to_text"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.convert_uri_to_text">[docs]</a>    <span class="k">def</span> <span class="nf">convert_uri_to_text</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Convert :attr:`.uri` to :attr`.text` inplace."""</span>
+        <span class="n">buffer</span> <span class="o">=</span> <span class="n">_uri_to_buffer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">buffer</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ContentConversionMixin.convert_content_to_uri"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.convert_content_to_uri">[docs]</a>    <span class="k">def</span> <span class="nf">convert_content_to_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Convert :attr:`.content` in :attr:`.uri` inplace with best effort"""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">convert_text_to_uri</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">convert_buffer_to_uri</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">content_type</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+
+<span class="k">def</span> <span class="nf">_uri_to_buffer</span><span class="p">(</span><span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
     <span class="sd">"""Convert uri to buffer</span>
 <span class="sd">    Internally it reads uri into buffer.</span>
 
@@ -614,10 +806,12 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="s1">'rb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1"> is not a URL or a valid local path'</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1"> is not a URL or a valid local path'</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_png_to_buffer_1d</span><span class="p">(</span><span class="n">arr</span><span class="p">:</span> <span class="s1">'np.ndarray'</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">height</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">zlib</span>
+
     <span class="n">pixels</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">arr</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
         <span class="n">pixels</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">p</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="mi">255</span><span class="p">])</span>
@@ -651,98 +845,86 @@
 
 
 <span class="k">def</span> <span class="nf">_pillow_image_to_buffer</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">image_format</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">io</span>
-
     <span class="n">img_byte_arr</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">()</span>
     <span class="n">image</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">img_byte_arr</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">image_format</span><span class="p">)</span>
     <span class="n">img_byte_arr</span> <span class="o">=</span> <span class="n">img_byte_arr</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">img_byte_arr</span>
 
 
-<div class="viewcode-block" id="png_to_buffer"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.png_to_buffer">[docs]</a><span class="k">def</span> <span class="nf">png_to_buffer</span><span class="p">(</span>
-    <span class="n">arr</span><span class="p">:</span> <span class="s1">'np.ndarray'</span><span class="p">,</span>
-    <span class="n">width</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">height</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">resize_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'BILINEAR'</span><span class="p">,</span>
-    <span class="n">color_axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
-<span class="p">):</span>
+<span class="k">def</span> <span class="nf">_to_png_buffer</span><span class="p">(</span><span class="n">arr</span><span class="p">:</span> <span class="s1">'np.ndarray'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
     <span class="sd">"""</span>
 <span class="sd">    Convert png to buffer bytes.</span>
 
 <span class="sd">    :param arr: Data representations of the png.</span>
-<span class="sd">    :param width: the width of the :attr:`arr`, if None, interpret from :attr:`arr` shape.</span>
-<span class="sd">    :param height: the height of the :attr:`arr`, if None, interpret from :attr:`arr` shape.</span>
-<span class="sd">    :param resize_method: Resize methods (e.g. `NEAREST`, `BILINEAR`, `BICUBIC`, and `LANCZOS`).</span>
-<span class="sd">    :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis</span>
 <span class="sd">    :return: Png in buffer bytes.</span>
 
 <span class="sd">    ..note::</span>
 <span class="sd">        if both :attr:`width` and :attr:`height` were provided, will not resize. Otherwise, will get image size</span>
 <span class="sd">        by :attr:`arr` shape and apply resize method :attr:`resize_method`.</span>
 <span class="sd">    """</span>
-    <span class="n">arr</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
-    <span class="n">is_height_width_set</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">height</span> <span class="ow">and</span> <span class="n">width</span><span class="p">)</span>
+    <span class="n">arr</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_height_width_set</span><span class="p">:</span>
-            <span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span>
-        <span class="n">png_bytes</span> <span class="o">=</span> <span class="n">_png_to_buffer_1d</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
+        <span class="c1"># note this should be only used for MNIST/FashionMNIST dataset, because of the nature of these two datasets</span>
+        <span class="c1"># no other image data should flattened into 1-dim array.</span>
+        <span class="n">png_bytes</span> <span class="o">=</span> <span class="n">_png_to_buffer_1d</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_height_width_set</span><span class="p">:</span>
-            <span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span>
-            <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">'L'</span><span class="p">)</span>
-            <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">),</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">Image</span><span class="p">,</span> <span class="n">resize_method</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">'L'</span><span class="p">)</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">'L'</span><span class="p">)</span>
         <span class="n">png_bytes</span> <span class="o">=</span> <span class="n">_pillow_image_to_buffer</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">image_format</span><span class="o">=</span><span class="s1">'PNG'</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
 
-        <span class="k">if</span> <span class="n">color_axis</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-            <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">color_axis</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_height_width_set</span><span class="p">:</span>
-            <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">num_channels</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">num_channels</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span>
-
-        <span class="k">if</span> <span class="n">num_channels</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># greyscale image</span>
-            <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">((</span><span class="n">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">255</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">'RGB'</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_height_width_set</span><span class="p">:</span>
-            <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">),</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">Image</span><span class="p">,</span> <span class="n">resize_method</span><span class="p">))</span>
-
+        <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">'RGB'</span><span class="p">)</span>
         <span class="n">png_bytes</span> <span class="o">=</span> <span class="n">_pillow_image_to_buffer</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">image_format</span><span class="o">=</span><span class="s1">'PNG'</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'ndim=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="si">}</span><span class="s1"> array is not supported'</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1"> ndarray can not be converted into an image buffer.'</span>
+        <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">png_bytes</span></div>
+    <span class="k">return</span> <span class="n">png_bytes</span>
 
 
-<div class="viewcode-block" id="to_image_blob"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.to_image_blob">[docs]</a><span class="k">def</span> <span class="nf">to_image_blob</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">color_axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'np.ndarray'</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_set_channel_axis</span><span class="p">(</span>
+    <span class="n">blob</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">original_channel_axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">target_channel_axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">"""This will always make the channel axis to the last of the :attr:`.blob`</span>
+
+<span class="sd">    #noqa: DAR101</span>
+<span class="sd">    #noqa: DAR201</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">original_channel_axis</span> <span class="o">!=</span> <span class="n">target_channel_axis</span><span class="p">:</span>
+        <span class="n">blob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">blob</span><span class="p">,</span> <span class="n">original_channel_axis</span><span class="p">,</span> <span class="n">target_channel_axis</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">blob</span>
+
+
+<span class="k">def</span> <span class="nf">_to_image_blob</span><span class="p">(</span>
+    <span class="n">source</span><span class="p">,</span>
+    <span class="n">width</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">height</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'np.ndarray'</span><span class="p">:</span>
     <span class="sd">"""</span>
 <span class="sd">    Convert an image buffer to blob</span>
 
-<span class="sd">    :param source: image bytes buffer</span>
-<span class="sd">    :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis</span>
+<span class="sd">    :param source: binary buffer or file path</span>
+<span class="sd">    :param width: the width of the image blob.</span>
+<span class="sd">    :param height: the height of the blob.</span>
 <span class="sd">    :return: image blob</span>
 <span class="sd">    """</span>
     <span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
 
-    <span class="n">raw_img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">source</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">'RGB'</span><span class="p">)</span>
-    <span class="n">img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">raw_img</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">'float32'</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">color_axis</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-        <span class="n">img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">color_axis</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">img</span></div>
+    <span class="n">raw_img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">width</span> <span class="ow">or</span> <span class="n">height</span><span class="p">:</span>
+        <span class="n">new_width</span> <span class="o">=</span> <span class="n">width</span> <span class="ow">or</span> <span class="n">raw_img</span><span class="o">.</span><span class="n">width</span>
+        <span class="n">new_height</span> <span class="o">=</span> <span class="n">height</span> <span class="ow">or</span> <span class="n">raw_img</span><span class="o">.</span><span class="n">height</span>
+        <span class="n">raw_img</span> <span class="o">=</span> <span class="n">raw_img</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">new_width</span><span class="p">,</span> <span class="n">new_height</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">raw_img</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="to_datauri"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.to_datauri">[docs]</a><span class="k">def</span> <span class="nf">to_datauri</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">_to_datauri</span><span class="p">(</span>
     <span class="n">mimetype</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">charset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'utf-8'</span><span class="p">,</span> <span class="n">base64</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">binary</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="p">):</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">"""</span>
 <span class="sd">    Convert data to data URI.</span>
 
@@ -772,7 +954,34 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">encoded_data</span> <span class="o">=</span> <span class="n">quote</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="n">parts</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">','</span><span class="p">,</span> <span class="n">encoded_data</span><span class="p">])</span>
-    <span class="k">return</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_is_uri</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="n">scheme</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlparse</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">scheme</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">scheme</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'http'</span><span class="p">,</span> <span class="s1">'https'</span><span class="p">})</span>
+        <span class="ow">or</span> <span class="p">(</span><span class="n">scheme</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'data'</span><span class="p">})</span>
+        <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">W_OK</span><span class="p">)</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_is_datauri</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="n">scheme</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlparse</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">scheme</span>
+    <span class="k">return</span> <span class="n">scheme</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'data'</span><span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">_get_file_context</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">'write'</span><span class="p">):</span>
+        <span class="n">file_ctx</span> <span class="o">=</span> <span class="n">nullcontext</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">__windows__</span><span class="p">:</span>
+            <span class="n">file_ctx</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">'wb'</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">file_ctx</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">'wb'</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">file_ctx</span>
 </pre></div>
             </article>
             <footer>

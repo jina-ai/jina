@@ -658,7 +658,7 @@
         <span class="k">for</span> <span class="n">doc</span><span class="p">,</span> <span class="n">embed</span><span class="p">,</span> <span class="n">cont</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">embeds</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
             <span class="n">doc</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">embed</span>
             <span class="n">doc</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">cont</span>
-            <span class="n">doc</span><span class="o">.</span><span class="n">convert_image_blob_to_uri</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">28</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">28</span><span class="p">)</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">convert_image_blob_to_uri</span><span class="p">()</span>
             <span class="n">doc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'blob'</span><span class="p">)</span></div></div>
 
 
@@ -675,7 +675,7 @@
 <span class="sd">        :param kwargs: other keyword arguments</span>
 <span class="sd">        """</span>
         <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
-            <span class="n">doc</span><span class="o">.</span><span class="n">convert_image_blob_to_uri</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">28</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">28</span><span class="p">)</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">convert_image_blob_to_uri</span><span class="p">()</span>
             <span class="n">doc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'blob'</span><span class="p">)</span></div></div>
 
 
