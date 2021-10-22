@@ -42,6 +42,7 @@ class ZEDRuntime(BaseRuntime):
         :param kwargs: extra keyword arguments
         """
         super().__init__(args, **kwargs)
+        self.logger.debug('Initializing ZEDRuntime')
         if not __windows__:
             try:
                 signal.signal(signal.SIGTERM, self._handle_sig_term)
@@ -69,10 +70,12 @@ class ZEDRuntime(BaseRuntime):
         # idle_dealer_ids only becomes non-None when it receives IDLE ControlRequest
         self._idle_dealer_ids = set()
 
+        self.logger.debug('Loading DataRequestHandler')
         self._data_request_handler = DataRequestHandler(self.args, self.logger)
         self._static_routing_table = args.static_routing_table
-
+        self.logger.debug('Loading ZmqStreamLet')
         self._load_zmqstreamlet()
+        self.logger.debug('Successfully loaded ZmqStreamLet')
 
     def run_forever(self):
         """Start the `ZmqStreamlet`."""

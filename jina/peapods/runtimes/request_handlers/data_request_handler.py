@@ -58,16 +58,20 @@ class DataRequestHandler:
         :param logger: the logger provided by the user
         :param kwargs: extra keyword arguments
         """
-        super().__init__()
         self.args = args
         self.args.pea_id = self.args.shard_id
         self.args.parallel = self.args.shards
         self.logger = logger
         self._is_closed = False
-        self._load_executor()
+        logger.debug(f' Loading Executor')
+        self._load_executor(logger)
+        logger.debug(f' Successfully loaded Executor')
 
-    def _load_executor(self):
-        """Load the executor to this runtime, specified by ``uses`` CLI argument."""
+    def _load_executor(self, logger):
+        """Load the executor to this runtime, specified by ``uses`` CLI argument.
+
+        :param logger: the logger provided by the user
+        """
         try:
             self._executor = BaseExecutor.load_config(
                 self.args.uses,
@@ -75,6 +79,7 @@ class DataRequestHandler:
                 override_metas=self.args.uses_metas,
                 override_requests=self.args.uses_requests,
                 runtime_args=vars(self.args),
+                logger=logger,
             )
         except BadConfigSource as ex:
             self.logger.error(

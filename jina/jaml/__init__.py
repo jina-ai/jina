@@ -1,10 +1,9 @@
-import sys
 import os
 import re
 import tempfile
 import warnings
 from types import SimpleNamespace
-from typing import Dict, Any, Union, TextIO, Optional, List, Tuple
+from typing import Dict, Any, Union, TextIO, Optional, List, Tuple, TYPE_CHECKING
 
 import yaml
 from yaml.constructor import FullConstructor
@@ -15,6 +14,9 @@ __all__ = ['JAML', 'JAMLCompatible']
 
 from ..excepts import BadConfigSource
 from ..helper import expand_env_var
+
+if TYPE_CHECKING:
+    from ..logging.logger import JinaLogger
 
 subvar_regex = re.compile(
     r'\${{\s*([\w\[\].]+)\s*}}'
@@ -480,6 +482,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         override_with: Optional[Dict] = None,
         override_metas: Optional[Dict] = None,
         override_requests: Optional[Dict] = None,
+        logger: Optional['JinaLogger'] = None,
         **kwargs,
     ) -> 'JAMLCompatible':
         """A high-level interface for loading configuration with features
@@ -529,6 +532,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :param override_with: dictionary of parameters to overwrite from the default config's with field
         :param override_metas: dictionary of parameters to overwrite from the default config's metas field
         :param override_requests: dictionary of parameters to overwrite from the default config's requests field
+        :param logger: the logger provided by the user
         :param kwargs: kwargs for parse_config_source
         :return: :class:`JAMLCompatible` object
         """
@@ -536,7 +540,11 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         stream, s_path = parse_config_source(source, **kwargs)
         with stream as fp:
             # first load yml with no tag
+            if logger:
+                logger.debug('Loading JAML with no tags')
             no_tag_yml = JAML.load_no_tags(fp)
+            if logger:
+                logger.debug('no_tag_yml loaded')
             if no_tag_yml:
                 no_tag_yml.update(**kwargs)
 
@@ -562,19 +570,28 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 cls._override_yml_params(no_tag_yml, 'with', override_with)
                 cls._override_yml_params(no_tag_yml, 'metas', override_metas)
                 cls._override_yml_params(no_tag_yml, 'requests', override_requests)
-
+                if logger:
+                    logger.debug('JAML properly overriden')
             else:
                 raise BadConfigSource(
                     f'can not construct {cls} from an empty {source}. nothing to read from there'
                 )
             if substitute:
                 # expand variables
+                if logger:
+                    logger.debug('expanding no_tag_yml')
                 no_tag_yml = JAML.expand_dict(no_tag_yml, context)
+                if logger:
+                    logger.debug('expanded no_tag_yml')
             if allow_py_modules:
+                if logger:
+                    logger.debug('loading py_modules')
                 load_py_modules(
                     no_tag_yml,
                     extra_search_paths=(os.path.dirname(s_path),) if s_path else None,
                 )
+                if logger:
+                    logger.debug('loaded py_modules')
 
             from ..flow.base import Flow
 
@@ -586,8 +603,14 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 )
             else:
                 # revert yaml's tag and load again, this time with substitution
+                if logger:
+                    logger.debug(' JAML.unescaped calling')
                 tag_yml = JAML.unescape(JAML.dump(no_tag_yml))
+                if logger:
+                    logger.debug(' JAML.unescaped done')
             # load into object, no more substitute
+            if logger:
+                logger.debug(' JAML.load no substitute')
             return JAML.load(tag_yml, substitute=False)
 
     @classmethod
