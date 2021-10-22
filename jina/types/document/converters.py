@@ -7,8 +7,10 @@ import urllib.request
 import zlib
 from contextlib import nullcontext
 from typing import Optional, overload, Union, BinaryIO
-from ... import __windows__
+
 import numpy as np
+
+from ... import __windows__
 
 
 class ContentConversionMixin:
@@ -36,7 +38,9 @@ class ContentConversionMixin:
         # noqa: DAR101
         """
 
-        self.blob = _to_image_blob(io.BytesIO(self.buffer), *args, **kwargs)
+        blob = _to_image_blob(io.BytesIO(self.buffer), *args, **kwargs)
+        blob = _set_channel_axis(blob, *args, **kwargs)
+        self.blob = blob
 
     def convert_image_blob_to_uri(self):
         """Assuming :attr:`.blob` is a _valid_ image, set :attr:`uri` accordingly"""
@@ -63,8 +67,8 @@ class ContentConversionMixin:
 
         # noqa: DAR101
         """
-
-        buffer = _to_png_buffer(self.blob)
+        blob = _set_channel_axis(self.blob, *args, **kwargs)
+        buffer = _to_png_buffer(blob)
         self.blob = _to_image_blob(io.BytesIO(buffer), *args, **kwargs)
 
     def dump_buffer_to_file(self, file: Union[str, BinaryIO]):
@@ -117,7 +121,8 @@ class ContentConversionMixin:
         """
 
         buffer = _uri_to_buffer(self.uri)
-        self.blob = _to_image_blob(io.BytesIO(buffer), *args, **kwargs)
+        blob = _to_image_blob(io.BytesIO(buffer), *args, **kwargs)
+        self.blob = _set_channel_axis(blob, *args, **kwargs)
 
     @overload
     def convert_buffer_to_blob(
@@ -277,11 +282,12 @@ def _to_png_buffer(arr: 'np.ndarray'):
         if both :attr:`width` and :attr:`height` were provided, will not resize. Otherwise, will get image size
         by :attr:`arr` shape and apply resize method :attr:`resize_method`.
     """
-    arr = arr.astype(np.uint8)
+    arr = arr.astype(np.uint8).squeeze()
 
     if arr.ndim == 1:
-        height, width = arr.shape[0], 1
-        png_bytes = _png_to_buffer_1d(arr, width, height)
+        # note this should be only used for MNIST/FashionMNIST dataset, because of the nature of these two datasets
+        # no other image data should flattened into 1-dim array.
+        png_bytes = _png_to_buffer_1d(arr, 28, 28)
     elif arr.ndim == 2:
         from PIL import Image
 
@@ -300,11 +306,14 @@ def _to_png_buffer(arr: 'np.ndarray'):
     return png_bytes
 
 
+def _set_channel_axis(blob, channel_axis: int = -1, **kwargs):
+    if channel_axis != -1:
+        blob = np.moveaxis(blob, channel_axis, -1)
+    return blob
+
+
 def _to_image_blob(
-    source,
-    width: Optional[int] = None,
-    height: Optional[int] = None,
-    channel_axis: int = -1,
+    source, width: Optional[int] = None, height: Optional[int] = None, **kwargs
 ) -> 'np.ndarray':
     """
     Convert an image buffer to blob
@@ -312,7 +321,7 @@ def _to_image_blob(
     :param source: binary buffer or file path
     :param width: the width of the image blob.
     :param height: the height of the blob.
-    :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+    :param kwargs: other kwargs
     :return: image blob
     """
     from PIL import Image
@@ -322,11 +331,7 @@ def _to_image_blob(
         new_width = width or raw_img.width
         new_height = height or raw_img.height
         raw_img = raw_img.resize((new_width, new_height))
-
-    img = np.array(raw_img)
-    if channel_axis != -1:
-        img = np.moveaxis(img, -1, channel_axis)
-    return img
+    return np.array(raw_img)
 
 
 def _to_datauri(
