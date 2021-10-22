@@ -54,8 +54,6 @@ class CompoundPod(BasePod):
         self.shards_args = self._set_shard_args(cargs, self.head_args, self.tail_args)
 
         for _args in self.shards_args:
-            if getattr(self.args, 'noblock_on_start', False):
-                _args.noblock_on_start = True
             self.shards.append(Pod(_args))
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -110,43 +108,21 @@ class CompoundPod(BasePod):
             If one of the :class:`Pod` fails to start, make sure that all of them
             are properly closed.
         """
-        if getattr(self.args, 'noblock_on_start', False):
-            head_args = self.head_args
-            head_args.noblock_on_start = True
-            self.head_pea = Pea(head_args)
-            self._enter_pea(self.head_pea)
-            for shard in self.shards:
-                self._enter_shard(shard)
-            tail_args = self.tail_args
-            tail_args.noblock_on_start = True
-            self.tail_pea = Pea(tail_args)
-            self._enter_pea(self.tail_pea)
-        else:
-            try:
-                head_args = self.head_args
-                self.head_pea = Pea(head_args)
-                self._enter_pea(self.head_pea)
-                for shard in self.shards:
-                    self._enter_shard(shard)
-                    shard.activate()
-                tail_args = self.tail_args
-                self.tail_pea = Pea(tail_args)
-                self._enter_pea(self.tail_pea)
-            except:
-                self.close()
-                raise
-            return self
+        head_args = self.head_args
+        self.head_pea = Pea(head_args)
+        self._enter_pea(self.head_pea)
+        for shard in self.shards:
+            self._enter_shard(shard)
+        tail_args = self.tail_args
+        self.tail_pea = Pea(tail_args)
+        self._enter_pea(self.tail_pea)
+        return self
 
     def wait_start_success(self) -> None:
         """
         Block until all pods and peas start successfully.
         If not successful, it will raise an error hoping the outer function to catch it
         """
-
-        if not self.args.noblock_on_start:
-            raise ValueError(
-                f'{self.wait_start_success!r} should only be called when `noblock_on_start` is set to True'
-            )
 
         try:
             self.head_pea.wait_start_success()

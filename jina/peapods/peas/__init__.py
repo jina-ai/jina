@@ -183,8 +183,6 @@ class BasePea:
         .. #noqa: DAR201
         """
         self.worker.start()
-        if not self.args.noblock_on_start:
-            self.wait_start_success()
         return self
 
     def join(self, *args, **kwargs):

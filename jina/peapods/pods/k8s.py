@@ -277,8 +277,6 @@ class K8sPod(BasePod):
                     self._deploy_gateway()
                 else:
                     self._deploy_runtime()
-                if not self.common_args.noblock_on_start:
-                    self.wait_start_success()
             return self
 
         def close(self):
@@ -489,10 +487,6 @@ class K8sPod(BasePod):
 
     def wait_start_success(self):
         """Not implemented. It should wait until the deployment is up and running"""
-        if not self.args.noblock_on_start:
-            raise ValueError(
-                f'{self.wait_start_success!r} should only be called when `noblock_on_start` is set to True'
-            )
         try:
             if self.k8s_head_deployment is not None:
                 self.k8s_head_deployment.wait_start_success()

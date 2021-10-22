@@ -344,7 +344,6 @@ class Pod(BasePod):
                 old_pea = self.peas[i]
                 old_pea.close()
                 _args = self.args[i]
-                _args.noblock_on_start = True
                 ### BACKWARDS COMPATIBILITY, so THAT DUMP_PATH is in runtime_args
                 _args.dump_path = dump_path
                 ###
@@ -358,8 +357,6 @@ class Pod(BasePod):
 
         def __enter__(self):
             for _args in self.args:
-                if getattr(self.pod_args, 'noblock_on_start', False):
-                    _args.noblock_on_start = True
                 pea = BasePea(_args)
                 self.peas.append(pea)
                 self._exit_fifo.enter_context(pea)
@@ -367,6 +364,13 @@ class Pod(BasePod):
 
         def __exit__(self, exc_type, exc_val, exc_tb):
             self._exit_fifo.__exit__(exc_type, exc_val, exc_tb)
+
+    class _UpdatedReplicaSet(_ReplicaSet):
+        def __init__(self, peas: List['BasePea']):
+            self.peas = peas
+
+        def __enter__(self):
+            pass
 
     def __init__(
         self,
@@ -566,21 +570,16 @@ class Pod(BasePod):
         """
         if self.peas_args['head'] is not None:
             _args = self.peas_args['head']
-            if getattr(self.args, 'noblock_on_start', False):
-                _args.noblock_on_start = True
             self.head_pea = BasePea(_args)
             self.enter_context(self.head_pea)
         self.replica_set = self._ReplicaSet(self.args, self.peas_args['peas'])
         self.enter_context(self.replica_set)
         if self.peas_args['tail'] is not None:
             _args = self.peas_args['tail']
-            if getattr(self.args, 'noblock_on_start', False):
-                _args.noblock_on_start = True
             self.tail_pea = BasePea(_args)
             self.enter_context(self.tail_pea)
 
-        if not getattr(self.args, 'noblock_on_start', False):
-            self.activate()
+        self.activate()
         return self
 
     def wait_start_success(self) -> None:
@@ -588,10 +587,6 @@ class Pod(BasePod):
 
         If not successful, it will raise an error hoping the outer function to catch it
         """
-        if not self.args.noblock_on_start:
-            raise ValueError(
-                f'{self.wait_start_success!r} should only be called when `noblock_on_start` is set to True'
-            )
         try:
             for p in self.peas:
                 p.wait_start_success()

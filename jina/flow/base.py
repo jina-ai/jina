@@ -476,7 +476,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
         args.k8s_namespace = self.args.name
         args.connect_to_predecessor = False
-        args.noblock_on_start = True
         self._pod_nodes[GATEWAY_NAME] = PodFactory.build_pod(
             args, needs, self.args.infrastructure
         )
@@ -792,7 +791,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         args.workspace = os.path.abspath(args.workspace or self.workspace)
 
         args.k8s_namespace = self.args.name
-        args.noblock_on_start = True
         args.zmq_identity = None
 
         # BACKWARDS COMPATIBILITY:

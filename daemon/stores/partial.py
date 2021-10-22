@@ -67,6 +67,7 @@ class PartialPeaStore(PartialStore):
             if args.runtime_cls == 'ContainerRuntime':
                 args.docker_kwargs = {'extra_hosts': {__docker_host__: 'host-gateway'}}
             self.object: Union['Pea', 'Pod'] = self.peapod_cls(args).__enter__()
+            self.object.wait_start_success()
         except Exception as e:
             if hasattr(self, 'object'):
                 self.object.__exit__(type(e), e, e.__traceback__)
