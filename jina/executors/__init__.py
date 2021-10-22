@@ -106,24 +106,28 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self.runtime_args = SimpleNamespace()
 
     def _add_requests(self, _requests: Optional[Dict]):
-        request_mapping = {}  # type: Dict[str, Callable]
+        if not hasattr(self, 'requests'):
+            self.requests = {}
 
         if _requests:
+            func_names = {f.__name__: e for e, f in self.requests.items()}
             for endpoint, func in _requests.items():
                 # the following line must be `getattr(self.__class__, func)` NOT `getattr(self, func)`
                 # this to ensure we always have `_func` as unbound method
+                if func in func_names:
+                    del self.requests[func_names[func]]
+
                 _func = getattr(self.__class__, func)
                 if callable(_func):
                     # the target function is not decorated with `@requests` yet
-                    request_mapping[endpoint] = _func
+                    self.requests[endpoint] = _func
                 elif typename(_func) == 'jina.executors.decorators.FunctionMapper':
                     # the target function is already decorated with `@requests`, need unwrap with `.fn`
-                    request_mapping[endpoint] = _func.fn
+                    self.requests[endpoint] = _func.fn
                 else:
                     raise TypeError(
                         f'expect {typename(self)}.{func} to be a function, but receiving {typename(_func)}'
                     )
-            self.requests = request_mapping
 
     def _add_metas(self, _metas: Optional[Dict]):
         from .metas import get_default_metas
