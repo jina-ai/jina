@@ -59,6 +59,7 @@ def run(
     :param jaml_classes: all the `JAMLCompatible` classes imported in main process
     """
     logger = JinaLogger(name, **vars(args))
+    logger.debug(f' Process started')
 
     def _unset_envs():
         if envs and args.runtime_backend != RuntimeBackendType.THREAD:
@@ -76,10 +77,12 @@ def run(
 
     try:
         _set_envs()
+        logger.debug(f' Initializing runtime class {runtime_cls}')
         runtime = runtime_cls(
             args=args,
             cancel_event=cancel_event,
         )
+        logger.debug(f' Runtime {runtime_cls} initialized')
     except Exception as ex:
         logger.error(
             f'{ex!r} during {runtime_cls!r} initialization'
@@ -90,8 +93,10 @@ def run(
         )
     else:
         is_started.set()
+        logger.debug(f' Enter runtime context')
         with runtime:
             is_ready.set()
+            logger.debug(f' Call runtime run_forever')
             runtime.run_forever()
     finally:
         _unset_envs()
