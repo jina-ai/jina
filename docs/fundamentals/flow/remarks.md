@@ -119,3 +119,9 @@ for _ in range(4):
     t = Thread(target=start_f)
     t.start()
 ```
+````
+
+````{admonition} Note
+:class: note
+By default, the gRPC protocl is used for the Flow if the `protocol` parameter is not specified.
+````
