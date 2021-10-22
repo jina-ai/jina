@@ -123,10 +123,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     raise TypeError(
                         f'expect {typename(self)}.{func} to be a function, but receiving {typename(_func)}'
                     )
-
-        if hasattr(self, 'requests'):
-            self.requests.update(request_mapping)
-        else:
             self.requests = request_mapping
 
     def _add_metas(self, _metas: Optional[Dict]):
