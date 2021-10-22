@@ -111,8 +111,6 @@ class ImageCrafter(Executor):
         super().__init__(*args, **kwargs)
         self.target_size = target_size
         self.resize_dim = resize_dim
-        self.img_mean = np.array(img_mean).reshape((1, 1, 3))
-        self.img_std = np.array(img_std).reshape((1, 1, 3))
         self.channel_axis = channel_axis
         self.target_channel_axis = target_channel_axis
 
@@ -137,10 +135,7 @@ class ImageCrafter(Executor):
     def _normalize(self, img):
         img = _resize_short(img, target_size=self.resize_dim)
         img, _, _ = _crop_image(img, target_size=self.target_size, how='center')
-        img = np.array(img).astype('float32') / 255
-        img -= self.img_mean
-        img /= self.img_std
-        return img
+        return np.array(img).astype('float32') / 255
 
 
 class ImageEncoder(Executor):
