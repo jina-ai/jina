@@ -541,5 +541,3 @@ def test_pod_with_gpus(mocker):
     )
     with K8sPod(args) as pod:
         assert pod.args.gpus == '3'
-        resp = pod._K8sDeployment._read_namespaced_deployment()
-        assert resp.spec.containers[0].resources.limits == {'nvidia.com/gpu': 3}
