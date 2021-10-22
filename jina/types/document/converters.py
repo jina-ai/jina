@@ -4,7 +4,6 @@ import os
 import struct
 import urllib.parse
 import urllib.request
-import zlib
 from contextlib import nullcontext
 from typing import Optional, overload, Union, BinaryIO
 
@@ -16,7 +15,18 @@ from ... import __windows__
 class ContentConversionMixin:
     """A mixin class for converting, dumping and resizing :attr:`.content` in :class:`Document`."""
 
-    @overload
+    def set_image_blob_channel_axis(
+        self, original_channel_axis: int, new_channel_axis: int
+    ):
+        """Move the channel axis of the image :attr:`.blob` inplace.
+
+        :param original_channel_axis: the original axis of the channel
+        :param new_channel_axis: the new axis of the channel
+        """
+        self.blob = _set_channel_axis(
+            self.blob, original_channel_axis, new_channel_axis
+        )
+
     def convert_image_buffer_to_blob(
         self,
         width: Optional[int] = None,
@@ -29,17 +39,8 @@ class ContentConversionMixin:
         :param height: the height of the blob.
         :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
         """
-
-        ...
-
-    def convert_image_buffer_to_blob(self, *args, **kwargs):
-        """Convert an image :attr:`.buffer` to a ndarray :attr:`.blob`.
-
-        # noqa: DAR101
-        """
-
-        blob = _to_image_blob(io.BytesIO(self.buffer), *args, **kwargs)
-        blob = _set_channel_axis(blob, *args, **kwargs)
+        blob = _to_image_blob(io.BytesIO(self.buffer), width=width, height=height)
+        blob = _set_channel_axis(blob, original_channel_axis=channel_axis)
         self.blob = blob
 
     def convert_image_blob_to_uri(self):
@@ -47,7 +48,6 @@ class ContentConversionMixin:
         png_bytes = _to_png_buffer(self.blob)
         self.uri = 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
 
-    @overload
     def resize_image_blob(
         self,
         width: Optional[int] = None,
@@ -60,16 +60,9 @@ class ContentConversionMixin:
         :param height: the height of the blob.
         :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
         """
-        ...
-
-    def resize_image_blob(self, *args, **kwargs):
-        """Resize the image :attr:`.blob` inplace.
-
-        # noqa: DAR101
-        """
-        blob = _set_channel_axis(self.blob, *args, **kwargs)
+        blob = _set_channel_axis(self.blob, original_channel_axis=channel_axis)
         buffer = _to_png_buffer(blob)
-        self.blob = _to_image_blob(io.BytesIO(buffer), *args, **kwargs)
+        self.blob = _to_image_blob(io.BytesIO(buffer), width=width, height=height)
 
     def dump_buffer_to_file(self, file: Union[str, BinaryIO]):
         """Save :attr:`.buffer` into a file
@@ -100,7 +93,6 @@ class ContentConversionMixin:
             buffer = _uri_to_buffer(self.uri)
             fp.write(buffer)
 
-    @overload
     def convert_image_uri_to_blob(
         self,
         width: Optional[int] = None,
@@ -113,16 +105,10 @@ class ContentConversionMixin:
         :param height: the height of the blob.
         :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
         """
-        ...
-
-    def convert_image_uri_to_blob(self, *args, **kwargs):
-        """Convert the image-like :attr:`.uri` into :attr:`.blob`
-        # noqa: DAR101
-        """
 
         buffer = _uri_to_buffer(self.uri)
-        blob = _to_image_blob(io.BytesIO(buffer), *args, **kwargs)
-        self.blob = _set_channel_axis(blob, *args, **kwargs)
+        blob = _to_image_blob(io.BytesIO(buffer), width=width, height=height)
+        self.blob = _set_channel_axis(blob, original_channel_axis=channel_axis)
 
     @overload
     def convert_buffer_to_blob(
@@ -232,6 +218,8 @@ def _uri_to_buffer(uri: str) -> bytes:
 
 
 def _png_to_buffer_1d(arr: 'np.ndarray', width: int, height: int) -> bytes:
+    import zlib
+
     pixels = []
     for p in arr[::-1]:
         pixels.extend([p, p, p, 255])
@@ -271,7 +259,7 @@ def _pillow_image_to_buffer(image, image_format: str) -> bytes:
     return img_byte_arr
 
 
-def _to_png_buffer(arr: 'np.ndarray'):
+def _to_png_buffer(arr: 'np.ndarray') -> bytes:
     """
     Convert png to buffer bytes.
 
@@ -306,14 +294,23 @@ def _to_png_buffer(arr: 'np.ndarray'):
     return png_bytes
 
 
-def _set_channel_axis(blob, channel_axis: int = -1, **kwargs):
-    if channel_axis != -1:
-        blob = np.moveaxis(blob, channel_axis, -1)
+def _set_channel_axis(
+    blob: np.ndarray, original_channel_axis: int = -1, target_channel_axis: int = -1
+) -> np.ndarray:
+    """This will always make the channel axis to the last of the :attr:`.blob`
+
+    #noqa: DAR101
+    #noqa: DAR201
+    """
+    if original_channel_axis != target_channel_axis:
+        blob = np.moveaxis(blob, original_channel_axis, target_channel_axis)
     return blob
 
 
 def _to_image_blob(
-    source, width: Optional[int] = None, height: Optional[int] = None, **kwargs
+    source,
+    width: Optional[int] = None,
+    height: Optional[int] = None,
 ) -> 'np.ndarray':
     """
     Convert an image buffer to blob
@@ -321,7 +318,6 @@ def _to_image_blob(
     :param source: binary buffer or file path
     :param width: the width of the image blob.
     :param height: the height of the blob.
-    :param kwargs: other kwargs
     :return: image blob
     """
     from PIL import Image
@@ -336,7 +332,7 @@ def _to_image_blob(
 
 def _to_datauri(
     mimetype, data, charset: str = 'utf-8', base64: bool = False, binary: bool = True
-):
+) -> str:
     """
     Convert data to data URI.
 
