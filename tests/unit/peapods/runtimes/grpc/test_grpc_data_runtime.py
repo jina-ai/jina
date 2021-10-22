@@ -55,9 +55,8 @@ def test_grpc_data_runtime(mocker):
 
 @pytest.mark.slow
 @pytest.mark.timeout(10)
-@pytest.mark.parametrize('close_method', ['TERMINATE'])
+@pytest.mark.parametrize('close_method', ['TERMINATE', 'CANCEL'])
 @pytest.mark.asyncio
-@pytest.mark.parametrize('close_method', ['TERMINATE'])
 @pytest.mark.skip('Graceful shutdown is not working at the moment')
 # TODO: This test should work, it does not
 async def test_grpc_data_runtime_graceful_shutdown(close_method):
