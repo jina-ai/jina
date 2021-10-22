@@ -300,7 +300,6 @@ class BasePea:
             _timeout = None
         else:
             _timeout /= 1e3
-
         if self._wait_for_ready_or_shutdown(_timeout):
             self._check_failed_to_start()
             self.logger.debug(__ready_msg__)

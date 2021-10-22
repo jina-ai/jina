@@ -578,8 +578,6 @@ class Pod(BasePod):
             _args = self.peas_args['tail']
             self.tail_pea = BasePea(_args)
             self.enter_context(self.tail_pea)
-
-        self.activate()
         return self
 
     def wait_start_success(self) -> None:
