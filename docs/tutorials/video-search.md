@@ -13,6 +13,9 @@
 In this tutorial, we create a video search system that retrieves the videos based on short text descriptions of the scenes. The main challenge is to enable the user to search videos _**without**_ using any labels or text information about the videos.
 
 <!--demo.gif-->
+```{figure} ../../.github/images/tutorial-video-search.gif
+:align: center
+```
 
 ## Build the Flow
 
@@ -41,7 +44,7 @@ the video. This is beyond the scope of this tutorial.
 ```
 
 ### Choose Executors
-To encode video frames and query texts into the same space, we choose the pretrained CLIP models from OpenAI. 
+To encode video frames and query texts into the same space, we choose the pretrained [CLIP model](https://github.com/openai/CLIP) from OpenAI. 
 
 ```{admonition} What is CLIP?
 :class: info
@@ -58,7 +61,7 @@ Given a short text `this is a dog`, the CLIP text model can encode it into a vec
 We can further find the distance between the text vector and the vectors of the dog image is smaller than that between the same text and an image of a cat. 
 ```
 
-As for the indexer, considering this is for demonstration purpose, we choose `SimpleIndexer` as our indexer. It stores both vectors and meta-information at one shot. The search is done by using the built-in `match` function of the `DocumentArrayMemmap`
+As for the indexer, considering this is for demonstration purpose, we choose `SimpleIndexer` as our indexer. It stores both vectors and meta-information at one shot. The search part is done by using the built-in `match` function of the `DocumentArrayMemmap`.
 
 ## Go through the Flow
 Although there is only one Flow defined in this example, it handles the requests to `/index` and `/search` differently by setting the `requests` decorators for the executors. 
@@ -74,7 +77,9 @@ The `VideoLoader` extracts the frames from the video and stores them as image ar
 
 The Documents after `VideoLoader` have the following format,
 
-<!--document.png-->
+```{figure} ../../.github/images/tutorial-video-search-doc.jpg
+:align: center
+```
 
 
 As the second step, `CLIPImageEncoder` calculates the `embedding` attribute for each chunk based on the CLIP model for images. The resulted vectors is 512-dimensional. 
@@ -117,19 +122,22 @@ Similar as overriding the `traversal_paths`, we need configurate the `@requests`
 
 
 ```{code-block} yaml
+---
+emphasize-lines: 5, 6, 9, 10, 13, 14
+---
 ...
 executors:
-  - uses: jinahub://VideoLoader/v0.1
+  - uses: jinahub://VideoLoader/v0.2
     ...
-    uses_requests:  # override the @requests
+    uses_requests:
       /index: 'extract'
   - uses: jinahub://CLIPImageEncoder/v0.1
     ...
-    uses_requests:  # override the @requests
+    uses_requests:
       /index: 'encode'
   - uses: jinahub://CLIPTextEncoder/v0.1
     ...
-    uses_requests:  # override the @requests
+    uses_requests:
       /search: 'encode'
 ...
 ```
