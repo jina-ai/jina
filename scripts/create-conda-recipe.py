@@ -20,7 +20,7 @@ def get_extra_requires(path):
 
                     k = re.split('([<>=])', k, 1)
 
-                    # If we have some version requrement, it will be returned as a
+                    # If we have some version requirement, it will be returned as a
                     # separate item by the split function
                     if len(k) == 3:
                         k = [k[0], k[1] + k[2]]
