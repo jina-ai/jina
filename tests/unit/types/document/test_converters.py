@@ -2,7 +2,6 @@ import os
 
 import numpy as np
 import pytest
-
 from jina import Document, __windows__
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -44,6 +43,15 @@ def test_convert_buffer_to_blob():
     converted_buffer_in_one_of = doc.buffer
     assert intialiazed_buffer != converted_buffer_in_one_of
     np.testing.assert_almost_equal(doc.content.reshape([10, 10]), array)
+
+
+@pytest.mark.parametrize('shape, channel_axis', [((3, 32, 32), 0), ((32, 32, 3), -1)])
+def test_image_normalize(shape, channel_axis):
+    doc = Document(content=np.random.randint(0, 255, shape, dtype=np.uint8))
+    doc.normalize_image_blob(channel_axis=channel_axis)
+    assert doc.blob.ndim == 3
+    assert doc.blob.shape == shape
+    assert doc.blob.dtype == np.float32
 
 
 @pytest.mark.parametrize(
