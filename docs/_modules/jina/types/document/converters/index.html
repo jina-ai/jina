@@ -615,7 +615,7 @@
 <span class="sd">        :param original_channel_axis: the original axis of the channel</span>
 <span class="sd">        :param new_channel_axis: the new axis of the channel</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">_set_channel_axis</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">_move_channel_axis</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="p">,</span> <span class="n">original_channel_axis</span><span class="p">,</span> <span class="n">new_channel_axis</span>
         <span class="p">)</span></div>
 
@@ -632,7 +632,7 @@
 <span class="sd">        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis</span>
 <span class="sd">        """</span>
         <span class="n">blob</span> <span class="o">=</span> <span class="n">_to_image_blob</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">)</span>
-        <span class="n">blob</span> <span class="o">=</span> <span class="n">_set_channel_axis</span><span class="p">(</span><span class="n">blob</span><span class="p">,</span> <span class="n">original_channel_axis</span><span class="o">=</span><span class="n">channel_axis</span><span class="p">)</span>
+        <span class="n">blob</span> <span class="o">=</span> <span class="n">_move_channel_axis</span><span class="p">(</span><span class="n">blob</span><span class="p">,</span> <span class="n">original_channel_axis</span><span class="o">=</span><span class="n">channel_axis</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">blob</span></div>
 
 <div class="viewcode-block" id="ContentConversionMixin.convert_image_blob_to_uri"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.convert_image_blob_to_uri">[docs]</a>    <span class="k">def</span> <span class="nf">convert_image_blob_to_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -652,7 +652,7 @@
 <span class="sd">        :param height: the height of the blob.</span>
 <span class="sd">        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis</span>
 <span class="sd">        """</span>
-        <span class="n">blob</span> <span class="o">=</span> <span class="n">_set_channel_axis</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="p">,</span> <span class="n">original_channel_axis</span><span class="o">=</span><span class="n">channel_axis</span><span class="p">)</span>
+        <span class="n">blob</span> <span class="o">=</span> <span class="n">_move_channel_axis</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="p">,</span> <span class="n">original_channel_axis</span><span class="o">=</span><span class="n">channel_axis</span><span class="p">)</span>
         <span class="n">buffer</span> <span class="o">=</span> <span class="n">_to_png_buffer</span><span class="p">(</span><span class="n">blob</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">_to_image_blob</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">buffer</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">)</span></div>
 
@@ -700,7 +700,37 @@
 
         <span class="n">buffer</span> <span class="o">=</span> <span class="n">_uri_to_buffer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
         <span class="n">blob</span> <span class="o">=</span> <span class="n">_to_image_blob</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">buffer</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">_set_channel_axis</span><span class="p">(</span><span class="n">blob</span><span class="p">,</span> <span class="n">original_channel_axis</span><span class="o">=</span><span class="n">channel_axis</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">_move_channel_axis</span><span class="p">(</span><span class="n">blob</span><span class="p">,</span> <span class="n">original_channel_axis</span><span class="o">=</span><span class="n">channel_axis</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ContentConversionMixin.normalize_image_blob"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.normalize_image_blob">[docs]</a>    <span class="k">def</span> <span class="nf">normalize_image_blob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">"""Normalize a uint8 image :attr:`.blob` into a float32 image :attr:`.blob` inplace.</span>
+
+<span class="sd">        Following Pytorch standard, the image must be in the shape of shape (3 x H x W) and</span>
+<span class="sd">        will be normalized in to a range of [0, 1] and then</span>
+<span class="sd">        normalized using mean = [0.485, 0.456, 0.406] and std = [0.229, 0.224, 0.225]. These two arrays are computed</span>
+<span class="sd">        based on millions of images. If you want to train from scratch on your own dataset, you can calculate the new</span>
+<span class="sd">        mean and std. Otherwise, using the Imagenet pretrianed model with its own mean and std is recommended.</span>
+
+<span class="sd">        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis</span>
+
+<span class="sd">        .. warning::</span>
+<span class="sd">            Please do NOT generalize this function to gray scale, black/white image, it does not make any sense for</span>
+<span class="sd">            non RGB image. if you look at their MNIST examples, the mean and stddev are 1-dimensional</span>
+<span class="sd">            (since the inputs are greyscale-- no RGB channels).</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">blob</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">/</span> <span class="mf">255.0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+            <span class="n">blob</span> <span class="o">=</span> <span class="n">_move_channel_axis</span><span class="p">(</span><span class="n">blob</span><span class="p">,</span> <span class="n">channel_axis</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mf">0.485</span><span class="p">,</span> <span class="mf">0.456</span><span class="p">,</span> <span class="mf">0.406</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+            <span class="n">std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mf">0.229</span><span class="p">,</span> <span class="mf">0.224</span><span class="p">,</span> <span class="mf">0.225</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+            <span class="n">blob</span> <span class="o">=</span> <span class="p">(</span><span class="n">blob</span> <span class="o">-</span> <span class="n">mean</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">])</span> <span class="o">/</span> <span class="n">std</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+            <span class="c1"># set back channel to original</span>
+            <span class="n">blob</span> <span class="o">=</span> <span class="n">_move_channel_axis</span><span class="p">(</span><span class="n">blob</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">channel_axis</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">blob</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'`blob` must be a uint8 ndarray with ndim=3, but receiving </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s1"> with ndim=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s1">'</span>
+            <span class="p">)</span></div>
 
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="nf">convert_buffer_to_blob</span><span class="p">(</span>
@@ -886,7 +916,7 @@
     <span class="k">return</span> <span class="n">png_bytes</span>
 
 
-<span class="k">def</span> <span class="nf">_set_channel_axis</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">_move_channel_axis</span><span class="p">(</span>
     <span class="n">blob</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">original_channel_axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">target_channel_axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="sd">"""This will always make the channel axis to the last of the :attr:`.blob`</span>
@@ -993,7 +1023,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 22, 2021.
+                    Last updated on Oct 23, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
