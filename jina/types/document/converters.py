@@ -23,7 +23,7 @@ class ContentConversionMixin:
         :param original_channel_axis: the original axis of the channel
         :param new_channel_axis: the new axis of the channel
         """
-        self.blob = _set_channel_axis(
+        self.blob = _move_channel_axis(
             self.blob, original_channel_axis, new_channel_axis
         )
 
@@ -40,7 +40,7 @@ class ContentConversionMixin:
         :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
         """
         blob = _to_image_blob(io.BytesIO(self.buffer), width=width, height=height)
-        blob = _set_channel_axis(blob, original_channel_axis=channel_axis)
+        blob = _move_channel_axis(blob, original_channel_axis=channel_axis)
         self.blob = blob
 
     def convert_image_blob_to_uri(self):
@@ -60,7 +60,7 @@ class ContentConversionMixin:
         :param height: the height of the blob.
         :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
         """
-        blob = _set_channel_axis(self.blob, original_channel_axis=channel_axis)
+        blob = _move_channel_axis(self.blob, original_channel_axis=channel_axis)
         buffer = _to_png_buffer(blob)
         self.blob = _to_image_blob(io.BytesIO(buffer), width=width, height=height)
 
@@ -108,7 +108,37 @@ class ContentConversionMixin:
 
         buffer = _uri_to_buffer(self.uri)
         blob = _to_image_blob(io.BytesIO(buffer), width=width, height=height)
-        self.blob = _set_channel_axis(blob, original_channel_axis=channel_axis)
+        self.blob = _move_channel_axis(blob, original_channel_axis=channel_axis)
+
+    def normalize_image_blob(self, channel_axis: int = -1):
+        """Normalize a uint8 image :attr:`.blob` into a float32 image :attr:`.blob` inplace.
+
+        Following Pytorch standard, the image must be in the shape of shape (3 x H x W) and
+        will be normalized in to a range of [0, 1] and then
+        normalized using mean = [0.485, 0.456, 0.406] and std = [0.229, 0.224, 0.225]. These two arrays are computed
+        based on millions of images. If you want to train from scratch on your own dataset, you can calculate the new
+        mean and std. Otherwise, using the Imagenet pretrianed model with its own mean and std is recommended.
+
+        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+
+        .. warning::
+            Please do NOT generalize this function to gray scale, black/white image, it does not make any sense for
+            non RGB image. if you look at their MNIST examples, the mean and stddev are 1-dimensional
+            (since the inputs are greyscale-- no RGB channels).
+        """
+        if self.blob.dtype == np.uint8 and self.blob.ndim == 3:
+            blob = (self.blob / 255.0).astype(np.float32)
+            blob = _move_channel_axis(blob, channel_axis, 0)
+            mean = np.asarray([0.485, 0.456, 0.406], dtype=np.float32)
+            std = np.asarray([0.229, 0.224, 0.225], dtype=np.float32)
+            blob = (blob - mean[:, None, None]) / std[:, None, None]
+            # set back channel to original
+            blob = _move_channel_axis(blob, 0, channel_axis)
+            self.blob = blob
+        else:
+            raise ValueError(
+                f'`blob` must be a uint8 ndarray with ndim=3, but receiving {self.blob.dtype} with ndim={self.blob.ndim}'
+            )
 
     @overload
     def convert_buffer_to_blob(
@@ -294,7 +324,7 @@ def _to_png_buffer(arr: 'np.ndarray') -> bytes:
     return png_bytes
 
 
-def _set_channel_axis(
+def _move_channel_axis(
     blob: np.ndarray, original_channel_axis: int = -1, target_channel_axis: int = -1
 ) -> np.ndarray:
     """This will always make the channel axis to the last of the :attr:`.blob`
