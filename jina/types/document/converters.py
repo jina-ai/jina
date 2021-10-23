@@ -120,6 +120,11 @@ class ContentConversionMixin:
         mean and std. Otherwise, using the Imagenet pretrianed model with its own mean and std is recommended.
 
         :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+
+        .. warning::
+            Please do NOT generalize this function to gray scale, black/white image, it does not make any sense for
+            non RGB image. if you look at their MNIST examples, the mean and stddev are 1-dimensional
+            (since the inputs are greyscale-- no RGB channels).
         """
         if self.blob.dtype == np.uint8 and self.blob.ndim == 3:
             blob = (self.blob / 255.0).astype(np.float32)
