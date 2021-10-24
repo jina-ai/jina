@@ -70,53 +70,13 @@ f = (Flow()
 :align: center
 ```
 
-The above Flow will create a topology with three Replicas of Executor `slow_encoder`. The `Gateway` will send every request to exactly one of the three instances. Then the replica will send its result to `fast_indexer`.
+The above Flow will create a topology with three Replicas of Executor `slow_encoder`. The `Gateway` will send every 
+request to exactly one of the three instances. Then the replica will send its result to `fast_indexer`.
 
-## Partition data by using Shards
+### Avoiding Bottlenecks on Executors with `replicas`
+In this section, we will showcase how we can avoid having bottlenecks on slow Executors by using `replicas`.
 
-Shards can be used to partition data (like an Index) into several parts. This enables the distribution of data across multiple machines.
-This is helpful in two situations:
-
-- When the full data does not fit on one machine 
-- When the latency of a single request becomes too large.
-
-Then splitting the load across two or more machines yields better results.
-
-For Shards, you can define which shard (instance) will receive the request from its predecessor. This behaviour is called `polling`. By default `polling` is set to `ANY`, which means only one shard will receive a request. If `polling` is to `ALL` it means that all Shards will receive a request.
-
-When you shard your index, the request handling usually differs between index and search requests:
-
-- Index (and update, delete) will just be handled by a single shard => `polling='any'`
-- Search requests are handled by all Shards => `polling='all'`
-
-For indexing, you only want a single shard to receive a request, because this is sufficient to add it to the index.
-For searching, you probably need to send the search request to all Shards, because the requested data could be on any shard.
-
-```python Usage
-from jina import Flow
-
-index_flow = Flow().add(name='ExecutorWithShards', shards=3, polling='any')
-search_flow = Flow().add(name='ExecutorWithShards', shards=3, polling='all', uses_after='MatchMerger')
-```
-
-### Merging search results via `uses_after`
-
-Each shard of a search Flow returns one set of results for each query Document.
-A merger Executor combines them afterwards.
-You can use the pre-built [MatchMerger](https://hub.jina.ai/executor/mruax3k7) or define your merger.
-
-```{admonition} Example
-:class: example
-A search Flow has 10 Shards for an Indexer.
-Each shard returns the top 20 results.
-After the merger there will be 200 results per query Document.
-```
-
-## Avoiding Bottlenecks on Executors with `parallel`
-Some Executor endpoints can be slower than others. And in order to avoid having bottlenecks because of slow endpoints, 
-you can use the parameter `parallel`.
-
-For example, suppose we have the following Executor:
+Suppose we have the following Executor:
 
 ```python
 import time
@@ -162,14 +122,14 @@ def simulate(flow):
             p.join()
 ```
 
-If we simply create a Flow with only 1 instance if `MyExecutor`, calls to the slow endpoint will make a bottleneck. 
-However, creating parallel instances will unblock the Flow:
+If we simply create a Flow with only 1 instance of `MyExecutor`, requests to the slow endpoint will make a bottleneck. 
+However, creating replicas will unblock the Flow:
 
-````{tab} with parallel
+````{tab} with replicas
 ```python
 from jina import Flow
 
-scaled_f = Flow(protocol='grpc', port_expose=12345).add(uses=MyExecutor, parallel=2)
+scaled_f = Flow(protocol='grpc', port_expose=12345).add(uses=MyExecutor, replicas=2)
 
 with TimeContext('calling scaled flow'):
     simulate(scaled_f)  # will take around 5 seconds
@@ -180,7 +140,7 @@ calling scaled flow takes 6 seconds (6.11s)
 ```
 ````
 
-````{tab} without parallel
+````{tab} without replicas
 ```python
 from jina import Flow
 
@@ -194,13 +154,53 @@ with TimeContext('calling normal flow'):
 calling normal flow takes 11 seconds (11.75s)
 ```
 ````
-Therefore, by using `parallel`, one can solve the flow enjoys a nonblocking behavior and we can avoid the bottleneck.
+Therefore, by using `replicas`, the Flow enjoys a non-blocking behavior and we can avoid bottlenecks.
 
 ````{admonition} Important
 :class: important
 By default, `polling='ANY'`. If `polling` is set to `ALL`, this will not be valid anymore: All instances of the 
 Executor will receive each request and there will be no performance benefits.
 ````
+
+## Partition data by using Shards
+
+Shards can be used to partition data (like an Index) into several parts. This enables the distribution of data across multiple machines.
+This is helpful in two situations:
+
+- When the full data does not fit on one machine 
+- When the latency of a single request becomes too large.
+
+Then splitting the load across two or more machines yields better results.
+
+For Shards, you can define which shard (instance) will receive the request from its predecessor. This behaviour is called `polling`. By default `polling` is set to `ANY`, which means only one shard will receive a request. If `polling` is to `ALL` it means that all Shards will receive a request.
+
+When you shard your index, the request handling usually differs between index and search requests:
+
+- Index (and update, delete) will just be handled by a single shard => `polling='any'`
+- Search requests are handled by all Shards => `polling='all'`
+
+For indexing, you only want a single shard to receive a request, because this is sufficient to add it to the index.
+For searching, you probably need to send the search request to all Shards, because the requested data could be on any shard.
+
+```python Usage
+from jina import Flow
+
+index_flow = Flow().add(name='ExecutorWithShards', shards=3, polling='any')
+search_flow = Flow().add(name='ExecutorWithShards', shards=3, polling='all', uses_after='MatchMerger')
+```
+
+### Merging search results via `uses_after`
+
+Each shard of a search Flow returns one set of results for each query Document.
+A merger Executor combines them afterwards.
+You can use the pre-built [MatchMerger](https://hub.jina.ai/executor/mruax3k7) or define your merger.
+
+```{admonition} Example
+:class: example
+A search Flow has 10 Shards for an Indexer.
+Each shard returns the top 20 results.
+After the merger there will be 200 results per query Document.
+```
 
 
 ## Combining Replicas & Shards
