@@ -17,7 +17,7 @@ In this tutorial, we create a video search system that retrieves the videos base
 
 ## Build the Flow
 
-Given that there is no text available, we can not use the text information of the video to match the query text directly. Instead, we need figure out another way to match videos and texts. 
+Given that there is no text available, we can not use the text information of the video to match the query text directly. Instead, we need to figure out another way to match videos and texts. 
 One way to find such matches is to use the video frames because part of the information in the videos can be captured by the frames. To be more concrete, we can find the related frames with similar semantics to the query texts and afterwards return the videos containing these frames. This requires models to encode the video frames and the query texts into the same space. In this case, the pretrained cross-modal models can help us out.
 
 ```{admonition} Use the other information of videos
@@ -47,7 +47,7 @@ To encode video frames and query texts into the same space, we choose the pretra
 ```{admonition} What is CLIP?
 :class: info
 
-The CLIP model is trained to learn the visual concepts from the natural languages by using text snippet and the image pairs across the internet. In the original CLIP paper, the model is used to perform Zero Shot Learning by encoding the text labels and the images with seperated models and later calculated the similarities between the encoded vectors. 
+The CLIP model is trained to learn visual concepts from natural languages. This is done using text snippets and image pairs across the internet. In the original CLIP paper, the model performs Zero Shot Learning by encoding text labels and images with separated models. Later the similarities between the encoded vectors are calculated . 
 ```
 
 In this tutorial, we use the image and the text encoding parts from CLIP to calculate the embeddings. 
@@ -59,7 +59,7 @@ Given a short text `this is a dog`, the CLIP text model can encode it into a vec
 We can further find the distance between the text vector and the vectors of the dog image is smaller than that between the same text and an image of a cat. 
 ```
 
-As for the indexer, considering this is for demonstration purpose, we choose `SimpleIndexer` as our indexer. It stores both vectors and meta-information at one shot. The search part is done by using the built-in `match` function of the `DocumentArrayMemmap`.
+As for the indexer, considering this is for demonstration purposes, we choose `SimpleIndexer` as our indexer. It stores both vectors and meta-information in one shot. The search part is done by using the built-in `match` function of the `DocumentArrayMemmap`.
 
 ## Go through the Flow
 Although there is only one Flow defined in this example, it handles the requests to `/index` and `/search` differently by setting the `requests` decorators for the executors. 
@@ -80,7 +80,7 @@ The Documents after `VideoLoader` have the following format,
 ```
 
 
-As the second step, `CLIPImageEncoder` calculates the `embedding` attribute for each chunk based on the CLIP model for images. The resulted vectors is 512-dimensional. 
+As the second step, `CLIPImageEncoder` calculates the `embedding` attribute for each chunk based on the CLIP model for images. The resulted vectors are 512-dimensional. 
 
 
 Afterwards, the `SimpleIndexer` stores all the Documents with a memory map.  
@@ -88,19 +88,18 @@ Afterwards, the `SimpleIndexer` stores all the Documents with a memory map.
 ### Query
 
 When being posted to the `/search` endpoint, the requests go through `CLIPTextEncoder`, `SimpleIndexer` and `SimpleRanker`.
-The requests have the text descriptions stored in the `text` attributes of the Documents. These texts are further encoded into vectors by `CLIPTextEncoder`. The vectors are stored in the `embedding` attribute and used to retrieve the related vectors of the video frames with the `SimpleRanker`. Last but not the least, `SimpleRanker` find out the corresponding videos based on the retrieved frames. 
+The requests have the text descriptions stored in the `text` attributes of the Documents. These texts are further encoded into vectors by `CLIPTextEncoder`. The vectors are stored in the `embedding` attribute and used to retrieve the related vectors of the video frames with the `SimpleRanker`. Last but not the least, `SimpleRanker` finds out the corresponding videos based on the retrieved frames. 
 
 ### Use the executors from Jina Hub
 
-Except the `SimpleRanker`, all the other executors used in this tutorial are available at [hub.jina.ai](https://hub.jina.ai/). We can use them off-the-shelf. 
+Except for the `SimpleRanker`, all the other executors used in this tutorial are available at [hub.jina.ai](https://hub.jina.ai/). We can use them off-the-shelf. 
 
 - [`VideoLoader`](https://hub.jina.ai/executor/i6gp4vwu)
 - [`CLIPImageEncoder`](https://hub.jina.ai/executor/0hnlmu3q)
 - [`CLIPTextEncoder`](https://hub.jina.ai/executor/livtkbkg)
 - [`SimpleIndexer`](https://hub.jina.ai/executor/zb38xlt4)
 
-Note that by default the `CLIPImageEncoder` encodes the `blob` of the Documents at the root level. In this example, the Document at the root level represents the video and its chunks represent the video frames that the CLIP model should encode. To override this default configuration in the YAML file, we set `traversal_paths: ['c']` under the `uses_with` field. Instead of encoding the Document at the root level, the embeddings is calculated based on the `blob` of each 
-chunk. 
+Note that by default the `CLIPImageEncoder` encodes the `blob` of the Documents at the root level. In this example, the Document at the root level represents the video and its chunks represent the video frames that the CLIP model should encode. To override this default configuration in the YAML file, we set `traversal_paths: ['c']` under the `uses_with` field. Instead of encoding the Document at the root level, the embeddings are calculated based on the `blob` of each chunk. 
 
 ```{code-block} yaml
 ---
@@ -116,7 +115,7 @@ executors:
 ```
 
 ### Override requests configuration
-Similar as overriding the `traversal_paths`, we need configurate the `@requests` for the executors to ensure the requests to `/index` and `/search` endpoints can be handled as expected. The `VideoLoader` and `CLIPImageEncoder` only process the requests to the `/index` endpoint. In contrary, the `CLIPTextEncoder` is only used to handle the requests to the `/search` endpoint.
+Similar to overriding the `traversal_paths`, we need to configure the `@requests` for the executors to ensure the requests to `/index` and `/search` endpoints can be handled as expected. The `VideoLoader` and `CLIPImageEncoder` only process the requests to the `/index` endpoint. In contrary, the `CLIPTextEncoder` is only used to handle the requests to the `/search` endpoint.
 
 
 ```{code-block} yaml
