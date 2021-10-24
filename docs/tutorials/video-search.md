@@ -1,4 +1,4 @@
-# Video Search 
+# Search in-Video Visual Content via Text
 
 ```{article-info}
 :avatar: avatars/nan.jpg
@@ -8,9 +8,7 @@
 :date: Oct. 19, 2021
 ```
 
-## Search Videos via Text
-
-In this tutorial, we create a video search system that retrieves the videos based on short text descriptions of the scenes. The main challenge is to enable the user to search videos _**without**_ using any labels or text information about the videos.
+In this tutorial, we create a video search system that retrieves the videos based on short text descriptions of the contents. The main challenge is to enable the user to search videos _**without**_ using any labels or text information about the videos.
 
 <!--demo.gif-->
 ```{figure} ../../.github/images/tutorial-video-search.gif
