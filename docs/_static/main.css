@@ -97,3 +97,29 @@ table code {
     margin-right: .5em;
     vertical-align: middle
 }
+
+
+
+body[data-theme="dark"] .only-dark-line {
+    display: inline-block !important;
+}
+
+body[data-theme="dark"] .only-light-line {
+    display: none !important;
+}
+
+body[data-theme="light"] .only-light-line {
+    display: inline-block !important;
+}
+
+body[data-theme="light"] .only-dark-line {
+    display: none !important;
+}
+
+body[data-theme="auto"] .only-light-line {
+    display: inline-block !important;
+}
+
+body[data-theme="auto"] .only-dark-line {
+    display: none !important;
+}
