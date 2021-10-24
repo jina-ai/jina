@@ -1,6 +1,14 @@
 (kubernetes)=
 # Jina on Kubernetes
 
+```{article-info}
+:avatar: avatars/florian.jpg
+:avatar-link: https://jobs.jina.ai
+:avatar-outline: muted
+:author: Florian @ Jina AI
+:date: Oct. 19, 2021
+```
+
 Jina natively supports Kubernetes and you can use it via Flow API.
 
 ## Preliminaries
