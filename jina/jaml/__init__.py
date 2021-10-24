@@ -1,3 +1,4 @@
+import copy
 import os
 import re
 import tempfile
@@ -587,13 +588,17 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
 
             from ..flow.base import Flow
 
-            if issubclass(cls, Flow) and no_tag_yml.get('jtype') != 'Flow {}':
+            if issubclass(cls, Flow):
+                no_tag_yml_copy = copy.copy(no_tag_yml)
                 # only needed for Flow
-                if no_tag_yml.get('with') is None:
-                    no_tag_yml['with'] = {}
-                no_tag_yml['with']['extra_search_paths'] = (
-                    no_tag_yml['with'].get('extra_search_paths') or []
+                if no_tag_yml_copy.get('with') is None:
+                    no_tag_yml_copy['with'] = {}
+                no_tag_yml_copy['with']['extra_search_paths'] = (
+                    no_tag_yml_copy['with'].get('extra_search_paths') or []
                 ) + (extra_search_paths or [])
+
+                if cls.is_valid_jaml(no_tag_yml_copy):
+                    no_tag_yml = no_tag_yml_copy
 
                 tag_yml = JAML.unescape(
                     JAML.dump(no_tag_yml),
@@ -615,3 +620,26 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 raw_yaml.update(field_params)
             else:
                 raw_yaml[field_name] = override_field
+
+    @staticmethod
+    def is_valid_jaml(obj: Dict) -> bool:
+        """
+        Verifies the yaml syntax of a given object by first serializing it and attempting to deserialize and catch
+        parser errors
+        :param obj: yaml object
+        :return: whether the syntax is valid or not
+
+        """
+        serialized_yaml = JAML.unescape(
+            JAML.dump(obj),
+            include_unknown_tags=False,
+        )
+
+        try:
+            yaml.safe_load(serialized_yaml)
+        # we only need to validate syntax, e.g, need to detect parser errors
+        except yaml.parser.ParserError:
+            return False
+        except yaml.error.YAMLError:
+            return True
+        return True
