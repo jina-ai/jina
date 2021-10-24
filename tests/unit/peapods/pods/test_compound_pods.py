@@ -90,7 +90,7 @@ def test_pod_context_sharded(runtime, shards, replicas):
             # count head and tail
             assert bp.num_peas == shards * (replicas + 2) + 2
 
-    with CompoundPod(args) as pod:
+    with CompoundPod(args):
         pass
 
 

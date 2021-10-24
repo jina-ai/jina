@@ -563,7 +563,6 @@ with f:
             The `name` and `tag` should be passed via ``args`` and `force` and `secret` as ``kwargs``, otherwise,
             cache does not work.
         """
-
         with ImportExtensions(required=True):
             import requests
 
@@ -732,6 +731,11 @@ with f:
                             need_pull = True
 
                         if need_pull:
+                            # pull the latest executor meta, as the cached data would expire
+                            executor = HubIO.fetch_meta(
+                                name, tag, secret=secret, force=True
+                            )
+
                             cache_dir = Path(
                                 os.environ.get(
                                     'JINA_HUB_CACHE_DIR',

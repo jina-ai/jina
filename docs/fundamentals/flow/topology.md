@@ -220,3 +220,24 @@ f = (Flow()
 ```
 
 This Flow has a single Executor with 2 Shards and 3 Replicas, which means it gets split into 2 Shards with 3 Replicas each. In total this Flow has 2*3=6 workers and could be distributed to six different machines if necessary.
+
+## Replica vs Shards
+
+The next table shows the difference between shards and replicas.
+
+||Replica|Shards|
+|---|---|---|
+|Create multiple copies of an executor| ✅ | ✅ |
+|Partition data into several parts | ❌ | ✅ |
+|Request handled by one of the executors | ✅ | ✅, if `polling = 'any'` |
+|Request handled by all of the executors | ❌ | ✅, if `polling = 'all'` |
+
+Think of using `replicas` when you have slow Executors and you want to be able to process multiple requests in parallel. 
+Also replicas provide high availability in case some executors are taken down (for updates, failures, etc)
+
+On the other hand, when your data  is too large to fit in one machine or if the latency of a request is too large `shards` is your best option since it allows you to split your data across multiple machines.
+
+````{admonition} Warning
+:class: warning
+Sometimes you'll also encouter `parallel`, this is equivalent to `shards` and is only kept for backwards compatibility.
+````

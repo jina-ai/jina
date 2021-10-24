@@ -66,7 +66,7 @@ class MyEncoder(Executor):
         for doc, embed, cont in zip(docs, embeds, content):
             doc.embedding = embed
             doc.content = cont
-            doc.convert_image_blob_to_uri(width=28, height=28)
+            doc.convert_image_blob_to_uri()
             doc.pop('blob')
 
 
@@ -83,7 +83,7 @@ class MyConverter(Executor):
         :param kwargs: other keyword arguments
         """
         for doc in docs:
-            doc.convert_image_blob_to_uri(width=28, height=28)
+            doc.convert_image_blob_to_uri()
             doc.pop('blob')
 
 
