@@ -7,8 +7,8 @@ from setuptools import setup
 from setuptools.command.develop import develop
 from setuptools.command.install import install
 
-if sys.version_info >= (3, 10, 0) or sys.version_info < (3, 7, 0):
-    raise OSError(f'Jina requires Python 3.7/3.8/3.9, but yours is {sys.version}')
+if sys.version_info < (3, 7, 0):
+    raise OSError(f'Jina requires Python >=3.7, but yours is {sys.version}')
 
 if (3, 7, 0) <= sys.version_info < (3, 8, 0):
     # https://github.com/pypa/setuptools/issues/926#issuecomment-294369342
