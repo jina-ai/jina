@@ -29,6 +29,7 @@ class DocumentArrayNeuralOpsMixin:
         use_scipy: bool = False,
         exclude_self: bool = False,
         is_sparse: bool = False,
+        filter_fn: Optional[Callable] = None,
     ) -> None:
         """Compute embedding based nearest neighbour in `another` for each Document in `self`,
         and store results in `matches`.
@@ -56,6 +57,7 @@ class DocumentArrayNeuralOpsMixin:
                 left-hand ``DocumentArray``.
         :param traversal_rdarray: if set, then matching is applied along the `traversal_path` of the
                 right-hand ``DocumentArray``.
+        :param filter_fn: if set, apply the filter function to filter docs on the right hand side (rhv) to be matched
         :param use_scipy: if set, use ``scipy`` as the computation backend
         :param exclude_self: if set, Documents in ``darray`` with same ``id`` as the left-hand values will not be
                         considered as matches.
@@ -85,8 +87,8 @@ class DocumentArrayNeuralOpsMixin:
                 lhv = DocumentArray(lhv)
 
         rhv = darray
-        if traversal_rdarray:
-            rhv = darray.traverse_flat(traversal_rdarray)
+        if traversal_rdarray or filter_fn:
+            rhv = darray.traverse_flat(traversal_rdarray or ['r'], filter_fn=filter_fn)
 
             from .document import DocumentArray
 
@@ -234,10 +236,11 @@ class DocumentArrayNeuralOpsMixin:
         self,
         output: Optional[str] = None,
         title: Optional[str] = None,
-        colored_tag: Optional[str] = None,
+        colored_attr: Optional[str] = None,
         colormap: str = 'rainbow',
         method: str = 'pca',
         show_axis: bool = False,
+        **kwargs,
     ):
         """Visualize embeddings in a 2D projection with the PCA algorithm. This function requires ``matplotlib`` installed.
 
@@ -246,13 +249,14 @@ class DocumentArrayNeuralOpsMixin:
 
         :param output: Optional path to store the visualization. If not given, show in UI
         :param title: Optional title of the plot. When not given, the default title is used.
-        :param colored_tag: Optional str that specifies tag used to color the plot
+        :param colored_attr: Optional str that specifies attribute used to color the plot, it supports dunder expression
+            such as `tags__label`, `matches__0__id`.
         :param colormap: the colormap string supported by matplotlib.
         :param method: the visualization method, available `pca`, `tsne`. `pca` is fast but may not well represent
                 nonlinear relationship of high-dimensional data. `tsne` requires scikit-learn to be installed and is
                 much slower.
         :param show_axis: If set, axis and bounding box of the plot will be printed.
-
+        :param kwargs: extra kwargs pass to matplotlib.plot
         """
 
         x_mat = self.embeddings
@@ -283,11 +287,20 @@ class DocumentArrayNeuralOpsMixin:
 
         plt.title(title or f'{len(x_mat)} Documents with PCA')
 
-        if colored_tag:
-            tags = [x[colored_tag] for x in self.get_attributes('tags')]
+        if colored_attr:
+            tags = []
+
+            for x in self:
+                try:
+                    tags.append(getattr(x, colored_attr))
+                except (KeyError, AttributeError, ValueError):
+                    tags.append(None)
             tag_to_num = {tag: num for num, tag in enumerate(set(tags))}
             plt_kwargs['c'] = np.array([tag_to_num[ni] for ni in tags])
             plt_kwargs['cmap'] = plt.get_cmap(colormap)
+
+        # update the plt_kwargs
+        plt_kwargs.update(kwargs)
 
         plt.scatter(**plt_kwargs)
 

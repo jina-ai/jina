@@ -1,10 +1,6 @@
 import base64
-import io
 import json
 import mimetypes
-import os
-import urllib.parse
-import urllib.request
 from hashlib import blake2b
 from typing import (
     Iterable,
@@ -23,7 +19,7 @@ import numpy as np
 from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 
-from .converters import png_to_buffer, to_datauri, to_image_blob, uri_to_buffer
+from .converters import ContentConversionMixin
 from .helper import versioned, VersionedMixin
 from ..mixin import ProtoTypeMixin
 from ..ndarray.generic import NdArray, BaseSparseNdArray
@@ -90,7 +86,7 @@ _all_doc_array_keys = ('blob', 'embedding')
 _special_mapped_keys = ('scores', 'evaluations')
 
 
-class Document(ProtoTypeMixin, VersionedMixin):
+class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
     """
     :class:`Document` is one of the **primitive data type** in Jina.
 
@@ -1006,132 +1002,6 @@ class Document(ProtoTypeMixin, VersionedMixin):
         for k, v in value.items():
             scores[k] = v
 
-    def convert_image_buffer_to_blob(self, color_axis: int = -1):
-        """Convert an image buffer to blob
-
-        :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
-        """
-        self.blob = to_image_blob(io.BytesIO(self.buffer), color_axis)
-
-    def convert_image_blob_to_uri(
-        self,
-        width: Optional[int] = None,
-        height: Optional[int] = None,
-        resize_method: str = 'BILINEAR',
-        color_axis: int = -1,
-    ):
-        """Assuming :attr:`blob` is a _valid_ image, set :attr:`uri` accordingly
-        :param width: the width of the blob, if None, interpret from :attr:`blob` shape.
-        :param height: the height of the blob, if None, interpret from :attr:`blob` shape.
-        :param resize_method: the resize method name
-        :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
-
-        ..note::
-            if both :attr:`width` and :attr:`height` were provided, will not resize. Otherwise, will get image size
-            by :attr:`self.blob` shape and apply resize method :attr:`resize_method`.
-        """
-        png_bytes = png_to_buffer(self.blob, width, height, resize_method, color_axis)
-        self.uri = 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
-
-    def convert_image_uri_to_blob(
-        self, color_axis: int = -1, uri_prefix: Optional[str] = None
-    ):
-        """Convert uri to blob
-
-        :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
-        :param uri_prefix: the prefix of the uri
-        """
-        self.blob = to_image_blob(
-            (uri_prefix + self.uri) if uri_prefix else self.uri, color_axis
-        )
-
-    def convert_image_datauri_to_blob(self, color_axis: int = -1):
-        """Convert data URI to image blob
-
-        :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
-        """
-        req = urllib.request.Request(self.uri, headers={'User-Agent': 'Mozilla/5.0'})
-        with urllib.request.urlopen(req) as fp:
-            buffer = fp.read()
-        self.blob = to_image_blob(io.BytesIO(buffer), color_axis)
-
-    def convert_buffer_to_blob(self, dtype=None, count=-1, offset=0):
-        """Assuming the :attr:`buffer` is a _valid_ buffer of Numpy ndarray,
-        set :attr:`blob` accordingly.
-
-        :param dtype: Data-type of the returned array; default: float.
-        :param count: Number of items to read. ``-1`` means all data in the buffer.
-        :param offset: Start reading the buffer from this offset (in bytes); default: 0.
-
-        .. note::
-            One can only recover values not shape information from pure buffer.
-        """
-        self.blob = np.frombuffer(self.buffer, dtype, count, offset)
-
-    def convert_blob_to_buffer(self):
-        """Convert blob to buffer"""
-        self.buffer = self.blob.tobytes()
-
-    def convert_uri_to_buffer(self):
-        """Convert uri to buffer
-        Internally it downloads from the URI and set :attr:`buffer`.
-
-        """
-        self.buffer = uri_to_buffer(self.uri)
-
-    def convert_uri_to_datauri(self, charset: str = 'utf-8', base64: bool = False):
-        """Convert uri to data uri.
-        Internally it reads uri into buffer and convert it to data uri
-
-        :param charset: charset may be any character set registered with IANA
-        :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit. Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that frequently uses non-US-ASCII characters.
-        """
-        if not _is_datauri(self.uri):
-            buffer = uri_to_buffer(self.uri)
-            self.uri = to_datauri(self.mime_type, buffer, charset, base64, binary=True)
-
-    def convert_buffer_to_uri(self, charset: str = 'utf-8', base64: bool = False):
-        """Convert buffer to data uri.
-        Internally it first reads into buffer and then converts it to data URI.
-
-        :param charset: charset may be any character set registered with IANA
-        :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit.
-            Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that
-            frequently uses non-US-ASCII characters.
-        """
-
-        if not self.mime_type:
-            raise ValueError(
-                f'{self.mime_type} is unset, can not convert it to data uri'
-            )
-
-        self.uri = to_datauri(self.mime_type, self.buffer, charset, base64, binary=True)
-
-    def convert_text_to_uri(self, charset: str = 'utf-8', base64: bool = False):
-        """Convert text to data uri.
-
-        :param charset: charset may be any character set registered with IANA
-        :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit.
-            Designed to be efficient for non-text 8 bit and binary data.
-            Sometimes used for text data that frequently uses non-US-ASCII characters.
-        """
-
-        self.uri = to_datauri(self.mime_type, self.text, charset, base64, binary=False)
-
-    def convert_uri_to_text(self):
-        """Assuming URI is text, convert it to text"""
-        self.convert_uri_to_buffer()
-        self.text = self.buffer.decode()
-
-    def convert_content_to_uri(self):
-        """Convert content in URI with best effort"""
-        if self.text:
-            self.convert_text_to_uri()
-        elif self.buffer:
-            self.convert_buffer_to_uri()
-        elif self.content_type:
-            raise NotImplementedError
-
     def MergeFrom(self, doc: 'Document'):
         """Merge the content of target
 
@@ -1192,10 +1062,10 @@ class Document(ProtoTypeMixin, VersionedMixin):
 
         mermaid_str = (
             """
-                                    %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
-                                    classDiagram
-    
-                                            """
+                                        %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
+                                        classDiagram
+        
+                                                """
             + self.__mermaid_str__()
         )
 
@@ -1338,18 +1208,3 @@ class Document(ProtoTypeMixin, VersionedMixin):
         else:
             raise AttributeError
         return value
-
-
-def _is_uri(value: str) -> bool:
-    scheme = urllib.parse.urlparse(value).scheme
-    return (
-        (scheme in {'http', 'https'})
-        or (scheme in {'data'})
-        or os.path.exists(value)
-        or os.access(os.path.dirname(value), os.W_OK)
-    )
-
-
-def _is_datauri(value: str) -> bool:
-    scheme = urllib.parse.urlparse(value).scheme
-    return scheme in {'data'}

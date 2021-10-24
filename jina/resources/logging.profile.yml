@@ -1,6 +1,5 @@
 handlers:  # enabled handlers, order does not matter
   - SysLogHandler
-  - FluentHandler
 level: INFO  # set verbose level
 configs:
   SysLogHandler:
@@ -9,14 +8,3 @@ configs:
     host: # when not given then record it locally, /dev/log on linux /var/run/syslog on mac
     port: # when not given then record it locally,  /dev/log on linux /var/run/syslog on mac
     formatter: PlainFormatter
-  FluentHandler:
-    # this configuration describes where is the fluentD daemon running and waiting for logs to be emitted.
-    # FluentD then will have its own configuration to forward the messages according to its own syntax
-    # prefix will help fluentD filter data. This will be prepended for FluentD to easily filter incoming messages
-    tag: profile
-    host: 0.0.0.0
-    port: 24224
-    format:
-      host: '%(hostname)s'
-      process: '%(process)s'
-      type: '%(levelname)s'
