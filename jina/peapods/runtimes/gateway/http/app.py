@@ -75,8 +75,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
 
     @app.on_event('shutdown')
     async def _shutdown():
-        await streamer.close()
-        if inspect.iscoroutine(iolet.close):
+        if inspect.iscoroutinefunction(iolet.close):
             await iolet.close()
         else:
             iolet.close()
