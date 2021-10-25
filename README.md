@@ -30,7 +30,7 @@ Jina<sup><a href=".github/pronounce-jina.mp3">`🔊`</a></sup> is a neural searc
 ⏱️ **Save time** - *The* design pattern of neural search systems, from zero to a production-ready system in minutes.
 
 🌩️ **Fast & cloud-native** - Distributed architecture from day one, scalable & cloud-native by design: enjoy
-containerizing, streaming, sharding, replicating, async scheduling, HTTP/gRPC/WebSocket protocols.
+containerization, streaming, sharding, replication, async scheduling, HTTP/gRPC/WebSocket protocols.
 
 🍱 **Own your stack** - Keep end-to-end stack ownership of your solution, avoid integration pitfalls you get with
 fragmented, multi-vendor, generic legacy tools.
