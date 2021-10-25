@@ -9,12 +9,12 @@
 ```
 
 
-As a way of searching, asking questions is a natural way to perform searching. For example, when you want to know the definition of Document in Jina, you will naturally ask, "__What is the Document in Jina?__". The expected answer can be found either from the documentation of Jina or the introduction videos at our YouTube channel. Thanks to the latest advances in NLP, the AI models can automatically find these answers from the contents. 
+As a way of searching, asking questions is a natural way to perform searching. For example, when you want to know the definition of Document in Jina, you will naturally ask, "__What is the Document in Jina?__". The expected answer can be found either from [docs.jina.ai](https://docs.jina.ai/) or the introduction videos at [Jina YouTube channel](https://www.youtube.com/c/JinaAI). Thanks to the latest advances in NLP, the AI models can automatically find these answers from the contents. 
 
-The goal of this tutorial is to build a Question-Answering (QA) system for in-Video Contents. Although most of the existing QA models only work for text, most videos in our life have vocal sound which contains rich information about the video and can be converted into text via [__STT__](https://en.wikipedia.org/wiki/Speech_recognition). Thereafter, videos with vocal sound naturally fits to the way of Question-Answering via text.
+The goal of this tutorial is to build a Question-Answering (QA) system for in-Video Contents. Although most of the existing QA models only work for text, most videos in our life have vocal sound which contains rich information about the video and can be converted into text via [speech recognition (STT)](https://en.wikipedia.org/wiki/Speech_recognition). Thereafter, videos with vocal sound naturally fits to the way of Question-Answering via text.
 
-In this tutorial, we will show you how to find the extract contents from videos that answer the question. 
-Instead of returning the related videos, the QA models can tell the user from which second to watch in order to get the answer to the question.
+In this tutorial, we will show you how to find the extract contents from videos that answer the query question. 
+Instead of just finding the related videos and having the user skim through the whole video, the QA models can tell the user from which second to watch in order to get the answer to the question.
 
 ```{figure} ../../.github/images/tutorial-video-qa.gif
 :align: center
@@ -22,7 +22,7 @@ Instead of returning the related videos, the QA models can tell the user from wh
 
 ## Build the Flow
 To convert vocal information of the videos into texts, we can rely on STT algorithms. Fortunately, for most of the
-videos at YouTube, one can download the subtitles that are generated automatically via STT. In this example, we assume
+videos at [YouTube](https://support.google.com/youtube/answer/6373554?hl=en), one can download the subtitles that are generated automatically via STT. In this example, we assume
 the video files have subtitles already embedded. By loading the subtitles, we can get the texts of the vocal sounds together
 with the beginning and ending timestamp.
 
@@ -45,8 +45,9 @@ the toy-data, we use an introduction video of Jina. In the auto-generated subtit
 ```
 
 With the subtitles of the videos, we further need a QA model. The input to the QA model usually has two parts, namely 
-the question and the context. The context denotes the candidate texts that contain the answers. To save the 
-computation cost, we want to have the context as short as possible. To generate such contexts, one can use either traditional information sparse vectors or dense vectors. In this example, we decide to use the dense vectors that are shipped together with the QA model.
+the question and the context. The context denotes the candidate texts that contain the answers. In our case, the context corresponds to the subtitles from which the answers are extracted. 
+
+To save the computational cost, we want to have the context as short as possible. To generate such contexts, one can use either traditional information sparse vectors or dense vectors. In this example, we decide to use the dense vectors that are shipped together with the QA model.
 
 
 ```{admonition} Note
@@ -57,9 +58,9 @@ With the traditional methods, the retrieval part can also be done via using BM25
 
 ### Choose executors
 
-To extract the subtitles from the videos, we use `VideoLoader` to extract. It uses `ffmpeg` to extract the subtitles 
-and afterwards generated chunks based on the subtitles with `webvtt-py`. The subtitles are stored in the `chunks` 
-together with the timestamp information and the video information at `tags`. The extracted subtitles have the following attributes, 
+we use `VideoLoader` to extract the subtitles from the videos. It uses [`ffmpeg`](https://www.ffmpeg.org/) to extract the subtitles 
+and afterwards generates chunks based on the subtitles using [`webvtt-py`](https://github.com/glut23/webvtt-py). The subtitles are stored in the `chunks` 
+together with other meta information including the timestamp information and the video information at `tags`. The extracted subtitles have the following attributes, 
 
 | tags | information |
 | -- | ---- |
@@ -164,7 +165,7 @@ As for the executors used in this tutorial, most of them are available at Jina H
 
 ## Next Steps
 
-In this example, we reply on the subtitles embedded in the video. This might not be the case for some home-made videos or the meeting recordings. For the videos without subtitles, we need to build executors using STT models to extract the vocal information. If the video contains other sounds, one can resort to [VADSpeechSegmenter](https://hub.jina.ai/executor/9sohw4wi) for separating the vocal sounds beforehand.
+In this example, we rely on the subtitles embedded in the video. For the videos without subtitles, we need to build executors using STT models to extract the vocal information. If the video contains other sounds, one can resort to [VADSpeechSegmenter](https://hub.jina.ai/executor/9sohw4wi) for separating the vocal sounds beforehand.
 
 Another direction to extend this example is to consider more text information of the videos. Although subtitles contain rich information about the video, not all the text information is included in the subtitles. A lot of videos have text information embedded in the images. In such cases, we need to reply on OCR models to extract the text information from the video frames. 
 
