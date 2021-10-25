@@ -694,12 +694,6 @@
         <span class="sd">"""Send end of iterator signal to Gateway"""</span>
         <span class="k">pass</span>
 
-<div class="viewcode-block" id="BaseStreamer.close"><a class="viewcode-back" href="../../../../../api/jina.peapods.stream.base/#jina.peapods.stream.base.BaseStreamer.close">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""</span>
-<span class="sd">        Stop receiving messages</span>
-<span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">receive_task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span></div>
-
 <div class="viewcode-block" id="BaseStreamer.stream"><a class="viewcode-back" href="../../../../../api/jina.peapods.stream.base/#jina.peapods.stream.base.BaseStreamer.stream">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">stream</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">request_iterator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterator</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">]</span>

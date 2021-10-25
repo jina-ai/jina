@@ -658,8 +658,7 @@
 
     <span class="nd">@app</span><span class="o">.</span><span class="n">on_event</span><span class="p">(</span><span class="s1">'shutdown'</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_shutdown</span><span class="p">():</span>
-        <span class="k">await</span> <span class="n">streamer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">iscoroutine</span><span class="p">(</span><span class="n">iolet</span><span class="o">.</span><span class="n">close</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">iolet</span><span class="o">.</span><span class="n">close</span><span class="p">):</span>
             <span class="k">await</span> <span class="n">iolet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">iolet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>

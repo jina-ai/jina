@@ -652,8 +652,7 @@
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="GRPCRuntime.async_teardown"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.gateway.grpc/#jina.peapods.runtimes.gateway.grpc.GRPCRuntime.async_teardown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Close the prefetcher"""</span>
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="sd">"""Close the iolet"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">grpc_data_requests</span><span class="p">:</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpclet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
