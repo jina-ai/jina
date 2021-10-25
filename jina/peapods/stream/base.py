@@ -94,9 +94,9 @@ class BaseStreamer(ABC):
 
     async def close(self):
         """
-        Stop receiving messages
+        Close resources, none held here
         """
-        self.receive_task.cancel()
+        pass
 
     @abstractmethod
     async def stream(
