@@ -739,11 +739,18 @@ closing...
 <p>An Executor can be loaded from and stored to a YAML file. The YAML file has the following format:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MyExecutor</span>
 <span class="nt">with</span><span class="p">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">...</span>
+  <span class="nt">parameter_1</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">foo</span>
+  <span class="nt">parameter_2</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">bar</span>
 <span class="nt">metas</span><span class="p">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">...</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MyExecutor</span>
+  <span class="nt">description</span><span class="p">:</span> <span class="s">"MyExecutor</span><span class="nv"> </span><span class="s">does</span><span class="nv"> </span><span class="s">a</span><span class="nv"> </span><span class="s">thing</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">stuff</span><span class="nv"> </span><span class="s">in</span><span class="nv"> </span><span class="s">your</span><span class="nv"> </span><span class="s">Documents"</span>
+  <span class="nt">workspace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">workspace</span>
+  <span class="nt">py_modules</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">executor.py</span>
 <span class="nt">requests</span><span class="p">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">...</span>
+  <span class="nt">index</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MyExecutor_index_method</span>
+  <span class="nt">search</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MyExecutor_search_method</span>
+  <span class="nt">random</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MyExecutor_other_method</span>
 </pre></div>
 </div>
 <ul class="simple">
