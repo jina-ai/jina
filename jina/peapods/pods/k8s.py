@@ -6,13 +6,13 @@ from typing import Optional, Dict, Union, Set, List, Iterable
 
 import jina
 from .k8slib import kubernetes_deployment, kubernetes_client
-from ..pods import BasePod, ExitFIFO
+from ..pods import BasePod
 from ... import __default_executor__
 from ...logging.logger import JinaLogger
 from ...excepts import RuntimeFailToStart
 
 
-class K8sPod(BasePod, ExitFIFO):
+class K8sPod(BasePod):
     """The K8sPod (KubernetesPod)  is used for deployments on Kubernetes."""
 
     class _K8sDeployment:

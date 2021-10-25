@@ -100,6 +100,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -326,6 +327,9 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`2.1.6`)](#release-note-216)
 - [Release Note (`2.1.7`)](#release-note-217)
 - [Release Note (`2.1.8`)](#release-note-218)
+- [Release Note (`2.1.9`)](#release-note-219)
+- [Release Note (`2.1.10`)](#release-note-2110)
+- [Release Note (`2.1.11`)](#release-note-2111)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -10934,4 +10938,57 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```bceeeef5```](https://github.com/jina-ai/jina/commit/bceeeef5040904f14639a41ed7a16f0d6e16aed8)] __-__ fix pillow dependencies (*Han Xiao*)
  - [[```101794f8```](https://github.com/jina-ai/jina/commit/101794f8026e936d3ce3e936d05d8f41aff76160)] __-__ __version__: the next version will be 2.1.10 (*Jina Dev Bot*)
+
+<a name=release-note-2-1-11></a>
+## Release Note (`2.1.11`)
+
+> Release time: 2021-10-24 09:55:04
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Jina Dev Bot,  Han Xiao,  Joan Fontanals,  Aziz Belaweid,  Sarvesh Kumar Dwivedi,  George Mastrapas,  Deepankar Mahapatro,  Winston Wong,  felix-wang,  Tobias Jacobowitz,  🙇
+
+
+### 💥 Breaking changes
+
+ - [[```40dbe5a8```](https://github.com/jina-ai/jina/commit/40dbe5a830880b0cb89d244eeb52d642d864d314)] __-__ __types__: move conversion to mixin, add helper functions 💥  (#3750) (*Han Xiao*)
+
+### 🆕 New Features
+
+ - [[```d75f2904```](https://github.com/jina-ai/jina/commit/d75f290473af5d053b0d05bac96e674a12d968ef)] __-__ __types__: add normalize image blob (#3762) (*Han Xiao*)
+ - [[```e1d650fd```](https://github.com/jina-ai/jina/commit/e1d650fd1d940845fcc53a319e787e76e713ad86)] __-__ __optimizers__: automatically infer search space in FlowOptimizer (#3571) (*George Mastrapas*)
+ - [[```ae2a8972```](https://github.com/jina-ai/jina/commit/ae2a89729cc22a70ca934823a95d68af7965862e)] __-__ add filter function to traverse (#3716) (*Winston Wong*)
+ - [[```05977b9c```](https://github.com/jina-ai/jina/commit/05977b9c77f03f5ca5602c8c58f3091088387980)] __-__ __network__: wait for pod to be ready in pool (#3723) (*Tobias Jacobowitz*)
+
+### 🐞 Bug fixes
+
+ - [[```58d6c6ec```](https://github.com/jina-ai/jina/commit/58d6c6eca9e68927bd0945c0065d6f5f4fa8be8f)] __-__ remove warning (#3752) (*Joan Fontanals*)
+ - [[```d0297de2```](https://github.com/jina-ai/jina/commit/d0297de2b86ce55bb0f6843c36fec19fa2f910cf)] __-__ fix typos in code and release.md (#3728) (*Sarvesh Kumar Dwivedi*)
+ - [[```d7f57cd1```](https://github.com/jina-ai/jina/commit/d7f57cd1b3ef4a56517dfae3d99d39ba16cd5d43)] __-__ fix rm from exitstack (#3740) (*Joan Fontanals*)
+ - [[```c8fa709e```](https://github.com/jina-ai/jina/commit/c8fa709e04a87d20046b6b9997d208418b157d2e)] __-__ offline cache expire (#3720) (*felix-wang*)
+
+### 🧼 Code Refactoring
+
+ - [[```8b1cc25a```](https://github.com/jina-ai/jina/commit/8b1cc25a631751c8111af50b3fd5f8d45e1ab088)] __-__ remove fluenthandler from default (#3749) (*Joan Fontanals*)
+ - [[```3b019868```](https://github.com/jina-ai/jina/commit/3b019868f9d7b9720cf83e5aedec2806654be5de)] __-__ use import extensions with win32api (#3731) (*Deepankar Mahapatro*)
+ - [[```71cfad37```](https://github.com/jina-ai/jina/commit/71cfad37571cdb8d0d5c9fdd83fbd154a2e5b7ba)] __-__ __types__: allow visualize color_attr to use attribute and dund… (#3733) (*Han Xiao*)
+ - [[```308ff488```](https://github.com/jina-ai/jina/commit/308ff488122db36f86b8f5ae4679afcd99e38b93)] __-__ use exitfifo for all pods (#3734) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```6b5c6d18```](https://github.com/jina-ai/jina/commit/6b5c6d1881cbd0541e5cca04d9da8a133915bb93)] __-__ __flowtopology__: add subsection replica vs shard  (#3721) (*Aziz Belaweid*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```647556bf```](https://github.com/jina-ai/jina/commit/647556bfc470584c7fbf5c542980bacea38252b3)] __-__ add faulthandler to test (#3751) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```5d480d8c```](https://github.com/jina-ai/jina/commit/5d480d8cd7a62afaa054b4bceb5ee86fc046fd65)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```70f6c111```](https://github.com/jina-ai/jina/commit/70f6c11182095acd3f2db0a60f7d2c99f320e8ab)] __-__ remove newline from public ip (#3730) (*Deepankar Mahapatro*)
+ - [[```d887c9ed```](https://github.com/jina-ai/jina/commit/d887c9ed3195884df03e5db754d9ee450dce2e20)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```a88b850d```](https://github.com/jina-ai/jina/commit/a88b850de273efdc0a7ad32b409dfa9853485fcc)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
+ - [[```21eec917```](https://github.com/jina-ai/jina/commit/21eec9178c8e9e4914872fbbc0d92746d17482a5)] __-__ __docs__: fix docs conf.py (*Han Xiao*)
+ - [[```aef2fd7c```](https://github.com/jina-ai/jina/commit/aef2fd7c6be2eda53b137c9ed00eed070e5cd443)] __-__ __version__: the next version will be 2.1.11 (*Jina Dev Bot*)
 

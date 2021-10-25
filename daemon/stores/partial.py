@@ -103,10 +103,7 @@ class PartialFlowStore(PartialStore):
             elif not Path(args.uses).is_file():
                 raise ValueError(f'uses {args.uses} not found in workspace')
 
-            with open(args.uses) as yaml_file:
-                yaml_source = yaml_file.read()
-
-            self.object: Flow = Flow.load_config(yaml_source).build()
+            self.object: Flow = Flow.load_config(args.uses).build()
             self.object.workspace_id = jinad_args.workspace_id
             self.object.workspace = __partial_workspace__
             self.object.env = {'HOME': __partial_workspace__}
@@ -172,6 +169,9 @@ class PartialFlowStore(PartialStore):
             self._logger.error(f'{e!r}')
             raise
         else:
+            with open(args.uses) as yaml_file:
+                yaml_source = yaml_file.read()
+
             self.item = PartialFlowItem(
                 arguments={
                     'port_expose': self.object.port_expose,
@@ -215,7 +215,7 @@ class PartialFlowStore(PartialStore):
             if kind == UpdateOperation.ROLLING_UPDATE:
                 self.object.rolling_update(pod_name=pod_name, dump_path=dump_path)
             else:
-                self._logger.error(f'unsupoorted kind: {kind}, no changes done')
+                self._logger.error(f'unsupported kind: {kind}, no changes done')
                 return self.item
         except Exception as e:
             self._logger.error(f'{e!r}')
