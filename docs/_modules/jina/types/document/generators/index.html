@@ -674,7 +674,7 @@
 
     <span class="k">def</span> <span class="nf">_iter_file_exts</span><span class="p">(</span><span class="n">ps</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span>
-            <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ps</span>
+            <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ps</span>
         <span class="p">)</span>
 
     <span class="n">num_docs</span> <span class="o">=</span> <span class="mi">0</span>
@@ -843,7 +843,7 @@
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="n">filepath</span><span class="p">:</span>
         <span class="n">file_type</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filepath</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">read_mode</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">filepath</span><span class="p">),</span> <span class="n">read_mode</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">file_type</span> <span class="ow">in</span> <span class="n">_jsonl_ext</span><span class="p">:</span>
                 <span class="k">yield from</span> <span class="n">from_ndjson</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">field_resolver</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">file_type</span> <span class="ow">in</span> <span class="n">_csv_ext</span><span class="p">:</span>
@@ -887,7 +887,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 24, 2021.
+                    Last updated on Oct 25, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
