@@ -11,7 +11,7 @@
 
 As a way of searching, asking questions is a natural way to perform searching. For example, when you want to know the definition of Document in Jina, you will naturally ask, "__What is the Document in Jina?__". The expected answer can be found either from the documentation of Jina or the introduction videos at our YouTube channel. Thanks to the latest advances in NLP, the AI models can automatically find these answers from the contents. 
 
-The goal of this tutorial is to build a Question-Answering (QA) system for in-Video Contents. Although most of the existing QA models only work for text, most videos in our life have vocal sound which contains rich information about the video and can be converted into text via __STT__. Thereafter, videos with vocal sound naturally fits to the way of Question-Answering via text.
+The goal of this tutorial is to build a Question-Answering (QA) system for in-Video Contents. Although most of the existing QA models only work for text, most videos in our life have vocal sound which contains rich information about the video and can be converted into text via [__STT__](https://en.wikipedia.org/wiki/Speech_recognition). Thereafter, videos with vocal sound naturally fits to the way of Question-Answering via text.
 
 In this tutorial, we will show you how to find the extract contents from videos that answer the question. 
 Instead of returning the related videos, the QA models can tell the user from which second to watch in order to get the answer to the question.
@@ -87,7 +87,7 @@ As the indexing and querying flows have only one shared executor, we create sepe
 
 There are three executors defined in the index Flow, namely `VideoLoader`, `DPRTextEncoder` and `SimpleIndexer`. The index requests contains Documents that have the path information of the video files stored at the `uri` attributes. The `VideoLoader` extracts the subtitles and store them in the `chunks`. Afterwards, each chunk of the Documents has one subtitle stored in the `text` attribute. The `DRPTextEnocder` encodes the subtitles into vectors which are later stored by `SimpleIndexer` together with other meta information. 
 
-<!--index.png-->
+![index flow](../../.github/images/tutorial-video-qa-flow-index.png)
 
 ### Query
 
@@ -112,11 +112,11 @@ Replacing the existing `matches`, the `DPRReaderRanker` stores the best matched 
 
 As the last step, `Text2Frame` is a customized executor which is used to get the video frame information from the retrieved answers and prepare the Document `matches` for the displaying at the frontend. The overall diagram of the query Flow is shown as below 
 
-<!--query.png-->
+![query flow](../../.github/images/tutorial-video-qa-flow-query.png)
 
 ### Use `DPRTextEncoder` differently in two Flows
 
-You might note that `DPRTextEncoder` is used in both index and query Flows. However, it is used to encode the subtitle texts in the index Flow and to encode the query questions in the query Flow. In these two cases, we need to choose different models and encode different attributes of the Documents. To achieve this, we use different initialization settings for `DPRTextEncoder` by overriding the `with` arguments in the YAML file. To override the `with` argument when defining the Flows, we need to pass the new argument to `uses_with`. You can find more information at [docs.jina.ai]().
+You might note that `DPRTextEncoder` is used in both index and query Flows. However, it is used to encode the subtitle texts in the index Flow and to encode the query questions in the query Flow. In these two cases, we need to choose different models and encode different attributes of the Documents. To achieve this, we use different initialization settings for `DPRTextEncoder` by overriding the `with` arguments in the YAML file. To override the `with` argument when defining the Flows, we need to pass the new argument to `uses_with`. You can find more information at [docs.jina.ai](https://docs.jina.ai/fundamentals/flow/add-exec-to-flow/#override-with-configuration).
 
 
 ```{code-block} YAML
@@ -156,15 +156,15 @@ You can find the codes at [example-video-qa](https://github.com/jina-ai/example-
 
 As for the executors used in this tutorial, most of them are available at Jina Hub
 
-- [`VideoLoader`]()
-- [`DPRTextEncoder`]()
-- [`DPRReaderRanker`]()
-- [`SimpleIndexer`]()
+- [`VideoLoader`](https://hub.jina.ai/executor/i6gp4vwu)
+- [`DPRTextEncoder`](https://hub.jina.ai/executor/awl0jxog)
+- [`DPRReaderRanker`](https://hub.jina.ai/executor/gzhiwmgg)
+- [`SimpleIndexer`](https://hub.jina.ai/executor/zb38xlt4)
 
 
 ## Next Steps
 
-In this example, we reply on the subtitles embedded in the video. This might not be the case for some home-made videos or the meeting recordings. For the videos without subtitles, we need to build executors using STT models to extract the vocal information. If the video contains other sounds, one can resort to [VADSpeechSegmenter]() for separating the vocal sounds beforehand.
+In this example, we reply on the subtitles embedded in the video. This might not be the case for some home-made videos or the meeting recordings. For the videos without subtitles, we need to build executors using STT models to extract the vocal information. If the video contains other sounds, one can resort to [VADSpeechSegmenter](https://hub.jina.ai/executor/9sohw4wi) for separating the vocal sounds beforehand.
 
 Another direction to extend this example is to consider more text information of the videos. Although subtitles contain rich information about the video, not all the text information is included in the subtitles. A lot of videos have text information embedded in the images. In such cases, we need to reply on OCR models to extract the text information from the video frames. 
 
