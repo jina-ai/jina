@@ -134,7 +134,7 @@ async def test_grpc_data_runtime_graceful_shutdown(close_method):
     assert not GRPCDataRuntime.is_ready(f'{args.host}:{args.port_in}')
 
 
-def _create_test_data_message(counter):
+def _create_test_data_message(counter=0):
     req = list(request_generator('/', DocumentArray([Document(text=str(counter))])))[0]
     msg = Message(None, req, 'test', '123')
     return msg
