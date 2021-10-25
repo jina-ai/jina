@@ -727,6 +727,75 @@ Therefore, you can add an executor via:</p>
 </div>
 </div>
 </div>
+<section id="executor-discovery">
+<h3>Executor discovery<a class="headerlink" href="#executor-discovery" title="Permalink to this headline">¶</a></h3>
+<p>By default, the Flow will attempt to retrieve the Executors’ source files and YAML config files from the working
+directory and other paths set in the <code class="docutils literal notranslate"><span class="pre">PATH</span></code> environment variable. If your Executor’s source files and YAML config are
+located elsewhere, you can specify their locations using the parameter
+<code class="docutils literal notranslate"><span class="pre">extra_search_paths</span></code>.</p>
+<p>For example, suppose we have the following project structure where <code class="docutils literal notranslate"><span class="pre">app/</span></code> represents the working directory:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
+├── app
+│   └── ▶ main.py
+└── executor
+    ├── config.yml
+    └── my_executor.py
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">executor/my_executor.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">requests</span>
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">executor/config.yml</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MyExecutor</span>
+<span class="nt">metas</span><span class="p">:</span>
+  <span class="nt">py_modules</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">executor.py</span>
+</pre></div>
+</div>
+<p>Now, in <code class="docutils literal notranslate"><span class="pre">app/main.py</span></code>, to correctly load the Executor, you can specify the directory of the Executor like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Document</span>
+<span class="hll"><span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">extra_search_paths</span><span class="o">=</span><span class="p">[</span><span class="s1">'../executor'</span><span class="p">])</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">'config.yml'</span><span class="p">)</span>
+</span><span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="important admonition">
+<p class="admonition-title">Important</p>
+<p>If you are creating a Flow from a YAML config file which is located outside the working directory, you just need to
+specify a correct relative or absolute path of the Flow’s YAML config file and make all paths to Executor config files
+relative to the Flow config file. The Flow will infer its config file location and add it to <code class="docutils literal notranslate"><span class="pre">extra_search_paths</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
+├── app
+│   └── ▶ main.py
+├── flow
+│   └── flow.yml
+└── executor
+    ├── config.yml
+    └── my_executor.py
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">flow.yml</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">executor</span>
+    <span class="nt">uses</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">../executor/config.yml</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">main.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Document</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="s1">'../flow/flow.yml'</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+</section>
 </section>
 <section id="add-remote-executor">
 <h2>Add remote Executor<a class="headerlink" href="#add-remote-executor" title="Permalink to this headline">¶</a></h2>
@@ -1014,7 +1083,10 @@ foo
                         <ul>
 <li><a class="reference internal" href="#">Add Executor</a><ul>
 <li><a class="reference internal" href="#chain-add">Chain <code class="docutils literal notranslate"><span class="pre">.add()</span></code></a></li>
-<li><a class="reference internal" href="#define-executor-via-uses">Define Executor via <code class="docutils literal notranslate"><span class="pre">uses</span></code></a></li>
+<li><a class="reference internal" href="#define-executor-via-uses">Define Executor via <code class="docutils literal notranslate"><span class="pre">uses</span></code></a><ul>
+<li><a class="reference internal" href="#executor-discovery">Executor discovery</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#add-remote-executor">Add remote Executor</a><ul>
 <li><a class="reference internal" href="#add-an-already-spawned-executor">Add an already spawned Executor</a></li>
 <li><a class="reference internal" href="#spawn-remote-executors-using-jinad"><span class="xref myst">Spawn remote Executors using <code class="docutils literal notranslate"><span class="pre">JinaD</span></code></span></a></li>

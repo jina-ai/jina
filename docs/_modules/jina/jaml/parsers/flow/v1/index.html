@@ -658,6 +658,7 @@
 <span class="sd">        :return: the Flow YAML parser given the syntax version number</span>
 <span class="sd">        """</span>
         <span class="n">p</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'with'</span><span class="p">,</span> <span class="p">{})</span>  <span class="c1"># type: Dict[str, Any]</span>
+
         <span class="n">a</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'args'</span><span class="p">)</span> <span class="k">if</span> <span class="s1">'args'</span> <span class="ow">in</span> <span class="n">p</span> <span class="k">else</span> <span class="p">()</span>
         <span class="n">k</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'kwargs'</span><span class="p">)</span> <span class="k">if</span> <span class="s1">'kwargs'</span> <span class="ow">in</span> <span class="n">p</span> <span class="k">else</span> <span class="p">{}</span>
         <span class="c1"># maybe there are some hanging kwargs in "parameters"</span>

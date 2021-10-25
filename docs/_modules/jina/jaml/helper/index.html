@@ -603,7 +603,7 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
 
 <span class="kn">from</span> <span class="nn">yaml</span> <span class="kn">import</span> <span class="n">MappingNode</span>
 <span class="kn">from</span> <span class="nn">yaml.composer</span> <span class="kn">import</span> <span class="n">Composer</span>
@@ -714,6 +714,7 @@
     <span class="n">allow_class_type</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">allow_dict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">allow_json</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">extra_search_paths</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">TextIO</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
@@ -728,6 +729,7 @@
 <span class="sd">    :param allow_class_type: flag</span>
 <span class="sd">    :param allow_dict: flag</span>
 <span class="sd">    :param allow_json: flag</span>
+<span class="sd">    :param extra_search_paths: extra paths to search for</span>
 <span class="sd">    :param args: unused</span>
 <span class="sd">    :param kwargs: unused</span>
 <span class="sd">    :return: a tuple, the first element is the text stream, the second element is the file path associate to it</span>
@@ -746,7 +748,7 @@
         <span class="c1"># already a readable stream</span>
         <span class="k">return</span> <span class="n">path</span><span class="p">,</span> <span class="kc">None</span>
     <span class="k">elif</span> <span class="n">allow_yaml_file</span> <span class="ow">and</span> <span class="n">is_yaml_filepath</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-        <span class="n">comp_path</span> <span class="o">=</span> <span class="n">complete_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">comp_path</span> <span class="o">=</span> <span class="n">complete_path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">extra_search_paths</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">open</span><span class="p">(</span><span class="n">comp_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf8'</span><span class="p">),</span> <span class="n">comp_path</span>
     <span class="k">elif</span> <span class="n">allow_raw_yaml_content</span> <span class="ow">and</span> <span class="n">path</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s1">'!'</span><span class="p">,</span> <span class="s1">'jtype'</span><span class="p">)):</span>
         <span class="c1"># possible YAML content</span>
@@ -771,7 +773,7 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="complete_path"><a class="viewcode-back" href="../../../../api/jina.jaml.helper/#jina.jaml.helper.complete_path">[docs]</a><span class="k">def</span> <span class="nf">complete_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">extra_search_paths</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="complete_path"><a class="viewcode-back" href="../../../../api/jina.jaml.helper/#jina.jaml.helper.complete_path">[docs]</a><span class="k">def</span> <span class="nf">complete_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">extra_search_paths</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">"""</span>
 <span class="sd">    Complete the path of file via searching in abs and relative paths.</span>
 
@@ -789,7 +791,7 @@
         <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'can not find </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">_search_file_in_paths</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">extra_search_paths</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_search_file_in_paths</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">extra_search_paths</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="sd">"""</span>
 <span class="sd">    Search in all dirs of the PATH environment variable and all dirs of files used in the call stack.</span>
 
@@ -818,7 +820,7 @@
             <span class="k">return</span> <span class="n">_p</span>
 
 
-<div class="viewcode-block" id="load_py_modules"><a class="viewcode-back" href="../../../../api/jina.jaml.helper/#jina.jaml.helper.load_py_modules">[docs]</a><span class="k">def</span> <span class="nf">load_py_modules</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">extra_search_paths</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="load_py_modules"><a class="viewcode-back" href="../../../../api/jina.jaml.helper/#jina.jaml.helper.load_py_modules">[docs]</a><span class="k">def</span> <span class="nf">load_py_modules</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">extra_search_paths</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">"""</span>
 <span class="sd">    Find 'py_modules' in the dict recursively and then load them.</span>
 

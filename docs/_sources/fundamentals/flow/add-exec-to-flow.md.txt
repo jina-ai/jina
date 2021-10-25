@@ -118,8 +118,82 @@ f = Flow().add(
 ```
 ````
 
+### Executor discovery
+By default, the Flow will attempt to retrieve the Executors' source files and YAML config files from the working 
+directory and other paths set in the `PATH` environment variable. If your Executor's source files and YAML config are 
+located elsewhere, you can specify their locations using the parameter 
+`extra_search_paths`.
+
+For example, suppose we have the following project structure where `app/` represents the working directory:
+```
+.
+├── app
+│   └── ▶ main.py
+└── executor
+    ├── config.yml
+    └── my_executor.py
+```
+`executor/my_executor.py`:
+```python
+from jina import Executor, DocumentArray, requests
+
+class MyExecutor(Executor):
+    @requests
+    def foo(self, docs: DocumentArray, **kwargs):
+        pass
+```
+
+`executor/config.yml`:
+```yaml
+jtype: MyExecutor
+metas:
+  py_modules:
+    - executor.py
+```
+
+Now, in `app/main.py`, to correctly load the Executor, you can specify the directory of the Executor like so:
+```{code-block} python
+---
+emphasize-lines: 2
+---
+from jina import Flow, Document
+f = Flow(extra_search_paths=['../executor']).add(uses='config.yml')
+with f:
+    r = f.post('/', inputs=Document())
+```
 
 
+````{admonition} Important
+:class: important
+If you are creating a Flow from a YAML config file which is located outside the working directory, you just need to 
+specify a correct relative or absolute path of the Flow's YAML config file and make all paths to Executor config files 
+relative to the Flow config file. The Flow will infer its config file location and add it to `extra_search_paths`:
+```
+.
+├── app
+│   └── ▶ main.py
+├── flow
+│   └── flow.yml
+└── executor
+    ├── config.yml
+    └── my_executor.py
+```
+`flow.yml`:
+```yaml
+jtype: Flow
+executors:
+  - name: executor
+    uses: ../executor/config.yml
+```
+
+`main.py`:
+```python
+from jina import Flow, Document
+f = Flow.load_config('../flow/flow.yml')
+with f:
+    r = f.post('/', inputs=Document())
+```
+````
 
 ## Add remote Executor
 
