@@ -30,7 +30,7 @@ Jina<sup><a href=".github/pronounce-jina.mp3">`🔊`</a></sup> is a neural searc
 ⏱️ **Save time** - *The* design pattern of neural search systems, from zero to a production-ready system in minutes.
 
 🌩️ **Fast & cloud-native** - Distributed architecture from day one, scalable & cloud-native by design: enjoy
-containerizing, streaming, paralleling, sharding, async scheduling, HTTP/gRPC/WebSocket protocols.
+containerization, streaming, sharding, replication, async scheduling, HTTP/gRPC/WebSocket protocols.
 
 🍱 **Own your stack** - Keep end-to-end stack ownership of your solution, avoid integration pitfalls you get with
 fragmented, multi-vendor, generic legacy tools.
@@ -99,7 +99,7 @@ class Indexer(Executor):
     def bar(self, docs: DocumentArray, **kwargs):
          docs.match(self._docs, metric='euclidean')
 
-f = Flow(port_expose=12345, protocol='http', cors=True).add(uses=CharEmbed, parallel=2).add(uses=Indexer)  # build a Flow, with 2 parallel CharEmbed, tho unnecessary
+f = Flow(port_expose=12345, protocol='http', cors=True).add(uses=CharEmbed, replicas=2).add(uses=Indexer)  # build a Flow, with 2 replica CharEmbed, tho unnecessary
 with f:
     f.post('/index', (Document(text=t.strip()) for t in open(__file__) if t.strip()))  # index all lines of _this_ file
     f.block()  # block for listening request
