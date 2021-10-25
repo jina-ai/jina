@@ -81,7 +81,7 @@ class Indexer(Executor):
 from jina import Flow
 
 f = (Flow(port_expose=12345, protocol='http', cors=True)
-        .add(uses=CharEmbed, shards=2)
+        .add(uses=CharEmbed, replicas=2)
         .add(uses=Indexer))  # build a Flow, with 2 shard CharEmbed, tho unnecessary
 
 ```

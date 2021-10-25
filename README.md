@@ -99,7 +99,7 @@ class Indexer(Executor):
     def bar(self, docs: DocumentArray, **kwargs):
          docs.match(self._docs, metric='euclidean')
 
-f = Flow(port_expose=12345, protocol='http', cors=True).add(uses=CharEmbed, shards=2).add(uses=Indexer)  # build a Flow, with 2 shard CharEmbed, tho unnecessary
+f = Flow(port_expose=12345, protocol='http', cors=True).add(uses=CharEmbed, replicas=2).add(uses=Indexer)  # build a Flow, with 2 replica CharEmbed, tho unnecessary
 with f:
     f.post('/index', (Document(text=t.strip()) for t in open(__file__) if t.strip()))  # index all lines of _this_ file
     f.block()  # block for listening request

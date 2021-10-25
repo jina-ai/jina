@@ -24,7 +24,7 @@ Now that you understand how to use public Executor from Hub, let's practice our 
       Flow()
       .add(uses='jinahub+docker://ImageTorchEncoder',
          uses_with={'model_name': 'alexnet'},
-         shards=2)
+         replicas=2)
       .add(uses=MyConverter)
       .add(uses=MyIndexer, workspace=args.workdir)
       .add(uses=MyEvaluator)
