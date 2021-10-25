@@ -55,7 +55,7 @@ computation cost, we want to have the context as short as possible. To generate 
 With the traditional methods, the retrieval part can also be done via using BM25, Tf-idf and etc.
 ```
 
-### Choose Executors
+### Choose executors
 
 To extract the subtitles from the videos, we use `VideoLoader` to extract. It uses `ffmpeg` to extract the subtitles 
 and afterwards generated chunks based on the subtitles with `webvtt-py`. The subtitles are stored in the `chunks` 
@@ -85,12 +85,87 @@ As the indexing and querying flows have only one shared executor, we create sepe
 
 ### Index
 
+There are three executors defined in the index Flow, namely `VideoLoader`, `DPRTextEncoder` and `SimpleIndexer`. The index requests contains Documents that have the path information of the video files stored at the `uri` attributes. The `VideoLoader` extracts the subtitles and store them in the `chunks`. Afterwards, each chunk of the Documents has one subtitle stored in the `text` attribute. The `DRPTextEnocder` encodes the subtitles into vectors which are later stored by `SimpleIndexer` together with other meta information. 
+
 <!--index.png-->
 
 ### Query
 
+The query flow consists of `DPRTextEncoder`, `SimpleIndexer`, `DPRReaderRanker` and `Text2Frame`. The `DPRTextEncoder` encodes the question that is stored in the `text` attribute of the query Document. This resulted vector is used to retrieve the related subtitles by finding the nearest neighbours in the vector space. This is done in the `SimpleIndexer` .
+The retrieved results are stored in the `matches` attribute of the query Document. Each Document in the `matches` has all the meta information about the subtitles as well, which is retrieved by the `SimpleIndexer` together with subtitle texts.
+To save the compuation costs for the `DPRReaderRanker`, only the top 20 matches are kept for processing in the downstreaming executors. The number of matches to be kept can be modified by setting the `limit` argument for the `SimpleIndexer`.
+
+```{code-block} YAML
+---
+emphasize-lines: 3
+---
+  # index.yml
+  ... 
+    uses: jinahub://SimpleIndexer/v0.4
+    uses_with:
+        limit: 20
+  ...
+```
+
+Afterwards, `DPRReaderRanker` find the exact the answers by using the question and the candidate subtitles. The question and the candidate subtitles are stored in the `text` attributes of the Document and its `matches` correspondingly. 
+Replacing the existing `matches`, the `DPRReaderRanker` stores the best matched answers in the `text` attribute of the `matches`. The other meta information are copied into the new matches as well, including `tags['beg_in_seconds']`, `tags['end_in_seconds']`, and `tags['video_uri']`. The `DPRReaderRanker` returns two types of `scores`. The `scores['relevance_score']` measures the relavance to the question of the subtitle from which the answer is extracted. The `scores['span_score']` indicates the weight of the extracted answer among the subtitle. 
+
+As the last step, `Text2Frame` is a customized executor which is used to get the video frame information from the retrieved answers and prepare the Document `matches` for the displaying at the frontend. The overall diagram of the query Flow is shown as below 
+
 <!--query.png-->
+
+### Use `DPRTextEncoder` differently in two Flows
+
+You might note that `DPRTextEncoder` is used in both index and query Flows. However, it is used to encode the subtitle texts in the index Flow and to encode the query questions in the query Flow. In these two cases, we need to choose different models and encode different attributes of the Documents. To achieve this, we use different initialization settings for `DPRTextEncoder` by overriding the `with` arguments in the YAML file. To override the `with` argument when defining the Flows, we need to pass the new argument to `uses_with`. You can find more information at [docs.jina.ai]().
+
+
+```{code-block} YAML
+---
+emphasize-lines: 5, 6, 7, 8, 9
+---
+  # index.yml
+  ... 
+  - name: encoder
+    uses: jinahub://DPRTextEncoder/v0.2
+    uses_with:
+      pretrained_model_name_or_path: 'facebook/dpr-ctx_encoder-single-nq-base'
+      encoder_type: 'context'
+      traversal_paths:
+        - 'c'
+  ...
+```
+
+```{code-block} YAML
+---
+emphasize-lines: 5, 6, 7, 8
+---
+  # query.yml
+  ... 
+  - name: encoder
+    uses: jinahub://DPRTextEncoder/v0.2
+    uses_with:
+      pretrained_model_name_or_path: 'facebook/dpr-question_encoder-single-nq-base'
+      encoder_type: 'question'
+      batch_size: 1
+  ...
+```
 
 ## Get the Source Code
 
 You can find the codes at [example-video-qa](https://github.com/jina-ai/example-video-qa).
+
+As for the executors used in this tutorial, most of them are available at Jina Hub
+
+- [`VideoLoader`]()
+- [`DPRTextEncoder`]()
+- [`DPRReaderRanker`]()
+- [`SimpleIndexer`]()
+
+
+## Next Steps
+
+In this example, we reply on the subtitles embedded in the video. This might not be the case for some home-made videos or the meeting recordings. For the videos without subtitles, we need to build executors using STT models to extract the vocal information. If the video contains other sounds, one can resort to [VADSpeechSegmenter]() for separating the vocal sounds beforehand.
+
+Another direction to extend this example is to consider more text information of the videos. Although subtitles contain rich information about the video, not all the text information is included in the subtitles. A lot of videos have text information embedded in the images. In such cases, we need to reply on OCR models to extract the text information from the video frames. 
+
+Overall, searching in-video content is a complex task and Jina makes it a lot easier.
