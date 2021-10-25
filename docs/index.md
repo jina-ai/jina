@@ -139,6 +139,7 @@ tutorials/chatbot
 tutorials/master-executor
 tutorials/refactor-hello-world
 tutorials/gpu-executor
+tutorials/video-search
 tutorials/video-qa
 ```
 

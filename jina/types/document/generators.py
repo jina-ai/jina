@@ -73,7 +73,7 @@ def from_files(
 
     def _iter_file_exts(ps):
         return itertools.chain.from_iterable(
-            glob.iglob(p, recursive=recursive) for p in ps
+            glob.iglob(os.path.expanduser(p), recursive=recursive) for p in ps
         )
 
     num_docs = 0
@@ -242,7 +242,7 @@ def from_lines(
     """
     if filepath:
         file_type = os.path.splitext(filepath)[1]
-        with open(filepath, read_mode) as f:
+        with open(os.path.expanduser(filepath), read_mode) as f:
             if file_type in _jsonl_ext:
                 yield from from_ndjson(f, field_resolver, size, sampling_rate)
             elif file_type in _csv_ext:
