@@ -24,7 +24,7 @@ Now that you understand how to use public Executor from Hub, let's practice our 
       Flow()
       .add(uses='jinahub+docker://ImageTorchEncoder',
          uses_with={'model_name': 'alexnet'},
-         parallel=2)
+         shards=2)
       .add(uses=MyConverter)
       .add(uses=MyIndexer, workspace=args.workdir)
       .add(uses=MyEvaluator)
@@ -56,10 +56,10 @@ use [TransformerTorchEncoder](https://github.com/jina-ai/executor-transformer-to
 2) Change lines 21 to 25 from `app.py` to define a different `Flow`. Change it to:
     ```python
     Flow(cors=True)
-    .add(uses=MyTransformer, parallel=args.parallel)
+    .add(uses=MyTransformer, replicas=args.replicas)
     .add(
         uses='jinahub+docker://TransformerTorchEncoder',
-        parallel=args.parallel,
+        replicas=args.replicas,
         uses_with={
             'pretrained_model_name_or_path': 'sentence-transformers/paraphrase-mpnet-base-v2'
         },
