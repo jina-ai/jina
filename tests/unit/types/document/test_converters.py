@@ -1,10 +1,40 @@
+import inspect
 import os
 
 import numpy as np
 import pytest
 from jina import Document, __windows__
+from jina.types.document import ContentConversionMixin
+from jina.types.document.generators import from_files
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
+
+
+def test_self_as_return():
+    num_fn = 0
+    for f in inspect.getmembers(ContentConversionMixin):
+        if (
+            callable(f[1])
+            and not f[1].__name__.startswith('_')
+            and not f[0].startswith('_')
+            and not f[1].__name__.startswith('dump')
+        ):
+            assert inspect.getfullargspec(f[1]).annotations['return'] == 'Document'
+            num_fn += 1
+    assert num_fn
+
+
+def test_image_convert_pipe(pytestconfig):
+    for d in from_files(f'{pytestconfig.rootdir}/.github/**/*.png'):
+        (
+            d.convert_image_uri_to_blob()
+            .convert_uri_to_datauri()
+            .resize_image_blob(64, 64)
+            .normalize_image_blob()
+            .set_image_blob_channel_axis(-1, 0)
+        )
+        assert d.blob.shape == (3, 64, 64)
+        assert d.uri
 
 
 def test_uri_to_blob():
