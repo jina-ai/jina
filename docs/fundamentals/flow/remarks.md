@@ -58,25 +58,25 @@ class C(Executor):
         return docs
 ```
 
-## Multiple Flows and Parallelism
-Creating multiple flows through process-based parallelism is supported for all protocols of the Flow client.
-However, using thread-based parallelism to create multiple Flows is not supported for the gRPC protocol. This 
-limitation comes from the fact that multi-threading is not supported for asyncio gRPC clients. In general, 
-multi-threaded use of the Flow gRPC Client is not supported and any usage outside the main thread will result in a 
-`GRPCClientThreadingError`:
+## Flow gRPC Client and Threading
+Since multi-threading is not supported for asyncio gRPC clients, using the Flow gRPC Client in different threads is not 
+supported. In fact, any usage outside the main thread will result in a `GRPCClientThreadingError`:
 
-````{tab} ❌ GRPC Flows with threads
 ```{code-block} python
+---
+emphasize-lines: 7, 12
+---
 from threading import Thread
 from jina import Flow
 
 def start_f():
-    f = Flow(protocol='grpc').add(uses=DummyExecutor, parallel=3, polling='ALL')
+    f = Flow(protocol='grpc').add(uses=DummyExecutor, replicas=3, polling='ALL')
     with f:
         f.post('/')
 
 
 for _ in range(4):
+    # multi-threaded use of the gRPC Client
     t = Thread(target=start_f)
     t.start()
 ```
@@ -85,43 +85,15 @@ for _ in range(4):
 jina.excepts.GRPCClientThreadingError: Using GRPCClient outside the main thread is not allowed. Please opt for 
 multi-processing instead.
 ```
-````
-
-````{tab} ✅ GRPC Flows with processes
-```{code-block} python
-from multiprocessing import Process
-from jina import Flow
-
-def start_f():
-    f = Flow(protocol='grpc').add(uses=DummyExecutor, parallel=3, polling='ALL')
-    with f:
-        f.post('/')
 
 
-for _ in range(4):
-    t = Process(target=start_f)
-    t.start()
-```
-````
-
-````{tab} ✅ HTTP Flows with threads
-```{code-block} python
-from threading import Thread
-from jina import Flow
-
-def start_f():
-    f = Flow(protocol='http').add(uses=DummyExecutor, parallel=3, polling='ALL')
-    with f:
-        f.post('/')
-
-
-for _ in range(4):
-    t = Thread(target=start_f)
-    t.start()
-```
+````{admonition} Note
+:class: note
+Using `Flow.post` on a Flow that uses the gRPC protocol will simply call the gRPC Client. Therefore, this method 
+shouldn't be multi-threaded. 
 ````
 
 ````{admonition} Note
 :class: note
-By default, the gRPC protocl is used for the Flow if the `protocol` parameter is not specified.
+By default, the gRPC protocol is used for the Flow if the `protocol` parameter is not specified.
 ````
