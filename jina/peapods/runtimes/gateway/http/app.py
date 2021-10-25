@@ -112,6 +112,20 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
                 'used_memory': used_memory_readable(),
             }
 
+        @app.get(
+            path='/',
+            summary='Root Health Check',
+            response_model=JinaStatusModel,
+            tags=['Debug'],
+        )
+        async def _root():
+            _info = get_full_version()
+            return {
+                'jina': _info[0],
+                'envs': _info[1],
+                'used_memory': used_memory_readable(),
+            }
+
         @app.post(
             path='/post',
             summary='Post a data request to some endpoint',

@@ -129,7 +129,7 @@ def deploy_service(
             'port_in': port_in,
             'port_out': port_out,
             'port_ctrl': port_ctrl,
-            'type': 'ClusterIP',
+            'type': 'NodePort',
         },
         logger=logger,
         custom_resource_dir=custom_resource_dir,
