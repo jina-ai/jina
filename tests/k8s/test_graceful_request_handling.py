@@ -54,9 +54,6 @@ def send_requests(
             yield Document(text=f'{i}')
             if stop_event.is_set():
                 logger.debug(f'stop sending new requests after {i} requests')
-                # allow some requests to complete
-                await asyncio.sleep(10.0)
-                os.kill(os.getpid(), signal.SIGKILL)
             else:
                 await asyncio.sleep(1.0 if scale_event.is_set() else 0.05)
 
@@ -143,8 +140,13 @@ async def test_no_message_lost_during_scaling(
                 time.sleep(1.0)
                 stop_event.set()
                 break
-            time.sleep(1.0)
+            await asyncio.sleep(1.0)
 
+        # allow some time for responses to complete
+        await asyncio.sleep(10.0)
+        # kill the process as the client can hang due to lost responsed
+        if process.is_alive():
+            process.kill()
         process.join()
 
         responses_list = []
