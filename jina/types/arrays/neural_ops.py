@@ -81,19 +81,9 @@ class DocumentArrayNeuralOpsMixin:
         if traversal_ldarray:
             lhv = self.traverse_flat(traversal_ldarray)
 
-            from .document import DocumentArray
-
-            if not isinstance(lhv, DocumentArray):
-                lhv = DocumentArray(lhv)
-
         rhv = darray
         if traversal_rdarray or filter_fn:
             rhv = darray.traverse_flat(traversal_rdarray or ['r'], filter_fn=filter_fn)
-
-            from .document import DocumentArray
-
-            if not isinstance(rhv, DocumentArray):
-                rhv = DocumentArray(rhv)
 
         if not (lhv and rhv):
             return

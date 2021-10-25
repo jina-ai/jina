@@ -293,7 +293,7 @@ def test_filter_fn_traverse_flat(filter_fn, docs_len, doc_req, use_dam, tmp_path
         docs.extend(doc_req.docs)
     else:
         docs = doc_req.docs
-    ds = list(docs.traverse_flat(['r', 'c', 'm', 'cm'], filter_fn=filter_fn))
+    ds = docs.traverse_flat(['r', 'c', 'm', 'cm'], filter_fn=filter_fn)
     assert len(ds) == docs_len
     assert all(isinstance(d, Document) for d in ds)
 
@@ -339,5 +339,5 @@ def test_filter_fn_traverse_flat_per_path(
     ds = list(docs.traverse_flat_per_path(['r', 'c', 'm', 'cm'], filter_fn=filter_fn))
     assert len(ds) == 4
     for seq, length in zip(ds, docs_len):
-        assert isinstance(seq, DocumentArray if not use_dam else itertools.chain)
+        assert isinstance(seq, DocumentArray)
         assert len(list(seq)) == length

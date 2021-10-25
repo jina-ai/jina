@@ -624,7 +624,7 @@ class DocumentArrayMemmap(
 
     @staticmethod
     def _flatten(sequence):
-        return itertools.chain.from_iterable(sequence)
+        return DocumentArray(list(itertools.chain.from_iterable(sequence)))
 
     @property
     def path(self) -> str:
