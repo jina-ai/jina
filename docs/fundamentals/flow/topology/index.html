@@ -680,7 +680,90 @@ until they finish their work.</p>
 </div>
 <figure class="align-center">
 <img alt="../../../_images/parallel-explain.svg" src="../../../_images/parallel-explain.svg"/></figure>
-<p>The above Flow will create a topology with three Replicas of Executor <code class="docutils literal notranslate"><span class="pre">slow_encoder</span></code>. The <code class="docutils literal notranslate"><span class="pre">Gateway</span></code> will send every request to exactly one of the three instances. Then the replica will send its result to <code class="docutils literal notranslate"><span class="pre">fast_indexer</span></code>.</p>
+<p>The above Flow will create a topology with three Replicas of Executor <code class="docutils literal notranslate"><span class="pre">slow_encoder</span></code>. The <code class="docutils literal notranslate"><span class="pre">Gateway</span></code> will send every
+request to exactly one of the three instances. Then the replica will send its result to <code class="docutils literal notranslate"><span class="pre">fast_indexer</span></code>.</p>
+<section id="avoiding-bottlenecks-on-executors-with-replicas">
+<h3>Avoiding Bottlenecks on Executors with <code class="docutils literal notranslate"><span class="pre">replicas</span></code><a class="headerlink" href="#avoiding-bottlenecks-on-executors-with-replicas" title="Permalink to this headline">¶</a></h3>
+<p>In this section, we will showcase how we can avoid having bottlenecks on slow Executors by using <code class="docutils literal notranslate"><span class="pre">replicas</span></code>.</p>
+<p>Suppose we have the following Executor:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/slow'</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/fast'</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+<p>We will simulate parallel requests to both endpoints of the Executor with these utility functions:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina.logging.profile</span> <span class="kn">import</span> <span class="n">TimeContext</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+
+<span class="k">def</span> <span class="nf">make_request</span><span class="p">(</span><span class="n">endpoint</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span><span class="sa">f</span><span class="s1">'calling </span><span class="si">{</span><span class="n">endpoint</span><span class="si">}</span><span class="s1"> roundtrip'</span><span class="p">):</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">'grpc'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">endpoint</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="n">flow</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">flow</span><span class="p">:</span>
+        <span class="n">mp</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="c1"># make multiple requests to both endpoints, in parallel</span>
+        <span class="k">for</span> <span class="n">endpoint</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'/slow'</span><span class="p">,</span> <span class="s1">'/fast'</span><span class="p">,</span> <span class="s1">'/slow'</span><span class="p">,</span> <span class="s1">'/fast'</span><span class="p">]:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">make_request</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,))</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="n">mp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="c1"># </span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">mp</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If we simply create a Flow with only 1 instance of <code class="docutils literal notranslate"><span class="pre">MyExecutor</span></code>, requests to the slow endpoint will make a bottleneck.
+However, creating replicas will unblock the Flow:</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">with replicas</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">scaled_f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">'grpc'</span><span class="p">,</span> <span class="n">port_expose</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span><span class="s1">'calling scaled flow'</span><span class="p">):</span>
+    <span class="n">simulate</span><span class="p">(</span><span class="n">scaled_f</span><span class="p">)</span>  <span class="c1"># will take around 5 seconds</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>calling scaled flow takes 6 seconds (6.11s)
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">without replicas</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">'grpc'</span><span class="p">,</span> <span class="n">port_expose</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span><span class="s1">'calling normal flow'</span><span class="p">):</span>
+    <span class="n">simulate</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>  <span class="c1"># will take around 10 seconds</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>calling normal flow takes 11 seconds (11.75s)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Therefore, by using <code class="docutils literal notranslate"><span class="pre">replicas</span></code>, the Flow enjoys a non-blocking behavior and we can avoid bottlenecks.</p>
+<div class="important admonition">
+<p class="admonition-title">Important</p>
+<p>By default, <code class="docutils literal notranslate"><span class="pre">polling='ANY'</span></code>. If <code class="docutils literal notranslate"><span class="pre">polling</span></code> is set to <code class="docutils literal notranslate"><span class="pre">ALL</span></code>, this will not be valid anymore: All instances of the
+Executor will receive each request and there will be no performance benefits.</p>
+</div>
+</section>
 </section>
 <section id="partition-data-by-using-shards">
 <h2>Partition data by using Shards<a class="headerlink" href="#partition-data-by-using-shards" title="Permalink to this headline">¶</a></h2>
@@ -835,7 +918,10 @@ Also replicas provide high availability in case some executors are taken down (f
                         <ul>
 <li><a class="reference internal" href="#">Topology</a><ul>
 <li><a class="reference internal" href="#define-predecessors-via-needs">Define predecessors via <code class="docutils literal notranslate"><span class="pre">needs</span></code></a></li>
-<li><a class="reference internal" href="#scale-executors-by-using-replicas">Scale Executors by using Replicas</a></li>
+<li><a class="reference internal" href="#scale-executors-by-using-replicas">Scale Executors by using Replicas</a><ul>
+<li><a class="reference internal" href="#avoiding-bottlenecks-on-executors-with-replicas">Avoiding Bottlenecks on Executors with <code class="docutils literal notranslate"><span class="pre">replicas</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#partition-data-by-using-shards">Partition data by using Shards</a><ul>
 <li><a class="reference internal" href="#merging-search-results-via-uses-after">Merging search results via <code class="docutils literal notranslate"><span class="pre">uses_after</span></code></a></li>
 </ul>
