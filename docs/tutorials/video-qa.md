@@ -113,18 +113,6 @@ There are four Executors in the query Flow:
  
 The overall structure of the query Flow is as follows:
 
-```{code-block} YAML
----
-emphasize-lines: 3
----
-  # index.yml
-  ... 
-    uses: jinahub://SimpleIndexer/v0.4
-    uses_with:
-        limit: 20
-  ...
-```
-
 ```{figure} ../../.github/images/tutorial-video-qa-flow-query.png
 :align: center
 ```
