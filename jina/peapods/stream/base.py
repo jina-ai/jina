@@ -92,12 +92,6 @@ class BaseStreamer(ABC):
         """Send end of iterator signal to Gateway"""
         pass
 
-    async def close(self):
-        """
-        Close resources, none held here
-        """
-        pass
-
     @abstractmethod
     async def stream(
         self, request_iterator: Union[Iterator, AsyncIterator]
