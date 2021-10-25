@@ -117,7 +117,7 @@ When not given, then the default naming strategy will apply.
         type=str,
         default=[],
         nargs='*',
-        help='Extra search paths to be used when loading modules.'
+        help='Extra search paths to be used when loading modules and finding YAML config files.'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
