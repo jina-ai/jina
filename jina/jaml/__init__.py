@@ -1,3 +1,4 @@
+import copy
 import os
 import re
 import tempfile
@@ -482,6 +483,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         override_with: Optional[Dict] = None,
         override_metas: Optional[Dict] = None,
         override_requests: Optional[Dict] = None,
+        extra_search_paths: Optional[List[str]] = None,
         logger: Optional['JinaLogger'] = None,
         **kwargs,
     ) -> 'JAMLCompatible':
@@ -532,12 +534,17 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :param override_with: dictionary of parameters to overwrite from the default config's with field
         :param override_metas: dictionary of parameters to overwrite from the default config's metas field
         :param override_requests: dictionary of parameters to overwrite from the default config's requests field
+        :param extra_search_paths: extra paths used when looking for executor yaml files
         :param logger: the logger provided by the user
         :param kwargs: kwargs for parse_config_source
         :return: :class:`JAMLCompatible` object
         """
+        if isinstance(source, str) and os.path.exists(source):
+            extra_search_paths = (extra_search_paths or []) + [os.path.dirname(source)]
 
-        stream, s_path = parse_config_source(source, **kwargs)
+        stream, s_path = parse_config_source(
+            source, extra_search_paths=extra_search_paths, **kwargs
+        )
         with stream as fp:
             # first load yml with no tag
             if logger:
@@ -586,9 +593,12 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             if allow_py_modules:
                 if logger:
                     logger.debug('loading py_modules')
+                _extra_search_paths = extra_search_paths or []
                 load_py_modules(
                     no_tag_yml,
-                    extra_search_paths=(os.path.dirname(s_path),) if s_path else None,
+                    extra_search_paths=(_extra_search_paths + [os.path.dirname(s_path)])
+                    if s_path
+                    else None,
                 )
                 if logger:
                     logger.debug('loaded py_modules')
@@ -596,6 +606,17 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             from ..flow.base import Flow
 
             if issubclass(cls, Flow):
+                no_tag_yml_copy = copy.copy(no_tag_yml)
+                # only needed for Flow
+                if no_tag_yml_copy.get('with') is None:
+                    no_tag_yml_copy['with'] = {}
+                no_tag_yml_copy['with']['extra_search_paths'] = (
+                    no_tag_yml_copy['with'].get('extra_search_paths') or []
+                ) + (extra_search_paths or [])
+
+                if cls.is_valid_jaml(no_tag_yml_copy):
+                    no_tag_yml = no_tag_yml_copy
+
                 tag_yml = JAML.unescape(
                     JAML.dump(no_tag_yml),
                     include_unknown_tags=False,
@@ -622,3 +643,26 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 raw_yaml.update(field_params)
             else:
                 raw_yaml[field_name] = override_field
+
+    @staticmethod
+    def is_valid_jaml(obj: Dict) -> bool:
+        """
+        Verifies the yaml syntax of a given object by first serializing it and attempting to deserialize and catch
+        parser errors
+        :param obj: yaml object
+        :return: whether the syntax is valid or not
+
+        """
+        serialized_yaml = JAML.unescape(
+            JAML.dump(obj),
+            include_unknown_tags=False,
+        )
+
+        try:
+            yaml.safe_load(serialized_yaml)
+        # we only need to validate syntax, e.g, need to detect parser errors
+        except yaml.parser.ParserError:
+            return False
+        except yaml.error.YAMLError:
+            return True
+        return True

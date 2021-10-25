@@ -97,7 +97,6 @@ In particular, when you work with an image `Document`, there are some extra help
 doc.convert_image_buffer_to_blob()
 doc.convert_image_blob_to_uri()
 doc.convert_image_uri_to_blob()
-doc.convert_image_datauri_to_blob()
 ```
 ````
 

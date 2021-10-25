@@ -79,6 +79,7 @@ class DataRequestHandler:
                 override_metas=self.args.uses_metas,
                 override_requests=self.args.uses_requests,
                 runtime_args=vars(self.args),
+                extra_search_paths=self.args.extra_search_paths,
                 logger=logger,
             )
         except BadConfigSource as ex:

@@ -793,6 +793,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         args.k8s_namespace = self.args.name
         args.noblock_on_start = True
+        args.extra_search_paths = self.args.extra_search_paths
         args.zmq_identity = None
 
         # BACKWARDS COMPATIBILITY:
