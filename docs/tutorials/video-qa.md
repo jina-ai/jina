@@ -56,7 +56,7 @@ To save computational cost, we want to have the context as short as possible. To
 With traditional methods, retrieval can also be done using BM25, Tf-idf, etc.
 ```
 
-### Choose executors
+### Choose Executors
 
 We use `VideoLoader` to extract subtitles from the videos. It uses [`ffmpeg`](https://www.ffmpeg.org/) to extract subtitles 
 and then generates chunks based on the subtitles using [`webvtt-py`](https://github.com/glut23/webvtt-py). The subtitles are stored in the `chunks` 
