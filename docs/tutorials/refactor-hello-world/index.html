@@ -657,7 +657,7 @@ use  <a class="reference external" href="https://github.com/jina-ai/executor-ima
    <span class="n">Flow</span><span class="p">()</span>
    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">'jinahub+docker://ImageTorchEncoder'</span><span class="p">,</span>
       <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">'model_name'</span><span class="p">:</span> <span class="s1">'alexnet'</span><span class="p">},</span>
-      <span class="n">parallel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+      <span class="n">replicas</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyConverter</span><span class="p">)</span>
    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyIndexer</span><span class="p">,</span> <span class="n">workspace</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">workdir</span><span class="p">)</span>
    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyEvaluator</span><span class="p">)</span>
@@ -687,10 +687,10 @@ use <a class="reference external" href="https://github.com/jina-ai/executor-tran
 have <code class="docutils literal notranslate"><span class="pre">app.py</span></code>  which you can change to leverage other embedding methods.</p></li>
 <li><p>Change lines 21 to 25 from <code class="docutils literal notranslate"><span class="pre">app.py</span></code> to define a different <code class="docutils literal notranslate"><span class="pre">Flow</span></code>. Change it to:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Flow</span><span class="p">(</span><span class="n">cors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyTransformer</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">parallel</span><span class="p">)</span>
+<span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyTransformer</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">replicas</span><span class="p">)</span>
 <span class="o">.</span><span class="n">add</span><span class="p">(</span>
     <span class="n">uses</span><span class="o">=</span><span class="s1">'jinahub+docker://TransformerTorchEncoder'</span><span class="p">,</span>
-    <span class="n">parallel</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">parallel</span><span class="p">,</span>
+    <span class="n">replicas</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">replicas</span><span class="p">,</span>
     <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span>
         <span class="s1">'pretrained_model_name_or_path'</span><span class="p">:</span> <span class="s1">'sentence-transformers/paraphrase-mpnet-base-v2'</span>
     <span class="p">},</span>

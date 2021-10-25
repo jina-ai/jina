@@ -886,7 +886,7 @@ It also reduce the network overhead.</p>
         <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
             <span class="n">doc</span><span class="o">.</span><span class="n">convert_image_uri_to_blob</span><span class="p">()</span>  <span class="c1"># conversion happens inside Flow</span>
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">my_input</span><span class="p">():</span>
     <span class="n">image_uris</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">'/.workspace/*.png'</span><span class="p">)</span>
