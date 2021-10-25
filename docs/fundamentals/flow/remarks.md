@@ -58,8 +58,8 @@ class C(Executor):
         return docs
 ```
 
-## Flow gRPC Client and Threading
-Since multi-threading is not supported for asyncio gRPC clients, using the Flow gRPC Client in different threads is not 
+## gRPC Client and Threading
+Since multi-threading is not supported for asyncio gRPC clients, using the gRPC Client in different threads is not 
 supported. In fact, any usage outside the main thread will result in a `GRPCClientThreadingError`:
 
 ```{code-block} python
@@ -90,7 +90,7 @@ multi-processing instead.
 ````{admonition} Note
 :class: note
 Using `Flow.post` on a Flow that uses the gRPC protocol will simply call the gRPC Client. Therefore, this method 
-shouldn't be multi-threaded. 
+shouldn't be multi-threaded if the Flow uses gRPC. 
 ````
 
 ````{admonition} Note
