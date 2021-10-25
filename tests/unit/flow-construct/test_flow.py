@@ -895,3 +895,13 @@ def test_flow_load_yaml_extra_search_paths():
     with f:
         r = f.post('/', inputs=Document(), return_results=True)
     assert r[0].docs[0].text == 'done'
+
+
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+@pytest.mark.parametrize('grpc_data_requests', [True, False])
+def test_gateway_only_flows_no_error(capsys, protocol, grpc_data_requests):
+    f = Flow(grpc_data_requests=grpc_data_requests, protocol=protocol)
+    with f:
+        pass
+    captured = capsys.readouterr()
+    assert not captured.err
