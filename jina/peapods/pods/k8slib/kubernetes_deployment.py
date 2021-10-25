@@ -150,15 +150,6 @@ def deploy_service(
         custom_resource_dir=None,
     )
 
-    if gpus:
-        # Firstly deploy DaemonSet, then request resources.
-        # Secondly patch deployment with `resources limit`.
-        logger.debug(f'🐳\tCreate DaemonSet for gpu resource deployment.')
-        kubernetes_tools.create(
-            'nvidia-device-plugin',
-            {},
-        )
-
     logger.debug(
         f'🐳\tCreate Deployment for "{name}" with image "{image_name}", replicas {replicas} and init_container {init_container is not None}'
     )
