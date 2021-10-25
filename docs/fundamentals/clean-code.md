@@ -286,7 +286,7 @@ class MyExecutor(Executor):
         for doc in docs:
             doc.convert_image_uri_to_blob()  # conversion happens inside Flow
 
-f = Flow().add(uses=MyExecutor, parallel=2)
+f = Flow().add(uses=MyExecutor, replicas=2)
 
 def my_input():
     image_uris = glob.glob('/.workspace/*.png')
