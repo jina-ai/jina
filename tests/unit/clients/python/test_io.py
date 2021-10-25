@@ -304,12 +304,12 @@ def test_from_files_with_uri():
 )
 def test_from_files_with_tilde():
     shutil.copy(
-        os.path.join(cur_dir, "docs_groundtruth.jsonlines"),
-        os.path.expanduser("~/"),
+        os.path.join(cur_dir, 'docs_groundtruth.jsonlines'),
+        os.path.expanduser('~/'),
     )
     shutil.copy(
-        os.path.join(cur_dir, "docs.csv"),
-        os.path.expanduser("~/"),
+        os.path.join(cur_dir, 'docs.csv'),
+        os.path.expanduser('~/'),
     )
     generator = from_files(patterns='~/*.*', to_dataturi=True, size=10)
     first = next(generator)
@@ -321,13 +321,13 @@ def test_from_files_with_tilde():
 )
 def test_from_lines_with_tilde():
 
-    if not os.path.exists(os.path.expanduser("~/.jina")):
-        os.mkdir(os.path.expanduser("~/.jina"))
+    if not os.path.exists(os.path.expanduser('~/.jina')):
+        os.mkdir(os.path.expanduser('~/.jina'))
     shutil.copy(
-        os.path.join(cur_dir, "docs_groundtruth.jsonlines"),
-        os.path.expanduser("~/.jina"),
+        os.path.join(cur_dir, 'docs_groundtruth.jsonlines'),
+        os.path.expanduser('~/.jina'),
     )
-    result = list(from_lines(filepath="~/.jina/docs_groundtruth.jsonlines"))
+    result = list(from_lines(filepath='~/.jina/docs_groundtruth.jsonlines'))
     assert len(result) == 2
     assert result[0][0].text == "a"
     assert result[0][1].text == "b"
