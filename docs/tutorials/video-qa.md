@@ -97,7 +97,10 @@ There are three Executors in the index Flow:
 - `DPRTextEncoder` encodes the subtitles into vectors.
 - `SimpleIndexer` stores the vectors and other meta-information
 
-![index flow](../../.github/images/tutorial-video-qa-flow-index.png)
+
+```{figure} ../../.github/images/tutorial-video-qa-flow-index.png
+:align: center
+```
 
 ### Query
 
@@ -122,7 +125,9 @@ emphasize-lines: 3
   ...
 ```
 
-![query flow](../../.github/images/tutorial-video-qa-flow-query.png)
+```{figure} ../../.github/images/tutorial-video-qa-flow-query.png
+:align: center
+```
 
 ### Use `DPRTextEncoder` differently in two Flows
 
