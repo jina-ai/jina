@@ -630,6 +630,17 @@
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.types.document.converters.</span></span><span class="sig-name descname"><span class="pre">ContentConversionMixin</span></span><a class="reference internal" href="../../_modules/jina/types/document/converters/#ContentConversionMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.converters.ContentConversionMixin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A mixin class for converting, dumping and resizing <a class="reference internal" href="../jina/#jina.Document.content" title="jina.Document.content"><code class="xref py py-attr docutils literal notranslate"><span class="pre">content</span></code></a> in <code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code>.</p>
+<p>Note that most of the functions, except the <code class="docutils literal notranslate"><span class="pre">dump_*</span></code> ones can be used in a chain, e.g.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">from_files</span><span class="p">(</span><span class="s1">'/Users/hanxiao/Documents/tmpimg/*.jpg'</span><span class="p">):</span>
+    <span class="k">yield</span> <span class="p">(</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">convert_image_uri_to_blob</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">convert_uri_to_datauri</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">resize_image_blob</span><span class="p">(</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">normalize_image_blob</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">set_image_blob_channel_axis</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.document.converters.ContentConversionMixin.set_image_blob_channel_axis">
 <span class="sig-name descname"><span class="pre">set_image_blob_channel_axis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">original_channel_axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_channel_axis</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/converters/#ContentConversionMixin.set_image_blob_channel_axis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.converters.ContentConversionMixin.set_image_blob_channel_axis" title="Permalink to this definition">¶</a></dt>
@@ -640,6 +651,12 @@
 <li><p><strong>original_channel_axis</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the original axis of the channel</p></li>
 <li><p><strong>new_channel_axis</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the new axis of the channel</p></li>
 </ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="../jina/#jina.Document" title="jina.Document">Document</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>itself after processed</p>
 </dd>
 </dl>
 </dd></dl>
@@ -655,12 +672,26 @@
 <li><p><strong>channel_axis</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the axis id of the color channel, <code class="docutils literal notranslate"><span class="pre">-1</span></code> indicates the color channel info at the last axis</p></li>
 </ul>
 </dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="../jina/#jina.Document" title="jina.Document">Document</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>itself after processed</p>
+</dd>
 </dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.document.converters.ContentConversionMixin.convert_image_blob_to_uri">
 <span class="sig-name descname"><span class="pre">convert_image_blob_to_uri</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/converters/#ContentConversionMixin.convert_image_blob_to_uri"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.converters.ContentConversionMixin.convert_image_blob_to_uri" title="Permalink to this definition">¶</a></dt>
 <dd><p>Assuming <a class="reference internal" href="../jina/#jina.Document.blob" title="jina.Document.blob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">blob</span></code></a> is a _valid_ image, set <code class="xref py py-attr docutils literal notranslate"><span class="pre">uri</span></code> accordingly</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../jina/#jina.Document" title="jina.Document">Document</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>itself after processed</p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.document.converters.ContentConversionMixin.resize_image_blob">
@@ -673,6 +704,12 @@
 <li><p><strong>height</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – the height of the blob.</p></li>
 <li><p><strong>channel_axis</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the axis id of the color channel, <code class="docutils literal notranslate"><span class="pre">-1</span></code> indicates the color channel info at the last axis</p></li>
 </ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="../jina/#jina.Document" title="jina.Document">Document</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>itself after processed</p>
 </dd>
 </dl>
 </dd></dl>
@@ -718,6 +755,12 @@
 <li><p><strong>channel_axis</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the axis id of the color channel, <code class="docutils literal notranslate"><span class="pre">-1</span></code> indicates the color channel info at the last axis</p></li>
 </ul>
 </dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="../jina/#jina.Document" title="jina.Document">Document</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>itself after processed</p>
+</dd>
 </dl>
 </dd></dl>
 <dl class="py method">
@@ -733,6 +776,12 @@ mean and std. Otherwise, using the Imagenet pretrianed model with its own mean a
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>channel_axis</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the axis id of the color channel, <code class="docutils literal notranslate"><span class="pre">-1</span></code> indicates the color channel info at the last axis</p>
 </dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="../jina/#jina.Document" title="jina.Document">Document</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>itself after processed</p>
+</dd>
 </dl>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -743,20 +792,51 @@ non RGB image. if you look at their MNIST examples, the mean and stddev are 1-di
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.document.converters.ContentConversionMixin.convert_buffer_to_blob">
-<span class="sig-name descname"><span class="pre">convert_buffer_to_blob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/converters/#ContentConversionMixin.convert_buffer_to_blob"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.converters.ContentConversionMixin.convert_buffer_to_blob" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert <a class="reference internal" href="../jina/#jina.Document.buffer" title="jina.Document.buffer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">buffer</span></code></a> to <a class="reference internal" href="../jina/#jina.Document.blob" title="jina.Document.blob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">blob</span></code></a> inplace.</p>
-<p># noqa: DAR101</p>
+<span class="sig-name descname"><span class="pre">convert_buffer_to_blob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/converters/#ContentConversionMixin.convert_buffer_to_blob"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.converters.ContentConversionMixin.convert_buffer_to_blob" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assuming the <code class="xref py py-attr docutils literal notranslate"><span class="pre">buffer</span></code> is a _valid_ buffer of Numpy ndarray,
+set <code class="xref py py-attr docutils literal notranslate"><span class="pre">blob</span></code> accordingly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dtype</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Data-type of the returned array; default: float.</p></li>
+<li><p><strong>count</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of items to read. <code class="docutils literal notranslate"><span class="pre">-1</span></code> means all data in the buffer.</p></li>
+<li><p><strong>offset</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Start reading the buffer from this offset (in bytes); default: 0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="../jina/#jina.Document" title="jina.Document">Document</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>itself after processed</p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.document.converters.ContentConversionMixin.convert_blob_to_buffer">
 <span class="sig-name descname"><span class="pre">convert_blob_to_buffer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/converters/#ContentConversionMixin.convert_blob_to_buffer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.converters.ContentConversionMixin.convert_blob_to_buffer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert <a class="reference internal" href="../jina/#jina.Document.blob" title="jina.Document.blob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">blob</span></code></a> to <a class="reference internal" href="../jina/#jina.Document.buffer" title="jina.Document.buffer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">buffer</span></code></a> inplace.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../jina/#jina.Document" title="jina.Document">Document</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>itself after processed</p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.document.converters.ContentConversionMixin.convert_uri_to_buffer">
 <span class="sig-name descname"><span class="pre">convert_uri_to_buffer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/converters/#ContentConversionMixin.convert_uri_to_buffer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.converters.ContentConversionMixin.convert_uri_to_buffer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert <a class="reference internal" href="../daemon.models.containers/#daemon.models.containers.ContainerMetadata.uri" title="daemon.models.containers.ContainerMetadata.uri"><code class="xref py py-attr docutils literal notranslate"><span class="pre">uri</span></code></a> to <a class="reference internal" href="../jina/#jina.Document.buffer" title="jina.Document.buffer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">buffer</span></code></a> inplace.
 Internally it downloads from the URI and set <code class="xref py py-attr docutils literal notranslate"><span class="pre">buffer</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../jina/#jina.Document" title="jina.Document">Document</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>itself after processed</p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.document.converters.ContentConversionMixin.convert_uri_to_datauri">
@@ -768,6 +848,12 @@ Internally it downloads from the URI and set <code class="xref py py-attr docuti
 <li><p><strong>charset</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – charset may be any character set registered with IANA</p></li>
 <li><p><strong>base64</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit. Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that frequently uses non-US-ASCII characters.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="../jina/#jina.Document" title="jina.Document">Document</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>itself after processed</p>
 </dd>
 </dl>
 </dd></dl>
@@ -785,6 +871,12 @@ Designed to be efficient for non-text 8 bit and binary data. Sometimes used for 
 frequently uses non-US-ASCII characters.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="../jina/#jina.Document" title="jina.Document">Document</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>itself after processed</p>
+</dd>
 </dl>
 </dd></dl>
 <dl class="py method">
@@ -800,17 +892,39 @@ Designed to be efficient for non-text 8 bit and binary data.
 Sometimes used for text data that frequently uses non-US-ASCII characters.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="../jina/#jina.Document" title="jina.Document">Document</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>itself after processed</p>
+</dd>
 </dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.document.converters.ContentConversionMixin.convert_uri_to_text">
 <span class="sig-name descname"><span class="pre">convert_uri_to_text</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/converters/#ContentConversionMixin.convert_uri_to_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.converters.ContentConversionMixin.convert_uri_to_text" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert <a class="reference internal" href="../daemon.models.containers/#daemon.models.containers.ContainerMetadata.uri" title="daemon.models.containers.ContainerMetadata.uri"><code class="xref py py-attr docutils literal notranslate"><span class="pre">uri</span></code></a> to :attr`.text` inplace.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../jina/#jina.Document" title="jina.Document">Document</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>itself after processed</p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.document.converters.ContentConversionMixin.convert_content_to_uri">
 <span class="sig-name descname"><span class="pre">convert_content_to_uri</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/converters/#ContentConversionMixin.convert_content_to_uri"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.converters.ContentConversionMixin.convert_content_to_uri" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert <a class="reference internal" href="../jina/#jina.Document.content" title="jina.Document.content"><code class="xref py py-attr docutils literal notranslate"><span class="pre">content</span></code></a> in <a class="reference internal" href="../daemon.models.containers/#daemon.models.containers.ContainerMetadata.uri" title="daemon.models.containers.ContainerMetadata.uri"><code class="xref py py-attr docutils literal notranslate"><span class="pre">uri</span></code></a> inplace with best effort</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../jina/#jina.Document" title="jina.Document">Document</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>itself after processed</p>
+</dd>
+</dl>
 </dd></dl>
 </dd></dl>
 </section>
