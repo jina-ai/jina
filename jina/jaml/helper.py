@@ -2,7 +2,7 @@ import collections
 import json
 import os
 import warnings
-from typing import Union, TextIO, Dict, Tuple, Optional
+from typing import Union, TextIO, Dict, Tuple, Optional, List
 
 from yaml import MappingNode
 from yaml.composer import Composer
@@ -113,6 +113,7 @@ def parse_config_source(
     allow_class_type: bool = True,
     allow_dict: bool = True,
     allow_json: bool = True,
+    extra_search_paths: Optional[List[str]] = None,
     *args,
     **kwargs,
 ) -> Tuple[TextIO, Optional[str]]:
@@ -127,6 +128,7 @@ def parse_config_source(
     :param allow_class_type: flag
     :param allow_dict: flag
     :param allow_json: flag
+    :param extra_search_paths: extra paths to search for
     :param args: unused
     :param kwargs: unused
     :return: a tuple, the first element is the text stream, the second element is the file path associate to it
@@ -145,7 +147,7 @@ def parse_config_source(
         # already a readable stream
         return path, None
     elif allow_yaml_file and is_yaml_filepath(path):
-        comp_path = complete_path(path)
+        comp_path = complete_path(path, extra_search_paths)
         return open(comp_path, encoding='utf8'), comp_path
     elif allow_raw_yaml_content and path.lstrip().startswith(('!', 'jtype')):
         # possible YAML content
@@ -170,7 +172,7 @@ def parse_config_source(
         )
 
 
-def complete_path(path: str, extra_search_paths: Optional[Tuple[str]] = None) -> str:
+def complete_path(path: str, extra_search_paths: Optional[List[str]] = None) -> str:
     """
     Complete the path of file via searching in abs and relative paths.
 
@@ -188,7 +190,7 @@ def complete_path(path: str, extra_search_paths: Optional[Tuple[str]] = None) ->
         raise FileNotFoundError(f'can not find {path}')
 
 
-def _search_file_in_paths(path, extra_search_paths: Optional[Tuple[str]] = None):
+def _search_file_in_paths(path, extra_search_paths: Optional[List[str]] = None):
     """
     Search in all dirs of the PATH environment variable and all dirs of files used in the call stack.
 
@@ -217,7 +219,7 @@ def _search_file_in_paths(path, extra_search_paths: Optional[Tuple[str]] = None)
             return _p
 
 
-def load_py_modules(d: Dict, extra_search_paths: Optional[Tuple[str]] = None) -> None:
+def load_py_modules(d: Dict, extra_search_paths: Optional[List[str]] = None) -> None:
     """
     Find 'py_modules' in the dict recursively and then load them.
 

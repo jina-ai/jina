@@ -104,10 +104,7 @@ class PartialFlowStore(PartialStore):
             elif not Path(args.uses).is_file():
                 raise ValueError(f'uses {args.uses} not found in workspace')
 
-            with open(args.uses) as yaml_file:
-                yaml_source = yaml_file.read()
-
-            self.object: Flow = Flow.load_config(yaml_source).build()
+            self.object: Flow = Flow.load_config(args.uses).build()
             self.object.workspace_id = jinad_args.workspace_id
             self.object.workspace = __partial_workspace__
             self.object.env = {'HOME': __partial_workspace__}
@@ -173,6 +170,9 @@ class PartialFlowStore(PartialStore):
             self._logger.error(f'{e!r}')
             raise
         else:
+            with open(args.uses) as yaml_file:
+                yaml_source = yaml_file.read()
+
             self.item = PartialFlowItem(
                 arguments={
                     'port_expose': self.object.port_expose,

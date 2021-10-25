@@ -791,6 +791,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         args.workspace = os.path.abspath(args.workspace or self.workspace)
 
         args.k8s_namespace = self.args.name
+        args.extra_search_paths = self.args.extra_search_paths
         args.zmq_identity = None
 
         # BACKWARDS COMPATIBILITY:
