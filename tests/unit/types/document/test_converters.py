@@ -55,7 +55,7 @@ def test_image_normalize(shape, channel_axis):
 
 
 @pytest.mark.parametrize(
-    'arr_size, color_axis, height, width',
+    'arr_size, channel_axis, height, width',
     [
         ((32 * 28), -1, None, None),  # single line
         ([32, 28], -1, None, None),  # without channel info
@@ -71,17 +71,16 @@ def test_image_normalize(shape, channel_axis):
         ([32, 28, 1], -1, 32, 28),  # h, w, c, (greyscale)
     ],
 )
-def test_convert_image_blob_to_uri(arr_size, color_axis, width, height):
+def test_convert_image_blob_to_uri(arr_size, channel_axis, width, height):
     doc = Document(content=np.random.randint(0, 255, arr_size))
     assert doc.blob.any()
     assert not doc.uri
-    print(doc.blob.shape, color_axis)
-    doc.resize_image_blob(channel_axis=color_axis, width=width, height=height)
+    doc.resize_image_blob(channel_axis=channel_axis, width=width, height=height)
 
-    # doc.convert_image_blob_to_uri(
-    # )
-    # assert doc.uri.startswith('data:image/png;base64,')
-    # assert doc.mime_type == 'image/png'
+    doc.convert_image_blob_to_uri()
+    assert doc.uri.startswith('data:image/png;base64,')
+    assert doc.mime_type == 'image/png'
+    assert doc.blob.any()  # assure after conversion blob still exist.
 
 
 @pytest.mark.xfail(
