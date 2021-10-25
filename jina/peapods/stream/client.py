@@ -34,8 +34,12 @@ class HTTPClientStreamer(ClientStreamer):
     """Streamer used at Client to stream HTTP requests/responses to/from HTTPGateway"""
 
     async def _receive(self) -> Awaitable:
-        """For HTTP Client, there's no task needed for receiving."""
-        pass
+        """For HTTP Client, there's no task needed for receiving.
+        Sleep like there's no tomorrow!
+
+        :return: awaitable
+        """
+        return await asyncio.sleep(1e9)
 
     def _handle_request(self, request: 'Request') -> 'asyncio.Future':
         """
