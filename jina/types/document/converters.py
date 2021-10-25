@@ -5,64 +5,95 @@ import struct
 import urllib.parse
 import urllib.request
 from contextlib import nullcontext
-from typing import Optional, overload, Union, BinaryIO
+from typing import Optional, Union, BinaryIO, TYPE_CHECKING
 
 import numpy as np
 
 from ... import __windows__
 
+if TYPE_CHECKING:
+    from . import Document
+
 
 class ContentConversionMixin:
-    """A mixin class for converting, dumping and resizing :attr:`.content` in :class:`Document`."""
+    """A mixin class for converting, dumping and resizing :attr:`.content` in :class:`Document`.
+
+    Note that most of the functions, except the ``dump_*`` ones can be used in a chain, e.g.
+
+    .. highlight:: python
+    .. code-block:: python
+
+        for d in from_files('/Users/hanxiao/Documents/tmpimg/*.jpg'):
+            yield (
+                d.convert_image_uri_to_blob()
+                .convert_uri_to_datauri()
+                .resize_image_blob(224, 224)
+                .normalize_image_blob()
+                .set_image_blob_channel_axis(-1, 0)
+            )
+    """
 
     def set_image_blob_channel_axis(
         self, original_channel_axis: int, new_channel_axis: int
-    ):
+    ) -> 'Document':
         """Move the channel axis of the image :attr:`.blob` inplace.
 
         :param original_channel_axis: the original axis of the channel
         :param new_channel_axis: the new axis of the channel
+
+        :return: itself after processed
         """
         self.blob = _move_channel_axis(
             self.blob, original_channel_axis, new_channel_axis
         )
+        return self
 
     def convert_image_buffer_to_blob(
         self,
         width: Optional[int] = None,
         height: Optional[int] = None,
         channel_axis: int = -1,
-    ):
+    ) -> 'Document':
         """Convert an image :attr:`.buffer` to a ndarray :attr:`.blob`.
 
         :param width: the width of the image blob.
         :param height: the height of the blob.
         :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+
+        :return: itself after processed
         """
         blob = _to_image_blob(io.BytesIO(self.buffer), width=width, height=height)
         blob = _move_channel_axis(blob, original_channel_axis=channel_axis)
         self.blob = blob
+        return self
 
-    def convert_image_blob_to_uri(self):
-        """Assuming :attr:`.blob` is a _valid_ image, set :attr:`uri` accordingly"""
+    def convert_image_blob_to_uri(self) -> 'Document':
+        """Assuming :attr:`.blob` is a _valid_ image, set :attr:`uri` accordingly
+
+        :return: itself after processed
+        """
         png_bytes = _to_png_buffer(self.blob)
         self.uri = 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
+        return self
 
     def resize_image_blob(
         self,
         width: Optional[int] = None,
         height: Optional[int] = None,
         channel_axis: int = -1,
-    ):
+    ) -> 'Document':
         """Resize the image :attr:`.blob` inplace.
 
         :param width: the width of the image blob.
         :param height: the height of the blob.
         :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+
+        :return: itself after processed
         """
         blob = _move_channel_axis(self.blob, original_channel_axis=channel_axis)
         buffer = _to_png_buffer(blob)
         self.blob = _to_image_blob(io.BytesIO(buffer), width=width, height=height)
+        return self
 
     def dump_buffer_to_file(self, file: Union[str, BinaryIO]):
         """Save :attr:`.buffer` into a file
@@ -98,19 +129,22 @@ class ContentConversionMixin:
         width: Optional[int] = None,
         height: Optional[int] = None,
         channel_axis: int = -1,
-    ):
+    ) -> 'Document':
         """Convert the image-like :attr:`.uri` into :attr:`.blob`
 
         :param width: the width of the image blob.
         :param height: the height of the blob.
         :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+
+        :return: itself after processed
         """
 
         buffer = _uri_to_buffer(self.uri)
         blob = _to_image_blob(io.BytesIO(buffer), width=width, height=height)
         self.blob = _move_channel_axis(blob, original_channel_axis=channel_axis)
+        return self
 
-    def normalize_image_blob(self, channel_axis: int = -1):
+    def normalize_image_blob(self, channel_axis: int = -1) -> 'Document':
         """Normalize a uint8 image :attr:`.blob` into a float32 image :attr:`.blob` inplace.
 
         Following Pytorch standard, the image must be in the shape of shape (3 x H x W) and
@@ -120,11 +154,14 @@ class ContentConversionMixin:
         mean and std. Otherwise, using the Imagenet pretrianed model with its own mean and std is recommended.
 
         :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+        :return: itself after processed
 
         .. warning::
             Please do NOT generalize this function to gray scale, black/white image, it does not make any sense for
             non RGB image. if you look at their MNIST examples, the mean and stddev are 1-dimensional
             (since the inputs are greyscale-- no RGB channels).
+
+
         """
         if self.blob.dtype == np.uint8 and self.blob.ndim == 3:
             blob = (self.blob / 255.0).astype(np.float32)
@@ -139,11 +176,11 @@ class ContentConversionMixin:
             raise ValueError(
                 f'`blob` must be a uint8 ndarray with ndim=3, but receiving {self.blob.dtype} with ndim={self.blob.ndim}'
             )
+        return self
 
-    @overload
     def convert_buffer_to_blob(
         self, dtype: Optional[str] = None, count: int = -1, offset: int = 0
-    ):
+    ) -> 'Document':
         """Assuming the :attr:`buffer` is a _valid_ buffer of Numpy ndarray,
         set :attr:`blob` accordingly.
 
@@ -151,40 +188,46 @@ class ContentConversionMixin:
         :param count: Number of items to read. ``-1`` means all data in the buffer.
         :param offset: Start reading the buffer from this offset (in bytes); default: 0.
 
-        .. note::
-            One can only recover values not shape information from pure buffer.
+        :return: itself after processed
         """
-        ...
+        self.blob = np.frombuffer(self.buffer, dtype=dtype, count=count, offset=offset)
+        return self
 
-    def convert_buffer_to_blob(self, *args, **kwargs):
-        """Convert :attr:`.buffer` to :attr:`.blob` inplace.
+    def convert_blob_to_buffer(self) -> 'Document':
+        """Convert :attr:`.blob` to :attr:`.buffer` inplace.
 
-        # noqa: DAR101
+        :return: itself after processed
         """
-        self.blob = np.frombuffer(self.buffer, *args, **kwargs)
-
-    def convert_blob_to_buffer(self):
-        """Convert :attr:`.blob` to :attr:`.buffer` inplace. """
         self.buffer = self.blob.tobytes()
+        return self
 
-    def convert_uri_to_buffer(self):
+    def convert_uri_to_buffer(self) -> 'Document':
         """Convert :attr:`.uri` to :attr:`.buffer` inplace.
         Internally it downloads from the URI and set :attr:`buffer`.
 
+        :return: itself after processed
         """
         self.buffer = _uri_to_buffer(self.uri)
+        return self
 
-    def convert_uri_to_datauri(self, charset: str = 'utf-8', base64: bool = False):
+    def convert_uri_to_datauri(
+        self, charset: str = 'utf-8', base64: bool = False
+    ) -> 'Document':
         """Convert :attr:`.uri` to dataURI and store it in :attr:`.uri` inplace.
 
         :param charset: charset may be any character set registered with IANA
         :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit. Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that frequently uses non-US-ASCII characters.
+
+        :return: itself after processed
         """
         if not _is_datauri(self.uri):
             buffer = _uri_to_buffer(self.uri)
             self.uri = _to_datauri(self.mime_type, buffer, charset, base64, binary=True)
+        return self
 
-    def convert_buffer_to_uri(self, charset: str = 'utf-8', base64: bool = False):
+    def convert_buffer_to_uri(
+        self, charset: str = 'utf-8', base64: bool = False
+    ) -> 'Document':
         """Convert :attr:`.buffer` to data :attr:`.uri` in place.
         Internally it first reads into buffer and then converts it to data URI.
 
@@ -192,6 +235,8 @@ class ContentConversionMixin:
         :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit.
             Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that
             frequently uses non-US-ASCII characters.
+
+        :return: itself after processed
         """
 
         if not self.mime_type:
@@ -202,31 +247,45 @@ class ContentConversionMixin:
         self.uri = _to_datauri(
             self.mime_type, self.buffer, charset, base64, binary=True
         )
+        return self
 
-    def convert_text_to_uri(self, charset: str = 'utf-8', base64: bool = False):
+    def convert_text_to_uri(
+        self, charset: str = 'utf-8', base64: bool = False
+    ) -> 'Document':
         """Convert :attr:`.text` to data :attr:`.uri`.
 
         :param charset: charset may be any character set registered with IANA
         :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit.
             Designed to be efficient for non-text 8 bit and binary data.
             Sometimes used for text data that frequently uses non-US-ASCII characters.
+
+        :return: itself after processed
         """
 
         self.uri = _to_datauri(self.mime_type, self.text, charset, base64, binary=False)
+        return self
 
-    def convert_uri_to_text(self):
-        """Convert :attr:`.uri` to :attr`.text` inplace."""
+    def convert_uri_to_text(self) -> 'Document':
+        """Convert :attr:`.uri` to :attr`.text` inplace.
+
+        :return: itself after processed
+        """
         buffer = _uri_to_buffer(self.uri)
         self.text = buffer.decode()
+        return self
 
-    def convert_content_to_uri(self):
-        """Convert :attr:`.content` in :attr:`.uri` inplace with best effort"""
+    def convert_content_to_uri(self) -> 'Document':
+        """Convert :attr:`.content` in :attr:`.uri` inplace with best effort
+
+        :return: itself after processed
+        """
         if self.text:
             self.convert_text_to_uri()
         elif self.buffer:
             self.convert_buffer_to_uri()
         elif self.content_type:
             raise NotImplementedError
+        return self
 
 
 def _uri_to_buffer(uri: str) -> bytes:
