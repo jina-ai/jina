@@ -282,13 +282,14 @@ By default the following endpoints are exposed to the public:
 
 #### Hide CRUD and debug endpoints from HTTP interface
 
-User can decide to hide CRUD and debug endpoints in production, or when the context is not applicable. For example, in the code snippet below, we didn't implement any CRUD endpoints for the executor, hence it does not make sense to expose them to public.
+User can decide to hide CRUD, debug or health check endpoints in production, or when the context is not applicable. For example, in the code snippet below, we didn't implement any CRUD endpoints for the executor, hence it does not make sense to expose them to public.
 
 ```python
 from jina import Flow
 f = Flow(protocol='http',
          no_debug_endpoints=True,
-         no_crud_endpoints=True)
+         no_crud_endpoints=True,
+         no_health_check_endpoint=True)
 ```
 
 ```{figure} ../../../.github/2.0/hide-crud-debug-endpoints.png

@@ -260,6 +260,16 @@ class JinaStatusModel(BaseModel):
         allow_population_by_field_name = True
 
 
+class JinaHealthCheckModel(BaseModel):
+    """Pydantic BaseModel for Jina health check, used as the response model in REST app."""
+
+    success: bool
+
+    class Config:
+        alias_generator = _to_camel_case
+        allow_population_by_field_name = True
+
+
 def _get_example_data():
     _example = jina_pb2.DocumentArrayProto()
     d0 = Document(id='🐲', tags={'guardian': 'Azure Dragon', 'position': 'East'})

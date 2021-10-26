@@ -182,6 +182,7 @@ ac_table = {
             '--default-swagger-ui',
             '--no-debug-endpoints',
             '--no-crud-endpoints',
+            '--no-health-check-endpoint',
             '--expose-endpoints',
             '--uvicorn-kwargs',
             '--compress',

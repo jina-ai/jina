@@ -134,6 +134,13 @@ def mixin_http_gateway_parser(parser=None):
     )
 
     gp.add_argument(
+        '--no-health-check-endpoint',
+        action='store_true',
+        default=False,
+        help='If set, root / endpoint is removed from HTTP interface. ',
+    )
+
+    gp.add_argument(
         '--expose-endpoints',
         type=str,
         help='''

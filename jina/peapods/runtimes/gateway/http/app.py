@@ -30,6 +30,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         from fastapi.middleware.cors import CORSMiddleware
         from .models import (
             JinaStatusModel,
+            JinaHealthCheckModel,
             JinaRequestModel,
             JinaEndpointRequestModel,
             JinaResponseModel,
@@ -82,6 +83,28 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             iolet.close()
 
     openapi_tags = []
+    if not args.no_health_check_endpoint:
+        openapi_tags.append(
+            {
+                'name': 'Health Check',
+                'description': 'Health Check interface. If health check is not required, '
+                'you can hide it by setting `--no-health-check-endpoint` in `Flow`/`Gateway`.',
+            }
+        )
+
+        @app.get(
+            path='/',
+            summary='Get health check response from Jina service',
+            response_model=JinaHealthCheckModel,
+            tags=['Health Check'],
+        )
+        async def _health_check():
+            """
+            Get the health check response of this Jina service.
+            .. # noqa: DAR201
+            """
+            return {'success': True}
+
     if not args.no_debug_endpoints:
         openapi_tags.append(
             {
@@ -105,20 +128,6 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
 
             .. # noqa: DAR201
             """
-            _info = get_full_version()
-            return {
-                'jina': _info[0],
-                'envs': _info[1],
-                'used_memory': used_memory_readable(),
-            }
-
-        @app.get(
-            path='/',
-            summary='Root Health Check',
-            response_model=JinaStatusModel,
-            tags=['Debug'],
-        )
-        async def _root():
             _info = get_full_version()
             return {
                 'jina': _info[0],
