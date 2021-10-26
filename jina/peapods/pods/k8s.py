@@ -41,7 +41,11 @@ class K8sPod(BasePod):
 
         def _deploy_gateway(self):
             test_pip = os.getenv('JINA_K8S_USE_TEST_PIP') is not None
-            image_name = 'winstonww/jina:add-root-path'
+            image_name = (
+                'jinaai/jina:test-pip'
+                if test_pip
+                else f'jinaai/jina:{self.version}-py38-standard'
+            )
             kubernetes_deployment.deploy_service(
                 self.dns_name,
                 namespace=self.k8s_namespace,
