@@ -1,5 +1,6 @@
 import asyncio
 import multiprocessing
+import os
 import time
 from multiprocessing import Process
 from threading import Event, Thread
@@ -57,7 +58,10 @@ def test_grpc_data_runtime(mocker):
 @pytest.mark.timeout(10)
 @pytest.mark.parametrize('close_method', ['TERMINATE', 'CANCEL'])
 @pytest.mark.asyncio
-@pytest.mark.skip('Graceful shutdown is not working at the moment')
+@pytest.mark.skipif(
+    'GITHUB_WORKFLOW' in os.environ,
+    reason='Graceful shutdown is not working at the moment',
+)
 # TODO: This test should work, it does not
 async def test_grpc_data_runtime_graceful_shutdown(close_method):
     args = set_pea_parser().parse_args([])
