@@ -602,7 +602,7 @@
                 <h1>Source code for jina.peapods.pods.k8slib.kubernetes_deployment</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">jina.hubble.helper</span> <span class="kn">import</span> <span class="n">parse_hub_uri</span>
 <span class="kn">from</span> <span class="nn">jina.hubble.hubio</span> <span class="kn">import</span> <span class="n">HubIO</span>
@@ -693,6 +693,7 @@
     <span class="n">custom_resource_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">port_expose</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">gpus</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">"""Deploy service on Kubernetes.</span>
 
@@ -709,6 +710,7 @@
 <span class="sd">        Defaults to the standard location jina.resources if not specified.</span>
 <span class="sd">    :param port_expose: port which will be exposed by the deployed containers</span>
 <span class="sd">    :param env: environment variables to be passed into configmap.</span>
+<span class="sd">    :param gpus: number of gpus to use, for k8s requires you pass an int number, refers to the number of requested gpus.</span>
 <span class="sd">    :return: dns name of the created service</span>
 <span class="sd">    """</span>
 
@@ -754,27 +756,30 @@
         <span class="sa">f</span><span class="s1">'🐳</span><span class="se">\t</span><span class="s1">Create Deployment for "</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">" with image "</span><span class="si">{</span><span class="n">image_name</span><span class="si">}</span><span class="s1">", replicas </span><span class="si">{</span><span class="n">replicas</span><span class="si">}</span><span class="s1"> and init_container </span><span class="si">{</span><span class="n">init_container</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="si">}</span><span class="s1">'</span>
     <span class="p">)</span>
 
+    <span class="n">deployment_params</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">'name'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+        <span class="s1">'namespace'</span><span class="p">:</span> <span class="n">namespace</span><span class="p">,</span>
+        <span class="s1">'image'</span><span class="p">:</span> <span class="n">image_name</span><span class="p">,</span>
+        <span class="s1">'replicas'</span><span class="p">:</span> <span class="n">replicas</span><span class="p">,</span>
+        <span class="s1">'command'</span><span class="p">:</span> <span class="n">container_cmd</span><span class="p">,</span>
+        <span class="s1">'args'</span><span class="p">:</span> <span class="n">container_args</span><span class="p">,</span>
+        <span class="s1">'port_expose'</span><span class="p">:</span> <span class="n">port_expose</span><span class="p">,</span>
+        <span class="s1">'port_in'</span><span class="p">:</span> <span class="n">port_in</span><span class="p">,</span>
+        <span class="s1">'port_out'</span><span class="p">:</span> <span class="n">port_out</span><span class="p">,</span>
+        <span class="s1">'port_ctrl'</span><span class="p">:</span> <span class="n">port_ctrl</span><span class="p">,</span>
+        <span class="s1">'pull_policy'</span><span class="p">:</span> <span class="n">pull_policy</span><span class="p">,</span>
+    <span class="p">}</span>
+
     <span class="k">if</span> <span class="n">init_container</span><span class="p">:</span>
         <span class="n">template_name</span> <span class="o">=</span> <span class="s1">'deployment-init'</span>
+        <span class="n">deployment_params</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">deployment_params</span><span class="p">,</span> <span class="o">**</span><span class="n">init_container</span><span class="p">}</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">template_name</span> <span class="o">=</span> <span class="s1">'deployment'</span>
-        <span class="n">init_container</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">gpus</span><span class="p">:</span>
+        <span class="n">deployment_params</span><span class="p">[</span><span class="s1">'device_plugins'</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'nvidia.com/gpu'</span><span class="p">:</span> <span class="n">gpus</span><span class="p">}</span>
     <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
         <span class="n">template_name</span><span class="p">,</span>
-        <span class="p">{</span>
-            <span class="s1">'name'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
-            <span class="s1">'namespace'</span><span class="p">:</span> <span class="n">namespace</span><span class="p">,</span>
-            <span class="s1">'image'</span><span class="p">:</span> <span class="n">image_name</span><span class="p">,</span>
-            <span class="s1">'replicas'</span><span class="p">:</span> <span class="n">replicas</span><span class="p">,</span>
-            <span class="s1">'command'</span><span class="p">:</span> <span class="n">container_cmd</span><span class="p">,</span>
-            <span class="s1">'args'</span><span class="p">:</span> <span class="n">container_args</span><span class="p">,</span>
-            <span class="s1">'port_expose'</span><span class="p">:</span> <span class="n">port_expose</span><span class="p">,</span>
-            <span class="s1">'port_in'</span><span class="p">:</span> <span class="n">port_in</span><span class="p">,</span>
-            <span class="s1">'port_out'</span><span class="p">:</span> <span class="n">port_out</span><span class="p">,</span>
-            <span class="s1">'port_ctrl'</span><span class="p">:</span> <span class="n">port_ctrl</span><span class="p">,</span>
-            <span class="s1">'pull_policy'</span><span class="p">:</span> <span class="n">pull_policy</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">init_container</span><span class="p">,</span>
-        <span class="p">},</span>
+        <span class="n">deployment_params</span><span class="p">,</span>
         <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
         <span class="n">custom_resource_dir</span><span class="o">=</span><span class="n">custom_resource_dir</span><span class="p">,</span>
     <span class="p">)</span>
@@ -904,7 +909,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 25, 2021.
+                    Last updated on Oct 26, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

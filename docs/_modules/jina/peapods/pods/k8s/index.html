@@ -724,6 +724,7 @@
                 <span class="n">pull_policy</span><span class="o">=</span><span class="s1">'IfNotPresent'</span><span class="p">,</span>
                 <span class="n">init_container</span><span class="o">=</span><span class="n">init_container_args</span><span class="p">,</span>
                 <span class="n">env</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="o">.</span><span class="n">env</span><span class="p">,</span>
+                <span class="n">gpus</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="o">.</span><span class="n">gpus</span><span class="p">,</span>
                 <span class="n">custom_resource_dir</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">common_args</span><span class="p">,</span> <span class="s1">'k8s_custom_resource_dir'</span><span class="p">,</span> <span class="kc">None</span>
                 <span class="p">),</span>
@@ -1255,7 +1256,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 25, 2021.
+                    Last updated on Oct 26, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
