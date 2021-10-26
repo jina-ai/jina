@@ -237,7 +237,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
                   Any executor that has `@requests(on=...)` bind with those values will receive data requests.
         :param no_debug_endpoints: If set, /status /post endpoints are removed from HTTP interface.
-        :param no_health_check_endpoint: If set, / endpoint is removed from HTTP interface.
+        :param no_health_check_endpoint: If set, root / endpoint is removed from HTTP interface.
         :param on_error_strategy: The skip strategy on exceptions.
 
           - IGNORE: Ignore it, keep running all Executors in the sequel flow
