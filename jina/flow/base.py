@@ -1592,7 +1592,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """
         try:
             if stop_event is None:
-                self._stop_event = threading.Event()  #: this allows `.close` to close the Flow from another thread/proc
+                self._stop_event = (
+                    threading.Event()
+                )  #: this allows `.close` to close the Flow from another thread/proc
                 self._stop_event.wait()
             else:
                 stop_event.wait()

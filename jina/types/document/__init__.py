@@ -161,7 +161,7 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
     ):
         """
         :param adjacency: the adjacency of this Document
-        :param blob: the blob content of this Document
+        :param blob: the blob content of thi Document
         :param buffer: the buffer bytes from this document
         :param chunks: the array of chunks of this document
         :param content: the value of the content depending on `:meth:`content_type`
