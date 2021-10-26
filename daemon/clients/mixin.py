@@ -1,6 +1,6 @@
 from functools import partialmethod
 
-from jina.helper import run_async
+from jina.helper import asyncio_run
 
 
 class AsyncToSyncMixin:
@@ -16,7 +16,7 @@ class AsyncToSyncMixin:
         """
         f = getattr(super(), func_name, None)
         if f:
-            return run_async(f, any_event_loop=True, *args, **kwargs)
+            return asyncio_run(f, any_event_loop=True, *args, **kwargs)
 
     alive = partialmethod(func, 'alive')
     status = partialmethod(func, 'status')

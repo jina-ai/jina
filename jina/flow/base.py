@@ -78,7 +78,7 @@ FALLBACK_PARSERS = [
 
 
 class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
-    """Flow is how Jina streamlines and distributes Executors. """
+    """Flow is how Jina streamlines and distributes Executors."""
 
     class _FlowK8sInfraResourcesManager:
         def __init__(self, k8s_namespace: str, k8s_custom_resource_dir: Optional[str]):
@@ -1794,9 +1794,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param dump_path: **backwards compatibility** This function was only accepting dump_path as the only potential arg to override
         :param uses_with: a Dictionary of arguments to restart the executor with
         """
-        from ..helper import run_async
+        from ..helper import asyncio_run
 
-        run_async(
+        asyncio_run(
             self._pod_nodes[pod_name].rolling_update,
             dump_path=dump_path,
             uses_with=uses_with,

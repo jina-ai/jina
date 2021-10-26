@@ -16,6 +16,7 @@ from datetime import datetime
 from itertools import islice
 from types import SimpleNamespace
 from typing import (
+    Callable,
     Tuple,
     Optional,
     Iterator,
@@ -44,7 +45,7 @@ __all__ = [
     'get_public_ip',
     'get_internal_ip',
     'convert_tuple_to_list',
-    'run_async',
+    'asyncio_run',
     'deprecated_alias',
     'countdown',
     'CatchAllCleanupContextManager',
@@ -908,6 +909,22 @@ def get_or_reuse_loop():
     return loop
 
 
+def asyncio_run(func: 'Callable', *args, **kwargs) -> Any:
+    """
+    Run a coroutine function asyncronously
+
+    :param func: An async method to be executed without awaiting
+    :param args: positional arguments
+    :param kwargs: keyword arguments
+    :return: result of the function ran asyncronously
+    """
+    from . import nest_asyncio
+
+    loop = get_or_reuse_loop()
+    nest_asyncio.apply(loop)
+    return loop.run_until_complete(func(*args, **kwargs))
+
+
 def typename(obj):
     """
     Get the typename of object.
@@ -1149,65 +1166,6 @@ def is_jupyter() -> bool:  # pragma: no cover
         return False  # Terminal running IPython
     else:
         return False  # Other type (?)
-
-
-def run_async(func, *args, **kwargs):
-    """Generalized asyncio.run for jupyter notebook.
-
-    When running inside jupyter, an eventloop is already exist, can't be stopped, can't be killed.
-    Directly calling asyncio.run will fail, as This function cannot be called when another asyncio event loop
-    is running in the same thread.
-
-    .. see_also:
-        https://stackoverflow.com/questions/55409641/asyncio-run-cannot-be-called-from-a-running-event-loop
-
-    call `run_async(my_function, any_event_loop=True, *args, **kwargs)` to enable run with any eventloop
-
-    :param func: function to run
-    :param args: parameters
-    :param kwargs: key-value parameters
-    :return: asyncio.run(func)
-    """
-
-    any_event_loop = kwargs.pop('any_event_loop', False)
-
-    class _RunThread(threading.Thread):
-        """Create a running thread when in Jupyter notebook."""
-
-        def run(self):
-            """Run given `func` asynchronously."""
-            self.result = asyncio.run(func(*args, **kwargs))
-
-    try:
-        loop = asyncio.get_running_loop()
-    except RuntimeError:
-        loop = None
-
-    if loop and loop.is_running():
-        # eventloop already exist
-        # running inside Jupyter
-        if any_event_loop or is_jupyter():
-            thread = _RunThread()
-            thread.start()
-            thread.join()
-            try:
-                return thread.result
-            except AttributeError:
-                from .excepts import BadClient
-
-                raise BadClient(
-                    'something wrong when running the eventloop, result can not be retrieved'
-                )
-        else:
-
-            raise RuntimeError(
-                'you have an eventloop running but not using Jupyter/ipython, '
-                'this may mean you are using Jina with other integration? if so, then you '
-                'may want to use Client/Flow(asyncio=True). If not, then '
-                'please report this issue here: https://github.com/jina-ai/jina'
-            )
-    else:
-        return asyncio.run(func(*args, **kwargs))
 
 
 def slugify(value):

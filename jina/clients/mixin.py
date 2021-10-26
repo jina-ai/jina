@@ -4,7 +4,7 @@ from typing import Optional, Dict, List, AsyncGenerator
 
 from .base import CallbackFnType, InputType
 from ..enums import InfrastructureType
-from ..helper import run_async
+from ..helper import asyncio_run
 from ..peapods.pods.k8slib import kubernetes_tools
 from ..types.request import Response
 
@@ -71,7 +71,7 @@ class PostMixin:
         else:
             context_mgr = nullcontext()
         with context_mgr:
-            return run_async(
+            return asyncio_run(
                 _get_results,
                 inputs=inputs,
                 on_done=on_done,

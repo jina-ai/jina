@@ -8,7 +8,6 @@ from typing import Dict, Optional, Union
 import aiohttp
 
 from jina import __resources_path__
-from jina.helper import run_async
 from jina.logging.logger import JinaLogger
 
 from .mixin import AsyncToSyncMixin
