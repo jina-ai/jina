@@ -37,16 +37,16 @@ fragmented, multi-vendor, generic legacy tools.
 
 <!-- end elevator-pitch -->
 
-## Install
+## Install:-
 
 - via PyPI: `pip install jina`
 - via Conda: `conda install jina -c conda-forge`
 - via Docker: `docker run jinaai/jina:latest`
 - [More install options](https://docs.jina.ai/get-started/install/)
 
-## [Documentation](https://docs.jina.ai)
+## [Documentation]: (https://docs.jina.ai)
 
-## Run Quick Demo
+## Run Quick Demo:-
 
 - [👗 Fashion image search](https://docs.jina.ai/get-started/hello-world/fashion/): `jina hello fashion`
 - [🤖 QA chatbot](https://docs.jina.ai/get-started/hello-world/covid-19-chatbot/): `pip install "jina[demo]" && jina hello chatbot`
@@ -54,7 +54,7 @@ fragmented, multi-vendor, generic legacy tools.
 - 🍴 Fork the source of a demo to your folder: `jina hello fork fashion ../my-proj/`
 
 
-## Build Your First Jina App
+## Build Your First Jina App:-
 
 Document, Executor, and Flow are three fundamental concepts in Jina.
 
@@ -150,7 +150,7 @@ This prints the following results:
 
 <!-- start support-pitch -->
 
-## Support
+## Support:-
 
 - Join our [Slack community](https://slack.jina.ai) to chat to our engineers about your use cases, questions, and
   support queries.
@@ -161,13 +161,13 @@ This prints the following results:
       and [live stream on YouTube](https://youtube.com/c/jina-ai)
 - Subscribe to the latest video tutorials on our [YouTube channel](https://youtube.com/c/jina-ai)
 
-## Join Us
+## Join Us:-
 
 Jina is backed by [Jina AI](https://jina.ai) and licensed under [Apache-2.0](./LICENSE). [We are actively hiring](https://jobs.jina.ai) AI engineers, solution engineers to build the next neural search ecosystem in opensource.
 
 <!-- end support-pitch -->
 
-## Contributing
+## Contributing:-
 
 We welcome all kinds of contributions from the open-source community, individuals and partners. We owe our success to
 your active involvement.
