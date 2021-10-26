@@ -101,6 +101,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -10991,4 +10992,52 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```a88b850d```](https://github.com/jina-ai/jina/commit/a88b850de273efdc0a7ad32b409dfa9853485fcc)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
  - [[```21eec917```](https://github.com/jina-ai/jina/commit/21eec9178c8e9e4914872fbbc0d92746d17482a5)] __-__ __docs__: fix docs conf.py (*Han Xiao*)
  - [[```aef2fd7c```](https://github.com/jina-ai/jina/commit/aef2fd7c6be2eda53b137c9ed00eed070e5cd443)] __-__ __version__: the next version will be 2.1.11 (*Jina Dev Bot*)
+
+<a name=release-note-2-1-12></a>
+## Release Note (`2.1.12`)
+
+> Release time: 2021-10-26 18:55:40
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Tenzin,  Deepankar Mahapatro,  Wang Bo,  Jina Dev Bot,  Tobias Jacobowitz,  Nan Wang,  AlaeddineAbdessalem,  Alex Cureton-Griffiths,  Maximilian Werk,  🙇
+
+
+### 🆕 New Features
+
+ - [[```15e010d2```](https://github.com/jina-ai/jina/commit/15e010d22bd9e50b88e8d250cce13212b0e345e7)] __-__ __flow__: block() now waits for specific threading event (#3790) (*Han Xiao*)
+ - [[```338cb080```](https://github.com/jina-ai/jina/commit/338cb0809a7006881551aa18beadb98a8807424a)] __-__ __k8s__: add gpu resource (#3693) (*Wang Bo*)
+ - [[```85495490```](https://github.com/jina-ai/jina/commit/854954902501fe0cc8cef097e8b78c4b52ed2720)] __-__ pass extra search paths to executor load config (#3680) (*AlaeddineAbdessalem*)
+
+### 🐞 Bug fixes
+
+ - [[```468c0cec```](https://github.com/jina-ai/jina/commit/468c0cece376d5afd42d0b68f5775bf040f76fb9)] __-__ __gateway__: dont cancel receive task (#3775) (*Tobias Jacobowitz*)
+ - [[```19a94a62```](https://github.com/jina-ai/jina/commit/19a94a627db1cc6d6043df00970c5be705992854)] __-__ allow tilde for from files (#3722) (*Maximilian Werk*)
+
+### 🧼 Code Refactoring
+
+ - [[```77255ae3```](https://github.com/jina-ai/jina/commit/77255ae3b1a3fe9fc0dbf700dbf5bf7dd93d7d1b)] __-__ __types__: allow chaining multiple convert_ functions (#3772) (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```7123ce25```](https://github.com/jina-ai/jina/commit/7123ce25ec914e4ee27928a04e3387daf1f711af)] __-__ __document__: typo in Document docstring (#3786) (*Tenzin*)
+ - [[```7d443865```](https://github.com/jina-ai/jina/commit/7d443865acb6a8aeaf8c2931cf819bf7fcab0e77)] __-__ add video search tutorials (#3709) (*Nan Wang*)
+ - [[```99ad6690```](https://github.com/jina-ai/jina/commit/99ad6690991b22d20819e24a872dc610fca8c9fd)] __-__ replace usages of parallel (#3769) (*AlaeddineAbdessalem*)
+ - [[```136ddecd```](https://github.com/jina-ai/jina/commit/136ddecda2049084269c5d278454a7baae99cd48)] __-__ add executor scalability with parallel section (#3729) (*AlaeddineAbdessalem*)
+ - [[```803cc82c```](https://github.com/jina-ai/jina/commit/803cc82c80386952e75401b52fa6888745ce5510)] __-__ expand executor yaml to be more usable (#3678) (*Alex Cureton-Griffiths*)
+ - [[```5be456d1```](https://github.com/jina-ai/jina/commit/5be456d1fb84b71d8b141139a6cce21246a20712)] __-__ fix docs css styling (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```31ce17c9```](https://github.com/jina-ai/jina/commit/31ce17c989eaa91725a33c62104ae4dfaf06d733)] __-__ __types__: minor clean up converter test (#3767) (*Wang Bo*)
+
+### 🍹 Other Improvements
+
+ - [[```e9577d37```](https://github.com/jina-ai/jina/commit/e9577d379af75702f1762568a437dcc9e1e1626a)] __-__ __jinad__: remove random port setting (#3788) (*Deepankar Mahapatro*)
+ - [[```f18b04eb```](https://github.com/jina-ai/jina/commit/f18b04eb82d18a3c554e2892bbae4b95fc0cb13e)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```7e050ffe```](https://github.com/jina-ai/jina/commit/7e050ffe5ecf32074fb6aded713c8706ca728931)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```1830b4e5```](https://github.com/jina-ai/jina/commit/1830b4e53779b9bd8db3ad4744801a2dc9ff233f)] __-__ __setup__: remove constraint on python 3.10 or higher (*Han Xiao*)
+ - [[```4a3b691f```](https://github.com/jina-ai/jina/commit/4a3b691f89b3dc1b54f90fe6fcc5a7e44ee2ce00)] __-__ update readme badge (*Han Xiao*)
+ - [[```78a2abf6```](https://github.com/jina-ai/jina/commit/78a2abf605b213ed6227afedf5535d02f9f71c82)] __-__ __version__: the next version will be 2.1.12 (*Jina Dev Bot*)
 
