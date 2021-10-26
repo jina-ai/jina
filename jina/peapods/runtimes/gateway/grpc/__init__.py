@@ -50,8 +50,7 @@ class GRPCRuntime(AsyncNewLoopRuntime):
         await self.server.start()
 
     async def async_teardown(self):
-        """Close the prefetcher"""
-        await self.streamer.close()
+        """Close the iolet"""
         if self.args.grpc_data_requests:
             await self._grpclet.close()
         else:

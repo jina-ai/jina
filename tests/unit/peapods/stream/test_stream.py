@@ -47,5 +47,3 @@ async def test_concurrent_requests():
 
     async for r in response:
         assert r.proto == request
-
-    await streamer.close()
