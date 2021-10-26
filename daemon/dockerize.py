@@ -363,7 +363,6 @@ class Dockerizer:
         """
         return {
             'JINA_LOG_WORKSPACE': os.path.join(__partial_workspace__, 'logs'),
-            'JINA_RANDOM_PORT_MIN': '49153',
             'JINA_LOG_LEVEL': os.getenv('JINA_LOG_LEVEL') or 'INFO',
             'JINA_HUB_ROOT': os.path.join(
                 __partial_workspace__, '.jina', 'hub-packages'
