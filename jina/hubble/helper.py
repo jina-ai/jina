@@ -333,10 +333,13 @@ def is_requirements_installed(
     try:
         with requirements_file.open() as requirements:
             pkg_resources.require(requirements)
-    except (DistributionNotFound, VersionConflict, RequirementParseError) as ex:
+    except (DistributionNotFound, RequirementParseError) as ex:
         if show_warning:
             warnings.warn(str(ex), UserWarning)
         return False
+    except VersionConflict as ex:
+        if show_warning:
+            warnings.warn(str(ex), UserWarning)
     return True
 
 
