@@ -355,6 +355,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self._inspect_pods = {}  # type: Dict[str, str]
         self._endpoints_mapping = {}  # type: Dict[str, Dict]
         self._build_level = FlowBuildLevel.EMPTY
+        self._close_flow = None
         self._last_changed_pod = [
             GATEWAY_NAME
         ]  #: default first pod is gateway, will add when build()
@@ -1117,6 +1118,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             return self.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        self._close_flow.set()
         super().__exit__(exc_type, exc_val, exc_tb)
 
         # unset all envs to avoid any side-effect
@@ -1127,6 +1129,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         # do not know why but removing these 2 lines make 2 tests fail
         if GATEWAY_NAME in self._pod_nodes:
             self._pod_nodes.pop(GATEWAY_NAME)
+
 
         self._build_level = FlowBuildLevel.EMPTY
         self.logger.debug('Flow is closed!')
@@ -1145,6 +1148,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         :return: this instance
         """
+
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
             self.build(copy_flow=False)
 
@@ -1163,7 +1167,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self._wait_until_all_ready()
 
         self._build_level = FlowBuildLevel.RUNNING
-
+        self._close_flow = threading.Event()
         return self
 
     def _wait_until_all_ready(self) -> bool:
@@ -1581,7 +1585,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def block(self):
         """Block the process until user hits KeyboardInterrupt"""
         try:
-            threading.Event().wait()
+            self._close_flow.wait()
         except KeyboardInterrupt:
             pass
 
