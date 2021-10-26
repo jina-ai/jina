@@ -965,7 +965,6 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s1">'JINA_LOG_WORKSPACE'</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__partial_workspace__</span><span class="p">,</span> <span class="s1">'logs'</span><span class="p">),</span>
-            <span class="s1">'JINA_RANDOM_PORT_MIN'</span><span class="p">:</span> <span class="s1">'49153'</span><span class="p">,</span>
             <span class="s1">'JINA_LOG_LEVEL'</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'JINA_LOG_LEVEL'</span><span class="p">)</span> <span class="ow">or</span> <span class="s1">'INFO'</span><span class="p">,</span>
             <span class="s1">'JINA_HUB_ROOT'</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                 <span class="n">__partial_workspace__</span><span class="p">,</span> <span class="s1">'.jina'</span><span class="p">,</span> <span class="s1">'hub-packages'</span>
