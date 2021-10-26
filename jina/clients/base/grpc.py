@@ -1,7 +1,5 @@
 import asyncio
 from contextlib import nullcontext
-from threading import Lock
-import threading
 from typing import Callable, Union, Optional
 
 import grpc
@@ -9,7 +7,7 @@ import grpc
 from ..base import BaseClient
 from ..helper import callback_exec
 from ..request import GeneratorSourceType
-from ...excepts import BadClient, BadClientInput, GRPCClientThreadingError
+from ...excepts import BadClient, BadClientInput
 from ...logging.profile import ProgressBar
 from ...proto import jina_pb2_grpc
 from ...types.request import Response
@@ -32,10 +30,6 @@ class GRPCBaseClient(BaseClient):
         on_always: Callable = None,
         **kwargs,
     ):
-        if threading.current_thread() is not threading.main_thread():
-            raise GRPCClientThreadingError(
-                'Using GRPCClient outside the main thread is not allowed. Please opt for multi-processing instead.'
-            )
         try:
             self.inputs = inputs
             req_iter = self._get_requests(**kwargs)

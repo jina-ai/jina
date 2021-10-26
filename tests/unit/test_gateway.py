@@ -7,7 +7,6 @@ import pytest
 
 from jina import Document, Client, Flow
 from jina.enums import CompressAlgo
-from jina.excepts import GRPCClientThreadingError
 from tests import random_docs
 
 
@@ -79,28 +78,3 @@ def test_gateway_concurrency(protocol, reraise):
     # requests.
     rate = failed / success
     assert rate < 0.1
-
-
-def test_grpc_client_threading(reraise):
-    PORT_EXPOSE = 12345
-    CONCURRENCY = 2
-
-    def _request():
-        with reraise:
-            with pytest.raises(GRPCClientThreadingError):
-                Client(port=PORT_EXPOSE, protocol='grpc').index(
-                    inputs=(Document() for _ in range(256)),
-                    return_results=True,
-                    _size=16,
-                )
-
-    f = Flow(protocol='grpc', port_expose=PORT_EXPOSE).add(parallel=2)
-    with f:
-        threads = []
-        for i in range(CONCURRENCY):
-            t = Thread(target=_request)
-            threads.append(t)
-            t.start()
-
-        for t in threads:
-            t.join()
