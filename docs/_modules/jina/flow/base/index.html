@@ -605,6 +605,7 @@
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">sys</span>
@@ -1719,6 +1720,9 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'_stop_event'</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stop_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span>
 
         <span class="c1"># unset all envs to avoid any side-effect</span>
@@ -1768,7 +1772,7 @@
 
         <span class="k">return</span> <span class="bp">self</span></div>
 
-    <span class="k">def</span> <span class="nf">_wait_until_all_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_wait_until_all_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">threads</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -2180,10 +2184,22 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">address_table</span>
 
-<div class="viewcode-block" id="Flow.block"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.block">[docs]</a>    <span class="k">def</span> <span class="nf">block</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Block the process until user hits KeyboardInterrupt"""</span>
+<div class="viewcode-block" id="Flow.block"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.block">[docs]</a>    <span class="k">def</span> <span class="nf">block</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">stop_event</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Event</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="sd">"""Block the Flow until `stop_event` is set or user hits KeyboardInterrupt</span>
+
+<span class="sd">        :param stop_event: a threading event or a multiprocessing event that onces set will resume the control Flow</span>
+<span class="sd">            to main thread.</span>
+<span class="sd">        """</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">stop_event</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_stop_event</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+                <span class="p">)</span>  <span class="c1">#: this allows `.close` to close the Flow from another thread/proc</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_stop_event</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">stop_event</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
             <span class="k">pass</span></div>
 

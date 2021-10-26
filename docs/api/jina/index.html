@@ -2446,8 +2446,14 @@ do the modification on top of it then return, otherwise, do in-line modification
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.Flow.block">
-<span class="sig-name descname"><span class="pre">block</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/flow/base/#Flow.block"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.Flow.block" title="Permalink to this definition">¶</a></dt>
-<dd><p>Block the process until user hits KeyboardInterrupt</p>
+<span class="sig-name descname"><span class="pre">block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stop_event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/flow/base/#Flow.block"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.Flow.block" title="Permalink to this definition">¶</a></dt>
+<dd><p>Block the Flow until <cite>stop_event</cite> is set or user hits KeyboardInterrupt</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>stop_event</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – a threading event or a multiprocessing event that onces set will resume the control Flow
+to main thread.</p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.Flow.protocol">
