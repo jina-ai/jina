@@ -78,6 +78,23 @@ def k8s_flow_configmap(test_executor_image: str) -> Flow:
     return flow
 
 
+@pytest.fixture
+def k8s_flow_gpu(test_executor_image: str) -> Flow:
+    flow = Flow(
+        name='k8s-flow-gpu',
+        port_expose=9090,
+        infrastructure='K8S',
+        protocol='http',
+        timeout_ready=120000,
+    ).add(
+        name='test_executor',
+        uses=test_executor_image,
+        timeout_ready=12000,
+        gpus=1,
+    )
+    return flow
+
+
 @pytest.mark.timeout(3600)
 @pytest.mark.parametrize('k8s_connection_pool', [True, False])
 def test_flow_with_needs(
@@ -217,6 +234,27 @@ def test_flow_with_configmap(
         assert doc.tags.get('k1') == 'v1'
         assert doc.tags.get('k2') == 'v2'
         assert doc.tags.get('env') == {'k1': 'v1', 'k2': 'v2'}
+
+
+@pytest.mark.timeout(3600)
+@pytest.mark.skip('Need to config gpu host.')
+def test_flow_with_gpu(
+    k8s_cluster,
+    k8s_flow_gpu,
+    load_images_in_kind,
+    set_test_pip_version,
+    logger,
+):
+    resp = run_test(
+        k8s_flow_gpu,
+        endpoint='/cuda',
+        port_expose=9090,
+    )
+
+    docs = resp[0].docs
+    assert len(docs) == 10
+    for doc in docs:
+        assert doc.tags['resources']['limits'] == {'nvidia.com/gpu:': 1}
 
 
 @pytest.fixture()

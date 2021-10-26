@@ -1,8 +1,9 @@
+import os
 import json
 from typing import Dict
 from unittest.mock import Mock
 
-import os
+import yaml
 import pytest
 import kubernetes
 
@@ -68,3 +69,39 @@ def test_create(template: str, params: Dict, monkeypatch):
 
     monkeypatch.undo()
     os.remove(path_to_config_file)
+
+
+@pytest.mark.parametrize('template', ['deployment', 'deployment-init'])
+def test_create_deployment_with_device_plugin(template, monkeypatch):
+    params = {
+        'name': 'test-name',
+        'namespace': 'test-namespace',
+        'image': 'test-image',
+        'replicas': 1,
+        'command': 'test-command',
+        'args': 'test-args',
+        'port_expose': 1234,
+        'port_in': 1234,
+        'port_out': 1234,
+        'port_ctrl': 1234,
+        'pull_policy': 1234,
+        'device_plugins': {'hardware-vendor.example/foo': 2, 'nvidia.com/gpu:': 3},
+    }
+
+    create_from_yaml_mock = Mock()
+    load_kube_config_mock = Mock()
+    remove_mock = Mock()
+    monkeypatch.setattr(kubernetes.utils, 'create_from_yaml', create_from_yaml_mock)
+    monkeypatch.setattr(kubernetes.config, 'load_kube_config', load_kube_config_mock)
+    monkeypatch.setattr(os, 'remove', remove_mock)
+
+    create(template, params)
+
+    assert remove_mock.call_count == 1
+    path_to_config_file = remove_mock.call_args[0][0]
+
+    with open(path_to_config_file, 'r') as f:
+        config = yaml.safe_load(f)
+        assert config['spec']['template']['spec']['containers'][0]['resources'] == {
+            'limits': {'hardware-vendor.example/foo': 2, 'nvidia.com/gpu:': 3}
+        }
