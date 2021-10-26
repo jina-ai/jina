@@ -1418,7 +1418,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         mermaid_str = op_flow._mermaid_str
         if vertical_layout:
-            mermaid_str = mermaid_str.replace('graph LR', 'graph TD')
+            mermaid_str = mermaid_str.replace('flowchart LR', 'flowchart TD')
 
         image_type = 'svg'
         if output and not output.endswith('svg'):
