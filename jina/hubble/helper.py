@@ -351,11 +351,21 @@ def install_requirements(
     import pkg_resources
 
     with requirements_file.open() as requirements:
-        install_reqs = [
-            str(req)
-            for req in pkg_resources.parse_requirements(requirements)
-            if req.project_name not in excludes or len(req.extras) > 0
-        ]
+        install_options = []
+        install_reqs = []
+        for req in requirements:
+            req = req.strip()
+            if (not req) or req.startswith('#'):
+                continue
+            elif req.startswith('-'):
+                install_options.extend(req.split(' '))
+            else:
+                for req_spec in pkg_resources.parse_requirements(req):
+                    if (
+                        req_spec.project_name not in excludes
+                        or len(req_spec.extras) > 0
+                    ):
+                        install_reqs.append(req)
 
     if len(install_reqs) == 0:
         return
@@ -373,4 +383,5 @@ def install_requirements(
             f'--default-timeout={timeout}',
         ]
         + install_reqs
+        + install_options
     )
