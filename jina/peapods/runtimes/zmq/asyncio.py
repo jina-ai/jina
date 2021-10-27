@@ -17,6 +17,9 @@ class AsyncNewLoopRuntime(BaseRuntime, ABC):
     """
     The async runtime to start a new event loop.
     """
+    def _handle_term_signal(self):
+        self.logger.debug(f' Terminate signal received')
+        self.is_cancel.set()
 
     def __init__(
         self,
@@ -37,7 +40,7 @@ class AsyncNewLoopRuntime(BaseRuntime, ABC):
                 for signame in {'SIGINT', 'SIGTERM'}:
                     self._loop.add_signal_handler(
                         getattr(signal, signame),
-                        lambda *args, **kwargs: self.is_cancel.set(),
+                        lambda *args, **kwargs: self._handle_term_signal(),
                     )
             except (ValueError, RuntimeError) as exc:
                 self.logger.warning(
