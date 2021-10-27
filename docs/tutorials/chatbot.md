@@ -1,4 +1,4 @@
-# Simple Chatbot in Jina
+# Question-Answering Chatbot via Transformer
 
 ```{article-info}
 :avatar: avatars/susana.jpg

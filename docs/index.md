@@ -122,26 +122,27 @@ fundamentals/clean-code
 
 
 ```{toctree}
+:caption: Data Type
+:hidden:
+
+datatype/text/index
+datatype/image/index
+datatype/video/index
+datatype/audio/index
+datatype/mesh/index
+```
+
+```{toctree}
 :caption: Advanced
 :hidden:
 
 advanced/hub/index
+advanced/master-executor
 advanced/daemon/index
 advanced/experimental/index
+advanced/gpu-executor
 ```
 
-```{toctree}
-:caption: Tutorials
-:hidden:
-
-tutorials/fuzzy-grep
-tutorials/chatbot
-tutorials/master-executor
-tutorials/refactor-hello-world
-tutorials/gpu-executor
-tutorials/video-search
-tutorials/video-qa
-```
 
 ```{toctree}
 :caption: API Reference
