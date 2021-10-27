@@ -16,7 +16,7 @@ class DocumentArrayNeuralOpsMixin:
 
     def match(
         self,
-        darray: Union['DocumentArray', 'DocumentArrayMemmap'],
+        darray: Union['DocumentArray', 'DocumentArrayMemmap', 'FaissContainer'],
         metric: Union[
             str, Callable[['np.ndarray', 'np.ndarray'], 'np.ndarray']
         ] = 'cosine',
@@ -118,7 +118,9 @@ class DocumentArrayNeuralOpsMixin:
                 rhv, cdist, _limit, normalization, metric_name, batch_size
             )
         else:
-            dist, idx = lhv._match(
+            from ..faiss import FaissIndexer
+            match_func = self._faiss_match if isinstance(rhv, FaissIndexer) else self._match
+            dist, idx = match_func(
                 rhv, cdist, _limit, normalization, metric_name, is_sparse
             )
 
@@ -178,6 +180,47 @@ class DocumentArrayNeuralOpsMixin:
 
             dist = minmax_normalize(dist, normalization, (min_d, max_d))
 
+        return dist, idx
+
+    def _faiss_match(self,
+                     fIndexer: 'FaissIndexer',
+                     cdist: Callable[[np.ndarray, np.ndarray, str], np.ndarray],
+                     limit: int,
+                     normalization: Tuple[int, int],
+                     metric_name: str,
+                     is_sparse: bool
+                     ) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Computes the matches between self and `fIndexer` using fast similarity search with Faiss.
+
+        :param fIndexer: the Faiss indexer to match against.
+        :param cdist: the distance metric
+        :param limit: the maximum number of matches, when not given
+                      all Documents in `darray` are considered as matches
+        :param normalization: a tuple [a, b] to be used with min-max normalization,
+                                the min distance will be rescaled to `a`, the max distance will be rescaled to `b`
+                                all values will be rescaled into range `[a, b]`.
+        :param metric_name: if provided, then match result will be marked with this string.
+        :param is_sparse: if provided, then match is computed on sparse embeddings
+        :return: distances and indices
+        """
+
+        # TODO: `cdist` and `is_sparse` not yet used
+
+        # difference: normalization here is performed based on top-k not entire db
+        if metric_name != 'cosine':
+            raise NotImplementedError
+        if metric_name != fIndexer.metric:
+            raise ValueError('Metric defined in FaissIndexer {} does not match {}'.format(fIndexer.metric, metric_name))
+
+        query     = self.embeddings
+        k         = min(limit, len(fIndexer))
+        dist, idx = fIndexer.search(query, k)
+
+        if isinstance(normalization, (tuple, list)) and normalization is not None:
+            min_d = np.min(dist, axis=-1, keepdims=True)
+            max_d = np.max(dist, axis=-1, keepdims=True)
+            dist  = minmax_normalize(dist, normalization, (min_d, max_d))
         return dist, idx
 
     def _match_online(

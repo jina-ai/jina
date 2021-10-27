@@ -193,6 +193,9 @@ from jina.types.document import Document
 from jina.types.arrays.document import DocumentArray
 from jina.types.arrays.memmap import DocumentArrayMemmap
 
+# Indexer
+from jina.types.faiss import FaissIndexer
+
 # Executor
 from jina.executors import BaseExecutor as Executor
 from jina.executors.decorators import requests
