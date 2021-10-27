@@ -98,7 +98,7 @@ def mixin_pea_parser(parser):
         default=1,
         help='The number of shards in the pod running at the same time, '
         '`port_in` and `port_out` will be set to random, '
-        'and routers will be added automatically when necessary',
+        'and routers will be added automatically when necessary. For more details check https://docs.jina.ai/fundamentals/flow/topology/',
     )
 
     gp.add_argument(
