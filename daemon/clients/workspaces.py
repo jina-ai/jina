@@ -85,7 +85,7 @@ class FormData(aiohttpFormData, ExitStack):
             except TypeError:
                 self._logger.error(f'invalid path passed {path}')
                 continue
-        self._logger.warning(
+        self._logger.info(
             (
                 f'{len(self)} file(s) ready to be uploaded: {", ".join(self.filenames)}'
                 if len(self) > 0

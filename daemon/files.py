@@ -44,6 +44,7 @@ def store_files_in_workspace(
             logger.debug(f'unzipping {dest}')
             with ZipFile(dest, 'r') as f:
                 f.extractall(path=workdir)
+                # f.extractall(path=os.path.join(workdir, Path(dest).stem))
             os.remove(dest)
 
 

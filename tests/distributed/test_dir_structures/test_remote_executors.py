@@ -54,14 +54,22 @@ src4: Multiple Executors using python files in multiple directories
 
 
 @pytest.mark.parametrize(
-    'config_yml',
-    ('src1/config.yml', 'src2/config.yml', 'src3/config.yml', 'src4/config.yml'),
+    'upload_files, config_yml',
+    [
+        ('src1', 'config.yml'),
+        ('src2', 'config.yml'),
+        ('src3', 'config.yml'),
+        ('src4', 'config_data.yml'),
+        ('src4', 'config_io.yml'),
+        (os.path.join(cur_dir, 'src1'), 'config.yml'),
+        (os.path.join(cur_dir, 'src2'), 'config.yml'),
+        (os.path.join(cur_dir, 'src3'), 'config.yml'),
+        (os.path.join(cur_dir, 'src4'), 'config_data.yml'),
+        (os.path.join(cur_dir, 'src4'), 'config_io.yml'),
+    ],
 )
-def test_remote_executor_via_yaml_relative_path(config_yml):
-    f = Flow().add(
-        # host=CLOUD_HOST,
-        uses=config_yml
-    )
+def test_remote_executor_via_config_yaml(upload_files, config_yml):
+    f = Flow().add(host=CLOUD_HOST, uses=config_yml, upload_files=upload_files)
     with f:
         resp = f.post(
             on='/',
@@ -72,63 +80,26 @@ def test_remote_executor_via_yaml_relative_path(config_yml):
 
 
 @pytest.mark.parametrize(
-    'config_yml',
-    (
-        os.path.join(cur_dir, 'src1/config.yml'),
-        os.path.join(cur_dir, 'src2/config.yml'),
-        os.path.join(cur_dir, 'src3/config.yml'),
-    ),
+    'upload_files, uses, executor_entrypoint',
+    [
+        ('src1', 'MyExecutor', 'my_executor.py'),
+        ('src2', 'MyExecutor', 'executors/__init__.py'),
+        ('src3', 'MyExecutor', 'executors/__init__.py'),
+        ('src4', 'IOExecutor', 'executors/__init__.py'),
+        ('src4', 'DataExecutor', 'executors/__init__.py'),
+        (os.path.join(cur_dir, 'src1'), 'MyExecutor', 'my_executor.py'),
+        (os.path.join(cur_dir, 'src2'), 'MyExecutor', 'executors/__init__.py'),
+        (os.path.join(cur_dir, 'src3'), 'MyExecutor', 'executors/__init__.py'),
+        (os.path.join(cur_dir, 'src4'), 'IOExecutor', 'executors/__init__.py'),
+        (os.path.join(cur_dir, 'src4'), 'DataExecutor', 'executors/__init__.py'),
+    ],
 )
-def test_remote_executor_via_yaml_absolute_path(config_yml):
+def test_remote_executor_via_pymodules(upload_files, uses, executor_entrypoint):
     f = Flow().add(
-        # host=CLOUD_HOST,
-        uses=config_yml
-    )
-    with f:
-        resp = f.post(
-            on='/',
-            inputs=Document(text=config_yml),
-            return_results=True,
-        )
-        assert resp[0].data.docs[0].text == config_yml * 2
-
-
-@pytest.mark.parametrize(
-    'executor_entrypoint',
-    (
-        'src1/executor.py',
-        'src2/executors/__init__.py',
-        'src3/executors/__init__.py',
-    ),
-)
-def test_remote_executor_via_pymodules_relative_path(executor_entrypoint):
-    f = Flow().add(
-        # host=CLOUD_HOST,
-        uses='MyExecutor',
+        host=CLOUD_HOST,
+        uses=uses,
         py_modules=executor_entrypoint,
-    )
-    with f:
-        resp = f.post(
-            on='/',
-            inputs=Document(text=executor_entrypoint),
-            return_results=True,
-        )
-        assert resp[0].data.docs[0].text == executor_entrypoint * 2
-
-
-@pytest.mark.parametrize(
-    'executor_entrypoint',
-    (
-        os.path.join(cur_dir, 'src1/executor.py'),
-        os.path.join(cur_dir, 'src2/executors/__init__.py'),
-        os.path.join(cur_dir, 'src3/executors/__init__.py'),
-    ),
-)
-def test_remote_executor_via_pymodules_absolute_path(executor_entrypoint):
-    f = Flow().add(
-        # host=CLOUD_HOST,
-        uses='MyExecutor',
-        py_modules=executor_entrypoint,
+        upload_files=upload_files,
     )
     with f:
         resp = f.post(

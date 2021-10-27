@@ -2,7 +2,8 @@ import os
 import copy
 import asyncio
 import argparse
-from typing import TYPE_CHECKING, Union
+from pathlib import Path
+from typing import TYPE_CHECKING, List, Optional, Union
 
 from ....enums import SocketType
 
@@ -40,6 +41,7 @@ class JinadRuntime(AsyncNewLoopRuntime):
         self.port_jinad = args.port_jinad
         self.pea_id = None
         self.logstream = None
+        self._filepaths = []
 
     async def async_setup(self):
         """Create Workspace, Pea on remote JinaD server"""
@@ -61,9 +63,10 @@ class JinadRuntime(AsyncNewLoopRuntime):
         if not await self.client.alive:
             raise DaemonConnectivityError
 
+        payload = replace_enum_to_str(vars(self._mask_args()))
         # Create a remote workspace with upload_files
         workspace_id = await self.client.workspaces.create(
-            paths=self.args.upload_files,
+            paths=self._filepaths,
             id=self.args.workspace_id,
             complete=True,
         )
@@ -71,17 +74,15 @@ class JinadRuntime(AsyncNewLoopRuntime):
             self.logger.critical(f'remote workspace creation failed')
             raise DaemonWorkspaceCreationFailed
 
-        payload = replace_enum_to_str(vars(self._mask_args(self.args)))
         # Create a remote Pea in the above workspace
-        success, ret = await self.client.peas.create(
+        success, response = await self.client.peas.create(
             workspace_id=workspace_id, payload=payload
         )
         if not success:
             self.logger.critical(f'remote pea creation failed')
-            raise DaemonPeaCreationFailed(
-                ret
-            )  # pea id is the error message here, to be
-        self.pea_id = ret
+            raise DaemonPeaCreationFailed(response)
+        else:
+            self.pea_id = response
 
     async def _wait_for_cancel(self):
         while not self.is_cancel.is_set():
@@ -114,56 +115,95 @@ class JinadRuntime(AsyncNewLoopRuntime):
         """Sleep forever, no prince will come."""
         await asyncio.sleep(1e10)
 
-    def _mask_args(self, args: 'argparse.Namespace'):
-        _args = copy.deepcopy(args)
+    def _update_filepaths(self, cargs: 'argparse.Namespace') -> None:
+        """Update filepaths for fileargs
+
+        :param cargs: copied args
+        """
+        # fileargs = ('upload_files', 'uses', 'uses_after', 'uses_before', 'py_modules')
+        abs_directories = set()
+
+        if not cargs.upload_files:
+            self.logger.warning(f'no files passed to upload to remote')
+        else:
+            for path in cargs.upload_files:
+                fullpath = Path(complete_path(path))
+                dirpath = fullpath.parent
+                abs_directories.add(dirpath)
+
+        # def _process(value):
+        #     """
+        #     'myexecutor.py' ->
+        #     'executors/__init__.py' ->
+        #     """
+        #     try:
+        #         fullpath = Path(complete_path(value))
+        #         dirpath = fullpath.parent
+        #         dirname = dirpath.name
+        #         filename = fullpath.name
+        #         abs_directories.add(dirpath)
+        #         return (
+        #             filename
+        #             if len(Path(value).parts) == 1
+        #             else os.path.join(dirname, filename)
+        #         )
+        #     except FileNotFoundError:
+        #         return
+
+        # for arg in fileargs:
+        #     value = getattr(cargs, arg, None)
+        #     if not value:
+        #         continue
+        #     elif isinstance(value, list):  # py_modules
+        #         setattr(
+        #             cargs,
+        #             arg,
+        #             list(filter(lambda x: x is not None, [_process(v) for v in value])),
+        #         )
+        #     else:
+        #         new_value = _process(value)
+        #         if new_value:
+        #             setattr(cargs, arg, new_value)
+
+        self._filepaths = list(abs_directories)
+        self.logger.warning(f'_filepaths: {self._filepaths}')
+
+    def _mask_args(self):
+        cargs = copy.deepcopy(self.args)
 
         # reset the runtime to ZEDRuntime/GRPCDataRuntime or ContainerRuntime
-        if _args.runtime_cls == 'JinadRuntime':
-            if _args.uses.startswith(('docker://', 'jinahub+docker://')):
-                _args.runtime_cls = 'ContainerRuntime'
+        if cargs.runtime_cls == 'JinadRuntime':
+            if cargs.uses.startswith(('docker://', 'jinahub+docker://')):
+                cargs.runtime_cls = 'ContainerRuntime'
             else:
-                if _args.grpc_data_requests:
-                    _args.runtime_cls = 'GRPCDataRuntime'
+                if cargs.grpc_data_requests:
+                    cargs.runtime_cls = 'GRPCDataRuntime'
                 else:
-                    _args.runtime_cls = 'ZEDRuntime'
+                    cargs.runtime_cls = 'ZEDRuntime'
 
         # TODO:/NOTE this prevents jumping from remote to another remote (Han: 2021.1.17)
         # _args.host = __default_host__
         # host resetting disables dynamic routing. Use `disable_remote` instead
-        _args.disable_remote = True
+        cargs.disable_remote = True
 
-        # NOTE: on remote relative filepaths should be converted to filename only
-        def basename(field):
-            if field and not field.startswith(('docker://', 'jinahub')):
-                try:
-                    return os.path.basename(complete_path(field))
-                except FileNotFoundError:
-                    pass
-            return field
-
-        for f in ('uses', 'uses_after', 'uses_before', 'py_modules'):
-            attr = getattr(_args, f, None)
-            if not attr:
-                continue
-            setattr(_args, f, [basename(m) for m in attr]) if isinstance(
-                attr, list
-            ) else setattr(_args, f, basename(attr))
-
-        _args.log_config = ''  # do not use local log_config
-        _args.upload_files = []  # reset upload files
-        _args.noblock_on_start = False  # wait until start success
+        self._update_filepaths(cargs)
+        cargs.log_config = ''  # do not use local log_config
+        cargs.upload_files = []  # reset upload files
+        cargs.noblock_on_start = False  # wait until start success
 
         changes = []
-        for k, v in vars(_args).items():
-            if v != getattr(args, k):
-                changes.append(f'{k:>30s}: {str(getattr(args, k)):30s} -> {str(v):30s}')
+        for k, v in vars(cargs).items():
+            if v != getattr(self.args, k):
+                changes.append(
+                    f'{k:>30s}: {str(getattr(self.args, k)):30s} -> {str(v):30s}'
+                )
         if changes:
             changes = [
                 'note the following arguments have been masked or altered for remote purpose:'
             ] + changes
             self.logger.debug('\n'.join(changes))
 
-        return _args
+        return cargs
 
     # Static methods used by the Pea to communicate with the `Runtime` in the separate process
 

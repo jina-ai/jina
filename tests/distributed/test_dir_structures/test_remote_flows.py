@@ -29,7 +29,6 @@ def RemoteFlow(directory, filename: str, envs: Dict[str, str] = {}):
 
 
 @pytest.mark.parametrize('directory', (['src1', 'src2', 'src3', 'src4']))
-# @pytest.mark.parametrize('directory', (['src1']))
 def test_remote_flow_with_config_yaml(directory):
     with RemoteFlow(
         directory=os.path.join(cur_dir, directory),
