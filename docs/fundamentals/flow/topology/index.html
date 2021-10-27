@@ -817,14 +817,14 @@ In this case Jina will shard the Executor and create Replicas for each shard.</p
 <img alt="../../../_images/replica_shards_example.svg" src="../../../_images/replica_shards_example.svg"/></figure>
 <p>This Flow has a single Executor with 2 Shards and 3 Replicas, which means it gets split into 2 Shards with 3 Replicas each. In total this Flow has 2*3=6 workers and could be distributed to six different machines if necessary.</p>
 </section>
-<section id="replica-vs-shards">
-<h2>Replica vs Shards<a class="headerlink" href="#replica-vs-shards" title="Permalink to this headline">¶</a></h2>
+<section id="replicas-vs-shards">
+<h2>Replicas vs Shards<a class="headerlink" href="#replicas-vs-shards" title="Permalink to this headline">¶</a></h2>
 <p>The next table shows the difference between shards and replicas.</p>
 <div class="table-wrapper"><table border="1" class="docutils">
 <thead>
 <tr>
 <th></th>
-<th>Replica</th>
+<th>Replicas</th>
 <th>Shards</th>
 </tr>
 </thead>
@@ -929,7 +929,7 @@ Also replicas provide high availability in case some executors are taken down (f
 </ul>
 </li>
 <li><a class="reference internal" href="#combining-replicas-shards">Combining Replicas &amp; Shards</a></li>
-<li><a class="reference internal" href="#replica-vs-shards">Replica vs Shards</a></li>
+<li><a class="reference internal" href="#replicas-vs-shards">Replicas vs Shards</a></li>
 </ul>
 </li>
 </ul>
