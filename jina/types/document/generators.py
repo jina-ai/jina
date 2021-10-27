@@ -104,6 +104,7 @@ def from_csv(
     field_resolver: Optional[Dict[str, str]] = None,
     size: Optional[int] = None,
     sampling_rate: Optional[float] = None,
+    delimiter: Optional[str] = ",",
 ) -> Generator['Document', None, None]:
     """Generator function for CSV. Yields documents.
 
@@ -113,12 +114,13 @@ def from_csv(
             a JSON string or a Python dict.
     :param size: the maximum number of the documents
     :param sampling_rate: the sampling rate between [0, 1]
+    :param delimiter: the character that separates fields in your CSV file
     :yield: documents
 
     """
     from ..document import Document
 
-    lines = csv.DictReader(fp)
+    lines = csv.DictReader(fp, dialect=dialect, delimiter=delimiter)
     for value in _subsample(lines, size, sampling_rate):
         if 'groundtruth' in value and 'document' in value:
             yield Document(value['document'], field_resolver), Document(
