@@ -115,7 +115,7 @@ with f:
 That means, **we want to find lines from the above code snippet that are most similar to `@request(on=something)`.**  Now click <kbd>Execute</kbd> button!
 
 <p align="center">
-<img src="https://github.com/jina-ai/jina/blob/master/.github/swagger-ui-prettyprint1.gif?raw=true" alt="Jina Swagger UI extension on visualizing neural search results" width="85%">
+<img src="https://github.com/jina-ai/jina/blob/master/.github/swaggerui.gif?raw=true" alt="Jina Swagger UI extension on visualizing neural search results" width="85%">
 </p>
 
 3️⃣ Not a GUI fan? Let's do it in Python then! Keep the above server running and start a simple client:
