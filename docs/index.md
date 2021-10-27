@@ -122,7 +122,7 @@ fundamentals/clean-code
 
 
 ```{toctree}
-:caption: Data Type
+:caption: Data Types
 :hidden:
 
 datatype/text/index
