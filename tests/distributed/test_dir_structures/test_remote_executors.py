@@ -1,42 +1,51 @@
 import os
-from posixpath import join
 
 import pytest
-
-from daemon.clients import JinaDClient
 from jina import Flow, Document, __default_host__
 
 CLOUD_HOST = 'localhost:8000'  # consider it as the staged version
 cur_dir = os.path.dirname(os.path.abspath(__file__))
-jinad_client = JinaDClient(host=__default_host__, port=8000)
-
 
 """
-Upload executors in Flow syntax to JinaD
+Upload executors in `Flow().add()` syntax to JinaD
 
-executor1: (Simplest case) Single python file
+src1: (Simplest case) Single python file
 .
-├── executor1
+├── src1
 │   ├── config.yml
 │   └── my_executor.py
 
-executor2: Multiple python files in one directory
+src2: Multiple python files in one directory
 .
-├── executor2
+├── src2
 │   ├── config.yml
-│   └── executor
+│   └── executors
 │       ├── __init__.py
 │       ├── helper.py
 │       └── my_executor.py
 
-executor3: Multiple python files in multiple directories
+src3: Multiple python files in multiple directories
 .
-├── executor3
+├── src3
 │   ├── config.yml
-│   └── executor
+│   └── executors
 │       ├── __init__.py
 │       ├── helper.py
 │       ├── my_executor.py
+│       └── utils
+│           ├── __init__.py
+│           ├── data.py
+│           └── io.py
+
+src4: Multiple Executors using python files in multiple directories
+.
+├── src4
+│   ├── config_data.yml
+│   ├── config_io.yml
+│   └── executors
+│       ├── __init__.py
+│       ├── helper.py
+│       ├── my_executor.py      # Multiple Executors
 │       └── utils
 │           ├── __init__.py
 │           ├── data.py
@@ -46,7 +55,7 @@ executor3: Multiple python files in multiple directories
 
 @pytest.mark.parametrize(
     'config_yml',
-    ('executor1/config.yml', 'executor2/config.yml', 'executor3/config.yml'),
+    ('src1/config.yml', 'src2/config.yml', 'src3/config.yml', 'src4/config.yml'),
 )
 def test_remote_executor_via_yaml_relative_path(config_yml):
     f = Flow().add(
@@ -65,9 +74,9 @@ def test_remote_executor_via_yaml_relative_path(config_yml):
 @pytest.mark.parametrize(
     'config_yml',
     (
-        os.path.join(cur_dir, 'executor1/config.yml'),
-        os.path.join(cur_dir, 'executor2/config.yml'),
-        os.path.join(cur_dir, 'executor3/config.yml'),
+        os.path.join(cur_dir, 'src1/config.yml'),
+        os.path.join(cur_dir, 'src2/config.yml'),
+        os.path.join(cur_dir, 'src3/config.yml'),
     ),
 )
 def test_remote_executor_via_yaml_absolute_path(config_yml):
@@ -87,9 +96,9 @@ def test_remote_executor_via_yaml_absolute_path(config_yml):
 @pytest.mark.parametrize(
     'executor_entrypoint',
     (
-        'executor1/my_executor.py',
-        'executor2/executor/__init__.py',
-        'executor3/executor/__init__.py',
+        'src1/executor.py',
+        'src2/executors/__init__.py',
+        'src3/executors/__init__.py',
     ),
 )
 def test_remote_executor_via_pymodules_relative_path(executor_entrypoint):
@@ -110,9 +119,9 @@ def test_remote_executor_via_pymodules_relative_path(executor_entrypoint):
 @pytest.mark.parametrize(
     'executor_entrypoint',
     (
-        os.path.join(cur_dir, 'executor1/my_executor.py'),
-        os.path.join(cur_dir, 'executor2/executor/__init__.py'),
-        os.path.join(cur_dir, 'executor3/executor/__init__.py'),
+        os.path.join(cur_dir, 'src1/executor.py'),
+        os.path.join(cur_dir, 'src2/executors/__init__.py'),
+        os.path.join(cur_dir, 'src3/executors/__init__.py'),
     ),
 )
 def test_remote_executor_via_pymodules_absolute_path(executor_entrypoint):

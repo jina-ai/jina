@@ -1,4 +1,4 @@
 jtype: MyExecutor
 metas:
   py_modules:
-    - executor/__init__.py
+    - executors/__init__.py
