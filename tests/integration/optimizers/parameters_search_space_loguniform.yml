@@ -1,0 +1,5 @@
+- !LogUniformParameter
+  jaml_variable: JINA_PARAM8
+  parameter_name: param8
+  high: 1.0
+  low: 0.0

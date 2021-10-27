@@ -2,7 +2,7 @@ import os
 import copy
 import asyncio
 import argparse
-from typing import Union
+from typing import TYPE_CHECKING, Union
 
 from ....enums import SocketType
 
@@ -17,7 +17,7 @@ from ....excepts import (
     DaemonWorkspaceCreationFailed,
 )
 
-if False:
+if TYPE_CHECKING:
     import multiprocessing
     import threading
     from ....logging.logger import JinaLogger
@@ -38,6 +38,8 @@ class JinadRuntime(AsyncNewLoopRuntime):
         self.timeout_ctrl = args.timeout_ctrl
         self.host = args.host
         self.port_jinad = args.port_jinad
+        self.pea_id = None
+        self.logstream = None
 
     async def async_setup(self):
         """Create Workspace, Pea on remote JinaD server"""
@@ -55,51 +57,58 @@ class JinadRuntime(AsyncNewLoopRuntime):
         self.client = AsyncJinaDClient(
             host=self.args.host, port=self.args.port_jinad, logger=self.logger
         )
+
         if not await self.client.alive:
             raise DaemonConnectivityError
 
         # Create a remote workspace with upload_files
-        self.workspace_id = await self.client.workspaces.create(
+        workspace_id = await self.client.workspaces.create(
             paths=self.args.upload_files,
             id=self.args.workspace_id,
             complete=True,
         )
-        if not self.workspace_id:
+        if not workspace_id:
             self.logger.critical(f'remote workspace creation failed')
             raise DaemonWorkspaceCreationFailed
 
         payload = replace_enum_to_str(vars(self._mask_args(self.args)))
         # Create a remote Pea in the above workspace
-        success, self.pea_id = await self.client.peas.create(
-            workspace_id=self.workspace_id, payload=payload
+        success, ret = await self.client.peas.create(
+            workspace_id=workspace_id, payload=payload
         )
         if not success:
             self.logger.critical(f'remote pea creation failed')
-            raise DaemonPeaCreationFailed
+            raise DaemonPeaCreationFailed(
+                ret
+            )  # pea id is the error message here, to be
+        self.pea_id = ret
 
     async def _wait_for_cancel(self):
         while not self.is_cancel.is_set():
             await asyncio.sleep(0.1)
 
-        await self.async_cancel()
         send_ctrl_message(self.ctrl_addr, 'TERMINATE', self.timeout_ctrl)
 
     async def async_run_forever(self):
         """
         Streams log messages using websocket from remote server
         """
-        self.logstream = asyncio.create_task(
-            self._sleep_forever()
-            if self.args.quiet_remote_logs
-            else self.client.logs(id=self.pea_id)
-        )
+        if self.pea_id is not None:
+            self.logstream = asyncio.create_task(
+                self._sleep_forever()
+                if self.args.quiet_remote_logs
+                else self.client.logs(id=self.pea_id)
+            )
 
     async def async_cancel(self):
-        """Cancels the logstream task, removes the remote Pea & Workspace"""
-        self.logstream.cancel()
-        await self.client.peas.delete(id=self.pea_id)
-        # NOTE: don't fail if workspace deletion fails here
-        await self.client.workspaces.delete(id=self.workspace_id)
+        """Cancels the logstream task, removes the remote Pea"""
+        if self.logstream is not None:
+            self.logstream.cancel()
+        if self.pea_id is not None:
+            if await self.client.peas.delete(id=self.pea_id):
+                self.logger.success(f'Successfully terminated remote Pea {self.pea_id}')
+            # Don't delete workspace here, as other Executors might use them.
+            # TODO(Deepankar): probably enable an arg here?
 
     async def _sleep_forever(self):
         """Sleep forever, no prince will come."""

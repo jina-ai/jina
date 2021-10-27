@@ -17,9 +17,9 @@ class FastSlowExecutor(Executor):
 
 
 @pytest.mark.parametrize(
-    'parallel, expected_response', [(1, ['slow', 'fast']), (2, ['fast', 'slow'])]
+    'shards, expected_response', [(1, ['slow', 'fast']), (2, ['fast', 'slow'])]
 )
-def test_non_blocking_gateway(parallel, expected_response):
+def test_non_blocking_gateway(shards, expected_response):
     response = []
 
     def fill_responses(resp):
@@ -28,7 +28,7 @@ def test_non_blocking_gateway(parallel, expected_response):
 
     data = DocumentArray([Document(text='slow'), Document(text='fast')])
 
-    f = Flow().add(uses=FastSlowExecutor, parallel=parallel)
+    f = Flow().add(uses=FastSlowExecutor, shards=shards)
     with f:
         f.post(on='/search', inputs=data, request_size=1, on_done=fill_responses)
 

@@ -7,8 +7,8 @@ from setuptools import setup
 from setuptools.command.develop import develop
 from setuptools.command.install import install
 
-if sys.version_info >= (3, 10, 0) or sys.version_info < (3, 7, 0):
-    raise OSError(f'Jina requires Python 3.7/3.8/3.9, but yours is {sys.version}')
+if sys.version_info < (3, 7, 0):
+    raise OSError(f'Jina requires Python >=3.7, but yours is {sys.version}')
 
 if (3, 7, 0) <= sys.version_info < (3, 8, 0):
     # https://github.com/pypa/setuptools/issues/926#issuecomment-294369342
@@ -123,9 +123,12 @@ perf_deps = all_deps['perf'].union(core_deps)
 standard_deps = all_deps['standard'].union(core_deps).union(perf_deps)
 
 if os.name == 'nt':
-    # uvloop & lz4 can not be run on windows
-    standard_deps.difference_update(perf_deps)
-    standard_deps.update(core_deps)
+    # uvloop is not supported on windows
+    exclude_deps = {i for i in standard_deps if i.startswith('uvloop')}
+    perf_deps.difference_update(exclude_deps)
+    standard_deps.difference_update(exclude_deps)
+    for k in ['all', 'devel', 'cicd']:
+        all_deps[k].difference_update(exclude_deps)
 
 # by default, final deps is the standard deps, unless specified by env otherwise
 final_deps = standard_deps
@@ -133,9 +136,9 @@ final_deps = standard_deps
 # Use env var to enable a minimum installation of Jina
 # JINA_PIP_INSTALL_CORE=1 pip install jina
 # JINA_PIP_INSTALL_PERF=1 pip install jina
-if 'JINA_PIP_INSTALL_CORE' in os.environ:
+if os.environ.get('JINA_PIP_INSTALL_CORE'):
     final_deps = core_deps
-elif 'JINA_PIP_INSTALL_PERF' in os.environ:
+elif os.environ.get('JINA_PIP_INSTALL_PERF'):
     final_deps = perf_deps
 
 setup(

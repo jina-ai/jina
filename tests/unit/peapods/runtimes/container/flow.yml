@@ -1,7 +1,7 @@
 !Flow
 version: '1'
-pods:
-  - name: pod1
+executors:
+  - name: executor1
     uses: docker://jinahub/pod
     docker-kwargs:
       hello: 0

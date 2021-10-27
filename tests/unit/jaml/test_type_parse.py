@@ -3,7 +3,7 @@ import pytest
 from jina.enums import SocketType
 from jina.executors import BaseExecutor
 from jina.jaml import JAML
-from jina import __default_executor__
+from jina import __default_executor__, requests
 
 
 class MyExecutor(BaseExecutor):
@@ -70,7 +70,7 @@ jtype: BaseExecutor
 with:
     a: 123
     b: BaseExecutor
-    jtype: unknown-blah    
+    jtype: unknown-blah
                                  ''',
         ),
     ],
@@ -88,3 +88,16 @@ def test_escape(original, escaped):
 
 def test_enum_dump():
     assert JAML.dump(SocketType.PUSH_CONNECT).strip() == '"PUSH_CONNECT"'
+
+
+class MyExec(BaseExecutor):
+    @requests
+    def foo(self, **kwargs):
+        pass
+
+
+def test_cls_from_tag():
+    assert JAML.cls_from_tag('MyExec') == MyExec
+    assert JAML.cls_from_tag('!MyExec') == MyExec
+    assert JAML.cls_from_tag('BaseExecutor') == BaseExecutor
+    assert JAML.cls_from_tag('Nonexisting') is None

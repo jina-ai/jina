@@ -202,3 +202,13 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
+
+    gp.add_argument(
+        '--k8s-disable-connection-pool',
+        action='store_false',
+        dest='k8s_connection_pool',
+        default=True,
+        help='Defines if connection pooling for replicas should be disabled in K8s. This mechanism implements load balancing between replicas of the same executor. This should be disabled if a service mesh (like istio) is used for load balancing.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )

@@ -34,6 +34,16 @@ h1, h2, h3 {
     color: whitesmoke;
 }
 
+.highlight-shell .highlight {
+    background: #00232b !important;
+    color: whitesmoke;
+}
+
+.highlight-bash .highlight {
+    background: #00232b !important;
+    color: whitesmoke;
+}
+
 .tab-set > input:checked + label {
     border-color: var(--tabs--label-text--active);
 }
@@ -49,4 +59,67 @@ table code {
     border-radius: .2em;
     font-size: var(--font-size--small--2);
     padding: .1em .2em;
+}
+
+.related-information {
+    justify-content: space-between;
+}
+
+.social-btn {
+    margin: 0 .3em;
+}
+
+.social-btn:hover {
+    opacity: .5;
+}
+
+.social-btns {
+    display: inline-block;
+}
+
+.announcement {
+    background-color: var(--color-brand-primary);
+    color: var(--color-background-primary) !important;
+}
+
+.announcement a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.announcement a:hover {
+    color: inherit;
+    text-decoration: underline;
+}
+
+.sidebar-ecosys-logo {
+    width: 1.2em;
+    margin-right: .5em;
+    vertical-align: middle
+}
+
+
+
+body[data-theme="dark"] .only-dark-line {
+    display: inline-block !important;
+}
+
+body[data-theme="dark"] .only-light-line {
+    display: none !important;
+}
+
+body[data-theme="light"] .only-light-line {
+    display: inline-block !important;
+}
+
+body[data-theme="light"] .only-dark-line {
+    display: none !important;
+}
+
+body[data-theme="auto"] .only-light-line {
+    display: inline-block !important;
+}
+
+body[data-theme="auto"] .only-dark-line {
+    display: none !important;
 }

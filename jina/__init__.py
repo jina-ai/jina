@@ -15,9 +15,10 @@ import sys as _sys
 import types as _types
 import warnings as _warnings
 
-
 if _sys.version_info < (3, 7, 0) or _sys.version_info >= (3, 10, 0):
     raise OSError(f'Jina requires Python 3.7/3.8/3.9, but yours is {_sys.version_info}')
+
+__windows__ = _sys.platform == 'win32'
 
 
 def _warning_on_one_line(message, category, filename, lineno, *args, **kwargs):
@@ -42,7 +43,7 @@ if _start_method and _start_method.lower() in {'fork', 'spawn', 'forkserver'}:
 
     _set_start_method(_start_method.lower())
     _warnings.warn(f'multiprocessing start method is set to `{_start_method.lower()}`')
-    _os.unsetenv('JINA_MP_START_METHOD')
+    _os.environ.pop('JINA_MP_START_METHOD')
 elif _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
     # DO SOME OS-WISE PATCHES
 
@@ -56,11 +57,11 @@ elif _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
 
-__version__ = '2.0.24'
+__version__ = '2.1.13'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
-__proto_version__ = '0.0.85'
+__proto_version__ = '0.0.86'
 
 __uptime__ = _datetime.datetime.now().isoformat()
 
@@ -72,32 +73,43 @@ __jina_env__ = (
     'JINA_ARRAY_QUANT',
     'JINA_CONTROL_PORT',
     'JINA_DEFAULT_HOST',
+    'JINA_DEFAULT_TIMEOUT_CTRL',
     'JINA_DISABLE_UVLOOP',
     'JINA_FULL_CLI',
     'JINA_HUBBLE_REGISTRY',
     'JINA_HUB_CACHE_DIR',
     'JINA_HUB_ROOT',
+    'JINA_K8S_USE_TEST_PIP',
     'JINA_LOG_CONFIG',
     'JINA_LOG_ID',
     'JINA_LOG_LEVEL',
     'JINA_LOG_NO_COLOR',
     'JINA_LOG_WORKSPACE',
+    'JINA_MP_START_METHOD',
     'JINA_OPTIMIZER_TRIAL_WORKSPACE',
     'JINA_POD_NAME',
     'JINA_RANDOM_PORT_MAX',
     'JINA_RANDOM_PORT_MIN',
     'JINA_VCS_VERSION',
-    'JINA_MP_START_METHOD',
 )
 
-__default_host__ = _os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
+__default_host__ = _os.environ.get(
+    'JINA_DEFAULT_HOST', '127.0.0.1' if __windows__ else '0.0.0.0'
+)
 __docker_host__ = 'host.docker.internal'
 __default_executor__ = 'BaseExecutor'
 __default_endpoint__ = '/default'
 __ready_msg__ = 'ready and listening'
 __stop_msg__ = 'terminated'
 __unset_msg__ = '(unset)'
-__num_args_executor_func__ = 5
+__args_executor_func__ = {
+    'docs',
+    'parameters',
+    'docs_matrix',
+    'groundtruths',
+    'groundtruths_matrix',
+}
+__args_executor_init__ = {'metas', 'requests', 'runtime_args'}
 __root_dir__ = _os.path.dirname(_os.path.abspath(__file__))
 __resources_path__ = _os.path.join(
     _os.path.dirname(_sys.modules['jina'].__file__), 'resources'
@@ -116,6 +128,7 @@ _names_with_underscore = [
     '__default_executor__',
     '__num_args_executor_func__',
     '__unset_msg__',
+    '__windows__',
 ]
 
 # ADD GLOBAL NAMESPACE VARIABLES

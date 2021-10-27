@@ -8,19 +8,9 @@ from ....grpc import Grpclet
 from .....proto import jina_pb2_grpc
 from ....zmq import AsyncZmqlet
 from ...zmq.asyncio import AsyncNewLoopRuntime
-from ..prefetch import PrefetchCaller
+from ....stream.gateway import GrpcGatewayStreamer, ZmqGatewayStreamer
 
 __all__ = ['GRPCRuntime']
-
-
-class GRPCPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
-    """JinaRPCServicer """
-
-    def __init__(self, args, iolet):
-        super().__init__()
-        self._servicer = PrefetchCaller(args, iolet=iolet)
-        self.Call = self._servicer.send
-        self.close = self._servicer.close
 
 
 class GRPCRuntime(AsyncNewLoopRuntime):
@@ -49,25 +39,27 @@ class GRPCRuntime(AsyncNewLoopRuntime):
                 message_callback=None,
                 logger=self.logger,
             )
-            self._prefetcher = GRPCPrefetchCall(self.args, iolet=self._grpclet)
+            self.streamer = GrpcGatewayStreamer(self.args, iolet=self._grpclet)
         else:
             self.zmqlet = AsyncZmqlet(self.args, logger=self.logger)
-            self._prefetcher = GRPCPrefetchCall(self.args, iolet=self.zmqlet)
+            self.streamer = ZmqGatewayStreamer(self.args, iolet=self.zmqlet)
 
-        jina_pb2_grpc.add_JinaRPCServicer_to_server(self._prefetcher, self.server)
+        jina_pb2_grpc.add_JinaRPCServicer_to_server(self.streamer, self.server)
         bind_addr = f'{__default_host__}:{self.args.port_expose}'
         self.server.add_insecure_port(bind_addr)
         await self.server.start()
 
-    async def async_cancel(self):
-        """The async method to stop server."""
-        await self.server.stop(0)
-        await self._prefetcher.close()
-
-    async def async_run_forever(self):
-        """The async running of server."""
-        await self.server.wait_for_termination()
+    async def async_teardown(self):
+        """Close the iolet"""
         if self.args.grpc_data_requests:
             await self._grpclet.close()
         else:
             self.zmqlet.close()
+
+    async def async_cancel(self):
+        """The async method to stop server."""
+        await self.server.stop(0)
+
+    async def async_run_forever(self):
+        """The async running of server."""
+        await self.server.wait_for_termination()

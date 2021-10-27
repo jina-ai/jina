@@ -37,7 +37,7 @@ class A(Executor):
             d.text = f'world {idx}'
 
 
-f = Flow().add(uses=A).add(uses=B, needs='gateway').add(uses=C, needs=['pod0', 'pod1'])
+f = Flow().add(uses=A).add(uses=B, needs='gateway').add(uses=C, needs=['executor0', 'executor1'])
 
 with f:
     f.post(on='/some_endpoint',

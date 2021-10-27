@@ -1,0 +1,10 @@
+!Flow
+version: '1'
+executors:
+  - name: executor0
+    needs: gateway
+  - name: executor1
+    needs: gateway
+  - name: executor2
+    uses: _merge
+    needs: [executor1, executor0]

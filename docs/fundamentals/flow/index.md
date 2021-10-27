@@ -71,7 +71,7 @@ Client:
 ```python
 from jina import Client, Document
 
-c = Client(port_expose=12345)
+c = Client(port=12345)
 c.post(on='/bar', inputs=Document(), on_done=print)
 ```
 
@@ -116,7 +116,7 @@ Document, Executor, and Flow are the three fundamental concepts in Jina.
 flow-api
 send-recv
 add-exec-to-flow
-parallel
+topology
 async-flow
 flow-as-a-service
 remarks

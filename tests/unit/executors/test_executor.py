@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from jina import Executor
+from jina import Executor, requests, Flow
 from jina.executors.metas import get_default_metas
 
 
@@ -25,9 +25,9 @@ def workspace(self) -> str:
         self.metas.workspace
         or (
             os.path.join(self.runtime_args.workspace, self.metas.name)
-            if self.metas.replica_id == -1
+            if self.metas.shard_id == -1
             else os.path.join(
-                self.runtime_args.workspace, self.metas.name, self.metas.replica_id
+                self.runtime_args.workspace, self.metas.name, self.metas.shard_id
             )
         )
     )

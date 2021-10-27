@@ -8,7 +8,7 @@ from jina.peapods.peas.helper import update_runtime_cls
 from jina import Flow, __docker_host__
 from jina.logging.logger import JinaLogger
 
-from .. import jinad_args
+from .. import jinad_args, __partial_workspace__
 from ..models import GATEWAY_RUNTIME_DICT
 from ..models.enums import UpdateOperation
 from ..models.ports import Ports, PortMappings
@@ -103,11 +103,12 @@ class PartialFlowStore(PartialStore):
             elif not Path(args.uses).is_file():
                 raise ValueError(f'uses {args.uses} not found in workspace')
 
-            with open(args.uses) as yaml_file:
-                yaml_source = yaml_file.read()
-
-            self.object: Flow = Flow.load_config(yaml_source).build()
+            self.object: Flow = Flow.load_config(args.uses).build()
             self.object.workspace_id = jinad_args.workspace_id
+            self.object.workspace = __partial_workspace__
+            self.object.env = {'HOME': __partial_workspace__}
+            # TODO(Deepankar): pass envs from main daemon process to partial-daemon so that
+            # Pods/Peas/Runtimes/Executors can inherit these env vars
 
             for pod in self.object._pod_nodes.values():
                 runtime_cls = update_runtime_cls(pod.args, copy=True).runtime_cls
@@ -116,12 +117,18 @@ class PartialFlowStore(PartialStore):
                     # `runs_in_docker` to be False. Since `Flow` args are sent to all Pods, `runs_in_docker` gets set
                     # for the `CompoundPod`, which blocks the requests. Below we unset that (hacky & ugly).
                     # We do it only for runtimes that starts on local (not container or remote)
-                    if runtime_cls in ['ZEDRuntime', 'ContainerRuntime'] + list(
-                        GATEWAY_RUNTIME_DICT.values()
+                    if (
+                        runtime_cls
+                        in [
+                            'ZEDRuntime',
+                            'GRPCDataRuntime',
+                            'ContainerRuntime',
+                        ]
+                        + list(GATEWAY_RUNTIME_DICT.values())
                     ):
                         pod.args.runs_in_docker = False
-                        for replica_args in pod.replicas_args:
-                            replica_args.runs_in_docker = False
+                        for shards_args in pod.shards_args:
+                            shards_args.runs_in_docker = False
                         if port_mapping:
                             # Ports for Head & Tail Peas in a CompoundPod set here.
                             # This is specifically needed as `save_config` doesn't save `port_out` for a HeadPea
@@ -130,20 +137,30 @@ class PartialFlowStore(PartialStore):
                             for pea_args in [pod.head_args, pod.tail_args]:
                                 if pea_args.name in port_mapping.pea_names:
                                     for port_name in Ports.__fields__:
-                                        if hasattr(pea_args, port_name):
-                                            setattr(
-                                                pea_args,
-                                                port_name,
-                                                getattr(
-                                                    port_mapping[pea_args.name].ports,
-                                                    port_name,
-                                                    random_port(),
-                                                ),
-                                            )
-                            # Update replica_args according to updated head & tail args
-                            pod.replicas_args = CompoundPod._set_replica_args(
-                                pod.args, pod.head_args, pod.tail_args
-                            )
+                                        self._set_pea_ports(
+                                            pea_args, port_mapping, port_name
+                                        )
+                            # Update shard_args according to updated head & tail args
+                            pod.assign_shards()
+                else:
+                    if port_mapping and (
+                        hasattr(pod.args, 'replicas') and pod.args.replicas > 1
+                    ):
+                        for pea_args in [pod.peas_args['head'], pod.peas_args['tail']]:
+                            if pea_args.name in port_mapping.pea_names:
+                                for port_name in Ports.__fields__:
+                                    self._set_pea_ports(
+                                        pea_args, port_mapping, port_name
+                                    )
+                        pod.update_worker_pea_args()
+
+                    # avoid setting runs_in_docker for Pods with parallel > 1 and using `ZEDRuntime`
+                    # else, replica-peas would try connecting to head/tail-pea via __docker_host__
+                    if runtime_cls in ['ZEDRuntime', 'GRPCDataRuntime'] and (
+                        hasattr(pod.args, 'replicas') and pod.args.replicas > 1
+                    ):
+                        pod.args.runs_in_docker = False
+                        pod.update_worker_pea_args()
 
             self.object = self.object.__enter__()
         except Exception as e:
@@ -152,6 +169,9 @@ class PartialFlowStore(PartialStore):
             self._logger.error(f'{e!r}')
             raise
         else:
+            with open(args.uses) as yaml_file:
+                yaml_source = yaml_file.read()
+
             self.item = PartialFlowItem(
                 arguments={
                     'port_expose': self.object.port_expose,
@@ -162,6 +182,18 @@ class PartialFlowStore(PartialStore):
             )
             self._logger.success(f'Flow is created')
             return self.item
+
+    def _set_pea_ports(self, pea_args, port_mapping, port_name):
+        if hasattr(pea_args, port_name):
+            setattr(
+                pea_args,
+                port_name,
+                getattr(
+                    port_mapping[pea_args.name].ports,
+                    port_name,
+                    random_port(),
+                ),
+            )
 
     def update(
         self,
@@ -183,7 +215,7 @@ class PartialFlowStore(PartialStore):
             if kind == UpdateOperation.ROLLING_UPDATE:
                 self.object.rolling_update(pod_name=pod_name, dump_path=dump_path)
             else:
-                self._logger.error(f'unsupoorted kind: {kind}, no changes done')
+                self._logger.error(f'unsupported kind: {kind}, no changes done')
                 return self.item
         except Exception as e:
             self._logger.error(f'{e!r}')

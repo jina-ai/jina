@@ -20,7 +20,7 @@ def get_extra_requires(path):
 
                     k = re.split('([<>=])', k, 1)
 
-                    # If we have some version requrement, it will be returned as a
+                    # If we have some version requirement, it will be returned as a
                     # separate item by the split function
                     if len(k) == 3:
                         k = [k[0], k[1] + k[2]]
@@ -28,6 +28,10 @@ def get_extra_requires(path):
 
                     # Can not use extra requirements in conda - i.e. uvicorn[standard]
                     k[0] = re.sub(r'\[\w+\]', '', k[0])
+
+                    # The kubernetes package is python-kubernetes on conda-forge
+                    if k[0] == 'kubernetes':
+                        k[0] = 'python-kubernetes'
 
                     # The docker package is docker-py on conda-forge
                     if k[0] == 'docker':
@@ -76,6 +80,9 @@ reqs['core'] = extra_deps['core']
 reqs['perf'] = reqs['core'].union(extra_deps['perf'])
 reqs['standard'] = reqs['perf'].union(extra_deps['standard'])
 
+for key in list(reqs.keys()):
+    reqs[key] = sorted(list(reqs[key]))
+
 
 ######################################
 # Get latest version and SHA from pypi
@@ -104,6 +111,7 @@ test_object = {
     'commands': ['pip check', 'jina --version'],
 }
 build_object_core = {
+    'noarch': 'python',
     'entry_points': ['jina = cli:main', 'jinad = daemon:main'],
     'script': 'python -m pip install . --no-deps -vv',
     'script_env': ['JINA_PIP_INSTALL_CORE=1'],
@@ -118,7 +126,7 @@ del build_object_standard['script_env']
 jina_pinned = "<{ pin_subpackage('jina', exact=True) }>"
 
 recipe_object = {
-    'package': {'name': '<{ name|lower }>', 'version': '<{ version }>'},
+    'package': {'name': '<{ name|lower }>-split', 'version': '<{ version }>'},
     'source': {
         'url': 'https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz',
         'sha256': jina_sha,
@@ -131,7 +139,7 @@ recipe_object = {
             'test': test_object,
             'requirements': {
                 'host': ['python >=3.7', 'pip'],
-                'run': ['python >=3.7'] + list(reqs['core']),
+                'run': ['__unix', 'python >=3.7'] + reqs['core'],
             },
         },
         {
@@ -140,7 +148,7 @@ recipe_object = {
             'build': build_object_perf,
             'requirements': {
                 'host': ['python >=3.7', 'pip'],
-                'run': ['python >=3.7'] + list(reqs['perf']),
+                'run': ['__unix', 'python >=3.7'] + reqs['perf'],
             },
         },
         {
@@ -149,7 +157,7 @@ recipe_object = {
             'build': build_object_standard,
             'requirements': {
                 'host': ['python >=3.7', 'pip'],
-                'run': ['python >=3.7'] + list(reqs['standard']),
+                'run': ['__unix', 'python >=3.7'] + reqs['standard'],
             },
         },
     ],
@@ -161,7 +169,10 @@ recipe_object = {
         'summary': 'Jina is the cloud-native neural search framework for any kind of data',
         'doc_url': 'https://docs.jina.ai',
     },
-    'extra': {'recipe-maintainers': ['tadejsv', 'maateen', 'nan-wang', 'hanxiao']},
+    'extra': {
+        'recipe-maintainers': ['tadejsv', 'maateen', 'nan-wang', 'hanxiao'],
+        'feedstock-name': 'jina',
+    },
 }
 
 

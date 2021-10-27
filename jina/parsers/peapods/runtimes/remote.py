@@ -1,5 +1,5 @@
 """Argparser module for remote runtime"""
-from ...helper import add_arg_group
+from ...helper import KVAppendAction, add_arg_group
 from .... import __default_host__
 from .... import helper
 from ....enums import CompressAlgo
@@ -33,6 +33,13 @@ def mixin_client_gateway_parser(parser):
         type=int,
         default=helper.random_port(),
         help='The port of the Gateway, which the client should connect to.',
+    )
+
+    gp.add_argument(
+        '--https',
+        action='store_true',
+        default=False,
+        help='If set, connect to gateway using https',
     )
 
 
@@ -134,6 +141,19 @@ def mixin_http_gateway_parser(parser=None):
         ''',
     )
 
+    gp.add_argument(
+        '--uvicorn-kwargs',
+        action=KVAppendAction,
+        metavar='KEY: VALUE',
+        nargs='*',
+        help='''
+Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
+
+More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
+
+''',
+    )
+
 
 def mixin_prefetch_parser(parser=None):
     """Add the options for prefetching
@@ -144,14 +164,11 @@ def mixin_prefetch_parser(parser=None):
     gp.add_argument(
         '--prefetch',
         type=int,
-        default=50,
-        help='The number of pre-fetched requests from the client',
-    )
-    gp.add_argument(
-        '--prefetch-on-recv',
-        type=int,
-        default=1,
-        help='The number of additional requests to fetch on every receive',
+        default=0,
+        help='''
+    Number of requests fetched from the client before feeding into the first Executor. 
+    
+    Used to control the speed of data input into a Flow. 0 disables prefetch (disabled by default)''',
     )
 
 

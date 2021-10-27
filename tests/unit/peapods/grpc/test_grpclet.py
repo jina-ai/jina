@@ -5,6 +5,7 @@ import pytest
 from google.protobuf import json_format
 from grpc import RpcError
 
+from jina import __default_host__
 from jina.parsers import set_pea_parser
 from jina.peapods.grpc import Grpclet
 from jina.proto import jina_pb2
@@ -98,16 +99,16 @@ def _create_msg(args):
     msg = ControlMessage('STATUS')
     routing_pb = jina_pb2.RoutingTableProto()
     routing_table = {
-        'active_pod': 'pod1',
+        'active_pod': 'executor1',
         'pods': {
-            'pod1': {
-                'host': '0.0.0.0',
+            'executor1': {
+                'host': __default_host__,
                 'port': args.port_in,
                 'expected_parts': 1,
-                'out_edges': [{'pod': 'pod2'}],
+                'out_edges': [{'pod': 'executor2'}],
             },
-            'pod2': {
-                'host': '0.0.0.0',
+            'executor2': {
+                'host': __default_host__,
                 'port': args.port_in,
                 'expected_parts': 1,
                 'out_edges': [],

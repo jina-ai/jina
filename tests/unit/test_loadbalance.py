@@ -21,7 +21,7 @@ class SlowWorker(Executor):
 
 @pytest.mark.slow
 def test_lb():
-    f = Flow(runtime='process').add(name='sw', uses='SlowWorker', parallel=10)
+    f = Flow(runtime='process').add(name='sw', uses='SlowWorker', shards=10)
     with f:
         f.index(inputs=random_docs(100), request_size=10)
 
@@ -29,7 +29,7 @@ def test_lb():
 @pytest.mark.slow
 def test_roundrobin():
     f = Flow(runtime='process').add(
-        name='sw', uses='SlowWorker', parallel=10, scheduling=SchedulerType.ROUND_ROBIN
+        name='sw', uses='SlowWorker', shards=10, scheduling=SchedulerType.ROUND_ROBIN
     )
     with f:
         f.index(inputs=random_docs(100), request_size=10)

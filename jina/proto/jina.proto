@@ -20,8 +20,9 @@ message DenseNdArrayProto {
 
     enum QuantizationMode {
         NONE = 0; // no quantization is performed, stored in the original ``dtype``
-        FP16 = 1; // 2x smaller if dtype is set to FP32
-        UINT8 = 2; // 4x smaller but lossy when dtype is FP32
+        FP16 = 1; // 4x smaller if original dtype FP64, lossy
+        UINT8 = 2; // 4x smaller if original dtype FP32, lossy
+        FP32 = 3; // 2x smaller if dtype is set to FP64
     }
 
     // quantization mode
@@ -104,9 +105,6 @@ message DocumentProto {
         // a text document
         string text = 13;
 
-        // a uri of the document could be: a local file path, a remote url starts with http or https or data URI scheme
-        string uri = 9;
-
         // Related information to be used when a Document represents a graph with its chunks as nodes
         GraphProto graph = 27;
     }
@@ -119,6 +117,9 @@ message DocumentProto {
 
     // the matched documents on the same level (recursive structure)
     repeated DocumentProto matches = 8;
+
+    // a uri of the document could be: a local file path, a remote url starts with http or https or data URI scheme
+    string uri = 9;
 
     // mime type of this document, for buffer content, this is required; for other contents, this can be guessed
     string mime_type = 10;

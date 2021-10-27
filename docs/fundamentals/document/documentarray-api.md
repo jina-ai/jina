@@ -13,33 +13,43 @@ da = DocumentArray([Document(), Document()])
 ```
 
 
-Methods supported by `DocumentArray`:
+Common methods supported by `DocumentArray`:
 
 | Category | Attributes |
 |--- |--- |
 | Python `list`-like interface | `__getitem__`, `__setitem__`, `__delitem__`, `__len__`, `insert`, `append`, `reverse`, `extend`, `__iadd__`, `__add__`, `__iter__`, `clear`, `sort`, `shuffle`, `sample` |
 | Persistence | `save`, `load` |
-| Neural Search Operations | `match`, `visualize` |
+| Math operations | `match`, `visualize`, `shuffle`, `sample` |
 | Advanced getters | `get_attributes`, `get_attributes_with_docs`, `traverse_flat`, `traverse` |
 
-## Construct `DocumentArray`
+## Construct DocumentArray
 
 You can construct a `DocumentArray` from an iterable of `Document`s:
 
+````{tab} From List
 ```python
 from jina import DocumentArray, Document
 
-# from list
-da1 = DocumentArray([Document(), Document()])
-
-# from generator
-da2 = DocumentArray((Document() for _ in range(10)))
-
-# from another `DocumentArray`
-da3 = DocumentArray(da2)
+da = DocumentArray([Document(), Document()])
 ```
+````
+````{tab} From generator
+```python
+from jina import DocumentArray, Document
 
-## Persistence via `save()`/`load()`
+da = DocumentArray((Document() for _ in range(10)))
+```
+````
+````{tab} From another DocumentArray
+```python
+from jina import DocumentArray, Document
+
+da = DocumentArray((Document() for _ in range(10)))
+da1 = DocumentArray(da)
+```
+````
+
+## Persistence DocumentArray
 
 To save all elements in a `DocumentArray` in a JSON line format:
 
@@ -63,7 +73,9 @@ da.save('data.bin', file_format='binary')
 da1 = DocumentArray.load('data.bin', file_format='binary')
 ```
 
-## Access element
+## Basic operations
+
+### Access elements
 
 You can access a `Document` in the `DocumentArray` via integer index, string `id` or `slice` indices:
 
@@ -82,16 +94,183 @@ da[1:2]
 # <jina.types.arrays.document.DocumentArray length=1 at 5705863632>
 ```
 
-## Traverse elements
 
-The following graphic illustrates the recursive `Document` structure. Every `Document` can have multiple `Chunks`
-and `Matches`.
-`Chunks` and `Matches` are `Documents` as well.
+### Sort elements
 
-<img src="https://hanxiao.io/2020/08/28/What-s-New-in-Jina-v0-5/blog-post-v050-protobuf-documents.jpg">
+`DocumentArray` is a subclass of `MutableSequence`, therefore you can use built-in Python `sort` to sort elements in
+a `DocumentArray` object, e.g.
 
-In most of the cases, you want to iterate through a certain level of documents.
-`DocumentArray.traverse` can be used for that by providing custom paths. As return value you get a generator which
+```{code-block} python
+---
+emphasize-lines: 11
+---
+from jina import DocumentArray, Document
+
+da = DocumentArray(
+    [
+        Document(tags={'id': 1}),
+        Document(tags={'id': 2}),
+        Document(tags={'id': 3})
+    ]
+)
+
+da.sort(key=lambda d: d.tags['id'], reverse=True)
+print(da)
+```
+
+To sort elements in `da` in-place, using `tags[id]` value in a descending manner:
+
+```text
+<jina.types.arrays.document.DocumentArray length=3 at 5701440528>
+
+{'id': '6a79982a-b6b0-11eb-8a66-1e008a366d49', 'tags': {'id': 3.0}},
+{'id': '6a799744-b6b0-11eb-8a66-1e008a366d49', 'tags': {'id': 2.0}},
+{'id': '6a799190-b6b0-11eb-8a66-1e008a366d49', 'tags': {'id': 1.0}}
+```
+
+### Filter elements
+
+You can use Python's [built-in `filter()`](https://docs.python.org/3/library/functions.html#filter) to filter elements
+in a `DocumentArray` object:
+
+```{code-block} python
+---
+emphasize-lines: 8
+---
+from jina import DocumentArray, Document
+
+da = DocumentArray([Document() for _ in range(6)])
+
+for j in range(6):
+    da[j].scores['metric'] = j
+
+for d in filter(lambda d: d.scores['metric'].value > 2, da):
+    print(d)
+```
+
+```text
+{'id': 'b5fa4871-cdf1-11eb-be5d-e86a64801cb1', 'scores': {'values': {'metric': {'value': 3.0}}}}
+{'id': 'b5fa4872-cdf1-11eb-be5d-e86a64801cb1', 'scores': {'values': {'metric': {'value': 4.0}}}}
+{'id': 'b5fa4873-cdf1-11eb-be5d-e86a64801cb1', 'scores': {'values': {'metric': {'value': 5.0}}}}
+```
+
+You can build a `DocumentArray` object from the filtered results:
+
+```python
+from jina import DocumentArray, Document
+
+da = DocumentArray([Document(weight=j) for j in range(6)])
+da2 = DocumentArray(d for d in da if d.weight > 2)
+
+print(da2)
+```
+
+```text
+DocumentArray has 3 items:
+{'id': '3bd0d298-b6da-11eb-b431-1e008a366d49', 'weight': 3.0},
+{'id': '3bd0d324-b6da-11eb-b431-1e008a366d49', 'weight': 4.0},
+{'id': '3bd0d392-b6da-11eb-b431-1e008a366d49', 'weight': 5.0}
+```
+
+
+### Sample elements
+
+`DocumentArray` provides function `.sample` that sample `k` elements without replacement. It accepts 2 parameters, `k`
+and `seed`. `k` is used to define the number of elements to sample, and `seed`
+helps you generate pseudo random results. It should be noted that `k` should always less or equal than the length of the
+document array.
+
+To make use of the function:
+
+```{code-block} python
+---
+emphasize-lines: 6, 7
+---
+from jina import Document, DocumentArray
+
+da = DocumentArray()  # initialize a random document array
+for idx in range(100):
+    da.append(Document(id=idx))  # append 100 documents into `da`
+sampled_da = da.sample(k=10)  # sample 10 documents
+sampled_da_with_seed = da.sample(k=10, seed=1)  # sample 10 documents with seed.
+```
+
+### Shuffle elements
+
+`DocumentArray` provides function `.shuffle` that shuffle the entire `DocumentArray`. It accepts the parameter `seed`
+.  `seed` helps you generate pseudo random results. By default, `seed` is None.
+
+To make use of the function:
+
+```{code-block} python
+---
+emphasize-lines: 6, 7
+---
+from jina import Document, DocumentArray
+
+da = DocumentArray()  # initialize a random document array
+for idx in range(100):
+    da.append(Document(id=idx))  # append 100 documents into `da`
+shuffled_da = da.shuffle()  # shuffle the DocumentArray
+shuffled_da_with_seed = da.shuffle(seed=1)  # shuffle the DocumentArray with seed.
+```
+
+### Split elements by tags
+
+`DocumentArray` provides function `.split` that split the `DocumentArray` into multiple :class:`DocumentArray` according to the tag value (stored in `tags`) of each :class:`Document`.
+It returns a python `dict` where `Documents` with the same value on `tag` are grouped together, their orders are preserved from the original :class:`DocumentArray`.
+
+To make use of the function:
+
+```{code-block} python
+---
+emphasize-lines: 10
+---
+from jina import Document, DocumentArray
+
+da = DocumentArray()
+da.append(Document(tags={'category': 'c'}))
+da.append(Document(tags={'category': 'c'}))
+da.append(Document(tags={'category': 'b'}))
+da.append(Document(tags={'category': 'a'}))
+da.append(Document(tags={'category': 'a'}))
+
+rv = da.split(tag='category')
+assert len(rv['c']) == 2  # category `c` is a DocumentArray has 2 Documents
+```
+
+
+
+### Iterate elements via `itertools`
+
+As `DocumentArray` is an `Iterable`, you can also
+use [Python's built-in `itertools` module](https://docs.python.org/3/library/itertools.html) on it. This enables
+advanced "iterator algebra" on the `DocumentArray`.
+
+For instance, you can group a `DocumentArray` by `parent_id`:
+
+```{code-block} python
+---
+emphasize-lines: 5
+---
+from jina import DocumentArray, Document
+from itertools import groupby
+
+da = DocumentArray([Document(parent_id=f'{i % 2}') for i in range(6)])
+groups = groupby(sorted(da, key=lambda d: d.parent_id), lambda d: d.parent_id)
+for key, group in groups:
+    key, len(list(group))
+```
+
+```text
+('0', 3)
+('1', 3)
+```
+
+
+#### Advanced iterator on nested Documents
+
+`DocumentArray.traverse` can be used for iterating over nested & recursive Documents. As return value you get a generator which
 generates `DocumentArrays` matching the provided traversal paths. Let's assume you have the following `Document`
 structure:
 
@@ -166,110 +345,7 @@ DocumentArray([
 ])
 ```
 
-## Sort elements
-
-`DocumentArray` is a subclass of `MutableSequence`, therefore you can use built-in Python `sort` to sort elements in
-a `DocumentArray` object, e.g.
-
-```{code-block} python
----
-emphasize-lines: 11
----
-from jina import DocumentArray, Document
-
-da = DocumentArray(
-    [
-        Document(tags={'id': 1}),
-        Document(tags={'id': 2}),
-        Document(tags={'id': 3})
-    ]
-)
-
-da.sort(key=lambda d: d.tags['id'], reverse=True)
-print(da)
-```
-
-To sort elements in `da` in-place, using `tags[id]` value in a descending manner:
-
-```text
-<jina.types.arrays.document.DocumentArray length=3 at 5701440528>
-
-{'id': '6a79982a-b6b0-11eb-8a66-1e008a366d49', 'tags': {'id': 3.0}},
-{'id': '6a799744-b6b0-11eb-8a66-1e008a366d49', 'tags': {'id': 2.0}},
-{'id': '6a799190-b6b0-11eb-8a66-1e008a366d49', 'tags': {'id': 1.0}}
-```
-
-## Filter elements
-
-You can use Python's [built-in `filter()`](https://docs.python.org/3/library/functions.html#filter) to filter elements
-in a `DocumentArray` object:
-
-```{code-block} python
----
-emphasize-lines: 8
----
-from jina import DocumentArray, Document
-
-da = DocumentArray([Document() for _ in range(6)])
-
-for j in range(6):
-    da[j].scores['metric'] = j
-
-for d in filter(lambda d: d.scores['metric'].value > 2, da):
-    print(d)
-```
-
-```text
-{'id': 'b5fa4871-cdf1-11eb-be5d-e86a64801cb1', 'scores': {'values': {'metric': {'value': 3.0}}}}
-{'id': 'b5fa4872-cdf1-11eb-be5d-e86a64801cb1', 'scores': {'values': {'metric': {'value': 4.0}}}}
-{'id': 'b5fa4873-cdf1-11eb-be5d-e86a64801cb1', 'scores': {'values': {'metric': {'value': 5.0}}}}
-```
-
-You can build a `DocumentArray` object from the filtered results:
-
-```python
-from jina import DocumentArray, Document
-
-da = DocumentArray([Document(weight=j) for j in range(6)])
-da2 = DocumentArray(d for d in da if d.weight > 2)
-
-print(da2)
-```
-
-```text
-DocumentArray has 3 items:
-{'id': '3bd0d298-b6da-11eb-b431-1e008a366d49', 'weight': 3.0},
-{'id': '3bd0d324-b6da-11eb-b431-1e008a366d49', 'weight': 4.0},
-{'id': '3bd0d392-b6da-11eb-b431-1e008a366d49', 'weight': 5.0}
-```
-
-## Use `itertools` on `DocumentArray`
-
-As `DocumentArray` is an `Iterable`, you can also
-use [Python's built-in `itertools` module](https://docs.python.org/3/library/itertools.html) on it. This enables
-advanced "iterator algebra" on the `DocumentArray`.
-
-For instance, you can group a `DocumentArray` by `parent_id`:
-
-```{code-block} python
----
-emphasize-lines: 5
----
-from jina import DocumentArray, Document
-from itertools import groupby
-
-da = DocumentArray([Document(parent_id=f'{i % 2}') for i in range(6)])
-groups = groupby(sorted(da, key=lambda d: d.parent_id), lambda d: d.parent_id)
-for key, group in groups:
-    key, len(list(group))
-```
-
-```text
-('0', 3)
-('1', 3)
-```
-
-## Get attributes in bulk
+### Get attributes of elements
 
 `DocumentArray` implements powerful getters that lets you fetch multiple attributes from the Documents it contains in
 one-shot:
@@ -306,7 +382,7 @@ np.stack(da.get_attributes('embedding'))
  [7 8 9]]
 ```
 
-## Get `.embeddings`
+## DocumentArray embeddings
 
 There is a faster version to extract embeddings from a `DocumentArray` or `DocumentArrayMemmap`, the property `.embeddings`. This property assumes all embeddings in the array have the same shape and dtype. Note that
 
@@ -328,8 +404,40 @@ Using `.embeddings` in a DocumenArray or DocumentArrayMemmap with different shap
 ````
 
 
+### Visualize embeddings
 
-## Finding closest documents between `DocumentArray` objects
+`DocumentArray` provides function `.visualize` to plot document embeddings in a 2D graph. `visualize` supports 2 methods
+to project in 2D space: `pca` and `tsne`.
+
+In the following example, we add 3 different distributions of embeddings and see 3 kinds of point clouds in the graph.
+
+```{code-block} python
+---
+emphasize-lines: 13
+---
+import numpy as np
+from jina import Document, DocumentArray
+
+da = DocumentArray(
+    [
+        Document(embedding=np.random.normal(0, 1, 50)) for _ in range(500)
+    ] + [
+        Document(embedding=np.random.normal(5, 2, 50)) for _ in range(500)
+    ] + [
+        Document(embedding=np.random.normal(2, 5, 50)) for _ in range(500)
+    ]
+)
+da.visualize()
+
+```
+
+```{figure} ../../../.github/2.0/document-array-visualize.png
+:align: center
+```
+
+
+(match-documentarray)=
+## Matching DocumentArray to another
 
 `DocumentArray` provides a`.match` function that finds the closest documents between two `DocumentArray` objects. This
 function requires all documents to be compared have an `embedding` and all embeddings to have the same length.
@@ -386,7 +494,7 @@ match emb = [1.  2.2 2.  1.  0. ] score = 1.5620499849319458
 match emb = [1.  0.1 0.  0.  0. ] score = 1.6763054132461548
 ```
 
-### Using Sparse arrays as embeddings
+### Matching sparse embeddings
 
 We can use sparse embeddings and do the `.match` using `is_sparse=True`
 
@@ -425,161 +533,5 @@ match emb = [[1.  2.2 2.  1.  0. ]] score = 1.5620499849319458
 match emb = [[1.  0.1 0.  0.  0. ]] score = 1.6763054132461548
 ```
 
-### Filter a subset of `DocumentArray` using `.find`
-
-`DocumentArray` provides function `.find` that finds the documents in the `DocumentArray`  whose tag values match a
-dictionary of user provided regular expressions. Since a `Document` can have many tags, the function expects one regular
-expression for each tag that a user wants to consider.
-
-The simplest way to use this function is to provide only the `regexes` dict. In this case, documents will be selected if
-all regular expressions passed are matched. Sometimes, a user might want to be less restrictive and might want to select
-documents only if a subset of the regular expressions is verified. In this case, `threshold` can be used to set the
-number of regular expressions that need to be matched in order to select a document.
-
-Let us consider the following example, where we want to select documents form a `DocumentArray` if the `city` tag
-contains a city that starts with `'B'`.
-
-```{code-block} python
----
-emphasize-lines: 9
----
-d1 = Document(tags={'city': 'Barcelona', 'phone': 'None'})
-d2 = Document(tags={'city': 'Berlin', 'phone': '648907348'})
-d3 = Document(tags={'city': 'Paris', 'phone': 'None'})
-d4 = Document(tags={'city': 'Brussels', 'phone': 'None'})
-
-docarray = DocumentArray([d1, d2, d3, d4])
-
-regexes = {'city': r'B.*'}
-docarray_filtered = docarray.find(regexes=regexes)
-print(f'len(docarray_filtered)={len(docarray_filtered)}')
-for d in docarray_filtered:
-    print(f'dict(d.tags)={dict(d.tags)}')
-```
-
-Will print
-
-```text
-len(docarray_filtered) = 3
-dict(d.tags) = {'phone': 'None', 'city': 'Barcelona'}
-dict(d.tags) = {'phone': '648907348', 'city': 'Berlin'}
-dict(d.tags) = {'phone': 'None', 'city': 'Brussels'}
-```
-
-We can consider more conditions, for example a subset of the previous documents that have `None` in the `'phone'` tag.
-We could do this as follows:
-
-```python
-regexes = {'city': r'B.*', 'phone': 'None'}
-docarray_filtered = docarray.find(regexes=regexes)
-print(f'len(docarray_filtered)={len(docarray_filtered)}')
-for d in docarray_filtered:
-    print(f'dict(d.tags)={dict(d.tags)}')
-```
-
-Will print
-
-```text
-len(docarray_filtered)=2
-dict(d.tags)={'city': 'Barcelona', 'phone': 'None'}
-dict(d.tags)={'phone': 'None', 'city': 'Brussels'}
-```
-
-## Sample a subset of `DocumentArray`
-
-`DocumentArray` provides function `.sample` that sample `k` elements without replacement. It accepts 2 parameters, `k`
-and `seed`. `k` is used to define the number of elements to sample, and `seed`
-helps you generate pseudo random results. It should be noted that `k` should always less or equal than the length of the
-document array.
-
-To make use of the function:
-
-```{code-block} python
----
-emphasize-lines: 6, 7
----
-from jina import Document, DocumentArray
-
-da = DocumentArray()  # initialize a random document array
-for idx in range(100):
-    da.append(Document(id=idx))  # append 100 documents into `da`
-sampled_da = da.sample(k=10)  # sample 10 documents
-sampled_da_with_seed = da.sample(k=10, seed=1)  # sample 10 documents with seed.
-```
-
-## Shuffle a `DocumentArray`
-
-`DocumentArray` provides function `.shuffle` that shuffle the entire `DocumentArray`. It accepts the parameter `seed`
-.  `seed` helps you generate pseudo random results. By default, `seed` is None.
-
-To make use of the function:
-
-```{code-block} python
----
-emphasize-lines: 6, 7
----
-from jina import Document, DocumentArray
-
-da = DocumentArray()  # initialize a random document array
-for idx in range(100):
-    da.append(Document(id=idx))  # append 100 documents into `da`
-shuffled_da = da.shuffle()  # shuffle the DocumentArray
-shuffled_da_with_seed = da.shuffle(seed=1)  # shuffle the DocumentArray with seed.
-```
-
-## Split a `DocumentArray` by tag
-
-`DocumentArray` provides function `.split` that split the `DocumentArray` into multiple :class:`DocumentArray` according to the tag value (stored in `tags`) of each :class:`Document`.
-It returns a python `dict` where `Documents` with the same value on `tag` are grouped together, their orders are preserved from the original :class:`DocumentArray`.
-
-To make use of the function:
-
-```{code-block} python
----
-emphasize-lines: 10
----
-from jina import Document, DocumentArray
-
-da = DocumentArray()
-da.append(Document(tags={'category': 'c'}))
-da.append(Document(tags={'category': 'c'}))
-da.append(Document(tags={'category': 'b'}))
-da.append(Document(tags={'category': 'a'}))
-da.append(Document(tags={'category': 'a'}))
-
-rv = da.split(tag='category')
-assert len(rv['c']) == 2  # category `c` is a DocumentArray has 2 Documents
-```
 
 
-
-## Visualize the embeddings of a `DocumentArray`
-
-`DocumentArray` provides function `.visualize` to plot document embeddings in a 2D graph. `visualize` supports 2 methods
-to project in 2D space: `pca` and `tsne`.
-
-In the following example, we add 3 different distributions of embeddings and see 3 kinds of point clouds in the graph.
-
-```{code-block} python
----
-emphasize-lines: 13
----
-import numpy as np
-from jina import Document, DocumentArray
-
-da = DocumentArray(
-    [
-        Document(embedding=np.random.normal(0, 1, 50)) for _ in range(500)
-    ] + [
-        Document(embedding=np.random.normal(5, 2, 50)) for _ in range(500)
-    ] + [
-        Document(embedding=np.random.normal(2, 5, 50)) for _ in range(500)
-    ]
-)
-da.visualize()
-
-```
-
-```{figure} ../../../.github/2.0/document-array-visualize.png
-:align: center
-```

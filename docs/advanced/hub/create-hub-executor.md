@@ -8,20 +8,10 @@ jina hub new
 ```
 
 
-```{figure} ../../../.github/hub-new.png
+```{figure} screenshots/create-new.gif
 :align: center
 ```
 
-````{admonition} Note
-:class: note
-A `Hub Executor` is an executor that is published in JinaHub. Such an executor can be easily used in a flow like this:
-```python
-from jina import Flow
-
-f = Flow().add(uses='jinahub+docker://MyExecutor')
-``` 
-We'll discuss more how to use hub executors in this {ref}`section <use-hub-executor>`
-````
 When you run the command above, a wizard will ask you some questions about the Executor. For the basic configuration, 
 you will be asked two things: The Executor’s name and where it should be saved. The wizard will ask if you want to have 
 a more advanced configuration, but it is unnecessary for most of use cases.
@@ -43,6 +33,22 @@ MyExecutor/
 - `requirements.txt` describes the Python dependencies of the Executor.
 - `executor.py` should contain the main logic of your Executor.
 - `README.md` should describe the usage of the Executor.
+
+
+## Fields of `manifest.yml`
+
+`manifest.yml` is optional.
+
+`manifest.yml` annotates your image so that it can be better managed by the Hub portal. To get better appealing on Jina Hub, you may want to 
+carefully set `manifest.yml` to the correct values.
+
+| Key | Description | Default |
+| --- | --- | --- |
+| `manifest_version` | The version of the manifest protocol | `1` |
+| `name` | Human-readable title of the Executor | None |
+| `description` | Human-readable description of the Executor | None |
+| `url` | URL to find more information on the Executor, normally it should be the GitHub repo URL | None |
+| `keywords` | A list of strings help user to filter and locate your package  | None | 
 
 ```{admonition} See Also
 :class: seealso

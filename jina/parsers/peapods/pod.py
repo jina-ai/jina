@@ -16,30 +16,13 @@ def mixin_base_pod_parser(parser):
         '--uses-before',
         type=str,
         help='The executor attached after the Peas described by --uses, typically before sending to all '
-        'parallels, accepted type follows `--uses`',
+        'shards, accepted type follows `--uses`',
     )
     gp.add_argument(
         '--uses-after',
         type=str,
         help='The executor attached after the Peas described by --uses, typically used for receiving from '
-        'all parallels, accepted type follows `--uses`',
-    )
-    gp.add_argument(
-        '--parallel',
-        '--shards',
-        type=int,
-        default=1,
-        help='The number of parallel peas in the pod running at the same time, '
-        '`port_in` and `port_out` will be set to random, '
-        'and routers will be added automatically when necessary',
-    )
-    gp.add_argument(
-        '--replicas',
-        type=int,
-        default=1,
-        help='The number of replicas in the pod, '
-        '`port_in` and `port_out` will be set to random, '
-        'and routers will be added automatically when necessary',
+        'all shards, accepted type follows `--uses`',
     )
     gp.add_argument(
         '--polling',
@@ -47,7 +30,7 @@ def mixin_base_pod_parser(parser):
         choices=list(PollingType),
         default=PollingType.ANY,
         help='''
-The polling strategy of the Pod (when `parallel>1`)
+The polling strategy of the Pod (when `shards>1`)
 - ANY: only one (whoever is idle) Pea polls the message
 - ALL: all Peas poll the message (like a broadcast)
 ''',
@@ -73,7 +56,7 @@ The polling strategy of the Pod (when `parallel>1`)
         '--peas-hosts',
         nargs='+',
         type=str,
-        help='''The hosts of the peas when parallel greater than 1.
+        help='''The hosts of the peas when shards greater than 1.
         Peas will be evenly distributed among the hosts. By default,
         peas are running on host provided by the argument ``host``''',
     )
@@ -134,14 +117,7 @@ def mixin_k8s_pod_parser(parser):
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
-    parser.add_argument(
-        '--k8s-namespace',
-        type=str,
-        default='',
-        help='Name of the namespace where Kubernetes deployment should be deployed, to be filled by flow name'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
-    )
+
     parser.add_argument(
         '--k8s-custom-resource-dir',
         type=str,

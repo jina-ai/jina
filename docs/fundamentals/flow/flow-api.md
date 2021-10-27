@@ -1,5 +1,5 @@
 (flow)=
-# Create a Flow
+# Create Flow
 
 An empty Flow can be created via:
 
@@ -38,6 +38,28 @@ prevent that, use `.block()` to suspend the current process.
 ```python
 with f:
     f.block()  # block the current process
+```
+
+To terminate a blocked Flow, one can send use `threading.Event` or `multiprocessing.Event` to send the terminate signal.
+The following example terminates a Flow from another process. 
+
+```python
+import multiprocessing
+import time
+
+from jina import Flow
+
+ev = multiprocessing.Event()
+
+def close_after_5s():
+    time.sleep(5)
+    ev.set()
+
+f = Flow().add()
+with f:
+    t = multiprocessing.Process(target=close_after_5s)
+    t.start()
+    f.block(stop_event=ev)
 ```
 ````
 ## Visualize a Flow

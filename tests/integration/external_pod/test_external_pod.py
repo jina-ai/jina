@@ -25,12 +25,12 @@ def num_replicas(request):
 
 
 @pytest.fixture
-def num_parallel(request):
+def num_shards(request):
     return request.param
 
 
 @pytest.fixture(scope='function')
-def external_pod_args(num_replicas, num_parallel):
+def external_pod_args(num_replicas, num_shards):
     args = [
         '--uses',
         'MyExternalExecutor',
@@ -40,8 +40,8 @@ def external_pod_args(num_replicas, num_parallel):
         str(random_port()),
         '--host-in',
         '0.0.0.0',
-        '--parallel',
-        str(num_parallel),
+        '--shards',
+        str(num_shards),
         '--replicas',
         str(num_replicas),
         '--polling',
@@ -66,9 +66,9 @@ class MyExternalExecutor(Executor):
 
 
 @pytest.mark.parametrize('num_replicas', [1, 2], indirect=True)
-@pytest.mark.parametrize('num_parallel', [1, 2], indirect=True)
+@pytest.mark.parametrize('num_shards', [1, 2], indirect=True)
 def test_flow_with_external_pod(
-    external_pod, external_pod_args, input_docs, num_replicas, num_parallel
+    external_pod, external_pod_args, input_docs, num_replicas, num_shards
 ):
     with external_pod:
         external_args = vars(external_pod_args)
@@ -83,7 +83,7 @@ def test_flow_with_external_pod(
         )
         with flow:
             resp = flow.index(inputs=input_docs, return_results=True)
-        validate_response(resp[0], 50 * num_parallel)
+        validate_response(resp[0], 50 * num_shards)
 
 
 @pytest.fixture(scope='function')
@@ -126,9 +126,9 @@ def test_flow_with_external_executor(
 
 
 @pytest.mark.parametrize('num_replicas', [2], indirect=True)
-@pytest.mark.parametrize('num_parallel', [2], indirect=True)
+@pytest.mark.parametrize('num_shards', [2], indirect=True)
 def test_two_flow_with_shared_external_pod(
-    external_pod, external_pod_args, input_docs, num_replicas, num_parallel
+    external_pod, external_pod_args, input_docs, num_replicas, num_shards
 ):
     with external_pod:
         external_args = vars(external_pod_args)
@@ -154,10 +154,10 @@ def test_two_flow_with_shared_external_pod(
         )
         with flow1, flow2:
             results = flow1.index(inputs=input_docs, return_results=True)
-            validate_response(results[0], 50 * num_parallel)
+            validate_response(results[0], 50 * num_shards)
 
             results = flow2.index(inputs=input_docs, return_results=True)
-            validate_response(results[0], 50 * num_parallel * 2)
+            validate_response(results[0], 50 * num_shards * 2)
 
 
 def test_two_flow_with_shared_external_executor(
@@ -193,7 +193,7 @@ def test_two_flow_with_shared_external_executor(
 
 
 @pytest.fixture(scope='function')
-def external_pod_parallel_1_args(num_replicas, num_parallel):
+def external_pod_shards_1_args(num_replicas, num_shards):
     args = [
         '--uses',
         'MyExternalExecutor',
@@ -203,8 +203,8 @@ def external_pod_parallel_1_args(num_replicas, num_parallel):
         str(random_port()),
         '--host-in',
         '0.0.0.0',
-        '--parallel',
-        str(num_parallel),
+        '--shards',
+        str(num_shards),
         '--replicas',
         str(num_replicas),
         '--polling',
@@ -214,12 +214,12 @@ def external_pod_parallel_1_args(num_replicas, num_parallel):
 
 
 @pytest.fixture
-def external_pod_parallel_1(external_pod_parallel_1_args):
-    return PodFactory.build_pod(external_pod_parallel_1_args)
+def external_pod_shards_1(external_pod_shards_1_args):
+    return PodFactory.build_pod(external_pod_shards_1_args)
 
 
 @pytest.fixture(scope='function')
-def external_pod_parallel_2_args(num_replicas, num_parallel):
+def external_pod_shards_2_args(num_replicas, num_shards):
     args = [
         '--uses',
         'MyExternalExecutor',
@@ -229,8 +229,8 @@ def external_pod_parallel_2_args(num_replicas, num_parallel):
         str(random_port()),
         '--host-in',
         '0.0.0.0',
-        '--parallel',
-        str(num_parallel),
+        '--shards',
+        str(num_shards),
         '--replicas',
         str(num_replicas),
         '--polling',
@@ -240,24 +240,24 @@ def external_pod_parallel_2_args(num_replicas, num_parallel):
 
 
 @pytest.fixture
-def external_pod_parallel_2(external_pod_parallel_2_args):
-    return PodFactory.build_pod(external_pod_parallel_2_args)
+def external_pod_shards_2(external_pod_shards_2_args):
+    return PodFactory.build_pod(external_pod_shards_2_args)
 
 
 @pytest.mark.parametrize('num_replicas', [1, 2], indirect=True)
-@pytest.mark.parametrize('num_parallel', [1, 2], indirect=True)
-def test_flow_with_external_pod_parallel(
-    external_pod_parallel_1,
-    external_pod_parallel_2,
-    external_pod_parallel_1_args,
-    external_pod_parallel_2_args,
+@pytest.mark.parametrize('num_shards', [1, 2], indirect=True)
+def test_flow_with_external_pod_shards(
+    external_pod_shards_1,
+    external_pod_shards_2,
+    external_pod_shards_1_args,
+    external_pod_shards_2_args,
     input_docs,
     num_replicas,
-    num_parallel,
+    num_shards,
 ):
-    with external_pod_parallel_1, external_pod_parallel_2:
-        external_args_1 = vars(external_pod_parallel_1_args)
-        external_args_2 = vars(external_pod_parallel_2_args)
+    with external_pod_shards_1, external_pod_shards_2:
+        external_args_1 = vars(external_pod_shards_1_args)
+        external_args_2 = vars(external_pod_shards_2_args)
         del external_args_1['name']
         del external_args_1['external']
         del external_args_1['pod_role']
@@ -268,29 +268,29 @@ def test_flow_with_external_pod_parallel(
         del external_args_2['dynamic_routing']
         flow = (
             Flow()
-            .add(name='pod1')
+            .add(name='executor1')
             .add(
                 **external_args_1,
                 name='external_fake_1',
                 external=True,
-                needs=['pod1'],
+                needs=['executor1'],
             )
             .add(
                 **external_args_2,
                 name='external_fake_2',
                 external=True,
-                needs=['pod1'],
+                needs=['executor1'],
             )
             .join(needs=['external_fake_1', 'external_fake_2'], port_in=random_port())
         )
 
         with flow:
             resp = flow.index(inputs=input_docs, return_results=True)
-        validate_response(resp[0], 50 * num_parallel * 2)
+        validate_response(resp[0], 50 * num_shards * 2)
 
 
 @pytest.fixture(scope='function')
-def external_pod_pre_parallel_args(num_replicas, num_parallel):
+def external_pod_pre_shards_args(num_replicas, num_shards):
     args = [
         '--uses',
         'MyExternalExecutor',
@@ -300,8 +300,8 @@ def external_pod_pre_parallel_args(num_replicas, num_parallel):
         str(random_port()),
         '--host-in',
         '0.0.0.0',
-        '--parallel',
-        str(num_parallel),
+        '--shards',
+        str(num_shards),
         '--replicas',
         str(num_replicas),
         '--polling',
@@ -311,21 +311,21 @@ def external_pod_pre_parallel_args(num_replicas, num_parallel):
 
 
 @pytest.fixture
-def external_pod_pre_parallel(external_pod_pre_parallel_args):
-    return PodFactory.build_pod(external_pod_pre_parallel_args)
+def external_pod_pre_shards(external_pod_pre_shards_args):
+    return PodFactory.build_pod(external_pod_pre_shards_args)
 
 
 @pytest.mark.parametrize('num_replicas', [1, 2], indirect=True)
-@pytest.mark.parametrize('num_parallel', [1, 2], indirect=True)
-def test_flow_with_external_pod_pre_parallel(
-    external_pod_pre_parallel,
-    external_pod_pre_parallel_args,
+@pytest.mark.parametrize('num_shards', [1, 2], indirect=True)
+def test_flow_with_external_pod_pre_shards(
+    external_pod_pre_shards,
+    external_pod_pre_shards_args,
     input_docs,
     num_replicas,
-    num_parallel,
+    num_shards,
 ):
-    with external_pod_pre_parallel:
-        external_args = vars(external_pod_pre_parallel_args)
+    with external_pod_pre_shards:
+        external_args = vars(external_pod_pre_shards_args)
         del external_args['name']
         del external_args['external']
         del external_args['pod_role']
@@ -338,22 +338,22 @@ def test_flow_with_external_pod_pre_parallel(
                 external=True,
             )
             .add(
-                name='pod1',
+                name='executor1',
                 needs=['external_fake'],
             )
             .add(
-                name='pod2',
+                name='executor2',
                 needs=['external_fake'],
             )
-            .join(needs=['pod1', 'pod2'])
+            .join(needs=['executor1', 'executor2'])
         )
         with flow:
             resp = flow.index(inputs=input_docs, return_results=True)
-        validate_response(resp[0], 50 * num_parallel * 2)
+        validate_response(resp[0], 50 * num_shards * 2)
 
 
 @pytest.fixture(scope='function')
-def external_pod_join_args(num_replicas, num_parallel):
+def external_pod_join_args(num_replicas, num_shards):
     args = [
         '--uses',
         'MyExternalExecutor',
@@ -365,8 +365,8 @@ def external_pod_join_args(num_replicas, num_parallel):
         '0.0.0.0',
         '--pod-role',
         'JOIN',
-        '--parallel',
-        str(num_parallel),
+        '--shards',
+        str(num_shards),
         '--replicas',
         str(num_replicas),
         '--polling',
@@ -381,13 +381,13 @@ def external_pod_join(external_pod_join_args):
 
 
 @pytest.mark.parametrize('num_replicas', [1, 2], indirect=True)
-@pytest.mark.parametrize('num_parallel', [1, 2], indirect=True)
+@pytest.mark.parametrize('num_shards', [1, 2], indirect=True)
 def test_flow_with_external_pod_join(
     external_pod_join,
     external_pod_join_args,
     input_docs,
     num_replicas,
-    num_parallel,
+    num_shards,
 ):
     with external_pod_join:
         external_args = vars(external_pod_join_args)
@@ -402,19 +402,19 @@ def test_flow_with_external_pod_join(
                 external=True,
             )
             .add(
-                name='pod1',
-                needs=['pod0'],
+                name='executor1',
+                needs=['executor0'],
             )
             .add(
-                name='pod2',
-                needs=['pod0'],
+                name='executor2',
+                needs=['executor0'],
             )
             .join(
                 **external_args,
                 external=True,
-                needs=['pod1', 'pod2'],
+                needs=['executor1', 'executor2'],
             )
         )
         with flow:
             resp = flow.index(inputs=input_docs, return_results=True)
-        validate_response(resp[0], 50 * num_parallel * num_parallel * 2)
+        validate_response(resp[0], 50 * num_shards * num_shards * 2)

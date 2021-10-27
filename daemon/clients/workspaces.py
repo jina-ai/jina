@@ -64,13 +64,10 @@ class AsyncWorkspaceClient(AsyncBaseClient):
         for path in paths:
             try:
                 _path = Path(path)
-                if complete:
+                if _path.is_file():
                     add_field_from(_path)
-                else:
-                    if _path.is_file():
-                        add_field_from(_path)
-                    elif _path.is_dir():
-                        [add_field_from(p) for p in _path.rglob('*') if p.is_file()]
+                elif _path.is_dir():
+                    [add_field_from(p) for p in _path.rglob('*') if p.is_file()]
             except TypeError:
                 self._logger.error(f'invalid path {path}')
                 continue
@@ -86,7 +83,7 @@ class AsyncWorkspaceClient(AsyncBaseClient):
         This is to handle a special case when JinadRuntime knows the workspace id already
         (during Pea creation). It should get invoked only by :meth:`create`.
 
-        For parallel > 1
+        For shards > 1
         - pea0 throws TypeError & we create a workspace
         - peaN (all other Peas) wait for workspace creation & don't emit logs
 
@@ -309,7 +306,7 @@ class AsyncWorkspaceClient(AsyncBaseClient):
             response_json = await response.json()
             if response.status != HTTPStatus.OK:
                 self._logger.error(
-                    f'deletion of {self._kind.title()} {id} failed: {error_msg_from(response_json)}'
+                    f'deletion of {self._kind.title()} failed as {error_msg_from(response_json)}'
                 )
             return response.status == HTTPStatus.OK
 

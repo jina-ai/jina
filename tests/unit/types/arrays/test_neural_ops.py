@@ -1,14 +1,15 @@
 import copy
 import os
+import random
 
 import numpy as np
+import pytest
 import scipy.sparse as sp
 from scipy.spatial.distance import cdist as scipy_cdist
-import pytest
 
-from jina import Document, DocumentArray
-from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import Document, DocumentArray, __windows__
 from jina.math.dimensionality_reduction import PCA
+from jina.types.arrays.memmap import DocumentArrayMemmap
 
 
 @pytest.fixture()
@@ -110,7 +111,6 @@ def test_matching_same_results_with_sparse(
     docarrays_for_embedding_distance_computation_sparse,
     metric,
 ):
-
     D1, D2 = docarrays_for_embedding_distance_computation
     D1_sp, D2_sp = docarrays_for_embedding_distance_computation_sparse
 
@@ -122,7 +122,7 @@ def test_matching_same_results_with_sparse(
             distances.extend([d.scores[metric].value])
 
     # use match with sparse arrays
-    D1_sp.match(D2_sp, metric=metric)
+    D1_sp.match(D2_sp, metric=metric, is_sparse=True)
     distances_sparse = []
     for m in D1.get_attributes('matches'):
         for d in m:
@@ -136,7 +136,6 @@ def test_matching_same_results_with_batch(
     docarrays_for_embedding_distance_computation,
     metric,
 ):
-
     D1, D2 = docarrays_for_embedding_distance_computation
     D1_batch = copy.deepcopy(D1)
     D2_batch = copy.deepcopy(D2)
@@ -342,10 +341,17 @@ def test_pca_projection(embeddings, whiten):
     assert embeddings_transformed.shape[1] == n_components
 
 
-def test_pca_plot_generated(embeddings, tmpdir):
-    doc_array = DocumentArray([Document(embedding=x) for x in embeddings])
+@pytest.mark.parametrize('colored_tag', [None, 'tags__label', 'id', 'mime_type'])
+@pytest.mark.parametrize('kwargs', [{}, dict(s=100, marker='^')])
+def test_pca_plot_generated(embeddings, tmpdir, colored_tag, kwargs):
+    doc_array = DocumentArray(
+        [
+            Document(embedding=x, tags={'label': random.randint(0, 5)})
+            for x in embeddings
+        ]
+    )
     file_path = os.path.join(tmpdir, 'pca_plot.png')
-    doc_array.visualize(output=file_path)
+    doc_array.visualize(file_path, colored_attr=colored_tag, **kwargs)
     assert os.path.exists(file_path)
 
 
@@ -398,3 +404,260 @@ def test_match_inclusive_dam(tmpdir):
     assert len(da2) == 3
     traversed = dam.traverse_flat(traversal_paths=['m', 'mm', 'mmm'])
     assert len(list(traversed)) == 9
+
+
+@pytest.mark.parametrize('exclude_self, num_matches', [(True, 1), (False, 2)])
+def test_match_exclude_self(exclude_self, num_matches):
+    da1 = DocumentArray(
+        [
+            Document(id='1', embedding=np.array([1, 2])),
+            Document(id='2', embedding=np.array([3, 4])),
+        ]
+    )
+    da2 = DocumentArray(
+        [
+            Document(id='1', embedding=np.array([1, 2])),
+            Document(id='2', embedding=np.array([3, 4])),
+        ]
+    )
+    da1.match(da2, exclude_self=exclude_self)
+    for d in da1:
+        assert len(d.matches) == num_matches
+
+
+@pytest.fixture()
+def get_pair_document_array():
+    da1 = DocumentArray(
+        [
+            Document(id='1', embedding=np.array([1, 2])),
+            Document(id='2', embedding=np.array([3, 4])),
+        ]
+    )
+    da2 = DocumentArray(
+        [
+            Document(id='1', embedding=np.array([1, 2])),
+            Document(id='2', embedding=np.array([3, 4])),
+            Document(id='3', embedding=np.array([4, 5])),
+        ]
+    )
+    yield da1, da2
+
+
+@pytest.mark.parametrize(
+    'limit, expect_len, exclude_self',
+    [
+        (2, 2, True),
+        (1, 1, True),
+        (3, 2, True),
+        (2, 2, False),
+        (1, 1, False),
+        (3, 3, False),
+    ],
+)
+def test_match_exclude_self_limit_2(
+    get_pair_document_array, exclude_self, limit, expect_len
+):
+    da1, da2 = get_pair_document_array
+    da1.match(da2, exclude_self=exclude_self, limit=limit)
+    for d in da1:
+        assert len(d.matches) == expect_len
+
+
+@pytest.mark.parametrize(
+    'lhs, rhs',
+    [
+        (DocumentArray(), DocumentArray()),
+        (
+            DocumentArray(
+                [
+                    Document(embedding=np.array([3, 4])),
+                    Document(embedding=np.array([4, 5])),
+                ]
+            ),
+            DocumentArray(
+                [
+                    Document(embedding=np.array([3, 4])),
+                    Document(embedding=np.array([4, 5])),
+                ]
+            ),
+        ),
+        (
+            DocumentArray(),
+            DocumentArray(
+                [
+                    Document(embedding=np.array([3, 4])),
+                    Document(embedding=np.array([4, 5])),
+                ]
+            ),
+        ),
+        (
+            (
+                DocumentArray(
+                    [
+                        Document(embedding=np.array([3, 4])),
+                        Document(embedding=np.array([4, 5])),
+                    ]
+                )
+            ),
+            DocumentArray(),
+        ),
+        (None, DocumentArray()),
+        (DocumentArray(), None),
+    ],
+)
+def test_match_none(lhs, rhs):
+    if lhs is not None:
+        lhs.match(rhs)
+    if rhs is not None:
+        rhs.match(lhs)
+
+
+@pytest.fixture()
+def get_two_docarray():
+    d1 = Document(embedding=np.array([0, 0, 0]))
+    d1c1 = Document(embedding=np.array([0, 1, 0]))
+
+    d2 = Document(embedding=np.array([1, 0, 0]))
+    d2c1 = Document(embedding=np.array([1, 1, 0]))
+    d2c2 = Document(embedding=np.array([1, 0, 1]))
+
+    d3 = Document(embedding=np.array([2, 1, 1]))
+    d3c1 = Document(embedding=np.array([2, 1, 0]))
+    d3c2 = Document(embedding=np.array([2, 0, 1]))
+    d3c3 = Document(embedding=np.array([2, 0, 0]))
+
+    d4 = Document(embedding=np.array([3, 1, 1]))
+    d4c1 = Document(embedding=np.array([3, 1, 0]))
+    d4c2 = Document(embedding=np.array([3, 0, 1]))
+    d4c3 = Document(embedding=np.array([3, 0, 0]))
+    d4c4 = Document(embedding=np.array([3, 1, 1]))
+
+    d1.chunks.extend([d1c1])
+    d2.chunks.extend([d2c1, d2c2])
+    d3.chunks.extend([d3c1, d3c2, d3c3])
+    d4.chunks.extend([d4c1, d4c2, d4c3, d4c4])
+
+    da1 = DocumentArray([d1, d2])
+    da2 = DocumentArray([d3, d4])
+    yield da1, da2
+
+
+def test_match_with_traversal_path(get_two_docarray):
+    da1, da2 = get_two_docarray
+    da1.match(da2, traversal_rdarray=['c'])
+    assert len(da1[0].matches) == len(da2[0].chunks) + len(da2[1].chunks)
+
+    da2.match(da1, traversal_rdarray=['c'])
+    assert len(da2[0].matches) == len(da1[0].chunks) + len(da1[1].chunks)
+
+
+def test_match_on_two_sides_chunks(get_two_docarray):
+    da1, da2 = get_two_docarray
+    da2.match(da1, traversal_ldarray=['c'], traversal_rdarray=['c'])
+    assert len(da2[0].matches) == 0
+    assert len(da2[0].chunks[0].matches) == len(da1[0].chunks) + len(da1[1].chunks)
+
+    da1.match(da2, traversal_ldarray=['c'], traversal_rdarray=['c'])
+    assert len(da1[0].matches) == 0
+    assert len(da1[0].chunks[0].matches) == len(da2[0].chunks) + len(da2[1].chunks)
+
+
+def test_match_dam_on_right(get_two_docarray, tmpdir):
+    da1, da2 = get_two_docarray
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend(da2)
+    da1.match(dam)
+    assert len(da1[0].matches) == len(da2)
+
+
+def test_match_dam_traversal_c_on_right(get_two_docarray, tmpdir):
+    da1, da2 = get_two_docarray
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend(da2)
+    da1.match(dam, traversal_rdarray=['c'])
+    assert len(da1[0].matches) == len(da2[0].chunks) + len(da2[1].chunks)
+
+
+@pytest.mark.parametrize('exclude_self', [True, False])
+@pytest.mark.parametrize('limit', [1, 2, 3])
+def test_exclude_self_should_keep_limit(limit, exclude_self):
+    da = DocumentArray(
+        [
+            Document(embedding=np.array([3, 1, 0])),
+            Document(embedding=np.array([3, 0, 1])),
+            Document(embedding=np.array([3, 0, 0])),
+            Document(embedding=np.array([3, 1, 1])),
+        ]
+    )
+    da.match(da, exclude_self=exclude_self, limit=limit)
+    for d in da:
+        assert len(d.matches) == limit
+        if exclude_self:
+            for m in d.matches:
+                assert d.id != m.id
+
+
+@pytest.mark.parametrize('limit', [1, 2, 1.0, 2.0, None])
+def test_match_handle_different_limit(get_two_docarray, limit, tmpdir):
+    da1, da2 = get_two_docarray
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend(da2)
+    da1.match(dam, limit=limit)
+    expected_length = limit if limit not in [None, -1] else len(da2)
+    assert len(da1[0].matches) == expected_length
+
+
+@pytest.mark.parametrize('limit', [0, -1])
+def test_match_assert_limit(get_two_docarray, limit, tmpdir):
+    da1, da2 = get_two_docarray
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend(da2)
+    with pytest.raises(ValueError):
+        da1.match(dam, limit=limit)
+
+
+@pytest.mark.parametrize('first_memmap', [True, False])
+@pytest.mark.parametrize('second_memmap', [True, False])
+@pytest.mark.parametrize('buffer_pool_size', [1000, 3])
+def test_filter_fn(doc_lists, tmp_path, first_memmap, second_memmap, buffer_pool_size):
+    def filter_fn():
+        shape = None
+
+        def valid(doc):
+            nonlocal shape
+            if doc.embedding is None:
+                return False
+            if shape is None:
+                shape = doc.embedding.shape
+            return shape == doc.embedding.shape
+
+        return valid
+
+    docs1, docs2 = doc_lists_to_doc_arrays(
+        doc_lists, tmp_path, first_memmap, second_memmap, buffer_pool_size
+    )
+    expected_len = len(docs2)
+
+    # match valid docs1 against valid docs2
+    docs1.match(docs2, filter_fn=filter_fn(), limit=len(docs2))
+    assert all(len(d1.matches) == expected_len for d1 in docs1)
+
+    # insert a doc with no embedding and a doc with wrong embedding shape into docs2
+    docs2.extend([Document(), Document(embedding=np.array([1]))])
+    docs1.match(docs2, filter_fn=filter_fn(), limit=len(docs2))
+    assert all(len(d1.matches) == expected_len for d1 in docs1)
+
+    # match docs1 with a doc without embedding against docs2
+    docs1.append(Document())
+    with pytest.raises(ValueError, match='cannot reshape array'):
+        docs1.match(docs2, filter_fn=filter_fn(), limit=len(docs2))
+
+    # match docs1 with a doc that has invalid embedding shape against docs2
+    docs1[len(docs1) - 1] = Document(embedding=np.array([1]))
+    with pytest.raises(ValueError, match='cannot reshape array'):
+        docs1.match(docs2, filter_fn=filter_fn(), limit=len(docs2))
+
+    # sanity check; if docs1 have valid embeddings, the following should work
+    docs1[len(docs1) - 1] = Document(embedding=np.array([1, 0, 1]))
+    docs1.match(docs2, filter_fn=filter_fn(), limit=len(docs2))
+    assert all(len(d1.matches) == expected_len for d1 in docs1)

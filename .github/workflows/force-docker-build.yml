@@ -44,11 +44,11 @@ jobs:
           fi
 
           if [[ "${{ matrix.pip_tag }}" == "perf" ]]; then
-            echo "PIP_INSTALL_PERF=1" >> $GITHUB_ENV
+            echo "JINA_PIP_INSTALL_PERF=1" >> $GITHUB_ENV
           fi
 
           if [[ "${{ matrix.pip_tag }}" == "" ]]; then
-            echo "PIP_INSTALL_CORE=1" >> $GITHUB_ENV
+            echo "JINA_PIP_INSTALL_CORE=1" >> $GITHUB_ENV
           fi
 
           JINA_VERSION=$(sed -n '/^__version__/p' ./jina/__init__.py | cut -d \' -f2)

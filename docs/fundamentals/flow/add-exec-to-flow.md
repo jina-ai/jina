@@ -21,7 +21,7 @@ f = Flow().add().add().add().add()
 :align: center
 ```
 
-## Define what executor to use via `uses`
+## Define Executor via `uses`
 
 `uses` parameter to specify the Executor.
 
@@ -118,7 +118,84 @@ f = Flow().add(
 ```
 ````
 
-## Add remote executors
+### Executor discovery
+By default, the Flow will attempt to retrieve the Executors' source files and YAML config files from the working 
+directory and other paths set in the `PATH` environment variable. If your Executor's source files and YAML config are 
+located elsewhere, you can specify their locations using the parameter 
+`extra_search_paths`.
+
+For example, suppose we have the following project structure where `app/` represents the working directory:
+```
+.
+├── app
+│   └── ▶ main.py
+└── executor
+    ├── config.yml
+    └── my_executor.py
+```
+`executor/my_executor.py`:
+```python
+from jina import Executor, DocumentArray, requests
+
+class MyExecutor(Executor):
+    @requests
+    def foo(self, docs: DocumentArray, **kwargs):
+        pass
+```
+
+`executor/config.yml`:
+```yaml
+jtype: MyExecutor
+metas:
+  py_modules:
+    - executor.py
+```
+
+Now, in `app/main.py`, to correctly load the Executor, you can specify the directory of the Executor like so:
+```{code-block} python
+---
+emphasize-lines: 2
+---
+from jina import Flow, Document
+f = Flow(extra_search_paths=['../executor']).add(uses='config.yml')
+with f:
+    r = f.post('/', inputs=Document())
+```
+
+
+````{admonition} Important
+:class: important
+If you are creating a Flow from a YAML config file which is located outside the working directory, you just need to 
+specify a correct relative or absolute path of the Flow's YAML config file and make all paths to Executor config files 
+relative to the Flow config file. The Flow will infer its config file location and add it to `extra_search_paths`:
+```
+.
+├── app
+│   └── ▶ main.py
+├── flow
+│   └── flow.yml
+└── executor
+    ├── config.yml
+    └── my_executor.py
+```
+`flow.yml`:
+```yaml
+jtype: Flow
+executors:
+  - name: executor
+    uses: ../executor/config.yml
+```
+
+`main.py`:
+```python
+from jina import Flow, Document
+f = Flow.load_config('../flow/flow.yml')
+with f:
+    r = f.post('/', inputs=Document())
+```
+````
+
+## Add remote Executor
 
 ### Add an already spawned Executor
 
@@ -134,40 +211,7 @@ f.add(host='localhost', port_in=12345, external=True)
 f.add(host='123.45.67.89', port_in=12345, external=True)
 ```
 
-### Add & spawn a remote `Executor` via `jinad`
-
-In the example below, the Executor with
-the `host`
-keyword `gpu-exec`, is put to a remote machine for parallelization, whereas other Executors stay local. Extra file
-dependencies that need to be uploaded are specified via the `upload_files` keyword.
-
-````{tab} 123.45.67.89
-
-```bash
-# have docker installed
-docker run --name=jinad --network=host -v /var/run/docker.sock:/var/run/docker.sock jinaai/jina:latest-daemon --port-expose 8000
-# stop the docker container
-docker rm -f jinad
-```
-
-````
-
-````{tab} Local
-
-```python
-from jina import Flow
-
-f = (Flow()
-     .add()
-     .add(name='gpu_exec',
-          uses='mwu_encoder.yml',
-          host='123.45.67.89:8000',
-          parallel=2,
-          upload_files=['mwu_encoder.py'])
-     .add())
-```
-
-````
+### [Spawn remote Executors using `JinaD`](../../advanced/daemon/remote-executors)
 
 ````{admonition} Commonly used arguments for deployment in 
 :class: tip 
@@ -192,7 +236,7 @@ f = (Flow()
 ````
 
 
-### Forcing an Executor in the remote-local configuration
+### Forcing an Executor in the remote-local config
 
 Sometimes you want to use a remote Executor in your local Flow (e.g. using an expensive encoder on a remote GPU). Then
 the remote cannot talk back to the next local Executor directly. This is similar to a server that cannot talk to a
@@ -204,7 +248,7 @@ the `connect_to_predecessor` argument and `port_out` to the Executor in front.
 f.add(name='remote', host='123.45.67.89', port_out=23456).add(name='local', connect_to_predecessor=True)
 ```
 
-## Override Executor configs
+## Override Executor config
 
 You can override an executor's meta configs when creating a flow.
 
@@ -226,7 +270,7 @@ with flow as f:
 ```
 
 ```text
-           pod0@219291[L]:ready and listening
+      executor0@219291[L]:ready and listening
         gateway@219291[L]:ready and listening
            Flow@219291[I]:🎉 Flow is ready to use!
 	🔗 Protocol: 		GRPC
@@ -260,7 +304,7 @@ with flow as f:
     f.post('/')
 ```
 ```text
-           pod0@219662[L]:ready and listening
+      executor0@219662[L]:ready and listening
         gateway@219662[L]:ready and listening
            Flow@219662[I]:🎉 Flow is ready to use!
 	🔗 Protocol: 		GRPC
@@ -295,7 +339,7 @@ with flow as f:
 ```
 
 ```text
-           pod0@221058[L]:ready and listening
+      executor0@221058[L]:ready and listening
         gateway@221058[L]:ready and listening
            Flow@221058[I]:🎉 Flow is ready to use!
 	🔗 Protocol: 		GRPC
@@ -306,9 +350,7 @@ bar
 foo
 ```
 
-````{admonition} Summary: commonly used patterns for add
-:class: tip 
-
+## Summary: common patterns
 
 
 | Description | Usage (`f = Flow(...)`) |
@@ -322,18 +364,5 @@ foo
 | Spawn Remote Executor (via `jinad` on Remote) | `f.add(uses='mwu_encoder.yml', host='123.45.67.89', port_in=12345, port_expose=8080)` |
 
 
-`.add()` accepts the following common arguments:
-
-| |  |
-|---|---|
-|Define Executor| `uses`|
-|Define Executor's parameters | `uses_with`, `uses_metas`, `uses_requests`|
-|Define Dependencies | `needs` |
-|Parallelization | `parallel`, `polling` |
-
-
 For a full list of arguments, please check `jina executor --help`.
-
-
-````
 

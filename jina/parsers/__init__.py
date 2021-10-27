@@ -2,7 +2,6 @@ import argparse
 
 from jina.parsers.client import mixin_comm_protocol_parser
 from .helper import _SHOW_ALL_ARGS
-from .peapods.pod import mixin_k8s_pod_parser
 
 
 def set_pea_parser(parser=None):
@@ -23,6 +22,7 @@ def set_pea_parser(parser=None):
     from .peapods.runtimes.remote import mixin_remote_runtime_parser
     from .peapods.pea import mixin_pea_parser
     from .peapods.runtimes.distributed import mixin_distributed_feature_parser
+    from .hubble.pull import mixin_hub_pull_options_parser
 
     mixin_base_ppr_parser(parser)
     mixin_zmq_runtime_parser(parser)
@@ -31,6 +31,7 @@ def set_pea_parser(parser=None):
     mixin_remote_runtime_parser(parser)
     mixin_distributed_feature_parser(parser)
     mixin_pea_parser(parser)
+    mixin_hub_pull_options_parser(parser)
 
     return parser
 
@@ -48,7 +49,7 @@ def set_pod_parser(parser=None):
 
     set_pea_parser(parser)
 
-    from .peapods.pod import mixin_base_pod_parser
+    from .peapods.pod import mixin_base_pod_parser, mixin_k8s_pod_parser
 
     mixin_base_pod_parser(parser)
     mixin_k8s_pod_parser(parser)
@@ -76,6 +77,7 @@ def set_gateway_parser(parser=None):
         mixin_http_gateway_parser,
         mixin_compressor_parser,
     )
+    from .peapods.pod import mixin_base_pod_parser, mixin_k8s_pod_parser
     from .peapods.pea import mixin_pea_parser
 
     mixin_base_ppr_parser(parser)
@@ -87,6 +89,7 @@ def set_gateway_parser(parser=None):
     mixin_comm_protocol_parser(parser)
     mixin_gateway_parser(parser)
     mixin_pea_parser(parser)
+    mixin_k8s_pod_parser(parser)
 
     from ..enums import SocketType, PodRoleType
 
@@ -97,28 +100,6 @@ def set_gateway_parser(parser=None):
         ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
         runtime_cls='GRPCRuntime',
         pod_role=PodRoleType.GATEWAY,
-    )
-
-    parser.add_argument(
-        '--routing-table',
-        type=str,
-        help='Routing graph for the gateway' if _SHOW_ALL_ARGS else argparse.SUPPRESS,
-    )
-
-    parser.add_argument(
-        '--dynamic-routing',
-        action='store_true',
-        default=True,
-        help='The Pod will setup the socket types of the HeadPea and TailPea depending on this argument.'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
-    )
-
-    parser.add_argument(
-        '--connect-to-predecessor',
-        action='store_true',
-        default=False,
-        help='The head Pea of this Pod will connect to the TailPea of the predecessor Pod.',
     )
 
     return parser
@@ -135,7 +116,9 @@ def set_client_cli_parser(parser=None):
 
         parser = set_base_parser()
 
-    from .peapods.runtimes.remote import mixin_client_gateway_parser
+    from .peapods.runtimes.remote import (
+        mixin_client_gateway_parser,
+    )
     from .client import mixin_client_features_parser, mixin_comm_protocol_parser
 
     mixin_client_gateway_parser(parser)
@@ -267,17 +250,6 @@ def get_main_parser():
             'are doing low-level orchestration',
             formatter_class=_chf,
             **(dict(help='Start a Pea')) if _SHOW_ALL_ARGS else {},
-        )
-    )
-
-    set_pod_parser(
-        sp.add_parser(
-            'pod',
-            description='Start a Pod. '
-            'You should rarely use this directly unless you '
-            'are doing low-level orchestration',
-            formatter_class=_chf,
-            **(dict(help='Start a Pod')) if _SHOW_ALL_ARGS else {},
         )
     )
 

@@ -34,7 +34,7 @@ def test_enum_definitions():
     quantization_enum_definition = PROTO_TO_PYDANTIC_MODELS.DocumentProto().schema()[
         'definitions'
     ]['QuantizationMode']
-    assert quantization_enum_definition['enum'] == [0, 1, 2]
+    assert quantization_enum_definition['enum'] == [0, 1, 2, 3]
 
     status_code_enum_definition = PROTO_TO_PYDANTIC_MODELS.StatusProto().schema()[
         'definitions'
@@ -113,7 +113,7 @@ def test_oneof_validation_error():
 
     with pytest.raises(pydantic.error_wrappers.ValidationError) as error:
         doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(text='abc', buffer=b'abc')
-    assert "only one field among ['buffer', 'blob', 'text', 'uri', 'graph']" in str(
+    assert "only one field among ['buffer', 'blob', 'text', 'graph']" in str(
         error.value
     )
 
@@ -121,7 +121,7 @@ def test_oneof_validation_error():
         doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(
             text='abc', buffer=b'abc', blob=PROTO_TO_PYDANTIC_MODELS.NdArrayProto()
         )
-    assert "only one field among ['buffer', 'blob', 'text', 'uri', 'graph']" in str(
+    assert "only one field among ['buffer', 'blob', 'text', 'graph']" in str(
         error.value
     )
 

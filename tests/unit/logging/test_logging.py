@@ -4,7 +4,7 @@ from datetime import datetime
 
 import pytest
 
-from jina import __uptime__, Flow, Document
+from jina import __uptime__, Flow, Document, __windows__
 from jina.enums import LogVerbosity
 from jina.helper import colored
 from jina.logging.logger import JinaLogger
@@ -12,7 +12,7 @@ from jina.logging.logger import JinaLogger
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-def log(logger):
+def log(logger: JinaLogger):
     logger.debug('this is test debug message')
     logger.info('this is test info message')
     logger.success('this is test success message')
@@ -37,19 +37,13 @@ def test_logging_syslog():
         'test_logger', log_config=os.path.join(cur_dir, 'yaml/syslog.yml')
     ) as logger:
         log(logger)
-        assert len(logger.handlers) == 1
+        assert len(logger.handlers) == 0 if __windows__ else 1
 
 
 def test_logging_default():
     with JinaLogger('test_logger') as logger:
         log(logger)
-        try:
-            import fluent
-
-            assert len(logger.handlers) == 2
-        except (ModuleNotFoundError, ImportError):
-            # if fluent not installed
-            assert len(logger.handlers) == 2
+        assert len(logger.handlers) == 1
 
 
 def test_logging_level_yaml(monkeypatch):
@@ -62,13 +56,14 @@ def test_logging_level_yaml(monkeypatch):
             os.remove(fn)
         log(file_logger)
         assert file_logger.logger.level == LogVerbosity.from_string('INFO')
-        for f in glob.glob(cur_dir + '/*.log'):
-            os.remove(f)
+    for f in glob.glob(cur_dir + '/*.log'):
+        os.remove(f)
 
 
 def test_logging_file(monkeypatch):
     monkeypatch.delenv('JINA_LOG_LEVEL', raising=True)  # ignore global env
-    fn = os.path.join(cur_dir, f'jina-{__uptime__}.log')
+    uptime = __uptime__.replace(':', '.') if __windows__ else __uptime__
+    fn = os.path.join(cur_dir, f'jina-{uptime}.log')
     with JinaLogger(
         'test_file_logger', log_config=os.path.join(cur_dir, 'yaml/file.yml')
     ) as file_logger:

@@ -1,5 +1,4 @@
 import os
-import random
 from copy import deepcopy
 
 import pytest
@@ -276,6 +275,15 @@ def test_document_save_load(method, tmp_path):
             assert d.content == d_r.content
 
 
+@pytest.mark.parametrize('flatten_tags', [True, False])
+def test_da_csv_write(flatten_tags, tmp_path):
+    da1 = DocumentArray(random_docs(1000))
+    tmpfile = os.path.join(tmp_path, 'test.csv')
+    da1.save_csv(tmpfile, flatten_tags)
+    with open(tmpfile) as fp:
+        assert len([v for v in fp]) == len(da1) + 1
+
+
 def test_documentarray_filter():
     da = DocumentArray([Document() for _ in range(6)])
 
@@ -323,6 +331,37 @@ def test_da_sort_by_document_interface_in_proto():
     assert da[0].embedding.shape == (1,)
 
 
+def test_da_sort_topk():
+    da = DocumentArray([Document(id=i, scores={'euclid': 10 - i}) for i in range(10)])
+    original = deepcopy(da)
+
+    da.sort(top_k=3, key=lambda d: d.scores['euclid'].value)
+    top = [da[i].scores['euclid'].value for i in range(3)]
+    rest = [da[i].scores['euclid'].value for i in range(3, 10)]
+    assert top[0] == 1 and top[1] == 2 and top[2] == 3
+    assert rest != sorted(rest)
+    assert len(da) == len(original)
+    assert all([d.id in original for d in da])
+
+    da.sort(top_k=3, key=lambda d: d.scores['euclid'].value, reverse=True)
+    top = [da[i].scores['euclid'].value for i in range(3)]
+    rest = [da[i].scores['euclid'].value for i in range(3, 10)]
+    assert top[0] == 10 and top[1] == 9 and top[2] == 8
+    assert rest != sorted(rest, reverse=True)
+    assert len(da) == len(original)
+    assert all([d.id in original for d in da])
+
+
+def test_da_sort_topk_tie():
+    da = DocumentArray([Document(id=i, tags={'order': i % 10}) for i in range(100)])
+    da.sort(top_k=10, key=lambda doc: doc.tags['order'])
+
+    top_k_ids = [doc.id for doc in da[0:10]]
+    assert top_k_ids == ['0', '10', '20', '30', '40', '50', '60', '70', '80', '90']
+    for i in range(10):
+        assert da[i].tags['order'] == 0
+
+
 def test_da_reverse():
     docs = [Document(embedding=np.array([1] * (10 - i))) for i in range(10)]
     da = DocumentArray(
@@ -366,16 +405,16 @@ def test_traversal_path():
 
     da.traverse_flat(['r'])
 
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         da.traverse_flat('r')
 
     da.traverse(['r'])
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         for _ in da.traverse('r'):
             pass
 
     da.traverse(['r'])
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         for _ in da.traverse('r'):
             pass
 
@@ -533,13 +572,18 @@ def test_embeddings_setter_da():
 
 
 def test_embeddings_getter_da():
-    emb = np.random.random((100, 128))
-    da = DocumentArray([Document(embedding=x) for x in emb])
+    embeddings = np.random.random((100, 10))
+    da = DocumentArray([Document(embedding=emb) for emb in embeddings])
     assert len(da) == 100
-    np.testing.assert_almost_equal(da.embeddings, emb)
+    np.testing.assert_almost_equal(da.get_attributes('embedding'), da.embeddings)
 
-    for x, doc in zip(emb, da):
-        np.testing.assert_almost_equal(x, doc.embedding)
+
+def test_embeddings_wrong_len():
+    da = DocumentArray([Document() for _ in range(100)])
+    embeddings = np.ones((2, 10))
+
+    with pytest.raises(ValueError, match='the number of rows in the'):
+        da.embeddings = embeddings
 
 
 def test_blobs_getter_da():
@@ -557,3 +601,88 @@ def test_blobs_setter_da():
 
     for x, doc in zip(blobs, da):
         np.testing.assert_almost_equal(x, doc.blob)
+
+
+def test_tags_getter_da():
+    da = DocumentArray([Document(tags={'a': 2, 'c': 'd'}) for _ in range(100)])
+    assert len(da.tags) == 100
+    assert da.tags == da.get_attributes('tags')
+
+
+def test_tags_setter_da():
+    tags = [{'a': 2, 'c': 'd'} for _ in range(100)]
+    da = DocumentArray([Document() for _ in range(100)])
+    da.tags = tags
+    assert da.tags == tags
+
+    for x, doc in zip(tags, da):
+        assert x == doc.tags
+
+
+def test_setter_wrong_len():
+    da = DocumentArray([Document() for _ in range(100)])
+    tags = [{'1': 2}]
+
+    with pytest.raises(ValueError, match='the number of tags in the'):
+        da.tags = tags
+
+
+def test_texts_getter_da():
+    da = DocumentArray([Document(text='hello') for _ in range(100)])
+    assert len(da.texts) == 100
+    assert da.texts == da.get_attributes('text')
+
+
+def test_texts_setter_da():
+    texts = ['text' for _ in range(100)]
+    da = DocumentArray([Document() for _ in range(100)])
+    da.texts = texts
+    assert da.texts == texts
+
+    for x, doc in zip(texts, da):
+        assert x == doc.text
+
+
+def test_texts_wrong_len():
+    da = DocumentArray([Document() for _ in range(100)])
+    texts = ['hello']
+
+    with pytest.raises(ValueError, match='the number of texts in the'):
+        da.texts = texts
+
+
+def test_blobs_wrong_len():
+    da = DocumentArray([Document() for _ in range(100)])
+    blobs = np.ones((2, 10, 10))
+
+    with pytest.raises(ValueError, match='the number of rows in the'):
+        da.blobs = blobs
+
+
+def test_none_extend():
+    da = DocumentArray([Document() for _ in range(100)])
+    da.extend(None)
+    assert len(da) == 100
+
+
+def test_buffers_getter_setter():
+    da = DocumentArray(
+        [
+            Document(buffer=b'aa'),
+            Document(buffer=b'bb'),
+            Document(buffer=b'cc'),
+        ]
+    )
+    assert da.buffers == [b'aa', b'bb', b'cc']
+    da.buffers = [b'cc', b'bb', b'aa']
+    assert da.buffers == [b'cc', b'bb', b'aa']
+    with pytest.raises(ValueError):
+        da.buffers = [b'cc', b'bb', b'aa', b'dd']
+    with pytest.raises(TypeError):
+        da.buffers = ['aa', 'bb', 'cc']
+
+
+def test_traverse_flat_root_itself():
+    da = DocumentArray([Document() for _ in range(100)])
+    res = da.traverse_flat(['r'])
+    assert id(res) == id(da)

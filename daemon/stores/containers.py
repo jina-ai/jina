@@ -4,7 +4,7 @@ import asyncio
 from copy import deepcopy
 from platform import uname
 from http import HTTPStatus
-from typing import Dict, TYPE_CHECKING, Union
+from typing import Dict, TYPE_CHECKING, List, Optional, Union
 
 import aiohttp
 
@@ -78,7 +78,7 @@ class ContainerStore(BaseStore):
         :param uri: uri of partial-daemon
         :return: True if partial-daemon is ready"""
         async with aiohttp.ClientSession() as session:
-            for _ in range(20):
+            for _ in range(60):
                 try:
                     async with session.get(uri) as response:
                         if response.status == HTTPStatus.OK:
@@ -94,7 +94,7 @@ class ContainerStore(BaseStore):
                         f'error while checking if partial-daemon is ready: {e}'
                     )
         self._logger.error(
-            f'couldn\'t reach {self._kind.title()} container at {uri} after 10secs'
+            f'couldn\'t reach {self._kind.title()} container at {uri} after 30secs'
         )
         return False
 
@@ -120,17 +120,18 @@ class ContainerStore(BaseStore):
         else:
             return f'http://{__docker_host__}:{port}'
 
-    def _command(self, port: int, workspace_id: DaemonID) -> str:
-        """Returns command for partial-daemon container to be appended to default entrypoint
+    def _entrypoint(self, port: int, workspace_id: DaemonID) -> str:
+        """Returns entrypoint for partial-daemon container to be appended to default entrypoint
 
-        NOTE: `command` is appended to already existing entrypoint, hence removed the prefix `jinad`
         NOTE: Important to set `workspace_id` here as this gets set in jina objects in the container
 
         :param port: partial-daemon port
         :param workspace_id: workspace id
         :return: command for partial-daemon container
         """
-        return f'--port {port} --mode {self._kind} --workspace-id {workspace_id.jid}'
+        return (
+            f'jinad --port {port} --mode {self._kind} --workspace-id {workspace_id.jid}'
+        )
 
     @BaseStore.dump
     async def add(
@@ -139,7 +140,8 @@ class ContainerStore(BaseStore):
         workspace_id: DaemonID,
         params: 'BaseModel',
         ports: Union[Dict, PortMappings],
-        envs: Dict[str, str] = {},
+        envs: Optional[Dict[str, str]] = {},
+        device_requests: Optional[List] = None,
         **kwargs,
     ) -> DaemonID:
         """Add a container to the store
@@ -149,11 +151,14 @@ class ContainerStore(BaseStore):
         :param params: pydantic model representing the args for the container
         :param ports: ports to be mapped to local
         :param envs: dict of env vars to be passed
+        :param device_requests: docker device requests
         :param kwargs: keyword args
         :raises KeyError: if workspace_id doesn't exist in the store or not ACTIVE
         :raises PartialDaemonConnectionException: if jinad cannot connect to partial
         :return: id of the container
         """
+        container = None
+
         try:
             from . import workspace_store
 
@@ -170,7 +175,7 @@ class ContainerStore(BaseStore):
             )
             dockerports.update({f'{partiald_port}/tcp': partiald_port})
             uri = self._uri(partiald_port)
-            command = self._command(partiald_port, workspace_id)
+            entrypoint = self._entrypoint(partiald_port, workspace_id)
             params = params.dict(exclude={'log_config'})
 
             self._logger.debug(
@@ -180,7 +185,7 @@ class ContainerStore(BaseStore):
                         '{:15s} -> {:15s}'.format('id', id),
                         '{:15s} -> {:15s}'.format('workspace', workspace_id),
                         '{:15s} -> {:15s}'.format('dockerports', str(dockerports)),
-                        '{:15s} -> {:15s}'.format('command', command),
+                        '{:15s} -> {:15s}'.format('entrypoint', entrypoint),
                     ]
                 )
             )
@@ -188,13 +193,14 @@ class ContainerStore(BaseStore):
             container, network, dockerports = Dockerizer.run(
                 workspace_id=workspace_id,
                 container_id=id,
-                command=command,
+                entrypoint=entrypoint,
                 ports=dockerports,
                 envs=envs,
+                device_requests=device_requests,
             )
             if not await self.ready(uri):
                 raise PartialDaemonConnectionException(
-                    f'{id.type.title()} creation failed, couldn\'t reach the container at {uri} after 10secs'
+                    f'{id.type.title()} creation failed, couldn\'t reach the container at {uri} after 30secs'
                 )
             kwargs.update(
                 {'ports': ports.dict()} if isinstance(ports, PortMappings) else {}
@@ -202,17 +208,18 @@ class ContainerStore(BaseStore):
             object = await self._add(uri=uri, params=params, **kwargs)
         except Exception as e:
             self._logger.error(f'{self._kind} creation failed as {e}')
-            container_logs = Dockerizer.logs(container.id)
-            if container_logs and isinstance(
-                e, (PartialDaemon400Exception, PartialDaemonConnectionException)
-            ):
-                self._logger.debug(
-                    f'error logs from partial daemon: \n {container_logs}'
-                )
-                if e.message and isinstance(e.message, list):
-                    e.message += container_logs.split('\n')
-                elif e.message and isinstance(e.message, str):
-                    e.message += container_logs
+            if container is not None:
+                container_logs = Dockerizer.logs(container.id)
+                if container_logs and isinstance(
+                    e, (PartialDaemon400Exception, PartialDaemonConnectionException)
+                ):
+                    self._logger.debug(
+                        f'error logs from partial daemon: \n {container_logs}'
+                    )
+                    if e.message and isinstance(e.message, list):
+                        e.message += container_logs.split('\n')
+                    elif e.message and isinstance(e.message, str):
+                        e.message += container_logs
             if id in Dockerizer.containers:
                 self._logger.info(f'removing container {id_cleaner(container.id)}')
                 Dockerizer.rm_container(container.id)
@@ -228,7 +235,7 @@ class ContainerStore(BaseStore):
                     uri=uri,
                 ),
                 arguments=ContainerArguments(
-                    command=f'jinad {command}',
+                    entrypoint=entrypoint,
                     object=object,
                 ),
                 workspace_id=workspace_id,

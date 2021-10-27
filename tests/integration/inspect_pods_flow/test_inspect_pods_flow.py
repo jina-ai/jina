@@ -50,21 +50,27 @@ def temp_folder(tmpdir):
 
 @pytest.mark.parametrize('inspect', params)
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc'])
-def test_flow1(inspect, protocol, temp_folder):
-    f = Flow(protocol=protocol, inspect=inspect).add(
+@pytest.mark.parametrize('grpc_data_requests', [False, True])
+def test_flow1(inspect, protocol, temp_folder, grpc_data_requests):
+    f = Flow(
+        protocol=protocol, inspect=inspect, grpc_data_requests=grpc_data_requests
+    ).add(
         uses=DummyEvaluator1,
         env={'TEST_EVAL_FLOW_TMPDIR': os.environ.get('TEST_EVAL_FLOW_TMPDIR')},
     )
 
     with f:
-        f.post(on='/index', inputs=docs)
+        res = f.post(on='/index', inputs=docs, return_results=True)
+
+    assert len(res) > 0
 
 
 @pytest.mark.parametrize('inspect', params)
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc'])
-def test_flow2(inspect, protocol, temp_folder):
+@pytest.mark.parametrize('grpc_data_requests', [False, True])
+def test_flow2(inspect, protocol, temp_folder, grpc_data_requests):
     f = (
-        Flow(protocol=protocol, inspect=inspect)
+        Flow(protocol=protocol, inspect=inspect, grpc_data_requests=grpc_data_requests)
         .add()
         .inspect(
             uses=DummyEvaluator1,
@@ -73,18 +79,20 @@ def test_flow2(inspect, protocol, temp_folder):
     )
 
     with f:
-        f.index(docs)
+        res = f.index(docs, return_results=True)
 
+    assert len(res) > 0
     validate([1], expect=f.args.inspect.is_keep)
 
 
 @pytest.mark.parametrize('inspect', params)
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc'])
-def test_flow3(inspect, protocol, temp_folder):
+@pytest.mark.parametrize('grpc_data_requests', [False, True])
+def test_flow3(inspect, protocol, temp_folder, grpc_data_requests):
     env = {'TEST_EVAL_FLOW_TMPDIR': os.environ.get('TEST_EVAL_FLOW_TMPDIR')}
 
     f = (
-        Flow(protocol=protocol, inspect=inspect)
+        Flow(protocol=protocol, inspect=inspect, grpc_data_requests=grpc_data_requests)
         .add(name='p1')
         .inspect(uses='DummyEvaluator1', env=env)
         .add(name='p2', needs='gateway')
@@ -93,18 +101,20 @@ def test_flow3(inspect, protocol, temp_folder):
     )
 
     with f:
-        f.index(docs)
+        res = f.index(docs, return_results=True)
 
+    assert len(res) > 0
     validate([1, 2], expect=f.args.inspect.is_keep)
 
 
 @pytest.mark.parametrize('inspect', params)
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc'])
-def test_flow4(inspect, protocol, temp_folder):
+@pytest.mark.parametrize('grpc_data_requests', [False, True])
+def test_flow4(inspect, protocol, temp_folder, grpc_data_requests):
     env = {'TEST_EVAL_FLOW_TMPDIR': os.environ.get('TEST_EVAL_FLOW_TMPDIR')}
 
     f = (
-        Flow(protocol=protocol, inspect=inspect)
+        Flow(protocol=protocol, inspect=inspect, grpc_data_requests=grpc_data_requests)
         .add()
         .inspect(uses='DummyEvaluator1', env=env)
         .add()
@@ -115,8 +125,9 @@ def test_flow4(inspect, protocol, temp_folder):
     )
 
     with f:
-        f.index(docs)
+        res = f.index(docs, return_results=True)
 
+    assert len(res) > 0
     validate([1, 2, 3], expect=f.args.inspect.is_keep)
 
 
@@ -132,7 +143,8 @@ class AddEvaluationExecutor(Executor):
 
 @pytest.mark.repeat(5)
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc'])
-def test_flow_returned_collect(protocol):
+@pytest.mark.parametrize('grpc_data_requests', [False, True])
+def test_flow_returned_collect(protocol, grpc_data_requests):
     # TODO(Joan): This test passes because we pass the `SlowExecutor` but I do not know how to make the `COLLECT` pod
     # use an specific executor.
 
@@ -146,7 +158,9 @@ def test_flow_returned_collect(protocol):
         assert 10.0 in scores
 
     f = (
-        Flow(protocol=protocol, inspect='COLLECT')
+        Flow(
+            protocol=protocol, inspect='COLLECT', grpc_data_requests=grpc_data_requests
+        )
         .add()
         .inspect(
             uses=AddEvaluationExecutor,
@@ -155,27 +169,27 @@ def test_flow_returned_collect(protocol):
 
     with f:
         response = f.index(inputs=docs, return_results=True)
-        validate_func(response[0])
+    validate_func(response[0])
 
 
 @pytest.mark.repeat(5)
 @pytest.mark.parametrize('inspect', ['HANG', 'REMOVE'])
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc'])
-def test_flow_not_returned(inspect, protocol, mocker):
+@pytest.mark.parametrize('grpc_data_requests', [False, True])
+def test_flow_not_returned(inspect, protocol, grpc_data_requests):
     def validate_func(resp):
         for doc in resp.data.docs:
             assert len(NamedScoreMapping(doc.evaluations)) == 0
 
     f = (
-        Flow(protocol=protocol, inspect=inspect)
+        Flow(protocol=protocol, inspect=inspect, grpc_data_requests=grpc_data_requests)
         .add()
         .inspect(
             uses=AddEvaluationExecutor,
         )
     )
 
-    mock = mocker.Mock()
     with f:
-        f.index(inputs=docs, on_done=mock)
+        res = f.index(inputs=docs, return_results=True)
 
-    validate_callback(mock, validate_func)
+    validate_func(res[0])

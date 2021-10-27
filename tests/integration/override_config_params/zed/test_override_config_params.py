@@ -41,12 +41,12 @@ def test_override_config_params(flow):
     assert doc.tags['workspace'] == 'different_workspace'
 
 
-def test_override_config_params_parallel():
+def test_override_config_params_shards():
     flow = Flow(return_results=True).add(
         uses=os.path.join(cur_dir, 'default_config.yml'),
         uses_with={'param1': 50, 'param2': 30},
         uses_metas={'workspace': 'different_workspace'},
-        parallel=2,
+        shards=2,
     )
     with flow:
         resps = flow.search(inputs=[Document()], return_results=True)

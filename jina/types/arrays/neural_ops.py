@@ -1,4 +1,4 @@
-from typing import Optional, Union, Callable, Tuple
+from typing import Optional, Union, Callable, Tuple, Sequence, TYPE_CHECKING
 
 import numpy as np
 
@@ -6,7 +6,7 @@ from ... import Document
 from ...importer import ImportExtensions
 from ...math.helper import top_k, minmax_normalize, update_rows_x_mat_best
 
-if False:
+if TYPE_CHECKING:
     from .document import DocumentArray
     from .memmap import DocumentArrayMemmap
 
@@ -20,20 +20,25 @@ class DocumentArrayNeuralOpsMixin:
         metric: Union[
             str, Callable[['np.ndarray', 'np.ndarray'], 'np.ndarray']
         ] = 'cosine',
-        limit: Optional[int] = 20,
-        normalization: Optional[Tuple[int, int]] = None,
-        use_scipy: bool = False,
+        limit: Optional[Union[int, float]] = 20,
+        normalization: Optional[Tuple[float, float]] = None,
         metric_name: Optional[str] = None,
         batch_size: Optional[int] = None,
+        traversal_ldarray: Optional[Sequence[str]] = None,
+        traversal_rdarray: Optional[Sequence[str]] = None,
+        use_scipy: bool = False,
+        exclude_self: bool = False,
+        is_sparse: bool = False,
+        filter_fn: Optional[Callable] = None,
     ) -> None:
         """Compute embedding based nearest neighbour in `another` for each Document in `self`,
         and store results in `matches`.
         .. note::
             'cosine', 'euclidean', 'sqeuclidean' are supported natively without extra dependency.
-            You can use other distance metric provided by ``scipy``, such as ‘braycurtis’, ‘canberra’, ‘chebyshev’,
-            ‘cityblock’, ‘correlation’, ‘cosine’, ‘dice’, ‘euclidean’, ‘hamming’, ‘jaccard’, ‘jensenshannon’,
-            ‘kulsinski’, ‘mahalanobis’, ‘matching’, ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
-            ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘wminkowski’, ‘yule’.
+            You can use other distance metric provided by ``scipy``, such as `braycurtis`, `canberra`, `chebyshev`,
+            `cityblock`, `correlation`, `cosine`, `dice`, `euclidean`, `hamming`, `jaccard`, `jensenshannon`,
+            `kulsinski`, `mahalanobis`, `matching`, `minkowski`, `rogerstanimoto`, `russellrao`, `seuclidean`,
+            `sokalmichener`, `sokalsneath`, `sqeuclidean`, `wminkowski`, `yule`.
             To use scipy metric, please set ``use_scipy=True``.
         - To make all matches values in [0, 1], use ``dA.match(dB, normalization=(0, 1))``
         - To invert the distance as score and make all values in range [0, 1],
@@ -44,12 +49,54 @@ class DocumentArrayNeuralOpsMixin:
         :param normalization: a tuple [a, b] to be used with min-max normalization,
                                 the min distance will be rescaled to `a`, the max distance will be rescaled to `b`
                                 all values will be rescaled into range `[a, b]`.
-        :param use_scipy: use Scipy as the computation backend
         :param metric_name: if provided, then match result will be marked with this string.
         :param batch_size: if provided, then `darray` is loaded in chunks of, at most, batch_size elements. This option
                            will be slower but more memory efficient. Specialy indicated if `darray` is a big
                            DocumentArrayMemmap.
+        :param traversal_ldarray: if set, then matching is applied along the `traversal_path` of the
+                left-hand ``DocumentArray``.
+        :param traversal_rdarray: if set, then matching is applied along the `traversal_path` of the
+                right-hand ``DocumentArray``.
+        :param filter_fn: if set, apply the filter function to filter docs on the right hand side (rhv) to be matched
+        :param use_scipy: if set, use ``scipy`` as the computation backend
+        :param exclude_self: if set, Documents in ``darray`` with same ``id`` as the left-hand values will not be
+                        considered as matches.
+        :param is_sparse: if set, the embeddings of left & right DocumentArray are considered as sparse NdArray
         """
+        if limit is not None:
+            if limit <= 0:
+                raise ValueError(f'`limit` must be larger than 0, receiving {limit}')
+            else:
+                limit = int(limit)
+
+        if batch_size is not None:
+            if batch_size <= 0:
+                raise ValueError(
+                    f'`batch_size` must be larger than 0, receiving {batch_size}'
+                )
+            else:
+                batch_size = int(batch_size)
+
+        lhv = self
+        if traversal_ldarray:
+            lhv = self.traverse_flat(traversal_ldarray)
+
+            from .document import DocumentArray
+
+            if not isinstance(lhv, DocumentArray):
+                lhv = DocumentArray(lhv)
+
+        rhv = darray
+        if traversal_rdarray or filter_fn:
+            rhv = darray.traverse_flat(traversal_rdarray or ['r'], filter_fn=filter_fn)
+
+            from .document import DocumentArray
+
+            if not isinstance(rhv, DocumentArray):
+                rhv = DocumentArray(rhv)
+
+        if not (lhv and rhv):
+            return
 
         if callable(metric):
             cdist = metric
@@ -64,28 +111,35 @@ class DocumentArrayNeuralOpsMixin:
             )
 
         metric_name = metric_name or (metric.__name__ if callable(metric) else metric)
-        limit = len(darray) if limit is None else limit
+        _limit = len(rhv) if limit is None else (limit + (1 if exclude_self else 0))
 
         if batch_size:
-            dist, idx = self._match_online(
-                darray, cdist, limit, normalization, metric_name, batch_size
+            dist, idx = lhv._match_online(
+                rhv, cdist, _limit, normalization, metric_name, batch_size
             )
         else:
-            dist, idx = self._match(darray, cdist, limit, normalization, metric_name)
+            dist, idx = lhv._match(
+                rhv, cdist, _limit, normalization, metric_name, is_sparse
+            )
 
-        for _q, _ids, _dists in zip(self, idx, dist):
+        for _q, _ids, _dists in zip(lhv, idx, dist):
             _q.matches.clear()
+            num_matches = 0
             for _id, _dist in zip(_ids, _dists):
                 # Note, when match self with other, or both of them share the same Document
                 # we might have recursive matches .
                 # checkout https://github.com/jina-ai/jina/issues/3034
-                d = darray[int(_id)]
-                if d.id in self:
+                d = rhv[int(_id)]  # type: Document
+                if d.id in lhv:
                     d = Document(d, copy=True)
                     d.pop('matches')
-                _q.matches.append(d, scores={metric_name: _dist})
+                if not (d.id == _q.id and exclude_self):
+                    _q.matches.append(d, scores={metric_name: _dist})
+                    num_matches += 1
+                    if num_matches >= (limit or _limit):
+                        break
 
-    def _match(self, darray, cdist, limit, normalization, metric_name):
+    def _match(self, darray, cdist, limit, normalization, metric_name, is_sparse):
         """
         Computes the matches between self and `darray` loading `darray` into main memory.
         :param darray: the other DocumentArray or DocumentArrayMemmap to match against
@@ -96,25 +150,19 @@ class DocumentArrayNeuralOpsMixin:
                                 the min distance will be rescaled to `a`, the max distance will be rescaled to `b`
                                 all values will be rescaled into range `[a, b]`.
         :param metric_name: if provided, then match result will be marked with this string.
+        :param is_sparse: if provided, then match is computed on sparse embeddings
         :return: distances and indices
         """
-        is_sparse = False
-
-        if isinstance(darray[0].embedding, np.ndarray):
-            x_mat = self.embeddings
-            y_mat = darray.embeddings
-
-        else:
-            import scipy.sparse as sp
-
-            if sp.issparse(darray[0].embedding):
-                x_mat = sp.vstack(self.get_attributes('embedding'))
-                y_mat = sp.vstack(darray.get_attributes('embedding'))
-                is_sparse = True
 
         if is_sparse:
-            dists = cdist(x_mat, y_mat, metric_name, is_sparse=is_sparse)
+            import scipy.sparse as sp
+
+            x_mat = sp.vstack(self.get_attributes('embedding'))
+            y_mat = sp.vstack(darray.get_attributes('embedding'))
+            dists = cdist(x_mat, y_mat, metric_name, is_sparse=True)
         else:
+            x_mat = self.embeddings
+            y_mat = darray.embeddings
             dists = cdist(x_mat, y_mat, metric_name)
 
         dist, idx = top_k(dists, min(limit, len(darray)), descending=False)
@@ -188,10 +236,11 @@ class DocumentArrayNeuralOpsMixin:
         self,
         output: Optional[str] = None,
         title: Optional[str] = None,
-        colored_tag: Optional[str] = None,
+        colored_attr: Optional[str] = None,
         colormap: str = 'rainbow',
         method: str = 'pca',
         show_axis: bool = False,
+        **kwargs,
     ):
         """Visualize embeddings in a 2D projection with the PCA algorithm. This function requires ``matplotlib`` installed.
 
@@ -200,13 +249,14 @@ class DocumentArrayNeuralOpsMixin:
 
         :param output: Optional path to store the visualization. If not given, show in UI
         :param title: Optional title of the plot. When not given, the default title is used.
-        :param colored_tag: Optional str that specifies tag used to color the plot
+        :param colored_attr: Optional str that specifies attribute used to color the plot, it supports dunder expression
+            such as `tags__label`, `matches__0__id`.
         :param colormap: the colormap string supported by matplotlib.
         :param method: the visualization method, available `pca`, `tsne`. `pca` is fast but may not well represent
                 nonlinear relationship of high-dimensional data. `tsne` requires scikit-learn to be installed and is
                 much slower.
         :param show_axis: If set, axis and bounding box of the plot will be printed.
-
+        :param kwargs: extra kwargs pass to matplotlib.plot
         """
 
         x_mat = self.embeddings
@@ -235,13 +285,22 @@ class DocumentArrayNeuralOpsMixin:
 
         plt.figure(figsize=(8, 8))
 
-        plt.title(title or f'{len(x_mat)} Documents with PCA')
+        plt.title(title or f'{len(x_mat)} Documents with {method}')
 
-        if colored_tag:
-            tags = [x[colored_tag] for x in self.get_attributes('tags')]
+        if colored_attr:
+            tags = []
+
+            for x in self:
+                try:
+                    tags.append(getattr(x, colored_attr))
+                except (KeyError, AttributeError, ValueError):
+                    tags.append(None)
             tag_to_num = {tag: num for num, tag in enumerate(set(tags))}
             plt_kwargs['c'] = np.array([tag_to_num[ni] for ni in tags])
             plt_kwargs['cmap'] = plt.get_cmap(colormap)
+
+        # update the plt_kwargs
+        plt_kwargs.update(kwargs)
 
         plt.scatter(**plt_kwargs)
 

@@ -1,21 +1,17 @@
 import base64
-import io
 import json
 import mimetypes
-import os
-import urllib.parse
-import urllib.request
 from hashlib import blake2b
 from typing import (
-    Iterable,
-    Union,
-    Dict,
-    Optional,
-    TypeVar,
     Any,
-    Tuple,
+    Dict,
+    Iterable,
     List,
+    Optional,
+    Tuple,
     Type,
+    TypeVar,
+    Union,
     overload,
 )
 
@@ -23,35 +19,28 @@ import numpy as np
 from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 
-from .converters import png_to_buffer, to_datauri, to_image_blob
-from .helper import versioned, VersionedMixin
-from ..mixin import ProtoTypeMixin
-from ..ndarray.generic import NdArray, BaseSparseNdArray
-from ..score import NamedScore
-from ..score.map import NamedScoreMapping
-from ..struct import StructView
 from ...excepts import BadDocType
-from ...helper import (
-    typename,
-    random_identity,
-    download_mermaid_url,
-    dunder_get,
-    cached_property,
-)
+from ...helper import download_mermaid_url, dunder_get, random_identity, typename
 from ...importer import ImportExtensions
 from ...logging.predefined import default_logger
 from ...proto import jina_pb2
+from ..mixin import ProtoTypeMixin
+from ..ndarray.generic import BaseSparseNdArray, NdArray
+from ..score import NamedScore
+from ..score.map import NamedScoreMapping
+from ..struct import StructView
+from .converters import ContentConversionMixin
+from .helper import VersionedMixin, versioned
 
 if False:
-    from ..arrays.chunk import ChunkArray
-    from ..arrays.match import MatchArray
-
-    from scipy.sparse import coo_matrix
-
     # fix type-hint complain for sphinx and flake
     import scipy
     import tensorflow as tf
     import torch
+    from scipy.sparse import coo_matrix
+
+    from ..arrays.chunk import ChunkArray
+    from ..arrays.match import MatchArray
 
     ArrayType = TypeVar(
         'ArrayType',
@@ -86,12 +75,12 @@ DocumentSourceType = TypeVar(
 
 _all_mime_types = set(mimetypes.types_map.values())
 
-_all_doc_content_keys = {'content', 'uri', 'blob', 'text', 'buffer'}
+_all_doc_content_keys = {'content', 'blob', 'text', 'buffer', 'graph'}
 _all_doc_array_keys = ('blob', 'embedding')
 _special_mapped_keys = ('scores', 'evaluations')
 
 
-class Document(ProtoTypeMixin, VersionedMixin):
+class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
     """
     :class:`Document` is one of the **primitive data type** in Jina.
 
@@ -149,6 +138,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
     @overload
     def __init__(
         self,
+        *,
         adjacency: Optional[int] = None,
         blob: Optional[Union['ArrayType', 'jina_pb2.NdArrayProto', 'NdArray']] = None,
         buffer: Optional[bytes] = None,
@@ -226,13 +216,16 @@ class Document(ProtoTypeMixin, VersionedMixin):
                 assert d.tags['hello'] == 'world'  # true
                 assert d.tags['good'] == 'bye'  # true
         """
-        self._pb_body = jina_pb2.DocumentProto()
         try:
             if isinstance(document, jina_pb2.DocumentProto):
                 if copy:
+                    self._pb_body = jina_pb2.DocumentProto()
                     self._pb_body.CopyFrom(document)
                 else:
                     self._pb_body = document
+            elif isinstance(document, bytes):
+                self._pb_body = jina_pb2.DocumentProto()
+                self._pb_body.ParseFromString(document)
             elif isinstance(document, (dict, str)):
                 if isinstance(document, str):
                     document = json.loads(document)
@@ -260,10 +253,12 @@ class Document(ProtoTypeMixin, VersionedMixin):
                 user_fields = set(document)
                 support_fields = set(
                     self.attributes(
-                        include_proto_fields_camelcase=True, include_properties=False
+                        include_proto_fields_camelcase=True,
+                        include_properties=False,
                     )
                 )
 
+                self._pb_body = jina_pb2.DocumentProto()
                 if support_fields.issuperset(user_fields):
                     json_format.ParseDict(document, self._pb_body)
                 else:
@@ -289,16 +284,18 @@ class Document(ProtoTypeMixin, VersionedMixin):
                             self._pb_body.tags.update(
                                 {k: document[k] for k in _remainder}
                             )
-            elif isinstance(document, bytes):
-                self._pb_body.ParseFromString(document)
             elif isinstance(document, Document):
                 if copy:
+                    self._pb_body = jina_pb2.DocumentProto()
                     self._pb_body.CopyFrom(document.proto)
                 else:
                     self._pb_body = document.proto
             elif document is not None:
                 # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(document)} is not recognizable')
+            else:
+                # create an empty document
+                self._pb_body = jina_pb2.DocumentProto()
         except Exception as ex:
             raise BadDocType(
                 f'fail to construct a document from {document}, '
@@ -309,13 +306,24 @@ class Document(ProtoTypeMixin, VersionedMixin):
         if self._pb_body.id is None or not self._pb_body.id:
             self.id = random_identity(use_uuid1=True)
 
-        # check if there are mutually exclusive content fields
-        if _contains_conflicting_content(**kwargs):
-            raise ValueError(
-                f'Document content fields are mutually exclusive, please provide only one of {_all_doc_content_keys}'
-            )
-        self._mermaid_id = random_identity()
-        self.set_attributes(**kwargs)
+        if kwargs:
+            # check if there are mutually exclusive content fields
+            if len(_all_doc_content_keys.intersection(kwargs.keys())) > 1:
+                raise ValueError(
+                    f'Document content fields are mutually exclusive, please provide only one of {_all_doc_content_keys}'
+                )
+            self.set_attributes(**kwargs)
+        self.__mermaid_id = None
+
+    @property
+    def _mermaid_id(self):
+        if self.__mermaid_id is None:
+            self.__mermaid_id = random_identity()
+        return self.__mermaid_id
+
+    @_mermaid_id.setter
+    def _mermaid_id(self, m_id):
+        self.__mermaid_id = m_id
 
     def pop(self, *fields) -> None:
         """Remove the values from the given fields of this Document.
@@ -600,6 +608,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
 
         if JINA_GLOBAL.scipy_installed:
             import scipy
+            import scipy.sparse
 
             if scipy.sparse.issparse(v):
                 from ..ndarray.sparse.scipy import SparseNdArray
@@ -884,10 +893,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
         if isinstance(value, bytes):
             self.buffer = value
         elif isinstance(value, str):
-            if _is_uri(value):
-                self.uri = value
-            else:
-                self.text = value
+            self.text = value
         elif isinstance(value, np.ndarray):
             self.blob = value
         else:
@@ -990,135 +996,6 @@ class Document(ProtoTypeMixin, VersionedMixin):
         for k, v in value.items():
             scores[k] = v
 
-    def convert_image_buffer_to_blob(self, color_axis: int = -1):
-        """Convert an image buffer to blob
-
-        :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
-        """
-        self.blob = to_image_blob(io.BytesIO(self.buffer), color_axis)
-
-    def convert_image_blob_to_uri(
-        self, width: int, height: int, resize_method: str = 'BILINEAR'
-    ):
-        """Assuming :attr:`blob` is a _valid_ image, set :attr:`uri` accordingly
-        :param width: the width of the blob
-        :param height: the height of the blob
-        :param resize_method: the resize method name
-        """
-        png_bytes = png_to_buffer(self.blob, width, height, resize_method)
-        self.uri = 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
-
-    def convert_image_uri_to_blob(
-        self, color_axis: int = -1, uri_prefix: Optional[str] = None
-    ):
-        """Convert uri to blob
-
-        :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
-        :param uri_prefix: the prefix of the uri
-        """
-        self.blob = to_image_blob(
-            (uri_prefix + self.uri) if uri_prefix else self.uri, color_axis
-        )
-
-    def convert_image_datauri_to_blob(self, color_axis: int = -1):
-        """Convert data URI to image blob
-
-        :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
-        """
-        req = urllib.request.Request(self.uri, headers={'User-Agent': 'Mozilla/5.0'})
-        with urllib.request.urlopen(req) as fp:
-            buffer = fp.read()
-        self.blob = to_image_blob(io.BytesIO(buffer), color_axis)
-
-    def convert_buffer_to_blob(self, dtype=None, count=-1, offset=0):
-        """Assuming the :attr:`buffer` is a _valid_ buffer of Numpy ndarray,
-        set :attr:`blob` accordingly.
-
-        :param dtype: Data-type of the returned array; default: float.
-        :param count: Number of items to read. ``-1`` means all data in the buffer.
-        :param offset: Start reading the buffer from this offset (in bytes); default: 0.
-
-        .. note::
-            One can only recover values not shape information from pure buffer.
-        """
-        self.blob = np.frombuffer(self.buffer, dtype, count, offset)
-
-    def convert_blob_to_buffer(self):
-        """Convert blob to buffer"""
-        self.buffer = self.blob.tobytes()
-
-    def convert_uri_to_buffer(self):
-        """Convert uri to buffer
-        Internally it downloads from the URI and set :attr:`buffer`.
-
-        """
-        if urllib.parse.urlparse(self.uri).scheme in {'http', 'https', 'data'}:
-            req = urllib.request.Request(
-                self.uri, headers={'User-Agent': 'Mozilla/5.0'}
-            )
-            with urllib.request.urlopen(req) as fp:
-                self.buffer = fp.read()
-        elif os.path.exists(self.uri):
-            with open(self.uri, 'rb') as fp:
-                self.buffer = fp.read()
-        else:
-            raise FileNotFoundError(f'{self.uri} is not a URL or a valid local path')
-
-    def convert_uri_to_datauri(self, charset: str = 'utf-8', base64: bool = False):
-        """Convert uri to data uri.
-        Internally it reads uri into buffer and convert it to data uri
-
-        :param charset: charset may be any character set registered with IANA
-        :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit. Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that frequently uses non-US-ASCII characters.
-        """
-        if not _is_datauri(self.uri):
-            self.convert_uri_to_buffer()
-            self.uri = to_datauri(
-                self.mime_type, self.buffer, charset, base64, binary=True
-            )
-
-    def convert_buffer_to_uri(self, charset: str = 'utf-8', base64: bool = False):
-        """Convert buffer to data uri.
-        Internally it first reads into buffer and then converts it to data URI.
-
-        :param charset: charset may be any character set registered with IANA
-        :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit.
-            Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that
-            frequently uses non-US-ASCII characters.
-        """
-
-        if not self.mime_type:
-            raise ValueError(
-                f'{self.mime_type} is unset, can not convert it to data uri'
-            )
-
-        self.uri = to_datauri(self.mime_type, self.buffer, charset, base64, binary=True)
-
-    def convert_text_to_uri(self, charset: str = 'utf-8', base64: bool = False):
-        """Convert text to data uri.
-
-        :param charset: charset may be any character set registered with IANA
-        :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit.
-            Designed to be efficient for non-text 8 bit and binary data.
-            Sometimes used for text data that frequently uses non-US-ASCII characters.
-        """
-
-        self.uri = to_datauri(self.mime_type, self.text, charset, base64, binary=False)
-
-    def convert_uri_to_text(self):
-        """Assuming URI is text, convert it to text"""
-        self.convert_uri_to_buffer()
-        self.text = self.buffer.decode()
-
-    def convert_content_to_uri(self):
-        """Convert content in URI with best effort"""
-        if self.text:
-            self.convert_text_to_uri()
-        elif self.buffer:
-            self.convert_buffer_to_uri()
-        elif self.content_type:
-            raise NotImplementedError
-
     def MergeFrom(self, doc: 'Document'):
         """Merge the content of target
 
@@ -1179,10 +1056,10 @@ class Document(ProtoTypeMixin, VersionedMixin):
 
         mermaid_str = (
             """
-                                    %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
-                                    classDiagram
-    
-                                            """
+                                        %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
+                                        classDiagram
+
+                                                """
             + self.__mermaid_str__()
         )
 
@@ -1212,7 +1089,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
         showed = False
         if inline_display:
             try:
-                from IPython.display import display, Image
+                from IPython.display import Image, display
 
                 display(Image(url=url))
                 showed = True
@@ -1325,29 +1202,3 @@ class Document(ProtoTypeMixin, VersionedMixin):
         else:
             raise AttributeError
         return value
-
-
-def _is_uri(value: str) -> bool:
-    scheme = urllib.parse.urlparse(value).scheme
-    return (
-        (scheme in {'http', 'https'})
-        or (scheme in {'data'})
-        or os.path.exists(value)
-        or os.access(os.path.dirname(value), os.W_OK)
-    )
-
-
-def _is_datauri(value: str) -> bool:
-    scheme = urllib.parse.urlparse(value).scheme
-    return scheme in {'data'}
-
-
-def _contains_conflicting_content(**kwargs):
-    content_keys = 0
-    for k in kwargs:
-        if k in _all_doc_content_keys:
-            content_keys += 1
-            if content_keys > 1:
-                return True
-
-    return False

@@ -61,14 +61,29 @@ html_theme_options = {
         "color-brand-primary": "#FBCB67",
         "color-brand-content": "#FBCB67",
     },
+
+    # PLEASE DO NOT DELETE the empty line between `start-announce` and `end-announce`
+    # PLEASE DO NOT DELETE `start-announce`/ `end-announce` it is used for our dev bot to inject announcement from GH
+
+    # start-announce
+
+    "announcement": '''
+    <a href="https://github.com/jina-ai/finetuner">Check out <b>Finetuner</b> - tuning any DNN for better embedding on neural search tasks</a>
+    ''',
+        
+    # end-announce
 }
 
 html_static_path = ['_static']
 html_extra_path = ['html_extra']
-html_css_files = ['main.css']
+html_css_files = [
+    'main.css',
+    'docbot.css',
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css',
+]
+html_js_files = ['https://cdn.jsdelivr.net/npm/vue@2/dist/vue.min.js', 'docbot.js']
 htmlhelp_basename = slug
 html_show_sourcelink = False
-html_title = 'Jina Documentation'
 html_favicon = '_static/favicon.ico'
 
 latex_documents = [(master_doc, f'{slug}.tex', project, author, 'manual')]
@@ -110,9 +125,8 @@ notfound_context = {
     'body': '''
 <h1>Page Not Found</h1>
 <p>Oops, we couldn't find that page. </p>
-<p>You can try using the search box or check our menu on the left hand side of this page.</p>
-
-<p>If neither of those options work, please create a Github issue ticket <a href="https://github.com/jina-ai/jina/">here</a>, and one of our team will respond.</p>
+<p>You can try "asking our docs" on the right corner of the page to find answer.</p>
+<p>Otherwise, <a href="https://github.com/jina-ai/jina/">please create a Github issue</a> and one of our team will respond.</p>
 
 ''',
 }
@@ -171,8 +185,18 @@ ogp_custom_meta_tags = [
 
   gtag('config', 'G-48ZDWC8GT6');
 </script>
-    '''
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+    ''',
 ]
+
+
+def add_server_address(app):
+    # This makes variable `server_address` available to docbot.js
+    server_address = app.config['server_address']
+    js_text = "var server_address = '%s';" % server_address
+    app.add_js_file(None, body=js_text)
+
 
 def setup(app):
     from sphinx.domains.python import PyField
@@ -200,3 +224,9 @@ def setup(app):
             ),
         ],
     )
+    app.add_config_value(
+        name='server_address',
+        default=os.getenv('JINA_DOCSBOT_SERVER', 'https://docsbot.jina.ai'),
+        rebuild='',
+    )
+    app.connect('builder-inited', add_server_address)

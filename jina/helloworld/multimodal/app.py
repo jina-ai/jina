@@ -11,6 +11,8 @@ from jina.logging.profile import ProgressBar
 from jina.parsers.helloworld import set_hw_multimodal_parser
 from jina.types.document.generators import from_csv
 
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+
 
 def hello_world(args):
     """
@@ -50,6 +52,7 @@ def hello_world(args):
 
     # this envs are referred in index and query flow YAMLs
     os.environ['HW_WORKDIR'] = args.workdir
+    os.environ['PY_MODULE'] = os.path.abspath(os.path.join(cur_dir, 'my_executors.py'))
     # now comes the real work
     # load index flow from a YAML file
 
@@ -66,7 +69,7 @@ def hello_world(args):
     f.port_expose = args.port_expose
 
     url_html_path = 'file://' + os.path.abspath(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static/index.html')
+        os.path.join(cur_dir, 'static/index.html')
     )
     with f:
         try:

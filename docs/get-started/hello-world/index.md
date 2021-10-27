@@ -66,6 +66,9 @@ jina hello chatbot --help
 jina hello fashion --help
 ```
 
+If you prefer to learn by watching the video, watch [this video explanation](https://www.youtube.com/watch?v=zQqbXFY0Nco) by Jina community member Aleksa Gordic
+
+
 ```{toctree}
 :hidden:
 

@@ -4,6 +4,7 @@ import time
 import pytest
 from google.protobuf import json_format
 
+from jina import __default_host__
 from jina.logging.logger import JinaLogger
 from jina.helper import random_identity
 from jina.parsers import set_pea_parser
@@ -18,9 +19,9 @@ def get_args():
     return set_pea_parser().parse_args(
         [
             '--host-in',
-            '0.0.0.0',
+            __default_host__,
             '--host-out',
-            '0.0.0.0',
+            __default_host__,
             '--socket-in',
             'ROUTER_BIND',
             '--socket-out',
@@ -53,16 +54,16 @@ def test_simple_dynamic_routing_zmqlet():
         msg = Message(None, req, 'tmp', '')
         routing_pb = jina_pb2.RoutingTableProto()
         routing_table = {
-            'active_pod': 'pod1',
+            'active_pod': 'executor1',
             'pods': {
-                'pod1': {
-                    'host': '0.0.0.0',
+                'executor1': {
+                    'host': __default_host__,
                     'port': args1.port_in,
                     'expected_parts': 0,
-                    'out_edges': [{'pod': 'pod2'}],
+                    'out_edges': [{'pod': 'executor2'}],
                 },
-                'pod2': {
-                    'host': '0.0.0.0',
+                'executor2': {
+                    'host': __default_host__,
                     'port': args2.port_in,
                     'expected_parts': 1,
                     'out_edges': [],
@@ -103,22 +104,22 @@ def test_double_dynamic_routing_zmqlet():
         d.tags['id'] = 2
         msg = Message(None, req, 'tmp', '')
         routing_table = {
-            'active_pod': 'pod1',
+            'active_pod': 'executor1',
             'pods': {
-                'pod1': {
-                    'host': '0.0.0.0',
+                'executor1': {
+                    'host': __default_host__,
                     'port': args1.port_in,
                     'expected_parts': 0,
-                    'out_edges': [{'pod': 'pod2'}, {'pod': 'pod3'}],
+                    'out_edges': [{'pod': 'executor2'}, {'pod': 'executor3'}],
                 },
-                'pod2': {
-                    'host': '0.0.0.0',
+                'executor2': {
+                    'host': __default_host__,
                     'port': args2.port_in,
                     'expected_parts': 1,
                     'out_edges': [],
                 },
-                'pod3': {
-                    'host': '0.0.0.0',
+                'executor3': {
+                    'host': __default_host__,
                     'port': args3.port_in,
                     'expected_parts': 1,
                     'out_edges': [],
@@ -170,22 +171,22 @@ async def test_double_dynamic_routing_async_zmqlet():
         msg = Message(None, req, 'tmp', '')
         routing_pb = jina_pb2.RoutingTableProto()
         routing_table = {
-            'active_pod': 'pod1',
+            'active_pod': 'executor1',
             'pods': {
-                'pod1': {
-                    'host': '0.0.0.0',
+                'executor1': {
+                    'host': __default_host__,
                     'port': args1.port_in,
                     'expected_parts': 0,
-                    'out_edges': [{'pod': 'pod2'}, {'pod': 'pod3'}],
+                    'out_edges': [{'pod': 'executor2'}, {'pod': 'executor3'}],
                 },
-                'pod2': {
-                    'host': '0.0.0.0',
+                'executor2': {
+                    'host': __default_host__,
                     'port': args2.port_in,
                     'expected_parts': 1,
                     'out_edges': [],
                 },
-                'pod3': {
-                    'host': '0.0.0.0',
+                'executor3': {
+                    'host': __default_host__,
                     'port': args3.port_in,
                     'expected_parts': 1,
                     'out_edges': [],
@@ -228,22 +229,22 @@ def test_double_dynamic_routing_zmqstreamlet():
         msg = Message(None, req, 'tmp', '')
         routing_pb = jina_pb2.RoutingTableProto()
         routing_table = {
-            'active_pod': 'pod1',
+            'active_pod': 'executor1',
             'pods': {
-                'pod1': {
-                    'host': '0.0.0.0',
+                'executor1': {
+                    'host': __default_host__,
                     'port': args1.port_in,
                     'expected_parts': 0,
-                    'out_edges': [{'pod': 'pod2'}, {'pod': 'pod3'}],
+                    'out_edges': [{'pod': 'executor2'}, {'pod': 'executor3'}],
                 },
-                'pod2': {
-                    'host': '0.0.0.0',
+                'executor2': {
+                    'host': __default_host__,
                     'port': args2.port_in,
                     'expected_parts': 1,
                     'out_edges': [],
                 },
-                'pod3': {
-                    'host': '0.0.0.0',
+                'executor3': {
+                    'host': __default_host__,
                     'port': args3.port_in,
                     'expected_parts': 1,
                     'out_edges': [],
@@ -291,16 +292,16 @@ def test_remote_local_dynamic_routing_zmqlet():
         msg = Message(None, req, 'tmp', '')
         routing_pb = jina_pb2.RoutingTableProto()
         routing_table = {
-            'active_pod': 'pod1',
+            'active_pod': 'executor1',
             'pods': {
-                'pod1': {
-                    'host': '0.0.0.0',
+                'executor1': {
+                    'host': __default_host__,
                     'port': args1.port_in,
                     'expected_parts': 0,
-                    'out_edges': [{'pod': 'pod2', 'send_as_bind': True}],
+                    'out_edges': [{'pod': 'executor2', 'send_as_bind': True}],
                 },
-                'pod2': {
-                    'host': '0.0.0.0',
+                'executor2': {
+                    'host': __default_host__,
                     'port': args2.port_in,
                     'expected_parts': 1,
                     'out_edges': [],

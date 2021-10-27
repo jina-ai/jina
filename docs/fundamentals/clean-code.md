@@ -5,7 +5,10 @@ tips to help you write beautiful and efficient code.
 
 ## Clean import
 
-`from jina import Document, DocumentArray, Executor, Flow, requests` is all you need. Copy-paste it as the first line of your code.
+```python
+from jina import Document, DocumentArray, Executor, Flow, requests
+```
+is often all you need. Copy-paste it as the first line of your code.
 
 ## Generator as Flow input
 
@@ -263,4 +266,109 @@ with f:
 ```
 ````
 
+## Heavylifting in the Flow, not in the Client
+   
+Heavylifting jobs should be put into an `Executor` if possible.
+For instance, sending high resolution images to the Flow
+can be time-consuming. Putting it into an Executor could leverage Flow to scale it.
+It also reduce the network overhead.
 
+````{tab} ✅ Do
+```python
+import glob
+
+from jina import Executor, Flow, requests, Document
+
+class MyExecutor(Executor):
+
+    @requests
+    def to_blob_conversion(self, docs: DocumentArray, **kwargs):
+        for doc in docs:
+            doc.convert_image_uri_to_blob()  # conversion happens inside Flow
+
+f = Flow().add(uses=MyExecutor, replicas=2)
+
+def my_input():
+    image_uris = glob.glob('/.workspace/*.png')
+    for image_uri in image_uris:
+        yield Document(uri=image_uri)
+
+with f:
+    f.post('/foo', inputs=my_input)
+```
+````
+
+````{tab} 😔 Don't
+```python
+import glob
+
+from jina import Executor, Document
+
+def my_input():
+    image_uris = glob.glob('/.workspace/*.png')  # load high resolution images.
+    for image_uri in image_uris:
+        doc = Document(uri=image_uri)
+        doc.convert_image_uri_to_blob()  # time consuming job at client side
+        yield doc
+
+f = Flow().add()
+
+with f:
+    f.post('/foo', inputs=my_input)
+```
+````
+
+
+## Keep only necessary fields
+
+Sometimes you do not want to pass the full Document to the sequel Executors due to efficiency reason. 
+You can simply use `.pop` method to remove those fields.
+
+When using Jina with an HTTP frontend, the frontend often does not need `ndarray` or binary content. Hence, 
+fields such as `blob`, `embedding`, and `buffer` can often be removed at the last Executor before returning the final results to the frontend.
+
+````{tab} ✅ Do
+
+```{code-block} python
+---
+emphasize-lines: 9
+---
+from jina import Executor, requests
+
+class FirstExecutor(Executor):
+    
+    @requests
+    def foo(self, docs, **kwargs):
+        # some process on docs
+        for d in docs:
+            d.pop('embedding', 'blob')
+
+class SecondExecutor(Executor):
+    
+    @requests
+    def bar(self, docs, **kwargs):
+        # do follow up processing, but now `.embedding` and `.blob` is empty
+        # but that's fine because this Executor does not need those fields 
+```
+
+````
+
+````{tab} 😔 Don't
+
+```python
+from jina import Executor, requests
+
+class FirstExecutor(Executor):
+    
+    @requests
+    def foo(self, docs, **kwargs):
+        # some process on docs
+
+class SecondExecutor(Executor):
+    
+    @requests
+    def bar(self, docs, **kwargs):
+        # do follow up processing, even though `.embedding` and `.blob` is never used 
+```
+
+````

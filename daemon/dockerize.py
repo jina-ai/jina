@@ -9,6 +9,7 @@ import docker
 from jina import __docker_host__
 from jina.helper import colored
 from jina.logging.logger import JinaLogger
+from jina.peapods.runtimes.container.helper import get_gpu_device_requests
 from . import (
     jinad_args,
     __root_workspace__,
@@ -193,7 +194,6 @@ class Dockerizer:
         return cls.run(
             workspace_id=workspace_id,
             container_id=workspace_id,
-            command=None,
             ports={f'{port}/tcp': port for port in daemon_file.ports},
             entrypoint=daemon_file.run,
         )
@@ -203,10 +203,10 @@ class Dockerizer:
         cls,
         workspace_id: DaemonID,
         container_id: DaemonID,
-        command: str,
+        entrypoint: str,
         ports: Dict,
-        envs: Dict = {},
-        entrypoint: Optional[str] = None,
+        envs: Optional[Dict] = {},
+        device_requests: Optional[List] = None,
     ) -> Tuple['Container', str, Dict]:
         """
         Runs a container using an existing image (tagged with `workspace_id`).
@@ -215,14 +215,25 @@ class Dockerizer:
             This uses the default entrypoint (mini-jinad) & appends `command` for execution.
         :param workspace_id: workspace id
         :param container_id: name of the container
-        :param command: command to be appended to default entrypoint
+        :param entrypoint: entrypoint for the container
         :param ports: ports to be mapped with local
         :param envs: dict of env vars to be set in the container
-        :param entrypoint: custom entrypoint
+        :param device_requests: docker device requests
         :raises DockerImageException: if image is not found locally
         :raises DockerContainerException: if container creation fails
         :return: tuple of container object, network id & ports
         """
+
+        def _validate_port_conflict(error: str) -> str:
+            msg = ""
+            if 'port is already allocated' in error:
+                match = re.findall(PORT_REGEX, error)
+                if match and len(match) > 0:
+                    msg = f'port conflict: {match[0]}'
+            return msg
+
+        def _validate_device_request(error: str) -> bool:
+            return True if 'could not select device driver' in error else False
 
         from .stores import workspace_store
 
@@ -238,7 +249,7 @@ class Dockerizer:
             f'{colored(network, "cyan")} and ports {colored(ports, "cyan")}'
         )
         try:
-            container: 'Container' = cls.client.containers.run(
+            run_kwargs = dict(
                 image=image,
                 name=container_id,
                 volumes=cls.volume(workspace_id),
@@ -246,10 +257,12 @@ class Dockerizer:
                 network=network,
                 ports=ports,
                 detach=True,
-                command=command,
                 entrypoint=entrypoint,
+                device_requests=device_requests or [],
+                working_dir=__partial_workspace__,
                 extra_hosts={__docker_host__: 'host-gateway'},
             )
+            container: 'Container' = cls.client.containers.run(**run_kwargs)
         except docker.errors.NotFound as e:
             cls.logger.critical(
                 f'Image {image} or Network {network} not found locally {e!r}'
@@ -259,12 +272,28 @@ class Dockerizer:
                 'Docker image not built properly, cannot proceed for run'
             )
         except docker.errors.APIError as e:
+            msg = f'API Error while starting the docker container {e}'
+            if _validate_device_request(str(e)):
+                # It might not be possible for local to know remote machine's gpu status.
+                # For few cases (Flow creation), we always set `gpus='all'`, which might fail
+                # if dockerd cannot find the device. In that case, run again without device requests
+                cls.logger.debug(
+                    f'couldn\'t start the container with following device request. '
+                    f'restarting after resetting device: {run_kwargs["device_requests"]}'
+                )
+                try:
+                    # This leaves the old container in a "created" state and conflicts the name.
+                    cls.rm_container(container_id)
+                except:
+                    pass
+                run_kwargs.pop('device_requests')
+                container: 'Container' = cls.client.containers.run(**run_kwargs)
+            else:
+                msg += ' ' + _validate_port_conflict(str(e))
+                raise DockerContainerException(msg)
+        except docker.errors.APIError as e:
             msg = f'API Error while starting the docker container{e}'
-            if 'port is already allocated' in str(e):
-                match = re.findall(PORT_REGEX, str(e))
-                if match and len(match) > 0:
-                    msg = f'port conflict: {match[0]}'
-            cls.logger.critical(msg)
+            msg += _validate_port_conflict(str(e))
             raise DockerContainerException(msg)
         # TODO: network & ports return can be avoided?
         return container, network, ports
@@ -311,7 +340,7 @@ class Dockerizer:
         """
         Local volumes to be mounted inside the container during `run`.
         .. note::
-            Local workspace should always be mounted to fefault WORKDIR for the container (/workspace).
+            Local workspace should always be mounted to default WORKDIR for the container (/workspace).
             docker sock on dockerhost should also be mounted to make sure DIND works
         :param workspace_id: workspace id
         :return: dict of volume mappings
@@ -334,7 +363,6 @@ class Dockerizer:
         """
         return {
             'JINA_LOG_WORKSPACE': os.path.join(__partial_workspace__, 'logs'),
-            'JINA_RANDOM_PORT_MIN': '49153',
             'JINA_LOG_LEVEL': os.getenv('JINA_LOG_LEVEL') or 'INFO',
             'JINA_HUB_ROOT': os.path.join(
                 __partial_workspace__, '.jina', 'hub-packages'

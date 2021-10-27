@@ -1,5 +1,6 @@
 import pytest
 
+from jina import __windows__
 from jina.peapods.zmq import Zmqlet
 
 
@@ -10,4 +11,6 @@ def test_get_ctrl_addr(host):
 
 @pytest.mark.parametrize('host', ['pi@192.0.0.1', '192.0.0.1'])
 def test_get_ctrl_addr_ipc(host):
-    assert Zmqlet.get_ctrl_address(host, 56789, True)[0].startswith('ipc')
+    assert (
+        Zmqlet.get_ctrl_address(host, 56789, True)[0].startswith('ipc') != __windows__
+    )

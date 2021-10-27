@@ -18,7 +18,11 @@
             }
             </style>
             <p>
-                📢 29 July 2021: <span style="color: blue; text-decoration: underline">Join us in Berlin for our <b>Jina &amp; Tonic </b> meetup!</span> 🍹
+                <a href="https://github.com/jina-ai/finetuner">
+                    <!--startmsg-->
+Check out <b>Finetuner</b> - tuning any DNN for better embedding on neural search tasks
+                    <!--endmsg-->
+                </a>
             </p>
         </div>
     </foreignObject>

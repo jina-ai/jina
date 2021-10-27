@@ -5,8 +5,9 @@ import threading
 import time
 from typing import Any, Tuple, Union, Dict, Optional
 
+from ...jaml import JAML
 from .helper import _get_event, ConditionalEvent
-from ... import __stop_msg__, __ready_msg__, __default_host__
+from ... import __stop_msg__, __ready_msg__
 from ...enums import PeaRoleType, RuntimeBackendType, SocketType
 from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
 from ...helper import typename
@@ -24,6 +25,7 @@ def run(
     is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
     is_ready: Union['multiprocessing.Event', 'threading.Event'],
     cancel_event: Union['multiprocessing.Event', 'threading.Event'],
+    jaml_classes: Optional[Dict] = None,
 ):
     """Method representing the :class:`BaseRuntime` activity.
 
@@ -41,6 +43,11 @@ def run(
     .. warning::
         If you are using ``thread`` as backend, envs setting will likely be overidden by others
 
+    .. note::
+        `jaml_classes` contains all the :class:`JAMLCompatible` classes registered in the main process.
+        When using `spawn` as the multiprocessing start method, passing this argument to `run` method re-imports
+        & re-registers all `JAMLCompatible` classes.
+
     :param args: namespace args from the Pea
     :param name: name of the Pea to have proper logging
     :param runtime_cls: the runtime class to instantiate
@@ -49,13 +56,14 @@ def run(
     :param is_shutdown: concurrency event to communicate runtime is terminated
     :param is_ready: concurrency event to communicate runtime is ready to receive messages
     :param cancel_event: concurrency event to receive cancelling signal from the Pea. Needed by some runtimes
+    :param jaml_classes: all the `JAMLCompatible` classes imported in main process
     """
     logger = JinaLogger(name, **vars(args))
 
     def _unset_envs():
         if envs and args.runtime_backend != RuntimeBackendType.THREAD:
             for k in envs.keys():
-                os.unsetenv(k)
+                os.environ.pop(k, None)
 
     def _set_envs():
         if args.env:
@@ -88,6 +96,7 @@ def run(
     finally:
         _unset_envs()
         is_shutdown.set()
+        logger.debug(f' Process terminated')
 
 
 class BasePea:
@@ -99,8 +108,10 @@ class BasePea:
     """
 
     def __init__(self, args: 'argparse.Namespace'):
-        super().__init__()  #: required here to call process/thread __init__
         self.args = args
+        # BACKWARDS COMPATIBILITY
+        self.args.pea_id = self.args.shard_id
+        self.args.parallel = self.args.shards
         self.name = self.args.name or self.__class__.__name__
 
         self.logger = JinaLogger(self.name, **vars(self.args))
@@ -150,6 +161,7 @@ class BasePea:
                 'is_ready': self.is_ready,
                 'cancel_event': self.cancel_event,
                 'runtime_cls': self.runtime_cls,
+                'jaml_classes': JAML.registered_classes(),
             },
         )
         self.daemon = self.args.daemon  #: required here to set process/thread daemon
@@ -182,14 +194,18 @@ class BasePea:
         :param args: extra positional arguments to pass to join
         :param kwargs: extra keyword arguments to pass to join
         """
+        self.logger.debug(f' Joining the process')
         self.worker.join(*args, **kwargs)
+        self.logger.debug(f' Successfully joined the process')
 
     def terminate(self):
         """Terminate the Pea.
         This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         """
         if hasattr(self.worker, 'terminate'):
+            self.logger.debug(f' terminating the runtime process')
             self.worker.terminate()
+            self.logger.debug(f' runtime process properly terminated')
 
     def _retry_control_message(self, command: str, num_retry: int = 3):
         from ..zmq import send_ctrl_message
@@ -248,6 +264,34 @@ class BasePea:
             shutdown_event=self.is_shutdown,
         )
 
+    def _fail_start_timeout(self, timeout):
+        """
+        Closes the Pea and raises a TimeoutError with the corresponding warning messages
+
+        :param timeout: The time to wait before readiness or failure is determined
+            .. # noqa: DAR201
+        """
+        _timeout = timeout or -1
+        self.logger.warning(
+            f'{self.runtime_cls!r} timeout after waiting for {self.args.timeout_ready}ms, '
+            f'if your executor takes time to load, you may increase --timeout-ready'
+        )
+        self.close()
+        raise TimeoutError(
+            f'{typename(self)}:{self.name} can not be initialized after {_timeout * 1e3}ms'
+        )
+
+    def _check_failed_to_start(self):
+        """
+        Raises a corresponding exception if failed to start
+        """
+        if self.is_shutdown.is_set():
+            # return too early and the shutdown is set, means something fails!!
+            if not self.is_started.is_set():
+                raise RuntimeFailToStart
+            else:
+                raise RuntimeRunForeverEarlyError
+
     def wait_start_success(self):
         """Block until all peas starts successfully.
 
@@ -260,24 +304,36 @@ class BasePea:
             _timeout /= 1e3
 
         if self._wait_for_ready_or_shutdown(_timeout):
-            if self.is_shutdown.is_set():
-                # return too early and the shutdown is set, means something fails!!
-                if not self.is_started.is_set():
-                    raise RuntimeFailToStart
-                else:
-                    raise RuntimeRunForeverEarlyError
-            else:
-                self.logger.success(__ready_msg__)
+            self._check_failed_to_start()
+            self.logger.debug(__ready_msg__)
         else:
-            _timeout = _timeout or -1
-            self.logger.warning(
-                f'{self.runtime_cls!r} timeout after waiting for {self.args.timeout_ready}ms, '
-                f'if your executor takes time to load, you may increase --timeout-ready'
-            )
-            self.close()
-            raise TimeoutError(
-                f'{typename(self)}:{self.name} can not be initialized after {_timeout * 1e3}ms'
-            )
+            self._fail_start_timeout(_timeout)
+
+    async def async_wait_start_success(self):
+        """Block until all peas starts successfully.
+
+        If not success, it will raise an error hoping the outer function to catch it
+        """
+        import asyncio
+
+        _timeout = self.args.timeout_ready
+        if _timeout <= 0:
+            _timeout = None
+        else:
+            _timeout /= 1e3
+
+        timeout_ns = 1e9 * _timeout if _timeout else None
+        now = time.time_ns()
+        while timeout_ns is None or time.time_ns() - now < timeout_ns:
+
+            if self.ready_or_shutdown.event.is_set():
+                self._check_failed_to_start()
+                self.logger.debug(__ready_msg__)
+                return
+            else:
+                await asyncio.sleep(0.1)
+
+        self._fail_start_timeout(_timeout)
 
     @property
     def _is_dealer(self):
@@ -293,11 +349,15 @@ class BasePea:
         """
         # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
         self.logger.debug('waiting for ready or shutdown signal from runtime')
+        terminated = False
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
             try:
+                self.logger.debug(f' Cancel runtime')
                 self._cancel_runtime()
+                self.logger.debug(f' Wait to shutdown')
                 if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
                     self.terminate()
+                    terminated = True
                     time.sleep(0.1)
                     raise Exception(
                         f'Shutdown signal was not received for {self._timeout_ctrl}'
@@ -310,12 +370,17 @@ class BasePea:
                     else '',
                     exc_info=not self.args.quiet_error,
                 )
+                if not terminated:
+                    self.terminate()
 
             # if it is not daemon, block until the process/thread finish work
             if not self.args.daemon:
                 self.join()
         elif self.is_shutdown.is_set():
             # here shutdown has been set already, therefore `run` will gracefully finish
+            self.logger.debug(
+                'shutdown is already set. Runtime will end gracefully on its own'
+            )
             pass
         else:
             # sometimes, we arrive to the close logic before the `is_ready` is even set.

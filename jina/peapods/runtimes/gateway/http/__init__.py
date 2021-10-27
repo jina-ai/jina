@@ -50,12 +50,14 @@ class HTTPRuntime(AsyncNewLoopRuntime):
 
         from .....helper import extend_rest_interface
 
+        uvicorn_kwargs = self.args.uvicorn_kwargs or {}
         self._server = UviServer(
             config=Config(
                 app=extend_rest_interface(get_fastapi_app(self.args, self.logger)),
                 host=__default_host__,
                 port=self.args.port_expose,
                 log_level=os.getenv('JINA_LOG_LEVEL', 'error').lower(),
+                **uvicorn_kwargs
             )
         )
         await self._server.setup()
@@ -72,7 +74,10 @@ class HTTPRuntime(AsyncNewLoopRuntime):
 
         await self.async_cancel()
 
+    async def async_teardown(self):
+        """Shutdown the server."""
+        await self._server.shutdown()
+
     async def async_cancel(self):
         """Stop the server."""
         self._server.should_exit = True
-        await self._server.shutdown()

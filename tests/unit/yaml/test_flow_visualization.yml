@@ -1,6 +1,6 @@
 !Flow
 version: '1'
-pods:
+executors:
   - name: loader
     read_only: true
   - name: normalizer

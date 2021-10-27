@@ -1,15 +1,40 @@
 # Welcome to Jina!
 
-Jina is a neural search framework that allows anyone to build SOTA & scalable deep learning search applications in minutes.
+```{include} ../README.md
+:start-after: <!-- start elevator-pitch -->
+:end-before: <!-- end elevator-pitch -->
+```
 
-1. Make sure that you have Python 3.7+ installed on Linux/MacOS.
-2. Install Jina: ``pip install jina``
-3. Run hello-world demos: ``jina hello fashion``
+## Install
+
+1. Make sure that you have Python 3.7+ installed on Linux/MacOS/{ref}`Windows <jina-on-windows>`.
+2. Install Jina
+
+    ````{tab} via PyPI
+    ```shell
+    pip install -U jina
+    ```
+    ````
+    ````{tab} via Conda
+    ```shell
+    conda install jina -c conda-forge
+    ```
+    ````
+    ````{tab} via Docker
+    ```shell
+    docker run jinaai/jina:latest
+    ```
+    ````
+
+3. Run hello-world demo
+   ```bash 
+   jina hello fashion
+   ```
 4. That’s it! In the next few seconds the demo will open in a new page in your browser.
 
 Now that you’re set up, let’s dive into more of how Jina works and how to build great apps.
 
-## Next Steps
+## Next steps
 
 :::::{grid} 2
 :gutter: 3
@@ -70,17 +95,10 @@ Awesome Jina swag to our awesome contributors (aka you)!
 
 :::::
 
-## Join the community
-
-- Join our 1.3K+ members [Slack community](https://slack.jina.ai) to chat to our engineers about your use cases, questions, and
-  support queries.
-- Join our [Engineering All Hands](https://youtube.com/playlist?list=PL3UBBWOUVhFYRUa_gpYYKBqEAkO4sxmne) meet-up to discuss your use case and learn Jina's new features.
-    - **When?** The second Tuesday of every month
-    - **Where?**
-      Zoom ([see our public events calendar](https://calendar.google.com/calendar/embed?src=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&ctz=Europe%2FBerlin)/[.ical](https://calendar.google.com/calendar/ical/c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com/public/basic.ics))
-      and [live stream on YouTube](https://youtube.com/c/jina-ai)
-- Subscribe to the latest video tutorials on our [YouTube channel](https://youtube.com/c/jina-ai)
-
+```{include} ../README.md
+:start-after: <!-- start support-pitch -->
+:end-before: <!-- end support-pitch -->
+```
 
 ```{toctree}
 :caption: Get started
@@ -99,7 +117,6 @@ fundamentals/concepts
 fundamentals/document/index
 fundamentals/executor/index
 fundamentals/flow/index
-fundamentals/practice-your-learning
 fundamentals/clean-code
 ```
 
@@ -114,7 +131,19 @@ advanced/experimental/index
 ```
 
 ```{toctree}
-:caption: Developer Reference
+:caption: Tutorials
+:hidden:
+
+tutorials/fuzzy-grep
+tutorials/chatbot
+tutorials/master-executor
+tutorials/refactor-hello-world
+tutorials/gpu-executor
+tutorials/video-search
+```
+
+```{toctree}
+:caption: API Reference
 :hidden:
 :maxdepth: 1
 
@@ -123,20 +152,7 @@ cli/index
 proto/index
 ```
 
-```{toctree}
-:caption: Support
-:hidden:
-
-Issue tracker <https://github.com/jina-ai/jina/issues>
-Slack community <https://slack.jina.ai>
-Youtube <http://youtube.com/c/jina-ai>
-Twitter @JinaAI_ <https://twitter.com/JinaAI_>
-LinkedIn <https://www.linkedin.com/company/jinaai/>
-Jina AI Company <https://jina.ai>
-
-```
-
 
 ---
-{ref}`genindex` {ref}`modindex`
+{ref}`genindex` | {ref}`modindex`
 
