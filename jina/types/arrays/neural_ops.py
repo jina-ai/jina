@@ -16,7 +16,7 @@ class DocumentArrayNeuralOpsMixin:
 
     def match(
         self,
-        darray: Union['DocumentArray', 'DocumentArrayMemmap', 'FaissContainer'],
+        darray: Union['DocumentArray', 'DocumentArrayMemmap', 'FaissIndexer'],
         metric: Union[
             str, Callable[['np.ndarray', 'np.ndarray'], 'np.ndarray']
         ] = 'cosine',
