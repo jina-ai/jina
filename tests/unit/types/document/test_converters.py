@@ -279,10 +279,10 @@ def test_da_text_to_blob_max_len_1(test_docs):
     assert test_docs[1].text == 'world'
     assert test_docs[2].text == 'world'
 
+
 def test_convert_text_blob_random_text():
     texts = ['a short phrase', 'word', 'this is a much longer sentence']
-    da = DocumentArray(
-        [Document(text=t) for t in texts])
+    da = DocumentArray([Document(text=t) for t in texts])
     vocab = da.get_vocabulary()
 
     # encoding

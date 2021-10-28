@@ -642,9 +642,11 @@ class DocumentArray(
             return da
 
     @classmethod
-    def load_csv(cls, file: Union[str, TextIO],
-                 field_resolver: Optional[Dict[str, str]] = None,
-                 ) -> 'DocumentArray':
+    def load_csv(
+        cls,
+        file: Union[str, TextIO],
+        field_resolver: Optional[Dict[str, str]] = None,
+    ) -> 'DocumentArray':
         """Load array elements from a binary file.
 
         :param file: File or filename to which the data is saved.
@@ -654,6 +656,7 @@ class DocumentArray(
         """
 
         from ..document.generators import from_csv
+
         return DocumentArray(from_csv(file, field_resolver=field_resolver))
 
     # Properties for fast access of commonly used attributes

@@ -18,21 +18,21 @@ class DocumentArrayNeuralOpsMixin:
     """ A mixin that provides match functionality to DocumentArrays """
 
     def match(
-            self,
-            darray: Union['DocumentArray', 'DocumentArrayMemmap'],
-            metric: Union[
-                str, Callable[['np.ndarray', 'np.ndarray'], 'np.ndarray']
-            ] = 'cosine',
-            limit: Optional[Union[int, float]] = 20,
-            normalization: Optional[Tuple[float, float]] = None,
-            metric_name: Optional[str] = None,
-            batch_size: Optional[int] = None,
-            traversal_ldarray: Optional[Sequence[str]] = None,
-            traversal_rdarray: Optional[Sequence[str]] = None,
-            use_scipy: bool = False,
-            exclude_self: bool = False,
-            is_sparse: bool = False,
-            filter_fn: Optional[Callable] = None,
+        self,
+        darray: Union['DocumentArray', 'DocumentArrayMemmap'],
+        metric: Union[
+            str, Callable[['np.ndarray', 'np.ndarray'], 'np.ndarray']
+        ] = 'cosine',
+        limit: Optional[Union[int, float]] = 20,
+        normalization: Optional[Tuple[float, float]] = None,
+        metric_name: Optional[str] = None,
+        batch_size: Optional[int] = None,
+        traversal_ldarray: Optional[Sequence[str]] = None,
+        traversal_rdarray: Optional[Sequence[str]] = None,
+        use_scipy: bool = False,
+        exclude_self: bool = False,
+        is_sparse: bool = False,
+        filter_fn: Optional[Callable] = None,
     ) -> None:
         """Compute embedding based nearest neighbour in `another` for each Document in `self`,
         and store results in `matches`.
@@ -184,7 +184,7 @@ class DocumentArrayNeuralOpsMixin:
         return dist, idx
 
     def _match_online(
-            self, darray, cdist, limit, normalization, metric_name, batch_size
+        self, darray, cdist, limit, normalization, metric_name, batch_size
     ):
         """
         Computes the matches between self and `darray` loading `darray` into main memory in chunks of size `batch_size`.
@@ -237,17 +237,24 @@ class DocumentArrayNeuralOpsMixin:
 
     @deprecated_method(new_function_name='plot_embeddings')
     def visualize(self, *args, **kwargs):
-        return self.plot_embeddings(*args, **kwargs)
+        """Deprecated! Please use :meth:`.plot_embeddings` instead.
+
+        Plot embeddings in a 2D projection with the PCA algorithm. This function requires ``matplotlib`` installed.
+
+        :param args: extra args
+        :param kwargs: extra kwargs
+        """
+        self.plot_embeddings(*args, **kwargs)
 
     def plot_embeddings(
-            self,
-            output: Optional[str] = None,
-            title: Optional[str] = None,
-            colored_attr: Optional[str] = None,
-            colormap: str = 'rainbow',
-            method: str = 'pca',
-            show_axis: bool = False,
-            **kwargs,
+        self,
+        output: Optional[str] = None,
+        title: Optional[str] = None,
+        colored_attr: Optional[str] = None,
+        colormap: str = 'rainbow',
+        method: str = 'pca',
+        show_axis: bool = False,
+        **kwargs,
     ):
         """Plot embeddings in a 2D projection with the PCA algorithm. This function requires ``matplotlib`` installed.
 
@@ -352,11 +359,11 @@ class DocumentArrayNeuralOpsMixin:
         )
 
     def plot_image_sprites(
-            self,
-            output: Optional[str] = None,
-            canvas_size: int = 512,
-            min_size: int = 16,
-            channel_axis: int = -1,
+        self,
+        output: Optional[str] = None,
+        canvas_size: int = 512,
+        min_size: int = 16,
+        channel_axis: int = -1,
     ):
         """Generate a sprite image for all image blobs in this DocumentArray-like object.
 
@@ -390,7 +397,9 @@ class DocumentArrayNeuralOpsMixin:
 
         actual_num_img = min(len(self), max_num_img)
 
-        with ProgressBar(description='Generating sprite', total_length=actual_num_img) as pg:
+        with ProgressBar(
+            description='Generating sprite', total_length=actual_num_img
+        ) as pg:
             for d in self:
                 d: Document
                 _d = Document(d, copy=True)
@@ -405,8 +414,8 @@ class DocumentArrayNeuralOpsMixin:
                 row_id = floor(img_id / img_per_row)
                 col_id = img_id % img_per_row
                 sprite_img[
-                (row_id * img_size): ((row_id + 1) * img_size),
-                (col_id * img_size): ((col_id + 1) * img_size),
+                    (row_id * img_size) : ((row_id + 1) * img_size),
+                    (col_id * img_size) : ((col_id + 1) * img_size),
                 ] = _d.blob
 
                 img_id += 1

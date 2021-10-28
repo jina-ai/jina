@@ -5,7 +5,16 @@ import json
 import os
 import random
 from contextlib import nullcontext
-from typing import Optional, Generator, Union, List, Iterable, Dict, TYPE_CHECKING, TextIO
+from typing import (
+    Optional,
+    Generator,
+    Union,
+    List,
+    Iterable,
+    Dict,
+    TYPE_CHECKING,
+    TextIO,
+)
 
 import numpy as np
 

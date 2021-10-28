@@ -663,7 +663,8 @@ def test_filter_fn(doc_lists, tmp_path, first_memmap, second_memmap, buffer_pool
     docs1.match(docs2, filter_fn=filter_fn(), limit=len(docs2))
     assert all(len(d1.matches) == expected_len for d1 in docs1)
 
+
 def test_sprite_image_generator(pytestconfig, tmpdir):
     da = DocumentArray(from_files(f'{pytestconfig.rootdir}/.github/**/*.png'))
     da.plot_image_sprites(tmpdir / 'sprint.png')
-    assert os.path.exists(tmpdir/'sprint.png')
+    assert os.path.exists(tmpdir / 'sprint.png')
