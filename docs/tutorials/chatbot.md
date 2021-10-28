@@ -484,7 +484,7 @@ class MyIndexer(Executor):
 ```
 
 `MyIndexer` exposes 2 endpoints: `index` and `search`. To perform indexing, we use 
-[DocumentArrayMemmap](https://docs.jina.ai/api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap)` 
+[`DocumentArrayMemmap`](https://docs.jina.ai/api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap) 
 which is a Jina data type. Indexing is a simple as adding the Documents to the `DocumentArrayMemmap`.
 
 ```{admonition} See Also
