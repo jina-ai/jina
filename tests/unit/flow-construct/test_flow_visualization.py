@@ -84,7 +84,7 @@ def test_flow_vertical(tmpdir, vertical_layout):
                 return
             if imghdr.what(fname) == 'png':
                 check = struct.unpack('>i', head[4:8])[0]
-                if check != 0x0d0a1a0a:
+                if check != 0x0D0A1A0A:
                     return
                 width, height = struct.unpack('>ii', head[16:24])
             elif imghdr.what(fname) == 'jpeg':
@@ -92,10 +92,10 @@ def test_flow_vertical(tmpdir, vertical_layout):
                     fh.seek(0)  # Read 0xff next
                     size = 2
                     ftype = 0
-                    while not 0xc0 <= ftype <= 0xcf:
+                    while not 0xC0 <= ftype <= 0xCF:
                         fh.seek(size, 1)
                         byte = fh.read(1)
-                        while ord(byte) == 0xff:
+                        while ord(byte) == 0xFF:
                             byte = fh.read(1)
                         ftype = ord(byte)
                         size = struct.unpack('>H', fh.read(2))[0] - 2
