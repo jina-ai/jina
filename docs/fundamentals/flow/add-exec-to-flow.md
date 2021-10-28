@@ -5,6 +5,10 @@
 Executors can be run as a local thread/process, a remote process, inside a Docker container, or even inside a remote
 Docker container.
 
+```{tip}
+
+You can see the exhaustive list of options for adding an Executor [here](https://docs.jina.ai/cli/#executor).
+```
 
 
 ## Chain `.add()`
