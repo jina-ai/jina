@@ -95,40 +95,48 @@ class ContentConversionMixin:
         self.blob = _to_image_blob(io.BytesIO(buffer), width=width, height=height)
         return self
 
-    def dump_buffer_to_file(self, file: Union[str, BinaryIO]):
+    def dump_buffer_to_file(self, file: Union[str, BinaryIO]) -> 'Document':
         """Save :attr:`.buffer` into a file
 
         :param file: File or filename to which the data is saved.
+        :return: itself after processed
         """
         fp = _get_file_context(file)
         with fp:
             fp.write(self.buffer)
+        return self
 
     def dump_image_blob_to_file(
         self,
         file: Union[str, BinaryIO],
         channel_axis: int = -1,
-    ):
+    ) -> 'Document':
         """Save :attr:`.blob` into a file
 
         :param file: File or filename to which the data is saved.
         :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+
+        :return: itself after processed
         """
         fp = _get_file_context(file)
         with fp:
             blob = _move_channel_axis(self.blob, channel_axis, -1)
             buffer = _to_png_buffer(blob)
             fp.write(buffer)
+        return self
 
-    def dump_uri_to_file(self, file: Union[str, BinaryIO]):
+    def dump_uri_to_file(self, file: Union[str, BinaryIO]) -> 'Document':
         """Save :attr:`.uri` into a file
 
         :param file: File or filename to which the data is saved.
+
+        :return: itself after processed
         """
         fp = _get_file_context(file)
         with fp:
             buffer = _uri_to_buffer(self.uri)
             fp.write(buffer)
+        return self
 
     def convert_image_uri_to_blob(
         self,
@@ -349,7 +357,7 @@ class ContentConversionMixin:
         padding: bool = False,
         channel_axis: int = -1,
         as_chunks: bool = False,
-    ):
+    ) -> 'Document':
         """Convert :attr:`.blob` into a sliding window view with the given window shape :attr:`.blob` inplace.
 
         :param window_shape: desired output size. If size is a sequence like (h, w), the output size will be matched to

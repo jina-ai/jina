@@ -133,7 +133,10 @@ def from_csv(
         file_ctx = open(file, 'r')
 
     with file_ctx as fp:
-        dialect = csv.Sniffer().sniff(fp.read(1024))
+        try:
+            dialect = csv.Sniffer().sniff(fp.read(1024))
+        except:
+            dialect = 'excel'  #: can not sniff delimiter, use default dialect
         fp.seek(0)
         lines = csv.DictReader(fp, dialect=dialect)
         for value in _subsample(lines, size, sampling_rate):

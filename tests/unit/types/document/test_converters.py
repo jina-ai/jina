@@ -18,8 +18,8 @@ def test_self_as_return():
             callable(f[1])
             and not f[1].__name__.startswith('_')
             and not f[0].startswith('_')
-            and not f[1].__name__.startswith('dump')
         ):
+            print(f[1])
             assert inspect.getfullargspec(f[1]).annotations['return'] == 'Document'
             num_fn += 1
     assert num_fn
