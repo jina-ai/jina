@@ -3,10 +3,8 @@ import os
 from jina import __default_host__
 from jina.logging.logger import JinaLogger
 from daemon.clients.workspaces import FormData
-from daemon.clients import JinaDClient
 
 import aiohttp
-import pytest
 
 logger = JinaLogger('test')
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -41,16 +39,3 @@ def test_workspace_none():
     with FormData() as data:
         assert isinstance(data, aiohttp.FormData)
         assert len(data) == 0
-
-
-def test_create_workspace():
-    client = JinaDClient(host=__default_host__, port=8000)
-    workspace_id = client.workspaces.create(
-        paths=[os.path.join(cur_dir, '../../../distributed/test_dir_structures/src1')]
-    )
-    print(workspace_id)
-    workspace_id = client.workspaces.update(
-        paths=[os.path.join(cur_dir, '../../../distributed/test_dir_structures/src1')],
-        id=workspace_id,
-    )
-    print(workspace_id)

@@ -89,9 +89,8 @@ def test_is_requirements_txt():
 
 
 def test_multiple_requirements_txt():
-    assert (
+    assert sorted(
         DaemonFile(
             os.path.join(cur_dir, '../../distributed/test_dir_structures/src5')
-        ).requirements
-        == 'sklearn tinydb'
-    )
+        ).requirements.split()
+    ) == ['sklearn', 'tinydb']

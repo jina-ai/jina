@@ -33,7 +33,7 @@ def RemoteFlow(directory, filename: str, envs: Dict[str, str] = {}):
     'directory, mul',
     [('src1', 2), ('src2', 2), ('src3', 2), ('src4', 4), ('src5', 2)],
 )
-def test_remote_flow_with_config_yaml(directory, filename, mul):
+def test_remote_flow_with_directory(directory, filename, mul):
     with RemoteFlow(
         directory=directory,
         filename=filename,

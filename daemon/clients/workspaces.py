@@ -30,7 +30,7 @@ if TYPE_CHECKING:
     from jina.logging.logger import JinaLogger
 
 
-class FormData(aiohttpFormData, ExitStack):
+class FormData(aiohttpFormData):
     """FormData used to upload files to remote"""
 
     def __init__(
@@ -40,20 +40,20 @@ class FormData(aiohttpFormData, ExitStack):
         complete: bool = False,
     ) -> None:
         super().__init__()
-        super(aiohttpFormData, self).__init__()
         self._logger = logger
         self._complete = complete
         self._cur_dir = os.getcwd()
         self.paths = paths
+        self._stack = ExitStack()
 
     def add(self, path: Path):
         """add a field to Form
 
         :param path: filepath
         """
-        super().add_field(
+        self.add_field(
             name='files',
-            value=self.enter_context(
+            value=self._stack.enter_context(
                 open(
                     complete_path(path, extra_search_paths=[self._cur_dir])
                     if self._complete
@@ -84,10 +84,11 @@ class FormData(aiohttpFormData, ExitStack):
         return len(self._fields)
 
     def __enter__(self):
+        self._stack.__enter__()
         if not self.paths:
             return self
-        tmpdir = self.enter_context(TemporaryDirectory())
-        self.enter_context(change_cwd(tmpdir))
+        tmpdir = self._stack.enter_context(TemporaryDirectory())
+        self._stack.enter_context(change_cwd(tmpdir))
         for path in map(Path, self.paths):
             try:
                 filename = path.name
@@ -107,6 +108,9 @@ class FormData(aiohttpFormData, ExitStack):
             )
         )
         return self
+
+    def __exit__(self, *args, **kwargs):
+        self._stack.__exit__(*args, **kwargs)
 
 
 class AsyncWorkspaceClient(AsyncBaseClient):
