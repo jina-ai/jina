@@ -1,9 +1,12 @@
+from math import sqrt, ceil, floor
 from typing import Optional, Union, Callable, Tuple, Sequence, TYPE_CHECKING
 
 import numpy as np
 
 from ... import Document
+from ...helper import deprecated_method
 from ...importer import ImportExtensions
+from ...logging.profile import ProgressBar
 from ...math.helper import top_k, minmax_normalize, update_rows_x_mat_best
 
 if TYPE_CHECKING:
@@ -15,21 +18,21 @@ class DocumentArrayNeuralOpsMixin:
     """ A mixin that provides match functionality to DocumentArrays """
 
     def match(
-        self,
-        darray: Union['DocumentArray', 'DocumentArrayMemmap'],
-        metric: Union[
-            str, Callable[['np.ndarray', 'np.ndarray'], 'np.ndarray']
-        ] = 'cosine',
-        limit: Optional[Union[int, float]] = 20,
-        normalization: Optional[Tuple[float, float]] = None,
-        metric_name: Optional[str] = None,
-        batch_size: Optional[int] = None,
-        traversal_ldarray: Optional[Sequence[str]] = None,
-        traversal_rdarray: Optional[Sequence[str]] = None,
-        use_scipy: bool = False,
-        exclude_self: bool = False,
-        is_sparse: bool = False,
-        filter_fn: Optional[Callable] = None,
+            self,
+            darray: Union['DocumentArray', 'DocumentArrayMemmap'],
+            metric: Union[
+                str, Callable[['np.ndarray', 'np.ndarray'], 'np.ndarray']
+            ] = 'cosine',
+            limit: Optional[Union[int, float]] = 20,
+            normalization: Optional[Tuple[float, float]] = None,
+            metric_name: Optional[str] = None,
+            batch_size: Optional[int] = None,
+            traversal_ldarray: Optional[Sequence[str]] = None,
+            traversal_rdarray: Optional[Sequence[str]] = None,
+            use_scipy: bool = False,
+            exclude_self: bool = False,
+            is_sparse: bool = False,
+            filter_fn: Optional[Callable] = None,
     ) -> None:
         """Compute embedding based nearest neighbour in `another` for each Document in `self`,
         and store results in `matches`.
@@ -181,7 +184,7 @@ class DocumentArrayNeuralOpsMixin:
         return dist, idx
 
     def _match_online(
-        self, darray, cdist, limit, normalization, metric_name, batch_size
+            self, darray, cdist, limit, normalization, metric_name, batch_size
     ):
         """
         Computes the matches between self and `darray` loading `darray` into main memory in chunks of size `batch_size`.
@@ -232,17 +235,21 @@ class DocumentArrayNeuralOpsMixin:
 
         return dist, idx
 
-    def visualize(
-        self,
-        output: Optional[str] = None,
-        title: Optional[str] = None,
-        colored_attr: Optional[str] = None,
-        colormap: str = 'rainbow',
-        method: str = 'pca',
-        show_axis: bool = False,
-        **kwargs,
+    @deprecated_method(new_function_name='plot_embeddings')
+    def visualize(self, *args, **kwargs):
+        return self.plot_embeddings(*args, **kwargs)
+
+    def plot_embeddings(
+            self,
+            output: Optional[str] = None,
+            title: Optional[str] = None,
+            colored_attr: Optional[str] = None,
+            colormap: str = 'rainbow',
+            method: str = 'pca',
+            show_axis: bool = False,
+            **kwargs,
     ):
-        """Visualize embeddings in a 2D projection with the PCA algorithm. This function requires ``matplotlib`` installed.
+        """Plot embeddings in a 2D projection with the PCA algorithm. This function requires ``matplotlib`` installed.
 
         If `tag_name` is provided the plot uses a distinct color for each unique tag value in the
         documents of the DocumentArray.
@@ -343,3 +350,78 @@ class DocumentArrayNeuralOpsMixin:
         return np.frombuffer(x_mat, dtype=self[0].proto.embedding.dense.dtype).reshape(
             (len_slice, self[0].proto.embedding.dense.shape[0])
         )
+
+    def plot_image_sprites(
+            self,
+            output: Optional[str] = None,
+            canvas_size: int = 512,
+            min_size: int = 16,
+            channel_axis: int = -1,
+    ):
+        """Generate a sprite image for all image blobs in this DocumentArray-like object.
+
+        An image sprite is a collection of images put into a single image. It is always square-sized.
+        Each sub-image is also square-sized and equally-sized.
+
+        :param output: Optional path to store the visualization. If not given, show in UI
+        :param canvas_size: the size of the canvas
+        :param min_size: the minimum size of the image
+        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+        """
+        if not self:
+            raise ValueError(f'{self!r} is empty')
+
+        with ImportExtensions(required=True):
+            import matplotlib.pyplot as plt
+
+        img_per_row = ceil(sqrt(len(self)))
+        img_size = int(canvas_size / img_per_row)
+
+        if img_size < min_size:
+            # image is too small, recompute the size
+            img_size = min_size
+            img_per_row = int(canvas_size / img_size)
+
+        max_num_img = img_per_row ** 2
+        sprite_img = np.zeros(
+            [img_size * img_per_row, img_size * img_per_row, 3], dtype='uint8'
+        )
+        img_id = 0
+
+        actual_num_img = min(len(self), max_num_img)
+
+        with ProgressBar(description='Generating sprite', total_length=actual_num_img) as pg:
+            for d in self:
+                d: Document
+                _d = Document(d, copy=True)
+                if _d.content_type != 'blob':
+                    _d.convert_image_uri_to_blob()
+                    channel_axis = -1
+
+                _d.set_image_blob_channel_axis(channel_axis, -1).resize_image_blob(
+                    width=img_size, height=img_size
+                )
+
+                row_id = floor(img_id / img_per_row)
+                col_id = img_id % img_per_row
+                sprite_img[
+                (row_id * img_size): ((row_id + 1) * img_size),
+                (col_id * img_size): ((col_id + 1) * img_size),
+                ] = _d.blob
+
+                img_id += 1
+                pg.update()
+                if img_id >= max_num_img:
+                    break
+
+        plt.gca().set_axis_off()
+        plt.subplots_adjust(top=1, bottom=0, right=1, left=0, hspace=0, wspace=0)
+        plt.margins(0, 0)
+        plt.gca().xaxis.set_major_locator(plt.NullLocator())
+        plt.gca().yaxis.set_major_locator(plt.NullLocator())
+
+        plt.imshow(sprite_img)
+        if output:
+            plt.savefig(output, bbox_inches='tight', pad_inches=0.1, transparent=True)
+        else:
+            plt.show()

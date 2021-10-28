@@ -5,7 +5,7 @@ import struct
 import urllib.parse
 import urllib.request
 from contextlib import nullcontext
-from typing import Optional, Union, BinaryIO, TYPE_CHECKING, Dict
+from typing import Optional, Union, BinaryIO, TYPE_CHECKING, Dict, Tuple
 
 import numpy as np
 
@@ -104,7 +104,11 @@ class ContentConversionMixin:
         with fp:
             fp.write(self.buffer)
 
-    def dump_image_blob_to_file(self, file: Union[str, BinaryIO], channel_axis: int = -1,):
+    def dump_image_blob_to_file(
+        self,
+        file: Union[str, BinaryIO],
+        channel_axis: int = -1,
+    ):
         """Save :attr:`.blob` into a file
 
         :param file: File or filename to which the data is saved.
@@ -336,6 +340,71 @@ class ContentConversionMixin:
             else:
                 _text.append(_vocab.get(k, '<UNK>'))
         self.text = delimiter.join(_text)
+        return self
+
+    def convert_image_blob_to_sliding_windows(
+        self,
+        window_shape: Tuple[int, int] = (64, 64),
+        strides: Optional[Tuple[int, int]] = None,
+        padding: bool = False,
+        channel_axis: int = -1,
+        as_chunks: bool = False,
+    ):
+        """Convert :attr:`.blob` into a sliding window view with the given window shape :attr:`.blob` inplace.
+
+        :param window_shape: desired output size. If size is a sequence like (h, w), the output size will be matched to
+            this. If size is an int, the output will have the same height and width as the `target_size`.
+        :param strides: the strides between two neighboring sliding windows. `strides` is a sequence like (h, w), in
+            which denote the strides on the vertical and the horizontal axis. When not given, using `window_shape`
+        :param padding: If False, only patches which are fully contained in the input image are included. If True,
+            all patches whose starting point is inside the input are included, and areas outside the input default to
+            zero. The `padding` argument has no effect on the size of each patch, it determines how many patches are
+            extracted. Default is False.
+        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis.
+        :param as_chunks: If set, each sliding window will be stored in the chunk of the current Document
+        :return: Document itself after processed
+        """
+        window_h, window_w = window_shape
+        stride_h, stride_w = strides or window_shape
+        blob = _move_channel_axis(self.blob, channel_axis, -1)
+        if padding:
+            h, w, c = blob.shape
+            ext_h = window_h - h % stride_h
+            ext_w = window_w - w % window_w
+            blob = np.pad(
+                blob,
+                ((0, ext_h), (0, ext_w), (0, 0)),
+                mode='constant',
+                constant_values=0,
+            )
+        h, w, c = blob.shape
+        row_step = blob.strides[0]
+        col_step = blob.strides[1]
+
+        expanded_img = np.lib.stride_tricks.as_strided(
+            blob,
+            shape=(
+                1 + int((h - window_h) / stride_h),
+                1 + int((w - window_w) / stride_w),
+                window_h,
+                window_w,
+                c,
+            ),
+            strides=(row_step * stride_h, col_step * stride_w, row_step, col_step, 1),
+            writeable=False,
+        )
+
+        expanded_img = expanded_img.reshape((-1, window_h, window_w, c))
+        if as_chunks:
+            bbox_locations = [
+                (h * stride_h, w * stride_w)
+                for h in range(expanded_img.shape[0])
+                for w in range(expanded_img.shape[1])]
+            from . import Document
+            for location, _blob in zip(bbox_locations, expanded_img):
+                self.chunks.append(Document(blob=_move_channel_axis(_blob, -1, channel_axis), location=location))
+        else:
+            self.blob = _move_channel_axis(expanded_img, -1, channel_axis)
         return self
 
 

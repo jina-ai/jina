@@ -404,7 +404,7 @@ Using `.embeddings` in a DocumenArray or DocumentArrayMemmap with different shap
 ````
 
 
-### Visualize embeddings
+### Plot embeddings
 
 `DocumentArray` provides function `.visualize` to plot document embeddings in a 2D graph. `visualize` supports 2 methods
 to project in 2D space: `pca` and `tsne`.
@@ -427,7 +427,7 @@ da = DocumentArray(
         Document(embedding=np.random.normal(2, 5, 50)) for _ in range(500)
     ]
 )
-da.visualize()
+da.plot_embeddings()
 
 ```
 
