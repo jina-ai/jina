@@ -709,28 +709,28 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span> <span class="o">=</span> <span class="n">SimpleNamespace</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_add_requests</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]):</span>
-        <span class="n">request_mapping</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[str, Callable]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'requests'</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">requests</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">if</span> <span class="n">_requests</span><span class="p">:</span>
+            <span class="n">func_names</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="n">e</span> <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
             <span class="k">for</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">_requests</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="c1"># the following line must be `getattr(self.__class__, func)` NOT `getattr(self, func)`</span>
                 <span class="c1"># this to ensure we always have `_func` as unbound method</span>
+                <span class="k">if</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">func_names</span><span class="p">:</span>
+                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">[</span><span class="n">func_names</span><span class="p">[</span><span class="n">func</span><span class="p">]]</span>
+
                 <span class="n">_func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">_func</span><span class="p">):</span>
                     <span class="c1"># the target function is not decorated with `@requests` yet</span>
-                    <span class="n">request_mapping</span><span class="p">[</span><span class="n">endpoint</span><span class="p">]</span> <span class="o">=</span> <span class="n">_func</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">[</span><span class="n">endpoint</span><span class="p">]</span> <span class="o">=</span> <span class="n">_func</span>
                 <span class="k">elif</span> <span class="n">typename</span><span class="p">(</span><span class="n">_func</span><span class="p">)</span> <span class="o">==</span> <span class="s1">'jina.executors.decorators.FunctionMapper'</span><span class="p">:</span>
                     <span class="c1"># the target function is already decorated with `@requests`, need unwrap with `.fn`</span>
-                    <span class="n">request_mapping</span><span class="p">[</span><span class="n">endpoint</span><span class="p">]</span> <span class="o">=</span> <span class="n">_func</span><span class="o">.</span><span class="n">fn</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">[</span><span class="n">endpoint</span><span class="p">]</span> <span class="o">=</span> <span class="n">_func</span><span class="o">.</span><span class="n">fn</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s1">'expect </span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s1"> to be a function, but receiving </span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">_func</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
                     <span class="p">)</span>
-
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'requests'</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">request_mapping</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">requests</span> <span class="o">=</span> <span class="n">request_mapping</span>
 
     <span class="k">def</span> <span class="nf">_add_metas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]):</span>
         <span class="kn">from</span> <span class="nn">.metas</span> <span class="kn">import</span> <span class="n">get_default_metas</span>

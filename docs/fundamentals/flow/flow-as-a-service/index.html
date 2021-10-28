@@ -735,6 +735,10 @@ Flow in an explicit C/S style.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">GRPCClient@14744[S]:connected to the gateway at 0.0.0.0:12345!</span>
 </pre></div>
 </div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Multiple gRPC Client cannot be spawned using <code class="docutils literal notranslate"><span class="pre">Threads</span></code> because of an <a class="reference external" href="https://github.com/grpc/grpc/issues/25364">upstream issue</a>. Use <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> instead.</p>
+</div>
 </section>
 <section id="via-websocket">
 <h3>via WebSocket<a class="headerlink" href="#via-websocket" title="Permalink to this headline">¶</a></h3>
