@@ -124,8 +124,26 @@ body[data-theme="auto"] .only-dark-line {
 }
 
 .color-gradient-card {
-    background: #22c1c3; /* fallback for old browsers */
-    background: -webkit-linear-gradient(to left, #fdbb2d, #22c1c3); /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to left, #fdbb2d, #22c1c3); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: linear-gradient(270deg, #22c1c3, #fdbb2d);
+    background-size: 200% 200%;
 
+    -webkit-animation: AnimationName 30s ease infinite;
+    -moz-animation: AnimationName 30s ease infinite;
+    animation: AnimationName 30s ease infinite;
+}
+
+@-webkit-keyframes AnimationName {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+@-moz-keyframes AnimationName {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+@keyframes AnimationName {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
 }

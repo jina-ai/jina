@@ -642,24 +642,19 @@ class DocumentArray(
             return da
 
     @classmethod
-    def load_csv(cls, file: Union[str, BinaryIO]) -> 'DocumentArray':
+    def load_csv(cls, file: Union[str, TextIO],
+                 field_resolver: Optional[Dict[str, str]] = None,
+                 ) -> 'DocumentArray':
         """Load array elements from a binary file.
 
         :param file: File or filename to which the data is saved.
-
+        :param field_resolver: a map from field names defined in JSON, dict to the field
+            names defined in Document.
         :return: a DocumentArray object
         """
 
-        if hasattr(file, 'read'):
-            file_ctx = nullcontext(file)
-        else:
-            file_ctx = open(file, 'r')
-
-        with file_ctx as fp:
-            da = DocumentArray()
-            for v in csv.DictReader(fp):
-                da.append(Document(v))
-            return da
+        from ..document.generators import from_csv
+        return DocumentArray(from_csv(file, field_resolver=field_resolver))
 
     # Properties for fast access of commonly used attributes
     @property

@@ -4,7 +4,8 @@ import itertools
 import json
 import os
 import random
-from typing import Optional, Generator, Union, List, Iterable, Dict, TYPE_CHECKING
+from contextlib import nullcontext
+from typing import Optional, Generator, Union, List, Iterable, Dict, TYPE_CHECKING, TextIO
 
 import numpy as np
 
@@ -100,17 +101,16 @@ def from_files(
 
 
 def from_csv(
-    fp: Iterable[str],
+    file: Union[str, TextIO],
     field_resolver: Optional[Dict[str, str]] = None,
     size: Optional[int] = None,
     sampling_rate: Optional[float] = None,
 ) -> Generator['Document', None, None]:
     """Generator function for CSV. Yields documents.
 
-    :param fp: file paths
-    :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field
-            names defined in Protobuf. This is only used when the given ``document`` is
-            a JSON string or a Python dict.
+    :param file: file paths or file handler
+    :param field_resolver: a map from field names defined in JSON, dict to the field
+            names defined in Document.
     :param size: the maximum number of the documents
     :param sampling_rate: the sampling rate between [0, 1]
     :yield: documents
@@ -118,14 +118,22 @@ def from_csv(
     """
     from ..document import Document
 
-    lines = csv.DictReader(fp)
-    for value in _subsample(lines, size, sampling_rate):
-        if 'groundtruth' in value and 'document' in value:
-            yield Document(value['document'], field_resolver), Document(
-                value['groundtruth'], field_resolver
-            )
-        else:
-            yield Document(value, field_resolver)
+    if hasattr(file, 'read'):
+        file_ctx = nullcontext(file)
+    else:
+        file_ctx = open(file, 'r')
+
+    with file_ctx as fp:
+        dialect = csv.Sniffer().sniff(fp.read(1024))
+        fp.seek(0)
+        lines = csv.DictReader(fp, dialect=dialect)
+        for value in _subsample(lines, size, sampling_rate):
+            if 'groundtruth' in value and 'document' in value:
+                yield Document(value['document'], field_resolver), Document(
+                    value['groundtruth'], field_resolver
+                )
+            else:
+                yield Document(value, field_resolver)
 
 
 def from_huggingface_datasets(

@@ -172,3 +172,11 @@ d.chunks.plot_image_sprites('simpsons-chunks-stride-10.png')
 ```
 
 Yep, that definitely looks better.
+
+
+```{toctree}
+:hidden:
+
+image2image
+text2image
+```
