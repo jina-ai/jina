@@ -652,6 +652,11 @@
 <span class="sd">        :returns: The removed connection or None if there was not any for the given ip</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">address</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_connection_idx</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rr_counter</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_rr_counter</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">else</span> <span class="mi">0</span>
+            <span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_address_to_connection_idx</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">address</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="kc">None</span></div>
@@ -661,7 +666,12 @@
 <span class="sd">        Returns a connection from the list. Strategy is round robin</span>
 <span class="sd">        :returns: A connection from the pool</span>
 <span class="sd">        """</span>
-        <span class="n">connection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_rr_counter</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">connection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_rr_counter</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="c1"># This can happen as a race condition while removing connections</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rr_counter</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">connection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_rr_counter</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rr_counter</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rr_counter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">connection</span></div>
 
