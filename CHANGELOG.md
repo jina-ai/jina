@@ -102,6 +102,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -11041,4 +11042,43 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```1830b4e5```](https://github.com/jina-ai/jina/commit/1830b4e53779b9bd8db3ad4744801a2dc9ff233f)] __-__ __setup__: remove constraint on python 3.10 or higher (*Han Xiao*)
  - [[```4a3b691f```](https://github.com/jina-ai/jina/commit/4a3b691f89b3dc1b54f90fe6fcc5a7e44ee2ce00)] __-__ update readme badge (*Han Xiao*)
  - [[```78a2abf6```](https://github.com/jina-ai/jina/commit/78a2abf605b213ed6227afedf5535d02f9f71c82)] __-__ __version__: the next version will be 2.1.12 (*Jina Dev Bot*)
+
+<a name=release-note-2-1-13></a>
+## Release Note (`2.1.13`)
+
+> Release time: 2021-10-28 22:41:28
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Tobias Jacobowitz,  ggdupont,  cristian,  AlaeddineAbdessalem,  Joan Fontanals,  felix-wang,  Jina Dev Bot,  Alex Cureton-Griffiths,  Aziz Belaweid,  Nan Wang,  🙇
+
+
+### 🆕 New Features
+
+ - [[```a5853c01```](https://github.com/jina-ai/jina/commit/a5853c01f1e5ed849a01c02f91495b282a57a675)] __-__ __k8s__: add error handling tests in K8s (#3736) (*Tobias Jacobowitz*)
+
+### 🐞 Bug fixes
+
+ - [[```57082528```](https://github.com/jina-ai/jina/commit/57082528b4a819b7ee10d771fae4324d311ff16b)] __-__ fix uses requests (#3754) (*Joan Fontanals*)
+ - [[```451cb177```](https://github.com/jina-ai/jina/commit/451cb1779186a8e2e47056b1e13a1cd3fbc0d950)] __-__ find-links options in requirements.txt (#3810) (*felix-wang*)
+ - [[```8d5d34d7```](https://github.com/jina-ai/jina/commit/8d5d34d7cfcd6cb3e19e6bdfae3735b58d563090)] __-__ __readme__: smoother swaggerui gif (#3801) (*Alex Cureton-Griffiths*)
+
+### 📗 Documentation
+
+ - [[```bd479142```](https://github.com/jina-ai/jina/commit/bd47914212831aa6a1699fc18fa87198663afeb9)] __-__ restructure tutorial into data types (#3791) (*Han Xiao*)
+ - [[```6d8db503```](https://github.com/jina-ai/jina/commit/6d8db503074cc357244cb679f98c7720f2c24db7)] __-__ __document__: fix tiny typo (#3789) (*ggdupont*)
+ - [[```2bd16cd5```](https://github.com/jina-ai/jina/commit/2bd16cd509b4a8f7e18d615230077b71bd6afae6)] __-__ link to wsl2 (#3813) (*cristian*)
+ - [[```92cc6a1f```](https://github.com/jina-ai/jina/commit/92cc6a1fa99df63bffb5bf6ae1ad89b0668a49d9)] __-__ __grpc__: warning for multiple threads (#3747) (*AlaeddineAbdessalem*)
+ - [[```9b83a3b6```](https://github.com/jina-ai/jina/commit/9b83a3b6615e484f3527d72a1d251c5ef1ae5876)] __-__ add link to list of args for .add (#3812) (*cristian*)
+ - [[```2b9b0b5c```](https://github.com/jina-ai/jina/commit/2b9b0b5c2435d083c5c5056b2f637f1ac5126ce6)] __-__ polish readme (#3803) (*Alex Cureton-Griffiths*)
+ - [[```bc42b451```](https://github.com/jina-ai/jina/commit/bc42b451b0de69d74bc21b1e7b1a61aa2b384975)] __-__ add link to helptext (#3792) (*Aziz Belaweid*)
+ - [[```d3f659b3```](https://github.com/jina-ai/jina/commit/d3f659b37d9c7987b54e5e6e2662ccc782154f9b)] __-__ add the tutorial for video QA (#3765) (*Nan Wang*)
+
+### 🍹 Other Improvements
+
+ - [[```ae1833c2```](https://github.com/jina-ai/jina/commit/ae1833c25bd19f7b11eb5693f2949e06ff9fb101)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```f5bd5771```](https://github.com/jina-ai/jina/commit/f5bd5771c1e0a924cd4443539853d702f67606a8)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```3371bd3d```](https://github.com/jina-ai/jina/commit/3371bd3dbb8b12fb36fc1fda5a376eb4c85fad8a)] __-__ __types__: fix typo in plot title (*Han Xiao*)
+ - [[```6eb7b9eb```](https://github.com/jina-ai/jina/commit/6eb7b9eb7daeb2a6ee6da3c8829a27d0eddd5a0a)] __-__ __version__: the next version will be 2.1.13 (*Jina Dev Bot*)
 
