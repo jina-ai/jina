@@ -16,5 +16,6 @@ class DataExecutor(Executor):
 class IOExecutor(Executor):
     @requests
     def foo(self, docs: DocumentArray, **kwargs):
+        docs[0].text *= 2
         ioops()
         print_something()

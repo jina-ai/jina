@@ -28,10 +28,12 @@ def RemoteFlow(directory, filename: str, envs: Dict[str, str] = {}):
             print(f'Remote Flow {flow_id} successfully terminated')
 
 
-@pytest.mark.parametrize('directory', (['src1', 'src2', 'src3', 'src4']))
-def test_remote_flow_with_config_yaml(directory):
+@pytest.mark.parametrize(
+    'directory, mul', [('src1', 2), ('src2', 2), ('src3', 2), ('src4', 4)]
+)
+def test_remote_flow_with_config_yaml(directory, mul):
     with RemoteFlow(
-        directory=os.path.join(cur_dir, directory),
+        directory=directory,
         filename='flow_config_yml.yml',
         envs={'PORT_EXPOSE': 12345},
     ):
@@ -40,13 +42,15 @@ def test_remote_flow_with_config_yaml(directory):
             inputs=Document(text=directory),
             return_results=True,
         )
-        assert resp[0].data.docs[0].text == directory * 2
+        assert resp[0].data.docs[0].text == directory * mul
 
 
-@pytest.mark.parametrize('directory', (['src1', 'src2', 'src3', 'src4']))
-def test_remote_flow_with_py_modules(directory):
+@pytest.mark.parametrize(
+    'directory, mul', [('src1', 2), ('src2', 2), ('src3', 2), ('src4', 4)]
+)
+def test_remote_flow_with_py_modules(directory, mul):
     with RemoteFlow(
-        directory=os.path.join(cur_dir, directory),
+        directory=directory,
         filename='flow_py_modules.yml',
         envs={'PORT_EXPOSE': 12345},
     ):
@@ -55,4 +59,4 @@ def test_remote_flow_with_py_modules(directory):
             inputs=Document(text=directory),
             return_results=True,
         )
-        assert resp[0].data.docs[0].text == directory * 2
+        assert resp[0].data.docs[0].text == directory * mul

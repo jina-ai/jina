@@ -41,7 +41,6 @@ class JinadRuntime(AsyncNewLoopRuntime):
         self.port_jinad = args.port_jinad
         self.pea_id = None
         self.logstream = None
-        self._filepaths = []
 
     async def async_setup(self):
         """Create Workspace, Pea on remote JinaD server"""
@@ -63,10 +62,9 @@ class JinadRuntime(AsyncNewLoopRuntime):
         if not await self.client.alive:
             raise DaemonConnectivityError
 
-        payload = replace_enum_to_str(vars(self._mask_args()))
         # Create a remote workspace with upload_files
         workspace_id = await self.client.workspaces.create(
-            paths=self._filepaths,
+            paths=self.filepaths,
             id=self.args.workspace_id,
             complete=True,
         )
@@ -74,6 +72,7 @@ class JinadRuntime(AsyncNewLoopRuntime):
             self.logger.critical(f'remote workspace creation failed')
             raise DaemonWorkspaceCreationFailed
 
+        payload = replace_enum_to_str(vars(self._mask_args()))
         # Create a remote Pea in the above workspace
         success, response = await self.client.peas.create(
             workspace_id=workspace_id, payload=payload
@@ -115,58 +114,24 @@ class JinadRuntime(AsyncNewLoopRuntime):
         """Sleep forever, no prince will come."""
         await asyncio.sleep(1e10)
 
-    def _update_filepaths(self, cargs: 'argparse.Namespace') -> None:
-        """Update filepaths for fileargs
+    @property
+    def filepaths(self) -> List[Path]:
+        """Get file/directories to be uploaded to remote workspace
 
-        :param cargs: copied args
+        :return: filepaths to be uploaded to remote
         """
-        # fileargs = ('upload_files', 'uses', 'uses_after', 'uses_before', 'py_modules')
-        abs_directories = set()
-
-        if not cargs.upload_files:
+        paths = set()
+        if not self.args.upload_files:
             self.logger.warning(f'no files passed to upload to remote')
         else:
-            for path in cargs.upload_files:
-                fullpath = Path(complete_path(path))
-                dirpath = fullpath.parent
-                abs_directories.add(dirpath)
+            for path in self.args.upload_files:
+                try:
+                    fullpath = Path(complete_path(path))
+                    paths.add(fullpath)
+                except FileNotFoundError:
+                    self.logger.error(f'invalid path {path} passed')
 
-        # def _process(value):
-        #     """
-        #     'myexecutor.py' ->
-        #     'executors/__init__.py' ->
-        #     """
-        #     try:
-        #         fullpath = Path(complete_path(value))
-        #         dirpath = fullpath.parent
-        #         dirname = dirpath.name
-        #         filename = fullpath.name
-        #         abs_directories.add(dirpath)
-        #         return (
-        #             filename
-        #             if len(Path(value).parts) == 1
-        #             else os.path.join(dirname, filename)
-        #         )
-        #     except FileNotFoundError:
-        #         return
-
-        # for arg in fileargs:
-        #     value = getattr(cargs, arg, None)
-        #     if not value:
-        #         continue
-        #     elif isinstance(value, list):  # py_modules
-        #         setattr(
-        #             cargs,
-        #             arg,
-        #             list(filter(lambda x: x is not None, [_process(v) for v in value])),
-        #         )
-        #     else:
-        #         new_value = _process(value)
-        #         if new_value:
-        #             setattr(cargs, arg, new_value)
-
-        self._filepaths = list(abs_directories)
-        self.logger.warning(f'_filepaths: {self._filepaths}')
+        return list(paths)
 
     def _mask_args(self):
         cargs = copy.deepcopy(self.args)
@@ -185,8 +150,6 @@ class JinadRuntime(AsyncNewLoopRuntime):
         # _args.host = __default_host__
         # host resetting disables dynamic routing. Use `disable_remote` instead
         cargs.disable_remote = True
-
-        self._update_filepaths(cargs)
         cargs.log_config = ''  # do not use local log_config
         cargs.upload_files = []  # reset upload files
         cargs.noblock_on_start = False  # wait until start success
