@@ -28,30 +28,15 @@ def RemoteFlow(directory, filename: str, envs: Dict[str, str] = {}):
             print(f'Remote Flow {flow_id} successfully terminated')
 
 
+@pytest.mark.parametrize('filename', ['flow_config_yml.yml', 'flow_py_modules.yml'])
 @pytest.mark.parametrize(
-    'directory, mul', [('src1', 2), ('src2', 2), ('src3', 2), ('src4', 4)]
+    'directory, mul',
+    [('src1', 2), ('src2', 2), ('src3', 2), ('src4', 4), ('src5', 2)],
 )
-def test_remote_flow_with_config_yaml(directory, mul):
+def test_remote_flow_with_config_yaml(directory, filename, mul):
     with RemoteFlow(
         directory=directory,
-        filename='flow_config_yml.yml',
-        envs={'PORT_EXPOSE': 12345},
-    ):
-        resp = Client(port=12345).post(
-            on='/',
-            inputs=Document(text=directory),
-            return_results=True,
-        )
-        assert resp[0].data.docs[0].text == directory * mul
-
-
-@pytest.mark.parametrize(
-    'directory, mul', [('src1', 2), ('src2', 2), ('src3', 2), ('src4', 4)]
-)
-def test_remote_flow_with_py_modules(directory, mul):
-    with RemoteFlow(
-        directory=directory,
-        filename='flow_py_modules.yml',
+        filename=filename,
         envs={'PORT_EXPOSE': 12345},
     ):
         resp = Client(port=12345).post(

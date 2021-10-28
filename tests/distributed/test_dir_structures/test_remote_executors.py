@@ -50,6 +50,23 @@ src4: Multiple Executors using python files in multiple directories
 │           ├── __init__.py
 │           ├── data.py
 │           └── io.py
+
+src5: Multiple python files in multiple directories with custom dependencies
+.
+├── src5
+│   ├── config.yml
+│   └── executors
+│       ├── __init__.py
+│       ├── helper.py
+│       ├── my_executor.py
+│       └── utils
+│           ├── __init__.py
+│           ├── data.py
+│           └── io.py
+│   ├── flow.yml
+│   ├── requirements-index.txt
+│   ├── requirements.txt
+
 """
 
 
@@ -61,11 +78,13 @@ src4: Multiple Executors using python files in multiple directories
         ('src3', 'config.yml'),
         ('src4', 'config_data.yml'),
         ('src4', 'config_io.yml'),
+        ('src5', 'config.yml'),
         (os.path.join(cur_dir, 'src1'), 'config.yml'),
         (os.path.join(cur_dir, 'src2'), 'config.yml'),
         (os.path.join(cur_dir, 'src3'), 'config.yml'),
         (os.path.join(cur_dir, 'src4'), 'config_data.yml'),
         (os.path.join(cur_dir, 'src4'), 'config_io.yml'),
+        (os.path.join(cur_dir, 'src5'), 'config.yml'),
     ],
 )
 def test_remote_executor_via_config_yaml(upload_files, config_yml):
@@ -80,31 +99,33 @@ def test_remote_executor_via_config_yaml(upload_files, config_yml):
 
 
 @pytest.mark.parametrize(
-    'upload_files, uses, executor_entrypoint',
+    'upload_files, uses, py_modules',
     [
         ('src1', 'MyExecutor', 'my_executor.py'),
         ('src2', 'MyExecutor', 'executors/__init__.py'),
         ('src3', 'MyExecutor', 'executors/__init__.py'),
         ('src4', 'IOExecutor', 'executors/__init__.py'),
         ('src4', 'DataExecutor', 'executors/__init__.py'),
+        ('src5', 'MyExecutor', 'executors/__init__.py'),
         (os.path.join(cur_dir, 'src1'), 'MyExecutor', 'my_executor.py'),
         (os.path.join(cur_dir, 'src2'), 'MyExecutor', 'executors/__init__.py'),
         (os.path.join(cur_dir, 'src3'), 'MyExecutor', 'executors/__init__.py'),
         (os.path.join(cur_dir, 'src4'), 'IOExecutor', 'executors/__init__.py'),
         (os.path.join(cur_dir, 'src4'), 'DataExecutor', 'executors/__init__.py'),
+        (os.path.join(cur_dir, 'src5'), 'MyExecutor', 'executors/__init__.py'),
     ],
 )
-def test_remote_executor_via_pymodules(upload_files, uses, executor_entrypoint):
+def test_remote_executor_via_pymodules(upload_files, uses, py_modules):
     f = Flow().add(
         host=CLOUD_HOST,
         uses=uses,
-        py_modules=executor_entrypoint,
+        py_modules=py_modules,
         upload_files=upload_files,
     )
     with f:
         resp = f.post(
             on='/',
-            inputs=Document(text=executor_entrypoint),
+            inputs=Document(text=py_modules),
             return_results=True,
         )
-        assert resp[0].data.docs[0].text == executor_entrypoint * 2
+        assert resp[0].data.docs[0].text == py_modules * 2
