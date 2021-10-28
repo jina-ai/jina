@@ -29,12 +29,7 @@ def test_cache_validate_remote_flow():
     in a remote Flow should be available to be accessed during the 2nd time an
     Executor/Flow tries accessing it.
     """
-    workspace_id = client.workspaces.create(
-        paths=[
-            os.path.join(cur_dir, 'cache_validator.py'),
-            os.path.join(cur_dir, 'flow_cache_validator.yml'),
-        ]
-    )
+    workspace_id = client.workspaces.create(paths=[cur_dir])
 
     with RemoteFlow(workspace_id) as response:
         # 1st Flow in remote workspace should download the file.
@@ -67,7 +62,8 @@ def test_cache_validate_remote_executor():
     f = Flow().add(
         uses=CacheValidator,
         host='localhost:8000',
-        py_modules=[os.path.join(cur_dir, 'cache_validator.py')],
+        py_modules='cache_validator.py',
+        upload_files=cur_dir,
         workspace_id=workspace_id,
     )
     with f:
@@ -80,7 +76,8 @@ def test_cache_validate_remote_executor():
     f = Flow().add(
         uses=CacheValidator,
         host='localhost:8000',
-        py_modules=[os.path.join(cur_dir, 'cache_validator.py')],
+        py_modules='cache_validator.py',
+        upload_files=cur_dir,
         workspace_id=workspace_id,
     )
     with f:

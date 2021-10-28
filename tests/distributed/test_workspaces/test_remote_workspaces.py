@@ -216,9 +216,9 @@ def test_upload_simple_non_standard_rootworkspace(docker_compose, mocker):
         Flow()
         .add()
         .add(
-            uses=[os.path.join(cur_dir, 'mwu_encoder.yml')],
+            uses='mwu_encoder.yml',
             host='localhost:9000',
-            upload_files=[os.path.join(cur_dir, 'mwu_encoder.py')],
+            upload_files=cur_dir,
         )
         .add()
     )

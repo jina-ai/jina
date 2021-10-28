@@ -7,7 +7,7 @@ from http import HTTPStatus
 from shutil import make_archive
 from tempfile import TemporaryDirectory
 from contextlib import AsyncExitStack, ExitStack
-from typing import List, Optional, Union, TYPE_CHECKING
+from typing import Any, List, Optional, Union, TYPE_CHECKING
 
 import aiohttp
 from aiohttp import FormData as aiohttpFormData
@@ -31,6 +31,8 @@ if TYPE_CHECKING:
 
 
 class FormData(aiohttpFormData, ExitStack):
+    """FormData used to upload files to remote"""
+
     def __init__(
         self,
         paths: Optional[List[str]] = None,
@@ -45,6 +47,10 @@ class FormData(aiohttpFormData, ExitStack):
         self.paths = paths
 
     def add(self, path: Path):
+        """add a field to Form
+
+        :param path: filepath
+        """
         super().add_field(
             name='files',
             value=self.enter_context(
@@ -59,11 +65,19 @@ class FormData(aiohttpFormData, ExitStack):
         )
 
     @property
-    def fields(self):
+    def fields(self) -> List[Any]:
+        """all fields in current Form
+
+        :return: list of fields
+        """
         return self._fields
 
     @property
     def filenames(self) -> List[str]:
+        """all filenames in current Form
+
+        :return: list of filenames
+        """
         return [os.path.basename(f[-1].name) for f in self.fields]
 
     def __len__(self):
