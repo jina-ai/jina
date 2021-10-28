@@ -259,8 +259,7 @@ async def test_no_message_lost_during_kill(
         )
 
 
-@pytest.mark.asyncio
-async def test_linear_processing_time_scaling(
+def test_linear_processing_time_scaling(
     slow_process_executor_image,
     logger,
     k8s_cluster,
@@ -301,7 +300,6 @@ async def test_linear_processing_time_scaling(
                 'logger': logger,
                 'namespace': 'test-flow-slow-process-executor',
             },
-            daemon=True,
         )
 
         process.start()
