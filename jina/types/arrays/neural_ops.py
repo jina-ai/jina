@@ -285,7 +285,7 @@ class DocumentArrayNeuralOpsMixin:
 
         plt.figure(figsize=(8, 8))
 
-        plt.title(title or f'{len(x_mat)} Documents with PCA')
+        plt.title(title or f'{len(x_mat)} Documents with {method}')
 
         if colored_attr:
             tags = []

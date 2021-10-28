@@ -879,3 +879,29 @@ def test_flow_change_parameters():
         assert r[0].parameters['a'] == 1.0
         r = f.post('/', parameters={}, return_results=True)
         assert r[0].parameters['a'] == 1.0
+
+
+def test_flow_load_executor_yaml_extra_search_paths():
+    f = Flow(extra_search_paths=[os.path.join(cur_dir, 'executor')]).add(
+        uses='config.yml'
+    )
+    with f:
+        r = f.post('/', inputs=Document(), return_results=True)
+    assert r[0].docs[0].text == 'done'
+
+
+def test_flow_load_yaml_extra_search_paths():
+    f = Flow.load_config(os.path.join(cur_dir, 'flow/flow.yml'))
+    with f:
+        r = f.post('/', inputs=Document(), return_results=True)
+    assert r[0].docs[0].text == 'done'
+
+
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+@pytest.mark.parametrize('grpc_data_requests', [True, False])
+def test_gateway_only_flows_no_error(capsys, protocol, grpc_data_requests):
+    f = Flow(grpc_data_requests=grpc_data_requests, protocol=protocol)
+    with f:
+        pass
+    captured = capsys.readouterr()
+    assert not captured.err

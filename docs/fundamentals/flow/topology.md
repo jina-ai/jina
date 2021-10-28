@@ -70,7 +70,97 @@ f = (Flow()
 :align: center
 ```
 
-The above Flow will create a topology with three Replicas of Executor `slow_encoder`. The `Gateway` will send every request to exactly one of the three instances. Then the replica will send its result to `fast_indexer`.
+The above Flow will create a topology with three Replicas of Executor `slow_encoder`. The `Gateway` will send every 
+request to exactly one of the three instances. Then the replica will send its result to `fast_indexer`.
+
+### Avoiding Bottlenecks on Executors with `replicas`
+In this section, we will showcase how we can avoid having bottlenecks on slow Executors by using `replicas`.
+
+Suppose we have the following Executor:
+
+```python
+import time
+from jina import Executor, requests
+
+
+class MyExecutor(Executor):
+
+    @requests(on='/slow')
+    def foo(self, **kwargs):
+        time.sleep(5)
+
+    @requests(on='/fast')
+    def bar(self, **kwargs):
+        pass
+```
+
+We will simulate parallel requests to both endpoints of the Executor with these utility functions:
+
+```python
+from jina.logging.profile import TimeContext
+from jina import Client
+import multiprocessing
+
+def make_request(endpoint):
+    with TimeContext(f'calling {endpoint} roundtrip'):
+        c = Client(protocol='grpc', port=12345)
+        c.post(endpoint)
+
+
+def simulate(flow):
+    with flow:
+        mp = []
+        
+        # make multiple requests to both endpoints, in parallel
+        for endpoint in ['/slow', '/fast', '/slow', '/fast']:
+            p = multiprocessing.Process(target=make_request, args=(endpoint,))
+            p.start()
+            mp.append(p)
+
+        # 
+        for p in mp:
+            p.join()
+```
+
+If we simply create a Flow with only 1 instance of `MyExecutor`, requests to the slow endpoint will make a bottleneck. 
+However, creating replicas will unblock the Flow:
+
+````{tab} with replicas
+```python
+from jina import Flow
+
+scaled_f = Flow(protocol='grpc', port_expose=12345).add(uses=MyExecutor, replicas=2)
+
+with TimeContext('calling scaled flow'):
+    simulate(scaled_f)  # will take around 5 seconds
+```
+
+```text
+calling scaled flow takes 6 seconds (6.11s)
+```
+````
+
+````{tab} without replicas
+```python
+from jina import Flow
+
+f = Flow(protocol='grpc', port_expose=12345).add(uses=MyExecutor)
+
+with TimeContext('calling normal flow'):
+    simulate(f)  # will take around 10 seconds
+```
+
+```text
+calling normal flow takes 11 seconds (11.75s)
+```
+````
+Therefore, by using `replicas`, the Flow enjoys a non-blocking behavior and we can avoid bottlenecks.
+
+````{admonition} Important
+:class: important
+By default, `polling='ANY'`. If `polling` is set to `ALL`, this will not be valid anymore: All instances of the 
+Executor will receive each request and there will be no performance benefits.
+````
 
 ## Partition data by using Shards
 
@@ -112,6 +202,7 @@ Each shard returns the top 20 results.
 After the merger there will be 200 results per query Document.
 ```
 
+
 ## Combining Replicas & Shards
 
 Replicas and Shards can also be combined, which is necessary for Flows with high scalability needs.
@@ -130,11 +221,11 @@ f = (Flow()
 
 This Flow has a single Executor with 2 Shards and 3 Replicas, which means it gets split into 2 Shards with 3 Replicas each. In total this Flow has 2*3=6 workers and could be distributed to six different machines if necessary.
 
-## Replica vs Shards
+## Replicas vs Shards
 
 The next table shows the difference between shards and replicas.
 
-||Replica|Shards|
+||Replicas|Shards|
 |---|---|---|
 |Create multiple copies of an executor| ✅ | ✅ |
 |Partition data into several parts | ❌ | ✅ |

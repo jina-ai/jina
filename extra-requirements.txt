@@ -26,7 +26,7 @@
 # demo: required for the hello world demos
 
 scipy>=1.6.1:               devel
-fastapi<=0.68.2:            standard, daemon, devel, demo
+fastapi:            standard, daemon, devel, demo
 uvicorn[standard]>=0.14.0:  standard, daemon, devel, demo
 fluent-logger:              daemon, devel
 docker:                     standard, daemon, devel

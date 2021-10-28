@@ -10,7 +10,7 @@ from jina import Flow, Document, DocumentArray, Executor, requests, Client
 
 INPUT_LEN = 4
 INPUT_GEN_SLEEP_TIME = 1
-SLOW_EXECUTOR_SLEEP_TIME = 3
+SLOW_EXECUTOR_SLEEP_TIME = 5
 
 
 def readable_time_from(t):

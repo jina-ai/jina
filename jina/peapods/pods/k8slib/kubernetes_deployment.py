@@ -1,6 +1,6 @@
 import json
 from argparse import Namespace
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional, Tuple, Union
 
 from jina.hubble.helper import parse_hub_uri
 from jina.hubble.hubio import HubIO
@@ -91,6 +91,7 @@ def deploy_service(
     custom_resource_dir: Optional[str] = None,
     port_expose: Optional[int] = None,
     env: Optional[Dict] = None,
+    gpus: Optional[Union[int, str]] = None,
 ) -> str:
     """Deploy service on Kubernetes.
 
@@ -107,6 +108,7 @@ def deploy_service(
         Defaults to the standard location jina.resources if not specified.
     :param port_expose: port which will be exposed by the deployed containers
     :param env: environment variables to be passed into configmap.
+    :param gpus: number of gpus to use, for k8s requires you pass an int number, refers to the number of requested gpus.
     :return: dns name of the created service
     """
 
@@ -152,27 +154,30 @@ def deploy_service(
         f'🐳\tCreate Deployment for "{name}" with image "{image_name}", replicas {replicas} and init_container {init_container is not None}'
     )
 
+    deployment_params = {
+        'name': name,
+        'namespace': namespace,
+        'image': image_name,
+        'replicas': replicas,
+        'command': container_cmd,
+        'args': container_args,
+        'port_expose': port_expose,
+        'port_in': port_in,
+        'port_out': port_out,
+        'port_ctrl': port_ctrl,
+        'pull_policy': pull_policy,
+    }
+
     if init_container:
         template_name = 'deployment-init'
+        deployment_params = {**deployment_params, **init_container}
     else:
         template_name = 'deployment'
-        init_container = {}
+    if gpus:
+        deployment_params['device_plugins'] = {'nvidia.com/gpu': gpus}
     kubernetes_tools.create(
         template_name,
-        {
-            'name': name,
-            'namespace': namespace,
-            'image': image_name,
-            'replicas': replicas,
-            'command': container_cmd,
-            'args': container_args,
-            'port_expose': port_expose,
-            'port_in': port_in,
-            'port_out': port_out,
-            'port_ctrl': port_ctrl,
-            'pull_policy': pull_policy,
-            **init_container,
-        },
+        deployment_params,
         logger=logger,
         custom_resource_dir=custom_resource_dir,
     )

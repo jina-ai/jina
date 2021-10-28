@@ -1,0 +1,4 @@
+jtype: Flow
+executors:
+  - name: executor
+    uses: ../executor/config.yml

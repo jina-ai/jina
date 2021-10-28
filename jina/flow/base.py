@@ -3,6 +3,7 @@ import base64
 import copy
 import itertools
 import json
+import multiprocessing
 import os
 import re
 import sys
@@ -265,7 +266,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param runs_in_docker: Informs a Pea that runs in a container. Important to properly set networking information
         :param runtime_backend: The parallel backend of the runtime inside the Pea
         :param runtime_cls: The runtime class to run inside the Pea
-        :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary
+        :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary. For more details check https://docs.jina.ai/fundamentals/flow/topology/
         :param socket_in: The socket type for input port
         :param socket_out: The socket type for output port
         :param ssh_keyfile: This specifies a key to be used in ssh login, default None. regular default ssh keys will be used without specifying this argument.
@@ -653,7 +654,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param runtime_backend: The parallel backend of the runtime inside the Pea
         :param runtime_cls: The runtime class to run inside the Pea
         :param scheduling: The strategy of scheduling workload among Peas
-        :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary
+        :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary. For more details check https://docs.jina.ai/fundamentals/flow/topology/
         :param socket_in: The socket type for input port
         :param socket_out: The socket type for output port
         :param ssh_keyfile: This specifies a key to be used in ssh login, default None. regular default ssh keys will be used without specifying this argument.
@@ -793,6 +794,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         args.k8s_namespace = self.args.name
         args.noblock_on_start = True
+        args.extra_search_paths = self.args.extra_search_paths
         args.zmq_identity = None
 
         # BACKWARDS COMPATIBILITY:
@@ -1116,6 +1118,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             return self.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        if hasattr(self, '_stop_event'):
+            self._stop_event.set()
+
         super().__exit__(exc_type, exc_val, exc_tb)
 
         # unset all envs to avoid any side-effect
@@ -1165,7 +1170,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         return self
 
-    def _wait_until_all_ready(self) -> bool:
+    def _wait_until_all_ready(self):
         results = {}
         threads = []
 
@@ -1577,10 +1582,22 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             )
         return address_table
 
-    def block(self):
-        """Block the process until user hits KeyboardInterrupt"""
+    def block(
+        self, stop_event: Optional[Union[threading.Event, multiprocessing.Event]] = None
+    ):
+        """Block the Flow until `stop_event` is set or user hits KeyboardInterrupt
+
+        :param stop_event: a threading event or a multiprocessing event that onces set will resume the control Flow
+            to main thread.
+        """
         try:
-            threading.Event().wait()
+            if stop_event is None:
+                self._stop_event = (
+                    threading.Event()
+                )  #: this allows `.close` to close the Flow from another thread/proc
+                self._stop_event.wait()
+            else:
+                stop_event.wait()
         except KeyboardInterrupt:
             pass
 

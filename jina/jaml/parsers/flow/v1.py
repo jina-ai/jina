@@ -57,6 +57,7 @@ class V1Parser(VersionedYAMLParser):
         :return: the Flow YAML parser given the syntax version number
         """
         p = data.get('with', {})  # type: Dict[str, Any]
+
         a = p.pop('args') if 'args' in p else ()
         k = p.pop('kwargs') if 'kwargs' in p else {}
         # maybe there are some hanging kwargs in "parameters"

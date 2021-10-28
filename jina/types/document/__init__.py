@@ -3,15 +3,15 @@ import json
 import mimetypes
 from hashlib import blake2b
 from typing import (
-    Iterable,
-    Union,
-    Dict,
-    Optional,
-    TypeVar,
     Any,
-    Tuple,
+    Dict,
+    Iterable,
     List,
+    Optional,
+    Tuple,
     Type,
+    TypeVar,
+    Union,
     overload,
 )
 
@@ -19,34 +19,28 @@ import numpy as np
 from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 
-from .converters import ContentConversionMixin
-from .helper import versioned, VersionedMixin
-from ..mixin import ProtoTypeMixin
-from ..ndarray.generic import NdArray, BaseSparseNdArray
-from ..score import NamedScore
-from ..score.map import NamedScoreMapping
-from ..struct import StructView
 from ...excepts import BadDocType
-from ...helper import (
-    typename,
-    random_identity,
-    download_mermaid_url,
-    dunder_get,
-)
+from ...helper import download_mermaid_url, dunder_get, random_identity, typename
 from ...importer import ImportExtensions
 from ...logging.predefined import default_logger
 from ...proto import jina_pb2
+from ..mixin import ProtoTypeMixin
+from ..ndarray.generic import BaseSparseNdArray, NdArray
+from ..score import NamedScore
+from ..score.map import NamedScoreMapping
+from ..struct import StructView
+from .converters import ContentConversionMixin
+from .helper import VersionedMixin, versioned
 
 if False:
-    from ..arrays.chunk import ChunkArray
-    from ..arrays.match import MatchArray
-
-    from scipy.sparse import coo_matrix
-
     # fix type-hint complain for sphinx and flake
     import scipy
     import tensorflow as tf
     import torch
+    from scipy.sparse import coo_matrix
+
+    from ..arrays.chunk import ChunkArray
+    from ..arrays.match import MatchArray
 
     ArrayType = TypeVar(
         'ArrayType',
@@ -1064,7 +1058,7 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
             """
                                         %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
                                         classDiagram
-        
+
                                                 """
             + self.__mermaid_str__()
         )
@@ -1095,7 +1089,7 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
         showed = False
         if inline_display:
             try:
-                from IPython.display import display, Image
+                from IPython.display import Image, display
 
                 display(Image(url=url))
                 showed = True
