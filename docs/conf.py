@@ -39,7 +39,6 @@ exclude_patterns = [
     'tests',
     'page_templates',
     '.github',
-    'api'
 ]
 pygments_style = 'rainbow_dash'
 html_theme = 'furo'
