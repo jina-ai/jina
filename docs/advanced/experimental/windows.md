@@ -9,6 +9,12 @@ However, as Jina is built keeping *nix-based platforms in mind, and the upstream
 There can be a significant performance impact while running Jina on Windows. You may not want to use it in production.
 ```
 
+```{tip}
+Alternatively, you can use the Windows Subsystem for Linux, for better compatibility. Check the official guide [here](https://docs.microsoft.com/en-us/windows/wsl/install).
+Make sure you install WSL**2**.
+Once done, you can install Jina as on a native *nix platform.
+```
+
 ## Known issues
 
 ### `multiprocessing` spawn

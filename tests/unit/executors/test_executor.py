@@ -192,3 +192,35 @@ def test_workspace_not_exists(tmpdir):
 
     e = MyExec(metas={'workspace': tmpdir})
     e.do()
+
+
+@pytest.mark.parametrize(
+    'uses_requests, expected',
+    [
+        (None, {'/foo', '/default', '*'}),
+        ({'/nofoo': 'foo'}, {'/nofoo', '/default', '*'}),
+        ({'/nofoo': 'foo', '/new': 'default'}, {'/nofoo', '/new', '*'}),
+        ({'/new': 'default'}, {'/foo', '/new', '*'}),
+        ({'/nofoo': 'foo', '/new': 'all'}, {'/nofoo', '/default', '/new'}),
+        ({'/new': 'all'}, {'/foo', '/default', '/new'}),
+    ],
+)
+def test_override_requests(uses_requests, expected):
+    class OverrideExec(Executor):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+
+        @requests()
+        def default(self, *args, **kwargs):
+            pass
+
+        @requests(on='*')
+        def all(self, *args, **kwargs):
+            pass
+
+        @requests(on='/foo')
+        def foo(self, *args, **kwargs):
+            pass
+
+    exec = OverrideExec(requests=uses_requests)
+    assert expected == set(exec.requests.keys())

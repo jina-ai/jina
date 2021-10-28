@@ -1,12 +1,10 @@
 import asyncio
 import os
-import time
 
 import docker
 import pytest
 
 from jina import Flow
-from jina.logging.logger import JinaLogger
 from jina.peapods.networking import K8sGrpcConnectionPool
 from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
 
@@ -14,27 +12,10 @@ client = docker.from_env()
 cur_dir = os.path.dirname(__file__)
 
 
-@pytest.fixture()
-def logger():
-    logger = JinaLogger('kubernetes-testing')
-    return logger
-
-
-@pytest.fixture()
-def slow_init_executor_image(logger: JinaLogger):
-    image, build_logs = client.images.build(
-        path=os.path.join(cur_dir, 'slow-init-executor'),
-        tag='slow-init-executor:0.13.1',
-    )
-    for chunk in build_logs:
-        if 'stream' in chunk:
-            for line in chunk['stream'].splitlines():
-                logger.debug(line)
-    return image.tags[-1]
-
-
 @pytest.mark.asyncio
-async def test_wait_for_ready(slow_init_executor_image):
+async def test_wait_for_ready(
+    slow_init_executor_image, k8s_cluster, load_images_in_kind, set_test_pip_version
+):
     flow = Flow(
         name='test-flow-slow-executor',
         infrastructure='K8S',
