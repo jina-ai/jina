@@ -1819,6 +1819,29 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             any_event_loop=True,
         )
 
+    def scale(
+        self,
+        pod_name: str,
+        *,
+        replicas: int,
+    ):
+        """
+        Scale the amount of replicas of a given Executor.
+
+        :param pod_name: pod to update
+        :param replicas: The number of replicas to scale to
+        """
+
+        # TODO when replicas-host is ready, needs to be passed here
+
+        from ..helper import run_async
+
+        run_async(
+            self._pod_nodes[pod_name].scale,
+            replicas=replicas,
+            any_event_loop=True,
+        )
+
     @property
     def client_args(self) -> argparse.Namespace:
         """Get Client settings.

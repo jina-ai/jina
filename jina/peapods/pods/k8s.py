@@ -128,6 +128,14 @@ class K8sPod(BasePod):
                 ),
             )
 
+        def _scale_runtime(self, replicas: int):
+            k8s_client = kubernetes_client.K8sClients().apps_v1
+            k8s_client.patch_namespaced_deployment_scale(
+                self.dns_name,
+                namespace=self.k8s_namespace,
+                body={"spec": {"replicas": replicas}},
+            )
+
         def _restart_runtime(self):
             image_name = self._get_image_name()
             container_args = self._get_container_args()
@@ -256,6 +264,9 @@ class K8sPod(BasePod):
                 fail_msg += f': {repr(exception_to_raise)}'
             raise RuntimeFailToStart(fail_msg)
 
+        async def wait_scale_success(self):
+            pass
+
         def rolling_update(
             self, dump_path: Optional[str] = None, *, uses_with: Optional[Dict] = None
         ):
@@ -270,6 +281,14 @@ class K8sPod(BasePod):
             self.deployment_args.uses_with = uses_with
             self.deployment_args.dump_path = dump_path
             self._restart_runtime()
+
+        def scale(self, replicas: int):
+            """
+            Scale the amount of replicas of a given Executor.
+
+            :param replicas: The number of replicas to scale to
+            """
+            self._scale_runtime(replicas)
 
         def start(self):
             with JinaLogger(f'start_{self.name}') as logger:
@@ -472,6 +491,18 @@ class K8sPod(BasePod):
 
         for deployment in self.k8s_deployments:
             await deployment.wait_restart_success(old_uids[deployment.dns_name])
+
+    async def scale(self, replicas: int):
+        """
+        Scale the amount of replicas of a given Executor.
+
+        :param replicas: The number of replicas to scale to
+        """
+        for deployment in self.k8s_deployments:
+            deployment.scale(replicas=replicas)
+        for deployment in self.k8s_deployments:
+            await deployment.wait_scale_success()
+            deployment.num_replicas = replicas
 
     def start(self) -> 'K8sPod':
         """Deploy the kubernetes pods via k8s Deployment and k8s Service.

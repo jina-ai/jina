@@ -287,6 +287,27 @@ class CompoundPod(BasePod):
                 if not task.done():
                     task.cancel()
 
+    async def scale(self, replicas: int):
+        """
+        Scale the amount of replicas of a given Executor.
+
+        :param replicas: The number of replicas to scale to
+        """
+        tasks = []
+        try:
+            import asyncio
+
+            tasks = [
+                asyncio.create_task(shard.scale(replicas=replicas))
+                for shard in self.shards
+            ]
+            for future in asyncio.as_completed(tasks):
+                _ = await future
+        except:
+            for task in tasks:
+                if not task.done():
+                    task.cancel()
+
     @property
     def _mermaid_str(self) -> List[str]:
         """String that will be used to represent the Pod graphically when `Flow.plot()` is invoked
