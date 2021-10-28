@@ -56,6 +56,14 @@ Document, Executor, and Flow are the three fundamental concepts in Jina.
 
 ::::
 
+::::{grid-item-card} {octicon}`infinity;1.5em` Tasks on Multi Data Types
+:link: datatype/text/index
+:link-type: doc
+:class-card: color-gradient-card
+
+Learn how to use Jina to build neural search solution for different types of data.
+::::
+
 ::::{grid-item-card} {octicon}`package-dependents;1.5em` Share Executors
 :link: advanced/hub/index
 :link-type: doc
@@ -73,12 +81,7 @@ Learn how to deploy and manage Jina on remote via a RESTful interface.
 ::::
 
 
-::::{grid-item-card} {octicon}`thumbsup;1.5em` Clean & Efficient Code 
-:link: fundamentals/clean-code
-:link-type: doc
 
-Write beautiful & lean code with Jina.
-::::
 
 ::::{grid-item-card} {octicon}`beaker;1.5em` Try Experimental Features
 :link: advanced/experimental/index
@@ -87,11 +90,6 @@ Write beautiful & lean code with Jina.
 Preview the next big thing we are building. Careful, zapping!
 ::::
 
-::::{grid-item-card} {octicon}`gift;1.5em` Get Yourself Jina Swag
-:link: https://jina.ai/blog/swag/
-
-Awesome Jina swag to our awesome contributors (aka you)!
-::::
 
 :::::
 
@@ -122,26 +120,28 @@ fundamentals/clean-code
 
 
 ```{toctree}
+:caption: Data Types
+:hidden:
+
+datatype/text/index
+datatype/image/index
+datatype/video/index
+datatype/audio/index
+datatype/mesh/index
+datatype/tabular/index
+```
+
+```{toctree}
 :caption: Advanced
 :hidden:
 
 advanced/hub/index
+advanced/master-executor
 advanced/daemon/index
 advanced/experimental/index
+advanced/gpu-executor
 ```
 
-```{toctree}
-:caption: Tutorials
-:hidden:
-
-tutorials/fuzzy-grep
-tutorials/chatbot
-tutorials/master-executor
-tutorials/refactor-hello-world
-tutorials/gpu-executor
-tutorials/video-search
-tutorials/video-qa
-```
 
 ```{toctree}
 :caption: API Reference
