@@ -10,7 +10,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.d53ab927f7bad3eaa42da95908504b10.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.59c74d8c95b765a7fd995ac71d459ebe.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/docbot.css" />
@@ -954,11 +954,21 @@
     <span class="kn">import</span> <span class="nn">pkg_resources</span>
 
     <span class="k">with</span> <span class="n">requirements_file</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">requirements</span><span class="p">:</span>
-        <span class="n">install_reqs</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="nb">str</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">req</span> <span class="ow">in</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">parse_requirements</span><span class="p">(</span><span class="n">requirements</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">req</span><span class="o">.</span><span class="n">project_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">excludes</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">req</span><span class="o">.</span><span class="n">extras</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
-        <span class="p">]</span>
+        <span class="n">install_options</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">install_reqs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">req</span> <span class="ow">in</span> <span class="n">requirements</span><span class="p">:</span>
+            <span class="n">req</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">req</span><span class="p">)</span> <span class="ow">or</span> <span class="n">req</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'#'</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">elif</span> <span class="n">req</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'-'</span><span class="p">):</span>
+                <span class="n">install_options</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">req</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">' '</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">req_spec</span> <span class="ow">in</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">parse_requirements</span><span class="p">(</span><span class="n">req</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">req_spec</span><span class="o">.</span><span class="n">project_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">excludes</span>
+                        <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">req_spec</span><span class="o">.</span><span class="n">extras</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                    <span class="p">):</span>
+                        <span class="n">install_reqs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">install_reqs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span>
@@ -976,6 +986,7 @@
             <span class="sa">f</span><span class="s1">'--default-timeout=</span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="o">+</span> <span class="n">install_reqs</span>
+        <span class="o">+</span> <span class="n">install_options</span>
     <span class="p">)</span></div>
 </pre></div>
             </article>
@@ -988,7 +999,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 27, 2021.
+                    Last updated on Oct 28, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
