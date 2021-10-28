@@ -49,6 +49,11 @@ class ConnectionList:
         :returns: The removed connection or None if there was not any for the given ip
         """
         if address in self._address_to_connection_idx:
+            self._rr_counter = (
+                self._rr_counter % (len(self._connections) - 1)
+                if (len(self._connections) - 1)
+                else 0
+            )
             return self._connections.pop(self._address_to_connection_idx.pop(address))
 
         return None
@@ -58,7 +63,12 @@ class ConnectionList:
         Returns a connection from the list. Strategy is round robin
         :returns: A connection from the pool
         """
-        connection = self._connections[self._rr_counter]
+        try:
+            connection = self._connections[self._rr_counter]
+        except IndexError:
+            # This can happen as a race condition while removing connections
+            self._rr_counter = 0
+            connection = self._connections[self._rr_counter]
         self._rr_counter = (self._rr_counter + 1) % len(self._connections)
         return connection
 
