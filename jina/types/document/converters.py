@@ -5,7 +5,7 @@ import struct
 import urllib.parse
 import urllib.request
 from contextlib import nullcontext
-from typing import Optional, Union, BinaryIO, TYPE_CHECKING
+from typing import Optional, Union, BinaryIO, TYPE_CHECKING, Dict
 
 import numpy as np
 
@@ -104,14 +104,16 @@ class ContentConversionMixin:
         with fp:
             fp.write(self.buffer)
 
-    def dump_image_blob_to_file(self, file: Union[str, BinaryIO]):
+    def dump_image_blob_to_file(self, file: Union[str, BinaryIO], channel_axis: int = -1,):
         """Save :attr:`.blob` into a file
 
         :param file: File or filename to which the data is saved.
+        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
         """
         fp = _get_file_context(file)
         with fp:
-            buffer = _to_png_buffer(self.blob)
+            blob = _move_channel_axis(self.blob, channel_axis, -1)
+            buffer = _to_png_buffer(blob)
             fp.write(buffer)
 
     def dump_uri_to_file(self, file: Union[str, BinaryIO]):
@@ -287,6 +289,55 @@ class ContentConversionMixin:
             raise NotImplementedError
         return self
 
+    def convert_text_to_blob(
+        self,
+        vocab: Dict[str, int],
+        max_length: Optional[int] = None,
+        dtype: str = 'int64',
+    ) -> 'Document':
+        """Convert :attr:`.text` to :attr:`.blob` inplace.
+
+        In the end :attr:`.blob` will be a 1D array where `D` is `max_length`.
+
+        To get the vocab of a DocumentArray, you can use `jina.types.document.converters.build_vocab` to
+
+        :param vocab: a dictionary that maps a word to an integer index, `0` is reserved for padding, `1` is reserved
+            for unknown words in :attr:`.text`. So you should *not* include these two entries in `vocab`.
+        :param max_length: the maximum length of the sequence. Sequence longer than this are cut off from *beginning*.
+            Sequence shorter than this will be padded with `0` from right hand side.
+        :param dtype: the dtype of the generated :attr:`.blob`
+        :return: Document itself after processed
+        """
+        self.blob = np.array(
+            _text_to_int_sequence(self.text, vocab, max_length), dtype=dtype
+        )
+        return self
+
+    def convert_blob_to_text(
+        self, vocab: Union[Dict[str, int], Dict[int, str]], delimiter: str = ' '
+    ) -> 'Document':
+        """Convert :attr:`.blob` to :attr:`.text` inplace.
+
+        :param vocab: a dictionary that maps a word to an integer index, `0` is reserved for padding, `1` is reserved
+            for unknown words in :attr:`.text`
+        :param delimiter: the delimiter that used to connect all words into :attr:`.text`
+        :return: Document itself after processed
+        """
+        if isinstance(list(vocab.keys())[0], str):
+            _vocab = {v: k for k, v in vocab.items()}
+
+        _text = []
+        for k in self.blob:
+            k = int(k)
+            if k == 0:
+                continue
+            elif k == 1:
+                _text.append('<UNK>')
+            else:
+                _text.append(_vocab.get(k, '<UNK>'))
+        self.text = delimiter.join(_text)
+        return self
+
 
 def _uri_to_buffer(uri: str) -> bytes:
     """Convert uri to buffer
@@ -416,7 +467,10 @@ def _to_image_blob(
         new_width = width or raw_img.width
         new_height = height or raw_img.height
         raw_img = raw_img.resize((new_width, new_height))
-    return np.array(raw_img)
+    try:
+        return np.array(raw_img.convert('RGB'))
+    except:
+        return np.array(raw_img)
 
 
 def _to_datauri(
@@ -479,3 +533,28 @@ def _get_file_context(file):
             file_ctx = open(file, 'wb')
 
     return file_ctx
+
+
+def _text_to_word_sequence(
+    text, filters='!"#$%&()*+,-./:;<=>?@[\\]^_`{|}~\t\n', split=' '
+):
+
+    translate_dict = {c: split for c in filters}
+    translate_map = str.maketrans(translate_dict)
+    text = text.lower().translate(translate_map)
+
+    seq = text.split(split)
+    for i in seq:
+        if i:
+            yield i
+
+
+def _text_to_int_sequence(text, vocab, max_len=None):
+    seq = _text_to_word_sequence(text)
+    vec = [vocab.get(s, 1) for s in seq]
+    if max_len:
+        if len(vec) < max_len:
+            vec = [0] * (max_len - len(vec)) + vec
+        elif len(vec) > max_len:
+            vec = vec[-max_len:]
+    return vec

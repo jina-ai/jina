@@ -2,6 +2,7 @@ import itertools
 import json
 import heapq
 from abc import abstractmethod
+from collections import defaultdict
 from collections.abc import MutableSequence, Iterable as Itr
 from contextlib import nullcontext
 from typing import (
@@ -746,3 +747,27 @@ class DocumentArray(
     @staticmethod
     def _flatten(sequence) -> 'DocumentArray':
         return DocumentArray(list(itertools.chain.from_iterable(sequence)))
+
+    def get_vocabulary(self, min_freq: int = 1) -> Dict[str, int]:
+        """Get the text vocabulary in a dict that maps from the word to the index from all Documents.
+
+        :param min_freq: the minimum word frequency to be considered into the vocabulary.
+        :return: a vocabulary in dictionary where key is the word, value is the index. The value is 2-index, where
+            `0` is reserved for padding, `1` is reserved for unknown token.
+        """
+
+        from ..document.converters import _text_to_word_sequence
+
+        all_tokens = defaultdict(int)
+        for d in self:
+            seq = _text_to_word_sequence(d.text)
+            for s in seq:
+                all_tokens[s] += 1
+
+        # 0 for padding, 1 for unknown
+        return {
+            k: idx
+            for idx, k in enumerate(
+                (k for k, v in all_tokens.items() if v >= min_freq), start=2
+            )
+        }
