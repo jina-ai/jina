@@ -310,9 +310,9 @@ class DocumentArrayMemmap(
             if key in self.buffer_pool:
                 return self.buffer_pool[key]
             doc = self.get_doc_by_key(key)
-            result = self.buffer_pool.add_or_update(key, doc)
-            if result:
-                _key, _doc = result
+            poped_doc = self.buffer_pool.add_or_update(key, doc)
+            if poped_doc:
+                _key, _doc = poped_doc
                 self._update(_doc, self._str2int_id(_key), update_buffer=False)
             return doc
 

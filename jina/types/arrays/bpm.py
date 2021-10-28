@@ -47,7 +47,7 @@ class BufferPoolManager:
             self.buffer[empty_idx] = doc
             self.doc_map.move_to_end(idx)
         # else, choose a spot to free and use it with LRU strategy
-        else:
+        elif self.pool_size > 0:
             # the least recently used item is the first item in doc_map
             dam_idx, (buffer_idx, version) = self.doc_map.popitem(last=False)
             if version != self.buffer[buffer_idx].version:

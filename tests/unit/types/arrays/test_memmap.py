@@ -44,9 +44,10 @@ def test_memmap_append_extend(tmpdir):
         assert d1.proto == d2.proto
 
 
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
 @pytest.mark.parametrize('idx1, idx99', [(1, 99), ('id_1', 'id_99')])
-def test_memmap_delete_clear(tmpdir, mocker, idx1, idx99):
-    dam = DocumentArrayMemmap(tmpdir)
+def test_memmap_delete_clear(tmpdir, mocker, buffer_pool_size, idx1, idx99):
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     candidates = list(random_docs(100))
     for d in candidates:
         d.id = f'id_{d.id}'
@@ -67,9 +68,10 @@ def test_memmap_delete_clear(tmpdir, mocker, idx1, idx99):
     mock.assert_not_called()
 
 
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
 @pytest.mark.parametrize('idx1, idx99', [(1, 99), ('id_1', 'id_99')])
-def test_get_set_item(tmpdir, idx1, idx99):
-    dam = DocumentArrayMemmap(tmpdir)
+def test_get_set_item(tmpdir, buffer_pool_size, idx1, idx99):
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     candidates = list(random_docs(100))
     for d in candidates:
         d.id = f'id_{d.id}'
@@ -93,8 +95,9 @@ def test_get_set_item(tmpdir, idx1, idx99):
         dam['unknown_new'] = Document()
 
 
-def test_traverse(tmpdir, mocker):
-    dam = DocumentArrayMemmap(tmpdir)
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_traverse(tmpdir, mocker, buffer_pool_size):
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     dam.extend(random_docs(100))
     mock = mocker.Mock()
     for c in dam.traverse_flat(['c']):
@@ -103,8 +106,9 @@ def test_traverse(tmpdir, mocker):
     mock.assert_called()
 
 
-def test_error(tmpdir):
-    dam = DocumentArrayMemmap(tmpdir)
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_error(tmpdir, buffer_pool_size):
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     dam.clear()
     with pytest.raises(KeyError):
         dam['12']
@@ -116,9 +120,10 @@ def test_error(tmpdir):
         del dam['12']
 
 
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
 @pytest.mark.xfail(__windows__, reason='broken on Windows')
-def test_persist(tmpdir):
-    dam = DocumentArrayMemmap(tmpdir)
+def test_persist(tmpdir, buffer_pool_size):
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     docs = list(random_docs(100))
     for doc in docs:
         doc.scores['score'] = 50
@@ -150,8 +155,9 @@ def test_persist(tmpdir):
     assert len(dam2) == 0
 
 
-def test_prune_save_space(tmpdir):
-    dam = DocumentArrayMemmap(tmpdir)
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_prune_save_space(tmpdir, buffer_pool_size):
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     dam.extend(random_docs(100))
     old_hsize = os.stat(os.path.join(tmpdir, 'header.bin')).st_size
     old_bsize = os.stat(os.path.join(tmpdir, 'body.bin')).st_size
@@ -163,8 +169,9 @@ def test_prune_save_space(tmpdir):
     assert new_hsize < old_hsize
 
 
-def test_convert_dam_to_da(tmpdir, mocker):
-    dam = DocumentArrayMemmap(tmpdir)
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_convert_dam_to_da(tmpdir, mocker, buffer_pool_size):
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     dam.extend(random_docs(100))
     da = DocumentArray(dam)
     dam.clear()
@@ -177,8 +184,9 @@ def test_convert_dam_to_da(tmpdir, mocker):
     assert len(dam) == 0
 
 
-def test_convert_dm_to_dam(tmpdir, mocker):
-    dam = DocumentArrayMemmap(tmpdir)
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_convert_dm_to_dam(tmpdir, mocker, buffer_pool_size):
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     da = DocumentArray(random_docs(100))
     dam.extend(da)
     da.clear()
@@ -191,9 +199,10 @@ def test_convert_dm_to_dam(tmpdir, mocker):
     assert len(dam) == 100
 
 
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
 @pytest.mark.parametrize('embed_dim', [10, 10000])
-def test_extend_and_get_attribute(tmpdir, embed_dim):
-    dam = DocumentArrayMemmap(tmpdir)
+def test_extend_and_get_attribute(tmpdir, embed_dim, buffer_pool_size):
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     dam.clear()
     docs = list(random_docs(100, start_id=0, embed_dim=embed_dim))
     dam.extend(docs)
@@ -210,8 +219,9 @@ def test_extend_and_get_attribute(tmpdir, embed_dim):
     assert len(dam2) == 200
 
 
-def test_sample(tmpdir):
-    da = DocumentArrayMemmap(tmpdir)
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_sample(tmpdir, buffer_pool_size):
+    da = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     docs = list(random_docs(100))
     da.extend(docs)
     sampled = da.sample(5)
@@ -221,8 +231,9 @@ def test_sample(tmpdir):
         da.sample(101)
 
 
-def test_sample_with_seed(tmpdir):
-    da = DocumentArrayMemmap(tmpdir)
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_sample_with_seed(tmpdir, buffer_pool_size):
+    da = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     docs = list(random_docs(100))
     da.extend(docs)
     sampled_1 = da.sample(5, seed=1)
@@ -233,8 +244,9 @@ def test_sample_with_seed(tmpdir):
     assert sampled_1 != sampled_3
 
 
-def test_shuffle(tmpdir):
-    da = DocumentArrayMemmap(tmpdir)
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_shuffle(tmpdir, buffer_pool_size):
+    da = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     docs = list(random_docs(100))
     da.extend(docs)
     shuffled = da.shuffle()
@@ -246,8 +258,9 @@ def test_shuffle(tmpdir):
     assert sorted(ids_before_shuffle) == sorted(ids_after_shuffle)
 
 
-def test_shuffle_with_seed(tmpdir):
-    da = DocumentArrayMemmap(tmpdir)
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_shuffle_with_seed(tmpdir, buffer_pool_size):
+    da = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     docs = list(random_docs(100))
     da.extend(docs)
     shuffled_1 = da.shuffle(seed=1)
@@ -258,8 +271,9 @@ def test_shuffle_with_seed(tmpdir):
     assert shuffled_1 != shuffled_3
 
 
-def test_memmap_delete_by_slice(tmpdir):
-    dam = DocumentArrayMemmap(tmpdir)
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_memmap_delete_by_slice(tmpdir, buffer_pool_size):
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     candidates = list(random_docs(100))
     for d in candidates:
         d.id = f'id_{d.id}'
@@ -275,12 +289,13 @@ def test_memmap_delete_by_slice(tmpdir):
             assert d.id != candidate.id
 
 
-def test_memmap_get_by_slice(tmpdir):
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_memmap_get_by_slice(tmpdir, buffer_pool_size):
     def _assert_similar(da1, da2):
         for doc_a, doc_b in zip(da1, da2):
             assert doc_a.id == doc_b.id
 
-    dam = DocumentArrayMemmap(tmpdir)
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     candidates = list(random_docs(100))
     for d in candidates:
         d.id = f'id_{d.id}'
@@ -314,8 +329,9 @@ def test_memmap_get_by_slice(tmpdir):
     assert len(dam[10:0]) == 0
 
 
-def test_memmap_update_document(tmpdir):
-    dam = DocumentArrayMemmap(tmpdir)
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_memmap_update_document(tmpdir, buffer_pool_size):
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     candidates = list(random_docs(100))
     dam.extend(candidates)
     for idx, candidate in enumerate(candidates):
@@ -326,8 +342,9 @@ def test_memmap_update_document(tmpdir):
         assert doc.content == f'new content {idx}'
 
 
-def test_memmap_update_in_memory(tmpdir):
-    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=100)
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_memmap_update_in_memory(tmpdir, buffer_pool_size):
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     candidates = list(random_docs(100))
     dam.extend(candidates)
     for idx, candidate in enumerate(candidates):
@@ -337,9 +354,10 @@ def test_memmap_update_in_memory(tmpdir):
         assert doc.content == f'new content {idx}'
 
 
-def test_memmap_save_reload(tmpdir):
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_memmap_save_reload(tmpdir, buffer_pool_size):
     docs = list(random_docs(100))
-    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=100)
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     dam.extend(docs)
 
     dam1 = DocumentArrayMemmap(tmpdir)
@@ -369,9 +387,10 @@ def test_memmap_save_reload(tmpdir):
         assert doc.content == 'new'
 
 
-def test_memmap_buffer_synched(tmpdir):
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_memmap_buffer_synched(tmpdir, buffer_pool_size):
     docs = list(random_docs(100))
-    dam = DocumentArrayMemmap(tmpdir)
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     dam.extend(docs[:50])
 
     for i, doc in enumerate(docs[50:]):
@@ -381,8 +400,9 @@ def test_memmap_buffer_synched(tmpdir):
         assert dam[doc.id].content == 'new'
 
 
-def test_memmap_physical_size(tmpdir):
-    da = DocumentArrayMemmap(tmpdir)
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_memmap_physical_size(tmpdir, buffer_pool_size):
+    da = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     assert da.physical_size == 0
     da.append(Document())
     assert da.physical_size > 0
@@ -425,24 +445,26 @@ def test_memmap_get_multiple_attribuets_with_embedding(
     assert isinstance(attributes[1][0], np.ndarray)
 
 
-def test_memmap_persisted(tmpdir):
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_memmap_persisted(tmpdir, buffer_pool_size):
     def _local_context():
-        dam = DocumentArrayMemmap(tmpdir)
+        dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
         docs = list(random_docs(10))
         dam.extend(docs)
         for doc in docs:
             doc.content = 'new'
 
     _local_context()
-    dam = DocumentArrayMemmap(tmpdir)
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     for i, doc in enumerate(dam):
         assert doc.content == 'new'
         assert doc.id == str(i)
 
 
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
 @pytest.mark.xfail(__windows__, reason='broken on Windows')
-def test_memmap_mutate(tmpdir):
-    da = DocumentArrayMemmap(tmpdir)
+def test_memmap_mutate(tmpdir, buffer_pool_size):
+    da = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     d0 = Document(text='hello')
     da.append(d0)
     assert da[0] == d0
@@ -450,7 +472,7 @@ def test_memmap_mutate(tmpdir):
     da.append(d1)
     assert da[1] == d1
 
-    da2 = DocumentArrayMemmap(tmpdir)
+    da2 = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     assert len(da2) == 2
     assert da2[0] == d0
     assert da2[1] == d1
@@ -471,23 +493,26 @@ def test_split(memmap_for_split):
     assert len(rv['a']) == 2
 
 
-def test_dam_embeddings(tmpdir):
-    dam = DocumentArrayMemmap(tmpdir)
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_dam_embeddings(tmpdir, buffer_pool_size):
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     dam.extend(Document(embedding=np.array([1, 2, 3, 4])) for _ in range(100))
     np.testing.assert_almost_equal(dam.get_attributes('embedding'), dam.embeddings)
 
 
-def test_dam_get_embeddings_slice(tmpdir):
-    da = DocumentArrayMemmap(tmpdir)
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_dam_get_embeddings_slice(tmpdir, buffer_pool_size):
+    da = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     da.extend(Document(embedding=np.array([1, 2, 3, 4])) for _ in range(100))
     np.testing.assert_almost_equal(
         da.get_attributes('embedding')[10:20], da._get_embeddings(slice(10, 20))
     )
 
 
-def test_embeddings_setter_dam(tmpdir):
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_embeddings_setter_dam(tmpdir, buffer_pool_size):
     emb = np.random.random((100, 128))
-    dam = DocumentArrayMemmap(tmpdir)
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     dam.extend([Document() for _ in range(100)])
     dam.embeddings = emb
     np.testing.assert_almost_equal(dam.embeddings, emb)
@@ -496,16 +521,18 @@ def test_embeddings_setter_dam(tmpdir):
         np.testing.assert_almost_equal(x, doc.embedding)
 
 
-def test_embeddings_getter_dam(tmpdir):
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_embeddings_getter_dam(tmpdir, buffer_pool_size):
     emb = np.random.random((100, 128))
-    dam = DocumentArrayMemmap(tmpdir)
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     dam.extend([Document(embedding=x) for x in emb])
     assert len(dam) == 100
     np.testing.assert_almost_equal(dam.embeddings, emb)
 
 
-def test_embeddings_wrong_len(tmpdir):
-    dam = DocumentArrayMemmap(tmpdir)
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_embeddings_wrong_len(tmpdir, buffer_pool_size):
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     dam.extend([Document() for x in range(100)])
     embeddings = np.ones((2, 10, 10))
 
@@ -513,17 +540,19 @@ def test_embeddings_wrong_len(tmpdir):
         dam.embeddings = embeddings
 
 
-def test_blobs_getter_dam(tmpdir):
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_blobs_getter_dam(tmpdir, buffer_pool_size):
     blobs = np.random.random((100, 10, 10))
-    dam = DocumentArrayMemmap(tmpdir)
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     dam.extend([Document(blob=blob) for blob in blobs])
     assert len(dam) == 100
     np.testing.assert_almost_equal(dam.get_attributes('blob'), dam.blobs)
 
 
-def test_blobs_setter_dam(tmpdir):
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_blobs_setter_dam(tmpdir, buffer_pool_size):
     blobs = np.random.random((100, 10, 10))
-    dam = DocumentArrayMemmap(tmpdir)
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     dam.extend([Document() for _ in blobs])
     dam.blobs = blobs
     np.testing.assert_almost_equal(dam.blobs, blobs)
@@ -531,15 +560,17 @@ def test_blobs_setter_dam(tmpdir):
         np.testing.assert_almost_equal(x, doc.blob)
 
 
-def test_tags_getter_dam(tmpdir):
-    dam = DocumentArrayMemmap(tmpdir)
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_tags_getter_dam(tmpdir, buffer_pool_size):
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     dam.extend([Document(tags={'a': 2, 'c': 'd'}) for _ in range(100)])
     assert len(dam.tags) == 100
     assert dam.tags == dam.get_attributes('tags')
 
 
-def test_tags_setter_dam(tmpdir):
-    dam = DocumentArrayMemmap(tmpdir)
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_tags_setter_dam(tmpdir, buffer_pool_size):
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     tags = [{'a': 2, 'c': 'd'} for _ in range(100)]
     dam.extend([Document() for _ in range(100)])
     dam.tags = tags
@@ -549,8 +580,9 @@ def test_tags_setter_dam(tmpdir):
         assert x == doc.tags
 
 
-def test_setter_wrong_len(tmpdir):
-    dam = DocumentArrayMemmap(tmpdir)
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_setter_wrong_len(tmpdir, buffer_pool_size):
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     dam.extend([Document() for _ in range(100)])
     tags = [{'1': 2}]
 
@@ -558,8 +590,9 @@ def test_setter_wrong_len(tmpdir):
         dam.tags = tags
 
 
-def test_texts_getter_dam(tmpdir):
-    dam = DocumentArrayMemmap(tmpdir)
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_texts_getter_dam(tmpdir, buffer_pool_size):
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     dam.extend([Document(text='hello') for _ in range(100)])
     assert len(dam.texts) == 100
     t1 = dam.texts
@@ -567,8 +600,9 @@ def test_texts_getter_dam(tmpdir):
     assert t1 == t2
 
 
-def test_texts_setter_dam(tmpdir):
-    dam = DocumentArrayMemmap(tmpdir)
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_texts_setter_dam(tmpdir, buffer_pool_size):
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     dam.extend([Document() for _ in range(100)])
     texts = ['text' for _ in range(100)]
     dam.texts = texts
@@ -578,8 +612,9 @@ def test_texts_setter_dam(tmpdir):
         assert x == doc.text
 
 
-def test_texts_wrong_len(tmpdir):
-    dam = DocumentArrayMemmap(tmpdir)
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_texts_wrong_len(tmpdir, buffer_pool_size):
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     dam.extend([Document() for _ in range(100)])
     texts = ['hello']
 
@@ -587,8 +622,9 @@ def test_texts_wrong_len(tmpdir):
         dam.texts = texts
 
 
-def test_blobs_wrong_len(tmpdir):
-    dam = DocumentArrayMemmap(tmpdir)
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_blobs_wrong_len(tmpdir, buffer_pool_size):
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     dam.extend([Document() for x in range(100)])
     blobs = np.ones((2, 10, 10))
 
@@ -600,8 +636,9 @@ def test_mmap_path_getter(memmap_with_text_and_embedding, tmpdir):
     assert memmap_with_text_and_embedding.path == tmpdir
 
 
-def test_issue_3527_delete_and_match(tmpdir):
-    dam = DocumentArrayMemmap(tmpdir)
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_issue_3527_delete_and_match(tmpdir, buffer_pool_size):
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
 
     dam.append(Document(id='a', embedding=np.array([1, 2, 3], dtype=np.float32)))
     del dam['a']
@@ -612,8 +649,9 @@ def test_issue_3527_delete_and_match(tmpdir):
     assert da[0].matches[0].id == 'c'
 
 
-def test_buffers_getter_setter(tmpdir):
-    dam = DocumentArrayMemmap(tmpdir)
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_buffers_getter_setter(tmpdir, buffer_pool_size):
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     dam.extend(
         [
             Document(buffer=b'aa'),
@@ -630,8 +668,9 @@ def test_buffers_getter_setter(tmpdir):
         dam.buffers = ['aa', 'bb', 'cc']
 
 
-def test_traverse_flat_root_itself(tmpdir):
-    dam = DocumentArrayMemmap(tmpdir)
+@pytest.mark.parametrize('buffer_pool_size', [0, 100, 1000])
+def test_traverse_flat_root_itself(tmpdir, buffer_pool_size):
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=buffer_pool_size)
     dam.extend([Document() for _ in range(100)])
     res = dam.traverse_flat(['r'])
     assert isinstance(res, DocumentArrayMemmap)
