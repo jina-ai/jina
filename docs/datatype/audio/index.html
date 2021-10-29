@@ -8,8 +8,8 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/datatype/audio/index.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="Audio: TBA" />
-  <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
+  <meta property="og:description" content="Audio: Sound, or audio signals are signals that vibrate in the audible frequency range. When someone talks, it generates air pressure signals; when you play music, the speaker converts electrical energy into mechanical energy. The mechanical energy compresses air and converts the motion into soun..." />
+  <meta property="og:image" content="datatype/audio/sampling-rate.jpeg" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -189,7 +189,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -647,9 +647,131 @@
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-unmute-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m7-563-2-069a-75-75-0-018-2-75v10-5a-75-75-0-01-1-238-57l3-472-11h1-75a1-75-1-75-0-010-9-25v-2-5c0-5-784-784-5-1-75-5h1-723l3-289-2-82a-75-75-0-01-801-111zm6-5-4-38l4-238-6-319a-75-75-0-01-488-181h-2a-25-25-0-00-25-25v2-5c0-138-112-25-25-25h2a-75-75-0-01-488-18l6-5-11-62v4-38zm6-096-2-038a-75-75-0-011-06-0-8-8-0-010-11-314-75-75-0-01-1-06-1-06-6-5-6-5-0-000-9-193-75-75-0-010-1-06v-001zm-1-06-2-121a-75-75-0-10-1-061-1-061-3-5-3-5-0-010-4-95-75-75-0-101-06-1-06-5-5-0-000-7-07l-001-001z-path-svg-audio">
 <h1><svg aria-hidden="true" class="sd-octicon sd-octicon-unmute" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M7.563 2.069A.75.75 0 018 2.75v10.5a.75.75 0 01-1.238.57L3.472 11H1.75A1.75 1.75 0 010 9.25v-2.5C0 5.784.784 5 1.75 5h1.723l3.289-2.82a.75.75 0 01.801-.111zM6.5 4.38L4.238 6.319a.75.75 0 01-.488.181h-2a.25.25 0 00-.25.25v2.5c0 .138.112.25.25.25h2a.75.75 0 01.488.18L6.5 11.62V4.38zm6.096-2.038a.75.75 0 011.06 0 8 8 0 010 11.314.75.75 0 01-1.06-1.06 6.5 6.5 0 000-9.193.75.75 0 010-1.06v-.001zm-1.06 2.121a.75.75 0 10-1.061 1.061 3.5 3.5 0 010 4.95.75.75 0 101.06 1.06 5 5 0 000-7.07l.001-.001z" fill-rule="evenodd"></path></svg> Audio<a class="headerlink" href="#svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-unmute-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m7-563-2-069a-75-75-0-018-2-75v10-5a-75-75-0-01-1-238-57l3-472-11h1-75a1-75-1-75-0-010-9-25v-2-5c0-5-784-784-5-1-75-5h1-723l3-289-2-82a-75-75-0-01-801-111zm6-5-4-38l4-238-6-319a-75-75-0-01-488-181h-2a-25-25-0-00-25-25v2-5c0-138-112-25-25-25h2a-75-75-0-01-488-18l6-5-11-62v4-38zm6-096-2-038a-75-75-0-011-06-0-8-8-0-010-11-314-75-75-0-01-1-06-1-06-6-5-6-5-0-000-9-193-75-75-0-010-1-06v-001zm-1-06-2-121a-75-75-0-10-1-061-1-061-3-5-3-5-0-010-4-95-75-75-0-101-06-1-06-5-5-0-000-7-07l-001-001z-path-svg-audio" title="Permalink to this headline">¶</a></h1>
-<p>TBA</p>
+<p>Sound, or audio signals are signals that vibrate in the audible frequency range. When someone talks, it generates air
+pressure signals; when you play music, the speaker converts electrical energy into mechanical energy. The mechanical
+energy compresses air and converts the motion into sound energy. Your ear takes in these air pressure differences and
+communicates with the brain. That’s how audio works in real world and we call it analog audio.</p>
+<p>Digital audio data can be a soundbite, a music, a ringtone, a background noise. It often comes in <code class="docutils literal notranslate"><span class="pre">.wav</span></code>, <code class="docutils literal notranslate"><span class="pre">.mp3</span></code>
+formats, where the sound waves are digitized by sampling them at discrete intervals. There are many interesting neural
+search tasks on audio data: music recommendations, similarity search for audio files, matching voice commands, voice
+synthesis for chatbot. Before you start to build solutions with Jina, let’s recap some fundamental knowledge about audio
+data.</p>
+<section id="sampling-rate">
+<h2>Sampling rate<a class="headerlink" href="#sampling-rate" title="Permalink to this headline">¶</a></h2>
+<p>Sampling rate determines the sound frequency range (corresponding to pitch) which can be represented in the digital
+waveform. It represents the quality of your audio data. Typical sampling frequencies are 8KHz, 16KHz and 44.1KHz. 1Hz
+means one sample per second, so obviously higher sampling frequencies mean more samples per second and therefore better
+signal quality.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="datatype/audio/sampling-rate.jpeg"><img alt="datatype/audio/sampling-rate.jpeg" src="datatype/audio/sampling-rate.jpeg" style="width: 80%;"/></a>
+</figure>
+<p>Different data loaders, mediums and file formats might have different sample rate requirements. For example, typical
+studio recording audio has 192KHz. To make this recording as a CD, it should be resampled to CD sampling rate of
+44.1KHz.</p>
+<p>Fun fact, human ear can hear up to ~20KHz. Higher frequencies convey some emotions, and are useful for identification of
+the speaker. In particular, if it is a human voice, then it is still intelligible at much lower sampling rate even when
+higher frequencies are lost.</p>
+<p>And you really don’t want to hear a 4KHz music.</p>
+</section>
+<section id="quantization">
+<h2>Quantization<a class="headerlink" href="#quantization" title="Permalink to this headline">¶</a></h2>
+<p>Another important concept in audio data is quantization. It is the process of reducing the infinite number precision of
+an audio sample to a finite precision as defined by a particular number of bits. In the majority of the cases, 16 bits
+per sample are used to represent each quantized sample, which means that there are 2<sup>16</sup> levels for the quantized
+signal. Quantization also forms the core of essentially all lossy compression algorithms.</p>
+<p>Below depicts a simple wave quantized in 2bits (left) and 3bits (right).</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../_images/2-3bit-quant.png"><img alt="../../_images/2-3bit-quant.png" src="../../_images/2-3bit-quant.png" style="width: 80%;"/></a>
+</figure>
+<p>Let’s hear some soundbite and feel how quantization affects the audio quality. In this example, the original audio file
+is at 16-bit, 44.1KHz.</p>
+<audio controls="">
+<source src="../../_static/download.wav" type="audio/wav"/>
+Your browser does not support the audio element.
+</audio>
+<p>We now keep the sampling rate at 44.1KHz but reduce the number of bits used in quantization:</p>
+<div class="table-wrapper"><table>
+<tr>
+<th>Quantization</th>
+<th>Audio</th>
+</tr>
+<tr>
+<td>8-bit</td>
+<td><audio controls=""><source src="../../_static/download%20(1).wav" type="audio/wav"/></audio></td>
+</tr>
+<tr>
+<td>6-bit</td>
+<td><audio controls=""><source src="../../_static/download%20(2).wav" type="audio/wav"/></audio></td>
+</tr>
+<tr>
+<td>4-bit</td>
+<td><audio controls=""><source src="../../_static/download%20(3).wav" type="audio/wav"/></audio></td>
+</tr>
+<tr>
+<td>3-bit</td>
+<td><audio controls=""><source src="../../_static/download%20(4).wav" type="audio/wav"/></audio></td>
+</tr>
+<tr>
+<td>2-bit</td>
+<td><audio controls=""><source src="../../_static/download%20(5).wav" type="audio/wav"/></audio></td>
+</tr>
+</table></div>
+<p>Don’t be flattered if you still can somehow recognize the 2-bit version. It is easy only because it is a human voice, which we are born to be very good at recognizing it. Try again with a music.</p>
+</section>
+<section id="load-wav-file">
+<h2>Load <code class="docutils literal notranslate"><span class="pre">.wav</span></code> file<a class="headerlink" href="#load-wav-file" title="Permalink to this headline">¶</a></h2>
+<p>You can use Jina Document API to load a wav file as a Document.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'toy.wav'</span><span class="p">)</span><span class="o">.</span><span class="n">convert_audio_uri_to_blob</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>(30833,) float32
+</pre></div>
+</div>
+</section>
+<section id="save-as-wav-file">
+<h2>Save as <code class="docutils literal notranslate"><span class="pre">.wav</span></code> file<a class="headerlink" href="#save-as-wav-file" title="Permalink to this headline">¶</a></h2>
+<p>You can save Document <code class="docutils literal notranslate"><span class="pre">.blob</span></code> as a <code class="docutils literal notranslate"><span class="pre">.wav</span></code> file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="o">.</span><span class="n">dump_audio_blob_to_file</span><span class="p">(</span><span class="s1">'toy.wav'</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>Let’s load the “hello” audio file, reverse it and finally save it.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'hello.wav'</span><span class="p">)</span><span class="o">.</span><span class="n">convert_audio_uri_to_blob</span><span class="p">()</span>
+<span class="n">d</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">blob</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">d</span><span class="o">.</span><span class="n">dump_audio_blob_to_file</span><span class="p">(</span><span class="s1">'olleh.wav'</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="table-wrapper"><table>
+<tr>
+<th>hello.wav</th>
+<th>olleh.wav</th>
+</tr>
+<tr>
+<td><audio controls=""><source src="../../_static/hello.wav" type="audio/wav"/></audio></td>
+<td><audio controls=""><source src="../../_static/olleh.wav" type="audio/wav"/></audio></td>
+</tr>
+</table></div>
+</section>
+<section id="other-tools-libraries-for-audio-data">
+<h2>Other tools &amp; libraries for audio data<a class="headerlink" href="#other-tools-libraries-for-audio-data" title="Permalink to this headline">¶</a></h2>
+<p>By no means you are restricted to use Jina native methods for audio processing. Here are some command-line tools, programs and libraries to use for more advanced handling of audio data:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://ffmpeg.org"><code class="docutils literal notranslate"><span class="pre">FFmpeg</span></code></a> is a free, open-source project for handling multimedia files and streams.</p></li>
+<li><p><a class="reference external" href="https://github.com/jiaaro/pydub"><code class="docutils literal notranslate"><span class="pre">pydub</span></code></a>: manipulate audio with a simple and easy high level interface</p></li>
+<li><p><a class="reference external" href="https://librosa.github.io/librosa/"><code class="docutils literal notranslate"><span class="pre">librosa</span></code></a>: a python package for music and audio analysis.</p></li>
+<li><p><a class="reference external" href="https://github.com/tyiannak/pyAudioAnalysis"><code class="docutils literal notranslate"><span class="pre">pyAudioAnalysis</span></code></a>: for IO or for more advanced feature extraction and signal analysis.</p></li>
+</ul>
 <div class="toctree-wrapper compound">
 </div>
+</section>
 </section>
 
             </article>
@@ -700,6 +822,28 @@
             
 
             <div class="toc-sticky toc-scroll">
+                
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-unmute" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M7.563 2.069A.75.75 0 018 2.75v10.5a.75.75 0 01-1.238.57L3.472 11H1.75A1.75 1.75 0 010 9.25v-2.5C0 5.784.784 5 1.75 5h1.723l3.289-2.82a.75.75 0 01.801-.111zM6.5 4.38L4.238 6.319a.75.75 0 01-.488.181h-2a.25.25 0 00-.25.25v2.5c0 .138.112.25.25.25h2a.75.75 0 01.488.18L6.5 11.62V4.38zm6.096-2.038a.75.75 0 011.06 0 8 8 0 010 11.314.75.75 0 01-1.06-1.06 6.5 6.5 0 000-9.193.75.75 0 010-1.06v-.001zm-1.06 2.121a.75.75 0 10-1.061 1.061 3.5 3.5 0 010 4.95.75.75 0 101.06 1.06 5 5 0 000-7.07l.001-.001z"></path></svg> Audio</a><ul>
+<li><a class="reference internal" href="#sampling-rate">Sampling rate</a></li>
+<li><a class="reference internal" href="#quantization">Quantization</a></li>
+<li><a class="reference internal" href="#load-wav-file">Load <code class="docutils literal notranslate"><span class="pre">.wav</span></code> file</a></li>
+<li><a class="reference internal" href="#save-as-wav-file">Save as <code class="docutils literal notranslate"><span class="pre">.wav</span></code> file</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
+<li><a class="reference internal" href="#other-tools-libraries-for-audio-data">Other tools &amp; libraries for audio data</a></li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
                 
                 <details id='jina-docbot' class="jina-doc-bot sd-sphinx-override sd-dropdown sd-card">
     <summary class="sd-summary-title sd-card-header">

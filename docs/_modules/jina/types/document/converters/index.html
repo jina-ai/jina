@@ -626,6 +626,7 @@
 <span class="kn">import</span> <span class="nn">struct</span>
 <span class="kn">import</span> <span class="nn">urllib.parse</span>
 <span class="kn">import</span> <span class="nn">urllib.request</span>
+<span class="kn">import</span> <span class="nn">wave</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">nullcontext</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span>
 
@@ -758,6 +759,65 @@
         <span class="k">with</span> <span class="n">fp</span><span class="p">:</span>
             <span class="n">buffer</span> <span class="o">=</span> <span class="n">_uri_to_buffer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
             <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="ContentConversionMixin.dump_audio_blob_to_file"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.dump_audio_blob_to_file">[docs]</a>    <span class="k">def</span> <span class="nf">dump_audio_blob_to_file</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BinaryIO</span><span class="p">],</span>
+        <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">44100</span><span class="p">,</span>
+        <span class="n">sample_width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Document'</span><span class="p">:</span>
+        <span class="sd">"""Save :attr:`.blob` into an wav file. Mono/stereo is preserved.</span>
+
+<span class="sd">        :param file: if file is a string, open the file by that name, otherwise treat it as a file-like object.</span>
+<span class="sd">        :param sample_rate: sampling frequency</span>
+<span class="sd">        :param sample_width: sample width in bytes</span>
+
+<span class="sd">        :return: Document itself after processed</span>
+<span class="sd">        """</span>
+        <span class="c1"># Convert to (little-endian) 16 bit integers.</span>
+        <span class="n">max_int16</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">15</span>
+        <span class="n">blob</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">*</span> <span class="n">max_int16</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">'&lt;h'</span><span class="p">)</span>
+        <span class="n">n_channels</span> <span class="o">=</span> <span class="mi">2</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">1</span>
+
+        <span class="k">with</span> <span class="n">wave</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="c1"># 2 Channels.</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">setnchannels</span><span class="p">(</span><span class="n">n_channels</span><span class="p">)</span>
+            <span class="c1"># 2 bytes per sample.</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">setsampwidth</span><span class="p">(</span><span class="n">sample_width</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">setframerate</span><span class="p">(</span><span class="n">sample_rate</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">writeframes</span><span class="p">(</span><span class="n">blob</span><span class="o">.</span><span class="n">tobytes</span><span class="p">())</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="ContentConversionMixin.convert_audio_uri_to_blob"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.convert_audio_uri_to_blob">[docs]</a>    <span class="k">def</span> <span class="nf">convert_audio_uri_to_blob</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Document'</span><span class="p">:</span>
+        <span class="sd">"""Convert an audio :attr:`.uri` into :attr:`.blob` inplace</span>
+
+<span class="sd">        :return: Document itself after processed</span>
+<span class="sd">        """</span>
+        <span class="n">ifile</span> <span class="o">=</span> <span class="n">wave</span><span class="o">.</span><span class="n">open</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span>
+        <span class="p">)</span>  <span class="c1">#: note wave is Python built-in module https://docs.python.org/3/library/wave.html</span>
+        <span class="n">samples</span> <span class="o">=</span> <span class="n">ifile</span><span class="o">.</span><span class="n">getnframes</span><span class="p">()</span>
+        <span class="n">audio</span> <span class="o">=</span> <span class="n">ifile</span><span class="o">.</span><span class="n">readframes</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+
+        <span class="c1"># Convert buffer to float32 using NumPy</span>
+        <span class="n">audio_as_np_int16</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">audio</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)</span>
+        <span class="n">audio_as_np_float32</span> <span class="o">=</span> <span class="n">audio_as_np_int16</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+        <span class="c1"># Normalise float32 array so that values are between -1.0 and +1.0</span>
+        <span class="n">max_int16</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">15</span>
+        <span class="n">audio_normalised</span> <span class="o">=</span> <span class="n">audio_as_np_float32</span> <span class="o">/</span> <span class="n">max_int16</span>
+
+        <span class="n">channels</span> <span class="o">=</span> <span class="n">ifile</span><span class="o">.</span><span class="n">getnchannels</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">channels</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># 1 for mono, 2 for stereo</span>
+            <span class="n">audio_stereo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">audio_normalised</span><span class="p">)</span> <span class="o">/</span> <span class="n">channels</span><span class="p">),</span> <span class="n">channels</span><span class="p">))</span>
+            <span class="n">audio_stereo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">audio_normalised</span><span class="p">[</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">audio_normalised</span><span class="p">),</span> <span class="mi">2</span><span class="p">)]</span>
+            <span class="n">audio_stereo</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">audio_normalised</span><span class="p">[</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">audio_normalised</span><span class="p">),</span> <span class="mi">2</span><span class="p">)]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">audio_stereo</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">audio_normalised</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="ContentConversionMixin.convert_image_uri_to_blob"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.convert_image_uri_to_blob">[docs]</a>    <span class="k">def</span> <span class="nf">convert_image_uri_to_blob</span><span class="p">(</span>
@@ -1244,7 +1304,6 @@
 <span class="k">def</span> <span class="nf">_text_to_word_sequence</span><span class="p">(</span>
     <span class="n">text</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="s1">'!"#$%&amp;()*+,-./:;&lt;=&gt;?@[</span><span class="se">\\</span><span class="s1">]^_`{|}~</span><span class="se">\t\n</span><span class="s1">'</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">' '</span>
 <span class="p">):</span>
-
     <span class="n">translate_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">split</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">filters</span><span class="p">}</span>
     <span class="n">translate_map</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">maketrans</span><span class="p">(</span><span class="n">translate_dict</span><span class="p">)</span>
     <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">translate_map</span><span class="p">)</span>
