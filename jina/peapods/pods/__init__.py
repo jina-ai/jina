@@ -345,6 +345,7 @@ class Pod(BasePod):
         def clear_peas(self):
             self._peas.clear()
 
+        @property
         def num_peas(self):
             return len(self._peas)
 
@@ -558,7 +559,8 @@ class Pod(BasePod):
             num_peas += 1
         if self.tail_pea is not None:
             num_peas += 1
-        num_peas += self.replica_set.num_peas
+        if self.replica_set is not None:  # external pods
+            num_peas += self.replica_set.num_peas
         return num_peas
 
     def __eq__(self, other: 'BasePod'):
