@@ -1,4 +1,5 @@
 from fastapi import Depends, APIRouter, HTTPException
+from typing import Dict, Optional
 
 from ... import Runtime400Exception
 from ..dependencies import PodDepends
@@ -47,9 +48,19 @@ async def _create(pod: PodDepends = Depends(PodDepends)):
     summary='Trigger a rolling update on this Pod',
     description='Types supported: "rolling_update"',
 )
-async def _update(id: DaemonID, kind: UpdateOperation, dump_path: str):
+async def _update(
+    id: DaemonID,
+    kind: UpdateOperation,
+    dump_path: Optional[str] = None,
+    uses_with: Optional[Dict] = None,
+):
     try:
-        return await store.update(id, kind, dump_path)
+        if dump_path is not None:
+            if uses_with is not None:
+                uses_with['dump_path'] = dump_path
+            else:
+                uses_with = {'dump_path': dump_path}
+        return await store.update(id, kind, uses_with=uses_with)
     except Exception as ex:
         raise Runtime400Exception from ex
 

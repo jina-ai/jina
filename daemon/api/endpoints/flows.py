@@ -57,9 +57,13 @@ async def _update(
     uses_with: Optional[Dict] = None,
 ):
     try:
-        return await store.update(
-            id, kind, pod_name=pod_name, dump_path=dump_path, uses_with=uses_with
-        )
+        if dump_path is not None:
+            if uses_with is not None:
+                uses_with['dump_path'] = dump_path
+            else:
+                uses_with = {'dump_path': dump_path}
+
+        return await store.update(id, kind, pod_name=pod_name, uses_with=uses_with)
     except Exception as ex:
         raise Runtime400Exception from ex
 

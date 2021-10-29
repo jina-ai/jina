@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Dict
 from fastapi import APIRouter
 
 from jina.helper import ArgNamespace
@@ -51,16 +51,15 @@ async def _create(flow: 'FlowModel', ports: Optional[PortMappings] = None):
 )
 async def _update(
     kind: UpdateOperation,
-    dump_path: str,
     pod_name: str,
-    shards: int = None,
+    uses_with: Dict,
 ):
     """
 
     .. #noqa: DAR101
     .. #noqa: DAR201"""
     try:
-        return store.update(kind, dump_path, pod_name, shards)
+        return store.update(kind, pod_name, uses_with=uses_with)
     except ValueError as ex:
         raise PartialDaemon400Exception from ex
 

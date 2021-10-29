@@ -252,8 +252,6 @@ class ContainerStore(BaseStore):
         id: DaemonID,
         kind: UpdateOperation,
         pod_name: str,
-        dump_path: Optional[str] = None,
-        *,
         uses_with: Optional[Dict] = None,
         **kwargs,
     ) -> DaemonID:
@@ -261,7 +259,6 @@ class ContainerStore(BaseStore):
 
         :param id: id of the container
         :param kind: type of update command to execute (only rolling_update for now)
-        :param dump_path: the path to which to dump on disk
         :param pod_name: pod to target with the dump request
         :param uses_with: the uses_with arguments to update the executor in pod_name
         :param kwargs: keyword args
@@ -270,12 +267,6 @@ class ContainerStore(BaseStore):
         """
         if id not in self:
             raise KeyError(f'{colored(id, "red")} not found in store.')
-
-        if dump_path is not None:
-            if uses_with is not None:
-                uses_with['dump_path'] = dump_path
-            else:
-                uses_with = {'dump_path': dump_path}
 
         if id.jtype == IDLiterals.JFLOW:
             params = {
