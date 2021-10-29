@@ -631,7 +631,7 @@ class Pod(BasePod):
         """Wait until all peas exit"""
         try:
             if self.head_pea is not None:
-                self.head_pea.activate_runtime()
+                self.head_pea.join()
             self.replica_set.join()
             if self.tail_pea is not None:
                 self.tail_pea.join()
