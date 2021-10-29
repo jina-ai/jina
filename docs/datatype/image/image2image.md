@@ -160,7 +160,7 @@ def print_matches(resp: Response):  # the callback function invoked when task is
 
 
 c = Client(protocol='http', port=12345)  # connect to localhost:12345
-c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
+c.post('/search', Document(uri='path/to/an/image/'), on_done=print_matches)
 ```
 
 ## Results
