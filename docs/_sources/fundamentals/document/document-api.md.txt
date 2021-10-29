@@ -535,6 +535,7 @@ from jina.types.document.generators import from_files
 DocumentArray(from_files('/*.png'))
 ```
 
+(recursive-nested-document)=
 ## Recursive & nested Document
 
 `Document` can be recursive both horizontally and vertically. The following graphic illustrates the recursive `Document` structure. Each `Document` can have multiple "Chunks"
