@@ -4,7 +4,7 @@
 <!--endmsg-->
 </p>
 <p align="center">
-<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/logo-light-ani.svg?raw=true" alt="Jina logo: Jina is a cloud-native neural search framework" width="200px"></a>
+<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/logo-light-ani-css.svg?raw=true" alt="Jina logo: Jina is a cloud-native neural search framework" width="200px"></a>
 </p>
 
 <p align="center">
