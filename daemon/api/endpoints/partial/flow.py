@@ -1,4 +1,4 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Any
 from fastapi import APIRouter
 
 from jina.helper import ArgNamespace
@@ -52,12 +52,13 @@ async def _create(flow: 'FlowModel', ports: Optional[PortMappings] = None):
 async def _update(
     kind: UpdateOperation,
     pod_name: str,
-    uses_with: Dict,
+    uses_with: Optional[Dict[str, Any]] = None,
 ):
     """
 
     .. #noqa: DAR101
-    .. #noqa: DAR201"""
+    .. #noqa: DAR201
+    """
     try:
         return store.update(kind, pod_name, uses_with=uses_with)
     except ValueError as ex:

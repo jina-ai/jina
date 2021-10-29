@@ -83,6 +83,33 @@ class PartialPodStore(PartialPeaStore):
 
     peapod_cls = Pod
 
+    def update(
+        self,
+        kind: UpdateOperation,
+        pod_name: str,
+        uses_with: Optional[Dict] = None,
+        **kwargs,
+    ) -> PartialStoreItem:
+        """Runs an update operation on the Flow.
+        :param kind: type of update command to execute (rolling_update)
+        :param pod_name: pod to target with the dump request
+        :param uses_with: the uses_with for the new executors to be rolled updated
+        :param kwargs: keyword args
+        :return: Item describing the Flow object
+        """
+        try:
+            if kind == UpdateOperation.ROLLING_UPDATE:
+                self.object.rolling_update(uses_with=uses_with)
+            else:
+                self._logger.error(f'unsupported kind: {kind}, no changes done')
+                return self.item
+        except Exception as e:
+            self._logger.error(f'{e!r}')
+            raise
+        else:
+            self.item.arguments = vars(self.object.args)
+            return self.item
+
 
 class PartialFlowStore(PartialStore):
     """A Flow store spawned inside partial-daemon container"""

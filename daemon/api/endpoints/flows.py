@@ -1,4 +1,6 @@
-from typing import Optional, Dict
+import json
+
+from typing import Optional, Dict, Any
 
 from fastapi import APIRouter, Depends
 from fastapi.exceptions import HTTPException
@@ -54,11 +56,12 @@ async def _update(
     kind: UpdateOperation,
     pod_name: str,
     dump_path: Optional[str] = None,
-    uses_with: Optional[Dict] = None,
+    uses_with: Optional[Dict[str, Any]] = None,
 ):
     try:
         if dump_path is not None:
             if uses_with is not None:
+                uses_with = json.loads(uses_with)
                 uses_with['dump_path'] = dump_path
             else:
                 uses_with = {'dump_path': dump_path}

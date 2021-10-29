@@ -1,5 +1,7 @@
+import json
+from typing import Optional, Dict, Any
+
 from fastapi import Depends, APIRouter, HTTPException
-from typing import Dict, Optional
 
 from ... import Runtime400Exception
 from ..dependencies import PodDepends
@@ -52,11 +54,12 @@ async def _update(
     id: DaemonID,
     kind: UpdateOperation,
     dump_path: Optional[str] = None,
-    uses_with: Optional[Dict] = None,
+    uses_with: Optional[Dict[str, Any]] = None,
 ):
     try:
         if dump_path is not None:
             if uses_with is not None:
+                uses_with = json.loads(uses_with)
                 uses_with['dump_path'] = dump_path
             else:
                 uses_with = {'dump_path': dump_path}

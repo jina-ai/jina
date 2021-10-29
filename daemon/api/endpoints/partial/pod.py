@@ -1,3 +1,4 @@
+from typing import Optional, Dict, Any
 from fastapi import APIRouter
 
 from jina.helper import ArgNamespace
@@ -6,6 +7,7 @@ from ....excepts import PartialDaemon400Exception
 from ....models import PodModel
 from ....models.partial import PartialStoreItem
 from ....stores import partial_store as store
+from ....models.enums import UpdateOperation
 
 router = APIRouter(prefix='/pod', tags=['pod'])
 
@@ -39,6 +41,27 @@ async def _create(pod: 'PodModel'):
         args = ArgNamespace.kwargs2namespace(pod.dict(), set_pod_parser())
         return store.add(args)
     except Exception as ex:
+        raise PartialDaemon400Exception from ex
+
+
+@router.put(
+    path='',
+    summary='Run an update operation on the Pod object',
+    description='Types supported: "rolling_update"',
+    response_model=PartialStoreItem,
+)
+async def _update(
+    kind: UpdateOperation,
+    uses_with: Optional[Dict[str, Any]] = None,
+):
+    """
+
+    .. #noqa: DAR101
+    .. #noqa: DAR201
+    """
+    try:
+        return store.update(kind, uses_with=uses_with)
+    except ValueError as ex:
         raise PartialDaemon400Exception from ex
 
 
