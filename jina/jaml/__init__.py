@@ -566,7 +566,9 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 if override_requests is not None:
                     _delitem(no_tag_yml, key='uses_requests')
                 cls._override_yml_params(no_tag_yml, 'with', override_with)
+                cls._override_yml_params(no_tag_yml, 'metas', override_metas)
                 cls._override_yml_params(no_tag_yml, 'requests', override_requests)
+
             else:
                 raise BadConfigSource(
                     f'can not construct {cls} from an empty {source}. nothing to read from there'
@@ -574,6 +576,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             if substitute:
                 # expand variables
                 no_tag_yml = JAML.expand_dict(no_tag_yml, context)
+
             if allow_py_modules:
                 _extra_search_paths = extra_search_paths or []
                 load_py_modules(
