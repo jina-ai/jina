@@ -65,7 +65,7 @@ def test_scale_flow_remote(
         for replica_id in r.docs.get_attributes('tags__replica_id'):
             replica_ids.add(replica_id)
 
-    assert replica_ids == {0, 1}
+    assert replica_ids == set(range(old_replicas))
 
     client.flows.update(
         id=flow_id,

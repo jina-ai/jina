@@ -1,5 +1,6 @@
 import os
 import re
+from zipfile import ZipFile, is_zipfile
 from itertools import chain
 from pathlib import Path
 from typing import Dict, List, Union
@@ -38,6 +39,12 @@ def store_files_in_workspace(
             content = f.file.read()
             fp.write(content)
         logger.debug(f'saved uploads to {dest}')
+
+        if is_zipfile(dest):
+            logger.debug(f'unzipping {dest}')
+            with ZipFile(dest, 'r') as f:
+                f.extractall(path=workdir)
+            os.remove(dest)
 
 
 def is_requirements_txt(filename) -> bool:
@@ -189,13 +196,14 @@ class DaemonFile:
             if is_requirements_txt(filename):
                 with open(os.path.join(self._workdir, filename)) as f:
                     requirements += ' '.join(f.read().splitlines())
+                requirements += ' '
         if not requirements:
             self._logger.warning(
                 'please add a requirements.txt file to manage python dependencies in the workspace'
             )
             return ''
         else:
-            return requirements
+            return requirements.strip()
 
     @property
     def dockercontext(self) -> str:

@@ -39,7 +39,7 @@ def docker_image_built():
 
 
 @pytest.mark.parametrize('shards', [1, 2])
-@pytest.mark.parametrize('old_replicas', [2, 3, 5])
+@pytest.mark.parametrize('old_replicas', [2, 5])
 @pytest.mark.parametrize('new_replicas', [3, 4])
 def test_scale_successfully_zedruntime(shards, old_replicas, new_replicas):
     f = Flow().add(
@@ -72,7 +72,7 @@ def test_scale_successfully_zedruntime(shards, old_replicas, new_replicas):
         for replica_id in r.docs.get_attributes('tags__replica_id'):
             replica_ids.add(replica_id)
 
-    assert replica_ids == {0, 1}
+    assert replica_ids == set(range(old_replicas))
 
     assert len(ret2) == 20
     replica_ids = set()
@@ -120,7 +120,7 @@ def test_scale_successfully_containerruntime(
         for replica_id in r.docs.get_attributes('tags__replica_id'):
             replica_ids.add(replica_id)
 
-    assert replica_ids == {0, 1}
+    assert replica_ids == set(range(old_replicas))
 
     assert len(ret2) == 20
     replica_ids = set()
