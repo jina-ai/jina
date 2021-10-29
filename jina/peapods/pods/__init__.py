@@ -363,7 +363,7 @@ class Pod(BasePod):
                 if (
                     self.pod_args.replicas == 1
                 ):  # keep backwards compatibility with `workspace` in `Executor`
-                    _args.replica_id = None
+                    _args.replica_id = -1
                 pea = BasePea(_args)
                 self.peas.append(pea)
                 self._exit_fifo.enter_context(pea)

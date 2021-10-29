@@ -86,3 +86,11 @@ def test_is_requirements_txt():
 
     for name in ['blah.txt', 'a.py']:
         assert not is_requirements_txt(name)
+
+
+def test_multiple_requirements_txt():
+    assert sorted(
+        DaemonFile(
+            os.path.join(cur_dir, '../../distributed/test_dir_structures/src5')
+        ).requirements.split()
+    ) == ['sklearn', 'tinydb']

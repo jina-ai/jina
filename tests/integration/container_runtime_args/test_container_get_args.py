@@ -51,5 +51,8 @@ def test_containerruntime_args(docker_image_built, shards, replicas):
         for doc in r.docs:
             assert doc.tags['shards'] == shards
 
-    assert replica_ids == set(range(replicas))
+    if replicas > 1:
+        assert replica_ids == set(range(replicas))
+    else:
+        assert replica_ids == {-1.0}
     assert shard_ids == set(range(shards))

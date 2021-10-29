@@ -4,4 +4,5 @@ with:
 metas:
   name: compound_indexer
   workspace: workspace_query
-  py_modules: [executors.py]
+  py_modules: 
+   - executors.py

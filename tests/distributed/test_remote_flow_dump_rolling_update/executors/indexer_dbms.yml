@@ -2,4 +2,5 @@ jtype: KeyValueDBMSIndexer
 metas:
   workspace: workspace_dbms
   name: keyvalue
-  py_modules: [executors.py]
+  py_modules: 
+    - executors.py
