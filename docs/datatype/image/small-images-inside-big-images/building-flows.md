@@ -81,6 +81,7 @@ we will be traversing matches: `'default_traversal_paths': ['m']`
 
 ```python
 from jina import Flow
+device = 'cpu'
 query_flow = Flow().add(uses=CLIPImageEncoder, name='encoder', uses_with={'device': device, 'traversal_paths': ['r']}) \
   .add(uses=SimpleIndexer, name='chunks_indexer', workspace='workspace') \
   .add(uses=SimpleRanker, name='ranker') \
