@@ -339,8 +339,9 @@ class Pod(BasePod):
             for pea in self._peas:
                 pea.activate_runtime()
 
+        @property
         def is_ready(self):
-            return all(p.is_ready.set() for p in self._peas)
+            return all(p.is_ready.is_set() for p in self._peas)
 
         def clear_peas(self):
             self._peas.clear()
@@ -632,7 +633,8 @@ class Pod(BasePod):
         try:
             if self.head_pea is not None:
                 self.head_pea.join()
-            self.replica_set.join()
+            if self.replica_set is not None:
+                self.replica_set.join()
             if self.tail_pea is not None:
                 self.tail_pea.join()
             self._activated = False
@@ -658,10 +660,10 @@ class Pod(BasePod):
         is_ready = True
         if self.head_pea is not None:
             is_ready = self.head_pea.is_ready.is_set()
-        if is_ready and self.tail_pea is not None:
-            is_ready = self.head_pea.is_ready.is_set()
         if is_ready:
-            is_ready = self.replica_set.is_ready()
+            is_ready = self.replica_set.is_ready
+        if is_ready and self.tail_pea is not None:
+            is_ready = self.tail_pea.is_ready.is_set()
         return is_ready and self._activated
 
     async def rolling_update(
