@@ -251,9 +251,10 @@ class ContainerStore(BaseStore):
         self,
         id: DaemonID,
         kind: UpdateOperation,
-        dump_path: str,
         pod_name: str,
-        shards: int = None,
+        dump_path: Optional[str] = None,
+        *,
+        uses_with: Optional[Dict] = None,
         **kwargs,
     ) -> DaemonID:
         """Update the container in the store
@@ -262,7 +263,7 @@ class ContainerStore(BaseStore):
         :param kind: type of update command to execute (only rolling_update for now)
         :param dump_path: the path to which to dump on disk
         :param pod_name: pod to target with the dump request
-        :param shards: nr of shards to dump
+        :param uses_with: the uses_with arguments to update the executor in pod_name
         :param kwargs: keyword args
         :raises KeyError: if id doesn't exist in the store
         :return: id of the container
@@ -270,15 +271,23 @@ class ContainerStore(BaseStore):
         if id not in self:
             raise KeyError(f'{colored(id, "red")} not found in store.')
 
+        if dump_path is not None:
+            if uses_with is not None:
+                uses_with['dump_path'] = dump_path
+            else:
+                uses_with = {'dump_path': dump_path}
+
         if id.jtype == IDLiterals.JFLOW:
             params = {
                 'kind': kind.value,
-                'dump_path': dump_path,
                 'pod_name': pod_name,
+                'uses_with': uses_with,
             }
-            params.update({'shards': shards} if shards else {})
         elif id.jtype == IDLiterals.JPOD:
-            params = {'kind': kind.value, 'dump_path': dump_path}
+            params = {
+                'kind': kind.value,
+                'uses_with': uses_with,
+            }
         else:
             self._logger.error(f'update not supported for {id.type} {id}')
             return id

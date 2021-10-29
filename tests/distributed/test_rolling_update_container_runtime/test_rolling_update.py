@@ -84,7 +84,7 @@ def test_dump_dbms_remote(executor_images, docker_compose):
         id=query_flow_id,
         kind='rolling_update',
         pod_name='indexer_query',
-        dump_path=DUMP_PATH,
+        uses_with={'dump_path': DUMP_PATH},
     )
 
     # validate that there are matches now

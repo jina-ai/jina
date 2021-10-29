@@ -1,6 +1,6 @@
 from pathlib import Path
 from argparse import Namespace
-from typing import List, Optional, Union
+from typing import Dict, Optional, Union
 
 from jina.helper import colored, random_port
 from jina.peapods import Pea, Pod, CompoundPod
@@ -198,22 +198,20 @@ class PartialFlowStore(PartialStore):
     def update(
         self,
         kind: UpdateOperation,
-        dump_path: str,
         pod_name: str,
-        shards: int,
+        uses_with: Optional[Dict] = None,
         **kwargs,
     ) -> PartialFlowItem:
         """Runs an update operation on the Flow.
-        :param kind: type of update command to execute (dump/rolling_update)
-        :param dump_path: the path to which to dump on disk
+        :param kind: type of update command to execute (rolling_update)
         :param pod_name: pod to target with the dump request
-        :param shards: nr of shards to dump
+        :param uses_with: the uses_with for the new executors to be rolled updated
         :param kwargs: keyword args
         :return: Item describing the Flow object
         """
         try:
             if kind == UpdateOperation.ROLLING_UPDATE:
-                self.object.rolling_update(pod_name=pod_name, dump_path=dump_path)
+                self.object.rolling_update(pod_name=pod_name, uses_with=uses_with)
             else:
                 self._logger.error(f'unsupported kind: {kind}, no changes done')
                 return self.item

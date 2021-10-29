@@ -88,7 +88,7 @@ def test_dump_dbms_remote(docker_compose):
         id=query_flow_id,
         kind='rolling_update',
         pod_name='indexer_query',
-        dump_path=DUMP_PATH_DOCKER,
+        uses_with={'dump_path': DUMP_PATH_DOCKER},
     )
 
     # data request goes to client

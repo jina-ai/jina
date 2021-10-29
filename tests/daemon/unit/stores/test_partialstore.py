@@ -74,8 +74,8 @@ def test_flowstore_update(partial_flow_store, mocker):
     partial_flow_store.update(
         kind=UpdateOperation.ROLLING_UPDATE,
         dump_path='',
+        uses_with={},
         pod_name='executor1',
-        shards=1,
     )
 
     update_mock.assert_called()
