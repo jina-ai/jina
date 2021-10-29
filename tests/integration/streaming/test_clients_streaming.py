@@ -19,7 +19,7 @@ def readable_time_from(t):
 
 def get_document(i, name):
     t = time.time()
-    print(f'in {name}, time: {readable_time_from(t)}', flush=True)
+    print(f'in {name} {i}, time: {readable_time_from(t)}, {t}', flush=True)
     return Document(id=i, tags={'input_gen': t})
 
 
@@ -59,7 +59,7 @@ class FastExecutor(Executor):
         for doc in docs:
             doc.tags['executor'] = time.time()
             print(
-                f'in FastExecutor: {doc.id}, time: {readable_time_from(doc.tags["executor"])}',
+                f'in FastExecutor: {doc.id}, time: {readable_time_from(doc.tags["executor"])}, {doc.tags["executor"]}',
                 flush=True,
             )
 
@@ -73,16 +73,17 @@ class SlowExecutor(Executor):
         for doc in docs:
             doc.tags['executor'] = time.time()
             print(
-                f'in SlowExecutor: {doc.id}, time: {readable_time_from(doc.tags["executor"])}',
+                f'in SlowExecutor: {doc.id}, time: {readable_time_from(doc.tags["executor"])}, {doc.tags["executor"]}',
                 flush=True,
             )
 
 
 def on_done(response, final_da: DocumentArray):
+    print(f' receiving response {response._pb_body.request_id}')
     for doc in response.docs:
         doc.tags['on_done'] = time.time()
         print(
-            f'in on_done {doc.id}, time: {readable_time_from(doc.tags["on_done"])}',
+            f'in on_done {doc.id}, time: {readable_time_from(doc.tags["on_done"])}, {doc.tags["on_done"]}',
             flush=True,
         )
     final_da.extend(response.docs)
@@ -113,7 +114,6 @@ def test_disable_prefetch_slow_client_fast_executor(
         f'\n\nRunning disable prefetch, slow client, fast Executor test for \n'
         f'protocol: {protocol}, input: {inputs.__name__}, grpc_data_req: {grpc_data_requests}'
     )
-    os.environ['JINA_LOG_LEVEL'] = 'ERROR'
     final_da = DocumentArray()
     with Flow(protocol=protocol, grpc_data_requests=grpc_data_requests).add(
         uses=FastExecutor
@@ -140,7 +140,7 @@ def test_disable_prefetch_slow_client_fast_executor(
     assert final_da[3].tags['executor'] < final_da[3].tags['on_done']
 
 
-@pytest.mark.parametrize('grpc_data_requests', [False, True])
+@pytest.mark.parametrize('grpc_data_requests', [True, False])
 @pytest.mark.parametrize(
     'protocol, inputs',
     [
@@ -159,7 +159,6 @@ def test_disable_prefetch_fast_client_slow_executor(
         f'\n\nRunning disable prefetch, fast client, slow Executor test for \n'
         f'protocol: {protocol}, input: {inputs.__name__}, grpc_data_req: {grpc_data_requests}'
     )
-    os.environ['JINA_LOG_LEVEL'] = 'ERROR'
     final_da = DocumentArray()
     with Flow(protocol=protocol, grpc_data_requests=grpc_data_requests).add(
         uses=SlowExecutor
@@ -173,6 +172,15 @@ def test_disable_prefetch_fast_client_slow_executor(
 
     assert len(final_da) == INPUT_LEN
     # since Executor is slow, all client inputs should be read before 1st request exits from Executor.
+    assert (
+        final_da[0].id < final_da[1].id
+    ), f'ids are not ordered with times {final_da[0].tags["input_gen"]} and {final_da[1].tags["input_gen"]}'
+    assert (
+        final_da[1].id < final_da[2].id
+    ), f'ids are not ordered with times {final_da[1].tags["input_gen"]} and {final_da[2].tags["input_gen"]}'
+    assert (
+        final_da[2].id < final_da[3].id
+    ), f'ids are not ordered with times {final_da[2].tags["input_gen"]} and {final_da[3].tags["input_gen"]}'
     assert final_da[0].tags['input_gen'] < final_da[1].tags['input_gen']
     assert final_da[1].tags['input_gen'] < final_da[2].tags['input_gen']
     assert final_da[2].tags['input_gen'] < final_da[3].tags['input_gen']
