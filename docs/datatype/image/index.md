@@ -179,4 +179,5 @@ Yep, that definitely looks better.
 
 image2image
 text2image
+small-images-inside-big-images/index
 ```
