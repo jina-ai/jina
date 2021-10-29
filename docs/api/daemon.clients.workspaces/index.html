@@ -299,7 +299,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../advanced/daemon/">Remote Executors and Flows via JinaD</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/jinad-server/">JinaD Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/jinad-client/">JinaD Client</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/remote-executors/">Remote Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/remote-executors/">Remote Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/workspace/">Workspace</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/remote-flows/">Remote Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/stream-remote-logs/">Remote Logs</a></li>
@@ -646,6 +646,48 @@
                 </div>
                 <section id="module-daemon.clients.workspaces">
 <span id="daemon-clients-workspaces-module"></span><h1>daemon.clients.workspaces module<a class="headerlink" href="#module-daemon.clients.workspaces" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="daemon.clients.workspaces.FormData">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">daemon.clients.workspaces.</span></span><span class="sig-name descname"><span class="pre">FormData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">complete</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/clients/workspaces/#FormData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.clients.workspaces.FormData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">aiohttp.formdata.FormData</span></code></p>
+<p>FormData used to upload files to remote</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="daemon.clients.workspaces.FormData.add">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/clients/workspaces/#FormData.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.clients.workspaces.FormData.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>add a field to Form</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>) – filepath</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="daemon.clients.workspaces.FormData.fields">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="pre">:</span> <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.clients.workspaces.FormData.fields" title="Permalink to this definition">¶</a></dt>
+<dd><p>all fields in current Form</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of fields</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="daemon.clients.workspaces.FormData.filenames">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">filenames</span></span><em class="property"><span class="pre">:</span> <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#daemon.clients.workspaces.FormData.filenames" title="Permalink to this definition">¶</a></dt>
+<dd><p>all filenames in current Form</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of filenames</p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="daemon.clients.workspaces.AsyncWorkspaceClient">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">daemon.clients.workspaces.</span></span><span class="sig-name descname"><span class="pre">AsyncWorkspaceClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/clients/workspaces/#AsyncWorkspaceClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.clients.workspaces.AsyncWorkspaceClient" title="Permalink to this definition">¶</a></dt>

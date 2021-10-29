@@ -299,7 +299,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../advanced/daemon/">Remote Executors and Flows via JinaD</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/jinad-server/">JinaD Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/jinad-client/">JinaD Client</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/remote-executors/">Remote Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/remote-executors/">Remote Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/workspace/">Workspace</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/remote-flows/">Remote Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/stream-remote-logs/">Remote Logs</a></li>
@@ -682,10 +682,26 @@ Raise 404 if filepath doesn’t exist in workspace.</p>
 </dl>
 </dd></dl>
 <dl class="py property">
+<dt class="sig sig-object py" id="daemon.api.dependencies.FlowDepends.newname">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">newname</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#daemon.api.dependencies.FlowDepends.newname" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return newfile path in following format
+<cite>flow.yml</cite> -&gt; <cite>&lt;root-workspace&gt;/&lt;workspace-id&gt;/&lt;flow-id&gt;_flow.yml</cite>
+<cite>flow1.yml</cite> -&gt; <cite>&lt;root-workspace&gt;/&lt;workspace-id&gt;/&lt;flow-id&gt;_flow1.yml</cite>
+<cite>src/flow.yml</cite> -&gt; <cite>&lt;root-workspace&gt;/&lt;workspace-id&gt;/src/&lt;flow-id&gt;_flow.yml</cite>
+<cite>src/abc/flow.yml</cite> -&gt; <cite>&lt;root-workspace&gt;/&lt;workspace-id&gt;/src/abc/&lt;flow-id&gt;_flow.yml</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>newname for the flow yaml file</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py property">
 <dt class="sig sig-object py" id="daemon.api.dependencies.FlowDepends.newfile">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">newfile</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#daemon.api.dependencies.FlowDepends.newfile" title="Permalink to this definition">¶</a></dt>
-<dd><p>return newfile path in format
-<cite>&lt;root-workspace&gt;/&lt;workspace-id&gt;/&lt;flow-id&gt;_&lt;original-filename&gt;</cite></p>
+<dd><p>Return newfile path fetched from newname</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>

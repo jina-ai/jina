@@ -274,7 +274,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../advanced/daemon/">Remote Executors and Flows via JinaD</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../advanced/daemon/jinad-server/">JinaD Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../advanced/daemon/jinad-client/">JinaD Client</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../advanced/daemon/remote-executors/">Remote Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../advanced/daemon/remote-executors/">Remote Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../advanced/daemon/workspace/">Workspace</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../advanced/daemon/remote-flows/">Remote Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../advanced/daemon/stream-remote-logs/">Remote Logs</a></li>
@@ -626,10 +626,13 @@
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">http</span> <span class="kn">import</span> <span class="n">HTTPStatus</span>
-<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">AsyncExitStack</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="n">make_archive</span>
+<span class="kn">from</span> <span class="nn">tempfile</span> <span class="kn">import</span> <span class="n">TemporaryDirectory</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">AsyncExitStack</span><span class="p">,</span> <span class="n">ExitStack</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">import</span> <span class="nn">aiohttp</span>
+<span class="kn">from</span> <span class="nn">aiohttp</span> <span class="kn">import</span> <span class="n">FormData</span> <span class="k">as</span> <span class="n">aiohttpFormData</span>
 <span class="kn">from</span> <span class="nn">rich.console</span> <span class="kn">import</span> <span class="n">Console</span>
 
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">colored</span>
@@ -640,12 +643,96 @@
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">AsyncBaseClient</span>
 <span class="kn">from</span> <span class="nn">.mixin</span> <span class="kn">import</span> <span class="n">AsyncToSyncMixin</span>
 <span class="kn">from</span> <span class="nn">..models.workspaces</span> <span class="kn">import</span> <span class="n">WorkspaceItem</span>
-<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">error_msg_from</span><span class="p">,</span> <span class="n">if_alive</span>
+<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">error_msg_from</span><span class="p">,</span> <span class="n">if_alive</span><span class="p">,</span> <span class="n">change_cwd</span>
 
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">..models</span> <span class="kn">import</span> <span class="n">DaemonID</span>
     <span class="kn">from</span> <span class="nn">rich.status</span> <span class="kn">import</span> <span class="n">Status</span>
+    <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+
+
+<div class="viewcode-block" id="FormData"><a class="viewcode-back" href="../../../../api/daemon.clients.workspaces/#daemon.clients.workspaces.FormData">[docs]</a><span class="k">class</span> <span class="nc">FormData</span><span class="p">(</span><span class="n">aiohttpFormData</span><span class="p">):</span>
+    <span class="sd">"""FormData used to upload files to remote"""</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">paths</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">logger</span><span class="p">:</span> <span class="s1">'JinaLogger'</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">complete</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logger</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_complete</span> <span class="o">=</span> <span class="n">complete</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cur_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">paths</span> <span class="o">=</span> <span class="n">paths</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span> <span class="o">=</span> <span class="n">ExitStack</span><span class="p">()</span>
+
+<div class="viewcode-block" id="FormData.add"><a class="viewcode-back" href="../../../../api/daemon.clients.workspaces/#daemon.clients.workspaces.FormData.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+        <span class="sd">"""add a field to Form</span>
+
+<span class="sd">        :param path: filepath</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_field</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">'files'</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span>
+                <span class="nb">open</span><span class="p">(</span>
+                    <span class="n">complete_path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">extra_search_paths</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_cur_dir</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_complete</span>
+                    <span class="k">else</span> <span class="n">path</span><span class="p">,</span>
+                    <span class="s1">'rb'</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">filename</span><span class="o">=</span><span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+        <span class="sd">"""all fields in current Form</span>
+
+<span class="sd">        :return: list of fields</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fields</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">filenames</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">"""all filenames in current Form</span>
+
+<span class="sd">        :return: list of filenames</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fields</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="n">tmpdir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">TemporaryDirectory</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">change_cwd</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="n">Path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">name</span>
+                <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+                    <span class="n">make_archive</span><span class="p">(</span><span class="n">base_name</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">'zip'</span><span class="p">,</span> <span class="n">root_dir</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">.zip'</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'invalid path passed </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+                <span class="k">continue</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s1"> file(s) ready to be uploaded: </span><span class="si">{</span><span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                <span class="k">else</span> <span class="s1">'No file to be uploaded'</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="AsyncWorkspaceClient"><a class="viewcode-back" href="../../../../api/daemon.clients.workspaces/#daemon.clients.workspaces.AsyncWorkspaceClient">[docs]</a><span class="k">class</span> <span class="nc">AsyncWorkspaceClient</span><span class="p">(</span><span class="n">AsyncBaseClient</span><span class="p">):</span>
@@ -655,59 +742,8 @@
     <span class="n">_endpoint</span> <span class="o">=</span> <span class="s1">'/workspaces'</span>
     <span class="n">_item_model_cls</span> <span class="o">=</span> <span class="n">WorkspaceItem</span>
 
-    <span class="k">def</span> <span class="nf">_files_in</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">paths</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
-        <span class="n">exitstack</span><span class="p">:</span> <span class="n">AsyncExitStack</span><span class="p">,</span>
-        <span class="n">complete</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'aiohttp.FormData'</span><span class="p">:</span>
-        <span class="sd">"""Walk through paths &amp; prepare formdata to be uploaded</span>
-
-<span class="sd">        :param paths: local file/directory paths</span>
-<span class="sd">        :param exitstack: exitstack used to enter context</span>
-<span class="sd">        :param complete: True if files need to searched over call stack, defaults to False</span>
-<span class="sd">        :return: formdata including file information</span>
-<span class="sd">        """</span>
-
-        <span class="n">data</span> <span class="o">=</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">FormData</span><span class="p">()</span>
-
-        <span class="k">def</span> <span class="nf">add_field_from</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
-            <span class="n">data</span><span class="o">.</span><span class="n">add_field</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="s1">'files'</span><span class="p">,</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">exitstack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span>
-                    <span class="nb">open</span><span class="p">(</span><span class="n">complete_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">if</span> <span class="n">complete</span> <span class="k">else</span> <span class="n">path</span><span class="p">,</span> <span class="s1">'rb'</span><span class="p">)</span>
-                <span class="p">),</span>
-                <span class="n">filename</span><span class="o">=</span><span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-            <span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">paths</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
-            <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">paths</span><span class="p">]</span>
-
-        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-                    <span class="n">add_field_from</span><span class="p">(</span><span class="n">_path</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">_path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
-                    <span class="p">[</span><span class="n">add_field_from</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">_path</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s1">'*'</span><span class="p">)</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_file</span><span class="p">()]</span>
-            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'invalid path </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-                <span class="k">continue</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'uploading </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">_fields</span><span class="p">)</span><span class="si">}</span><span class="s1"> file(s): '</span>
-            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">_fields</span><span class="p">])</span><span class="si">}</span><span class="s1">'</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">data</span>
-
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_helper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="s1">'DaemonID'</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="s1">'Status'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">"""</span>
-<span class="sd">        This is to handle a special case when JinadRuntime knows the workspace id already</span>
-<span class="sd">        (during Pea creation). It should get invoked only by :meth:`create`.</span>
-
-<span class="sd">        For shards &gt; 1</span>
-<span class="sd">        - pea0 throws TypeError &amp; we create a workspace</span>
-<span class="sd">        - peaN (all other Peas) wait for workspace creation &amp; don't emit logs</span>
+        <span class="sd">"""Helper get with known workspace_id</span>
 
 <span class="sd">        :param id: workspace id</span>
 <span class="sd">        :param status: rich.console.status object to be updated</span>
@@ -725,7 +761,9 @@
         <span class="k">elif</span> <span class="n">state</span> <span class="o">==</span> <span class="n">RemoteWorkspaceState</span><span class="o">.</span><span class="n">FAILED</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span> <span class="n">logs</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span> <span class="n">logs</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>  <span class="c1"># NOTE: we don't emit logs here</span>
 
     <span class="nd">@if_alive</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">create</span><span class="p">(</span>
@@ -753,6 +791,14 @@
             <span class="p">)</span>
             <span class="n">workspace_id</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="nb">id</span><span class="p">:</span>
+                <span class="sd">"""When creating `Peas` with `shards &gt; 1`, `JinadRuntime` knows the workspace_id already.</span>
+<span class="sd">                For shards &gt; 1:</span>
+<span class="sd">                - shard 0 throws TypeError &amp; we create a workspace</span>
+<span class="sd">                - shard N (all other shards) wait for workspace creation &amp; don't emit logs</span>
+
+<span class="sd">                For shards = 0:</span>
+<span class="sd">                - Throws a TypeError &amp; we create a workspace</span>
+<span class="sd">                """</span>
                 <span class="n">workspace_id</span> <span class="o">=</span> <span class="n">daemonize</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="k">return</span> <span class="p">(</span>
@@ -764,10 +810,8 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'workspace doesn</span><span class="se">\'</span><span class="s1">t exist, creating..'</span><span class="p">)</span>
 
             <span class="n">status</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">'Workspace: Getting files to upload...'</span><span class="p">)</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_files_in</span><span class="p">(</span><span class="n">paths</span><span class="o">=</span><span class="n">paths</span><span class="p">,</span> <span class="n">exitstack</span><span class="o">=</span><span class="n">stack</span><span class="p">,</span> <span class="n">complete</span><span class="o">=</span><span class="n">complete</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">paths</span>
-                <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span>
+                <span class="n">FormData</span><span class="p">(</span><span class="n">paths</span><span class="o">=</span><span class="n">paths</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">,</span> <span class="n">complete</span><span class="o">=</span><span class="n">complete</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="n">status</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">'Workspace: Sending request...'</span><span class="p">)</span>
             <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_async_context</span><span class="p">(</span>
@@ -869,10 +913,8 @@
                 <span class="n">console</span><span class="o">.</span><span class="n">status</span><span class="p">(</span><span class="s1">'Workspace update: ...'</span><span class="p">,</span> <span class="n">spinner</span><span class="o">=</span><span class="s1">'earth'</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="n">status</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">'Workspace: Getting files to upload...'</span><span class="p">)</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_files_in</span><span class="p">(</span><span class="n">paths</span><span class="o">=</span><span class="n">paths</span><span class="p">,</span> <span class="n">exitstack</span><span class="o">=</span><span class="n">stack</span><span class="p">,</span> <span class="n">complete</span><span class="o">=</span><span class="n">complete</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">paths</span>
-                <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span>
+                <span class="n">FormData</span><span class="p">(</span><span class="n">paths</span><span class="o">=</span><span class="n">paths</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">,</span> <span class="n">complete</span><span class="o">=</span><span class="n">complete</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="n">status</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">'Workspace: Sending request for update...'</span><span class="p">)</span>
             <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_async_context</span><span class="p">(</span>

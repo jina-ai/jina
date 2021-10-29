@@ -273,7 +273,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../advanced/daemon/">Remote Executors and Flows via JinaD</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../advanced/daemon/jinad-server/">JinaD Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced/daemon/jinad-client/">JinaD Client</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../advanced/daemon/remote-executors/">Remote Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced/daemon/remote-executors/">Remote Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced/daemon/workspace/">Workspace</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced/daemon/remote-flows/">Remote Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced/daemon/stream-remote-logs/">Remote Logs</a></li>
@@ -649,9 +649,11 @@
 </li>
         <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.active_target_pod">active_target_pod (jina.types.routing.table.RoutingTable property)</a>
 </li>
-        <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore.add">add() (daemon.stores.base.BaseStore method)</a>
+        <li><a href="../api/daemon.clients.workspaces/#daemon.clients.workspaces.FormData.add">add() (daemon.clients.workspaces.FormData method)</a>
 
         <ul>
+          <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore.add">(daemon.stores.base.BaseStore method)</a>
+</li>
           <li><a href="../api/daemon.stores.containers/#daemon.stores.containers.ContainerStore.add">(daemon.stores.containers.ContainerStore method)</a>
 </li>
           <li><a href="../api/daemon.stores.partial/#daemon.stores.partial.PartialFlowStore.add">(daemon.stores.partial.PartialFlowStore method)</a>
@@ -771,6 +773,8 @@
 </li>
         <li><a href="../api/cli.export/#cli.export.api_to_dict">api_to_dict() (in module cli.export)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina/#jina.DocumentArray.append">append() (jina.DocumentArray method)</a>
 
         <ul>
@@ -787,8 +791,6 @@
           <li><a href="../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap.append">(jina.types.arrays.memmap.DocumentArrayMemmap method)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.peapods.pods.k8slib.kubernetes_client/#jina.peapods.pods.k8slib.kubernetes_client.K8sClients.apps_v1">apps_v1 (jina.peapods.pods.k8slib.kubernetes_client.K8sClients property)</a>
 </li>
         <li><a href="../api/jina.hubble.helper/#jina.hubble.helper.archive_package">archive_package() (in module jina.hubble.helper)</a>
@@ -2070,7 +2072,15 @@
         </ul></li>
         <li><a href="../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.fetch_meta">fetch_meta() (jina.hubble.hubio.HubIO static method)</a>
 </li>
-        <li><a href="../api/jina.peapods.runtimes.gateway.http.models/#jina.peapods.runtimes.gateway.http.models.CustomConfig.fields">fields (jina.peapods.runtimes.gateway.http.models.CustomConfig attribute)</a>
+        <li><a href="../api/daemon.clients.workspaces/#daemon.clients.workspaces.FormData.fields">fields (daemon.clients.workspaces.FormData property)</a>
+
+        <ul>
+          <li><a href="../api/jina.peapods.runtimes.gateway.http.models/#jina.peapods.runtimes.gateway.http.models.CustomConfig.fields">(jina.peapods.runtimes.gateway.http.models.CustomConfig attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="../api/daemon.clients.workspaces/#daemon.clients.workspaces.FormData.filenames">filenames (daemon.clients.workspaces.FormData property)</a>
+</li>
+        <li><a href="../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.filepaths">filepaths (jina.peapods.runtimes.jinad.JinadRuntime property)</a>
 </li>
         <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceArguments.files">files (daemon.models.workspaces.WorkspaceArguments attribute)</a>
 </li>
@@ -2108,10 +2118,10 @@
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.FlowMissingPodError">FlowMissingPodError</a>
 </li>
-        <li><a href="../api/jina.optimizers/#jina.optimizers.FlowOptimizer">FlowOptimizer (class in jina.optimizers)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.optimizers/#jina.optimizers.FlowOptimizer">FlowOptimizer (class in jina.optimizers)</a>
+</li>
         <li><a href="../api/jina.optimizers.flow_runner/#jina.optimizers.flow_runner.FlowRunner">FlowRunner (class in jina.optimizers.flow_runner)</a>
 </li>
         <li><a href="../api/daemon.clients/#daemon.clients.JinaDClient.flows">flows (daemon.clients.JinaDClient property)</a>
@@ -2136,6 +2146,8 @@
           <li><a href="../api/jina.logging.formatter/#jina.logging.formatter.ProfileFormatter.format">(jina.logging.formatter.ProfileFormatter method)</a>
 </li>
         </ul></li>
+        <li><a href="../api/daemon.clients.workspaces/#daemon.clients.workspaces.FormData">FormData (class in daemon.clients.workspaces)</a>
+</li>
         <li><a href="../api/jina.types.document.generators/#jina.types.document.generators.from_csv">from_csv() (in module jina.types.document.generators)</a>
 </li>
         <li><a href="../api/jina.types.document.generators/#jina.types.document.generators.from_files">from_files() (in module jina.types.document.generators)</a>
@@ -4775,6 +4787,8 @@
         <li><a href="../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.new">new() (jina.hubble.hubio.HubIO method)</a>
 </li>
         <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.FlowDepends.newfile">newfile (daemon.api.dependencies.FlowDepends property)</a>
+</li>
+        <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.FlowDepends.newname">newname (daemon.api.dependencies.FlowDepends property)</a>
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.NoAvailablePortError">NoAvailablePortError</a>
 </li>

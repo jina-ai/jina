@@ -274,7 +274,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../advanced/daemon/">Remote Executors and Flows via JinaD</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/jinad-server/">JinaD Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/jinad-client/">JinaD Client</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/remote-executors/">Remote Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/remote-executors/">Remote Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/workspace/">Workspace</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/remote-flows/">Remote Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/stream-remote-logs/">Remote Logs</a></li>
@@ -622,6 +622,7 @@
                 <h1>Source code for daemon.files</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">zipfile</span> <span class="kn">import</span> <span class="n">ZipFile</span><span class="p">,</span> <span class="n">is_zipfile</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
@@ -659,7 +660,13 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s1">'wb+'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
             <span class="n">content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
             <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'saved uploads to </span><span class="si">{</span><span class="n">dest</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span></div>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'saved uploads to </span><span class="si">{</span><span class="n">dest</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">is_zipfile</span><span class="p">(</span><span class="n">dest</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'unzipping </span><span class="si">{</span><span class="n">dest</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">ZipFile</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">workdir</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="is_requirements_txt"><a class="viewcode-back" href="../../../api/daemon.files/#daemon.files.is_requirements_txt">[docs]</a><span class="k">def</span> <span class="nf">is_requirements_txt</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -811,13 +818,14 @@
             <span class="k">if</span> <span class="n">is_requirements_txt</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
                 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_workdir</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                     <span class="n">requirements</span> <span class="o">+=</span> <span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">())</span>
+                <span class="n">requirements</span> <span class="o">+=</span> <span class="s1">' '</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">requirements</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="s1">'please add a requirements.txt file to manage python dependencies in the workspace'</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="s1">''</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">requirements</span>
+            <span class="k">return</span> <span class="n">requirements</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">dockercontext</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>

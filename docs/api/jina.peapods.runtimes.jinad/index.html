@@ -300,7 +300,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../advanced/daemon/">Remote Executors and Flows via JinaD</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/jinad-server/">JinaD Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/jinad-client/">JinaD Client</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/remote-executors/">Remote Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/remote-executors/">Remote Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/workspace/">Workspace</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/remote-flows/">Remote Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../advanced/daemon/stream-remote-logs/">Remote Logs</a></li>
@@ -668,6 +668,19 @@
 <dt class="sig sig-object py" id="jina.peapods.runtimes.jinad.JinadRuntime.async_cancel">
 <em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">async_cancel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/jinad/#JinadRuntime.async_cancel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.jinad.JinadRuntime.async_cancel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cancels the logstream task, removes the remote Pea</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.peapods.runtimes.jinad.JinadRuntime.filepaths">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">filepaths</span></span><em class="property"><span class="pre">:</span> <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.peapods.runtimes.jinad.JinadRuntime.filepaths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get file/directories to be uploaded to remote workspace</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>filepaths to be uploaded to remote</p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.peapods.runtimes.jinad.JinadRuntime.cancel">

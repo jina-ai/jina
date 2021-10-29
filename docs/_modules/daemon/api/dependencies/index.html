@@ -274,7 +274,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../advanced/daemon/">Remote Executors and Flows via JinaD</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../advanced/daemon/jinad-server/">JinaD Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../advanced/daemon/jinad-client/">JinaD Client</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../advanced/daemon/remote-executors/">Remote Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../advanced/daemon/remote-executors/">Remote Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../advanced/daemon/workspace/">Workspace</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../advanced/daemon/remote-flows/">Remote Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../advanced/daemon/stream-remote-logs/">Remote Logs</a></li>
@@ -712,13 +712,28 @@
             <span class="p">)</span></div>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">newname</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">"""Return newfile path in following format</span>
+<span class="sd">        `flow.yml` -&gt; `&lt;root-workspace&gt;/&lt;workspace-id&gt;/&lt;flow-id&gt;_flow.yml`</span>
+<span class="sd">        `flow1.yml` -&gt; `&lt;root-workspace&gt;/&lt;workspace-id&gt;/&lt;flow-id&gt;_flow1.yml`</span>
+<span class="sd">        `src/flow.yml` -&gt; `&lt;root-workspace&gt;/&lt;workspace-id&gt;/src/&lt;flow-id&gt;_flow.yml`</span>
+<span class="sd">        `src/abc/flow.yml` -&gt; `&lt;root-workspace&gt;/&lt;workspace-id&gt;/src/abc/&lt;flow-id&gt;_flow.yml`</span>
+
+<span class="sd">        :return: newname for the flow yaml file</span>
+<span class="sd">        """</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">parts</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s1">'</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">parts</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">parts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">newfile</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">"""return newfile path in format</span>
-<span class="sd">        `&lt;root-workspace&gt;/&lt;workspace-id&gt;/&lt;flow-id&gt;_&lt;original-filename&gt;`</span>
+        <span class="sd">"""Return newfile path fetched from newname</span>
 
 <span class="sd">        :return: return filepath to save flow config in</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="n">get_workspace_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workspace_id</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">get_workspace_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workspace_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">newname</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FlowDepends.load_and_dump"><a class="viewcode-back" href="../../../../api/daemon.api.dependencies/#daemon.api.dependencies.FlowDepends.load_and_dump">[docs]</a>    <span class="k">def</span> <span class="nf">load_and_dump</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""</span>
@@ -808,7 +823,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">ports</span> <span class="o">=</span> <span class="n">port_mapping</span>
             <span class="c1"># save to a new file &amp; set it for partial-daemon</span>
             <span class="n">f</span><span class="o">.</span><span class="n">save_config</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">newfile</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">newfile</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">newname</span></div>
 
     <span class="k">def</span> <span class="nf">_update_port_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pea_args</span><span class="p">,</span> <span class="n">pod_name</span><span class="p">,</span> <span class="n">port_mapping</span><span class="p">):</span>
         <span class="n">current_ports</span> <span class="o">=</span> <span class="n">Ports</span><span class="p">()</span>

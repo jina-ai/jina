@@ -300,7 +300,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../advanced/daemon/">Remote Executors and Flows via JinaD</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/jinad-server/">JinaD Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/jinad-client/">JinaD Client</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/remote-executors/">Remote Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/remote-executors/">Remote Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/workspace/">Workspace</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/remote-flows/">Remote Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../advanced/daemon/stream-remote-logs/">Remote Logs</a></li>
@@ -740,10 +740,6 @@ flow.py<div class="sd-summary-down docutils">
 </section>
 <section id="multiple-python-files">
 <h2>Multiple Python files<a class="headerlink" href="#multiple-python-files" title="Permalink to this headline">¶</a></h2>
-<div class="admonition caution">
-<p class="admonition-title">Caution</p>
-<p>This way of repository structure is currently not compatible with JinaD, when adding the executor to a Flow using <code class="docutils literal notranslate"><span class="pre">uses='config.yml'</span></code>, as JinaD only supports a flat file structure.  In this case, it is recommended that you containerize your executor, and use it with JinaD in your Flow either via <code class="docutils literal notranslate"><span class="pre">uses='jinahub+docker://...'</span></code> or <code class="docutils literal notranslate"><span class="pre">uses='docker://...'</span></code>.</p>
-</div>
 <p>When you are working with multiple python files, you should organize them as a <strong>Python package</strong> and put them in a special folder inside
 your repository (as you would normally do with Python packages). Specifically, you should do the following:</p>
 <ul class="simple">
@@ -806,6 +802,10 @@ your repository (as you would normally do with Python packages). Specifically, y
 </div>
 <p>Here you can then import from <code class="docutils literal notranslate"><span class="pre">utils/data.py</span></code> in <code class="docutils literal notranslate"><span class="pre">my_executor.py</span></code> like this: <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">.utils.data</span> <span class="pre">import</span> <span class="pre">foo</span></code>, and do any other kinds of relative imports that python enables.</p>
 <p>The best thing is that no matter how complicated your package structure, “importing” it in your <code class="docutils literal notranslate"><span class="pre">config.yml</span></code> file is super easy - you always put only <code class="docutils literal notranslate"><span class="pre">executor/__init__.py</span></code> under <code class="docutils literal notranslate"><span class="pre">py_modules</span></code>.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>For a remote Executor used with JinaD, please read the guidelines about <a class="reference external" href="../../advanced/daemon/remote-executors.md#file-structures-with-remote-executors">uploading files to remote</a>.</p>
+</div>
 </section>
 </section>
 
