@@ -144,10 +144,10 @@ def test_disable_prefetch_slow_client_fast_executor(
 @pytest.mark.parametrize(
     'protocol, inputs',
     [
-        # ('grpc', async_gen),
-        # ('grpc', blocking_gen),
-        # ('websocket', async_gen),
-        # ('websocket', blocking_gen),
+        ('grpc', async_gen),
+        ('grpc', blocking_gen),
+        ('websocket', async_gen),
+        ('websocket', blocking_gen),
         ('http', async_gen),
         ('http', blocking_gen),
     ],
