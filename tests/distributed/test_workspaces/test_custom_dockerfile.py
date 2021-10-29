@@ -9,7 +9,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 def test_custom_dockerfile():
     f = Flow().add(
         uses='DummyRedisIndexer',
-        py_modules=[os.path.join(cur_dir, 'redis_executor.py')],
+        py_modules='redis_executor.py',
         upload_files=[
             os.path.join(cur_dir, '../../daemon/unit/models/good_ws_custom_dockerfile'),
         ],
