@@ -10,6 +10,7 @@ from ..networking import get_connect_host
 from ..peas import BasePea
 from ... import __default_executor__
 from ... import helper
+from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError, ScalingFails
 from ...enums import (
     SchedulerType,
     PodRoleType,
@@ -373,6 +374,8 @@ class Pod(BasePod):
             Scale the amount of replicas of a given Executor.
 
             :param replicas: The number of replicas to scale to
+
+                .. note: Scale is either successful or not. If one replica fails to start, the ReplicaSet remains in the same state
             """
             # TODO make scale robust, in what state this ReplicaSet ends when this fails?
             if replicas > len(self.peas):
@@ -384,15 +387,37 @@ class Pod(BasePod):
                     new_args.name = new_args.name[:-1] + f'{i}'
                     new_args.port_ctrl = helper.random_port()
                     new_args.replica_id = i
+                    # no exception should happen at create and enter time
                     new_pea = BasePea(new_args)
                     self._exit_fifo.enter_context(new_pea)
                     new_peas.append(new_pea)
                     new_args_list.append(new_args)
+                exception = None
                 for new_pea, new_args in zip(new_peas, new_args_list):
-                    await new_pea.async_wait_start_success()
-                    new_pea.activate_runtime()
-                    self.args.append(new_args)
-                    self.peas.append(new_pea)
+                    try:
+                        await new_pea.async_wait_start_success()
+                    except (
+                        RuntimeFailToStart,
+                        TimeoutError,
+                        RuntimeRunForeverEarlyError,
+                    ) as ex:
+                        exception = ex
+                        break
+
+                if exception is not None:
+                    # close peas and remove them from exitfifo
+                    if self.pod_args.shards > 1:
+                        msg = f' Scaling fails for shard {self.pod_args.shard_id}'
+                    else:
+                        msg = ' Scaling fails'
+
+                    msg += f'due to executor failing to start with exception: {exception!r}'
+                    raise ScalingFails(msg)
+                else:
+                    for new_pea, new_args in zip(new_peas, new_args_list):
+                        new_pea.activate_runtime()
+                        self.args.append(new_args)
+                        self.peas.append(new_pea)
             elif replicas < len(self.peas):
                 pass  # scale down has some challenges with the exit fifo
             self.pod_args.replicas = replicas
@@ -695,6 +720,7 @@ class Pod(BasePod):
 
         :param replicas: The number of replicas to scale to
         """
+        # potential exception will be raised to CompoundPod or Flow
         await self.replica_set.scale(replicas)
         self.args.replicas = replicas
 

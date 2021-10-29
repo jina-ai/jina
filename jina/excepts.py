@@ -21,6 +21,10 @@ class RuntimeFailToStart(SystemError):
     """When pea/pod is failed to started."""
 
 
+class ScalingFails(SystemError):
+    """When scaling is unsuccessful for an Executor."""
+
+
 class MemoryOverHighWatermark(Exception):
     """When the memory usage is over the defined high water mark."""
 

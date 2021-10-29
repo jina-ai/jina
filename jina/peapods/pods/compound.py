@@ -304,9 +304,11 @@ class CompoundPod(BasePod):
             for future in asyncio.as_completed(tasks):
                 _ = await future
         except:
+            # TODO: Handle the failure of one of the shards. Unscale back all of them to the original state?
             for task in tasks:
                 if not task.done():
                     task.cancel()
+            raise
 
     @property
     def _mermaid_str(self) -> List[str]:
