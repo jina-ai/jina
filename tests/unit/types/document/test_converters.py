@@ -25,6 +25,18 @@ def test_self_as_return():
     assert num_fn
 
 
+def test_audio_convert_pipe(pytestconfig, tmpdir):
+    num_d = 0
+    for d in from_files(f'{pytestconfig.rootdir}/docs/**/*.wav'):
+        fname = str(tmpdir / f'tmp{num_d}.wav')
+        d.convert_audio_uri_to_blob()
+        d.blob = d.blob[::-1]
+        d.dump_audio_blob_to_file(fname)
+        assert os.path.exists(fname)
+        num_d += 1
+    assert num_d
+
+
 def test_image_convert_pipe(pytestconfig):
     for d in from_files(f'{pytestconfig.rootdir}/.github/**/*.png'):
         (
