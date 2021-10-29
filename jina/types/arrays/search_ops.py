@@ -1,9 +1,7 @@
-import re
-import random
 import operator
+import random
 from collections import defaultdict
-from typing import Dict, Optional, Union, Tuple, Any
-
+from typing import Dict, Optional, Any
 
 if False:
     from .document import DocumentArray

@@ -5,7 +5,7 @@ import struct
 import urllib.parse
 import urllib.request
 from contextlib import nullcontext
-from typing import Optional, Union, BinaryIO, TYPE_CHECKING
+from typing import Optional, Union, BinaryIO, TYPE_CHECKING, Dict, Tuple
 
 import numpy as np
 
@@ -95,34 +95,48 @@ class ContentConversionMixin:
         self.blob = _to_image_blob(io.BytesIO(buffer), width=width, height=height)
         return self
 
-    def dump_buffer_to_file(self, file: Union[str, BinaryIO]):
+    def dump_buffer_to_file(self, file: Union[str, BinaryIO]) -> 'Document':
         """Save :attr:`.buffer` into a file
 
         :param file: File or filename to which the data is saved.
+        :return: itself after processed
         """
         fp = _get_file_context(file)
         with fp:
             fp.write(self.buffer)
+        return self
 
-    def dump_image_blob_to_file(self, file: Union[str, BinaryIO]):
+    def dump_image_blob_to_file(
+        self,
+        file: Union[str, BinaryIO],
+        channel_axis: int = -1,
+    ) -> 'Document':
         """Save :attr:`.blob` into a file
 
         :param file: File or filename to which the data is saved.
+        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+
+        :return: itself after processed
         """
         fp = _get_file_context(file)
         with fp:
-            buffer = _to_png_buffer(self.blob)
+            blob = _move_channel_axis(self.blob, channel_axis, -1)
+            buffer = _to_png_buffer(blob)
             fp.write(buffer)
+        return self
 
-    def dump_uri_to_file(self, file: Union[str, BinaryIO]):
+    def dump_uri_to_file(self, file: Union[str, BinaryIO]) -> 'Document':
         """Save :attr:`.uri` into a file
 
         :param file: File or filename to which the data is saved.
+
+        :return: itself after processed
         """
         fp = _get_file_context(file)
         with fp:
             buffer = _uri_to_buffer(self.uri)
             fp.write(buffer)
+        return self
 
     def convert_image_uri_to_blob(
         self,
@@ -287,6 +301,127 @@ class ContentConversionMixin:
             raise NotImplementedError
         return self
 
+    def convert_text_to_blob(
+        self,
+        vocab: Dict[str, int],
+        max_length: Optional[int] = None,
+        dtype: str = 'int64',
+    ) -> 'Document':
+        """Convert :attr:`.text` to :attr:`.blob` inplace.
+
+        In the end :attr:`.blob` will be a 1D array where `D` is `max_length`.
+
+        To get the vocab of a DocumentArray, you can use `jina.types.document.converters.build_vocab` to
+
+        :param vocab: a dictionary that maps a word to an integer index, `0` is reserved for padding, `1` is reserved
+            for unknown words in :attr:`.text`. So you should *not* include these two entries in `vocab`.
+        :param max_length: the maximum length of the sequence. Sequence longer than this are cut off from *beginning*.
+            Sequence shorter than this will be padded with `0` from right hand side.
+        :param dtype: the dtype of the generated :attr:`.blob`
+        :return: Document itself after processed
+        """
+        self.blob = np.array(
+            _text_to_int_sequence(self.text, vocab, max_length), dtype=dtype
+        )
+        return self
+
+    def convert_blob_to_text(
+        self, vocab: Union[Dict[str, int], Dict[int, str]], delimiter: str = ' '
+    ) -> 'Document':
+        """Convert :attr:`.blob` to :attr:`.text` inplace.
+
+        :param vocab: a dictionary that maps a word to an integer index, `0` is reserved for padding, `1` is reserved
+            for unknown words in :attr:`.text`
+        :param delimiter: the delimiter that used to connect all words into :attr:`.text`
+        :return: Document itself after processed
+        """
+        if isinstance(list(vocab.keys())[0], str):
+            _vocab = {v: k for k, v in vocab.items()}
+
+        _text = []
+        for k in self.blob:
+            k = int(k)
+            if k == 0:
+                continue
+            elif k == 1:
+                _text.append('<UNK>')
+            else:
+                _text.append(_vocab.get(k, '<UNK>'))
+        self.text = delimiter.join(_text)
+        return self
+
+    def convert_image_blob_to_sliding_windows(
+        self,
+        window_shape: Tuple[int, int] = (64, 64),
+        strides: Optional[Tuple[int, int]] = None,
+        padding: bool = False,
+        channel_axis: int = -1,
+        as_chunks: bool = False,
+    ) -> 'Document':
+        """Convert :attr:`.blob` into a sliding window view with the given window shape :attr:`.blob` inplace.
+
+        :param window_shape: desired output size. If size is a sequence like (h, w), the output size will be matched to
+            this. If size is an int, the output will have the same height and width as the `target_size`.
+        :param strides: the strides between two neighboring sliding windows. `strides` is a sequence like (h, w), in
+            which denote the strides on the vertical and the horizontal axis. When not given, using `window_shape`
+        :param padding: If False, only patches which are fully contained in the input image are included. If True,
+            all patches whose starting point is inside the input are included, and areas outside the input default to
+            zero. The `padding` argument has no effect on the size of each patch, it determines how many patches are
+            extracted. Default is False.
+        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis.
+        :param as_chunks: If set, each sliding window will be stored in the chunk of the current Document
+        :return: Document itself after processed
+        """
+        window_h, window_w = window_shape
+        stride_h, stride_w = strides or window_shape
+        blob = _move_channel_axis(self.blob, channel_axis, -1)
+        if padding:
+            h, w, c = blob.shape
+            ext_h = window_h - h % stride_h
+            ext_w = window_w - w % window_w
+            blob = np.pad(
+                blob,
+                ((0, ext_h), (0, ext_w), (0, 0)),
+                mode='constant',
+                constant_values=0,
+            )
+        h, w, c = blob.shape
+        row_step = blob.strides[0]
+        col_step = blob.strides[1]
+
+        expanded_img = np.lib.stride_tricks.as_strided(
+            blob,
+            shape=(
+                1 + int((h - window_h) / stride_h),
+                1 + int((w - window_w) / stride_w),
+                window_h,
+                window_w,
+                c,
+            ),
+            strides=(row_step * stride_h, col_step * stride_w, row_step, col_step, 1),
+            writeable=False,
+        )
+
+        expanded_img = expanded_img.reshape((-1, window_h, window_w, c))
+        if as_chunks:
+            bbox_locations = [
+                (h * stride_h, w * stride_w)
+                for h in range(expanded_img.shape[0])
+                for w in range(expanded_img.shape[1])
+            ]
+            from . import Document
+
+            for location, _blob in zip(bbox_locations, expanded_img):
+                self.chunks.append(
+                    Document(
+                        blob=_move_channel_axis(_blob, -1, channel_axis),
+                        location=location,
+                    )
+                )
+        else:
+            self.blob = _move_channel_axis(expanded_img, -1, channel_axis)
+        return self
+
 
 def _uri_to_buffer(uri: str) -> bytes:
     """Convert uri to buffer
@@ -416,7 +551,10 @@ def _to_image_blob(
         new_width = width or raw_img.width
         new_height = height or raw_img.height
         raw_img = raw_img.resize((new_width, new_height))
-    return np.array(raw_img)
+    try:
+        return np.array(raw_img.convert('RGB'))
+    except:
+        return np.array(raw_img)
 
 
 def _to_datauri(
@@ -479,3 +617,28 @@ def _get_file_context(file):
             file_ctx = open(file, 'wb')
 
     return file_ctx
+
+
+def _text_to_word_sequence(
+    text, filters='!"#$%&()*+,-./:;<=>?@[\\]^_`{|}~\t\n', split=' '
+):
+
+    translate_dict = {c: split for c in filters}
+    translate_map = str.maketrans(translate_dict)
+    text = text.lower().translate(translate_map)
+
+    seq = text.split(split)
+    for i in seq:
+        if i:
+            yield i
+
+
+def _text_to_int_sequence(text, vocab, max_len=None):
+    seq = _text_to_word_sequence(text)
+    vec = [vocab.get(s, 1) for s in seq]
+    if max_len:
+        if len(vec) < max_len:
+            vec = [0] * (max_len - len(vec)) + vec
+        elif len(vec) > max_len:
+            vec = vec[-max_len:]
+    return vec

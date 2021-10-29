@@ -2,6 +2,7 @@ import itertools
 import json
 import heapq
 from abc import abstractmethod
+from collections import defaultdict
 from collections.abc import MutableSequence, Iterable as Itr
 from contextlib import nullcontext
 from typing import (
@@ -641,24 +642,22 @@ class DocumentArray(
             return da
 
     @classmethod
-    def load_csv(cls, file: Union[str, BinaryIO]) -> 'DocumentArray':
+    def load_csv(
+        cls,
+        file: Union[str, TextIO],
+        field_resolver: Optional[Dict[str, str]] = None,
+    ) -> 'DocumentArray':
         """Load array elements from a binary file.
 
         :param file: File or filename to which the data is saved.
-
+        :param field_resolver: a map from field names defined in JSON, dict to the field
+            names defined in Document.
         :return: a DocumentArray object
         """
 
-        if hasattr(file, 'read'):
-            file_ctx = nullcontext(file)
-        else:
-            file_ctx = open(file, 'r')
+        from ..document.generators import from_csv
 
-        with file_ctx as fp:
-            da = DocumentArray()
-            for v in csv.DictReader(fp):
-                da.append(Document(v))
-            return da
+        return DocumentArray(from_csv(file, field_resolver=field_resolver))
 
     # Properties for fast access of commonly used attributes
     @property
@@ -746,3 +745,27 @@ class DocumentArray(
     @staticmethod
     def _flatten(sequence) -> 'DocumentArray':
         return DocumentArray(list(itertools.chain.from_iterable(sequence)))
+
+    def get_vocabulary(self, min_freq: int = 1) -> Dict[str, int]:
+        """Get the text vocabulary in a dict that maps from the word to the index from all Documents.
+
+        :param min_freq: the minimum word frequency to be considered into the vocabulary.
+        :return: a vocabulary in dictionary where key is the word, value is the index. The value is 2-index, where
+            `0` is reserved for padding, `1` is reserved for unknown token.
+        """
+
+        from ..document.converters import _text_to_word_sequence
+
+        all_tokens = defaultdict(int)
+        for d in self:
+            seq = _text_to_word_sequence(d.text)
+            for s in seq:
+                all_tokens[s] += 1
+
+        # 0 for padding, 1 for unknown
+        return {
+            k: idx
+            for idx, k in enumerate(
+                (k for k, v in all_tokens.items() if v >= min_freq), start=2
+            )
+        }

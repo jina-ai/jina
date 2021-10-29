@@ -23,7 +23,7 @@ def helloworld_args(tmpdir):
             str(tmpdir),
             '--unblock-query-flow',
             '--index-data-url',
-            'https://static.jina.ai/multimodal/people-img-cicd.zip',
+            'https://static.jina.ai/multimodal/people-img.zip',
         ]
     )
 

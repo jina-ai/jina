@@ -45,4 +45,5 @@ create-hub-executor
 push-executor
 use-hub-executor
 executor-best-practices
+../../tutorials/master-executor
 ```

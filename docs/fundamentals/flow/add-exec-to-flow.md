@@ -5,6 +5,10 @@
 Executors can be run as a local thread/process, a remote process, inside a Docker container, or even inside a remote
 Docker container.
 
+```{tip}
+
+You can see the exhaustive list of options for adding an Executor [here](https://docs.jina.ai/cli/#executor).
+```
 
 
 ## Chain `.add()`
@@ -318,7 +322,7 @@ param3: 30
 
 
 ### Override `requests` configuration
-You can override the `requests` configuration of an executor and bind methods to endpoints that you provide:
+You can override the `requests` configuration of an executor and bind methods to endpoints that you provide. In the following codes, we replace the endpoint `/foo` binded to the `foo()` function with `/non_foo` and add a new endpoint `/bar` for binding `bar()`. Note the `all_req()` function is binded to **all** the endpoints except those explicitly binded to other functions, i.e. `/non_foo` and `/bar`.
 
 
 ```python
@@ -326,16 +330,21 @@ from jina import Executor, requests, Flow
 
 class MyExecutor(Executor):
     @requests
-    def foo(self, docs, **kwargs):
-        print('foo')
+    def all_req(self, parameters, **kwargs):
+        print(f'all req {parameters.get("recipient")}')
+        
+    @requests(on='/foo')
+    def foo(self, parameters, **kwargs):
+        print(f'foo {parameters.get("recipient")}')
     
-    def bar(self, docs, **kwargs):
-        print('bar')
+    def bar(self, parameters, **kwargs):
+        print(f'bar {parameters.get("recipient")}')
 
-flow = Flow().add(uses=MyExecutor, uses_requests={'/index': 'bar'})
+flow = Flow().add(uses=MyExecutor, uses_requests={'/bar': 'bar', '/non_foo': 'foo', })
 with flow as f:
-    f.post('/index')
-    f.post('/dummy')
+    f.post('/bar', parameters={'recipient': 'bar()'})
+    f.post('/non_foo', parameters={'recipient': 'foo()'})
+    f.post('/foo', parameters={'recipient': 'all_req()'})
 ```
 
 ```text

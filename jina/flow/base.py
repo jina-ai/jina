@@ -266,7 +266,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param runs_in_docker: Informs a Pea that runs in a container. Important to properly set networking information
         :param runtime_backend: The parallel backend of the runtime inside the Pea
         :param runtime_cls: The runtime class to run inside the Pea
-        :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary
+        :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary. For more details check https://docs.jina.ai/fundamentals/flow/topology/
         :param socket_in: The socket type for input port
         :param socket_out: The socket type for output port
         :param ssh_keyfile: This specifies a key to be used in ssh login, default None. regular default ssh keys will be used without specifying this argument.
@@ -654,7 +654,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param runtime_backend: The parallel backend of the runtime inside the Pea
         :param runtime_cls: The runtime class to run inside the Pea
         :param scheduling: The strategy of scheduling workload among Peas
-        :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary
+        :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary. For more details check https://docs.jina.ai/fundamentals/flow/topology/
         :param socket_in: The socket type for input port
         :param socket_out: The socket type for output port
         :param ssh_keyfile: This specifies a key to be used in ssh login, default None. regular default ssh keys will be used without specifying this argument.
@@ -1422,7 +1422,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         mermaid_str = op_flow._mermaid_str
         if vertical_layout:
-            mermaid_str = mermaid_str.replace('graph LR', 'graph TD')
+            mermaid_str = mermaid_str.replace('flowchart LR', 'flowchart TD')
 
         image_type = 'svg'
         if output and not output.endswith('svg'):

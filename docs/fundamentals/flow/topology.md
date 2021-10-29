@@ -221,11 +221,11 @@ f = (Flow()
 
 This Flow has a single Executor with 2 Shards and 3 Replicas, which means it gets split into 2 Shards with 3 Replicas each. In total this Flow has 2*3=6 workers and could be distributed to six different machines if necessary.
 
-## Replica vs Shards
+## Replicas vs Shards
 
 The next table shows the difference between shards and replicas.
 
-||Replica|Shards|
+||Replicas|Shards|
 |---|---|---|
 |Create multiple copies of an executor| ✅ | ✅ |
 |Partition data into several parts | ❌ | ✅ |
