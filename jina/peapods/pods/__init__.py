@@ -360,6 +360,10 @@ class Pod(BasePod):
             for _args in self.args:
                 if getattr(self.pod_args, 'noblock_on_start', False):
                     _args.noblock_on_start = True
+                if (
+                    self.pod_args.replicas == 1
+                ):  # keep backwards compatibility with `workspace` in `Executor`
+                    _args.replica_id = None
                 pea = BasePea(_args)
                 self.peas.append(pea)
                 self._exit_fifo.enter_context(pea)
