@@ -345,6 +345,9 @@ class Pod(BasePod):
         def clear_peas(self):
             self._peas.clear()
 
+        def num_peas(self):
+            return len(self._peas)
+
         def join(self):
             for pea in self._peas:
                 pea.join()
@@ -555,7 +558,7 @@ class Pod(BasePod):
             num_peas += 1
         if self.tail_pea is not None:
             num_peas += 1
-        num_peas += len(self.replica_set._peas)
+        num_peas += self.replica_set.num_peas
         return num_peas
 
     def __eq__(self, other: 'BasePod'):
@@ -565,7 +568,6 @@ class Pod(BasePod):
         """
         Activate all peas in this pod
         """
-        # order is good. Activate from tail to head
         if self.tail_pea is not None:
             self.tail_pea.activate_runtime()
         self.replica_set.activate()
