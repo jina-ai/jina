@@ -30,7 +30,7 @@ def docker_image_built():
     import docker
 
     client = docker.from_env()
-    client.images.build(path=os.path.join(cur_dir, 'scaleexecutor/'), tag=img_name)
+    client.images.build(path=os.path.join(cur_dir, 'scale-executor'), tag=img_name)
     client.close()
     yield
     time.sleep(2)
@@ -41,118 +41,158 @@ def docker_image_built():
 @pytest.mark.parametrize('shards', [1, 2])
 @pytest.mark.parametrize('new_replicas', [3, 4])
 def test_scale_successfully_zedruntime(shards, new_replicas):
-    f = Flow().add(name='executor', uses=ScalableExecutor, replicas=2, shards=shards)
+    f = Flow().add(
+        name='executor', uses=ScalableExecutor, replicas=2, shards=shards, polling='ANY'
+    )
     with f:
         ret1 = f.index(
-            inputs=DocumentArray([Document() for _ in range(50)]),
+            inputs=DocumentArray([Document() for _ in range(200)]),
             return_results=True,
             request_size=10,
         )
         f.scale(pod_name='executor', replicas=new_replicas)
         ret2 = f.index(
-            inputs=DocumentArray([Document() for _ in range(50)]),
+            inputs=DocumentArray([Document() for _ in range(200)]),
             return_results=True,
             request_size=10,
         )
 
-    assert len(ret1) == 5
+    assert len(ret1) == 20
+    replica_ids = set()
     for r in ret1:
         assert len(r.docs) == 10
-        replica_ids = set(r.docs.get_attributes('tags__replica_id'))
-        assert replica_ids == {0, 1}
-    assert len(ret2) == 5
+        for replica_id in r.docs.get_attributes('tags__replica_id'):
+            replica_ids.add(replica_id)
+
+    assert replica_ids == {0, 1}
+
+    assert len(ret2) == 20
+    replica_ids = set()
     for r in ret2:
         assert len(r.docs) == 10
-        replica_ids = set(r.docs.get_attributes('tags__replica_id'))
-        assert replica_ids == set(range(new_replicas))
+        for replica_id in r.docs.get_attributes('tags__replica_id'):
+            replica_ids.add(replica_id)
+
+    assert replica_ids == set(range(new_replicas))
 
 
 @pytest.mark.parametrize('shards', [1, 2])
 @pytest.mark.parametrize('new_replicas', [3, 4])
 def test_scale_successfully_containerruntime(docker_image_built, shards, new_replicas):
     f = Flow().add(
-        name='executor', uses=f'docker://{img_name}', replicas=2, shards=shards
+        name='executor',
+        uses=f'docker://{img_name}',
+        replicas=2,
+        shards=shards,
+        polling='ANY',
     )
     with f:
         ret1 = f.index(
-            inputs=DocumentArray([Document() for _ in range(50)]),
+            inputs=DocumentArray([Document() for _ in range(200)]),
             return_results=True,
             request_size=10,
         )
         f.scale(pod_name='executor', replicas=new_replicas)
         ret2 = f.index(
-            inputs=DocumentArray([Document() for _ in range(50)]),
+            inputs=DocumentArray([Document() for _ in range(200)]),
             return_results=True,
             request_size=10,
         )
 
-    assert len(ret1) == 5
+    assert len(ret1) == 20
+    replica_ids = set()
     for r in ret1:
         assert len(r.docs) == 10
-        replica_ids = set(r.docs.get_attributes('tags__replica_id'))
-        assert replica_ids == {0, 1}
-    assert len(ret2) == 5
+        for replica_id in r.docs.get_attributes('tags__replica_id'):
+            replica_ids.add(replica_id)
+
+    assert replica_ids == {0, 1}
+
+    assert len(ret2) == 20
+    replica_ids = set()
     for r in ret2:
         assert len(r.docs) == 10
-        replica_ids = set(r.docs.get_attributes('tags__replica_id'))
-        assert replica_ids == set(range(new_replicas))
+        for replica_id in r.docs.get_attributes('tags__replica_id'):
+            replica_ids.add(replica_id)
+
+    assert replica_ids == set(range(new_replicas))
 
 
 @pytest.mark.parametrize('shards', [1, 2])
 def test_scale_failure_zedruntime(shards):
-    f = Flow().add(name='executor', uses=ScalableExecutor, replicas=2, shards=shards)
+    f = Flow().add(
+        name='executor', uses=ScalableExecutor, replicas=2, shards=shards, polling='ANY'
+    )
     with f:
         ret1 = f.index(
-            inputs=DocumentArray([Document() for _ in range(50)]),
+            inputs=DocumentArray([Document() for _ in range(200)]),
             return_results=True,
             request_size=10,
         )
         with pytest.raises(Exception):
             f.scale(pod_name='executor', replicas=5)
         ret2 = f.index(
-            inputs=DocumentArray([Document() for _ in range(50)]),
+            inputs=DocumentArray([Document() for _ in range(200)]),
             return_results=True,
             request_size=10,
         )
 
-    assert len(ret1) == 5
+    assert len(ret1) == 20
+    replica_ids = set()
     for r in ret1:
         assert len(r.docs) == 10
-        replica_ids = set(r.docs.get_attributes('tags__replica_id'))
-        assert replica_ids == {0, 1}
-    assert len(ret2) == 5
+        for replica_id in r.docs.get_attributes('tags__replica_id'):
+            replica_ids.add(replica_id)
+
+    assert replica_ids == {0, 1}
+
+    assert len(ret2) == 20
+    replica_ids = set()
     for r in ret2:
         assert len(r.docs) == 10
-        replica_ids = set(r.docs.get_attributes('tags__replica_id'))
-        assert replica_ids == {0, 1}
+        for replica_id in r.docs.get_attributes('tags__replica_id'):
+            replica_ids.add(replica_id)
+
+    assert replica_ids == {0, 1}
 
 
 @pytest.mark.parametrize('shards', [1, 2])
 def test_scale_failure_containerruntime(docker_image_built, shards):
     f = Flow().add(
-        name='executor', uses=f'docker://{img_name}', replicas=2, shards=shards
+        name='executor',
+        uses=f'docker://{img_name}',
+        replicas=2,
+        shards=shards,
+        polling='ANY',
     )
     with f:
         ret1 = f.index(
-            inputs=DocumentArray([Document() for _ in range(50)]),
+            inputs=DocumentArray([Document() for _ in range(200)]),
             return_results=True,
             request_size=10,
         )
         with pytest.raises(Exception):
             f.scale(pod_name='executor', replicas=5)
         ret2 = f.index(
-            inputs=DocumentArray([Document() for _ in range(50)]),
+            inputs=DocumentArray([Document() for _ in range(200)]),
             return_results=True,
             request_size=10,
         )
 
-    assert len(ret1) == 5
+    assert len(ret1) == 20
+    replica_ids = set()
     for r in ret1:
         assert len(r.docs) == 10
-        replica_ids = set(r.docs.get_attributes('tags__replica_id'))
-        assert replica_ids == {0, 1}
-    assert len(ret2) == 5
+        for replica_id in r.docs.get_attributes('tags__replica_id'):
+            replica_ids.add(replica_id)
+
+    assert replica_ids == {0, 1}
+
+    assert len(ret2) == 20
+    replica_ids = set()
     for r in ret2:
         assert len(r.docs) == 10
-        replica_ids = set(r.docs.get_attributes('tags__replica_id'))
-        assert replica_ids == {0, 1}
+        for replica_id in r.docs.get_attributes('tags__replica_id'):
+            replica_ids.add(replica_id)
+
+    assert replica_ids == {0, 1}

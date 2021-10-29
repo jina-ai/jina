@@ -381,16 +381,22 @@ class Pod(BasePod):
                 for i in range(len(self.peas), replicas):
                     new_args = copy.copy(self.args[0])
                     new_args.noblock_on_start = True
+                    new_args.name = new_args.name[:-1] + f'{i}'
+                    new_args.port_ctrl = helper.random_port()
+                    new_args.replica_id = i
                     new_pea = BasePea(new_args)
                     self._exit_fifo.enter_context(new_pea)
                     new_peas.append(new_pea)
                     new_args_list.append(new_args)
                 for new_pea, new_args in zip(new_peas, new_args_list):
                     await new_pea.async_wait_start_success()
+                    new_pea.activate_runtime()
                     self.args.append(new_args)
                     self.peas.append(new_pea)
             elif replicas < len(self.peas):
                 pass  # scale down has some challenges with the exit fifo
+
+            self.args.replicas = replicas
 
         def __enter__(self):
             for _args in self.args:
@@ -690,7 +696,8 @@ class Pod(BasePod):
 
         :param replicas: The number of replicas to scale to
         """
-        self.replica_set.scale(replicas)
+        await self.replica_set.scale(replicas)
+        self.args.replicas = replicas
 
     @staticmethod
     def _set_peas_args(
