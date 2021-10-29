@@ -99,7 +99,6 @@ table code {
 }
 
 
-
 body[data-theme="dark"] .only-dark-line {
     display: inline-block !important;
 }
@@ -122,4 +121,29 @@ body[data-theme="auto"] .only-light-line {
 
 body[data-theme="auto"] .only-dark-line {
     display: none !important;
+}
+
+.color-gradient-card {
+    background: linear-gradient(270deg, #22c1c3, #fdbb2d);
+    background-size: 200% 200%;
+
+    -webkit-animation: AnimationName 30s ease infinite;
+    -moz-animation: AnimationName 30s ease infinite;
+    animation: AnimationName 30s ease infinite;
+}
+
+@-webkit-keyframes AnimationName {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+@-moz-keyframes AnimationName {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+@keyframes AnimationName {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
 }

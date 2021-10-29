@@ -22,7 +22,7 @@ def test_compression(compress_algo):
 
 
 @pytest.mark.slow
-@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+@pytest.mark.parametrize('protocol', ['websocket', 'http'])
 def test_gateway_concurrency(protocol, reraise):
     PORT_EXPOSE = 12345
     CONCURRENCY = 2

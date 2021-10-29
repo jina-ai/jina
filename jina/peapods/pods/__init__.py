@@ -342,7 +342,7 @@ class Pod(BasePod):
     class _ReplicaSet:
         def __init__(self, pod_args: Namespace, args: List[Namespace]):
             self._exit_fifo = ExitFIFO()
-            self.pod_args = pod_args
+            self.pod_args = copy.copy(pod_args)
             self.args = args
             self.peas = []
 
@@ -395,8 +395,7 @@ class Pod(BasePod):
                     self.peas.append(new_pea)
             elif replicas < len(self.peas):
                 pass  # scale down has some challenges with the exit fifo
-
-            self.args.replicas = replicas
+            self.pod_args.replicas = replicas
 
         def __enter__(self):
             for _args in self.args:

@@ -10,6 +10,7 @@ from scipy.spatial.distance import cdist as scipy_cdist
 from jina import Document, DocumentArray, __windows__
 from jina.math.dimensionality_reduction import PCA
 from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina.types.document.generators import from_files
 
 
 @pytest.fixture()
@@ -351,7 +352,7 @@ def test_pca_plot_generated(embeddings, tmpdir, colored_tag, kwargs):
         ]
     )
     file_path = os.path.join(tmpdir, 'pca_plot.png')
-    doc_array.visualize(file_path, colored_attr=colored_tag, **kwargs)
+    doc_array.plot_embeddings(file_path, colored_attr=colored_tag, **kwargs)
     assert os.path.exists(file_path)
 
 
@@ -661,3 +662,9 @@ def test_filter_fn(doc_lists, tmp_path, first_memmap, second_memmap, buffer_pool
     docs1[len(docs1) - 1] = Document(embedding=np.array([1, 0, 1]))
     docs1.match(docs2, filter_fn=filter_fn(), limit=len(docs2))
     assert all(len(d1.matches) == expected_len for d1 in docs1)
+
+
+def test_sprite_image_generator(pytestconfig, tmpdir):
+    da = DocumentArray(from_files(f'{pytestconfig.rootdir}/.github/**/*.png'))
+    da.plot_image_sprites(tmpdir / 'sprint.png')
+    assert os.path.exists(tmpdir / 'sprint.png')

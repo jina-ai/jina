@@ -83,9 +83,7 @@ def test_input_csv_from_lines_field_resolver():
 
 
 def test_input_csv_from_strings():
-    with open(os.path.join(cur_dir, 'docs.csv')) as fp:
-        lines = fp.readlines()
-    result = list(from_csv(lines))
+    result = list(from_csv(os.path.join(cur_dir, 'docs.csv')))
     assert len(result) == 2
     assert isinstance(result[0], Document)
     assert result[0].tags['source'] == 'testsrc'

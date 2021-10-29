@@ -102,6 +102,13 @@ c.post('/')
 GRPCClient@14744[S]:connected to the gateway at 0.0.0.0:12345!
 ```
 
+
+````{warning}
+
+Multiple gRPC Client cannot be spawned using `Threads` because of an [upstream issue](https://github.com/grpc/grpc/issues/25364). Use `multiprocessing` instead.
+````
+
+
 ### via WebSocket
 
 ```python

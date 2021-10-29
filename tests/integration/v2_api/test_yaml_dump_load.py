@@ -13,19 +13,15 @@ class MyExec(Executor):
 
     @requests(on=['/foo', '/foo2'])
     def foo(self, docs, **kwargs):
-        print(f'foo: {kwargs}')
-        print(self.workspace)
         for d in docs:
             d.text = '/foo'
 
     @requests
     def bar(self, docs, **kwargs):
-        print(f'bar: {kwargs}')
         for d in docs:
             d.text = '/bar'
 
     def random(self, docs, **kwargs):
-        print(f'random: {kwargs}')
         for d in docs:
             d.text = '/random'
 
@@ -51,7 +47,7 @@ def test_load_save_yml(tmp_path):
     assert m.bar == 'hello'
     assert m.bar2 == 1
     assert m.metas.name == 'my-awesomeness'
-    for k in ('/foo', '/foo2', '/default', '/foo_endpoint', '/random_endpoint'):
+    for k in ('/default', '/foo_endpoint', '/random_endpoint'):
         assert k in m.requests
 
 
@@ -59,21 +55,17 @@ def test_load_save_yml(tmp_path):
     'req_endpoint, doc_text',
     [
         ('/foo', '/foo'),
-        ('/foo2', '/foo'),
+        ('/foo2', '/bar'),
         ('/foo3', '/bar'),
         ('/foo_endpoint', '/foo'),
         ('/random_endpoint', '/random'),
         ('/bar', '/bar'),
     ],
 )
-def test_load_yaml_route(mocker, req_endpoint, doc_text):
+def test_load_yaml_route(req_endpoint, doc_text):
     f = Flow().add(uses=y)
 
-    mock = mocker.Mock()
-
-    def validate(req):
-        mock()
-        assert req.docs[0].text == doc_text
-
     with f:
-        f.post(req_endpoint, Document(), on_done=validate)
+        results = f.post(req_endpoint, Document(), return_results=True)
+
+    assert results[0].docs[0].text == doc_text

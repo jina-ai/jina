@@ -1,4 +1,4 @@
-# Fuzzy `grep` in 30 Lines
+# Fuzzy String Matching in 30 Lines
 
 ```{article-info}
 :avatar: avatars/han.jpg

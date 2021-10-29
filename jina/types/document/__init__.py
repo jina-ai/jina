@@ -197,9 +197,8 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
                 it builds a view or a copy from it.
         :param copy: when ``document`` is given as a :class:`DocumentProto` object, build a
                 view (i.e. weak reference) from it or a deep copy from it.
-        :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field
-                names defined in Protobuf. This is only used when the given ``document`` is
-                a JSON string or a Python dict.
+        :param field_resolver: a map from field names defined in JSON, dict to the field
+            names defined in Document.
         :param kwargs: other parameters to be set _after_ the document is constructed
 
         .. note::
