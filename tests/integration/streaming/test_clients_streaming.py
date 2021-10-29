@@ -27,14 +27,14 @@ def blocking_gen():
     """Fast synchronous client generator"""
     for i in range(INPUT_LEN):
         yield get_document(i, name='blocking_gen')
-        time.sleep(0.1)
+        time.sleep(0.2)
 
 
 async def async_gen():
     """Fast async client generator"""
     for i in range(INPUT_LEN):
         yield get_document(i, name='async_gen')
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(0.2)
 
 
 def slow_blocking_gen():
@@ -144,10 +144,10 @@ def test_disable_prefetch_slow_client_fast_executor(
 @pytest.mark.parametrize(
     'protocol, inputs',
     [
-        ('grpc', async_gen),
-        ('grpc', blocking_gen),
-        ('websocket', async_gen),
-        ('websocket', blocking_gen),
+        # ('grpc', async_gen),
+        # ('grpc', blocking_gen),
+        # ('websocket', async_gen),
+        # ('websocket', blocking_gen),
         ('http', async_gen),
         ('http', blocking_gen),
     ],
