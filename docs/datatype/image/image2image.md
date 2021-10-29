@@ -47,7 +47,7 @@ We have one flow defined for this tutorial, however, it handles requests to `/in
 defining different endpoints using `requests` decorators. Below we see the Flow, which consists of `Encoder` to encode
 the images as first step, followed by an `Indexer` to store/retrieve data.
 
-```{figure} ../../.github/images/image_search_flow.svg
+```{figure} ../../../.github/images/image_search_flow.svg
 :align: center
 ```
 
