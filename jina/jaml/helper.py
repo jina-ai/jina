@@ -226,14 +226,14 @@ def load_py_modules(d: Dict, extra_search_paths: Optional[List[str]] = None) -> 
     :param d: the dictionary to traverse
     :param extra_search_paths: any extra paths to search
     """
-    mod = set()
+    mod = []
 
     def _finditem(obj, key='py_modules'):
         value = obj.get(key, [])
         if isinstance(value, str):
-            mod.add(value)
+            mod.append(value)
         elif isinstance(value, (list, tuple)):
-            mod.update(value)
+            mod.extend(value)
         for k, v in obj.items():
             if isinstance(v, dict):
                 _finditem(v, key)
