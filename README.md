@@ -1,10 +1,10 @@
 <p align="center">
 <!--startmsg-->
-<a href="https://github.com/jina-ai/finetuner"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/meetup.svg?raw=true"></a>
+
 <!--endmsg-->
 </p>
 <p align="center">
-<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/logo-only.gif?raw=true" alt="Jina logo: Jina is a cloud-native neural search framework" width="200px"></a>
+<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/logo-light-ani-2.svg?raw=true" alt="Jina logo: Jina is a cloud-native neural search framework" width="200px"></a>
 </p>
 
 <p align="center">

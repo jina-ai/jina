@@ -331,17 +331,38 @@ class Pod(BasePod):
 
     class _ReplicaSet:
         def __init__(self, pod_args: Namespace, args: List[Namespace]):
-            self._exit_fifo = ExitFIFO()
             self.pod_args = pod_args
             self.args = args
-            self.peas = []
+            self._peas = []
+
+        def activate(self):
+            for pea in self._peas:
+                pea.activate_runtime()
+
+        @property
+        def is_ready(self):
+            return all(p.is_ready.is_set() for p in self._peas)
+
+        def clear_peas(self):
+            self._peas.clear()
+
+        @property
+        def num_peas(self):
+            return len(self._peas)
+
+        def join(self):
+            for pea in self._peas:
+                pea.join()
+
+        def wait_start_success(self):
+            for pea in self._peas:
+                pea.wait_start_success()
 
         async def rolling_update(
             self, dump_path: Optional[str] = None, *, uses_with: Optional[Dict] = None
         ):
-            new_exit_fifo = ExitFIFO()
-            for i in range(len(self.peas)):
-                old_pea = self.peas[i]
+            for i in range(len(self._peas)):
+                old_pea = self._peas[i]
                 old_pea.close()
                 _args = self.args[i]
                 _args.noblock_on_start = True
@@ -350,11 +371,10 @@ class Pod(BasePod):
                 ###
                 _args.uses_with = uses_with
                 new_pea = BasePea(_args)
-                new_exit_fifo.enter_context(new_pea)
+                new_pea.__enter__()
                 await new_pea.async_wait_start_success()
                 new_pea.activate_runtime()
-                self.peas[i] = new_pea
-            self._exit_fifo = new_exit_fifo
+                self._peas[i] = new_pea
 
         def __enter__(self):
             for _args in self.args:
@@ -364,13 +384,19 @@ class Pod(BasePod):
                     self.pod_args.replicas == 1
                 ):  # keep backwards compatibility with `workspace` in `Executor`
                     _args.replica_id = -1
-                pea = BasePea(_args)
-                self.peas.append(pea)
-                self._exit_fifo.enter_context(pea)
+                self._peas.append(BasePea(_args).start())
             return self
 
         def __exit__(self, exc_type, exc_val, exc_tb):
-            self._exit_fifo.__exit__(exc_type, exc_val, exc_tb)
+            closing_exception = None
+            for pea in self._peas:
+                try:
+                    pea.close()
+                except Exception as exc:
+                    if closing_exception is None:
+                        closing_exception = exc
+            if exc_val is None and closing_exception is not None:
+                raise closing_exception
 
     def __init__(
         self,
@@ -399,16 +425,6 @@ class Pod(BasePod):
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
         self.join()
-
-    @property
-    def peas(self):
-        """List of peas in this Pod
-        :return: Return all the concatenated list of peas
-        """
-        _peas = [self.head_pea] if self.head_pea is not None else []
-        _peas.extend(self.replica_set.peas if self.replica_set is not None else [])
-        _peas.extend([self.tail_pea] if self.tail_pea is not None else [])
-        return _peas
 
     def update_pea_args(self):
         """ Update args of all its peas based on Pod args. Including head/tail"""
@@ -543,7 +559,14 @@ class Pod(BasePod):
 
         .. # noqa: DAR201
         """
-        return len(self.peas)
+        num_peas = 0
+        if self.head_pea is not None:
+            num_peas += 1
+        if self.tail_pea is not None:
+            num_peas += 1
+        if self.replica_set is not None:  # external pods
+            num_peas += self.replica_set.num_peas
+        return num_peas
 
     def __eq__(self, other: 'BasePod'):
         return self.num_peas == other.num_peas and self.name == other.name
@@ -552,9 +575,11 @@ class Pod(BasePod):
         """
         Activate all peas in this pod
         """
-        # order is good. Activate from tail to head
-        for pea in reversed(self.peas):
-            pea.activate_runtime()
+        if self.tail_pea is not None:
+            self.tail_pea.activate_runtime()
+        self.replica_set.activate()
+        if self.head_pea is not None:
+            self.head_pea.activate_runtime()
 
         self._activated = True
 
@@ -597,8 +622,11 @@ class Pod(BasePod):
                 f'{self.wait_start_success!r} should only be called when `noblock_on_start` is set to True'
             )
         try:
-            for p in self.peas:
-                p.wait_start_success()
+            if self.head_pea is not None:
+                self.head_pea.wait_start_success()
+            self.replica_set.wait_start_success()
+            if self.tail_pea is not None:
+                self.tail_pea.wait_start_success()
             self.activate()
         except:
             self.close()
@@ -607,16 +635,20 @@ class Pod(BasePod):
     def join(self):
         """Wait until all peas exit"""
         try:
-            for p in self.peas:
-                p.join()
-                self._activated = False
+            if self.head_pea is not None:
+                self.head_pea.join()
+            if self.replica_set is not None:
+                self.replica_set.join()
+            if self.tail_pea is not None:
+                self.tail_pea.join()
+            self._activated = False
         except KeyboardInterrupt:
             pass
         finally:
             self.head_pea = None
             self.tail_pea = None
             if self.replica_set is not None:
-                self.replica_set.peas.clear()
+                self.replica_set.clear_peas()
             self._activated = False
 
     @property
@@ -629,7 +661,14 @@ class Pod(BasePod):
 
         .. # noqa: DAR201
         """
-        return all(p.is_ready.is_set() for p in self.peas) and self._activated
+        is_ready = True
+        if self.head_pea is not None:
+            is_ready = self.head_pea.is_ready.is_set()
+        if is_ready:
+            is_ready = self.replica_set.is_ready
+        if is_ready and self.tail_pea is not None:
+            is_ready = self.tail_pea.is_ready.is_set()
+        return is_ready and self._activated
 
     async def rolling_update(
         self, dump_path: Optional[str] = None, *, uses_with: Optional[Dict] = None
