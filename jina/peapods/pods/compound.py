@@ -304,7 +304,7 @@ class CompoundPod(BasePod):
             for future in asyncio.as_completed(tasks):
                 _ = await future
         except:
-            # TODO: Handle the failure of one of the shards. Unscale back all of them to the original state?
+            # TODO: Handle the failure of one of the shards. Unscale back all of them to the original state? Cancelling would potentially be dangerous.
             for task in tasks:
                 if not task.done():
                     task.cancel()

@@ -8,11 +8,11 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class ScalableExecutor(Executor):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, allow_failure=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.replica_id = self.runtime_args.replica_id
         self.shard_id = self.runtime_args.shard_id
-        if self.replica_id > 3:
+        if self.replica_id > 3 and allow_failure:
             raise Exception(f' I fail when scaling above 4')
 
     @requests
@@ -39,10 +39,18 @@ def docker_image_built():
 
 
 @pytest.mark.parametrize('shards', [1, 2])
+@pytest.mark.parametrize('old_replicas', [2, 3, 5])
 @pytest.mark.parametrize('new_replicas', [3, 4])
-def test_scale_successfully_zedruntime(shards, new_replicas):
+def test_scale_successfully_zedruntime(shards, old_replicas, new_replicas):
     f = Flow().add(
-        name='executor', uses=ScalableExecutor, replicas=2, shards=shards, polling='ANY'
+        name='executor',
+        uses=ScalableExecutor,
+        uses_with={
+            'allow_failure': new_replicas > old_replicas
+        },  # I want to also test proper downscaling
+        replicas=old_replicas,
+        shards=shards,
+        polling='ANY',
     )
     with f:
         ret1 = f.index(
@@ -77,12 +85,18 @@ def test_scale_successfully_zedruntime(shards, new_replicas):
 
 
 @pytest.mark.parametrize('shards', [1, 2])
+@pytest.mark.parametrize('old_replicas', [2, 3, 5])
 @pytest.mark.parametrize('new_replicas', [3, 4])
-def test_scale_successfully_containerruntime(docker_image_built, shards, new_replicas):
+def test_scale_successfully_containerruntime(
+    docker_image_built, shards, old_replicas, new_replicas
+):
     f = Flow().add(
         name='executor',
         uses=f'docker://{img_name}',
-        replicas=2,
+        replicas=old_replicas,
+        uses_with={
+            'allow_failure': new_replicas > old_replicas
+        },  # I want to also test proper downscaling
         shards=shards,
         polling='ANY',
     )

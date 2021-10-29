@@ -369,6 +369,50 @@ class Pod(BasePod):
                 self.peas[i] = new_pea
             self._exit_fifo = new_exit_fifo
 
+        async def _scale_up(self, replicas: int):
+            new_peas = []
+            new_args_list = []
+            for i in range(len(self.peas), replicas):
+                new_args = copy.copy(self.args[0])
+                new_args.noblock_on_start = True
+                new_args.name = new_args.name[:-1] + f'{i}'
+                new_args.port_ctrl = helper.random_port()
+                new_args.replica_id = i
+                # no exception should happen at create and enter time
+                new_pea = BasePea(new_args)
+                self._exit_fifo.enter_context(new_pea)
+                new_peas.append(new_pea)
+                new_args_list.append(new_args)
+            exception = None
+            for new_pea, new_args in zip(new_peas, new_args_list):
+                try:
+                    await new_pea.async_wait_start_success()
+                except (
+                    RuntimeFailToStart,
+                    TimeoutError,
+                    RuntimeRunForeverEarlyError,
+                ) as ex:
+                    exception = ex
+                    break
+
+            if exception is not None:
+                # close peas and remove them from exitfifo
+                if self.pod_args.shards > 1:
+                    msg = f' Scaling fails for shard {self.pod_args.shard_id}'
+                else:
+                    msg = ' Scaling fails'
+
+                msg += f'due to executor failing to start with exception: {exception!r}'
+                raise ScalingFails(msg)
+            else:
+                for new_pea, new_args in zip(new_peas, new_args_list):
+                    new_pea.activate_runtime()
+                    self.args.append(new_args)
+                    self.peas.append(new_pea)
+
+        async def _scale_down(self, replicas: int):
+            pass
+
         async def scale(self, replicas: int):
             """
             Scale the amount of replicas of a given Executor.
@@ -379,47 +423,11 @@ class Pod(BasePod):
             """
             # TODO make scale robust, in what state this ReplicaSet ends when this fails?
             if replicas > len(self.peas):
-                new_peas = []
-                new_args_list = []
-                for i in range(len(self.peas), replicas):
-                    new_args = copy.copy(self.args[0])
-                    new_args.noblock_on_start = True
-                    new_args.name = new_args.name[:-1] + f'{i}'
-                    new_args.port_ctrl = helper.random_port()
-                    new_args.replica_id = i
-                    # no exception should happen at create and enter time
-                    new_pea = BasePea(new_args)
-                    self._exit_fifo.enter_context(new_pea)
-                    new_peas.append(new_pea)
-                    new_args_list.append(new_args)
-                exception = None
-                for new_pea, new_args in zip(new_peas, new_args_list):
-                    try:
-                        await new_pea.async_wait_start_success()
-                    except (
-                        RuntimeFailToStart,
-                        TimeoutError,
-                        RuntimeRunForeverEarlyError,
-                    ) as ex:
-                        exception = ex
-                        break
-
-                if exception is not None:
-                    # close peas and remove them from exitfifo
-                    if self.pod_args.shards > 1:
-                        msg = f' Scaling fails for shard {self.pod_args.shard_id}'
-                    else:
-                        msg = ' Scaling fails'
-
-                    msg += f'due to executor failing to start with exception: {exception!r}'
-                    raise ScalingFails(msg)
-                else:
-                    for new_pea, new_args in zip(new_peas, new_args_list):
-                        new_pea.activate_runtime()
-                        self.args.append(new_args)
-                        self.peas.append(new_pea)
+                await self._scale_up(replicas)
             elif replicas < len(self.peas):
-                pass  # scale down has some challenges with the exit fifo
+                await self._scale_down(
+                    replicas
+                )  # scale down has some challenges with the exit fifo
             self.pod_args.replicas = replicas
 
         def __enter__(self):

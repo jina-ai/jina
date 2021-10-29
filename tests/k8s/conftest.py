@@ -70,6 +70,18 @@ def test_executor_image(logger: JinaLogger):
 
 
 @pytest.fixture()
+def scale_executor_image(logger: JinaLogger):
+    image, build_logs = client.images.build(
+        path=os.path.join(cur_dir, 'scale-executor'), tag='scale-executor:0.13.1'
+    )
+    for chunk in build_logs:
+        if 'stream' in chunk:
+            for line in chunk['stream'].splitlines():
+                logger.debug(line)
+    return image.tags[-1]
+
+
+@pytest.fixture()
 def executor_merger_image(logger: JinaLogger):
     image, build_logs = client.images.build(
         path=os.path.join(cur_dir, 'executor-merger'), tag='merger-executor:0.1.1'
