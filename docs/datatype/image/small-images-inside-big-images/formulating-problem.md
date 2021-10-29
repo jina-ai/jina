@@ -4,6 +4,7 @@ matching will not work. Imagine that you have the following big image :
 
 ```{figure} cat-bird.jpg
 :align: center
+:width: 60%
 ```
 
 It contains a scene with a cat in the background, a bird and a few other items in the scene.
@@ -12,6 +13,7 @@ Now let's suppose that the query image is a simple bird:
 
 ```{figure} bird.jpg
 :align: center
+:width: 10%
 ```
 
 Encoding the query image will generate embeddings that effectively represent it. However, it's not easy to build an 
@@ -27,6 +29,7 @@ Imagine that we can identify these objects inside the big image like so:
 
 ```{figure} cat-bird-detections.jpg
 :align: center
+:width: 60%
 ```
 ````
 
