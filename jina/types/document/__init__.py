@@ -1199,5 +1199,5 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
         elif '__' in item:
             value = dunder_get(self._pb_body, item)
         else:
-            raise AttributeError
+            raise AttributeError(f'no attribute named `{item}`')
         return value
