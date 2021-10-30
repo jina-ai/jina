@@ -25,6 +25,17 @@ def test_self_as_return():
     assert num_fn
 
 
+def test_video_convert_pipe(pytestconfig, tmpdir):
+    num_d = 0
+    for d in from_files(f'{pytestconfig.rootdir}/docs/**/*.mp4'):
+        fname = str(tmpdir / f'tmp{num_d}.mp4')
+        d.convert_uri_to_video_blob()
+        d.dump_video_blob_to_file(fname)
+        assert os.path.exists(fname)
+        num_d += 1
+    assert num_d
+
+
 def test_audio_convert_pipe(pytestconfig, tmpdir):
     num_d = 0
     for d in from_files(f'{pytestconfig.rootdir}/docs/**/*.wav'):
