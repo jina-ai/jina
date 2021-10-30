@@ -103,7 +103,7 @@ Preview the next big thing we are building. Careful, zapping!
 :hidden:
 
 get-started/neural-search
-get-started/install
+get-started/install/index
 get-started/hello-world/index
 ```
 

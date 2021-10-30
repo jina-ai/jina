@@ -94,9 +94,9 @@ the resource and make it inline.
 In particular, when you work with an image `Document`, there are some extra helpers that enable more conversion:
 
 ```python
-doc.convert_image_buffer_to_blob()
+doc.convert_buffer_to_image_blob()
 doc.convert_image_blob_to_uri()
-doc.convert_image_uri_to_blob()
+doc.convert_uri_to_image_blob()
 ```
 ````
 
