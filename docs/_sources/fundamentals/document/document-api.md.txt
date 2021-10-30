@@ -89,17 +89,6 @@ the appropriate conversion method.
 You can convert a URI to a data URI (a data in-line URI scheme) using `doc.convert_uri_to_datauri()`. This will fetch
 the resource and make it inline.
 
-````{tip}
-
-In particular, when you work with an image `Document`, there are some extra helpers that enable more conversion:
-
-```python
-doc.convert_buffer_to_image_blob()
-doc.convert_image_blob_to_uri()
-doc.convert_uri_to_image_blob()
-```
-````
-
 ## Document embedding
 
 An embedding is a multi-dimensional representation of a `Document`. You can assign any Numpy `ndarray` as a `Document`'s
