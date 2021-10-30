@@ -104,6 +104,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -11129,4 +11130,23 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```ffff5c00```](https://github.com/jina-ai/jina/commit/ffff5c00921f91c7b092e25c0bfa2a76a40d596e)] __-__ add sampling-rate.jpeg (*Han Xiao*)
  - [[```fceb978f```](https://github.com/jina-ai/jina/commit/fceb978fb09a668accd0781b73d91444a931f017)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```088ef96f```](https://github.com/jina-ai/jina/commit/088ef96f3eec3a11c8a5df895b9733f1fc2b3e8c)] __-__ __version__: the next version will be 2.1.14 (*Jina Dev Bot*)
+
+<a name=release-note-2-2-1></a>
+## Release Note (`2.2.1`)
+
+> Release time: 2021-10-30 13:57:21
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```a0f77183```](https://github.com/jina-ai/jina/commit/a0f77183cdd3ba154566d38abfec7baa8fc1739f)] __-__ __types__: fix warning deprecate wrapper (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```e1c0d575```](https://github.com/jina-ai/jina/commit/e1c0d575a39c468ac55d6760d5717b4100715dac)] __-__ __version__: the next version will be 2.2.1 (*Jina Dev Bot*)
 
