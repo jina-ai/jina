@@ -636,7 +636,7 @@
 <div class="viewcode-block" id="ContentConversionMixin"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin">[docs]</a><span class="k">class</span> <span class="nc">ContentConversionMixin</span><span class="p">:</span>
     <span class="sd">"""A mixin class for converting, dumping and resizing :attr:`.content` in :class:`Document`.</span>
 
-<span class="sd">    Note that most of the functions, except the ``dump_*`` ones can be used in a chain, e.g.</span>
+<span class="sd">    Note that most of the functions can be used in a chain, e.g.</span>
 
 <span class="sd">    .. highlight:: python</span>
 <span class="sd">    .. code-block:: python</span>
@@ -664,6 +664,66 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">_move_channel_axis</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="p">,</span> <span class="n">original_channel_axis</span><span class="p">,</span> <span class="n">new_channel_axis</span>
         <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="ContentConversionMixin.convert_uri_to_video_blob"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.convert_uri_to_video_blob">[docs]</a>    <span class="k">def</span> <span class="nf">convert_uri_to_video_blob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">only_keyframes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Document'</span><span class="p">:</span>
+        <span class="sd">"""Convert a :attr:`.uri` to a video ndarray :attr:`.blob`.</span>
+
+<span class="sd">        :param only_keyframes: only keep the keyframes in the video</span>
+<span class="sd">        :return: Document itself after processed</span>
+<span class="sd">        """</span>
+        <span class="kn">import</span> <span class="nn">av</span>
+
+        <span class="k">with</span> <span class="n">av</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span> <span class="k">as</span> <span class="n">container</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">only_keyframes</span><span class="p">:</span>
+                <span class="n">stream</span> <span class="o">=</span> <span class="n">container</span><span class="o">.</span><span class="n">streams</span><span class="o">.</span><span class="n">video</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">stream</span><span class="o">.</span><span class="n">codec_context</span><span class="o">.</span><span class="n">skip_frame</span> <span class="o">=</span> <span class="s1">'NONKEY'</span>
+
+            <span class="n">frames</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="n">container</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">video</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+                <span class="n">img</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">to_image</span><span class="p">()</span>
+                <span class="n">frames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">img</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">frames</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="ContentConversionMixin.dump_video_blob_to_file"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.dump_video_blob_to_file">[docs]</a>    <span class="k">def</span> <span class="nf">dump_video_blob_to_file</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BinaryIO</span><span class="p">],</span> <span class="n">frame_rate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span> <span class="n">codec</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'h264'</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Document'</span><span class="p">:</span>
+        <span class="sd">"""Save :attr:`.blob` as a video mp4/h264 file.</span>
+
+<span class="sd">        :param file: The file to open, which can be either a string or a file-like object.</span>
+<span class="sd">        :param frame_rate: frames per second</span>
+<span class="sd">        :param codec: the name of a decoder/encoder</span>
+<span class="sd">        :return: itself after processed</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">4</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'expects `.blob` with dtype=uint8 and ndim=4 and the last dimension is 3, '</span>
+                <span class="sa">f</span><span class="s1">'but receiving </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1"> in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s1">'</span>
+            <span class="p">)</span>
+
+        <span class="n">video_blob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="kn">import</span> <span class="nn">av</span>
+
+        <span class="k">with</span> <span class="n">av</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">container</span><span class="p">:</span>
+            <span class="n">stream</span> <span class="o">=</span> <span class="n">container</span><span class="o">.</span><span class="n">add_stream</span><span class="p">(</span><span class="n">codec</span><span class="p">,</span> <span class="n">rate</span><span class="o">=</span><span class="n">frame_rate</span><span class="p">)</span>
+            <span class="n">stream</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">stream</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">stream</span><span class="o">.</span><span class="n">pix_fmt</span> <span class="o">=</span> <span class="s1">'yuv420p'</span>
+
+            <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">video_blob</span><span class="p">:</span>
+                <span class="n">frame</span> <span class="o">=</span> <span class="n">av</span><span class="o">.</span><span class="n">VideoFrame</span><span class="o">.</span><span class="n">from_ndarray</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">'rgb24'</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">packet</span> <span class="ow">in</span> <span class="n">stream</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">frame</span><span class="p">):</span>
+                    <span class="n">container</span><span class="o">.</span><span class="n">mux</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">packet</span> <span class="ow">in</span> <span class="n">stream</span><span class="o">.</span><span class="n">encode</span><span class="p">():</span>
+                <span class="n">container</span><span class="o">.</span><span class="n">mux</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="ContentConversionMixin.convert_image_buffer_to_blob"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.convert_image_buffer_to_blob">[docs]</a>    <span class="k">def</span> <span class="nf">convert_image_buffer_to_blob</span><span class="p">(</span>
@@ -1329,7 +1389,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 29, 2021.
+                    Last updated on Oct 30, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

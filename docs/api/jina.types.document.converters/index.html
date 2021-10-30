@@ -646,7 +646,7 @@
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.types.document.converters.</span></span><span class="sig-name descname"><span class="pre">ContentConversionMixin</span></span><a class="reference internal" href="../../_modules/jina/types/document/converters/#ContentConversionMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.converters.ContentConversionMixin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A mixin class for converting, dumping and resizing <a class="reference internal" href="../jina/#jina.Document.content" title="jina.Document.content"><code class="xref py py-attr docutils literal notranslate"><span class="pre">content</span></code></a> in <code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code>.</p>
-<p>Note that most of the functions, except the <code class="docutils literal notranslate"><span class="pre">dump_*</span></code> ones can be used in a chain, e.g.</p>
+<p>Note that most of the functions can be used in a chain, e.g.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">from_files</span><span class="p">(</span><span class="s1">'/Users/hanxiao/Documents/tmpimg/*.jpg'</span><span class="p">):</span>
     <span class="k">yield</span> <span class="p">(</span>
         <span class="n">d</span><span class="o">.</span><span class="n">convert_image_uri_to_blob</span><span class="p">()</span>
@@ -666,6 +666,42 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>original_channel_axis</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the original axis of the channel</p></li>
 <li><p><strong>new_channel_axis</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the new axis of the channel</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="../jina/#jina.Document" title="jina.Document">Document</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>itself after processed</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.document.converters.ContentConversionMixin.convert_uri_to_video_blob">
+<span class="sig-name descname"><span class="pre">convert_uri_to_video_blob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">only_keyframes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/converters/#ContentConversionMixin.convert_uri_to_video_blob"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.converters.ContentConversionMixin.convert_uri_to_video_blob" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a <a class="reference internal" href="../daemon.models.containers/#daemon.models.containers.ContainerMetadata.uri" title="daemon.models.containers.ContainerMetadata.uri"><code class="xref py py-attr docutils literal notranslate"><span class="pre">uri</span></code></a> to a video ndarray <a class="reference internal" href="../jina/#jina.Document.blob" title="jina.Document.blob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">blob</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>only_keyframes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – only keep the keyframes in the video</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="../jina/#jina.Document" title="jina.Document">Document</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Document itself after processed</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.document.converters.ContentConversionMixin.dump_video_blob_to_file">
+<span class="sig-name descname"><span class="pre">dump_video_blob_to_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'h264'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/converters/#ContentConversionMixin.dump_video_blob_to_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.converters.ContentConversionMixin.dump_video_blob_to_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save <a class="reference internal" href="../jina/#jina.Document.blob" title="jina.Document.blob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">blob</span></code></a> as a video mp4/h264 file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">BinaryIO</span></code>]) – The file to open, which can be either a string or a file-like object.</p></li>
+<li><p><strong>frame_rate</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – frames per second</p></li>
+<li><p><strong>codec</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the name of a decoder/encoder</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -1102,7 +1138,7 @@ extracted. Default is False.</p></li>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 29, 2021.
+                    Last updated on Oct 30, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

@@ -8,8 +8,8 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/datatype/video/index.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="Video:" />
-  <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
+  <meta property="og:description" content="Video: Video data is a common asset consumed on daily basis: live stream on Youtube/TikTok, CCTV camera or fun meme gifs. Even though most applications of computer vision today center on images, thanks to those viral TikTokers, video data analysis has gained more attention recently, e.g. monitori..." />
+  <meta property="og:image" content="../../_images/flipbook-flip.gif" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -183,7 +183,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -642,8 +642,100 @@
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-device-camera-video-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m16-3-75a-75-75-0-00-1-136-643l11-5-425v4-75a1-75-1-75-0-009-25-3h-7-5a1-75-1-75-0-000-4-75v6-5c0-12-216-784-13-1-75-13h7-5a1-75-1-75-0-0011-11-25v-675l3-864-2-318a-75-75-0-0016-12-25v-8-5zm-5-5-075l3-5-2-1v-5-85l-3-5-2-1v1-65zm9-5-6-75v-2a-25-25-0-00-25-25h-7-5a-25-25-0-00-25-25v6-5c0-138-112-25-25-25h7-5a-25-25-0-00-25-25v-4-5z-path-svg-video">
 <h1><svg aria-hidden="true" class="sd-octicon sd-octicon-device-camera-video" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M16 3.75a.75.75 0 00-1.136-.643L11 5.425V4.75A1.75 1.75 0 009.25 3h-7.5A1.75 1.75 0 000 4.75v6.5C0 12.216.784 13 1.75 13h7.5A1.75 1.75 0 0011 11.25v-.675l3.864 2.318A.75.75 0 0016 12.25v-8.5zm-5 5.075l3.5 2.1v-5.85l-3.5 2.1v1.65zM9.5 6.75v-2a.25.25 0 00-.25-.25h-7.5a.25.25 0 00-.25.25v6.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-4.5z" fill-rule="evenodd"></path></svg> Video<a class="headerlink" href="#svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-device-camera-video-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m16-3-75a-75-75-0-00-1-136-643l11-5-425v4-75a1-75-1-75-0-009-25-3h-7-5a1-75-1-75-0-000-4-75v6-5c0-12-216-784-13-1-75-13h7-5a1-75-1-75-0-0011-11-25v-675l3-864-2-318a-75-75-0-0016-12-25v-8-5zm-5-5-075l3-5-2-1v-5-85l-3-5-2-1v1-65zm9-5-6-75v-2a-25-25-0-00-25-25h-7-5a-25-25-0-00-25-25v6-5c0-138-112-25-25-25h7-5a-25-25-0-00-25-25v-4-5z-path-svg-video" title="Permalink to this headline">¶</a></h1>
+<p>Video data is a common asset consumed on daily basis: live stream on Youtube/TikTok, CCTV camera or fun meme gifs.</p>
+<p>Even though most applications of computer vision today center on images, thanks to those viral TikTokers, video data analysis has gained more attention recently, e.g. monitoring real-time video and analyzing archived video.</p>
+<p>Comparing to static image, video allows for deeper situational understanding, because sequences of images provide new information about action. For example, we can track an obstacle through a sequence of images and understand its behavior to predict the next move. We can track a human pose, and understand the action taken with action classification.</p>
+<p>Neural search on video often includes tasks such as in-video content search, video2video recommendation, video question-answering. Before you start to solve those tasks, let’s take a quick tour on the video data format, and how Jina Document API can help you get started.</p>
+<section id="video-as-sequence-of-images">
+<h2>Video as sequence of images<a class="headerlink" href="#video-as-sequence-of-images" title="Permalink to this headline">¶</a></h2>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/flipbook-flip.gif"><img alt="../../_images/flipbook-flip.gif" src="../../_images/flipbook-flip.gif" style="width: 60%;"/></a>
+</figure>
+<p>Videos are nothing but a collection of a set of images. These images are called frames and can be combined to get the original video. An important concept here is the frame rate, which refers to the number of individual frames or images that are displayed per second of film or TV display. Movies and films are almost exclusively projected at 24 frames per second, or 24fps. The higher the frame rate, the smoother the video looks like and the bigger file size.</p>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/framerate.gif"><img alt="../../_images/framerate.gif" src="../../_images/framerate.gif" style="width: 60%;"/></a>
+</figure>
+<p>In a nutshell, video processing can be seen as a sequence of operations done for each frame. Each frame includes processes of decoding, computation and encoding. Decoding is a conversion of the video frame from compressed format to the raw format. Computation is a certain operation which we need to do with the frame.</p>
+</section>
+<section id="key-frames">
+<h2>Key frames<a class="headerlink" href="#key-frames" title="Permalink to this headline">¶</a></h2>
+<p>If video data is merely a sequence of frames, then how about converting the video to a collection of sequentially-numbered image files and process them one by one? Generating an image sequence has disadvantages: they can be large and unwieldy, and generating them can take some time. Besides, not all frames are equally useful or important.</p>
+<p>A key frame in video is a shot that defines the starting and ending points of any smooth transition. Subsequent frames, sometimes coined as the delta frames, only contain the information that has changed. Because only two or three key frames over the span of a second do not create the illusion of movement, the remaining frames are filled with “inbetweens”.</p>
+<p>Key frames will appear multiple times within a video, depending on how it was created or how it’s being streamed. A sequence of key frames defines which movement the viewer will see, whereas the position of the key frames on the film, video, or animation defines the timing of the movement. Extracting key frames from a video often gives a good representation of the video, as it preserves the salient feature of the video, while removes most of the repeated frames.</p>
+</section>
+<section id="load-video-data">
+<h2>Load video data<a class="headerlink" href="#load-video-data" title="Permalink to this headline">¶</a></h2>
+<p>Let’s use Jina Document API to load video this video:</p>
+<video controls="" width="60%">
+<source src="../../_static/mov_bbb.mp4" type="video/mp4"/>
+</video>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'toy.mp4'</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">convert_uri_to_video_blob</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>(250, 176, 320, 3)
+</pre></div>
+</div>
+<p>For video data, <code class="docutils literal notranslate"><span class="pre">.blob</span></code> is a 4-dim array, where the first dimension represents the frame id, or time. The last three dimensions represent the same thing as in image data. Here we got our <code class="docutils literal notranslate"><span class="pre">d.blob.shape=(250,</span> <span class="pre">176,</span> <span class="pre">320,</span> <span class="pre">3)</span></code>, which means this video is sized in 176x320 and contains 250 frames. Based on the overall length of the video (10s), we can infer the framerate is around 250/10=25fps.</p>
+<p>We can put each frame into a sub-Document in <code class="docutils literal notranslate"><span class="pre">.chunks</span></code> as use image sprite to visualize them.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">blob</span><span class="p">:</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">blob</span><span class="o">=</span><span class="n">b</span><span class="p">))</span>
+
+<span class="n">d</span><span class="o">.</span><span class="n">chunks</span><span class="o">.</span><span class="n">plot_image_sprites</span><span class="p">(</span><span class="s1">'mov.png'</span><span class="p">)</span>
+</pre></div>
+</div>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../_images/mov_bbb.png"><img alt="../../_images/mov_bbb.png" src="../../_images/mov_bbb.png" style="width: 70%;"/></a>
+</figure>
+</section>
+<section id="key-frame-extraction">
+<h2>Key frame extraction<a class="headerlink" href="#key-frame-extraction" title="Permalink to this headline">¶</a></h2>
+<p>From the sprite image one can observe our example video is quite redundant. Let’s extract the key frames from this video and see:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'toy.mp4'</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">convert_uri_to_video_blob</span><span class="p">(</span><span class="n">only_keyframes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>(2, 176, 320, 3)
+</pre></div>
+</div>
+<p>Looks like we only have two key frames, let’s dump them into images and see what do they look like.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">blob</span><span class="p">):</span>
+    <span class="n">Document</span><span class="p">(</span><span class="n">blob</span><span class="o">=</span><span class="n">c</span><span class="p">)</span><span class="o">.</span><span class="n">dump_image_blob_to_file</span><span class="p">(</span><span class="sa">f</span><span class="s1">'chunk-</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s1">.png'</span><span class="p">)</span>
+</pre></div>
+</div>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../_images/chunk-0.png"><img alt="../../_images/chunk-0.png" src="../../_images/chunk-0.png" style="width: 40%;"/></a>
+</figure>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../_images/chunk-1.png"><img alt="../../_images/chunk-1.png" src="../../_images/chunk-1.png" style="width: 40%;"/></a>
+</figure>
+<p>Makes sense, right?</p>
+</section>
+<section id="save-as-video-file">
+<h2>Save as video file<a class="headerlink" href="#save-as-video-file" title="Permalink to this headline">¶</a></h2>
+<p>One can also save a Document <code class="docutils literal notranslate"><span class="pre">.blob</span></code> as a video file. In this example, we load our <code class="docutils literal notranslate"><span class="pre">.mp4</span></code> video and store it into a 60fps video.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'toy.mp4'</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">convert_uri_to_video_blob</span><span class="p">()</span>
+    <span class="o">.</span><span class="n">dump_video_blob_to_file</span><span class="p">(</span><span class="s1">'60fps.mp4'</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<video controls="" width="60%">
+<source src="../../_static/60fps.mp4" type="video/mp4"/>
+</video>
 <div class="toctree-wrapper compound">
 </div>
+</section>
 </section>
 
             </article>
@@ -678,7 +770,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 29, 2021.
+                    Last updated on Oct 30, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -694,6 +786,27 @@
             
 
             <div class="toc-sticky toc-scroll">
+                
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-device-camera-video" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M16 3.75a.75.75 0 00-1.136-.643L11 5.425V4.75A1.75 1.75 0 009.25 3h-7.5A1.75 1.75 0 000 4.75v6.5C0 12.216.784 13 1.75 13h7.5A1.75 1.75 0 0011 11.25v-.675l3.864 2.318A.75.75 0 0016 12.25v-8.5zm-5 5.075l3.5 2.1v-5.85l-3.5 2.1v1.65zM9.5 6.75v-2a.25.25 0 00-.25-.25h-7.5a.25.25 0 00-.25.25v6.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-4.5z"></path></svg> Video</a><ul>
+<li><a class="reference internal" href="#video-as-sequence-of-images">Video as sequence of images</a></li>
+<li><a class="reference internal" href="#key-frames">Key frames</a></li>
+<li><a class="reference internal" href="#load-video-data">Load video data</a></li>
+<li><a class="reference internal" href="#key-frame-extraction">Key frame extraction</a></li>
+<li><a class="reference internal" href="#save-as-video-file">Save as video file</a></li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
                 
                 <details id='jina-docbot' class="jina-doc-bot sd-sphinx-override sd-dropdown sd-card">
     <summary class="sd-summary-title sd-card-header">
