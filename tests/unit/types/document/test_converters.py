@@ -318,3 +318,15 @@ def test_convert_text_blob_random_text():
 
     assert texts
     assert da.texts == texts
+
+
+def test_deprecate_fn():
+    doc = Document(uri=os.path.join(cur_dir, 'test.png'))
+
+    with pytest.warns(DeprecationWarning):
+        doc.convert_image_uri_to_blob()
+
+    with pytest.warns(None) as record:
+        doc.convert_uri_to_image_blob()
+
+    assert len(record) == 0
