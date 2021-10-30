@@ -4,6 +4,7 @@ import os
 import struct
 import urllib.parse
 import urllib.request
+import warnings
 import wave
 from contextlib import nullcontext
 from typing import Optional, Union, BinaryIO, TYPE_CHECKING, Dict, Tuple
@@ -16,6 +17,18 @@ if TYPE_CHECKING:
     from . import Document
 
 
+def _deprecate(new_fn):
+    import inspect
+
+    old_fn_name = inspect.stack()[1][4][0].strip().split("=")[0].strip()
+    warnings.warn(
+        f'`{old_fn_name}` is renamed to `{new_fn.__name__}` with the same usage, please use the latter instead. '
+        f'The old function will be removed soon.',
+        DeprecationWarning,
+    )
+    return new_fn
+
+
 class ContentConversionMixin:
     """A mixin class for converting, dumping and resizing :attr:`.content` in :class:`Document`.
 
@@ -26,10 +39,10 @@ class ContentConversionMixin:
 
         for d in from_files('/Users/hanxiao/Documents/tmpimg/*.jpg'):
             yield (
-                d.convert_image_uri_to_blob()
+                d.convert_uri_to_image_blob()
                 .convert_uri_to_datauri()
-                .resize_image_blob(224, 224)
-                .normalize_image_blob()
+                .set_image_blob_size(224, 224)
+                .set_image_blob_normalization()
                 .set_image_blob_channel_axis(-1, 0)
             )
     """
@@ -109,7 +122,7 @@ class ContentConversionMixin:
                 container.mux(packet)
         return self
 
-    def convert_image_buffer_to_blob(
+    def convert_buffer_to_image_blob(
         self,
         width: Optional[int] = None,
         height: Optional[int] = None,
@@ -137,7 +150,7 @@ class ContentConversionMixin:
         self.uri = 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
         return self
 
-    def resize_image_blob(
+    def set_image_blob_size(
         self,
         width: Optional[int] = None,
         height: Optional[int] = None,
@@ -227,7 +240,7 @@ class ContentConversionMixin:
             f.writeframes(blob.tobytes())
         return self
 
-    def convert_audio_uri_to_blob(self) -> 'Document':
+    def convert_uri_to_audio_blob(self) -> 'Document':
         """Convert an audio :attr:`.uri` into :attr:`.blob` inplace
 
         :return: Document itself after processed
@@ -258,7 +271,7 @@ class ContentConversionMixin:
             self.blob = audio_normalised
         return self
 
-    def convert_image_uri_to_blob(
+    def convert_uri_to_image_blob(
         self,
         width: Optional[int] = None,
         height: Optional[int] = None,
@@ -278,7 +291,12 @@ class ContentConversionMixin:
         self.blob = _move_channel_axis(blob, original_channel_axis=channel_axis)
         return self
 
-    def normalize_image_blob(self, channel_axis: int = -1) -> 'Document':
+    def set_image_blob_normalization(
+        self,
+        channel_axis: int = -1,
+        img_mean: Tuple[float] = (0.485, 0.456, 0.406),
+        img_std: Tuple[float] = (0.229, 0.224, 0.225),
+    ) -> 'Document':
         """Normalize a uint8 image :attr:`.blob` into a float32 image :attr:`.blob` inplace.
 
         Following Pytorch standard, the image must be in the shape of shape (3 x H x W) and
@@ -288,6 +306,8 @@ class ContentConversionMixin:
         mean and std. Otherwise, using the Imagenet pretrianed model with its own mean and std is recommended.
 
         :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+        :param img_mean: the mean of all images
+        :param img_std: the standard deviation of all images
         :return: itself after processed
 
         .. warning::
@@ -300,8 +320,8 @@ class ContentConversionMixin:
         if self.blob.dtype == np.uint8 and self.blob.ndim == 3:
             blob = (self.blob / 255.0).astype(np.float32)
             blob = _move_channel_axis(blob, channel_axis, 0)
-            mean = np.asarray([0.485, 0.456, 0.406], dtype=np.float32)
-            std = np.asarray([0.229, 0.224, 0.225], dtype=np.float32)
+            mean = np.asarray(img_mean, dtype=np.float32)
+            std = np.asarray(img_std, dtype=np.float32)
             blob = (blob - mean[:, None, None]) / std[:, None, None]
             # set back channel to original
             blob = _move_channel_axis(blob, 0, channel_axis)
@@ -541,6 +561,12 @@ class ContentConversionMixin:
         else:
             self.blob = _move_channel_axis(expanded_img, -1, channel_axis)
         return self
+
+    convert_image_buffer_to_blob = _deprecate(convert_buffer_to_image_blob)
+    normalize_image_blob = _deprecate(set_image_blob_normalization)
+    convert_image_uri_to_blob = _deprecate(convert_uri_to_image_blob)
+    convert_audio_uri_to_blob = _deprecate(convert_uri_to_audio_blob)
+    resize_image_blob = _deprecate(set_image_blob_size)
 
 
 def _uri_to_buffer(uri: str) -> bytes:

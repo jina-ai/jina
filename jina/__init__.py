@@ -31,6 +31,8 @@ def _warning_on_one_line(message, category, filename, lineno, *args, **kwargs):
 
 
 _warnings.formatwarning = _warning_on_one_line
+_warnings.simplefilter('always', DeprecationWarning)
+
 
 # fix fork error on MacOS but seems no effect? must do EXPORT manually before jina start
 _os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
