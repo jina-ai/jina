@@ -1,0 +1,71 @@
+!! 𝗛𝗲𝗹𝗹𝗼 !!
+
+
+Task Description📄
+
+🔰 Create High Availability Architecture with AWS CLI 🔰
+
+🔅The architecture includes- 
+
+- Webserver configured on EC2 Instance
+
+- Document Root(/var/www/html) made persistent by mounting on EBS Block Device.
+
+- Static objects used in code such as pictures stored in S3
+
+- Setting up Content Delivery Network using CloudFront and using the origin domain as S3 bucket. 
+
+- Finally place the Cloud Front URL on the webapp code for security and low latency.
+
+}
+
+AWS ClouldFront
+
+Amazon CloudFront is a content delivery network offered by Amazon Web Services. Content delivery networks provide a globally-distributed network of proxy servers which cache content, such as web videos or other bulky media, more locally to consumers, thus improving access speed for downloading the content.
+
+===========================
+TASK COMPLETION...
+===========================
+1) First of all we have to launch one EC2 Instance in which we configure the Apache Webserver.
+aws ec2 run-instances   --security-group-ids   group_id   --instance-type _type_ --image-id ami_id   --key-name key_name  --count no_of_instance 
+
+2) Now we have to create one EBS.After creating EBS Volume let's attach in to the EC2 Instance .
+aws ec2 create-volume --volume-type volume_type --size volume_size --availability-zone AZ_name
+
+aws ec2  attach-volume   --volume-id volume_id   --instance-id instance_id  --device device_name
+
+3) To configure webserver we have to first Install httpd service package and start their services.
+commands :-
+Yum install httpd
+(to install httpd package)
+systemctl start httpd
+(to start service)
+
+4) To make Document root /var/www/html of apache web server
+✔ First we have to create  partition
+
+✔ Second we have to  Formatting the partition
+
+
+✔ Last we have to Mount this partition with the the folder /var/www/html/
+
+5) now we have to put the static content like images used in web code into the S3 Bucket for better availability . For these we have to create one S3 Bucket .
+✔ To create S3 Bucket AWS CLI has Command as -
+
+aws s3api create-bucket  --bucket {bucket_name}  --region {region_name} 
+
+✔ Now we can upload our objects / content inside S3 Bucket . To upload or copy any Local Static Content or files we have command as :
+
+aws s3 cp  {file_name}  s3://{bucket_name}/ --acl {value}
+
+✔Using the URL provided to the object by S3 we can now access the Image .
+
+https://lwarth123.s3.ap-south-1.amazon.com/arth.jpg
+
+lwarth123.s3.ap-south-1.amazonaws.com/arth.jpg
+6) To set up Content Deliver Network of AWS We have to create CloudFront Distribution for our S3 Bucket Objects .
+
+ Command to Create CloudFront Distribution :
+aws cloudfront create-distribution  --origin-domain-name {domain_name}
+
+7) We can see that CloudFront provides one Domain Name or unique URL to access the content with fast speed and low latency . Now we have to give these Cloud Front URL in our Code for the Image instead of S3 URL .Finally we can see our web page is now become more faster in terms of speed as one of the part of web page that is Image is coming from AWS Cloud Front CDN .
