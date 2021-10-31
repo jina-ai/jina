@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 
 def _deprecate(new_fn):
-    def f(*args, **kwargs):
+    def _f(*args, **kwargs):
         import inspect
 
         old_fn_name = inspect.stack()[1][4][0].strip().split("=")[0].strip()
@@ -29,7 +29,7 @@ def _deprecate(new_fn):
         )
         return new_fn(*args, **kwargs)
 
-    return f
+    return _f
 
 
 class ContentConversionMixin:
