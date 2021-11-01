@@ -24,7 +24,7 @@ class TraversableSequence:
     def traverse(
         self,
         traversal_paths: Sequence[str],
-        filter_fn: Optional[Callable] = None,
+        filter_fn: Optional[Callable[['Document'], bool]] = None,
     ) -> Iterable['TraversableSequence']:
         """
         Return an Iterator of :class:``TraversableSequence`` of the leaves when applying the traversal_paths.
@@ -52,7 +52,9 @@ class TraversableSequence:
 
     @staticmethod
     def _traverse(
-        docs: 'TraversableSequence', path: str, filter_fn: Optional[Callable] = None
+        docs: 'TraversableSequence',
+        path: str,
+        filter_fn: Optional[Callable[['Document'], bool]] = None,
     ):
         if path:
             loc = path[0]
@@ -82,7 +84,9 @@ class TraversableSequence:
             yield DocumentArray(list(filter(filter_fn, docs)))
 
     def traverse_flat_per_path(
-        self, traversal_paths: Sequence[str], filter_fn: Optional[Callable] = None
+        self,
+        traversal_paths: Sequence[str],
+        filter_fn: Optional[Callable[['Document'], bool]] = None,
     ):
         """
         Returns a flattened :class:``TraversableSequence`` per path in :param:``traversal_paths``
@@ -98,7 +102,9 @@ class TraversableSequence:
             yield self._flatten(self._traverse(self, p, filter_fn=filter_fn))
 
     def traverse_flat(
-        self, traversal_paths: Sequence[str], filter_fn: Optional[Callable] = None
+        self,
+        traversal_paths: Sequence[str],
+        filter_fn: Optional[Callable[['Document'], bool]] = None,
     ) -> Iterable['Document']:
         """
         Returns a single flattened :class:``TraversableSequence`` with all Documents, that are reached

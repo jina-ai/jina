@@ -32,7 +32,7 @@ class DocumentArrayNeuralOpsMixin:
         use_scipy: bool = False,
         exclude_self: bool = False,
         is_sparse: bool = False,
-        filter_fn: Optional[Callable] = None,
+        filter_fn: Optional[Callable[['Document'], bool]] = None,
         only_id: bool = False,
     ) -> None:
         """Compute embedding based nearest neighbour in `another` for each Document in `self`,
