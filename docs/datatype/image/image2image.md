@@ -1,6 +1,6 @@
 # Search Similar Images
 
-Given an example image can we find similar images without the need of any labels? Leveraging Jina, we have the advantage that we
+Given an example image can we find similar images without the need of any labels? Leveraging Jina, we have the advantage that 
 we don't need to use any labels or textual information about the images in order to build a search for similar images.
 
 In this tutorial we are going to create an image search system that retrieves similar images. We are going to
