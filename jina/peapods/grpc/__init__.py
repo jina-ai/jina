@@ -5,8 +5,9 @@ from typing import Optional, Callable
 import grpc
 from google.protobuf import struct_pb2
 
+from jina.enums import PollingType
 from jina.logging.logger import JinaLogger
-from jina.peapods.networking import create_connection_pool
+from jina.peapods.networking import create_connection_pool, ConnectionPool
 
 from jina.proto import jina_pb2_grpc, jina_pb2
 from jina.types.message import Message
@@ -17,59 +18,47 @@ from jina.types.routing.table import RoutingTable
 class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
     """A `Grpclet` object can send/receive Messages via gRPC.
 
-    :param args: the parsed arguments from the CLI
+    :param port: port to listen on
+    :param connection_pool: connection_pool to use for sending
+    :param host: host to bind to, defaults to 0.0.0.0
     :param message_callback: the callback to call on received messages
     :param logger: the logger to use
     """
 
     def __init__(
         self,
-        args: argparse.Namespace,
-        message_callback: Callable[['Message'], None],
+        port: int,
+        connection_pool: ConnectionPool,
+        host: str = '0.0.0.0',
+        message_callback: Callable[['Message'], None] = None,
         logger: Optional['JinaLogger'] = None,
     ):
-        self.args = args
+        self.host = host
+        self.port = port
         self._logger = logger or JinaLogger(self.__class__.__name__)
         self.callback = message_callback
 
-        self._connection_pool = create_connection_pool(args)
+        self._connection_pool = connection_pool
 
         self.msg_recv = 0
         self.msg_sent = 0
         self._pending_tasks = []
-        self._static_routing_table = args.static_routing_table
-        if args.static_routing_table:
-            self._routing_table = RoutingTable(args.routing_table)
-            self._next_targets = self._routing_table.get_next_target_addresses()
-        else:
-            self._routing_table = None
-            self._next_targets = None
 
-    async def send_message(self, msg: 'Message', **kwargs):
+    async def send_message(
+        self, msg: 'Message', target_address: str, polling_type: PollingType, **kwargs
+    ):
         """
         Sends a message via gRPC to the target indicated in the message's routing table
         :param msg: the protobuf message to send
+        :param target_address: address to send to, should include the port like 1.1.1.1:53
+         :param polling_type: polling type can be any or all
         :param kwargs: Additional arguments.
         """
-
-        if self._next_targets:
-            for pod_address in self._next_targets:
-                self._send_message(msg, pod_address)
-        else:
-            routing_table = RoutingTable(msg.envelope.routing_table)
-            next_targets = routing_table.get_next_targets()
-            for target, _ in next_targets:
-                self._send_message(
-                    self._add_envelope(msg, target),
-                    target.active_target_pod.full_address,
-                )
-
-    def _send_message(self, msg, pod_address):
         try:
             self.msg_sent += 1
 
             self._pending_tasks.append(
-                self._connection_pool.send_message(msg, pod_address)
+                self._connection_pool.send_message(msg, target_address, polling_type)
             )
 
             self._update_pending_tasks()
@@ -166,7 +155,7 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         )
 
         jina_pb2_grpc.add_JinaDataRequestRPCServicer_to_server(self, self._grpc_server)
-        bind_addr = f'{self.args.host}:{self.args.port_in}'
+        bind_addr = f'{self.host}:{self.port}'
         self._grpc_server.add_insecure_port(bind_addr)
         self._logger.debug(f'Binding gRPC server for data requests to {bind_addr}')
         self._connection_pool.start()
