@@ -851,14 +851,14 @@
 <span class="sd">    :param d: the dictionary to traverse</span>
 <span class="sd">    :param extra_search_paths: any extra paths to search</span>
 <span class="sd">    """</span>
-    <span class="n">mod</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">mod</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_finditem</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">'py_modules'</span><span class="p">):</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">[])</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">mod</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">mod</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
-            <span class="n">mod</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">mod</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                 <span class="n">_finditem</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>

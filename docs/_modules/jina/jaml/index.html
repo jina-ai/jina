@@ -1238,13 +1238,10 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_override_yml_params</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">raw_yaml</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">override_field</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">override_field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">field_params</span> <span class="o">=</span> <span class="n">raw_yaml</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">field_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">field_params</span><span class="p">:</span>
-                <span class="n">field_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">override_field</span><span class="p">)</span>
-                <span class="n">raw_yaml</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">field_params</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">raw_yaml</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">override_field</span>
+        <span class="k">if</span> <span class="n">override_field</span><span class="p">:</span>
+            <span class="n">field_params</span> <span class="o">=</span> <span class="n">raw_yaml</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">field_name</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="n">field_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">override_field</span><span class="p">)</span>
+            <span class="n">raw_yaml</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">field_params</span>
 
 <div class="viewcode-block" id="JAMLCompatible.is_valid_jaml"><a class="viewcode-back" href="../../../api/jina.jaml/#jina.jaml.JAMLCompatible.is_valid_jaml">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">is_valid_jaml</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
