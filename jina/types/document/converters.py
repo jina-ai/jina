@@ -549,13 +549,14 @@ class ContentConversionMixin:
             cur_loc_h, cur_loc_w = self.location[:2]
 
         bbox_locations = [
-            (h * stride_h + cur_loc_h, w * stride_w+cur_loc_w, window_h, window_w)
+            (h * stride_h + cur_loc_h, w * stride_w + cur_loc_w, window_h, window_w)
             for h in range(expanded_img.shape[0])
             for w in range(expanded_img.shape[1])
         ]
         expanded_img = expanded_img.reshape((-1, window_h, window_w, c))
         if as_chunks:
             from . import Document
+
             for location, _blob in zip(bbox_locations, expanded_img):
                 self.chunks.append(
                     Document(
