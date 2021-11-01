@@ -29,16 +29,10 @@ images) to the model to encode it into embeddings and then use the **Indexer** t
 can be based on any type of metric but without going deeper into this, we will focus only on Euclidean distance between
 two embeddings (corresponding to two images).
 
-Now, you might wonder what this *Indexer* is, or how to use a neural network of your choice. Worry not, we've got you
-covered. In Jina we have three fundamental concepts that you need to know to follow this tutorial. If you
-haven't read it yet, head on over to [Jina's basic concepts](https://docs.jina.ai/fundamentals/concepts/) page. 
-
-An Executor is the algorithmic unit in Jina. It performs a single task on a `Document` or `DocumentArray`.
-We have many Executors available on [Jina Hub](https://hub.jina.ai) - a marketplace for Executors. You can use any of
-them relevant to your tasks or build one of your own. Coming back to the problem, we will use the **SimpleIndexer** Executor as
+We will use the **SimpleIndexer** Executor as
 our indexer (the one that stores and retrieves data). This Executor also returns the matching `Document` when we make
 a query. The search part is done using the built-in `match` function of `DocumentArrayMemmap`. To encode the images into
-embeddings we will use our own defined Executor which uses the pre-trained 'ResNet101' model.
+embeddings we will use our own Executor which uses the pre-trained 'ResNet101' model.
 
 ## Flow Overview
 
@@ -63,7 +57,7 @@ docs_array = DocumentArray(from_files(f'{image_dir}/*.{image_format}'))
 ```
 
 Once the image is loaded our next step is to encode these images into embeddings. As stated earlier you can use
-Executors from  [Jina Hub](https://hub.jina.ai) off-the-shelf or you can define an Executor of your own in
+Executors from [Jina Hub](https://hub.jina.ai) off-the-shelf or you can define an Executor of your own in
 just a few steps. For this tutorial we will write our own Executor:
 
 ```python
