@@ -105,6 +105,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -11151,4 +11152,33 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 ### 🍹 Other Improvements
 
  - [[```e1c0d575```](https://github.com/jina-ai/jina/commit/e1c0d575a39c468ac55d6760d5717b4100715dac)] __-__ __version__: the next version will be 2.2.1 (*Jina Dev Bot*)
+
+<a name=release-note-2-2-2></a>
+## Release Note (`2.2.2`)
+
+> Release time: 2021-11-01 11:12:48
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```50a19452```](https://github.com/jina-ai/jina/commit/50a19452f8c526438c2b81036ecc7c1d01a083a6)] __-__ __types__: add only_id option to match func (#3842) (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```a66b4aa6```](https://github.com/jina-ai/jina/commit/a66b4aa67c33cccd822cdd8b35cc754d5a3a645a)] __-__ __types__: fix csv loader dialect (#3841) (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```01695a5c```](https://github.com/jina-ai/jina/commit/01695a5c7a97790328783bcbeb5fcdd31eb3a584)] __-__ fix broken test in _deprecate wrapper (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```dce709db```](https://github.com/jina-ai/jina/commit/dce709db639d3bfd41fb4dbf22dc59bd63309514)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```973c7353```](https://github.com/jina-ai/jina/commit/973c735360422ea370855f35f35bcc49464a6b58)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```502435bf```](https://github.com/jina-ai/jina/commit/502435bf04ad742694470667077f3df65148cce5)] __-__ __version__: the next version will be 2.2.2 (*Jina Dev Bot*)
 
