@@ -44,6 +44,8 @@ fragmented, multi-vendor, generic legacy tools.
 - via Docker: `docker run jinaai/jina:latest`
 - [More install options](https://docs.jina.ai/get-started/install/)
 
+If you are using Windows, be sure to install Jina on [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install).
+
 ## [Documentation](https://docs.jina.ai)
 
 ## Run Quick Demo
