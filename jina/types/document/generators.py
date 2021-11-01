@@ -125,7 +125,8 @@ def from_csv(
     :param sampling_rate: the sampling rate between [0, 1]
     :param dialect: define a set of parameters specific to a particular CSV dialect. could be a string that represents
         predefined dialects in your system, or could be a :class:`csv.Dialect` class that groups specific formatting
-        parameters together.
+        parameters together. If you don't know the dialect and the default one does not work for you,
+        you can try set it to ``auto``.
     :yield: documents
 
     """
