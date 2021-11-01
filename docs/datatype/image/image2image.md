@@ -8,25 +8,25 @@ use the test split of the [Dogs vs. Cats](https://www.kaggle.com/c/dogs-vs-cats/
 will subsequently refer to as the pets dataset. It contains 12.5K images of cats and dogs. Now, we can define our
 problem as selecting an image of cat or dog, and getting back images of similar cats or dogs respectively.
 
-We know that Jina searches semantically and this can vary with the neural network that we use for encoding our images. Since our
-task is to search for similar images we will consider visually similar images as semantically-related.
+Jina searches semantically, and the results will vary depending on the neural network that we use for image encoding. Our
+task is to search for similar images so we will consider visually-similar images as semantically-related.
 
 ## Build the Flow
 
-The solution to the problem uses a simple pipeline that can be subdivided into two steps:  **Index** and **Query**
+The solution uses a simple pipeline that can be subdivided into two steps:  **Index** and **Query**
 
 ### Index
 
 To search something out of the full dataset, we first need to index the data. This means that we store the embeddings
-of all the images from the pets dataset in some form of storage. The images can be read as a numpy array which is then
-fed to neural network of our choice. This neural network encodes the input images into some latent space which we call
-"embeddings". We then use **Indexer** to store these embeddings in memory.
+of all the images from the dataset in some form of storage. The images can be read as a numpy array which is then
+fed to the neural network of our choice. This neural network encodes the input images into some latent space which we call
+"embeddings". We then use an **Indexer** to store these embeddings in memory.
 
 ### Query
 
 Once the data is indexed, i.e. our database is built, we simply need to feed our query (an image or set of
 images) to the model to encode it into embeddings and then use the **Indexer** to retrieve matching images. The matching
-can be based on any type of metrics but without going deeper into this, we will focus only on Euclidean distance between
+can be based on any type of metric but without going deeper into this, we will focus only on Euclidean distance between
 two embeddings (corresponding to two images).
 
 Now, you might wonder what this *Indexer* is, or how to use a neural network of your choice. Worry not, we've got you
@@ -53,7 +53,7 @@ the images as the first step, followed by an `Indexer` to store/retrieve data.
 ## Insights
 
 Our first task is to wrap the image data as `Document`s and form a `DocumentArray`. This can be done easily with the
-following code snippet. `from_files` creates an iterator over a list of image paths and yields `Document`s.
+following code snippet. `from_files` creates an iterator over a list of image paths and yields `Document`s:
 
 ```python
 from jina import DocumentArray
@@ -64,7 +64,7 @@ docs_array = DocumentArray(from_files(f'{image_dir}/*.{image_format}'))
 
 Once the image is loaded our next step is to encode these images into embeddings. As stated earlier you can use
 Executors from  [Jina Hub](https://hub.jina.ai) off-the-shelf or you can define an Executor of your own in
-just a few steps. For this tutorial we will write our own Executor in a few lines of code:
+just a few steps. For this tutorial we will write our own Executor:
 
 ```python
 from jina import DocumentArray, Executor, requests
@@ -84,19 +84,19 @@ class FlashImageEncoder(Executor):
             doc.embedding = embed.numpy()
 ```
 
-You can see how simple it is to build an `Encoder` Executor: We simply inherit the base `Executor` and use a decorator
+To build an Encoder Executor we inherit the base `Executor` and use a decorator
 to define endpoints. As this `request` decorator is empty, this function will be called regardless of the
-endpoints invoked, i.e., on both `/index` and `/search` endpoints. We
+endpoints invoked, i.e., on both the `/index` and `/search` endpoints. We
 leverage [lightning-flash](https://github.com/PyTorchLightning/lightning-flash) to use the pre-trained `ResNet101` model for
 getting the embeddings. You can replace this model with any other pre-trained models of your choice. When this
 Executor is instantiated, the pre-trained weights are downloaded automatically. The `predict` function takes in
 the `DocumentArray` and extracts embeddings, each of which is then stored in the `embedding` attribute of the
 respective `Document`.
 
-Finally, comes the storage/retrieval step. This we accomplish using an **Indexer** executor. You can use any of the
+Finally, comes the storage/retrieval step. We do this with the **Indexer** Executor. You can use any of the
 available indexers on [Jina Hub](https://hub.jina.ai) or define your own. To create an **Indexer** you need to have two
-endpoints: `/index` and `/search`. For this tutorial we will define a `SimpleIndexer` which is also available on jina
-Hub.
+endpoints: `/index` and `/search`. For this tutorial we will define a `SimpleIndexer` which is [also available on jina
+Hub](https://hub.jina.ai/executor/zb38xlt4).
 
 ```python
 from jina import DocumentArrayMemmap, DocumentArray, Executor, requests
@@ -117,7 +117,7 @@ class SimpleIndexer(Executor):
         docs.match(self._dam)
 ```
 
-`SimpleIndexer` stores all the Documents with a memory map when invoked with an `/index` endpoint. During the search
+`SimpleIndexer` stores all the Documents with a memory map when invoked with the `/index` endpoint. During the search
 Flow, it matches the query `Document` with the indexed `Document` using the built-in `match` function
 of `DocumentArrayMemmap`.
 
