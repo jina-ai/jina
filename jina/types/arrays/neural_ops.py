@@ -32,7 +32,8 @@ class DocumentArrayNeuralOpsMixin:
         use_scipy: bool = False,
         exclude_self: bool = False,
         is_sparse: bool = False,
-        filter_fn: Optional[Callable] = None,
+        filter_fn: Optional[Callable[['Document'], bool]] = None,
+        only_id: bool = False,
     ) -> None:
         """Compute embedding based nearest neighbour in `another` for each Document in `self`,
         and store results in `matches`.
@@ -65,6 +66,7 @@ class DocumentArrayNeuralOpsMixin:
         :param exclude_self: if set, Documents in ``darray`` with same ``id`` as the left-hand values will not be
                         considered as matches.
         :param is_sparse: if set, the embeddings of left & right DocumentArray are considered as sparse NdArray
+        :param only_id: if set, then returning matches will only contain ``id``
         """
         if limit is not None:
             if limit <= 0:
@@ -125,6 +127,19 @@ class DocumentArrayNeuralOpsMixin:
                 rhv, cdist, _limit, normalization, metric_name, is_sparse
             )
 
+        def _get_id_from_da(rhv, int_offset):
+            return rhv._pb_body[int_offset].id
+
+        def _get_id_from_dam(rhv, int_offset):
+            return rhv._int2str_id(int_offset)
+
+        from .memmap import DocumentArrayMemmap
+
+        if isinstance(rhv, DocumentArrayMemmap):
+            _get_id = _get_id_from_dam
+        else:
+            _get_id = _get_id_from_da
+
         for _q, _ids, _dists in zip(lhv, idx, dist):
             _q.matches.clear()
             num_matches = 0
@@ -132,7 +147,11 @@ class DocumentArrayNeuralOpsMixin:
                 # Note, when match self with other, or both of them share the same Document
                 # we might have recursive matches .
                 # checkout https://github.com/jina-ai/jina/issues/3034
-                d = rhv[int(_id)]  # type: Document
+                if only_id:
+                    d = Document(id=_get_id(rhv, _id))
+                else:
+                    d = rhv[int(_id)]  # type: Document
+
                 if d.id in lhv:
                     d = Document(d, copy=True)
                     d.pop('matches')
