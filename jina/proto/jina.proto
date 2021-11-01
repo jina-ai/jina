@@ -1,7 +1,6 @@
 syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/struct.proto";
-import "google/protobuf/empty.proto";
 
 package jina;
 
@@ -157,28 +156,6 @@ message RouteProto {
     StatusProto status = 5; // the status of the execution
 }
 
-message TargetPodProto{
-    string host = 1; // the host HeadPea of the BasePod
-    uint32 port = 2; // the port HeadPea of the BasePod
-    uint32 port_out = 6; // the port TailPea of the BasePod
-    uint32 expected_parts = 3; // the number of parts the pod should expect
-    repeated RoutingEdgeProto out_edges = 4; // pod_name of Pods, the TailPea should send traffic to
-    string target_identity = 5;
-}
-
-message RoutingEdgeProto {
-    string pod = 1;
-    bool send_as_bind = 2;
-}
-
-message RoutingTableProto {
-    // Pods that get visited during a Flow. Gateway should be both the first and the last entry.
-    map<string, TargetPodProto>  pods = 1;
-
-    // The currently active Pod. Needed for ZMQ.
-    string active_pod = 2;
-}
-
 /**
  * Represents a Envelope, a part of the ``Message``.
  */
@@ -204,11 +181,11 @@ message EnvelopeProto {
         string vcs = 3; // vcs's version
     }
 
-    VersionProto version = 6; // version info
+    VersionProto version = 5; // version info
 
-    string request_type = 7; // type of the request: DataRequest, ControlRequest
+    string request_type = 6; // type of the request: DataRequest, ControlRequest
 
-    bool check_version = 8; // check local Protobuf version on every Pod that this message flows to
+    bool check_version = 7; // check local Protobuf version on every Pod that this message flows to
 
     /**
      * Represents a config for the compression algorithm
@@ -224,16 +201,11 @@ message EnvelopeProto {
     }
 
 
-    CompressConfigProto compression = 9; // compress configuration used for request
+    CompressConfigProto compression = 8; // compress configuration used for request
 
-    repeated RouteProto routes = 10; // status info on every routes
+    StatusProto status = 9; // status info
 
-    RoutingTableProto routing_table = 13;  // the routing table contains information to the next pods
-
-    StatusProto status = 11; // status info
-
-    HeaderProto header = 12; // header contains meta info defined by the user, copied from Request, for lazy serialization
-
+    HeaderProto header = 10; // header contains meta info defined by the user, copied from Request, for lazy serialization
 }
 
 /**
@@ -333,13 +305,22 @@ message RequestProto {
         enum Command {
             TERMINATE = 0; // shutdown the BasePod
             STATUS = 1; // check the status of the BasePod
-            IDLE = 2; // used in ROUTER-DEALER pattern, tells the router that the dealer is idle
-            CANCEL = 3; // used in ROUTER-DEALER pattern, tells the router that the dealer is busy (or closed)
-            SCALE = 4; // scale up/down a Pod
-            ACTIVATE = 5; // used in ROUTER-DEALER pattern, Indicate a Pea that it can activate itself and send the IDLE command to their router
-            DEACTIVATE = 6; // used in ROUTER-DEALER pattern, Indicate a Pea that it can deactivate itself and send the CANCEL command to their router
+            SCALE = 2; // scale up/down a Pod
+            ACTIVATE = 3; // used to add Peas to a Pod
+            DEACTIVATE = 4; // used to remove Peas from a Pod
         }
         Command command = 1; // the control command
+
+        /**
+         * Represents an entity (like a Pea)
+         */
+        message RelatedEntity {
+            string id = 1; // unique id of the entity, like the name of a pea
+            string address = 2; // address of the entity, could be an IP address
+            uint32 port = 3; // port this entity is listening on
+        }
+
+        repeated RelatedEntity relatedEntities = 2; // list of entities this ControlMessage is related to
     }
 
     HeaderProto header = 4; // header contains meta info defined by the user
@@ -368,7 +349,7 @@ service JinaRPC {
  */
 service JinaDataRequestRPC {
     // Pass in a Message, wrapping a DataRequest
-    rpc Call (MessageProto) returns (google.protobuf.Empty) {
+    rpc Call (MessageProto) returns (MessageProto) {
     }
 }
 
