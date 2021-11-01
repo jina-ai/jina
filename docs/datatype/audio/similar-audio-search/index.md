@@ -7,9 +7,13 @@ Searching for similar audios has a wide range of application including finding s
 ### Segment the Audio Clips
 
 The audioset dataset contains millions of annotated audios extracted from YouTube videos. Each sound clip is 10-second long and labeled to 632 audio event classes. 
-One of the challenges is that some sound clips contains other events and using one vector to express the whole clip is noisy. Therefore, we decide to split the clips into smaller chunks. Each chunk contains a smaller clip of 4-second. 
+One of the challenges is that some sound clips contains other events and using one vector to express the whole clip is noisy. Therefore, we decide to split the clips into smaller chunks. Each chunk contains a smaller clip of 4-second. For example, this audio clip is labled as `applause` but contains a long part of music.
 
-<!--embed-noise-samples-->
+<audio controls>
+  <source src="../../_static/similar-audio-search-match-UE3XnVFodMI_230000_applause.mp3" type="audio/wav">
+Your browser does not support the audio element.
+</audio>
+
 
 ```{admonition} Tips
 :class: info
@@ -66,6 +70,13 @@ class AudioSegmenter(Executor):
 
 ```
 
+```{admonition} Tips
+:class: info
+
+The length of audios might not be exactly 10 seconds and therefore the number of extract chunks might vary from audio to audio.
+
+```
+
 ### Encode the Audios
 
 To encode the sound clips into vectors, we choose VGGish model from Google Research. By default, the VGGish model needs the audios to be sampled at 16kHz and converted to examples of log mel spectrogram. The returning embeddings for each sound clip is a matrix of the size `K x 128`, where `K` is the number of examples in log mel spectrogram and roughly correpsond to the length of audio in seconds. Therefore, each 4-second audio clip in the chunks is represented by 4 128-dimensional vectors.
@@ -109,6 +120,35 @@ We choose the [SimpleIndexer](https://hub.jina.ai/executor/zb38xlt4) from Jina H
   ...
 ```
 
+### Merge the Matches
+
+Since we use audio chunks to retrieve the matches, we need to merge the retrieved matches into the matches for each query audio. We write `MyRanker` as below to collect the orginal 10-second audio clip for each retrieved 4-second short clips. Each long clip is retrieved for multiple times base on different parts of its short clips. We use the score of the most matched short clip as the score of the long audio. Afterwards, the retrieved long audios are sorted by their scores.
+
+```python
+class MyRanker(Executor):
+    @requests(on='/search')
+    def rank(self, docs: DocumentArray = None, **kwargs):
+        for doc in docs.traverse_flat(('r', )):
+            parents_scores = defaultdict(list)
+            parents_match = defaultdict(list)
+            for m in DocumentArray([doc]).traverse_flat(['cm']):
+                parents_scores[m.parent_id].append(m.scores['cosine'].value)
+                parents_match[m.parent_id].append(m)
+            new_matches = []
+            for match_parent_id, scores in parents_scores.items():
+                score_id = np.argmin(scores)
+                score = scores[score_id]
+                match = parents_match[match_parent_id][score_id]
+                new_match = Document(
+                    uri=match.uri,
+                    id=match_parent_id,
+                    scores={'cosine': score})
+                new_matches.append(new_match)
+            # Sort the matches
+            doc.matches = new_matches
+            doc.matches.sort(key=lambda d: d.scores['cosine'].value)
+```
+
 ## Run the Flow
 
 As we defined the flow in the YAML file, we use the `load_config` function to create the Flow and index the data.
@@ -141,9 +181,28 @@ Open the browser at `localhost:45678/docs`, send query via the Swagger UI,
 }
 ```
 
-<!--sample.gif-->
+## Show Resutls
 
-## show resutls
 
-<!--embed-query-samples-->
+<table>
+  <tr>
+    <th>Query</th>
+    <th>Matches</th>
+    <th>Score</th>
+  </tr>
+  <tr>
+    <td><audio controls><source src="../../_static/similar-audio-search-query-hhzoH17yf3o_20000_airplane.mp3" type="audio/wav"></audio></td>
+    <td><audio controls><source src="../../_static/similar-audio-search-match-6pO06krKrf8_30000_airplane.mp3" type="audio/wav"></audio></td>
+    <td>0.000014126301</td>
+    <td>0.0</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><audio controls><source src="../../_static/similar-audio-search-match-UE3XnVFodMI_230000_applause.mp3" type="audio/wav"></audio></td>
+    <td>0.00002515316</td>
+  </tr>
+</table>
 
+## Get the Source Code
+
+The code is available at [example-audio-search](https://github.com/jina-ai/example-audio-search)
