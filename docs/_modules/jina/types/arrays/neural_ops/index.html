@@ -651,7 +651,8 @@
         <span class="n">use_scipy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">exclude_self</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">is_sparse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">filter_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">filter_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="s1">'Document'</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">only_id</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Compute embedding based nearest neighbour in `another` for each Document in `self`,</span>
 <span class="sd">        and store results in `matches`.</span>
@@ -684,6 +685,7 @@
 <span class="sd">        :param exclude_self: if set, Documents in ``darray`` with same ``id`` as the left-hand values will not be</span>
 <span class="sd">                        considered as matches.</span>
 <span class="sd">        :param is_sparse: if set, the embeddings of left &amp; right DocumentArray are considered as sparse NdArray</span>
+<span class="sd">        :param only_id: if set, then returning matches will only contain ``id``</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">limit</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
@@ -744,6 +746,19 @@
                 <span class="n">rhv</span><span class="p">,</span> <span class="n">cdist</span><span class="p">,</span> <span class="n">_limit</span><span class="p">,</span> <span class="n">normalization</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">is_sparse</span>
             <span class="p">)</span>
 
+        <span class="k">def</span> <span class="nf">_get_id_from_da</span><span class="p">(</span><span class="n">rhv</span><span class="p">,</span> <span class="n">int_offset</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">rhv</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">[</span><span class="n">int_offset</span><span class="p">]</span><span class="o">.</span><span class="n">id</span>
+
+        <span class="k">def</span> <span class="nf">_get_id_from_dam</span><span class="p">(</span><span class="n">rhv</span><span class="p">,</span> <span class="n">int_offset</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">rhv</span><span class="o">.</span><span class="n">_int2str_id</span><span class="p">(</span><span class="n">int_offset</span><span class="p">)</span>
+
+        <span class="kn">from</span> <span class="nn">.memmap</span> <span class="kn">import</span> <span class="n">DocumentArrayMemmap</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rhv</span><span class="p">,</span> <span class="n">DocumentArrayMemmap</span><span class="p">):</span>
+            <span class="n">_get_id</span> <span class="o">=</span> <span class="n">_get_id_from_dam</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_get_id</span> <span class="o">=</span> <span class="n">_get_id_from_da</span>
+
         <span class="k">for</span> <span class="n">_q</span><span class="p">,</span> <span class="n">_ids</span><span class="p">,</span> <span class="n">_dists</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">lhv</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">dist</span><span class="p">):</span>
             <span class="n">_q</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
             <span class="n">num_matches</span> <span class="o">=</span> <span class="mi">0</span>
@@ -751,7 +766,11 @@
                 <span class="c1"># Note, when match self with other, or both of them share the same Document</span>
                 <span class="c1"># we might have recursive matches .</span>
                 <span class="c1"># checkout https://github.com/jina-ai/jina/issues/3034</span>
-                <span class="n">d</span> <span class="o">=</span> <span class="n">rhv</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">_id</span><span class="p">)]</span>  <span class="c1"># type: Document</span>
+                <span class="k">if</span> <span class="n">only_id</span><span class="p">:</span>
+                    <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">_get_id</span><span class="p">(</span><span class="n">rhv</span><span class="p">,</span> <span class="n">_id</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">d</span> <span class="o">=</span> <span class="n">rhv</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">_id</span><span class="p">)]</span>  <span class="c1"># type: Document</span>
+
                 <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">lhv</span><span class="p">:</span>
                     <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                     <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'matches'</span><span class="p">)</span>

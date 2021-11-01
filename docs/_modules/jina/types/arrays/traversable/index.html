@@ -643,7 +643,7 @@
 <div class="viewcode-block" id="TraversableSequence.traverse"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence.traverse">[docs]</a>    <span class="k">def</span> <span class="nf">traverse</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">traversal_paths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">filter_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">filter_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="s1">'Document'</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="s1">'TraversableSequence'</span><span class="p">]:</span>
         <span class="sd">"""</span>
 <span class="sd">        Return an Iterator of :class:``TraversableSequence`` of the leaves when applying the traversal_paths.</span>
@@ -671,7 +671,9 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_traverse</span><span class="p">(</span>
-        <span class="n">docs</span><span class="p">:</span> <span class="s1">'TraversableSequence'</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">filter_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">docs</span><span class="p">:</span> <span class="s1">'TraversableSequence'</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">filter_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="s1">'Document'</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
             <span class="n">loc</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -701,7 +703,9 @@
             <span class="k">yield</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">filter_fn</span><span class="p">,</span> <span class="n">docs</span><span class="p">)))</span>
 
 <div class="viewcode-block" id="TraversableSequence.traverse_flat_per_path"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence.traverse_flat_per_path">[docs]</a>    <span class="k">def</span> <span class="nf">traverse_flat_per_path</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">traversal_paths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">filter_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">traversal_paths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">filter_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="s1">'Document'</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Returns a flattened :class:``TraversableSequence`` per path in :param:``traversal_paths``</span>
@@ -717,7 +721,9 @@
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flatten</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">filter_fn</span><span class="o">=</span><span class="n">filter_fn</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="TraversableSequence.traverse_flat"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence.traverse_flat">[docs]</a>    <span class="k">def</span> <span class="nf">traverse_flat</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">traversal_paths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">filter_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">traversal_paths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">filter_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="s1">'Document'</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">]:</span>
         <span class="sd">"""</span>
 <span class="sd">        Returns a single flattened :class:``TraversableSequence`` with all Documents, that are reached</span>
