@@ -698,7 +698,7 @@ If <cite>read_mode</cite> is None, will iterate over filenames.</p></li>
 </dd></dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.types.document.generators.from_csv">
-<span class="sig-prename descclassname"><span class="pre">jina.types.document.generators.</span></span><span class="sig-name descname"><span class="pre">from_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_resolver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/generators/#from_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.generators.from_csv" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">jina.types.document.generators.</span></span><span class="sig-name descname"><span class="pre">from_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_resolver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dialect</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'excel'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/generators/#from_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.generators.from_csv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generator function for CSV. Yields documents.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -708,6 +708,10 @@ If <cite>read_mode</cite> is None, will iterate over filenames.</p></li>
 names defined in Document.</p></li>
 <li><p><strong>size</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – the maximum number of the documents</p></li>
 <li><p><strong>sampling_rate</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – the sampling rate between [0, 1]</p></li>
+<li><p><strong>dialect</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]) – define a set of parameters specific to a particular CSV dialect. could be a string that represents
+predefined dialects in your system, or could be a <code class="xref py py-class docutils literal notranslate"><span class="pre">csv.Dialect</span></code> class that groups specific formatting
+parameters together. If you don’t know the dialect and the default one does not work for you,
+you can try set it to <code class="docutils literal notranslate"><span class="pre">auto</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Yield</dt>
@@ -835,7 +839,7 @@ a JSON string or a Python dict.</p></li>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 31, 2021.
+                    Last updated on Nov 01, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

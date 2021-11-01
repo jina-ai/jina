@@ -733,6 +733,7 @@
     <span class="n">field_resolver</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">sampling_rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">dialect</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">'csv.Dialect'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'excel'</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
     <span class="sd">"""Generator function for CSV. Yields documents.</span>
 
@@ -741,6 +742,10 @@
 <span class="sd">            names defined in Document.</span>
 <span class="sd">    :param size: the maximum number of the documents</span>
 <span class="sd">    :param sampling_rate: the sampling rate between [0, 1]</span>
+<span class="sd">    :param dialect: define a set of parameters specific to a particular CSV dialect. could be a string that represents</span>
+<span class="sd">        predefined dialects in your system, or could be a :class:`csv.Dialect` class that groups specific formatting</span>
+<span class="sd">        parameters together. If you don't know the dialect and the default one does not work for you,</span>
+<span class="sd">        you can try set it to ``auto``.</span>
 <span class="sd">    :yield: documents</span>
 
 <span class="sd">    """</span>
@@ -752,11 +757,14 @@
         <span class="n">file_ctx</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span>
 
     <span class="k">with</span> <span class="n">file_ctx</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="c1"># when set to auto, then sniff</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">dialect</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">Sniffer</span><span class="p">()</span><span class="o">.</span><span class="n">sniff</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1024</span><span class="p">))</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dialect</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dialect</span> <span class="o">==</span> <span class="s1">'auto'</span><span class="p">:</span>
+                <span class="n">dialect</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">Sniffer</span><span class="p">()</span><span class="o">.</span><span class="n">sniff</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1024</span><span class="p">))</span>
+                <span class="n">fp</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="n">dialect</span> <span class="o">=</span> <span class="s1">'excel'</span>  <span class="c1">#: can not sniff delimiter, use default dialect</span>
-        <span class="n">fp</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
         <span class="n">lines</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="n">dialect</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">_subsample</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">):</span>
             <span class="k">if</span> <span class="s1">'groundtruth'</span> <span class="ow">in</span> <span class="n">value</span> <span class="ow">and</span> <span class="s1">'document'</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
@@ -925,7 +933,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 31, 2021.
+                    Last updated on Nov 01, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
