@@ -13,6 +13,7 @@ from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2_grpc
 from jina.types.message import Message
 from .. import __default_host__, __docker_host__
+from ..enums import PollingType
 from ..helper import get_public_ip, get_internal_ip, get_or_reuse_loop
 
 if False:
@@ -72,6 +73,13 @@ class ConnectionList:
         self._rr_counter = (self._rr_counter + 1) % len(self._connections)
         return connection
 
+    def get_all_connections(self):
+        """
+        Returns all available connections
+        :returns: A complete list of all connections from the pool
+        """
+        return self._connections
+
     def pop_connection(self):
         """
         Removes and returns a connection from the list. Strategy is round robin
@@ -111,16 +119,37 @@ class ConnectionPool:
 
         self._logger = logger or JinaLogger(self.__class__.__name__)
 
-    def send_message(self, msg: Message, target_address: str):
-        """Send msg to target_address via one of the pooled connections
+    def send_message(
+        self,
+        msg: Message,
+        target_address: str,
+        polling_type: PollingType = PollingType.ANY,
+    ):
+        """Send msg to target_address via one or all of the pooled connections
 
         :param msg: message to send
         :param target_address: address to send to, should include the port like 1.1.1.1:53
+        :param polling_type: defines if the message should be send to any or all pooled connections for target_address
         :return: result of the actual send method
         """
         if target_address in self._connections:
-            pooled_connection = self._connections[target_address].get_next_connection()
-            return self._send_message(msg, pooled_connection)
+            connections = []
+            if polling_type == PollingType.ANY:
+                connections.append(
+                    self._connections[target_address].get_next_connection()
+                )
+            elif polling_type == PollingType.ALL:
+                connections.extend(
+                    self._connections[target_address].get_all_connections()
+                )
+            else:
+                raise ValueError(f'Unsupported polling type {polling_type}')
+
+            results = []
+            for connection in connections:
+                results.append(self._send_message(msg, connection))
+
+            return results
         elif self._on_demand_connection:
             # If the pool is disabled and an unknown connection is requested: create it
             connection_pool = self._create_connection_pool(target_address)
@@ -448,18 +477,21 @@ def get_connect_host(
         return bind_host
 
 
-def create_connection_pool(args: 'Namespace') -> ConnectionPool:
+def create_connection_pool(
+    k8s_namespace: str = None, k8s_connection_pool: bool = True
+) -> ConnectionPool:
     """
-    Creates the appropriate connection pool based on args
-    :param args: Arguments for this pod
+    Creates the appropriate connection pool based on parameters
+    :param k8s_namespace: k8s namespace the pool will live in, None if outside K8s
+    :param k8s_connection_pool: flag to indicate if K8sGrpcConnectionPool should be used, defaults to true in K8s
     :return: A connection pool object
     """
-    if args.k8s_namespace and args.k8s_connection_pool:
+    if k8s_namespace and k8s_connection_pool:
         from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
 
         k8s_clients = K8sClients()
         return K8sGrpcConnectionPool(
-            namespace=args.k8s_namespace,
+            namespace=k8s_namespace,
             client=k8s_clients.core_v1,
         )
     else:
