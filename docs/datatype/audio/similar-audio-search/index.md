@@ -4,10 +4,14 @@ Searching for similar audios has a wide range of application including finding s
 
 ## Build the Flow
 
+```{figure} similar-audio-search-flow.svg
+:align: center
+```
+
 ### Segment the Audio Clips
 
-The audioset dataset contains millions of annotated audios extracted from YouTube videos. Each sound clip is 10-second long and labeled to 632 audio event classes. 
-One of the challenges is that some sound clips contains other events and using one vector to express the whole clip is noisy. Therefore, we decide to split the clips into smaller chunks. Each chunk contains a smaller clip of 4-second. For example, this audio clip is labled as `applause` but contains a long part of music.
+The AudioSet dataset contains millions of annotated audios extracted from YouTube videos. Each sound clip is 10-second long and labeled to 632 audio event classes. 
+One major challenges is that some sound clips contains other events. This makes it difficult and nosiy to express the whole clip with a single vector. For example, the audio clip below is labled as `applause` but contains a long part of music. To overcome this issue, we use the [recursive structure](https://docs.jina.ai/fundamentals/document/document-api/#recursive-nested-document) of Jina Document and split the clips into smaller chunks. Each chunk contains a smaller clip of 4-second. 
 
 <audio controls>
   <source src="../../_static/similar-audio-search-match-UE3XnVFodMI_230000_applause.mp3" type="audio/wav">
@@ -21,7 +25,7 @@ Your browser does not support the audio element.
 The AudioSet dataset doesn't contain the original sound clip. You can use `youtube-dl` to download the audio data from the corresponding YouTube videos:
 
 :::text
-youtube-dl --postprocessor-args '-ss 8.953 -to 18.953' -x --audio-format mp3 -o 'data/OXJ9Ln2sXJ8_30000_airplane.%(ext)s' https://www.youtube.com/watch\?v\=OXJ9Ln2sXJ8_30000
+youtube-dl --postprocessor-args '-ss 8.953 -to 18.953' -x --audio-format mp3 -o 'data/OXJ9Ln2sXJ8_30000.%(ext)s' https://www.youtube.com/watch\?v\=OXJ9Ln2sXJ8_30000
 :::
 ```
 
@@ -194,7 +198,6 @@ Open the browser at `localhost:45678/docs`, send query via the Swagger UI,
     <td><audio controls><source src="../../_static/similar-audio-search-query-hhzoH17yf3o_20000_airplane.mp3" type="audio/wav"></audio></td>
     <td><audio controls><source src="../../_static/similar-audio-search-match-6pO06krKrf8_30000_airplane.mp3" type="audio/wav"></audio></td>
     <td>0.000014126301</td>
-    <td>0.0</td>
   </tr>
   <tr>
     <td></td>
