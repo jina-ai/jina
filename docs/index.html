@@ -31,7 +31,7 @@
     <link rel="index" title="Index" href="genindex/" /><link rel="search" title="Search" href="search/" /><link rel="next" title="What is Neural Search?" href="get-started/neural-search/" />
 
     <link rel="shortcut icon" href="_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.10.09"/>
-        <title>Jina 2.2.2 documentation</title>
+        <title>Jina 2.2.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
@@ -165,7 +165,7 @@
         </div>
         <div class="header-center">
             <a href="#">
-                <div class="brand">Jina 2.2.2 documentation</div>
+                <div class="brand">Jina 2.2.3 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -654,8 +654,7 @@ fragmented, multi-vendor, generic legacy tools.</p>
 <section id="install">
 <h2>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h2>
 <ol>
-<li><p>Make sure that you have Python 3.7+ installed on Linux/MacOS/<a class="reference internal" href="advanced/experimental/windows/#jina-on-windows"><span class="std std-ref">Windows</span></a>.</p></li>
-<li><p>Install Jina</p>
+<li><p>Make sure that you have Python 3.7+ installed on Linux/MacOS/<a class="reference internal" href="advanced/experimental/windows/#jina-on-windows"><span class="std std-ref">Windows</span></a>.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">via PyPI</label><div class="tab-content docutils">
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install -U jina
@@ -668,18 +667,26 @@ fragmented, multi-vendor, generic legacy tools.</p>
 </div>
 </div>
 <input class="tab-input" id="tab-set--0-input--3" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--3">via Docker</label><div class="tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker run jinaai/jina:latest
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker pull jinaai/jina:latest
 </pre></div>
 </div>
 </div>
 </div>
 </li>
-<li><p>Run hello-world demo</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hello fashion
+<li><p>That’s it! Try a hello-world demo</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">Run natively</label><div class="tab-content docutils">
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina hello fashion
 </pre></div>
 </div>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--2">Run in Docker</label><div class="tab-content docutils">
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker run -v <span class="s2">"</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">/j:/j"</span> jinaai/jina:latest hello fashion --workdir /j <span class="o">&amp;&amp;</span> open j/demo.html
+</pre></div>
+</div>
+</div>
+</div>
 </li>
-<li><p>That’s it! In the next few seconds the demo will open in a new page in your browser.</p></li>
 </ol>
 <p>Now that you’re set up, let’s dive into more of how Jina works and how to build great apps.</p>
 </section>
