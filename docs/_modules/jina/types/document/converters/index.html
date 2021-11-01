@@ -1169,14 +1169,17 @@
             <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="n">row_step</span> <span class="o">*</span> <span class="n">stride_h</span><span class="p">,</span> <span class="n">col_step</span> <span class="o">*</span> <span class="n">stride_w</span><span class="p">,</span> <span class="n">row_step</span><span class="p">,</span> <span class="n">col_step</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
             <span class="n">writeable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="n">cur_loc_h</span><span class="p">,</span> <span class="n">cur_loc_w</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+            <span class="n">cur_loc_h</span><span class="p">,</span> <span class="n">cur_loc_w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
 
+        <span class="n">bbox_locations</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">h</span> <span class="o">*</span> <span class="n">stride_h</span> <span class="o">+</span> <span class="n">cur_loc_h</span><span class="p">,</span> <span class="n">w</span> <span class="o">*</span> <span class="n">stride_w</span> <span class="o">+</span> <span class="n">cur_loc_w</span><span class="p">,</span> <span class="n">window_h</span><span class="p">,</span> <span class="n">window_w</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">expanded_img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">expanded_img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="p">]</span>
         <span class="n">expanded_img</span> <span class="o">=</span> <span class="n">expanded_img</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">window_h</span><span class="p">,</span> <span class="n">window_w</span><span class="p">,</span> <span class="n">c</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">as_chunks</span><span class="p">:</span>
-            <span class="n">bbox_locations</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="p">(</span><span class="n">h</span> <span class="o">*</span> <span class="n">stride_h</span><span class="p">,</span> <span class="n">w</span> <span class="o">*</span> <span class="n">stride_w</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">expanded_img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-                <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">expanded_img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-            <span class="p">]</span>
             <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">Document</span>
 
             <span class="k">for</span> <span class="n">location</span><span class="p">,</span> <span class="n">_blob</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">bbox_locations</span><span class="p">,</span> <span class="n">expanded_img</span><span class="p">):</span>
