@@ -91,11 +91,16 @@ def test_simple_run(docs):
 
 @pytest.fixture()
 def docker_image():
-    docker_file = os.path.join(cur_dir, 'Dockerfile')
-    os.system(f"docker build -f {docker_file} -t test_rolling_update_docker {cur_dir}")
-    time.sleep(3)
+    import docker
+
+    client = docker.from_env()
+    client.images.build(path=os.path.join(cur_dir), tag='test_rolling_update_docker')
+    client.close()
     yield
-    os.system(f"docker rmi $(docker images | grep 'test_rolling_update_docker')")
+    time.sleep(2)
+    client = docker.from_env()
+    client.containers.prune()
+    client.close()
 
 
 @pytest.mark.repeat(5)

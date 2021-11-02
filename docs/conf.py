@@ -68,7 +68,7 @@ html_theme_options = {
     # start-announce
 
     "announcement": '''
-    <a href="https://github.com/jina-ai/finetuner">Check out <b>Finetuner</b> - tuning any DNN for better embedding on neural search tasks</a>
+    <a href="https://www.meetup.com/jina-community-meetup/events/279857954/">Learn more about Jina and Finetuner at our Engineering All Hands on Nov 9</a>
     ''',
         
     # end-announce

@@ -86,7 +86,6 @@ def test_dump_dbms_remote(docker_compose):
     # jinad is used for ctrl requests
     client.flows.update(
         id=query_flow_id,
-        kind='rolling_update',
         pod_name='indexer_query',
         uses_with={'dump_path': DUMP_PATH_DOCKER},
     )

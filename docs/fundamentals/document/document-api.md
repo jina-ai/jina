@@ -89,17 +89,6 @@ the appropriate conversion method.
 You can convert a URI to a data URI (a data in-line URI scheme) using `doc.convert_uri_to_datauri()`. This will fetch
 the resource and make it inline.
 
-````{tip}
-
-In particular, when you work with an image `Document`, there are some extra helpers that enable more conversion:
-
-```python
-doc.convert_image_buffer_to_blob()
-doc.convert_image_blob_to_uri()
-doc.convert_image_uri_to_blob()
-```
-````
-
 ## Document embedding
 
 An embedding is a multi-dimensional representation of a `Document`. You can assign any Numpy `ndarray` as a `Document`'s
@@ -535,6 +524,7 @@ from jina.types.document.generators import from_files
 DocumentArray(from_files('/*.png'))
 ```
 
+(recursive-nested-document)=
 ## Recursive & nested Document
 
 `Document` can be recursive both horizontally and vertically. The following graphic illustrates the recursive `Document` structure. Each `Document` can have multiple "Chunks"

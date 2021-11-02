@@ -26,7 +26,7 @@
 # demo: required for the hello world demos
 
 scipy>=1.6.1:               devel
-fastapi:            standard, daemon, devel, demo
+fastapi:                    standard, daemon, devel, demo
 uvicorn[standard]>=0.14.0:  standard, daemon, devel, demo
 fluent-logger:              daemon, devel
 docker:                     standard, daemon, devel
@@ -77,3 +77,4 @@ kubernetes>=18.20.0:        perf, standard, devel
 pytest-kind==21.1.3:        test
 pytest-lazy-fixture:        test
 datasets:                   cicd
+av:                         cicd
