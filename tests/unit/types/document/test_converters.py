@@ -330,3 +330,9 @@ def test_deprecate_fn():
         doc.convert_uri_to_image_blob()
 
     assert len(record) == 0
+
+
+def test_glb_converters():
+    doc = Document(uri=os.path.join(cur_dir, 'test.glb'))
+    doc.convert_uri_to_point_cloud_blob(2000)
+    assert doc.blob.shape == (2000, 3)
