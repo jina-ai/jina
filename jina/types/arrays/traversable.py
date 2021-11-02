@@ -166,7 +166,7 @@ class TraversableSequence:
         if traversal_paths:
             warnings.warn(
                 'using `traversal_paths` as an argument inside `.batch()` is deprecated. '
-                'please use `.traverse_flat().batch()` instead',
+                'please use `.traverse_flat(traversal_paths=...).batch()` instead',
                 DeprecationWarning,
             )
             _check_traversal_path_type(traversal_paths)

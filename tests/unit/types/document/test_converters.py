@@ -111,14 +111,6 @@ def test_image_normalize(shape, channel_axis):
 @pytest.mark.parametrize(
     'arr_size, channel_axis, height, width',
     [
-        ((32 * 28), -1, None, None),  # single line
-        ([32, 28], -1, None, None),  # without channel info
-        ([32, 28, 3], -1, None, None),  # h, w, c (rgb)
-        ([3, 32, 28], 0, None, None),  # c, h, w  (rgb)
-        ([1, 32, 28], 0, None, None),  # c, h, w, (greyscale)
-        ([32, 28, 1], -1, None, None),  # h, w, c, (greyscale)
-        ((32 * 28), -1, 896, 1),  # single line
-        ([32, 28], -1, 32, 28),  # without channel info
         ([32, 28, 3], -1, 32, 28),  # h, w, c (rgb)
         ([3, 32, 28], 0, 32, 28),  # c, h, w  (rgb)
         ([1, 32, 28], 0, 32, 28),  # c, h, w, (greyscale)
