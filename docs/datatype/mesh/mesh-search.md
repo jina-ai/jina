@@ -126,7 +126,7 @@ class PNEncoder(Executor):
 
 ```{admonition} Tips
 :class: info
-Notice how instead of iterating over each doc to set its embedding, we can directly get the blobs of all docs in `docs` at once by using the attribute `blobs` and set the embeddings of all docs in `docs` at once by using the attribute `embeddings`.
+ Instead of iterating over each doc to set its embedding, we can directly get the blobs of all docs in `docs` at once by using the attribute `blobs` and set the embeddings of all docs in `docs` at once by using the attribute `embeddings`.
 ```
 
 
@@ -507,7 +507,7 @@ with Flow().add(uses=GlbCrafter).add(uses=PNEncoder, uses_with={'ckpt_path': 'mo
 
 ```{admonition} Warning
 :class: warning
-Note `pyrender` has to be imported before all `pyglet` dependencies, otherwise an error will be raised in some os environments such as Mac OS.
+Note, `pyrender` has to be imported before all `pyglet` dependencies, otherwise an error will be raised in some os environments such as Mac OS.
 ```
 
 ## Results
@@ -537,4 +537,3 @@ And the following are the top 3 matches:
 ```
 
 **Congratulations!** You have just built a 3D Mesh Search Pipeline!
->>>>>>> a064f75818 (feat: add results and update GlbVisualizer)
