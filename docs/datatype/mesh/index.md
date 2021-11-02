@@ -13,7 +13,7 @@ A 3D mesh is the structural build of a 3D model consisting of polygons. Most 3D 
 
 ```{figure} image45.gif
 :align: center
-:width: 70%
+:width: 50%
 ```
 
 Before you start, let's recap some basic concepts of 3D mesh data and how Jina can help you process them.
