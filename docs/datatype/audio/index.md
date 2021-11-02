@@ -149,5 +149,5 @@ By no means you are restricted to use Jina native methods for audio processing. 
 ```{toctree}
 :hidden:
 
-find-replace-audio
+similar-audio-search/index
 ```
