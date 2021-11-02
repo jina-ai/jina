@@ -44,7 +44,7 @@ class ContentConversionMixin:
             yield (
                 d.convert_uri_to_image_blob()
                 .convert_uri_to_datauri()
-                .set_image_blob_size(224, 224)
+                .set_image_blob_shape(shape=(224, 224))
                 .set_image_blob_normalization()
                 .set_image_blob_channel_axis(-1, 0)
             )
@@ -153,23 +153,32 @@ class ContentConversionMixin:
         self.uri = 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
         return self
 
-    def set_image_blob_size(
+    def set_image_blob_shape(
         self,
-        width: Optional[int] = None,
-        height: Optional[int] = None,
+        shape: Tuple[int, int],
         channel_axis: int = -1,
     ) -> 'Document':
-        """Resize the image :attr:`.blob` inplace.
+        """Resample the image :attr:`.blob` into different size inplace.
 
-        :param width: the width of the image blob.
-        :param height: the height of the blob.
+        If your current image blob has shape ``[H,W,C]``, then the new blob will be ``[*shape, C]``
+
+        :param shape: the new shape of the image blob.
         :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
 
         :return: itself after processed
         """
         blob = _move_channel_axis(self.blob, original_channel_axis=channel_axis)
-        buffer = _to_png_buffer(blob)
-        self.blob = _to_image_blob(io.BytesIO(buffer), width=width, height=height)
+        out_rows, out_cols = shape
+        in_rows, in_cols, n_in = blob.shape
+
+        # compute coordinates to resample
+        x = np.tile(np.linspace(0, in_cols - 2, out_cols), out_rows)
+        y = np.repeat(np.linspace(0, in_rows - 2, out_rows), out_cols)
+
+        # resample each image
+        r = _nn_interpolate_2D(blob, x, y)
+        self.blob = r.reshape(out_rows, out_cols, n_in)
+
         return self
 
     def dump_buffer_to_file(self, file: Union[str, BinaryIO]) -> 'Document':
@@ -572,7 +581,7 @@ class ContentConversionMixin:
     normalize_image_blob = _deprecate(set_image_blob_normalization)
     convert_image_uri_to_blob = _deprecate(convert_uri_to_image_blob)
     convert_audio_uri_to_blob = _deprecate(convert_uri_to_audio_blob)
-    resize_image_blob = _deprecate(set_image_blob_size)
+    resize_image_blob = _deprecate(set_image_blob_shape)
 
 
 def _uri_to_buffer(uri: str) -> bytes:
@@ -793,3 +802,10 @@ def _text_to_int_sequence(text, vocab, max_len=None):
         elif len(vec) > max_len:
             vec = vec[-max_len:]
     return vec
+
+
+def _nn_interpolate_2D(X, x, y):
+    nx, ny = np.around(x), np.around(y)
+    nx = np.clip(nx, 0, X.shape[1] - 1).astype(int)
+    ny = np.clip(ny, 0, X.shape[0] - 1).astype(int)
+    return X[ny, nx, :]

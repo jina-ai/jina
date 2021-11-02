@@ -53,7 +53,7 @@ def test_image_convert_pipe(pytestconfig):
         (
             d.convert_uri_to_image_blob()
             .convert_uri_to_datauri()
-            .set_image_blob_size(64, 64)
+            .set_image_blob_shape((64, 64))
             .set_image_blob_normalization()
             .set_image_blob_channel_axis(-1, 0)
         )
@@ -129,7 +129,7 @@ def test_convert_image_blob_to_uri(arr_size, channel_axis, width, height):
     doc = Document(content=np.random.randint(0, 255, arr_size))
     assert doc.blob.any()
     assert not doc.uri
-    doc.set_image_blob_size(channel_axis=channel_axis, width=width, height=height)
+    doc.set_image_blob_shape(channel_axis=channel_axis, shape=(width, height))
 
     doc.convert_image_blob_to_uri()
     assert doc.uri.startswith('data:image/png;base64,')

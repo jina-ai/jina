@@ -426,8 +426,8 @@ class DocumentArrayNeuralOpsMixin:
                     _d.convert_uri_to_image_blob()
                     channel_axis = -1
 
-                _d.set_image_blob_channel_axis(channel_axis, -1).set_image_blob_size(
-                    width=img_size, height=img_size
+                _d.set_image_blob_channel_axis(channel_axis, -1).set_image_blob_shape(
+                    shape=(img_size, img_size)
                 )
 
                 row_id = floor(img_id / img_per_row)
