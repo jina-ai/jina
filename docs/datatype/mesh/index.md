@@ -2,7 +2,7 @@
 
 ````{tip}
 
-To enable the full feature of Document API on image, you need to install `trimesh`.
+To enable the full feature of Document API on mesh data, you need to install `trimesh`.
 
 ```shell
 pip install trimesh
