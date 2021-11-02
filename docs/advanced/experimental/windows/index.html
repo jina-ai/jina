@@ -666,8 +666,8 @@ Once done, you can install Jina as on a native *nix platform.</p>
 <section id="known-issues">
 <h2>Known issues<a class="headerlink" href="#known-issues" title="Permalink to this headline">¶</a></h2>
 <section id="multiprocessing-spawn">
-<h3><code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> spawn<a class="headerlink" href="#multiprocessing-spawn" title="Permalink to this headline">¶</a></h3>
-<p>Jina relies heavily on <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> to enable scaling &amp; distribution. Windows only supports <a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#the-spawn-and-forkserver-start-methods">spawn start method for multiprocessing</a>, which has a few caveats.</p>
+<h3><code class="docutils literal notranslate"><span class="pre">multiprocessing</span> <span class="pre">spawn</span></code><a class="headerlink" href="#multiprocessing-spawn" title="Permalink to this headline">¶</a></h3>
+<p>Jina relies heavily on <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> to enable scaling &amp; distribution. Windows only supports <a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#the-spawn-and-forkserver-start-methods">spawn start method for multiprocessing</a>, which has a few caveats. <a class="reference external" href="../../../fundamentals/flow/remarks#multiprocessing-spawn">Please follow the guidelines here.</a></p>
 </section>
 <section id="compatability-of-executors-in-the-hub">
 <h3>Compatability of Executors in the Hub<a class="headerlink" href="#compatability-of-executors-in-the-hub" title="Permalink to this headline">¶</a></h3>
@@ -689,116 +689,12 @@ Once done, you can install Jina as on a native *nix platform.</p>
 <h3>Memory watermark is unavailable<a class="headerlink" href="#memory-watermark-is-unavailable" title="Permalink to this headline">¶</a></h3>
 <p>Since Windows doesn’t support <code class="docutils literal notranslate"><span class="pre">resource</span></code> module, memory watermark checks are disabled by default.</p>
 </section>
-</section>
-<section id="best-practices">
-<h2>Best practices<a class="headerlink" href="#best-practices" title="Permalink to this headline">¶</a></h2>
 <section id="unicodeencodeerror-on-jina-cli">
 <h3><code class="docutils literal notranslate"><span class="pre">UnicodeEncodeError</span></code> on Jina CLI<a class="headerlink" href="#unicodeencodeerror-on-jina-cli" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>UnicodeEncodeError: 'charmap' codec can't encode character '\u25ae' in position : character maps to &lt;undefined&gt;
 </pre></div>
 </div>
 <p>Set environment variable <code class="docutils literal notranslate"><span class="pre">PYTHONIOENCODING='utf-8'</span></code> before starting your python script.</p>
-</section>
-<section id="explicit-entrypoint">
-<h3>Explicit entrypoint<a class="headerlink" href="#explicit-entrypoint" title="Permalink to this headline">¶</a></h3>
-<p>On Windows, the entrypoint of a Jina Flow should always be explicit via <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">__name__</span> <span class="pre">==</span> <span class="pre">'__main__'</span></code>.</p>
-<div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">✅ Do</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
-
-<span class="k">class</span> <span class="nc">CustomExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="nd">@requests</span>
-    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="o">...</span>
-
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">CustomExecutor</span><span class="p">)</span>
-    <span class="k">with</span> <span class="n">f</span><span class="p">:</span>
-        <span class="o">...</span>
-
-<span class="hll"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
-</span><span class="hll">    <span class="n">main</span><span class="p">()</span>
-</span></pre></div>
-</div>
-</div>
-<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">😔 Don’t</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
-<span class="hll">
-</span><span class="k">class</span> <span class="nc">CustomExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="nd">@requests</span>
-    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="o">...</span>
-
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">CustomExecutor</span><span class="p">)</span>
-<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
-    <span class="o">...</span>
-
-<span class="sd">"""</span>
-<span class="sd"># error</span>
-<span class="sd">This probably means that you are not using fork to start your</span>
-<span class="sd">child processes and you have forgotten to use the proper idiom</span>
-<span class="sd">in the main module:</span>
-
-<span class="sd">    if _name_ == '_main_':</span>
-<span class="sd">        freeze_support()</span>
-<span class="sd">        ...</span>
-
-<span class="sd">The "freeze_support()" line can be omitted if the program</span>
-<span class="sd">is not going to be frozen to produce an executable.</span>
-
-<span class="sd">"""</span>
-</pre></div>
-</div>
-</div>
-</div>
-</section>
-<section id="declare-executors-on-the-top-level-of-the-module">
-<h3>Declare Executors on the top-level of the module<a class="headerlink" href="#declare-executors-on-the-top-level-of-the-module" title="Permalink to this headline">¶</a></h3>
-<div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">✅ Do</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="hll"><span class="k">class</span> <span class="nc">CustomExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-</span>    <span class="nd">@requests</span>
-    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="o">...</span>
-
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">Executor</span><span class="p">)</span>
-    <span class="k">with</span> <span class="n">f</span><span class="p">:</span>
-        <span class="o">...</span>
-</pre></div>
-</div>
-</div>
-<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--2">😔 Don’t</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-<span class="hll">    <span class="k">class</span> <span class="nc">CustomExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-</span>        <span class="nd">@requests</span>
-        <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-            <span class="o">...</span>
-
-    <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">Executor</span><span class="p">)</span>
-    <span class="k">with</span> <span class="n">f</span><span class="p">:</span>
-        <span class="o">...</span>
-</pre></div>
-</div>
-</div>
-</div>
-</section>
-<section id="avoid-un-picklable-objects">
-<h3>Avoid un-picklable objects<a class="headerlink" href="#avoid-un-picklable-objects" title="Permalink to this headline">¶</a></h3>
-<p><a class="reference external" href="https://docs.python.org/3/library/pickle.html#what-can-be-pickled-and-unpickled">Here’s a list of types that can be pickled in Python</a>. Since <code class="docutils literal notranslate"><span class="pre">spawn</span></code> relies on pickling, we should avoid using code that cannot be pickled.</p>
-<div class="admonition hint">
-<p class="admonition-title">Hint</p>
-<p>Here are a few errors which indicates that you are using some code that is not pickable.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pickle.PicklingError: Can<span class="s1">'t pickle: it'</span>s not the same object
-AssertionError: can only join a started process
-</pre></div>
-</div>
-</div>
-<p>Inline functions, such as nested or lambda functions are not picklable. Use <code class="docutils literal notranslate"><span class="pre">functools.partial</span></code> instead.</p>
-</section>
-<section id="always-provide-absolute-path">
-<h3>Always provide absolute path<a class="headerlink" href="#always-provide-absolute-path" title="Permalink to this headline">¶</a></h3>
-<p>While passing filepaths to different jina arguments (e.g.- <code class="docutils literal notranslate"><span class="pre">uses</span></code>, <code class="docutils literal notranslate"><span class="pre">py_modules</span></code>), always pass the absolute path.</p>
 </section>
 </section>
 </section>
@@ -862,19 +758,12 @@ AssertionError: can only join a started process
                         <ul>
 <li><a class="reference internal" href="#">Jina on Windows</a><ul>
 <li><a class="reference internal" href="#known-issues">Known issues</a><ul>
-<li><a class="reference internal" href="#multiprocessing-spawn"><code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> spawn</a></li>
+<li><a class="reference internal" href="#multiprocessing-spawn"><code class="docutils literal notranslate"><span class="pre">multiprocessing</span> <span class="pre">spawn</span></code></a></li>
 <li><a class="reference internal" href="#compatability-of-executors-in-the-hub">Compatability of Executors in the Hub</a></li>
 <li><a class="reference internal" href="#jinad-is-not-supported">JinaD is not supported</a></li>
 <li><a class="reference internal" href="#limited-support-for-documentarraymemmap">Limited support for <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code></a></li>
 <li><a class="reference internal" href="#memory-watermark-is-unavailable">Memory watermark is unavailable</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#best-practices">Best practices</a><ul>
 <li><a class="reference internal" href="#unicodeencodeerror-on-jina-cli"><code class="docutils literal notranslate"><span class="pre">UnicodeEncodeError</span></code> on Jina CLI</a></li>
-<li><a class="reference internal" href="#explicit-entrypoint">Explicit entrypoint</a></li>
-<li><a class="reference internal" href="#declare-executors-on-the-top-level-of-the-module">Declare Executors on the top-level of the module</a></li>
-<li><a class="reference internal" href="#avoid-un-picklable-objects">Avoid un-picklable objects</a></li>
-<li><a class="reference internal" href="#always-provide-absolute-path">Always provide absolute path</a></li>
 </ul>
 </li>
 </ul>
