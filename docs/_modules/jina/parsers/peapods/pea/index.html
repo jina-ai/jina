@@ -700,6 +700,15 @@
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--replica-id'</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>  <span class="c1"># not sure how to mantain backwards compatibility with the workspace of Executor</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'the id of the replica of an executor'</span>
+        <span class="k">if</span> <span class="n">_SHOW_ALL_ARGS</span>
+        <span class="k">else</span> <span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--pea-role'</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">PeaRoleType</span><span class="o">.</span><span class="n">from_string</span><span class="p">,</span>
         <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">PeaRoleType</span><span class="p">),</span>

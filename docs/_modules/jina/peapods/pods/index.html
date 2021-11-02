@@ -1006,6 +1006,10 @@
             <span class="k">for</span> <span class="n">_args</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">,</span> <span class="s1">'noblock_on_start'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
                     <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="o">.</span><span class="n">replicas</span> <span class="o">==</span> <span class="mi">1</span>
+                <span class="p">):</span>  <span class="c1"># keep backwards compatibility with `workspace` in `Executor`</span>
+                    <span class="n">_args</span><span class="o">.</span><span class="n">replica_id</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_peas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BasePea</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">())</span>
             <span class="k">return</span> <span class="bp">self</span>
 
