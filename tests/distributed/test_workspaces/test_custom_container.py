@@ -1,7 +1,6 @@
 import os
 
 import docker
-import pytest
 
 from jina import __default_host__
 from daemon.clients import JinaDClient

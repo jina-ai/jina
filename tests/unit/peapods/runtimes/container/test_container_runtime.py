@@ -324,12 +324,13 @@ def test_container_override_params(docker_image_built, tmpdir, mocker):
     )
 
     with f:
-        f.index(random_docs(10), on_done=mock)
+        responses = f.index(random_docs(10), return_results=True)
 
+    assert len(responses) > 0
     assert os.path.exists(
         os.path.join(abc_path, 'ext-mwu-encoder', '0', 'ext-mwu-encoder.bin')
     )
-    validate_callback(mock, validate_response)
+    validate_response(responses[0])
 
 
 def test_container_volume(docker_image_built, tmpdir):
@@ -345,11 +346,12 @@ def test_container_volume(docker_image_built, tmpdir):
     )
 
     with f:
-        f.index(random_docs(10))
+        responses = f.index(random_docs(10), return_results=True)
 
     assert os.path.exists(
         os.path.join(abc_path, 'ext-mwu-encoder', '0', 'ext-mwu-encoder.bin')
     )
+    assert len(responses) > 0
 
 
 @pytest.mark.parametrize(
@@ -460,6 +462,78 @@ def test_pass_native_arg(monkeypatch, mocker):
         [
             '--uses',
             'docker://jinahub/pod',
+        ]
+    )
+    _ = ContainerRuntime(args, ctrl_addr='', ready_event=multiprocessing.Event())
+
+
+def test_pass_replica_id_shard_id(monkeypatch, mocker):
+    import docker
+
+    mocker.patch(
+        'jina.peapods.runtimes.container.ContainerRuntime.is_ready',
+        return_value=True,
+    )
+
+    class MockContainers:
+        class MockContainer:
+            def reload(self):
+                pass
+
+            def logs(self, **kwargs):
+                return []
+
+        def __init__(self):
+            pass
+
+        def get(self, *args):
+            pass
+
+        def run(self, *args, **kwargs):
+            assert '--shard-id' in list(args[1])
+            assert '--shards' in list(args[1])
+            assert '--replica-id' in list(args[1])
+            assert list(args[1])[list(args[1]).index('--shard-id') + 1] == '1'
+            assert list(args[1])[list(args[1]).index('--shards') + 1] == '5'
+            assert list(args[1])[list(args[1]).index('--replica-id') + 1] == '1'
+            return MockContainers.MockContainer()
+
+    class MockClient:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def close(self):
+            pass
+
+        def version(self):
+            return {'Version': '20.0.1'}
+
+        @property
+        def networks(self):
+            return {'bridge': None}
+
+        @property
+        def containers(self):
+            return MockContainers()
+
+        @property
+        def images(self):
+            return {}
+
+    monkeypatch.setattr(docker, 'from_env', MockClient)
+    args = set_pea_parser().parse_args(
+        [
+            '--uses',
+            'docker://jinahub/pod',
+            '--docker-kwargs',
+            'hello: 0',
+            'environment: ["VAR1=BAR", "VAR2=FOO"]',
+            '--shards',
+            '5',
+            '--shard-id',
+            '1',
+            '--replica-id',
+            '1',
         ]
     )
     _ = ContainerRuntime(args, ctrl_addr='', ready_event=multiprocessing.Event())
