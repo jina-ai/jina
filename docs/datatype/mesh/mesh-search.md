@@ -32,7 +32,7 @@ class GlbCrafter(Executor):
             d.blob = as_mesh(trimesh.load_mesh(d.uri)).sample(2048)
 ```
 
-We first load the data of each `glb` file as Python object. We will use the `trimesh` package to represents the `glb` data in the form of triangular meshes. The loaded object is of type `trimesh.Scene` which may contain one or more triangular mesh geometries. We combine all the meshes in the `Scene` to create a single `Trimesh` using `as_mesh`. Then we can sample surfaces from a single mesh geeomtry. The sampled surface will be made from 2048 points in 3D space and hence the shape of the `ndarray` representing each 3D model will be `(2048, 3)`.
+We first load the data of each `glb` file as Python object. We will use the `trimesh` package to represents the `glb` data in the form of triangular meshes. The loaded object is of type `trimesh.Scene` which may contain one or more triangular mesh geometries. We combine all the meshes in the `Scene` to create a single `Trimesh` using `as_mesh`. Then we can sample surfaces from a single mesh geometry. The sampled surface will be made from 2048 points in 3D space and hence the shape of the `ndarray` representing each 3D model will be `(2048, 3)`.
 
 ## Encode 3D Model
 
@@ -266,7 +266,6 @@ This is how the flow we built looks like:
 Combining the steps listed above and import the necessary dependencies, the following is the complete code.
 
 ```python
-import glob
 from typing import Optional, List
 
 from jina import Flow, Executor, DocumentArray, Document, requests
@@ -508,7 +507,7 @@ Note `pyrender` has to be imported before all `pyglet` dependencies, otherwise a
 
 ## Results
 
-Now let's take a look at the search results! Below is the 3D model we would like to search:
+Now let's take a look at the search results! Below is the `rifle_16.glb` 3D model we would like to search:
 
 ```{figure} query_doc.gif
 :align: center
