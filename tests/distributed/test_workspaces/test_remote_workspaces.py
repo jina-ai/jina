@@ -103,7 +103,8 @@ def test_upload_multiple_workspaces(replicas):
     )
     with f:
         responses = f.index(
-            inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS))
+            inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
+            return_results=True,
         )
     assert len(responses) > 0
     assert len(responses[0].docs) > 0
