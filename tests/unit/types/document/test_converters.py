@@ -53,7 +53,7 @@ def test_image_convert_pipe(pytestconfig):
         (
             d.convert_uri_to_image_blob()
             .convert_uri_to_datauri()
-            .set_image_blob_size(64, 64)
+            .set_image_blob_shape((64, 64))
             .set_image_blob_normalization()
             .set_image_blob_channel_axis(-1, 0)
         )
@@ -111,14 +111,6 @@ def test_image_normalize(shape, channel_axis):
 @pytest.mark.parametrize(
     'arr_size, channel_axis, height, width',
     [
-        ((32 * 28), -1, None, None),  # single line
-        ([32, 28], -1, None, None),  # without channel info
-        ([32, 28, 3], -1, None, None),  # h, w, c (rgb)
-        ([3, 32, 28], 0, None, None),  # c, h, w  (rgb)
-        ([1, 32, 28], 0, None, None),  # c, h, w, (greyscale)
-        ([32, 28, 1], -1, None, None),  # h, w, c, (greyscale)
-        ((32 * 28), -1, 896, 1),  # single line
-        ([32, 28], -1, 32, 28),  # without channel info
         ([32, 28, 3], -1, 32, 28),  # h, w, c (rgb)
         ([3, 32, 28], 0, 32, 28),  # c, h, w  (rgb)
         ([1, 32, 28], 0, 32, 28),  # c, h, w, (greyscale)
@@ -129,7 +121,7 @@ def test_convert_image_blob_to_uri(arr_size, channel_axis, width, height):
     doc = Document(content=np.random.randint(0, 255, arr_size))
     assert doc.blob.any()
     assert not doc.uri
-    doc.set_image_blob_size(channel_axis=channel_axis, width=width, height=height)
+    doc.set_image_blob_shape(channel_axis=channel_axis, shape=(width, height))
 
     doc.convert_image_blob_to_uri()
     assert doc.uri.startswith('data:image/png;base64,')
