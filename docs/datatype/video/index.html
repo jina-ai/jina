@@ -224,6 +224,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/neural-search/">What is Neural Search?</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../advanced/experimental/windows/">Jina on Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get-started/install/troubleshooting/">Troubleshooting</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../get-started/hello-world/">Run Hello World Demos</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -650,6 +651,13 @@
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-device-camera-video-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m16-3-75a-75-75-0-00-1-136-643l11-5-425v4-75a1-75-1-75-0-009-25-3h-7-5a1-75-1-75-0-000-4-75v6-5c0-12-216-784-13-1-75-13h7-5a1-75-1-75-0-0011-11-25v-675l3-864-2-318a-75-75-0-0016-12-25v-8-5zm-5-5-075l3-5-2-1v-5-85l-3-5-2-1v1-65zm9-5-6-75v-2a-25-25-0-00-25-25h-7-5a-25-25-0-00-25-25v6-5c0-138-112-25-25-25h7-5a-25-25-0-00-25-25v-4-5z-path-svg-video">
 <h1><svg aria-hidden="true" class="sd-octicon sd-octicon-device-camera-video" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M16 3.75a.75.75 0 00-1.136-.643L11 5.425V4.75A1.75 1.75 0 009.25 3h-7.5A1.75 1.75 0 000 4.75v6.5C0 12.216.784 13 1.75 13h7.5A1.75 1.75 0 0011 11.25v-.675l3.864 2.318A.75.75 0 0016 12.25v-8.5zm-5 5.075l3.5 2.1v-5.85l-3.5 2.1v1.65zM9.5 6.75v-2a.25.25 0 00-.25-.25h-7.5a.25.25 0 00-.25.25v6.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-4.5z" fill-rule="evenodd"></path></svg> Video<a class="headerlink" href="#svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-device-camera-video-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m16-3-75a-75-75-0-00-1-136-643l11-5-425v4-75a1-75-1-75-0-009-25-3h-7-5a1-75-1-75-0-000-4-75v6-5c0-12-216-784-13-1-75-13h7-5a1-75-1-75-0-0011-11-25v-675l3-864-2-318a-75-75-0-0016-12-25v-8-5zm-5-5-075l3-5-2-1v-5-85l-3-5-2-1v1-65zm9-5-6-75v-2a-25-25-0-00-25-25h-7-5a-25-25-0-00-25-25v6-5c0-138-112-25-25-25h7-5a-25-25-0-00-25-25v-4-5z-path-svg-video" title="Permalink to this headline">¶</a></h1>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>To enable the full feature of Document API on video, you need to install <code class="docutils literal notranslate"><span class="pre">av</span></code>.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install av
+</pre></div>
+</div>
+</div>
 <p>Video data is a common asset consumed on daily basis: live stream on Youtube/TikTok, CCTV camera or fun meme gifs.</p>
 <p>Even though most applications of computer vision today center on images, thanks to those viral TikTokers, video data analysis has gained more attention recently, e.g. monitoring real-time video and analyzing archived video.</p>
 <p>Comparing to static image, video allows for deeper situational understanding, because sequences of images provide new information about action. For example, we can track an obstacle through a sequence of images and understand its behavior to predict the next move. We can track a human pose, and understand the action taken with action classification.</p>

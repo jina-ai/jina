@@ -224,6 +224,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../get-started/neural-search/">What is Neural Search?</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../advanced/experimental/windows/">Jina on Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/troubleshooting/">Troubleshooting</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../get-started/hello-world/">Run Hello World Demos</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -655,7 +656,7 @@
 <section id="prerequisites">
 <h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
 <p>Let’s first install the following PyPI dependencies:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install jina tensorflow trimesh pyrender
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install tensorflow trimesh pyrender
 </pre></div>
 </div>
 </section>
@@ -902,6 +903,13 @@
 <section id="putting-it-all-together">
 <h2>Putting it all together<a class="headerlink" href="#putting-it-all-together" title="Permalink to this headline">¶</a></h2>
 <p>Combining the steps listed above and import the necessary dependencies, the following is the complete code.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Complete source code<div class="sd-summary-down docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-down" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z" fill-rule="evenodd"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-up" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z" fill-rule="evenodd"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">requests</span>
@@ -1136,8 +1144,9 @@
     <span class="n">visualizer</span> <span class="o">=</span> <span class="n">GlbVisualizer</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">matches</span><span class="o">=</span><span class="n">doc</span><span class="o">.</span><span class="n">matches</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span><span class="o">.</span><span class="n">visualize</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="warning admonition">
-<p class="admonition-title">Warning</p>
+</div>
+</details><div class="warning admonition">
+<p class="admonition-title">Import warning</p>
 <p>Note, <code class="docutils literal notranslate"><span class="pre">pyrender</span></code> has to be imported before all <code class="docutils literal notranslate"><span class="pre">pyglet</span></code> dependencies, otherwise an error will be raised in some os environments such as Mac OS.</p>
 </div>
 </section>
