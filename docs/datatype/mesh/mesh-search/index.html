@@ -8,7 +8,8 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/datatype/mesh/mesh-search.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
+  <meta property="og:description" content="In this tutorial, we will learn how to build a 3D mesh search pipeline with Jina. In particular, we will be building a search pipeline for 3D models in GLB format. Just like other data types, the 3D meshes search pipeline consists of loading, encoding and indexing the data. We can search the data..." />
+  <meta property="og:image" content="../../../_images/flow.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -188,7 +189,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -280,7 +281,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../audio/"><svg aria-hidden="true" class="sd-octicon sd-octicon-unmute" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M7.563 2.069A.75.75 0 018 2.75v10.5a.75.75 0 01-1.238.57L3.472 11H1.75A1.75 1.75 0 010 9.25v-2.5C0 5.784.784 5 1.75 5h1.723l3.289-2.82a.75.75 0 01.801-.111zM6.5 4.38L4.238 6.319a.75.75 0 01-.488.181h-2a.25.25 0 00-.25.25v2.5c0 .138.112.25.25.25h2a.75.75 0 01.488.18L6.5 11.62V4.38zm6.096-2.038a.75.75 0 011.06 0 8 8 0 010 11.314.75.75 0 01-1.06-1.06 6.5 6.5 0 000-9.193.75.75 0 010-1.06v-.001zm-1.06 2.121a.75.75 0 10-1.061 1.061 3.5 3.5 0 010 4.95.75.75 0 101.06 1.06 5 5 0 000-7.07l.001-.001z" fill-rule="evenodd"></path></svg> Audio</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../audio/find-replace-audio/">Find &amp; Replace Audio Clips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../audio/similar-audio-search/">Search Similar Audios</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../"><svg aria-hidden="true" class="sd-octicon sd-octicon-package" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M8.878.392a1.75 1.75 0 00-1.756 0l-5.25 3.045A1.75 1.75 0 001 4.951v6.098c0 .624.332 1.2.872 1.514l5.25 3.045a1.75 1.75 0 001.756 0l5.25-3.045c.54-.313.872-.89.872-1.514V4.951c0-.624-.332-1.2-.872-1.514L8.878.392zM7.875 1.69a.25.25 0 01.25 0l4.63 2.685L8 7.133 3.245 4.375l4.63-2.685zM2.5 5.677v5.372c0 .09.047.171.125.216l4.625 2.683V8.432L2.5 5.677zm6.25 8.271l4.625-2.683a.25.25 0 00.125-.216V5.677L8.75 8.432v5.516z" fill-rule="evenodd"></path></svg> 3D Mesh</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
@@ -649,6 +650,515 @@
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="search-similar-3d-meshes">
 <h1>Search Similar 3D Meshes<a class="headerlink" href="#search-similar-3d-meshes" title="Permalink to this headline">¶</a></h1>
+<p>In this tutorial, we will learn how to build a 3D mesh search pipeline with Jina. In particular, we will be building a search pipeline for 3D models in GLB format.</p>
+<p>Just like other data types, the 3D meshes search pipeline consists of <strong>loading</strong>, <strong>encoding</strong> and <strong>indexing</strong> the data. We can search the data after they are indexed.</p>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>Let’s first install the following PyPI dependencies:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install jina tensorflow trimesh pyrender
+</pre></div>
+</div>
+</section>
+<section id="load-glb-data">
+<h2>Load GLB data<a class="headerlink" href="#load-glb-data" title="Permalink to this headline">¶</a></h2>
+<p>First, given a <code class="docutils literal notranslate"><span class="pre">glb</span></code> file, how do we load and craft the <code class="docutils literal notranslate"><span class="pre">glb</span></code> into a Document so that we can process and encode?  Let’s use <code class="docutils literal notranslate"><span class="pre">trimesh</span></code> to build an executor for this.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">as_mesh</span><span class="p">(</span><span class="n">scene</span><span class="p">:</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Scene</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scene</span><span class="o">.</span><span class="n">geometry</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+        <span class="nb">tuple</span><span class="p">(</span><span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">faces</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">faces</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">scene</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+
+
+<span class="k">class</span> <span class="nc">GlbCrafter</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s1">'/index'</span><span class="p">,</span> <span class="s1">'/search'</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="n">mesh</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">load_mesh</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">as_mesh</span><span class="p">(</span><span class="n">trimesh</span><span class="o">.</span><span class="n">load_mesh</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">uri</span><span class="p">))</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We first load the data of each <code class="docutils literal notranslate"><span class="pre">glb</span></code> file as Python object. We will use the <code class="docutils literal notranslate"><span class="pre">trimesh</span></code> package to represents the <code class="docutils literal notranslate"><span class="pre">glb</span></code> data in the form of triangular meshes. The loaded object is of type <code class="docutils literal notranslate"><span class="pre">trimesh.Scene</span></code> which may contain one or more triangular mesh geometries. We combine all the meshes in the <code class="docutils literal notranslate"><span class="pre">Scene</span></code> to create a single <code class="docutils literal notranslate"><span class="pre">Trimesh</span></code> using <code class="docutils literal notranslate"><span class="pre">as_mesh</span></code>. Then we can sample surfaces from a single mesh geometry. The sampled surface will be made from 2048 points in 3D space and hence the shape of the <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> representing each 3D model will be <code class="docutils literal notranslate"><span class="pre">(2048,</span> <span class="pre">3)</span></code>.</p>
+</section>
+<section id="encode-3d-model">
+<h2>Encode 3D Model<a class="headerlink" href="#encode-3d-model" title="Permalink to this headline">¶</a></h2>
+<p>Once we convert each <code class="docutils literal notranslate"><span class="pre">glb</span></code> model into an <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>, encoding the inputs becomes straightforward. We will use our pre-trained <code class="docutils literal notranslate"><span class="pre">pointnet</span></code> to encode the data. The model looks like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span><span class="n">ckpt_path</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+    <span class="kn">from</span> <span class="nn">tensorflow</span> <span class="kn">import</span> <span class="n">keras</span>
+    <span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">layers</span>
+    
+    <span class="k">def</span> <span class="nf">conv_bn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">filters</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Conv1D</span><span class="p">(</span><span class="n">filters</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">'valid'</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">(</span><span class="n">momentum</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">layers</span><span class="o">.</span><span class="n">Activation</span><span class="p">(</span><span class="s1">'relu'</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">dense_bn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">filters</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">filters</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">(</span><span class="n">momentum</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">layers</span><span class="o">.</span><span class="n">Activation</span><span class="p">(</span><span class="s1">'relu'</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">tnet</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">num_features</span><span class="p">):</span>
+        <span class="k">class</span> <span class="nc">OrthogonalRegularizer</span><span class="p">(</span><span class="n">keras</span><span class="o">.</span><span class="n">regularizers</span><span class="o">.</span><span class="n">Regularizer</span><span class="p">):</span>
+            <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_features_</span><span class="p">,</span> <span class="n">l2reg</span><span class="o">=</span><span class="mf">0.001</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">num_features</span> <span class="o">=</span> <span class="n">num_features_</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">l2reg</span> <span class="o">=</span> <span class="n">l2reg</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">eye</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_features</span><span class="p">)</span>
+    
+            <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_features</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_features</span><span class="p">))</span>
+                <span class="n">xxt</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">tensordot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+                <span class="n">xxt</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">xxt</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_features</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_features</span><span class="p">))</span>
+                <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l2reg</span> <span class="o">*</span> <span class="n">tf</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">xxt</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">eye</span><span class="p">))</span>
+    
+            <span class="k">def</span> <span class="nf">get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">return</span> <span class="p">{</span><span class="s1">'num_features'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_features</span><span class="p">,</span>
+                        <span class="s1">'l2reg'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">l2reg</span><span class="p">,</span>
+                        <span class="s1">'eye'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">eye</span><span class="o">.</span><span class="n">numpy</span><span class="p">()}</span>
+    
+        <span class="n">bias</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">num_features</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+        <span class="n">reg</span> <span class="o">=</span> <span class="n">OrthogonalRegularizer</span><span class="p">(</span><span class="n">num_features</span><span class="p">)</span>
+    
+        <span class="n">x</span> <span class="o">=</span> <span class="n">conv_bn</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">conv_bn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">conv_bn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">GlobalMaxPooling1D</span><span class="p">()(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">dense_bn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">dense_bn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span>
+            <span class="n">num_features</span> <span class="o">*</span> <span class="n">num_features</span><span class="p">,</span>
+            <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">'zeros'</span><span class="p">,</span>
+            <span class="n">bias_initializer</span><span class="o">=</span><span class="n">bias</span><span class="p">,</span>
+            <span class="n">activity_regularizer</span><span class="o">=</span><span class="n">reg</span><span class="p">,</span>
+        <span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">feat_T</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Reshape</span><span class="p">((</span><span class="n">num_features</span><span class="p">,</span> <span class="n">num_features</span><span class="p">))(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dot</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))([</span><span class="n">inputs</span><span class="p">,</span> <span class="n">feat_T</span><span class="p">])</span>
+
+    <span class="n">inputs</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">2048</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">tnet</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">conv_bn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">conv_bn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">tnet</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">conv_bn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">conv_bn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">GlobalMaxPooling1D</span><span class="p">()(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">dense_bn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">'softmax'</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'pointnet'</span><span class="p">)</span>
+    <span class="n">intermediate_layer_model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">input</span><span class="p">,</span>
+                                           <span class="n">outputs</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">get_layer</span><span class="p">(</span><span class="sa">f</span><span class="s1">'dense_1'</span><span class="p">)</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+    <span class="n">intermediate_layer_model</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span><span class="n">ckpt_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">intermediate_layer_model</span>
+</pre></div>
+</div>
+<p>With the above model, we can then build our <code class="docutils literal notranslate"><span class="pre">pointnet</span></code> executor:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">PNEncoder</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ckpt_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedding_model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="n">ckpt_path</span><span class="o">=</span><span class="n">ckpt_path</span><span class="p">)</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s1">'/index'</span><span class="p">,</span> <span class="s1">'/search'</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">docs</span><span class="o">.</span><span class="n">embeddings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">blobs</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="info admonition">
+<p class="admonition-title">Tips</p>
+<p>Instead of iterating over each doc to set its embedding, we can directly get the blobs of all docs in <code class="docutils literal notranslate"><span class="pre">docs</span></code> at once by using the attribute <code class="docutils literal notranslate"><span class="pre">blobs</span></code> and set the embeddings of all docs in <code class="docutils literal notranslate"><span class="pre">docs</span></code> at once by using the attribute <code class="docutils literal notranslate"><span class="pre">embeddings</span></code>.</p>
+</div>
+</section>
+<section id="index-the-data">
+<h2>Index the data<a class="headerlink" href="#index-the-data" title="Permalink to this headline">¶</a></h2>
+<p>Let’s also build an indexer to index the data.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyIndexer</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="n">_docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/index'</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/search'</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">docs</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The above indexer simply uses <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> to store all the index docs and leverages the <code class="docutils literal notranslate"><span class="pre">match</span></code> function of <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> to match the query with docs indexed.</p>
+</section>
+<section id="visualize-3d-model">
+<h2>Visualize 3D Model<a class="headerlink" href="#visualize-3d-model" title="Permalink to this headline">¶</a></h2>
+<p>Finally, let’s also build the <code class="docutils literal notranslate"><span class="pre">GlbVisualizer</span></code> to visualize the results.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyrender</span>
+<span class="kn">import</span> <span class="nn">pyglet</span>
+<span class="kn">from</span> <span class="nn">pyglet</span> <span class="kn">import</span> <span class="n">clock</span>
+<span class="kn">from</span> <span class="nn">pyglet.gl</span> <span class="kn">import</span> <span class="n">Config</span>
+<span class="kn">from</span> <span class="nn">pyrender</span> <span class="kn">import</span> <span class="n">Viewer</span>
+
+
+<span class="k">def</span> <span class="nf">_init_and_start_app</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">TARGET_OPEN_GL_MAJOR</span> <span class="o">=</span> <span class="mi">4</span>  <span class="c1"># Target OpenGL Major Version</span>
+        <span class="n">TARGET_OPEN_GL_MINOR</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">MIN_OPEN_GL_MAJOR</span> <span class="o">=</span> <span class="mi">3</span>     <span class="c1"># Minimum OpenGL Major Version</span>
+        <span class="n">MIN_OPEN_GL_MINOR</span> <span class="o">=</span> <span class="mi">3</span>     <span class="c1"># Minimum OpenGL Minor Version</span>
+        <span class="n">confs</span> <span class="o">=</span> <span class="p">[</span><span class="n">Config</span><span class="p">(</span><span class="n">sample_buffers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                        <span class="n">depth_size</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span>
+                        <span class="n">double_buffer</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">major_version</span><span class="o">=</span><span class="n">TARGET_OPEN_GL_MAJOR</span><span class="p">,</span>
+                        <span class="n">minor_version</span><span class="o">=</span><span class="n">TARGET_OPEN_GL_MINOR</span><span class="p">),</span>
+                 <span class="n">Config</span><span class="p">(</span><span class="n">depth_size</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span>
+                        <span class="n">double_buffer</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">major_version</span><span class="o">=</span><span class="n">TARGET_OPEN_GL_MAJOR</span><span class="p">,</span>
+                        <span class="n">minor_version</span><span class="o">=</span><span class="n">TARGET_OPEN_GL_MINOR</span><span class="p">),</span>
+                 <span class="n">Config</span><span class="p">(</span><span class="n">sample_buffers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                        <span class="n">depth_size</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span>
+                        <span class="n">double_buffer</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">major_version</span><span class="o">=</span><span class="n">MIN_OPEN_GL_MAJOR</span><span class="p">,</span>
+                        <span class="n">minor_version</span><span class="o">=</span><span class="n">MIN_OPEN_GL_MINOR</span><span class="p">),</span>
+                 <span class="n">Config</span><span class="p">(</span><span class="n">depth_size</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span>
+                        <span class="n">double_buffer</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">major_version</span><span class="o">=</span><span class="n">MIN_OPEN_GL_MAJOR</span><span class="p">,</span>
+                        <span class="n">minor_version</span><span class="o">=</span><span class="n">MIN_OPEN_GL_MINOR</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">conf</span> <span class="ow">in</span> <span class="n">confs</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="nb">super</span><span class="p">(</span><span class="n">Viewer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">conf</span><span class="p">,</span> <span class="n">resizable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                             <span class="n">width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_viewport_size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                             <span class="n">height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_viewport_size</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">break</span>
+            <span class="k">except</span> <span class="n">pyglet</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">NoSuchConfigException</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Unable to initialize an OpenGL 3+ context'</span><span class="p">)</span>
+
+        <span class="n">clock</span><span class="o">.</span><span class="n">schedule_interval</span><span class="p">(</span>
+            <span class="n">Viewer</span><span class="o">.</span><span class="n">_time_event</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">viewer_flags</span><span class="p">[</span><span class="s1">'refresh_rate'</span><span class="p">],</span> <span class="bp">self</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">switch_to</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_caption</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">viewer_flags</span><span class="p">[</span><span class="s1">'window_title'</span><span class="p">])</span>
+
+
+<span class="k">class</span> <span class="nc">GlbVisualizer</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search_doc</span><span class="p">,</span> <span class="n">matches</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">search_doc</span> <span class="o">=</span> <span class="n">search_doc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matches</span> <span class="o">=</span> <span class="n">matches</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orig_func</span> <span class="o">=</span> <span class="n">pyrender</span><span class="o">.</span><span class="n">Viewer</span><span class="o">.</span><span class="n">_init_and_start_app</span>
+        <span class="n">pyrender</span><span class="o">.</span><span class="n">Viewer</span><span class="o">.</span><span class="n">_init_and_start_app</span> <span class="o">=</span> <span class="n">_init_and_start_app</span>
+
+    <span class="k">def</span> <span class="nf">visualize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">search_doc</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="s1">'Query Doc'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">matches</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">match</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">matches</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'Top </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1"> Match'</span><span class="p">)</span>
+        <span class="n">pyglet</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
+        <span class="n">fuze_trimesh</span> <span class="o">=</span> <span class="n">as_mesh</span><span class="p">(</span><span class="n">trimesh</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">uri</span><span class="p">))</span>
+        <span class="n">mesh</span> <span class="o">=</span> <span class="n">pyrender</span><span class="o">.</span><span class="n">Mesh</span><span class="o">.</span><span class="n">from_trimesh</span><span class="p">(</span><span class="n">fuze_trimesh</span><span class="p">)</span>
+        <span class="n">scene</span> <span class="o">=</span> <span class="n">pyrender</span><span class="o">.</span><span class="n">Scene</span><span class="p">()</span>
+        <span class="n">scene</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
+
+        <span class="n">pyrender</span><span class="o">.</span><span class="n">Viewer</span><span class="p">(</span>
+            <span class="n">scene</span><span class="p">,</span>
+            <span class="n">use_raymond_lighting</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">viewer_flags</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">'rotate'</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s1">'window_title'</span><span class="p">:</span> <span class="n">title</span><span class="p">,</span> 
+                <span class="s1">'caption'</span><span class="p">:</span> <span class="p">[{</span>
+                    <span class="s1">'font_name'</span><span class="p">:</span> <span class="s1">'OpenSans-Regular'</span><span class="p">,</span>
+                    <span class="s1">'font_pt'</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+                    <span class="s1">'color'</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="s1">'scale'</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+                    <span class="s1">'location'</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+                    <span class="s1">'text'</span><span class="p">:</span> <span class="n">title</span>
+                <span class="p">}]</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pyrender</span><span class="o">.</span><span class="n">Viewer</span><span class="o">.</span><span class="n">_init_and_start_app</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orig_func</span>
+</pre></div>
+</div>
+<p>The visualizer uses <code class="docutils literal notranslate"><span class="pre">pyrender</span></code> to render the query and match results. Since we want to display multiple models at once, we need to patch the <code class="docutils literal notranslate"><span class="pre">_init_and_start_app</span></code> function to delay the start of pyrender app after all viewers are initialized.</p>
+</section>
+<section id="index-search-and-visualize-data">
+<h2>Index, Search and Visualize Data<a class="headerlink" href="#index-search-and-visualize-data" title="Permalink to this headline">¶</a></h2>
+<p>Download the pre-trained PNEncoder model <a class="reference external" href="https://github.com/jina-ai/example-3D-model/tree/main/executors/pn_encoder/ckpt">here</a> into <code class="docutils literal notranslate"><span class="pre">model/ckpt</span></code>. Also, store the index/search data in <code class="docutils literal notranslate"><span class="pre">data/</span></code>. We can then put the executors into a flow and use the flow to perform indexing and searching. Finally, we use the <code class="docutils literal notranslate"><span class="pre">GlbVisualizer</span></code> built earlier to visualize our data.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">GlbCrafter</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">PNEncoder</span><span class="p">,</span> <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">'ckpt_path'</span><span class="p">:</span> <span class="s1">'model/ckpt/ckpt_True'</span><span class="p">})</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyIndexer</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">from_files</span><span class="p">(</span><span class="s1">'data/*.glb'</span><span class="p">))</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'data/rifle_16.glb'</span><span class="p">),</span> <span class="n">return_results</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c1"># visualize top 3 matches, since we also index query doc, exclude the top 1 match as it is the query doc</span>
+    <span class="n">visualizer</span> <span class="o">=</span> <span class="n">GlbVisualizer</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">matches</span><span class="o">=</span><span class="n">doc</span><span class="o">.</span><span class="n">matches</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span><span class="o">.</span><span class="n">visualize</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This is how the flow we built looks like:</p>
+<figure class="align-center">
+<img alt="../../../_images/flow.png" src="../../../_images/flow.png"/>
+</figure>
+</section>
+<section id="putting-it-all-together">
+<h2>Putting it all together<a class="headerlink" href="#putting-it-all-together" title="Permalink to this headline">¶</a></h2>
+<p>Combining the steps listed above and import the necessary dependencies, the following is the complete code.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">jina.types.document.generators</span> <span class="kn">import</span> <span class="n">from_files</span>
+<span class="kn">import</span> <span class="nn">trimesh</span>
+
+<span class="kn">import</span> <span class="nn">pyrender</span>
+<span class="kn">from</span> <span class="nn">pyrender</span> <span class="kn">import</span> <span class="n">Viewer</span>
+
+<span class="c1"># pyglet dependencies should be imported AFTER pyrender</span>
+<span class="kn">import</span> <span class="nn">pyglet</span>
+<span class="kn">from</span> <span class="nn">pyglet</span> <span class="kn">import</span> <span class="n">clock</span>
+<span class="kn">from</span> <span class="nn">pyglet.gl</span> <span class="kn">import</span> <span class="n">Config</span>
+
+
+<span class="k">def</span> <span class="nf">as_mesh</span><span class="p">(</span><span class="n">scene</span><span class="p">:</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Scene</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scene</span><span class="o">.</span><span class="n">geometry</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+        <span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">faces</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">faces</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">scene</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">GlbCrafter</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s1">'/index'</span><span class="p">,</span> <span class="s1">'/search'</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="n">mesh</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">load_mesh</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">as_mesh</span><span class="p">(</span><span class="n">trimesh</span><span class="o">.</span><span class="n">load_mesh</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">uri</span><span class="p">))</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span><span class="n">ckpt_path</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+    <span class="kn">from</span> <span class="nn">tensorflow</span> <span class="kn">import</span> <span class="n">keras</span>
+    <span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">layers</span>
+
+    <span class="k">def</span> <span class="nf">conv_bn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">filters</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Conv1D</span><span class="p">(</span><span class="n">filters</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">'valid'</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">(</span><span class="n">momentum</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">layers</span><span class="o">.</span><span class="n">Activation</span><span class="p">(</span><span class="s1">'relu'</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">dense_bn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">filters</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">filters</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">(</span><span class="n">momentum</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">layers</span><span class="o">.</span><span class="n">Activation</span><span class="p">(</span><span class="s1">'relu'</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">tnet</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">num_features</span><span class="p">):</span>
+        <span class="k">class</span> <span class="nc">OrthogonalRegularizer</span><span class="p">(</span><span class="n">keras</span><span class="o">.</span><span class="n">regularizers</span><span class="o">.</span><span class="n">Regularizer</span><span class="p">):</span>
+            <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_features_</span><span class="p">,</span> <span class="n">l2reg</span><span class="o">=</span><span class="mf">0.001</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">num_features</span> <span class="o">=</span> <span class="n">num_features_</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">l2reg</span> <span class="o">=</span> <span class="n">l2reg</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">eye</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_features</span><span class="p">)</span>
+
+            <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_features</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_features</span><span class="p">))</span>
+                <span class="n">xxt</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">tensordot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+                <span class="n">xxt</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">xxt</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_features</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_features</span><span class="p">))</span>
+                <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l2reg</span> <span class="o">*</span> <span class="n">tf</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">xxt</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">eye</span><span class="p">))</span>
+
+            <span class="k">def</span> <span class="nf">get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">return</span> <span class="p">{</span>
+                    <span class="s1">'num_features'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_features</span><span class="p">,</span>
+                    <span class="s1">'l2reg'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">l2reg</span><span class="p">,</span>
+                    <span class="s1">'eye'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">eye</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span>
+                <span class="p">}</span>
+
+        <span class="n">bias</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">num_features</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+        <span class="n">reg</span> <span class="o">=</span> <span class="n">OrthogonalRegularizer</span><span class="p">(</span><span class="n">num_features</span><span class="p">)</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">conv_bn</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">conv_bn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">conv_bn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">GlobalMaxPooling1D</span><span class="p">()(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">dense_bn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">dense_bn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span>
+            <span class="n">num_features</span> <span class="o">*</span> <span class="n">num_features</span><span class="p">,</span>
+            <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">'zeros'</span><span class="p">,</span>
+            <span class="n">bias_initializer</span><span class="o">=</span><span class="n">bias</span><span class="p">,</span>
+            <span class="n">activity_regularizer</span><span class="o">=</span><span class="n">reg</span><span class="p">,</span>
+        <span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">feat_T</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Reshape</span><span class="p">((</span><span class="n">num_features</span><span class="p">,</span> <span class="n">num_features</span><span class="p">))(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dot</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))([</span><span class="n">inputs</span><span class="p">,</span> <span class="n">feat_T</span><span class="p">])</span>
+
+    <span class="n">inputs</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">2048</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">tnet</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">conv_bn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">conv_bn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">tnet</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">conv_bn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">conv_bn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">GlobalMaxPooling1D</span><span class="p">()(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">dense_bn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">'softmax'</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'pointnet'</span><span class="p">)</span>
+    <span class="n">intermediate_layer_model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span>
+        <span class="n">inputs</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">get_layer</span><span class="p">(</span><span class="sa">f</span><span class="s1">'dense_1'</span><span class="p">)</span><span class="o">.</span><span class="n">output</span>
+    <span class="p">)</span>
+    <span class="n">intermediate_layer_model</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span><span class="n">ckpt_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">intermediate_layer_model</span>
+
+
+<span class="k">class</span> <span class="nc">PNEncoder</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ckpt_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedding_model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="n">ckpt_path</span><span class="o">=</span><span class="n">ckpt_path</span><span class="p">)</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s1">'/index'</span><span class="p">,</span> <span class="s1">'/search'</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">docs</span><span class="o">.</span><span class="n">embeddings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">blobs</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">MyIndexer</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="n">_docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/index'</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/search'</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">docs</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_init_and_start_app</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">TARGET_OPEN_GL_MAJOR</span> <span class="o">=</span> <span class="mi">4</span>  <span class="c1"># Target OpenGL Major Version</span>
+    <span class="n">TARGET_OPEN_GL_MINOR</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">MIN_OPEN_GL_MAJOR</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># Minimum OpenGL Major Version</span>
+    <span class="n">MIN_OPEN_GL_MINOR</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># Minimum OpenGL Minor Version</span>
+    <span class="n">confs</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">Config</span><span class="p">(</span>
+            <span class="n">sample_buffers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">samples</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+            <span class="n">depth_size</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span>
+            <span class="n">double_buffer</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">major_version</span><span class="o">=</span><span class="n">TARGET_OPEN_GL_MAJOR</span><span class="p">,</span>
+            <span class="n">minor_version</span><span class="o">=</span><span class="n">TARGET_OPEN_GL_MINOR</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">Config</span><span class="p">(</span>
+            <span class="n">depth_size</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span>
+            <span class="n">double_buffer</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">major_version</span><span class="o">=</span><span class="n">TARGET_OPEN_GL_MAJOR</span><span class="p">,</span>
+            <span class="n">minor_version</span><span class="o">=</span><span class="n">TARGET_OPEN_GL_MINOR</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">Config</span><span class="p">(</span>
+            <span class="n">sample_buffers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">samples</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+            <span class="n">depth_size</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span>
+            <span class="n">double_buffer</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">major_version</span><span class="o">=</span><span class="n">MIN_OPEN_GL_MAJOR</span><span class="p">,</span>
+            <span class="n">minor_version</span><span class="o">=</span><span class="n">MIN_OPEN_GL_MINOR</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">Config</span><span class="p">(</span>
+            <span class="n">depth_size</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span>
+            <span class="n">double_buffer</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">major_version</span><span class="o">=</span><span class="n">MIN_OPEN_GL_MAJOR</span><span class="p">,</span>
+            <span class="n">minor_version</span><span class="o">=</span><span class="n">MIN_OPEN_GL_MINOR</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">]</span>
+    <span class="k">for</span> <span class="n">conf</span> <span class="ow">in</span> <span class="n">confs</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">Viewer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+                <span class="n">config</span><span class="o">=</span><span class="n">conf</span><span class="p">,</span>
+                <span class="n">resizable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_viewport_size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_viewport_size</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="k">break</span>
+        <span class="k">except</span> <span class="n">pyglet</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">NoSuchConfigException</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Unable to initialize an OpenGL 3+ context'</span><span class="p">)</span>
+
+    <span class="n">clock</span><span class="o">.</span><span class="n">schedule_interval</span><span class="p">(</span>
+        <span class="n">Viewer</span><span class="o">.</span><span class="n">_time_event</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">viewer_flags</span><span class="p">[</span><span class="s1">'refresh_rate'</span><span class="p">],</span> <span class="bp">self</span>
+    <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">switch_to</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">set_caption</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">viewer_flags</span><span class="p">[</span><span class="s1">'window_title'</span><span class="p">])</span>
+
+
+<span class="k">class</span> <span class="nc">GlbVisualizer</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search_doc</span><span class="p">,</span> <span class="n">matches</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">search_doc</span> <span class="o">=</span> <span class="n">search_doc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matches</span> <span class="o">=</span> <span class="n">matches</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orig_func</span> <span class="o">=</span> <span class="n">pyrender</span><span class="o">.</span><span class="n">Viewer</span><span class="o">.</span><span class="n">_init_and_start_app</span>
+        <span class="n">pyrender</span><span class="o">.</span><span class="n">Viewer</span><span class="o">.</span><span class="n">_init_and_start_app</span> <span class="o">=</span> <span class="n">_init_and_start_app</span>
+
+    <span class="k">def</span> <span class="nf">visualize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">search_doc</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="s1">'Query Doc'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">matches</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">match</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">matches</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'Top </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1"> Match'</span><span class="p">)</span>
+        <span class="n">pyglet</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
+        <span class="n">scene</span> <span class="o">=</span> <span class="n">pyrender</span><span class="o">.</span><span class="n">Scene</span><span class="p">()</span>
+        <span class="n">scene</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">pyrender</span><span class="o">.</span><span class="n">Mesh</span><span class="o">.</span><span class="n">from_trimesh</span><span class="p">(</span><span class="n">as_mesh</span><span class="p">(</span><span class="n">trimesh</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">uri</span><span class="p">))))</span>
+
+        <span class="n">pyrender</span><span class="o">.</span><span class="n">Viewer</span><span class="p">(</span>
+            <span class="n">scene</span><span class="p">,</span>
+            <span class="n">use_raymond_lighting</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">viewer_flags</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">'rotate'</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s1">'window_title'</span><span class="p">:</span> <span class="n">title</span><span class="p">,</span>
+                <span class="s1">'caption'</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s1">'font_name'</span><span class="p">:</span> <span class="s1">'OpenSans-Regular'</span><span class="p">,</span>
+                        <span class="s1">'font_pt'</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+                        <span class="s1">'color'</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="s1">'scale'</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+                        <span class="s1">'location'</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+                        <span class="s1">'text'</span><span class="p">:</span> <span class="n">title</span><span class="p">,</span>
+                    <span class="p">}</span>
+                <span class="p">],</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pyrender</span><span class="o">.</span><span class="n">Viewer</span><span class="o">.</span><span class="n">_init_and_start_app</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orig_func</span>
+
+
+<span class="k">with</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">GlbCrafter</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">PNEncoder</span><span class="p">,</span> <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">'ckpt_path'</span><span class="p">:</span> <span class="s1">'model/ckpt/ckpt_True'</span><span class="p">})</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyIndexer</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">from_files</span><span class="p">(</span><span class="s1">'data/*.glb'</span><span class="p">))</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'data/rifle_16.glb'</span><span class="p">),</span> <span class="n">return_results</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">visualizer</span> <span class="o">=</span> <span class="n">GlbVisualizer</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">matches</span><span class="o">=</span><span class="n">doc</span><span class="o">.</span><span class="n">matches</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span><span class="o">.</span><span class="n">visualize</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="warning admonition">
+<p class="admonition-title">Warning</p>
+<p>Note, <code class="docutils literal notranslate"><span class="pre">pyrender</span></code> has to be imported before all <code class="docutils literal notranslate"><span class="pre">pyglet</span></code> dependencies, otherwise an error will be raised in some os environments such as Mac OS.</p>
+</div>
+</section>
+<section id="results">
+<h2>Results<a class="headerlink" href="#results" title="Permalink to this headline">¶</a></h2>
+<p>Now let’s take a look at the search results! Below is the <code class="docutils literal notranslate"><span class="pre">rifle_16.glb</span></code> 3D model we would like to search for:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../../_images/query_doc.gif"><img alt="../../../_images/query_doc.gif" src="../../../_images/query_doc.gif" style="width: 330.0px; height: 242.00000000000003px;"/></a>
+</figure>
+<p>And the following are the top 3 matches:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../../_images/top_1.gif"><img alt="../../../_images/top_1.gif" src="../../../_images/top_1.gif" style="width: 330.0px; height: 242.00000000000003px;"/></a>
+</figure>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../../_images/top_2.gif"><img alt="../../../_images/top_2.gif" src="../../../_images/top_2.gif" style="width: 330.0px; height: 242.00000000000003px;"/></a>
+</figure>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../../_images/top_3.gif"><img alt="../../../_images/top_3.gif" src="../../../_images/top_3.gif" style="width: 330.0px; height: 242.00000000000003px;"/></a>
+</figure>
+<p><strong>Congratulations!</strong> You have just built a 3D Mesh Search Pipeline!</p>
+</section>
 </section>
 
             </article>
@@ -683,7 +1193,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 01, 2021.
+                    Last updated on Nov 02, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -699,6 +1209,30 @@
             
 
             <div class="toc-sticky toc-scroll">
+                
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">Search Similar 3D Meshes</a><ul>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#load-glb-data">Load GLB data</a></li>
+<li><a class="reference internal" href="#encode-3d-model">Encode 3D Model</a></li>
+<li><a class="reference internal" href="#index-the-data">Index the data</a></li>
+<li><a class="reference internal" href="#visualize-3d-model">Visualize 3D Model</a></li>
+<li><a class="reference internal" href="#index-search-and-visualize-data">Index, Search and Visualize Data</a></li>
+<li><a class="reference internal" href="#putting-it-all-together">Putting it all together</a></li>
+<li><a class="reference internal" href="#results">Results</a></li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
                 
                 <details id='jina-docbot' class="jina-doc-bot sd-sphinx-override sd-dropdown sd-card">
     <summary class="sd-summary-title sd-card-header">
