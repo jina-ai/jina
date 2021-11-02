@@ -124,6 +124,11 @@ class PNEncoder(Executor):
         docs.embeddings = self.embedding_model.predict(docs.blobs)
 ```
 
+```{admonition} Tips
+:class: info
+Notice how instead of iterating over each doc to set its embedding, we can directly get the blobs of all docs in `docs` at once by using the attribute `blobs` and set the embeddings of all docs in `docs` at once by using the attribute `embeddings`.
+```
+
 
 ## Index the data
 
@@ -500,14 +505,14 @@ with Flow().add(uses=GlbCrafter).add(uses=PNEncoder, uses_with={'ckpt_path': 'mo
     visualizer = GlbVisualizer(doc, matches=doc.matches[1:4]).visualize()
 ```
 
-```{admonition} Import pyrender before pyglet
+```{admonition} Warning
 :class: warning
 Note `pyrender` has to be imported before all `pyglet` dependencies, otherwise an error will be raised in some os environments such as Mac OS.
 ```
 
 ## Results
 
-Now let's take a look at the search results! Below is the `rifle_16.glb` 3D model we would like to search:
+Now let's take a look at the search results! Below is the `rifle_16.glb` 3D model we would like to search for:
 
 ```{figure} query_doc.gif
 :align: center
