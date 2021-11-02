@@ -654,8 +654,8 @@
 <p>Sound, or audio signals are signals that vibrate in the audible frequency range. When someone talks, it generates air
 pressure signals; when you play music, the speaker converts electrical energy into mechanical energy. The mechanical
 energy compresses air and converts the motion into sound energy. Your ear takes in these air pressure differences and
-communicates with the brain. That’s how audio works in real world and we call it analog audio.</p>
-<p>Digital audio data can be a soundbite, a music, a ringtone, a background noise. It often comes in <code class="docutils literal notranslate"><span class="pre">.wav</span></code>, <code class="docutils literal notranslate"><span class="pre">.mp3</span></code>
+communicates with the brain. That’s how audio works in the real world and we call it analog audio.</p>
+<p>Digital audio data can be a soundbite, music, a ringtone, a background noise. It often comes in <code class="docutils literal notranslate"><span class="pre">.wav</span></code>, <code class="docutils literal notranslate"><span class="pre">.mp3</span></code>
 formats, where the sound waves are digitized by sampling them at discrete intervals. There are many interesting neural
 search tasks on audio data: music recommendations, similarity search for audio files, matching voice commands, voice
 synthesis for chatbot. Before you start to build solutions with Jina, let’s recap some fundamental knowledge about audio
@@ -683,17 +683,17 @@ higher frequencies are lost.</p>
 an audio sample to a finite precision as defined by a particular number of bits. In the majority of the cases, 16 bits
 per sample are used to represent each quantized sample, which means that there are 2<sup>16</sup> levels for the quantized
 signal. Quantization also forms the core of essentially all lossy compression algorithms.</p>
-<p>Below depicts a simple wave quantized in 2bits (left) and 3bits (right).</p>
+<p>Following image depicts a simple wave quantized in 2bits (left) and 3bits (right).</p>
 <figure class="align-center">
 <a class="reference internal image-reference" href="../../_images/2-3bit-quant.png"><img alt="../../_images/2-3bit-quant.png" src="../../_images/2-3bit-quant.png" style="width: 80%;"/></a>
 </figure>
-<p>Let’s hear some soundbite and feel how quantization affects the audio quality. In this example, the original audio file
+<p>Let’s listen to some soundbites and feel how quantization affects the audio quality. In this example, the original audio file
 is at 16-bit, 44.1KHz.</p>
 <audio controls="">
 <source src="../../_static/download.wav" type="audio/wav"/>
 Your browser does not support the audio element.
 </audio>
-<p>We now keep the sampling rate at 44.1KHz but reduce the number of bits used in quantization:</p>
+<p>Now, we keep the sampling rate at 44.1KHz but reduce the number of bits used in quantization:</p>
 <div class="table-wrapper"><table>
 <tr>
 <th>Quantization</th>
@@ -720,7 +720,7 @@ Your browser does not support the audio element.
 <td><audio controls=""><source src="../../_static/download%20(5).wav" type="audio/wav"/></audio></td>
 </tr>
 </table></div>
-<p>Don’t be flattered if you still can somehow recognize the 2-bit version. It is easy only because it is a human voice, which we are born to be very good at recognizing it. Try again with a music.</p>
+<p>Don’t be flattered if you still recognize the 2-bit version. It is easy only because it is a human voice, which we are very good at recognizing. Try again with a music.</p>
 </section>
 <section id="load-wav-file">
 <h2>Load <code class="docutils literal notranslate"><span class="pre">.wav</span></code> file<a class="headerlink" href="#load-wav-file" title="Permalink to this headline">¶</a></h2>
