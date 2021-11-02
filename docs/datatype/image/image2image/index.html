@@ -8,7 +8,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/datatype/image/image2image.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="Given an example image can we find similar images without the need of any labels? Leveraging Jina, the advantage that we get is that we do not need to use any labels or textual information about the images in order to build similar image search. In this tutorial we are going to create an image se..." />
+  <meta property="og:description" content="Given an example image can we find similar images without the need of any labels? Leveraging Jina, we have the advantage that we don’t need to use any labels or textual information about the images in order to build a search for similar images. In this tutorial we are going to create an image sea..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -651,63 +651,57 @@
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="search-similar-images">
 <h1>Search Similar Images<a class="headerlink" href="#search-similar-images" title="Permalink to this headline">¶</a></h1>
-<p>Given an example image can we find similar images without the need of any labels? Leveraging Jina, the advantage that we
-get is that we do not need to use any labels or textual information about the images in order to build similar image
-search.</p>
-<p>In this tutorial we are going to create an image search system that retrieves similar images. The data we are going to
-use is the test split of the <a class="reference external" href="https://www.kaggle.com/c/dogs-vs-cats/data?select=test1.zip">Dogs vs. Cats</a> datasets. We
-will subsequently refer this dataset as pets dataset. It contains 12.5K images of cats and dogs. Now, we can define our
-problem as selecting an image of cat or dog, we would like to get similar images of cats or dogs respectively.</p>
-<p>We know that Jina searches semantically and this could vary with the neural network that we use for encoding. Since our
-task is to search similar images we will consider visually similar as semantically-related.</p>
+<p>Given an example image can we find similar images without the need of any labels? Leveraging Jina, we have the advantage that
+we don’t need to use any labels or textual information about the images in order to build a search for similar images.</p>
+<p>In this tutorial we are going to create an image search system that retrieves similar images. We are going to
+use the test split of the <a class="reference external" href="https://www.kaggle.com/c/dogs-vs-cats/data?select=test1.zip">Dogs vs. Cats</a> dataset, which we
+will subsequently refer to as the pets dataset. It contains 12.5K images of cats and dogs. Now, we can define our
+problem as selecting an image of cat or dog, and getting back images of similar cats or dogs respectively.</p>
+<p>Jina searches semantically, and the results will vary depending on the neural network that we use for image encoding. Our
+task is to search for similar images so we will consider visually-similar images as semantically-related.</p>
 <section id="build-the-flow">
 <h2>Build the Flow<a class="headerlink" href="#build-the-flow" title="Permalink to this headline">¶</a></h2>
-<p>The solution to the problem entails a simple pipeline that can be subdivided into two steps:  <strong>Index</strong> and <strong>Query</strong></p>
+<p>The solution uses a simple pipeline that can be subdivided into two steps:  <strong>Index</strong> and <strong>Query</strong></p>
 <section id="index">
 <h3>Index<a class="headerlink" href="#index" title="Permalink to this headline">¶</a></h3>
-<p>To search something out of the full data, first we need to index the data. What it means is that we store the embeddings
-of all the images from the pets dataset in some form of storage. The images can be read as a numpy array which is then
-fed to neural network of our choice. This neural network encodes the input images into some latent space which we call
-as embeddings. We then use <strong>Indexer</strong> to store these embeddings in memory.</p>
+<p>To search something out of the full dataset, we first need to index the data. This means that we store the embeddings
+of all the images from the dataset in some form of storage. The images can be read as a numpy array which is then
+fed to the neural network of our choice. This neural network encodes the input images into some latent space which we call
+“embeddings”. We then use an <strong>Indexer</strong> to store these embeddings in memory.</p>
 </section>
 <section id="query">
 <h3>Query<a class="headerlink" href="#query" title="Permalink to this headline">¶</a></h3>
-<p>Once the data is indexed, i.e. our database is built, we simply need to feed our query which is an image or set of
-images to the model to encode it into embeddings and then use the <strong>Indexer</strong> to retrieve matching images. The matching
-can be based on any type of metrics but without going deeper into this, we will focus only on euclidean distance between
-two embeddings (corresponding to two images) as metrics.</p>
-<p>Now, one might think what this <em>Indexer</em> is, or how to use neural network of our choice. Worry not, we’ve got you
-covered. In Jina AI, we have three fundamental concepts which is all you need to know to follow this tutorial. If you
-haven’t read it yet, head on to <a class="reference external" href="https://docs.jina.ai/">Jina’s docs</a> page and give it a shot. Executor is the
-algorithmic unit in the Jina. It performs a single task on a <code class="docutils literal notranslate"><span class="pre">Document</span></code> or <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>.</p>
-<p>We have many executors available at <a class="reference external" href="https://hub.jina.ai">Jina Hub</a> - a marketplace for Executors. You can use any of
-them relevant to your tasks or build one of your own. Coming back to problem, we will use <strong>SimpleIndexer</strong> executor as
-our indexer (the one that stores and retrieves data). This executor also returns us the matching <code class="docutils literal notranslate"><span class="pre">Document</span></code> when we make
+<p>Once the data is indexed, i.e. our database is built, we simply need to feed our query (an image or set of
+images) to the model to encode it into embeddings and then use the <strong>Indexer</strong> to retrieve matching images. The matching
+can be based on any type of metric but without going deeper into this, we will focus only on Euclidean distance between
+two embeddings (corresponding to two images).</p>
+<p>We will use the <strong>SimpleIndexer</strong> Executor as
+our indexer (the one that stores and retrieves data). This Executor also returns the matching <code class="docutils literal notranslate"><span class="pre">Document</span></code> when we make
 a query. The search part is done using the built-in <code class="docutils literal notranslate"><span class="pre">match</span></code> function of <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code>. To encode the images into
-embeddings we will use our own defined executor which uses pre-trained ‘ResNet101’ model.</p>
+embeddings we will use our own Executor which uses the pre-trained ‘ResNet101’ model.</p>
 </section>
 </section>
 <section id="flow-overview">
 <h2>Flow Overview<a class="headerlink" href="#flow-overview" title="Permalink to this headline">¶</a></h2>
-<p>We have one flow defined for this tutorial, however, it handles requests to <code class="docutils literal notranslate"><span class="pre">/index</span></code> and <code class="docutils literal notranslate"><span class="pre">/search</span></code> differently by
-defining different endpoints using <code class="docutils literal notranslate"><span class="pre">requests</span></code> decorators. Below we see the Flow, which consists of <code class="docutils literal notranslate"><span class="pre">Encoder</span></code> to encode
-the images as first step, followed by an <code class="docutils literal notranslate"><span class="pre">Indexer</span></code> to store/retrieve data.</p>
+<p>We have one Flow defined for this tutorial. However, it handles requests to <code class="docutils literal notranslate"><span class="pre">/index</span></code> and <code class="docutils literal notranslate"><span class="pre">/search</span></code> differently by
+defining different endpoints using <code class="docutils literal notranslate"><span class="pre">requests</span></code> decorators. Below we see the Flow, which consists of an <code class="docutils literal notranslate"><span class="pre">Encoder</span></code> to encode
+the images as the first step, followed by an <code class="docutils literal notranslate"><span class="pre">Indexer</span></code> to store/retrieve data.</p>
 <figure class="align-center">
 <img alt="../../../_images/image_search_flow.svg" src="../../../_images/image_search_flow.svg"/></figure>
 </section>
 <section id="insights">
 <h2>Insights<a class="headerlink" href="#insights" title="Permalink to this headline">¶</a></h2>
-<p>Our firs task is to wrap the image data as <code class="docutils literal notranslate"><span class="pre">Document</span></code> and form a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>. This can be easily done by using
-following code snippet. <code class="docutils literal notranslate"><span class="pre">from_files</span></code> creates an iterator over a list of image path provided and yields <code class="docutils literal notranslate"><span class="pre">Document</span></code>.</p>
+<p>Our first task is to wrap the image data as <code class="docutils literal notranslate"><span class="pre">Document</span></code>s and form a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>. This can be done easily with the
+following code snippet. <code class="docutils literal notranslate"><span class="pre">from_files</span></code> creates an iterator over a list of image paths and yields <code class="docutils literal notranslate"><span class="pre">Document</span></code>s:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 <span class="kn">from</span> <span class="nn">jina.types.document.generators</span> <span class="kn">import</span> <span class="n">from_files</span>
 
 <span class="n">docs_array</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">from_files</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">image_dir</span><span class="si">}</span><span class="s1">/*.</span><span class="si">{</span><span class="n">image_format</span><span class="si">}</span><span class="s1">'</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>Once the image is loaded our next step is to encode these images into embeddings. As stated earlier one can use
-executors from  <a class="reference external" href="https://hub.jina.ai">hub.jina.ai</a> and use them off-the-shelf or can define an executor of their own in
-just few steps. For this tutorial we will write our own executor in few lines of codes as shown below.</p>
+<p>Once the image is loaded our next step is to encode these images into embeddings. As stated earlier you can use
+Executors from <a class="reference external" href="https://hub.jina.ai">Jina Hub</a> off-the-shelf or you can define an Executor of your own in
+just a few steps. For this tutorial we will write our own Executor:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 <span class="kn">from</span> <span class="nn">flash.image</span> <span class="kn">import</span> <span class="n">ImageEmbedder</span>
 
@@ -725,18 +719,18 @@ just few steps. For this tutorial we will write our own executor in few lines of
             <span class="n">doc</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">embed</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>As one can see, how simple it is to build an <code class="docutils literal notranslate"><span class="pre">Encoder</span></code> executor. We simply inherit the base <code class="docutils literal notranslate"><span class="pre">Executor</span></code> and use decorator
-to define endpoints. As this <code class="docutils literal notranslate"><span class="pre">request</span></code> decorator is empty, it means that this function will be called regardless of the
-endpoints invoked, i.e., on both <code class="docutils literal notranslate"><span class="pre">/index</span></code> and <code class="docutils literal notranslate"><span class="pre">/search</span></code> endpoint. We
-leverage <a class="reference external" href="https://github.com/PyTorchLightning/lightning-flash">lightning-flash</a> to use pre-trained <code class="docutils literal notranslate"><span class="pre">ResNet101</span></code> model for
-getting the embeddings. Reader can replace this model with any other pre-trained models of their choice. When this
-executor is instantiated, the pre-trained weights are downloaded automatically. The <code class="docutils literal notranslate"><span class="pre">predict</span></code> function takes in
-the <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> and extracts embeddings which is then stored in the <code class="docutils literal notranslate"><span class="pre">embedding</span></code> attribute of the
+<p>To build an Encoder Executor we inherit the base <code class="docutils literal notranslate"><span class="pre">Executor</span></code> and use a decorator
+to define endpoints. As this <code class="docutils literal notranslate"><span class="pre">request</span></code> decorator is empty, this function will be called regardless of the
+endpoints invoked, i.e., on both the <code class="docutils literal notranslate"><span class="pre">/index</span></code> and <code class="docutils literal notranslate"><span class="pre">/search</span></code> endpoints. We
+leverage <a class="reference external" href="https://github.com/PyTorchLightning/lightning-flash">lightning-flash</a> to use the pre-trained <code class="docutils literal notranslate"><span class="pre">ResNet101</span></code> model for
+getting the embeddings. You can replace this model with any other pre-trained models of your choice. When this
+Executor is instantiated, the pre-trained weights are downloaded automatically. The <code class="docutils literal notranslate"><span class="pre">predict</span></code> function takes in
+the <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> and extracts embeddings, each of which is then stored in the <code class="docutils literal notranslate"><span class="pre">embedding</span></code> attribute of the
 respective <code class="docutils literal notranslate"><span class="pre">Document</span></code>.</p>
-<p>Finally, comes the storage/retrieval step. This we accomplish using an <strong>Indexer</strong> executor. We can use any of the
-available indexers on <a class="reference external" href="https://hub.jina.ai">hub.jina.ai</a> or define our own. To create an <strong>Indexer</strong> we need to have two
-endpoints <code class="docutils literal notranslate"><span class="pre">/index</span></code> and <code class="docutils literal notranslate"><span class="pre">/search</span></code>. For this tutorial we will define a <code class="docutils literal notranslate"><span class="pre">SimpleIndexer</span></code> which is also available on jina
-hub.</p>
+<p>Finally, comes the storage/retrieval step. We do this with the <strong>Indexer</strong> Executor. You can use any of the
+available indexers on <a class="reference external" href="https://hub.jina.ai">Jina Hub</a> or define your own. To create an <strong>Indexer</strong> you need to have two
+endpoints: <code class="docutils literal notranslate"><span class="pre">/index</span></code> and <code class="docutils literal notranslate"><span class="pre">/search</span></code>. For this tutorial we will define a <code class="docutils literal notranslate"><span class="pre">SimpleIndexer</span></code> which is <a class="reference external" href="https://hub.jina.ai/executor/zb38xlt4">also available on jina
+Hub</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArrayMemmap</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 
 
@@ -755,14 +749,13 @@ hub.</p>
         <span class="n">docs</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dam</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">SimpleIndexer</span></code> stores all the Documents with a memory map when invoked with a <code class="docutils literal notranslate"><span class="pre">/index</span></code> endpoint. During the search
-flow, it matches the query <code class="docutils literal notranslate"><span class="pre">Document</span></code> with the indexed <code class="docutils literal notranslate"><span class="pre">Document</span></code> using the built-in <code class="docutils literal notranslate"><span class="pre">match</span></code> function
+<p><code class="docutils literal notranslate"><span class="pre">SimpleIndexer</span></code> stores all the Documents with a memory map when invoked with the <code class="docutils literal notranslate"><span class="pre">/index</span></code> endpoint. During the search
+Flow, it matches the query <code class="docutils literal notranslate"><span class="pre">Document</span></code> with the indexed <code class="docutils literal notranslate"><span class="pre">Document</span></code> using the built-in <code class="docutils literal notranslate"><span class="pre">match</span></code> function
 of <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code>.</p>
 </section>
 <section id="putting-it-all-together-in-a-flow">
 <h2>Putting it all together in a Flow<a class="headerlink" href="#putting-it-all-together-in-a-flow" title="Permalink to this headline">¶</a></h2>
-<p>So far we saw individual components of the Flow and how to define them. Next comes putting all this together in a Flow,
-which can be done as shown below</p>
+<p>So far we saw individual components of the Flow and how to define them. Next comes putting all of this together in a Flow:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
@@ -782,7 +775,7 @@ which can be done as shown below</p>
 </section>
 <section id="query-from-python">
 <h3>Query from Python<a class="headerlink" href="#query-from-python" title="Permalink to this headline">¶</a></h3>
-<p>Keeping the server running we can start a simple client to make query.</p>
+<p>Keeping the server running we can start a simple client to make a query:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Document</span>
 <span class="kn">from</span> <span class="nn">jina.types.request</span> <span class="kn">import</span> <span class="n">Response</span>
 
@@ -800,8 +793,8 @@ which can be done as shown below</p>
 </section>
 <section id="results">
 <h2>Results<a class="headerlink" href="#results" title="Permalink to this headline">¶</a></h2>
-<p>The returned response contains the matching <code class="docutils literal notranslate"><span class="pre">Document</span></code> which contains the <code class="docutils literal notranslate"><span class="pre">uri</span></code> of the images. Below we can see the
-returned matching images to the query</p>
+<p>The returned response contains the matching <code class="docutils literal notranslate"><span class="pre">Document</span></code> which in turn contains the <code class="docutils literal notranslate"><span class="pre">uri</span></code> of the images. Below we can see the
+returned matching images of the query:</p>
 <figure class="align-center">
 <img alt="../../../_images/image-search.png" src="../../../_images/image-search.png"/>
 </figure>
