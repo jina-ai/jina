@@ -1,6 +1,6 @@
 # Search Similar Audios
 
-Searching for similar audios has a wide range of application including finding similar songs, replacing curse words and detecting the speakers. In this tutorial, we will build an example of searching similar audios using the [AudioSet](https://research.google.com/audioset/) dataset and the [VGGish](https://github.com/tensorflow/models/tree/master/research/audioset/vggish) model.
+Do you want to find similar songs from your music library? Do you want to search all the meeting records that your leader has given a comment? Do you want to find the timestamp from your videos when your baby is laughing? In all these cases, searching similar audios will be helpful. As an important format of storing information, searching audios is an essential part for managing multimedial data. In this tutorial, we will build an example using the [VGGish](https://github.com/tensorflow/models/tree/master/research/audioset/vggish) model.
 
 ## Build the Flow
 
@@ -9,12 +9,12 @@ Searching for similar audios has a wide range of application including finding s
 ```
 
 ### Segment the Audio Clips
-
-The AudioSet dataset contains millions of annotated audios extracted from YouTube videos. Each sound clip is 10-second long and labeled to 632 audio event classes. 
-One major challenges is that some sound clips contains other events. This makes it difficult and nosiy to express the whole clip with a single vector. For example, the audio clip below is labled as `applause` but contains a long part of music. To overcome this issue, we use the [recursive structure](https://docs.jina.ai/fundamentals/document/document-api/#recursive-nested-document) of Jina Document and split the clips into smaller chunks. Each chunk contains a smaller clip of 4-second. 
+In this example, we use the [AudioSet](https://research.google.com/audioset/) dataset.
+The dataset contains millions of annotated audios events extracted from YouTube videos. Each audio event is 10-second long and labeled to 632 audio event classes. 
+One major challenges is that some audio events contains other events. This makes it difficult and nosiy to express the whole clip with a single vector. For example, the audio clip below is labled as `Applause` but contains a long part of music. To overcome this issue, we use the [recursive structure](https://docs.jina.ai/fundamentals/document/document-api/#recursive-nested-document) of Jina Document and split the events into smaller chunks. Each chunk contains an audio clip of 4-second. 
 
 <audio controls>
-  <source src="../../_static/similar-audio-search-match-UE3XnVFodMI_230000_applause.mp3" type="audio/wav">
+  <source src="../../../_static/similar-audio-search-UE3XnVFodMI_230000_applause.mp3" type="audio/mp3">
 Your browser does not support the audio element.
 </audio>
 
@@ -22,14 +22,18 @@ Your browser does not support the audio element.
 ```{admonition} Tips
 :class: info
 
-The AudioSet dataset doesn't contain the original sound clip. You can use `youtube-dl` to download the audio data from the corresponding YouTube videos:
+The AudioSet dataset doesn't contain the original audio event. You can use `youtube-dl` to download the audio data from the corresponding YouTube videos:
 
 :::text
 youtube-dl --postprocessor-args '-ss 8.953 -to 18.953' -x --audio-format mp3 -o 'data/OXJ9Ln2sXJ8_30000.%(ext)s' https://www.youtube.com/watch\?v\=OXJ9Ln2sXJ8_30000
 :::
 ```
 
-To segment the audio clips into 4-second chunks, we define `AudioSegmenter` which loads the audio files into `ndarray` and split the array based on the `window_size`. The extracted audio data is stored in the `blob` attribute of the chunks. The file path of the audio files is defined in the `uri` attribute. We also set `stride` for hopping the sliding window. Using `stride=2` and `window_size=4`, we genereate 4 chunks for each 10-second audio, in which each chunk has 2 seconds overlapped with the previous one.
+To segment the audio events into 4-second chunks, we create an executor, namely `AudioSegmenter`, which use [`librosa`](https://github.com/librosa/librosa) to load the audio files as waveform into `blob`. Afterwards, it splits the waveform array into smaller arrays based on the `window_size`. Each small array contains the audio data iin the wave form and is stored in the `blob` attribute of the chunks. 
+
+The `stride` argument is for setting the step size of the sliding window. Using `stride=2` and `window_size=4` to process a 10-second audio events, we will get 4 chunks, of which each chunk is 4-second long and has 2 seconds overlapped with the previous one.
+
+`AudioSegmenter` requires the file path of the audio files to be defined in the `uri` attribute of each input Document. 
 
 ```python
 import librosa as lr
@@ -83,11 +87,16 @@ The length of audios might not be exactly 10 seconds and therefore the number of
 
 ### Encode the Audios
 
-To encode the sound clips into vectors, we choose VGGish model from Google Research. By default, the VGGish model needs the audios to be sampled at 16kHz and converted to examples of log mel spectrogram. The returning embeddings for each sound clip is a matrix of the size `K x 128`, where `K` is the number of examples in log mel spectrogram and roughly correpsond to the length of audio in seconds. Therefore, each 4-second audio clip in the chunks is represented by 4 128-dimensional vectors.
+To encode the sound clips into vectors, we choose VGGish model from Google Research. By default, the VGGish model needs the audios to be sampled at 16kHz and converted to examples of log mel spectrogram. The returning embeddings for each sound clip is a matrix of the size `K x 128`, where `K` is the number of examples in log mel spectrogram and roughly correpsond to the length of audio in seconds. Therefore, each 4-second audio clip in the chunks is represented by four 128-dimensional vectors.
 
-Since the sequence of the sounds matters, we further concatenate the 4 vectors for each audio clip and consider the resulted 512-dimensional vector as the final representation. After encoding indexing and querying audios are encoded into 1280-dimensional vectors, we can find the similar audios to the querying ones by looking for nearest neighbors in the vector space.
+Since the sequence of the sounds matters, we further concatenate these four vectors and consider the resulted 512-dimensional vector as the final representation for each audio clip. After encoding indexing and querying audios into 512-dimensional vectors, we can find the similar audios to the querying ones by looking for nearest neighbors in the vector space.
 
-[VGGishAudioEncoder](https://hub.jina.ai/executor/jypyr28o) is available at Jina Hub. It accepts the audio Documents with waveform data stored in the `blob` attribute as `ndarray`. The `load_input_from` argument is to configurate the input data type, which can be each `uri`, `waveform` or `log_mel`. The `min_duration` defines the number of vectors to concatenate. 
+[VGGishAudioEncoder](https://hub.jina.ai/executor/jypyr28o) is available at Jina Hub. It accepts three types of inputs
+- the waveform data stored in `blob` attribute together with the sampling rate information stored in `tags['sample_rate']`
+- the log mel spectrogram features stored in `blob` attribute
+- the file path information of a `.mp3` or `.wav` file stored in the `uri` attribute
+
+`load_input_from` argument is to configurate the input data type, which can be each `waveform`, `log_mel`, or `uri`. `min_duration` defines the number of vectors to concatenate. 
 
 ```yaml
   ...
@@ -108,6 +117,8 @@ Since the sequence of the sounds matters, we further concatenate the 4 vectors f
 When choosing `waveform` in VGGishAudioEncoder, we need to provide `sample_rate` at `tags['sample_rate']` for generating log mel spectrogram features.
 
 ```
+
+
 ### Storage
 
 We choose the [SimpleIndexer](https://hub.jina.ai/executor/zb38xlt4) from Jina Hub for building a simple index storing both embedding vectors and meta information. During querying, we need to split the querying audios in the same way as indexing and generating chunks. Therefore, we need to set both `traversal_rdarray` and `traversal_ldarray` to `['c',]` to ask the SimpleIndexer to use the embeddings of the chunks for the querying and the indexed Documents correspondingly.
@@ -126,7 +137,7 @@ We choose the [SimpleIndexer](https://hub.jina.ai/executor/zb38xlt4) from Jina H
 
 ### Merge the Matches
 
-Since we use audio chunks to retrieve the matches, we need to merge the retrieved matches into the matches for each query audio. We write `MyRanker` as below to collect the orginal 10-second audio clip for each retrieved 4-second short clips. Each long clip is retrieved for multiple times base on different parts of its short clips. We use the score of the most matched short clip as the score of the long audio. Afterwards, the retrieved long audios are sorted by their scores.
+Since we use audio chunks to retrieve the matches, we need to merge the retrieved matches into the matches for each query audio. We write `MyRanker` as below to collect the original 10-second audio event for each retrieved 4-second short clips. Since one audio event might be retrieved for multiple times base on different parts of its short clips, we use the score of the most matched short clip as the score of the audio event. Afterwards, the retrieved audio events are sorted by their scores.
 
 ```python
 class MyRanker(Executor):
@@ -195,14 +206,24 @@ Open the browser at `localhost:45678/docs`, send query via the Swagger UI,
     <th>Score</th>
   </tr>
   <tr>
-    <td><audio controls><source src="../../_static/similar-audio-search-query-hhzoH17yf3o_20000_airplane.mp3" type="audio/wav"></audio></td>
-    <td><audio controls><source src="../../_static/similar-audio-search-match-6pO06krKrf8_30000_airplane.mp3" type="audio/wav"></audio></td>
-    <td>0.000014126301</td>
+    <td><audio controls><source src="../../../_static/similar-audio-search-HL-SGox-Ez0_churchbell.mp3" type="audio/mp3"></audio></td>
+    <td><audio controls><source src="../../../_static/similar-audio-search-IusuWEAoIoY_churchbell.mp3" type="audio/mp3"></audio></td>
+    <td>0.002978</td>
   </tr>
   <tr>
     <td></td>
-    <td><audio controls><source src="../../_static/similar-audio-search-match-UE3XnVFodMI_230000_applause.mp3" type="audio/wav"></audio></td>
-    <td>0.00002515316</td>
+    <td><audio controls><source src="../../../_static/similar-audio-search-_JTHtcRHxnw_churchbell.mp3" type="audio/mp3"></audio></td>
+    <td>0.003295</td>
+  </tr>
+  <tr>
+    <td><audio controls><source src="../../../_static/similar-audio-search-YpUQ46pPj4c_airplane.mp3" type="audio/mp3"></audio></td>
+    <td><audio controls><source src="../../../_static/similar-audio-search-LX_FgjpJE60_airplane.mp3" type="audio/mp3"></audio></td>
+    <td>0.000008</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><audio controls><source src="../../../_static/similar-audio-search-6pO06krKrf8_30000_airplane.mp3" type="audio/mp3"></audio></td>
+    <td>0.000011</td>
   </tr>
 </table>
 
