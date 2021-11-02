@@ -45,11 +45,14 @@ class ContainerStore(BaseStore):
         raise NotImplementedError
 
     @if_alive
-    async def _update(self, uri: str, params: Dict, **kwargs) -> Dict:
+    async def _update(
+        self, uri: str, params: Dict, json: Optional[Dict] = None, **kwargs
+    ) -> Dict:
         """Sends `PUT` request to `partial-daemon` to execute a command on a Flow.
 
         :param uri: uri of partial-daemon
-        :param params: json payload to be sent
+        :param params: query params to be sent
+        :param json: json payload to be sent as body
         :param kwargs: keyword args
         :raises PartialDaemon400Exception: if update fails
         :return: response from partial-daemon
@@ -59,7 +62,7 @@ class ContainerStore(BaseStore):
             f'sending PUT request to partial-daemon on {uri}/{self._kind}'
         )
         async with aiohttp.request(
-            method='PUT', url=f'{uri}/{self._kind}', params=params
+            method='PUT', url=f'{uri}/{self._kind}', params=params, json=json
         ) as response:
             response_json = await response.json()
             if response.status != HTTPStatus.OK:
@@ -269,23 +272,16 @@ class ContainerStore(BaseStore):
             raise KeyError(f'{colored(id, "red")} not found in store.')
 
         if id.jtype == IDLiterals.JFLOW:
-            params = {
-                'kind': kind.value,
-                'pod_name': pod_name,
-                'uses_with': uses_with,
-            }
+            params = {'kind': kind.value, 'pod_name': pod_name}
         elif id.jtype == IDLiterals.JPOD:
-            params = {
-                'kind': kind.value,
-                'uses_with': uses_with,
-            }
+            params = {'kind': kind.value}
         else:
             self._logger.error(f'update not supported for {id.type} {id}')
             return id
 
         uri = self[id].metadata.uri
         try:
-            object = await self._update(uri, params)
+            object = await self._update(uri, params, json={'uses_with': uses_with})
         except Exception as e:
             self._logger.error(f'Error while updating the {self._kind.title()}: \n{e}')
             raise

@@ -77,9 +77,9 @@ class AsyncFlowClient(AsyncBaseClient):
         self,
         id: Union[str, 'DaemonID'],
         pod_name: str,
-        dump_path: str,
+        dump_path: Optional[str] = None,
         *,
-        uses_with: Dict,
+        uses_with: Optional[Dict] = None,
     ) -> str:
         """Update a Flow on remote JinaD (only rolling_update supported)
 
@@ -101,7 +101,7 @@ class AsyncFlowClient(AsyncBaseClient):
                 'kind': UpdateOperation.ROLLING_UPDATE.value,
                 'pod_name': pod_name,
             },
-            data={'uses_with': uses_with},
+            json={'uses_with': uses_with},
             timeout=self.timeout,
         ) as response:
             response_json = await response.json()

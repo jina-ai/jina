@@ -3,6 +3,7 @@ import os
 import numpy as np
 import pytest
 import requests
+from daemon.models.id import DaemonID
 
 from jina import Document
 from jina.logging.logger import JinaLogger
@@ -84,10 +85,15 @@ def test_dump_dbms_remote(docker_compose):
     logger.info(f'dump path size size: {dir_size}')
 
     # jinad is used for ctrl requests
-    client.flows.update(
-        id=query_flow_id,
-        pod_name='indexer_query',
-        uses_with={'dump_path': DUMP_PATH_DOCKER},
+    assert (
+        DaemonID(
+            client.flows.update(
+                id=query_flow_id,
+                pod_name='indexer_query',
+                uses_with={'dump_path': DUMP_PATH_DOCKER},
+            )
+        )
+        == DaemonID(query_flow_id)
     )
 
     # data request goes to client

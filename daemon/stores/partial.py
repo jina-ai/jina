@@ -207,7 +207,7 @@ class PartialFlowStore(PartialStore):
                 },
                 yaml_source=yaml_source,
             )
-            self._logger.success(f'Flow is created')
+            self._logger.success(f'Flow is created successfully!')
             return self.item
 
     def _set_pea_ports(self, pea_args, port_mapping, port_name):
@@ -247,4 +247,5 @@ class PartialFlowStore(PartialStore):
             raise
         else:
             self.item.arguments = vars(self.object.args)
+            self._logger.success(f'Flow is updated successfully!')
             return self.item

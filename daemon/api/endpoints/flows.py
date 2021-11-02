@@ -1,5 +1,3 @@
-import json
-
 from typing import Optional, Dict, Any
 
 from fastapi import APIRouter, Depends
@@ -61,7 +59,6 @@ async def _update(
     try:
         if dump_path is not None:
             if uses_with is not None:
-                uses_with = json.loads(uses_with)
                 uses_with['dump_path'] = dump_path
             else:
                 uses_with = {'dump_path': dump_path}
