@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Union, Dict
+from typing import Union, Dict, Optional
 
 import aiohttp
 
@@ -18,7 +18,11 @@ class AsyncPodClient(AsyncPeaClient):
 
     @if_alive
     async def update(
-        self, id: Union[str, 'DaemonID'], dump_path: str, *, uses_with: Dict
+        self,
+        id: Union[str, 'DaemonID'],
+        dump_path: Optional[str] = None,
+        *,
+        uses_with: Optional[Dict] = None,
     ) -> str:
         """Update a Flow on remote JinaD (only rolling_update supported)
 
@@ -37,8 +41,8 @@ class AsyncPodClient(AsyncPeaClient):
             url=f'{self.store_api}/{daemonize(id, self._kind)}',
             params={
                 'kind': UpdateOperation.ROLLING_UPDATE.value,
-                'uses_with': uses_with,
             },
+            json={'uses_with': uses_with},
             timeout=self.timeout,
         ) as response:
             response_json = await response.json()
