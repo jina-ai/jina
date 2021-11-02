@@ -8,7 +8,7 @@ Just like other data types, the 3D meshes search pipeline consists of **loading*
 
 Let's first install the following PyPI dependencies:
 ```shell
-pip install jina tensorflow trimesh pyrender
+pip install tensorflow trimesh pyrender
 ```
 
 ## Load GLB data
@@ -270,6 +270,7 @@ This is how the flow we built looks like:
 
 Combining the steps listed above and import the necessary dependencies, the following is the complete code.
 
+````{dropdown} Complete source code
 ```python
 from typing import Optional, List
 
@@ -504,8 +505,10 @@ with Flow().add(uses=GlbCrafter).add(uses=PNEncoder, uses_with={'ckpt_path': 'mo
     doc = results[0].docs[0]
     visualizer = GlbVisualizer(doc, matches=doc.matches[1:4]).visualize()
 ```
+````
 
-```{admonition} Warning
+
+```{admonition} Import warning
 :class: warning
 Note, `pyrender` has to be imported before all `pyglet` dependencies, otherwise an error will be raised in some os environments such as Mac OS.
 ```
