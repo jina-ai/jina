@@ -670,7 +670,7 @@
 <span class="sd">            yield (</span>
 <span class="sd">                d.convert_uri_to_image_blob()</span>
 <span class="sd">                .convert_uri_to_datauri()</span>
-<span class="sd">                .set_image_blob_size(224, 224)</span>
+<span class="sd">                .set_image_blob_shape(shape=(224, 224))</span>
 <span class="sd">                .set_image_blob_normalization()</span>
 <span class="sd">                .set_image_blob_channel_axis(-1, 0)</span>
 <span class="sd">            )</span>
@@ -779,23 +779,32 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">uri</span> <span class="o">=</span> <span class="s1">'data:image/png;base64,'</span> <span class="o">+</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">png_bytes</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="ContentConversionMixin.set_image_blob_size"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.set_image_blob_size">[docs]</a>    <span class="k">def</span> <span class="nf">set_image_blob_size</span><span class="p">(</span>
+<div class="viewcode-block" id="ContentConversionMixin.set_image_blob_shape"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.set_image_blob_shape">[docs]</a>    <span class="k">def</span> <span class="nf">set_image_blob_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">width</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">height</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">channel_axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Document'</span><span class="p">:</span>
-        <span class="sd">"""Resize the image :attr:`.blob` inplace.</span>
+        <span class="sd">"""Resample the image :attr:`.blob` into different size inplace.</span>
 
-<span class="sd">        :param width: the width of the image blob.</span>
-<span class="sd">        :param height: the height of the blob.</span>
+<span class="sd">        If your current image blob has shape ``[H,W,C]``, then the new blob will be ``[*shape, C]``</span>
+
+<span class="sd">        :param shape: the new shape of the image blob.</span>
 <span class="sd">        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis</span>
 
 <span class="sd">        :return: itself after processed</span>
 <span class="sd">        """</span>
         <span class="n">blob</span> <span class="o">=</span> <span class="n">_move_channel_axis</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="p">,</span> <span class="n">original_channel_axis</span><span class="o">=</span><span class="n">channel_axis</span><span class="p">)</span>
-        <span class="n">buffer</span> <span class="o">=</span> <span class="n">_to_png_buffer</span><span class="p">(</span><span class="n">blob</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">_to_image_blob</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">buffer</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">)</span>
+        <span class="n">out_rows</span><span class="p">,</span> <span class="n">out_cols</span> <span class="o">=</span> <span class="n">shape</span>
+        <span class="n">in_rows</span><span class="p">,</span> <span class="n">in_cols</span><span class="p">,</span> <span class="n">n_in</span> <span class="o">=</span> <span class="n">blob</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="c1"># compute coordinates to resample</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">in_cols</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">out_cols</span><span class="p">),</span> <span class="n">out_rows</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">in_rows</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">out_rows</span><span class="p">),</span> <span class="n">out_cols</span><span class="p">)</span>
+
+        <span class="c1"># resample each image</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">_nn_interpolate_2D</span><span class="p">(</span><span class="n">blob</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">out_rows</span><span class="p">,</span> <span class="n">out_cols</span><span class="p">,</span> <span class="n">n_in</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="ContentConversionMixin.dump_buffer_to_file"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin.dump_buffer_to_file">[docs]</a>    <span class="k">def</span> <span class="nf">dump_buffer_to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BinaryIO</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">'Document'</span><span class="p">:</span>
@@ -1227,7 +1236,7 @@
     <span class="n">normalize_image_blob</span> <span class="o">=</span> <span class="n">_deprecate</span><span class="p">(</span><span class="n">set_image_blob_normalization</span><span class="p">)</span>
     <span class="n">convert_image_uri_to_blob</span> <span class="o">=</span> <span class="n">_deprecate</span><span class="p">(</span><span class="n">convert_uri_to_image_blob</span><span class="p">)</span>
     <span class="n">convert_audio_uri_to_blob</span> <span class="o">=</span> <span class="n">_deprecate</span><span class="p">(</span><span class="n">convert_uri_to_audio_blob</span><span class="p">)</span>
-    <span class="n">resize_image_blob</span> <span class="o">=</span> <span class="n">_deprecate</span><span class="p">(</span><span class="n">set_image_blob_size</span><span class="p">)</span></div>
+    <span class="n">resize_image_blob</span> <span class="o">=</span> <span class="n">_deprecate</span><span class="p">(</span><span class="n">set_image_blob_shape</span><span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">_uri_to_buffer</span><span class="p">(</span><span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
@@ -1448,6 +1457,13 @@
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_len</span><span class="p">:</span>
             <span class="n">vec</span> <span class="o">=</span> <span class="n">vec</span><span class="p">[</span><span class="o">-</span><span class="n">max_len</span><span class="p">:]</span>
     <span class="k">return</span> <span class="n">vec</span>
+
+
+<span class="k">def</span> <span class="nf">_nn_interpolate_2D</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">nx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">ny</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">ny</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">X</span><span class="p">[</span><span class="n">ny</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="p">:]</span>
 </pre></div>
             </article>
             <footer>

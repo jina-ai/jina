@@ -660,7 +660,7 @@
     <span class="k">yield</span> <span class="p">(</span>
         <span class="n">d</span><span class="o">.</span><span class="n">convert_uri_to_image_blob</span><span class="p">()</span>
         <span class="o">.</span><span class="n">convert_uri_to_datauri</span><span class="p">()</span>
-        <span class="o">.</span><span class="n">set_image_blob_size</span><span class="p">(</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">set_image_blob_shape</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">))</span>
         <span class="o">.</span><span class="n">set_image_blob_normalization</span><span class="p">()</span>
         <span class="o">.</span><span class="n">set_image_blob_channel_axis</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="p">)</span>
@@ -755,14 +755,14 @@
 </dl>
 </dd></dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.types.document.converters.ContentConversionMixin.set_image_blob_size">
-<span class="sig-name descname"><span class="pre">set_image_blob_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/converters/#ContentConversionMixin.set_image_blob_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.converters.ContentConversionMixin.set_image_blob_size" title="Permalink to this definition">¶</a></dt>
-<dd><p>Resize the image <a class="reference internal" href="../jina/#jina.Document.blob" title="jina.Document.blob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">blob</span></code></a> inplace.</p>
+<dt class="sig sig-object py" id="jina.types.document.converters.ContentConversionMixin.set_image_blob_shape">
+<span class="sig-name descname"><span class="pre">set_image_blob_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/converters/#ContentConversionMixin.set_image_blob_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.converters.ContentConversionMixin.set_image_blob_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resample the image <a class="reference internal" href="../jina/#jina.Document.blob" title="jina.Document.blob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">blob</span></code></a> into different size inplace.</p>
+<p>If your current image blob has shape <code class="docutils literal notranslate"><span class="pre">[H,W,C]</span></code>, then the new blob will be <code class="docutils literal notranslate"><span class="pre">[*shape,</span> <span class="pre">C]</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>width</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – the width of the image blob.</p></li>
-<li><p><strong>height</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – the height of the blob.</p></li>
+<li><p><strong>shape</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – the new shape of the image blob.</p></li>
 <li><p><strong>channel_axis</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the axis id of the color channel, <code class="docutils literal notranslate"><span class="pre">-1</span></code> indicates the color channel info at the last axis</p></li>
 </ul>
 </dd>

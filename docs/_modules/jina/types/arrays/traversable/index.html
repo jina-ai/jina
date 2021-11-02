@@ -624,8 +624,18 @@
                     </label>
                 </div>
                 <h1>Source code for jina.types.arrays.traversable</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Callable</span>
+<span></span><span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Iterable</span><span class="p">,</span>
+    <span class="n">Sequence</span><span class="p">,</span>
+    <span class="n">TYPE_CHECKING</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Generator</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">.document</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
@@ -731,7 +741,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">traversal_paths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="n">filter_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="s1">'Document'</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'DocumentArray'</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">]]:</span>
         <span class="sd">"""</span>
 <span class="sd">        Returns a single flattened :class:``TraversableSequence`` with all Documents, that are reached</span>
 <span class="sd">        via the :param:``traversal_paths``.</span>
@@ -761,6 +771,7 @@
         <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">traversal_paths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">require_attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="s1">'DocumentArray'</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
         <span class="sd">"""</span>
 <span class="sd">        Creates a `Generator` that yields `DocumentArray` of size `batch_size` until `docs` is fully traversed along</span>
@@ -771,6 +782,7 @@
 <span class="sd">        :param traversal_paths: Specifies along which "axis" the document shall be traversed. (defaults to ['r'])</span>
 <span class="sd">        :param batch_size: Size of each generated batch (except the last one, which might be smaller, default: 32)</span>
 <span class="sd">        :param require_attr: Optionally, you can filter out docs which don't have this attribute</span>
+<span class="sd">        :param shuffle: If set, shuffle the Documents before dividing into minibatches.</span>
 <span class="sd">        :yield: a Generator of `DocumentArray`, each in the length of `batch_size`</span>
 <span class="sd">        """</span>
 
@@ -778,6 +790,11 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'`batch_size` should be a positive integer'</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">traversal_paths</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s1">'using `traversal_paths` as an argument inside `.batch()` is deprecated. '</span>
+                <span class="s1">'please use `.traverse_flat(traversal_paths=...).batch()` instead'</span><span class="p">,</span>
+                <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="n">_check_traversal_path_type</span><span class="p">(</span><span class="n">traversal_paths</span><span class="p">)</span>
             <span class="n">docs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traverse_flat</span><span class="p">(</span><span class="n">traversal_paths</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -785,24 +802,43 @@
 
         <span class="kn">from</span> <span class="nn">.document</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
-        <span class="n">_batch</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
-            <span class="c1"># For array-valued attributes we need to compare to None</span>
-            <span class="k">if</span> <span class="n">require_attr</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'embedding'</span><span class="p">,</span> <span class="s1">'blob'</span><span class="p">]:</span>
-                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">require_attr</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">_batch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">require_attr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">require_attr</span><span class="p">):</span>
-                    <span class="n">_batch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">_batch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">require_attr</span><span class="p">:</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">ix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+            <span class="n">n_batches</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">N</span> <span class="o">/</span> <span class="n">batch_size</span><span class="p">))</span>
 
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_batch</span><span class="p">)</span> <span class="o">==</span> <span class="n">batch_size</span><span class="p">:</span>
-                <span class="k">yield</span> <span class="n">_batch</span>
-                <span class="n">_batch</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">shuffle</span><span class="p">:</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">ix</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">_batch</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="n">_batch</span></div>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_batches</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">docs</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="n">batch_size</span> <span class="p">:</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">batch_size</span><span class="p">])</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s1">'using `require_attr` as an argument inside `.batch()` is deprecated. '</span>
+                <span class="s1">'please use `.traverse_flat(filter_fn=...).batch()` instead'</span><span class="p">,</span>
+                <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="c1"># less efficient batching algorithm, will be removed soon</span>
+            <span class="n">_batch</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+                <span class="c1"># For array-valued attributes we need to compare to None</span>
+                <span class="k">if</span> <span class="n">require_attr</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'embedding'</span><span class="p">,</span> <span class="s1">'blob'</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">require_attr</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">_batch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">require_attr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">require_attr</span><span class="p">):</span>
+                        <span class="n">_batch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">_batch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_batch</span><span class="p">)</span> <span class="o">==</span> <span class="n">batch_size</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">_batch</span>
+                    <span class="n">_batch</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">_batch</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">_batch</span></div>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@abstractmethod</span>

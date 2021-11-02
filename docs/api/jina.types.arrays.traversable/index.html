@@ -725,7 +725,7 @@ behavior then in :method:<code class="docutils literal notranslate"><span class=
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]</p>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]]</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>a single :class:<code class="docutils literal notranslate"><span class="pre">TraversableSequence</span></code> containing the document of all leaves when applying the traversal_paths.</p>
@@ -734,7 +734,7 @@ behavior then in :method:<code class="docutils literal notranslate"><span class=
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.arrays.traversable.TraversableSequence.batch">
-<span class="sig-name descname"><span class="pre">batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traversal_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">require_attr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/traversable/#TraversableSequence.batch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.traversable.TraversableSequence.batch" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traversal_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">require_attr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/traversable/#TraversableSequence.batch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.traversable.TraversableSequence.batch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a <cite>Generator</cite> that yields <cite>DocumentArray</cite> of size <cite>batch_size</cite> until <cite>docs</cite> is fully traversed along
 the <cite>traversal_path</cite>. The None <cite>docs</cite> are filtered out and optionally the <cite>docs</cite> can be filtered by checking for
 the existence of a <cite>Document</cite> attribute.
@@ -745,6 +745,7 @@ Note, that the last batch might be smaller than <cite>batch_size</cite>.</p>
 <li><p><strong>traversal_paths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Specifies along which “axis” the document shall be traversed. (defaults to [‘r’])</p></li>
 <li><p><strong>batch_size</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Size of each generated batch (except the last one, which might be smaller, default: 32)</p></li>
 <li><p><strong>require_attr</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Optionally, you can filter out docs which don’t have this attribute</p></li>
+<li><p><strong>shuffle</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If set, shuffle the Documents before dividing into minibatches.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Yield</dt>
