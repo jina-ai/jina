@@ -20,7 +20,7 @@ def readable_time_from(t):
 def get_document(i, name):
     t = time.time()
     print(f'in {name} {i}, time: {readable_time_from(t)}, {t}', flush=True)
-    return Document(id=i, tags={'input_gen': t})
+    return Document(id=f'id-{i}', tags={'input_gen': t})
 
 
 def blocking_gen():
@@ -127,17 +127,17 @@ def test_disable_prefetch_slow_client_fast_executor(
 
     assert len(final_da) == INPUT_LEN
     # Since the input_gen is slow, order will always be gen -> exec -> on_done for every request
-    assert final_da[0].tags['input_gen'] < final_da[0].tags['executor']
-    assert final_da[0].tags['executor'] < final_da[0].tags['on_done']
-    assert final_da[0].tags['on_done'] < final_da[1].tags['input_gen']
-    assert final_da[1].tags['input_gen'] < final_da[1].tags['executor']
-    assert final_da[1].tags['executor'] < final_da[1].tags['on_done']
-    assert final_da[1].tags['on_done'] < final_da[2].tags['input_gen']
-    assert final_da[2].tags['input_gen'] < final_da[2].tags['executor']
-    assert final_da[2].tags['executor'] < final_da[2].tags['on_done']
-    assert final_da[2].tags['on_done'] < final_da[3].tags['input_gen']
-    assert final_da[3].tags['input_gen'] < final_da[3].tags['executor']
-    assert final_da[3].tags['executor'] < final_da[3].tags['on_done']
+    assert final_da['id-0'].tags['input_gen'] < final_da['id-0'].tags['executor']
+    assert final_da['id-0'].tags['executor'] < final_da['id-0'].tags['on_done']
+    assert final_da['id-0'].tags['on_done'] < final_da['id-1'].tags['input_gen']
+    assert final_da['id-1'].tags['input_gen'] < final_da['id-1'].tags['executor']
+    assert final_da['id-1'].tags['executor'] < final_da['id-1'].tags['on_done']
+    assert final_da['id-1'].tags['on_done'] < final_da['id-2'].tags['input_gen']
+    assert final_da['id-2'].tags['input_gen'] < final_da['id-2'].tags['executor']
+    assert final_da['id-2'].tags['executor'] < final_da['id-2'].tags['on_done']
+    assert final_da['id-2'].tags['on_done'] < final_da['id-3'].tags['input_gen']
+    assert final_da['id-3'].tags['input_gen'] < final_da['id-3'].tags['executor']
+    assert final_da['id-3'].tags['executor'] < final_da['id-3'].tags['on_done']
 
 
 @pytest.mark.parametrize('grpc_data_requests', [True, False])
@@ -173,18 +173,18 @@ def test_disable_prefetch_fast_client_slow_executor(
     assert len(final_da) == INPUT_LEN
     # since Executor is slow, all client inputs should be read before 1st request exits from Executor.
     assert (
-        final_da[0].id < final_da[1].id
-    ), f'ids are not ordered with times {final_da[0].tags["input_gen"]} and {final_da[1].tags["input_gen"]}'
+        final_da['id-0'].id < final_da['id-1'].id
+    ), f'ids are not ordered with times {final_da["id-0"].tags["input_gen"]} and {final_da["id-1"].tags["input_gen"]}'
     assert (
-        final_da[1].id < final_da[2].id
-    ), f'ids are not ordered with times {final_da[1].tags["input_gen"]} and {final_da[2].tags["input_gen"]}'
+        final_da['id-1'].id < final_da['id-2'].id
+    ), f'ids are not ordered with times {final_da["id-1"].tags["input_gen"]} and {final_da["id-2"].tags["input_gen"]}'
     assert (
-        final_da[2].id < final_da[3].id
-    ), f'ids are not ordered with times {final_da[2].tags["input_gen"]} and {final_da[3].tags["input_gen"]}'
-    assert final_da[0].tags['input_gen'] < final_da[1].tags['input_gen']
-    assert final_da[1].tags['input_gen'] < final_da[2].tags['input_gen']
-    assert final_da[2].tags['input_gen'] < final_da[3].tags['input_gen']
-    assert final_da[3].tags['input_gen'] < final_da[0].tags['executor']
+        final_da['id-2'].id < final_da['id-3'].id
+    ), f'ids are not ordered with times {final_da["id-2"].tags["input_gen"]} and {final_da["id-3"].tags["input_gen"]}'
+    assert final_da['id-0'].tags['input_gen'] < final_da['id-1'].tags['input_gen']
+    assert final_da['id-1'].tags['input_gen'] < final_da['id-2'].tags['input_gen']
+    assert final_da['id-2'].tags['input_gen'] < final_da['id-3'].tags['input_gen']
+    assert final_da['id-3'].tags['input_gen'] < final_da['id-0'].tags['executor']
     # At least 1 request should reache `on_done` before all requests are processed in the Executor.
     # Validates that the requests are not pending at the Executor
     first_on_done_time = min(i.tags['on_done'] for i in final_da)
