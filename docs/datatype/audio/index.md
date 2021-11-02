@@ -94,7 +94,7 @@ You can use Jina Document API to load a wav file as a Document.
 ```python
 from jina import Document
 
-d = Document(uri='toy.wav').convert_audio_uri_to_blob()
+d = Document(uri='toy.wav').convert_uri_to_audio_blob()
 
 print(d.blob.shape, d.blob.dtype)
 ```
@@ -119,7 +119,7 @@ Let's load the "hello" audio file, reverse it and finally save it.
 ```python
 from jina import Document
 
-d = Document(uri='hello.wav').convert_audio_uri_to_blob()
+d = Document(uri='hello.wav').convert_uri_to_audio_blob()
 d.blob = d.blob[::-1]
 d.dump_audio_blob_to_file('olleh.wav')
 ```
@@ -149,5 +149,5 @@ By no means you are restricted to use Jina native methods for audio processing. 
 ```{toctree}
 :hidden:
 
-find-replace-audio
+similar-audio-search/index
 ```

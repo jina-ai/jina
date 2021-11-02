@@ -88,8 +88,16 @@ def doc_lists_to_doc_arrays(
 @pytest.mark.parametrize(
     'limit, batch_size', [(1, None), (2, None), (None, None), (1, 1), (1, 2), (2, 1)]
 )
+@pytest.mark.parametrize('only_id', [True, False])
 def test_matching_retrieves_correct_number(
-    doc_lists, limit, batch_size, first_memmap, second_memmap, tmpdir, buffer_pool_size
+    doc_lists,
+    limit,
+    batch_size,
+    first_memmap,
+    second_memmap,
+    tmpdir,
+    buffer_pool_size,
+    only_id,
 ):
     D1, D2 = doc_lists_to_doc_arrays(
         doc_lists,
@@ -98,7 +106,9 @@ def test_matching_retrieves_correct_number(
         second_memmap,
         buffer_pool_size=buffer_pool_size,
     )
-    D1.match(D2, metric='sqeuclidean', limit=limit, batch_size=batch_size)
+    D1.match(
+        D2, metric='sqeuclidean', limit=limit, batch_size=batch_size, only_id=only_id
+    )
     for m in D1.get_attributes('matches'):
         if limit is None:
             assert len(m) == len(D2)
@@ -107,16 +117,18 @@ def test_matching_retrieves_correct_number(
 
 
 @pytest.mark.parametrize('metric', ['sqeuclidean', 'cosine'])
+@pytest.mark.parametrize('only_id', [True, False])
 def test_matching_same_results_with_sparse(
     docarrays_for_embedding_distance_computation,
     docarrays_for_embedding_distance_computation_sparse,
     metric,
+    only_id,
 ):
     D1, D2 = docarrays_for_embedding_distance_computation
     D1_sp, D2_sp = docarrays_for_embedding_distance_computation_sparse
 
     # use match with numpy arrays
-    D1.match(D2, metric=metric)
+    D1.match(D2, metric=metric, only_id=only_id)
     distances = []
     for m in D1.get_attributes('matches'):
         for d in m:
@@ -133,16 +145,16 @@ def test_matching_same_results_with_sparse(
 
 
 @pytest.mark.parametrize('metric', ['sqeuclidean', 'cosine'])
+@pytest.mark.parametrize('only_id', [True, False])
 def test_matching_same_results_with_batch(
-    docarrays_for_embedding_distance_computation,
-    metric,
+    docarrays_for_embedding_distance_computation, metric, only_id
 ):
     D1, D2 = docarrays_for_embedding_distance_computation
     D1_batch = copy.deepcopy(D1)
     D2_batch = copy.deepcopy(D2)
 
     # use match without batches
-    D1.match(D2, metric=metric)
+    D1.match(D2, metric=metric, only_id=only_id)
     distances = []
     for m in D1.get_attributes('matches'):
         for d in m:
@@ -160,9 +172,9 @@ def test_matching_same_results_with_batch(
 
 
 @pytest.mark.parametrize('metric', ['euclidean', 'cosine'])
+@pytest.mark.parametrize('only_id', [True, False])
 def test_matching_scipy_cdist(
-    docarrays_for_embedding_distance_computation,
-    metric,
+    docarrays_for_embedding_distance_computation, metric, only_id
 ):
     def scipy_cdist_metric(X, Y, *args):
         return scipy_cdist(X, Y, metric=metric)
@@ -178,7 +190,7 @@ def test_matching_scipy_cdist(
             distances.extend([d.scores[metric].value])
 
     # match with callable cdist function from scipy
-    D1_scipy.match(D2, metric=scipy_cdist_metric)
+    D1_scipy.match(D2, metric=scipy_cdist_metric, only_id=only_id)
     distances_scipy = []
     for m in D1.get_attributes('matches'):
         for d in m:
@@ -202,6 +214,7 @@ def test_matching_scipy_cdist(
     ],
 )
 @pytest.mark.parametrize('use_scipy', [True, False])
+@pytest.mark.parametrize('only_id', [True, False])
 def test_matching_retrieves_closest_matches(
     doc_lists,
     tmpdir,
@@ -211,6 +224,7 @@ def test_matching_retrieves_closest_matches(
     first_memmap,
     second_memmap,
     buffer_pool_size,
+    only_id,
 ):
     """
     Tests if match.values are returned 'low to high' if normalization is True or 'high to low' otherwise
@@ -223,7 +237,12 @@ def test_matching_retrieves_closest_matches(
         buffer_pool_size=buffer_pool_size,
     )
     D1.match(
-        D2, metric=metric, limit=3, normalization=normalization, use_scipy=use_scipy
+        D2,
+        metric=metric,
+        limit=3,
+        normalization=normalization,
+        use_scipy=use_scipy,
+        only_id=only_id,
     )
     expected_sorted_values = [
         D1[0].matches[i].scores['sqeuclidean'].value for i in range(3)
@@ -247,12 +266,14 @@ def test_matching_retrieves_closest_matches(
     ],
 )
 @pytest.mark.parametrize('use_scipy', [True, False])
+@pytest.mark.parametrize('only_id', [True, False])
 def test_docarray_match_docarraymemmap(
     docarrays_for_embedding_distance_computation,
     normalization,
     metric,
     tmpdir,
     use_scipy,
+    only_id,
 ):
     D1, D2 = docarrays_for_embedding_distance_computation
     D1_ = copy.deepcopy(D1)
@@ -270,6 +291,7 @@ def test_docarray_match_docarraymemmap(
         limit=3,
         normalization=normalization,
         use_scipy=use_scipy,
+        only_id=only_id,
     )
     values_docarraymemmap = [m.scores[metric].value for d in D1_ for m in d.matches]
 
@@ -287,8 +309,9 @@ def test_docarray_match_docarraymemmap(
         ((0, 1), 'jaccard'),
     ],
 )
+@pytest.mark.parametrize('only_id', [True, False])
 def test_scipy_dist(
-    docarrays_for_embedding_distance_computation, normalization, metric, tmpdir
+    docarrays_for_embedding_distance_computation, normalization, metric, tmpdir, only_id
 ):
     D1, D2 = docarrays_for_embedding_distance_computation
     D1_ = copy.deepcopy(D1)
@@ -299,7 +322,12 @@ def test_scipy_dist(
     D2memmap = DocumentArrayMemmap(tmpdir)
     D2memmap.extend(D2_)
     D1_.match(
-        D2memmap, metric=metric, limit=3, normalization=normalization, use_scipy=True
+        D2memmap,
+        metric=metric,
+        limit=3,
+        normalization=normalization,
+        use_scipy=True,
+        only_id=only_id,
     )
     values_docarraymemmap = [m.scores[metric].value for d in D1_ for m in d.matches]
 
@@ -309,8 +337,9 @@ def test_scipy_dist(
 @pytest.mark.parametrize('buffer_pool_size', [1000, 3])
 @pytest.mark.parametrize('first_memmap', [True, False])
 @pytest.mark.parametrize('second_memmap', [True, False])
+@pytest.mark.parametrize('only_id', [True, False])
 def test_2arity_function(
-    first_memmap, second_memmap, doc_lists, tmpdir, buffer_pool_size
+    first_memmap, second_memmap, doc_lists, tmpdir, buffer_pool_size, only_id
 ):
     def dotp(x, y, *args):
         return np.dot(x, np.transpose(y))
@@ -322,7 +351,7 @@ def test_2arity_function(
         second_memmap,
         buffer_pool_size=buffer_pool_size,
     )
-    D1.match(D2, metric=dotp, use_scipy=True)
+    D1.match(D2, metric=dotp, use_scipy=True, only_id=only_id)
 
     for d in D1:
         for m in d.matches:
@@ -356,7 +385,8 @@ def test_pca_plot_generated(embeddings, tmpdir, colored_tag, kwargs):
     assert os.path.exists(file_path)
 
 
-def test_match_inclusive():
+@pytest.mark.parametrize('only_id', [True, False])
+def test_match_inclusive(only_id):
     """Call match function, while the other :class:`DocumentArray` is itself
     or have same :class:`Document`.
     """
@@ -369,19 +399,20 @@ def test_match_inclusive():
         ]
     )
 
-    da1.match(da1)
+    da1.match(da1, only_id=only_id)
     assert len(da1) == 3
     traversed = da1.traverse_flat(traversal_paths=['m', 'mm', 'mmm'])
     assert len(traversed) == 9
     # The document array da2 shares same documents with da1
     da2 = DocumentArray([Document(embedding=np.array([4, 1, 3])), da1[0], da1[1]])
-    da1.match(da2)
+    da1.match(da2, only_id=only_id)
     assert len(da2) == 3
     traversed = da1.traverse_flat(traversal_paths=['m', 'mm', 'mmm'])
     assert len(traversed) == 9
 
 
-def test_match_inclusive_dam(tmpdir):
+@pytest.mark.parametrize('only_id', [True, False])
+def test_match_inclusive_dam(tmpdir, only_id):
     """Call match function, while the other :class:`DocumentArray` is itself
     or have same :class:`Document`.
     """
@@ -395,20 +426,21 @@ def test_match_inclusive_dam(tmpdir):
         ]
     )
 
-    dam.match(dam)
+    dam.match(dam, only_id=only_id)
     assert len(dam) == 3
     traversed = dam.traverse_flat(traversal_paths=['m', 'mm', 'mmm'])
     assert len(list(traversed)) == 9
     # The document array da2 shares same documents with da1
     da2 = DocumentArray([Document(embedding=np.array([4, 1, 3])), dam[0], dam[1]])
-    dam.match(da2)
+    dam.match(da2, only_id=only_id)
     assert len(da2) == 3
     traversed = dam.traverse_flat(traversal_paths=['m', 'mm', 'mmm'])
     assert len(list(traversed)) == 9
 
 
 @pytest.mark.parametrize('exclude_self, num_matches', [(True, 1), (False, 2)])
-def test_match_exclude_self(exclude_self, num_matches):
+@pytest.mark.parametrize('only_id', [True, False])
+def test_match_exclude_self(exclude_self, num_matches, only_id):
     da1 = DocumentArray(
         [
             Document(id='1', embedding=np.array([1, 2])),
@@ -421,7 +453,7 @@ def test_match_exclude_self(exclude_self, num_matches):
             Document(id='2', embedding=np.array([3, 4])),
         ]
     )
-    da1.match(da2, exclude_self=exclude_self)
+    da1.match(da2, exclude_self=exclude_self, only_id=only_id)
     for d in da1:
         assert len(d.matches) == num_matches
 
@@ -668,3 +700,13 @@ def test_sprite_image_generator(pytestconfig, tmpdir):
     da = DocumentArray(from_files(f'{pytestconfig.rootdir}/.github/**/*.png'))
     da.plot_image_sprites(tmpdir / 'sprint.png')
     assert os.path.exists(tmpdir / 'sprint.png')
+
+
+@pytest.mark.parametrize('only_id', [True, False])
+def test_only_id(docarrays_for_embedding_distance_computation, only_id):
+    D1, D2 = docarrays_for_embedding_distance_computation
+    D1.match(D2, only_id=only_id)
+    for d in D1:
+        for m in d.matches:
+            assert (m.embedding is None) == only_id
+            assert m.id

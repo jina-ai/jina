@@ -4,6 +4,7 @@ import os
 import struct
 import urllib.parse
 import urllib.request
+import warnings
 import wave
 from contextlib import nullcontext
 from typing import Optional, Union, BinaryIO, TYPE_CHECKING, Dict, Tuple
@@ -16,20 +17,35 @@ if TYPE_CHECKING:
     from . import Document
 
 
+def _deprecate(new_fn):
+    def _f(*args, **kwargs):
+        import inspect
+
+        old_fn_name = inspect.stack()[1][4][0].strip().split("=")[0].strip()
+        warnings.warn(
+            f'`{old_fn_name}` is renamed to `{new_fn.__name__}` with the same usage, please use the latter instead. '
+            f'The old function will be removed soon.',
+            DeprecationWarning,
+        )
+        return new_fn(*args, **kwargs)
+
+    return _f
+
+
 class ContentConversionMixin:
     """A mixin class for converting, dumping and resizing :attr:`.content` in :class:`Document`.
 
-    Note that most of the functions, except the ``dump_*`` ones can be used in a chain, e.g.
+    Note that most of the functions can be used in a chain, e.g.
 
     .. highlight:: python
     .. code-block:: python
 
         for d in from_files('/Users/hanxiao/Documents/tmpimg/*.jpg'):
             yield (
-                d.convert_image_uri_to_blob()
+                d.convert_uri_to_image_blob()
                 .convert_uri_to_datauri()
-                .resize_image_blob(224, 224)
-                .normalize_image_blob()
+                .set_image_blob_size(224, 224)
+                .set_image_blob_normalization()
                 .set_image_blob_channel_axis(-1, 0)
             )
     """
@@ -49,7 +65,67 @@ class ContentConversionMixin:
         )
         return self
 
-    def convert_image_buffer_to_blob(
+    def convert_uri_to_video_blob(self, only_keyframes: bool = False) -> 'Document':
+        """Convert a :attr:`.uri` to a video ndarray :attr:`.blob`.
+
+        :param only_keyframes: only keep the keyframes in the video
+        :return: Document itself after processed
+        """
+        import av
+
+        with av.open(self.uri) as container:
+            if only_keyframes:
+                stream = container.streams.video[0]
+                stream.codec_context.skip_frame = 'NONKEY'
+
+            frames = []
+            for frame in container.decode(video=0):
+                img = frame.to_image()
+                frames.append(np.asarray(img))
+
+        self.blob = np.moveaxis(np.stack(frames), 1, 2)
+        return self
+
+    def dump_video_blob_to_file(
+        self, file: Union[str, BinaryIO], frame_rate: int = 30, codec: str = 'h264'
+    ) -> 'Document':
+        """Save :attr:`.blob` as a video mp4/h264 file.
+
+        :param file: The file to open, which can be either a string or a file-like object.
+        :param frame_rate: frames per second
+        :param codec: the name of a decoder/encoder
+        :return: itself after processed
+        """
+        if (
+            self.blob.ndim != 4
+            or self.blob.shape[-1] != 3
+            or self.blob.dtype != np.uint8
+        ):
+            raise ValueError(
+                f'expects `.blob` with dtype=uint8 and ndim=4 and the last dimension is 3, '
+                f'but receiving {self.blob.shape} in {self.blob.dtype}'
+            )
+
+        video_blob = np.moveaxis(np.clip(self.blob, 0, 255), 1, 2)
+
+        import av
+
+        with av.open(file, mode='w') as container:
+            stream = container.add_stream(codec, rate=frame_rate)
+            stream.width = self.blob.shape[1]
+            stream.height = self.blob.shape[2]
+            stream.pix_fmt = 'yuv420p'
+
+            for b in video_blob:
+                frame = av.VideoFrame.from_ndarray(b, format='rgb24')
+                for packet in stream.encode(frame):
+                    container.mux(packet)
+
+            for packet in stream.encode():
+                container.mux(packet)
+        return self
+
+    def convert_buffer_to_image_blob(
         self,
         width: Optional[int] = None,
         height: Optional[int] = None,
@@ -77,7 +153,7 @@ class ContentConversionMixin:
         self.uri = 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
         return self
 
-    def resize_image_blob(
+    def set_image_blob_size(
         self,
         width: Optional[int] = None,
         height: Optional[int] = None,
@@ -167,7 +243,7 @@ class ContentConversionMixin:
             f.writeframes(blob.tobytes())
         return self
 
-    def convert_audio_uri_to_blob(self) -> 'Document':
+    def convert_uri_to_audio_blob(self) -> 'Document':
         """Convert an audio :attr:`.uri` into :attr:`.blob` inplace
 
         :return: Document itself after processed
@@ -198,7 +274,7 @@ class ContentConversionMixin:
             self.blob = audio_normalised
         return self
 
-    def convert_image_uri_to_blob(
+    def convert_uri_to_image_blob(
         self,
         width: Optional[int] = None,
         height: Optional[int] = None,
@@ -218,7 +294,12 @@ class ContentConversionMixin:
         self.blob = _move_channel_axis(blob, original_channel_axis=channel_axis)
         return self
 
-    def normalize_image_blob(self, channel_axis: int = -1) -> 'Document':
+    def set_image_blob_normalization(
+        self,
+        channel_axis: int = -1,
+        img_mean: Tuple[float] = (0.485, 0.456, 0.406),
+        img_std: Tuple[float] = (0.229, 0.224, 0.225),
+    ) -> 'Document':
         """Normalize a uint8 image :attr:`.blob` into a float32 image :attr:`.blob` inplace.
 
         Following Pytorch standard, the image must be in the shape of shape (3 x H x W) and
@@ -228,6 +309,8 @@ class ContentConversionMixin:
         mean and std. Otherwise, using the Imagenet pretrianed model with its own mean and std is recommended.
 
         :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+        :param img_mean: the mean of all images
+        :param img_std: the standard deviation of all images
         :return: itself after processed
 
         .. warning::
@@ -240,8 +323,8 @@ class ContentConversionMixin:
         if self.blob.dtype == np.uint8 and self.blob.ndim == 3:
             blob = (self.blob / 255.0).astype(np.float32)
             blob = _move_channel_axis(blob, channel_axis, 0)
-            mean = np.asarray([0.485, 0.456, 0.406], dtype=np.float32)
-            std = np.asarray([0.229, 0.224, 0.225], dtype=np.float32)
+            mean = np.asarray(img_mean, dtype=np.float32)
+            std = np.asarray(img_std, dtype=np.float32)
             blob = (blob - mean[:, None, None]) / std[:, None, None]
             # set back channel to original
             blob = _move_channel_axis(blob, 0, channel_axis)
@@ -461,14 +544,17 @@ class ContentConversionMixin:
             strides=(row_step * stride_h, col_step * stride_w, row_step, col_step, 1),
             writeable=False,
         )
+        cur_loc_h, cur_loc_w = 0, 0
+        if self.location:
+            cur_loc_h, cur_loc_w = self.location[:2]
 
+        bbox_locations = [
+            (h * stride_h + cur_loc_h, w * stride_w + cur_loc_w, window_h, window_w)
+            for h in range(expanded_img.shape[0])
+            for w in range(expanded_img.shape[1])
+        ]
         expanded_img = expanded_img.reshape((-1, window_h, window_w, c))
         if as_chunks:
-            bbox_locations = [
-                (h * stride_h, w * stride_w)
-                for h in range(expanded_img.shape[0])
-                for w in range(expanded_img.shape[1])
-            ]
             from . import Document
 
             for location, _blob in zip(bbox_locations, expanded_img):
@@ -481,6 +567,12 @@ class ContentConversionMixin:
         else:
             self.blob = _move_channel_axis(expanded_img, -1, channel_axis)
         return self
+
+    convert_image_buffer_to_blob = _deprecate(convert_buffer_to_image_blob)
+    normalize_image_blob = _deprecate(set_image_blob_normalization)
+    convert_image_uri_to_blob = _deprecate(convert_uri_to_image_blob)
+    convert_audio_uri_to_blob = _deprecate(convert_uri_to_audio_blob)
+    resize_image_blob = _deprecate(set_image_blob_size)
 
 
 def _uri_to_buffer(uri: str) -> bytes:

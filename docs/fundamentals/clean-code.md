@@ -284,7 +284,7 @@ class MyExecutor(Executor):
     @requests
     def to_blob_conversion(self, docs: DocumentArray, **kwargs):
         for doc in docs:
-            doc.convert_image_uri_to_blob()  # conversion happens inside Flow
+            doc.convert_uri_to_image_blob()  # conversion happens inside Flow
 
 f = Flow().add(uses=MyExecutor, replicas=2)
 
@@ -308,7 +308,7 @@ def my_input():
     image_uris = glob.glob('/.workspace/*.png')  # load high resolution images.
     for image_uri in image_uris:
         doc = Document(uri=image_uri)
-        doc.convert_image_uri_to_blob()  # time consuming job at client side
+        doc.convert_uri_to_image_blob()  # time consuming job at client side
         yield doc
 
 f = Flow().add()

@@ -2,7 +2,7 @@ import pytest
 
 from jina.enums import SocketType
 from jina.executors import BaseExecutor
-from jina.jaml import JAML
+from jina.jaml import JAML, JAMLCompatible
 from jina import __default_executor__, requests
 
 
@@ -101,3 +101,45 @@ def test_cls_from_tag():
     assert JAML.cls_from_tag('!MyExec') == MyExec
     assert JAML.cls_from_tag('BaseExecutor') == BaseExecutor
     assert JAML.cls_from_tag('Nonexisting') is None
+
+
+@pytest.mark.parametrize(
+    'field_name, override_field',
+    [
+        ('with', None),
+        ('metas', None),
+        ('requests', None),
+        ('with', {'a': 456, 'b': 'updated-test'}),
+        (
+            'metas',
+            {'name': 'test-name-updated', 'workspace': 'test-work-space-updated'},
+        ),
+        ('requests', {'/foo': 'baz'}),
+        # assure py_modules only occurs once #3830
+        (
+            'metas',
+            {
+                'name': 'test-name-updated',
+                'workspace': 'test-work-space-updated',
+                'py_modules': 'test_module.py',
+            },
+        ),
+    ],
+)
+def test_override_yml_params(field_name, override_field):
+    original_raw_yaml = {
+        'jtype': 'SimpleIndexer',
+        'with': {'a': 123, 'b': 'test'},
+        'metas': {'name': 'test-name', 'workspace': 'test-work-space'},
+        'requests': {'/foo': 'bar'},
+    }
+    updated_raw_yaml = original_raw_yaml
+    JAMLCompatible()._override_yml_params(updated_raw_yaml, field_name, override_field)
+    if override_field:
+        assert updated_raw_yaml[field_name] == override_field
+    else:
+        assert original_raw_yaml == updated_raw_yaml
+    # assure we don't create py_modules twice
+    if override_field == 'metas' and 'py_modules' in override_field:
+        assert 'py_modules' in updated_raw_yaml['metas']
+        assert 'py_modules' not in updated_raw_yaml
