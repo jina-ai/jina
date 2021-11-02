@@ -10,7 +10,6 @@ import sys
 import threading
 import time
 import uuid
-import warnings
 from collections import OrderedDict
 from contextlib import ExitStack
 from typing import Optional, Union, Tuple, List, Set, Dict, overload, Type
@@ -364,7 +363,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self.k8s_infrastructure_manager = None
         if self.args.infrastructure == InfrastructureType.K8S:
             self.k8s_infrastructure_manager = self._FlowK8sInfraResourcesManager(
-                k8s_namespace=self.args.name,
+                k8s_namespace=self.args.k8s_namespace,
                 k8s_custom_resource_dir=getattr(
                     self.args, 'k8s_custom_resource_dir', None
                 ),
