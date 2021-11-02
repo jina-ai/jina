@@ -8,8 +8,8 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/datatype/mesh/index.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="3D Mesh: A 3D mesh defines the properties such as shape, color and texture of an object in three dimensions. It is widely used in industries such as 3D printing and gaming. In addition to the traditional data types such text, audio and images, neural search can also be applied to less typical one..." />
-  <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
+  <meta property="og:description" content="3D Mesh: A 3D mesh is the structural build of a 3D model consisting of polygons. Most 3D meshes are created via professional software packages, such as commercial suites like Unity, or the free open source Blender 3D. Neural search on 3D mesh can be both fun and practically useful: consider a gam..." />
+  <meta property="og:image" content="../../_images/image45.gif" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -189,7 +189,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -651,10 +651,58 @@
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-package-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m8-878-392a1-75-1-75-0-00-1-756-0l-5-25-3-045a1-75-1-75-0-001-4-951v6-098c0-624-332-1-2-872-1-514l5-25-3-045a1-75-1-75-0-001-756-0l5-25-3-045c-54-313-872-89-872-1-514v4-951c0-624-332-1-2-872-1-514l8-878-392zm7-875-1-69a-25-25-0-01-25-0l4-63-2-685l8-7-133-3-245-4-375l4-63-2-685zm2-5-5-677v5-372c0-09-047-171-125-216l4-625-2-683v8-432l2-5-5-677zm6-25-8-271l4-625-2-683a-25-25-0-00-125-216v5-677l8-75-8-432v5-516z-path-svg-3d-mesh">
 <h1><svg aria-hidden="true" class="sd-octicon sd-octicon-package" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M8.878.392a1.75 1.75 0 00-1.756 0l-5.25 3.045A1.75 1.75 0 001 4.951v6.098c0 .624.332 1.2.872 1.514l5.25 3.045a1.75 1.75 0 001.756 0l5.25-3.045c.54-.313.872-.89.872-1.514V4.951c0-.624-.332-1.2-.872-1.514L8.878.392zM7.875 1.69a.25.25 0 01.25 0l4.63 2.685L8 7.133 3.245 4.375l4.63-2.685zM2.5 5.677v5.372c0 .09.047.171.125.216l4.625 2.683V8.432L2.5 5.677zm6.25 8.271l4.625-2.683a.25.25 0 00.125-.216V5.677L8.75 8.432v5.516z" fill-rule="evenodd"></path></svg> 3D Mesh<a class="headerlink" href="#svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-package-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m8-878-392a1-75-1-75-0-00-1-756-0l-5-25-3-045a1-75-1-75-0-001-4-951v6-098c0-624-332-1-2-872-1-514l5-25-3-045a1-75-1-75-0-001-756-0l5-25-3-045c-54-313-872-89-872-1-514v4-951c0-624-332-1-2-872-1-514l8-878-392zm7-875-1-69a-25-25-0-01-25-0l4-63-2-685l8-7-133-3-245-4-375l4-63-2-685zm2-5-5-677v5-372c0-09-047-171-125-216l4-625-2-683v8-432l2-5-5-677zm6-25-8-271l4-625-2-683a-25-25-0-00-125-216v5-677l8-75-8-432v5-516z-path-svg-3d-mesh" title="Permalink to this headline">¶</a></h1>
-<p>A 3D mesh defines the properties such as shape, color and texture of an object in three dimensions. It is widely used in industries such as 3D printing and gaming. In addition to the traditional data types such text, audio and images, neural search can also be applied to less typical ones such as 3D meshes.</p>
-<p>In this chapter, we will show you how simple it is to build a 3D mesh search pipeline and walk you through the process step by step.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>To enable the full feature of Document API on mesh data, you need to install <code class="docutils literal notranslate"><span class="pre">trimesh</span></code>.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install trimesh
+</pre></div>
+</div>
+</div>
+<p>A 3D mesh is the structural build of a 3D model consisting of polygons. Most 3D meshes are created via professional software packages, such as commercial suites like Unity, or the free open source Blender 3D. Neural search on 3D mesh can be both fun and practically useful: consider a game developer places a zombie into a scene, one can leverage Jina to find looks-alike monsters and put them in the scene to bring the terror to the next level.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../_images/image45.gif"><img alt="../../_images/image45.gif" src="../../_images/image45.gif" style="width: 50%;"/></a>
+</figure>
+<p>Before you start, let’s recap some basic concepts of 3D mesh data and how Jina can help you process them.</p>
+<section id="vertices-edges-and-faces">
+<h2>Vertices, edges and faces<a class="headerlink" href="#vertices-edges-and-faces" title="Permalink to this headline">¶</a></h2>
+<p>A common misconception is that 3D model/mesh is just a set of points defined by (X, Y, Z) coordinates. That is not true, at least not the full story. 3D mesh is a collection of vertices, edges and faces that defines the shape of a polyhedral object. The faces usually consist of triangles since this simplifies rendering.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../_images/img.png"><img alt="../../_images/img.png" src="../../_images/img.png" style="width: 50%;"/></a>
+</figure>
+<p>When we talk about simple 3D mesh data, there are three concepts you need to be aware of:</p>
+<ul class="simple">
+<li><p><strong>Vertex</strong>: a (X, Y, Z) coordinate along with other meta information such as color, normal vector and texture.</p></li>
+<li><p><strong>Edge</strong>: a connection between two vertices.</p></li>
+<li><p><strong>Face</strong>: a closed set of edges, in which a triangle face has three edges.</p></li>
+</ul>
+<p>Our intuition on storing (X, Y, Z) coordinates only corresponds to the vertex-vertex representation, which describes a 3D object as a set of vertices connected to other vertices. Despite its simplicity, vertex-vertex representation is not widely used since the face and edge information is implicit. Thus, it is necessary to traverse the data in order to generate a list of faces for rendering. In addition, operations on edges and faces are not easily accomplished.</p>
+</section>
+<section id="common-file-formats">
+<h2>Common file formats<a class="headerlink" href="#common-file-formats" title="Permalink to this headline">¶</a></h2>
+<p>Due to the variety of mesh representations, there are many 3D files in the market: <code class="docutils literal notranslate"><span class="pre">.glb</span></code>, <code class="docutils literal notranslate"><span class="pre">gltf</span></code>, <code class="docutils literal notranslate"><span class="pre">.fbx</span></code>, <code class="docutils literal notranslate"><span class="pre">.obj</span></code> etc. Some of them are proprietary and hence Jina does not provide a loader for all of them.</p>
+</section>
+<section id="point-cloud">
+<h2>Point cloud<a class="headerlink" href="#point-cloud" title="Permalink to this headline">¶</a></h2>
+<p>Point cloud is another representation of a 3D mesh. It is made by repeated and uniformly sampling points within the 3D body. Comparing to the mesh representation, point cloud is a fixed size ndarray and hence easier for deep learning algorithms to handle. In Jina, you can simply load a 3D mesh and convert it into a point cloud via:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'viking.glb'</span><span class="p">)</span><span class="o">.</span><span class="n">convert_uri_to_point_cloud_blob</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">blob</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>(1000, 3)
+</pre></div>
+</div>
+<p>The following pictures depict a 3D mesh and a point cloud with 1000 samples from that 3D mesh.</p>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/3dmesh-man.gif"><img alt="../../_images/3dmesh-man.gif" src="../../_images/3dmesh-man.gif" style="width: 50%;"/></a>
+</figure>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/pointcloud-man.gif"><img alt="../../_images/pointcloud-man.gif" src="../../_images/pointcloud-man.gif" style="width: 50%;"/></a>
+</figure>
 <div class="toctree-wrapper compound">
 </div>
+</section>
 </section>
 
             </article>
@@ -705,6 +753,25 @@
             
 
             <div class="toc-sticky toc-scroll">
+                
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-package" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8.878.392a1.75 1.75 0 00-1.756 0l-5.25 3.045A1.75 1.75 0 001 4.951v6.098c0 .624.332 1.2.872 1.514l5.25 3.045a1.75 1.75 0 001.756 0l5.25-3.045c.54-.313.872-.89.872-1.514V4.951c0-.624-.332-1.2-.872-1.514L8.878.392zM7.875 1.69a.25.25 0 01.25 0l4.63 2.685L8 7.133 3.245 4.375l4.63-2.685zM2.5 5.677v5.372c0 .09.047.171.125.216l4.625 2.683V8.432L2.5 5.677zm6.25 8.271l4.625-2.683a.25.25 0 00.125-.216V5.677L8.75 8.432v5.516z"></path></svg> 3D Mesh</a><ul>
+<li><a class="reference internal" href="#vertices-edges-and-faces">Vertices, edges and faces</a></li>
+<li><a class="reference internal" href="#common-file-formats">Common file formats</a></li>
+<li><a class="reference internal" href="#point-cloud">Point cloud</a></li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
                 
                 <details id='jina-docbot' class="jina-doc-bot sd-sphinx-override sd-dropdown sd-card">
     <summary class="sd-summary-title sd-card-header">

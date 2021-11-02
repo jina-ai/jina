@@ -859,6 +859,26 @@
 </dl>
 </dd></dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="jina.types.document.converters.ContentConversionMixin.convert_uri_to_point_cloud_blob">
+<span class="sig-name descname"><span class="pre">convert_uri_to_point_cloud_blob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_chunks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/converters/#ContentConversionMixin.convert_uri_to_point_cloud_blob"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.converters.ContentConversionMixin.convert_uri_to_point_cloud_blob" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a 3d mesh-like <a class="reference internal" href="../daemon.models.containers/#daemon.models.containers.ContainerMetadata.uri" title="daemon.models.containers.ContainerMetadata.uri"><code class="xref py py-attr docutils literal notranslate"><span class="pre">uri</span></code></a> into <a class="reference internal" href="../jina/#jina.Document.blob" title="jina.Document.blob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">blob</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>samples</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – number of points to sample from the mesh</p></li>
+<li><p><strong>as_chunks</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – when multiple geometry stored in one mesh file,
+then store each geometry into different <a class="reference internal" href="../jina/#jina.Document.chunks" title="jina.Document.chunks"><code class="xref py py-attr docutils literal notranslate"><span class="pre">chunks</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="../jina/#jina.Document" title="jina.Document">Document</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>itself after processed</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
 <dt class="sig sig-object py" id="jina.types.document.converters.ContentConversionMixin.convert_uri_to_image_blob">
 <span class="sig-name descname"><span class="pre">convert_uri_to_image_blob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/converters/#ContentConversionMixin.convert_uri_to_image_blob"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.converters.ContentConversionMixin.convert_uri_to_image_blob" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert the image-like <a class="reference internal" href="../daemon.models.containers/#daemon.models.containers.ContainerMetadata.uri" title="daemon.models.containers.ContainerMetadata.uri"><code class="xref py py-attr docutils literal notranslate"><span class="pre">uri</span></code></a> into <a class="reference internal" href="../jina/#jina.Document.blob" title="jina.Document.blob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">blob</span></code></a></p>
