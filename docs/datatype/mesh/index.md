@@ -1,5 +1,14 @@
 # {octicon}`package` 3D Mesh
 
+````{tip}
+
+To enable the full feature of Document API on image, you need to install `trimesh`.
+
+```shell
+pip install trimesh
+```
+````
+
 A 3D mesh is the structural build of a 3D model consisting of polygons. Most 3D meshes are created via professional software packages, such as commercial suites like Unity, or the free open source Blender 3D. Neural search on 3D mesh can be both fun and practically useful: consider a game developer places a zombie into a scene, one can leverage Jina to find looks-alike monsters and put them in the scene to bring the terror to the next level.
 
 ```{figure} image45.gif
