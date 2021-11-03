@@ -1173,7 +1173,7 @@ def _get_array_type(array) -> Tuple[str, bool]:
             return 'jina', True
 
     if 'jina_pb2' in module_tags:
-        if class_name == 'DenseNdArrayProto':
+        if class_name == 'DenseNdArrayProto' or class_name == 'NdArrayProto':
             return 'jina_proto', False
         if class_name == 'SparseNdArrayProto':
             return 'jina_proto', True

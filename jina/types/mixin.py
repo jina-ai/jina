@@ -78,8 +78,4 @@ class ProtoTypeMixin:
         :return: the dict representation for the object
         """
         content = self.dict()
-        if hasattr(self, '_attributes_in_str') and isinstance(
-            self._attributes_in_str, list
-        ):
-            content = {k: content[k] for k in self._attributes_in_str}
         return content
