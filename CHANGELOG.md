@@ -106,6 +106,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -340,6 +341,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`2.2.0`)](#release-note-220)
 - [Release Note (`2.2.1`)](#release-note-221)
 - [Release Note (`2.2.2`)](#release-note-222)
+- [Release Note (`2.2.3`)](#release-note-223)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -11182,4 +11184,45 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```dce709db```](https://github.com/jina-ai/jina/commit/dce709db639d3bfd41fb4dbf22dc59bd63309514)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```973c7353```](https://github.com/jina-ai/jina/commit/973c735360422ea370855f35f35bcc49464a6b58)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```502435bf```](https://github.com/jina-ai/jina/commit/502435bf04ad742694470667077f3df65148cce5)] __-__ __version__: the next version will be 2.2.2 (*Jina Dev Bot*)
+
+<a name=release-note-2-2-3></a>
+## Release Note (`2.2.3`)
+
+> Release time: 2021-11-02 20:05:49
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Alex Cureton-Griffiths,  Roshan Jossy,  Deepankar Mahapatro,  Joan Fontanals,  Winston Wong,  Nan Wang,  Jina Dev Bot,  Wang Bo,  🙇
+
+
+### ⚡ Performance Improvements
+
+ - [[```b58ad0a2```](https://github.com/jina-ai/jina/commit/b58ad0a2169fe2d53a72f589d2f49fa248a5f2de)] __-__ __types__: more efficient batching and resampling (#3855) (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```cdadb075```](https://github.com/jina-ai/jina/commit/cdadb0751fafb129c4ab601d87fc1030eb6f9490)] __-__ make accessible shard and replica info at container rt (#3822) (*Joan Fontanals*)
+ - [[```6104e4be```](https://github.com/jina-ai/jina/commit/6104e4beacd1cabe8618b6bc3469fef1db13a002)] __-__ __types__: fix location and bounding box in converters (#3847) (*Han Xiao*)
+ - [[```d78530b3```](https://github.com/jina-ai/jina/commit/d78530b3f6aa145fa5ba08d8e8ba9dcd8dfeb701)] __-__ __jaml__: remove duplicate py_modules while parsing yaml (#3830) (*Wang Bo*)
+
+### 📗 Documentation
+
+ - [[```e95a600b```](https://github.com/jina-ai/jina/commit/e95a600ba2c966a47110023242a1f44393f36970)] __-__ add general tutorial on 3d mesh data (#3853) (*Han Xiao*)
+ - [[```5905c85e```](https://github.com/jina-ai/jina/commit/5905c85e823b8544c69fc32f335ba1f720bda5cd)] __-__ __tutorial__: polish image2image (#3843) (*Alex Cureton-Griffiths*)
+ - [[```0e6e2b28```](https://github.com/jina-ai/jina/commit/0e6e2b28711d29ce40480ceb561622f19297a2f5)] __-__ __audio tutorial__: grammatical corrections (#3852) (*Roshan Jossy*)
+ - [[```95b284a6```](https://github.com/jina-ai/jina/commit/95b284a644f3edb53268f892756f22645be601c0)] __-__ multiprocessing spawn (#3851) (*Deepankar Mahapatro*)
+ - [[```06f1af4a```](https://github.com/jina-ai/jina/commit/06f1af4a57ff63225bc1cafd5b4b404f3d5fb0f1)] __-__ add troubleshooting section (*Han Xiao*)
+ - [[```93dea1c9```](https://github.com/jina-ai/jina/commit/93dea1c9ab773e00556283fdd6549714926f6078)] __-__ 3d mesh search tutorial (#3829) (*Winston Wong*)
+ - [[```b1aba219```](https://github.com/jina-ai/jina/commit/b1aba219e06ebd1d47092bb5834776f30262b291)] __-__ add similar audio search tutorials (#3839) (*Nan Wang*)
+ - [[```8af57865```](https://github.com/jina-ai/jina/commit/8af578658d8cd891ecc5f9662e526fed688c56a5)] __-__ fix install section (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```caf8dc76```](https://github.com/jina-ai/jina/commit/caf8dc763188d2797c5cc023c5edce7bb605ad88)] __-__ __docs__: minor revision on 3d mesh search (*Han Xiao*)
+ - [[```d03360ff```](https://github.com/jina-ai/jina/commit/d03360ff4abc73924b78b75fe31f31610b61973b)] __-__ __readme__: fix logo to use pos instead of morph (*Han Xiao*)
+ - [[```49c4c019```](https://github.com/jina-ai/jina/commit/49c4c019df515e6b6f2fe2f182c8023b5c3c0432)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```b55ec716```](https://github.com/jina-ai/jina/commit/b55ec716f6417e652c0decfa18ef6b29a8024f9f)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```d22f471b```](https://github.com/jina-ai/jina/commit/d22f471bcb18fd7540d576050347355d7278b41e)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
+ - [[```3b4c7eb0```](https://github.com/jina-ai/jina/commit/3b4c7eb0afd7c81d9e4ea273d5da04c639dea099)] __-__ __version__: the next version will be 2.2.3 (*Jina Dev Bot*)
 

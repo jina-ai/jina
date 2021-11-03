@@ -59,7 +59,7 @@ from jina import Document
 d = (
     Document(uri='apple.png')
     .convert_uri_to_image_blob()
-    .set_image_blob_size(224, 224)
+    .set_image_blob_shape(shape=(224, 224))
     .set_image_blob_normalization()
     .set_image_blob_channel_axis(-1, 0)
 )
