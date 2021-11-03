@@ -726,6 +726,20 @@
 <span class="sig-name descname"><span class="pre">peapod_cls</span></span><a class="headerlink" href="#daemon.stores.partial.PartialPodStore.peapod_cls" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="../jina.peapods.pods/#jina.peapods.pods.Pod" title="jina.peapods.pods.Pod"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.pods.Pod</span></code></a></p>
 </dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="daemon.stores.partial.PartialPodStore.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pod_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_with</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/partial/#PartialPodStore.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.partial.PartialPodStore.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs an update operation on the Flow.
+:type kind: <a class="reference internal" href="../daemon.models.enums/#daemon.models.enums.UpdateOperation" title="daemon.models.enums.UpdateOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">UpdateOperation</span></code></a>
+:param kind: type of update command to execute (rolling_update)
+:type pod_name: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param pod_name: pod to target with the dump request
+:type uses_with: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]
+:param uses_with: the uses_with for the new executors to be rolled updated
+:param kwargs: keyword args
+:rtype: <a class="reference internal" href="../daemon.models.partial/#daemon.models.partial.PartialStoreItem" title="daemon.models.partial.PartialStoreItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">PartialStoreItem</span></code></a>
+:return: Item describing the Flow object</p>
+</dd></dl>
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="daemon.stores.partial.PartialFlowStore">
@@ -754,16 +768,14 @@
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="daemon.stores.partial.PartialFlowStore.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dump_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pod_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shards</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/partial/#PartialFlowStore.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.partial.PartialFlowStore.update" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pod_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_with</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/partial/#PartialFlowStore.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.partial.PartialFlowStore.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs an update operation on the Flow.
 :type kind: <a class="reference internal" href="../daemon.models.enums/#daemon.models.enums.UpdateOperation" title="daemon.models.enums.UpdateOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">UpdateOperation</span></code></a>
-:param kind: type of update command to execute (dump/rolling_update)
-:type dump_path: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param dump_path: the path to which to dump on disk
+:param kind: type of update command to execute (rolling_update)
 :type pod_name: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
 :param pod_name: pod to target with the dump request
-:type shards: <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>
-:param shards: nr of shards to dump
+:type uses_with: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]
+:param uses_with: the uses_with for the new executors to be rolled updated
 :param kwargs: keyword args
 :rtype: <a class="reference internal" href="../daemon.models.partial/#daemon.models.partial.PartialFlowItem" title="daemon.models.partial.PartialFlowItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">PartialFlowItem</span></code></a>
 :return: Item describing the Flow object</p>
