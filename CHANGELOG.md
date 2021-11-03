@@ -107,6 +107,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -11225,4 +11226,38 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```b55ec716```](https://github.com/jina-ai/jina/commit/b55ec716f6417e652c0decfa18ef6b29a8024f9f)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```d22f471b```](https://github.com/jina-ai/jina/commit/d22f471bcb18fd7540d576050347355d7278b41e)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
  - [[```3b4c7eb0```](https://github.com/jina-ai/jina/commit/3b4c7eb0afd7c81d9e4ea273d5da04c639dea099)] __-__ __version__: the next version will be 2.2.3 (*Jina Dev Bot*)
+
+<a name=release-note-2-2-4></a>
+## Release Note (`2.2.4`)
+
+> Release time: 2021-11-03 20:55:50
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Joan Fontanals,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```21103d25```](https://github.com/jina-ai/jina/commit/21103d25aea51baae5e5853a3d44b162be3bfc05)] __-__ __types__: add text_fields to get_vocabulary to doc and da (#3861) (*Han Xiao*)
+ - [[```2eef05d0```](https://github.com/jina-ai/jina/commit/2eef05d0472c397f639a0c139f9922e50fdd1701)] __-__ allow rolling update with uses_with in jinad (#3826) (*Joan Fontanals*)
+
+### 🐞 Bug fixes
+
+ - [[```bb9c3006```](https://github.com/jina-ai/jina/commit/bb9c3006761baf6bccbbed123e33fa6e8157765a)] __-__ set does not guarantee order (#3859) (*Joan Fontanals*)
+
+### 🧼 Code Refactoring
+
+ - [[```61cad7e2```](https://github.com/jina-ai/jina/commit/61cad7e2e5e68b2b5cf8f54e8577b2f5ed5b9b36)] __-__ __types__: improve the array type checking (#3863) (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```b0be6554```](https://github.com/jina-ai/jina/commit/b0be6554a9545da495147a08830206db7a19e638)] __-__ __stream__: fix flaky http protocol (#3833) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```93456179```](https://github.com/jina-ai/jina/commit/93456179294563cfd01a6f4b1f42991a8661965e)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```a3f10fb7```](https://github.com/jina-ai/jina/commit/a3f10fb7a154888e6a9f3189a14de9fbb10ee6fb)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```204a4f34```](https://github.com/jina-ai/jina/commit/204a4f34937d8b755e12391ee0462c46b42eafb7)] __-__ __version__: the next version will be 2.2.4 (*Jina Dev Bot*)
 
