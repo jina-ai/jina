@@ -136,7 +136,7 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
         buffer: Optional[bytes] = None,
         chunks: Optional[Iterable['Document']] = None,
         content: Optional[DocumentContentType] = None,
-        embedding: Optional['NdArray'] = None,
+        embedding: Optional['ArrayType'] = None,
         granularity: Optional[int] = None,
         id: Optional[str] = None,
         matches: Optional[Iterable['Document']] = None,
@@ -549,7 +549,7 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
         ).value
 
     @embedding.setter
-    def embedding(self, value: 'NdArray'):
+    def embedding(self, value: 'ArrayType'):
         """Set the ``embedding`` of the content of a Document.
 
         :param value: the array value to set the embedding
