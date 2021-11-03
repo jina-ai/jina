@@ -136,7 +136,7 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
         buffer: Optional[bytes] = None,
         chunks: Optional[Iterable['Document']] = None,
         content: Optional[DocumentContentType] = None,
-        embedding: Optional['ArrayType'] = None,
+        embedding: Optional['NdArray'] = None,
         granularity: Optional[int] = None,
         id: Optional[str] = None,
         matches: Optional[Iterable['Document']] = None,
