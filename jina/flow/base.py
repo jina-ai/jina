@@ -468,13 +468,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 port_expose=self.port_expose,
                 pod_role=PodRoleType.GATEWAY,
                 expose_endpoints=json.dumps(self._endpoints_mapping),
-                k8s_namespace=self.args.name,
+                k8s_namespace=self.args.k8s_namespace,
             )
         )
 
         kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
-        args.k8s_namespace = self.args.name
+        args.k8s_namespace = self.args.k8s_namespace
         args.connect_to_predecessor = False
         args.noblock_on_start = True
         self._pod_nodes[GATEWAY_NAME] = PodFactory.build_pod(
@@ -791,7 +791,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         # pod workspace if not set then derive from flow workspace
         args.workspace = os.path.abspath(args.workspace or self.workspace)
 
-        args.k8s_namespace = self.args.name
+        args.k8s_namespace = self.args.k8s_namespace
         args.noblock_on_start = True
         args.extra_search_paths = self.args.extra_search_paths
         args.zmq_identity = None

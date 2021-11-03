@@ -69,6 +69,7 @@ def k8s_flow_configmap(test_executor_image: str) -> Flow:
         infrastructure='K8S',
         protocol='http',
         timeout_ready=120000,
+        k8s_namespace='k8s-flow-configmap-ns',
     ).add(
         name='test_executor',
         uses=test_executor_image,
