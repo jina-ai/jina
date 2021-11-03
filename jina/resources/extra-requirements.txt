@@ -36,7 +36,7 @@ cryptography:               standard, daemon, devel
 filelock:                   standard, daemon, devel
 requests:                   standard, daemon, devel
 torch>=1.1.0:               demo
-transformers>=2.6.0:        demo
+transformers<=4.2.2:        demo
 tensorflow>=2.0:            cicd
 torchvision>=0.3.0:         demo
 Pillow:                     demo

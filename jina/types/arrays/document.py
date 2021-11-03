@@ -470,25 +470,8 @@ class DocumentArray(
         """
         return len(self) > 0
 
-    def __str__(self):
-
-        content = f'{self.__class__.__name__} has {len(self._pb_body)} items'
-
-        if len(self._pb_body) > 3:
-            content += ' (showing first three)'
-
-        content += ':\n'
-        content += ',\n'.join(str(Document(d)) for d in self._pb_body[:3])
-
-        return content
-
     def __repr__(self):
-        content = ' '.join(
-            f'{k}={v}' for k, v in {'length': len(self._pb_body)}.items()
-        )
-        content += f' at {id(self)}'
-        content = content.strip()
-        return f'<{typename(self)} {content}>'
+        return f'<{typename(self)} (length={len(self._pb_body)}) at {id(self)}>'
 
     def save(
         self, file: Union[str, TextIO, BinaryIO], file_format: str = 'json'
