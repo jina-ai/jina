@@ -627,6 +627,7 @@
 <span></span><span class="kn">import</span> <span class="nn">base64</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">mimetypes</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
 <span class="kn">from</span> <span class="nn">hashlib</span> <span class="kn">import</span> <span class="n">blake2b</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Any</span><span class="p">,</span>
@@ -655,7 +656,7 @@
 <span class="kn">from</span> <span class="nn">..score</span> <span class="kn">import</span> <span class="n">NamedScore</span>
 <span class="kn">from</span> <span class="nn">..score.map</span> <span class="kn">import</span> <span class="n">NamedScoreMapping</span>
 <span class="kn">from</span> <span class="nn">..struct</span> <span class="kn">import</span> <span class="n">StructView</span>
-<span class="kn">from</span> <span class="nn">.converters</span> <span class="kn">import</span> <span class="n">ContentConversionMixin</span>
+<span class="kn">from</span> <span class="nn">.converters</span> <span class="kn">import</span> <span class="n">ContentConversionMixin</span><span class="p">,</span> <span class="n">_text_to_word_sequence</span>
 <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">VersionedMixin</span><span class="p">,</span> <span class="n">versioned</span>
 
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
@@ -1826,7 +1827,20 @@
             <span class="n">value</span> <span class="o">=</span> <span class="n">dunder_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'no attribute named `</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">`'</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">value</span></div>
+        <span class="k">return</span> <span class="n">value</span>
+
+<div class="viewcode-block" id="Document.get_vocabulary"><a class="viewcode-back" href="../../../../api/jina.types.document/#jina.Document.get_vocabulary">[docs]</a>    <span class="k">def</span> <span class="nf">get_vocabulary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text_attrs</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'text'</span><span class="p">,))</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+        <span class="sd">"""Get the text vocabulary in a counter dict that maps from the word to its frequency from all :attr:`text_fields`.</span>
+
+<span class="sd">        :param text_attrs: the textual attributes where vocabulary will be derived from</span>
+<span class="sd">        :return: a vocabulary in dictionary where key is the word, value is the frequency of that word in all text fields.</span>
+<span class="sd">        """</span>
+        <span class="n">all_tokens</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">text_attrs</span><span class="p">:</span>
+            <span class="n">all_tokens</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_text_to_word_sequence</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="n">all_tokens</span></div></div>
 </pre></div>
             </article>
             <footer>

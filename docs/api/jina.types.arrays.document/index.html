@@ -954,11 +954,14 @@ first element in the DocumentArray / DocumentArrayMemmap</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.arrays.document.DocumentArray.get_vocabulary">
-<span class="sig-name descname"><span class="pre">get_vocabulary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">min_freq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/document/#DocumentArray.get_vocabulary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.document.DocumentArray.get_vocabulary" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_vocabulary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">min_freq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_attrs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('text',)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/document/#DocumentArray.get_vocabulary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.document.DocumentArray.get_vocabulary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the text vocabulary in a dict that maps from the word to the index from all Documents.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>min_freq</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the minimum word frequency to be considered into the vocabulary.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text_attrs</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, …]) – the textual attributes where vocabulary will be derived from</p></li>
+<li><p><strong>min_freq</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the minimum word frequency to be considered into the vocabulary.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</p>
