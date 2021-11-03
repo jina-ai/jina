@@ -1,6 +1,7 @@
 import base64
 import json
 import mimetypes
+from collections import Counter
 from hashlib import blake2b
 from typing import (
     Any,
@@ -29,7 +30,7 @@ from ..ndarray.generic import BaseSparseNdArray, NdArray
 from ..score import NamedScore
 from ..score.map import NamedScoreMapping
 from ..struct import StructView
-from .converters import ContentConversionMixin
+from .converters import ContentConversionMixin, _text_to_word_sequence
 from .helper import VersionedMixin, versioned
 
 if False:
@@ -1201,3 +1202,16 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
         else:
             raise AttributeError(f'no attribute named `{item}`')
         return value
+
+    def get_vocabulary(self, text_attrs: Tuple[str, ...] = ('text',)) -> Dict[str, int]:
+        """Get the text vocabulary in a counter dict that maps from the word to its frequency from all :attr:`text_fields`.
+
+        :param text_attrs: the textual attributes where vocabulary will be derived from
+        :return: a vocabulary in dictionary where key is the word, value is the frequency of that word in all text fields.
+        """
+        all_tokens = Counter()
+
+        for f in text_attrs:
+            all_tokens.update(_text_to_word_sequence(getattr(self, f)))
+
+        return all_tokens

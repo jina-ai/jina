@@ -1,8 +1,9 @@
+import csv
+import heapq
 import itertools
 import json
-import heapq
 from abc import abstractmethod
-from collections import defaultdict
+from collections import Counter
 from collections.abc import MutableSequence, Iterable as Itr
 from contextlib import nullcontext
 from typing import (
@@ -29,10 +30,9 @@ from .search_ops import DocumentArraySearchOpsMixin
 from .traversable import TraversableSequence
 from ..document import Document
 from ..struct import StructView
+from ... import __windows__
 from ...helper import typename
 from ...proto import jina_pb2
-from ... import __windows__
-import csv
 
 try:
     # when protobuf using Cpp backend
@@ -746,21 +746,20 @@ class DocumentArray(
     def _flatten(sequence) -> 'DocumentArray':
         return DocumentArray(list(itertools.chain.from_iterable(sequence)))
 
-    def get_vocabulary(self, min_freq: int = 1) -> Dict[str, int]:
+    def get_vocabulary(
+        self, min_freq: int = 1, text_attrs: Tuple[str, ...] = ('text',)
+    ) -> Dict[str, int]:
         """Get the text vocabulary in a dict that maps from the word to the index from all Documents.
 
+        :param text_attrs: the textual attributes where vocabulary will be derived from
         :param min_freq: the minimum word frequency to be considered into the vocabulary.
         :return: a vocabulary in dictionary where key is the word, value is the index. The value is 2-index, where
             `0` is reserved for padding, `1` is reserved for unknown token.
         """
 
-        from ..document.converters import _text_to_word_sequence
-
-        all_tokens = defaultdict(int)
+        all_tokens = Counter()
         for d in self:
-            seq = _text_to_word_sequence(d.text)
-            for s in seq:
-                all_tokens[s] += 1
+            all_tokens.update(d.get_vocabulary(text_attrs=text_attrs))
 
         # 0 for padding, 1 for unknown
         return {
