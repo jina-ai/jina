@@ -3,6 +3,7 @@ import time
 
 import numpy as np
 import pytest
+from daemon.models.id import DaemonID
 
 from jina import Document, Client, __default_host__
 from jina.logging.logger import JinaLogger
@@ -84,11 +85,15 @@ def test_dump_dbms_remote(executor_images, docker_compose):
     )
 
     # rolling_update on Query Flow
-    client.flows.update(
-        id=query_flow_id,
-        kind='rolling_update',
-        pod_name='indexer_query',
-        dump_path=DUMP_PATH,
+    assert (
+        DaemonID(
+            client.flows.update(
+                id=query_flow_id,
+                pod_name='indexer_query',
+                uses_with={'dump_path': DUMP_PATH},
+            )
+        )
+        == DaemonID(query_flow_id)
     )
 
     # validate that there are matches now
