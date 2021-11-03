@@ -1181,7 +1181,7 @@ def _get_array_type(array) -> Tuple[str, bool]:
     if 'tensorflow' in module_tags:
         if class_name == 'SparseTensor':
             return 'tensorflow', True
-        if class_name == 'Tensor':
+        if class_name == 'Tensor' or class_name == 'EagerTensor':
             return 'tensorflow', False
 
     if 'torch' in module_tags and class_name == 'Tensor':
