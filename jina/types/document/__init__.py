@@ -1,7 +1,7 @@
 import base64
 import json
 import mimetypes
-from collections import defaultdict
+from collections import Counter
 from hashlib import blake2b
 from typing import (
     Any,
@@ -1209,10 +1209,9 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
         :param text_attrs: the textual attributes where vocabulary will be derived from
         :return: a vocabulary in dictionary where key is the word, value is the frequency of that word in all text fields.
         """
-        all_tokens = defaultdict(int)
+        all_tokens = Counter()
 
         for f in text_attrs:
-            for s in _text_to_word_sequence(getattr(self, f)):
-                all_tokens[s] += 1
+            all_tokens.update(_text_to_word_sequence(getattr(self, f)))
 
         return all_tokens
