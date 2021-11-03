@@ -101,7 +101,7 @@ class AsyncFlowClient(AsyncBaseClient):
                 'kind': UpdateOperation.ROLLING_UPDATE.value,
                 'pod_name': pod_name,
             },
-            json={'uses_with': uses_with},
+            json=uses_with,
             timeout=self.timeout,
         ) as response:
             response_json = await response.json()

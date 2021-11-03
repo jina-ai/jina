@@ -281,7 +281,7 @@ class ContainerStore(BaseStore):
 
         uri = self[id].metadata.uri
         try:
-            object = await self._update(uri, params, json={'uses_with': uses_with})
+            object = await self._update(uri, params, json=uses_with)
         except Exception as e:
             self._logger.error(f'Error while updating the {self._kind.title()}: \n{e}')
             raise
