@@ -613,13 +613,10 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
 
     @classmethod
     def _override_yml_params(cls, raw_yaml, field_name, override_field):
-        if override_field is not None:
-            field_params = raw_yaml.get(field_name, None)
-            if field_params:
-                field_params.update(**override_field)
-                raw_yaml.update(field_params)
-            else:
-                raw_yaml[field_name] = override_field
+        if override_field:
+            field_params = raw_yaml.get(field_name, {})
+            field_params.update(**override_field)
+            raw_yaml[field_name] = field_params
 
     @staticmethod
     def is_valid_jaml(obj: Dict) -> bool:

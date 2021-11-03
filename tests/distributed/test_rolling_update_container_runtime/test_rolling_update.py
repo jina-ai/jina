@@ -26,16 +26,20 @@ EMB_SIZE = 10
 
 @pytest.fixture
 def executor_images():
+    import docker
+
+    client = docker.from_env()
+
     dbms_dir = os.path.join(cur_dir, 'pods', 'dbms')
-    dbms_docker_file = os.path.join(dbms_dir, 'Dockerfile')
-    os.system(f"docker build -f {dbms_docker_file} -t dbms-executor {dbms_dir}")
     query_dir = os.path.join(cur_dir, 'pods', 'query')
-    query_docker_file = os.path.join(query_dir, 'Dockerfile')
-    os.system(f"docker build -f {query_docker_file} -t query-executor {query_dir}")
-    time.sleep(3)
+    client.images.build(path=dbms_dir, tag='dbms-executor')
+    client.images.build(path=query_dir, tag='query-executor')
+    client.close()
     yield
-    os.system(f"docker rmi $(docker images | grep 'dbms-executor')")
-    os.system(f"docker rmi $(docker images | grep 'query-executor')")
+    time.sleep(2)
+    client = docker.from_env()
+    client.containers.prune()
+    client.close()
 
 
 def _create_flows():

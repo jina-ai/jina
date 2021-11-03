@@ -213,22 +213,22 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         if workspace:
             complete_workspace = os.path.join(workspace, self.metas.name)
             replica_id = getattr(self.runtime_args, 'replica_id', None)
-            pea_id = getattr(
+            shard_id = getattr(
                 self.runtime_args,
-                'pea_id',
-                getattr(self.runtime_args, 'shard_id', None),
+                'shard_id',
+                getattr(self.runtime_args, 'pea_id', None),
             )
             if replica_id is not None and replica_id != -1:
                 complete_workspace = os.path.join(complete_workspace, str(replica_id))
-            if pea_id is not None and pea_id != -1:
-                complete_workspace = os.path.join(complete_workspace, str(pea_id))
+            if shard_id is not None and shard_id != -1:
+                complete_workspace = os.path.join(complete_workspace, str(shard_id))
             if not os.path.exists(complete_workspace):
                 os.makedirs(complete_workspace)
             return os.path.abspath(complete_workspace)
         else:
             raise ValueError(
                 'Neither `metas.workspace` nor `runtime_args.workspace` is set, '
-                'are you using this Executor is a Flow?'
+                'are you using this Executor in a Flow?'
             )
 
     def __enter__(self):
