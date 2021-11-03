@@ -646,25 +646,23 @@
 <span class="kn">from</span> <span class="nn">google.protobuf</span> <span class="kn">import</span> <span class="n">json_format</span>
 <span class="kn">from</span> <span class="nn">google.protobuf.field_mask_pb2</span> <span class="kn">import</span> <span class="n">FieldMask</span>
 
-<span class="kn">from</span> <span class="nn">...excepts</span> <span class="kn">import</span> <span class="n">BadDocType</span>
-<span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">download_mermaid_url</span><span class="p">,</span> <span class="n">dunder_get</span><span class="p">,</span> <span class="n">random_identity</span><span class="p">,</span> <span class="n">typename</span>
-<span class="kn">from</span> <span class="nn">...importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
-<span class="kn">from</span> <span class="nn">...logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
-<span class="kn">from</span> <span class="nn">...proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
+<span class="kn">from</span> <span class="nn">.converters</span> <span class="kn">import</span> <span class="n">ContentConversionMixin</span><span class="p">,</span> <span class="n">_text_to_word_sequence</span>
+<span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">VersionedMixin</span><span class="p">,</span> <span class="n">versioned</span>
 <span class="kn">from</span> <span class="nn">..mixin</span> <span class="kn">import</span> <span class="n">ProtoTypeMixin</span>
 <span class="kn">from</span> <span class="nn">..ndarray.generic</span> <span class="kn">import</span> <span class="n">BaseSparseNdArray</span><span class="p">,</span> <span class="n">NdArray</span>
 <span class="kn">from</span> <span class="nn">..score</span> <span class="kn">import</span> <span class="n">NamedScore</span>
 <span class="kn">from</span> <span class="nn">..score.map</span> <span class="kn">import</span> <span class="n">NamedScoreMapping</span>
 <span class="kn">from</span> <span class="nn">..struct</span> <span class="kn">import</span> <span class="n">StructView</span>
-<span class="kn">from</span> <span class="nn">.converters</span> <span class="kn">import</span> <span class="n">ContentConversionMixin</span><span class="p">,</span> <span class="n">_text_to_word_sequence</span>
-<span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">VersionedMixin</span><span class="p">,</span> <span class="n">versioned</span>
+<span class="kn">from</span> <span class="nn">...excepts</span> <span class="kn">import</span> <span class="n">BadDocType</span>
+<span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">download_mermaid_url</span><span class="p">,</span> <span class="n">dunder_get</span><span class="p">,</span> <span class="n">random_identity</span><span class="p">,</span> <span class="n">typename</span>
+<span class="kn">from</span> <span class="nn">...logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
+<span class="kn">from</span> <span class="nn">...proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
 
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
     <span class="c1"># fix type-hint complain for sphinx and flake</span>
-    <span class="kn">import</span> <span class="nn">scipy</span>
-    <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+    <span class="kn">import</span> <span class="nn">scipy.sparse</span>
+    <span class="kn">import</span> <span class="nn">tensorflow</span>
     <span class="kn">import</span> <span class="nn">torch</span>
-    <span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">coo_matrix</span>
 
     <span class="kn">from</span> <span class="nn">..arrays.chunk</span> <span class="kn">import</span> <span class="n">ChunkArray</span>
     <span class="kn">from</span> <span class="nn">..arrays.match</span> <span class="kn">import</span> <span class="n">MatchArray</span>
@@ -677,18 +675,11 @@
         <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">bsr_matrix</span><span class="p">,</span>
         <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csc_matrix</span><span class="p">,</span>
         <span class="n">torch</span><span class="o">.</span><span class="n">sparse_coo_tensor</span><span class="p">,</span>
-        <span class="n">tf</span><span class="o">.</span><span class="n">SparseTensor</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">SparseArrayType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span>
-        <span class="s1">'SparseArrayType'</span><span class="p">,</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-        <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">,</span>
-        <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">coo_matrix</span><span class="p">,</span>
-        <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">bsr_matrix</span><span class="p">,</span>
-        <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csc_matrix</span><span class="p">,</span>
-        <span class="n">torch</span><span class="o">.</span><span class="n">sparse_coo_tensor</span><span class="p">,</span>
-        <span class="n">tf</span><span class="o">.</span><span class="n">SparseTensor</span><span class="p">,</span>
+        <span class="n">tensorflow</span><span class="o">.</span><span class="n">SparseTensor</span><span class="p">,</span>
+        <span class="n">tensorflow</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">jina_pb2</span><span class="o">.</span><span class="n">NdArrayProto</span><span class="p">,</span>
+        <span class="n">NdArray</span><span class="p">,</span>
     <span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'Document'</span><span class="p">,</span> <span class="s1">'DocumentContentType'</span><span class="p">,</span> <span class="s1">'DocumentSourceType'</span><span class="p">]</span>
@@ -767,13 +758,11 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">adjacency</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">blob</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">'ArrayType'</span><span class="p">,</span> <span class="s1">'jina_pb2.NdArrayProto'</span><span class="p">,</span> <span class="s1">'NdArray'</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">blob</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">'ArrayType'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">buffer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">chunks</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">content</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DocumentContentType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">embedding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
-            <span class="n">Union</span><span class="p">[</span><span class="s1">'ArrayType'</span><span class="p">,</span> <span class="s1">'jina_pb2.NdArrayProto'</span><span class="p">,</span> <span class="s1">'NdArray'</span><span class="p">]</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">embedding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">'ArrayType'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">granularity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">matches</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1130,7 +1119,7 @@
 
 <div class="viewcode-block" id="Document.get_sparse_blob"><a class="viewcode-back" href="../../../../api/jina.types.document/#jina.Document.get_sparse_blob">[docs]</a>    <span class="k">def</span> <span class="nf">get_sparse_blob</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">sparse_ndarray_cls_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseSparseNdArray</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'SparseArrayType'</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'ArrayType'</span><span class="p">:</span>
         <span class="sd">"""Return ``blob`` of the content of a Document as an sparse array.</span>
 
 <span class="sd">        :param sparse_ndarray_cls_type: Sparse class type, such as `SparseNdArray`.</span>
@@ -1147,7 +1136,7 @@
         <span class="p">)</span><span class="o">.</span><span class="n">value</span></div>
 
     <span class="nd">@blob</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">blob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'ArrayType'</span><span class="p">,</span> <span class="s1">'jina_pb2.NdArrayProto'</span><span class="p">,</span> <span class="s1">'NdArray'</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="nf">blob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s1">'ArrayType'</span><span class="p">):</span>
         <span class="sd">"""Set the `blob` to :param:`value`.</span>
 
 <span class="sd">        :param value: the array value to set the blob</span>
@@ -1155,7 +1144,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_ndarray</span><span class="p">(</span><span class="s1">'blob'</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">embedding</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'SparseArrayType'</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">embedding</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'ArrayType'</span><span class="p">:</span>
         <span class="sd">"""Return ``embedding`` of the content of a Document.</span>
 
 <span class="sd">         .. note::</span>
@@ -1169,7 +1158,7 @@
 
 <div class="viewcode-block" id="Document.get_sparse_embedding"><a class="viewcode-back" href="../../../../api/jina.types.document/#jina.Document.get_sparse_embedding">[docs]</a>    <span class="k">def</span> <span class="nf">get_sparse_embedding</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">sparse_ndarray_cls_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseSparseNdArray</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'SparseArrayType'</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'ArrayType'</span><span class="p">:</span>
         <span class="sd">"""Return ``embedding`` of the content of a Document as an sparse array.</span>
 
 <span class="sd">        :param sparse_ndarray_cls_type: Sparse class type, such as `SparseNdArray`.</span>
@@ -1186,95 +1175,43 @@
         <span class="p">)</span><span class="o">.</span><span class="n">value</span></div>
 
     <span class="nd">@embedding</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">embedding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'ArrayType'</span><span class="p">,</span> <span class="s1">'jina_pb2.NdArrayProto'</span><span class="p">,</span> <span class="s1">'NdArray'</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="nf">embedding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s1">'ArrayType'</span><span class="p">):</span>
         <span class="sd">"""Set the ``embedding`` of the content of a Document.</span>
 
 <span class="sd">        :param value: the array value to set the embedding</span>
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_ndarray</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_update_sparse_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">sparse_cls</span><span class="p">):</span>
-        <span class="n">NdArray</span><span class="p">(</span>
-            <span class="n">is_sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">sparse_cls</span><span class="o">=</span><span class="n">sparse_cls</span><span class="p">,</span>
-            <span class="n">proto</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="k">def</span> <span class="nf">_update_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="n">framework</span><span class="p">,</span> <span class="n">is_sparse</span> <span class="o">=</span> <span class="n">_get_array_type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_check_installed_array_packages</span><span class="p">():</span>
-        <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">JINA_GLOBAL</span>
+        <span class="k">if</span> <span class="n">framework</span> <span class="o">==</span> <span class="s1">'jina'</span><span class="p">:</span>
+            <span class="n">_t</span> <span class="o">=</span> <span class="n">NdArray</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+            <span class="n">_t</span><span class="o">.</span><span class="n">is_sparse</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">is_sparse</span>
+            <span class="n">_t</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">elif</span> <span class="n">framework</span> <span class="o">==</span> <span class="s1">'jina_proto'</span><span class="p">:</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">JINA_GLOBAL</span><span class="o">.</span><span class="n">scipy_installed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">JINA_GLOBAL</span><span class="o">.</span><span class="n">scipy_installed</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">pkg_name</span><span class="o">=</span><span class="s1">'scipy'</span><span class="p">):</span>
-                <span class="kn">import</span> <span class="nn">scipy</span>
-
-                <span class="n">JINA_GLOBAL</span><span class="o">.</span><span class="n">scipy_installed</span> <span class="o">=</span> <span class="kc">True</span>
-
-        <span class="k">if</span> <span class="n">JINA_GLOBAL</span><span class="o">.</span><span class="n">tensorflow_installed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">JINA_GLOBAL</span><span class="o">.</span><span class="n">tensorflow_installed</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">pkg_name</span><span class="o">=</span><span class="s1">'tensorflow'</span><span class="p">):</span>
-                <span class="kn">import</span> <span class="nn">tensorflow</span>
-
-                <span class="n">JINA_GLOBAL</span><span class="o">.</span><span class="n">tensorflow_installed</span> <span class="o">=</span> <span class="kc">True</span>
-
-        <span class="k">if</span> <span class="n">JINA_GLOBAL</span><span class="o">.</span><span class="n">torch_installed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">JINA_GLOBAL</span><span class="o">.</span><span class="n">torch_installed</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">pkg_name</span><span class="o">=</span><span class="s1">'torch'</span><span class="p">):</span>
-                <span class="kn">import</span> <span class="nn">torch</span>
-
-                <span class="n">JINA_GLOBAL</span><span class="o">.</span><span class="n">torch_installed</span> <span class="o">=</span> <span class="kc">True</span>
-
-    <span class="k">def</span> <span class="nf">_update_if_sparse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-
-        <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">JINA_GLOBAL</span>
-
-        <span class="n">v_valid_sparse_type</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">Document</span><span class="o">.</span><span class="n">_check_installed_array_packages</span><span class="p">()</span>
-
-        <span class="k">if</span> <span class="n">JINA_GLOBAL</span><span class="o">.</span><span class="n">scipy_installed</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">scipy</span>
-            <span class="kn">import</span> <span class="nn">scipy.sparse</span>
-
-            <span class="k">if</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">is_sparse</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">framework</span> <span class="o">==</span> <span class="s1">'scipy'</span><span class="p">:</span>
                 <span class="kn">from</span> <span class="nn">..ndarray.sparse.scipy</span> <span class="kn">import</span> <span class="n">SparseNdArray</span>
-
-                <span class="bp">self</span><span class="o">.</span><span class="n">_update_sparse_ndarray</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">sparse_cls</span><span class="o">=</span><span class="n">SparseNdArray</span><span class="p">)</span>
-                <span class="n">v_valid_sparse_type</span> <span class="o">=</span> <span class="kc">True</span>
-
-        <span class="k">if</span> <span class="n">JINA_GLOBAL</span><span class="o">.</span><span class="n">tensorflow_installed</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">tensorflow</span>
-
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">tensorflow</span><span class="o">.</span><span class="n">SparseTensor</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">framework</span> <span class="o">==</span> <span class="s1">'tensorflow'</span><span class="p">:</span>
                 <span class="kn">from</span> <span class="nn">..ndarray.sparse.tensorflow</span> <span class="kn">import</span> <span class="n">SparseNdArray</span>
-
-                <span class="bp">self</span><span class="o">.</span><span class="n">_update_sparse_ndarray</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">sparse_cls</span><span class="o">=</span><span class="n">SparseNdArray</span><span class="p">)</span>
-                <span class="n">v_valid_sparse_type</span> <span class="o">=</span> <span class="kc">True</span>
-
-        <span class="k">if</span> <span class="n">JINA_GLOBAL</span><span class="o">.</span><span class="n">torch_installed</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">torch</span>
-
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">is_sparse</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">framework</span> <span class="o">==</span> <span class="s1">'torch'</span><span class="p">:</span>
                 <span class="kn">from</span> <span class="nn">..ndarray.sparse.pytorch</span> <span class="kn">import</span> <span class="n">SparseNdArray</span>
 
-                <span class="bp">self</span><span class="o">.</span><span class="n">_update_sparse_ndarray</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">sparse_cls</span><span class="o">=</span><span class="n">SparseNdArray</span><span class="p">)</span>
-                <span class="n">v_valid_sparse_type</span> <span class="o">=</span> <span class="kc">True</span>
-
-        <span class="k">return</span> <span class="n">v_valid_sparse_type</span>
-
-    <span class="k">def</span> <span class="nf">_update_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">NdArrayProto</span><span class="p">):</span>
-            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-            <span class="n">NdArray</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">v</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">NdArray</span><span class="p">):</span>
-            <span class="n">NdArray</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span><span class="o">.</span><span class="n">is_sparse</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">is_sparse</span>
-            <span class="n">NdArray</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">value</span>
+            <span class="n">NdArray</span><span class="p">(</span>
+                <span class="n">is_sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">sparse_cls</span><span class="o">=</span><span class="n">SparseNdArray</span><span class="p">,</span>
+                <span class="n">proto</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">v</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">v_valid_sparse_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_if_sparse</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">v_valid_sparse_type</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1"> is in unsupported type </span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">framework</span> <span class="o">==</span> <span class="s1">'numpy'</span><span class="p">:</span>
+                <span class="n">NdArray</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">v</span>
+            <span class="k">if</span> <span class="n">framework</span> <span class="o">==</span> <span class="s1">'tensorflow'</span><span class="p">:</span>
+                <span class="n">NdArray</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">framework</span> <span class="o">==</span> <span class="s1">'torch'</span><span class="p">:</span>
+                <span class="n">NdArray</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="nd">@versioned</span>
@@ -1682,10 +1619,10 @@
 
         <span class="n">mermaid_str</span> <span class="o">=</span> <span class="p">(</span>
             <span class="sd">"""</span>
-<span class="sd">                                        %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%</span>
-<span class="sd">                                        classDiagram</span>
-
-<span class="sd">                                                """</span>
+<span class="sd">                                            %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%</span>
+<span class="sd">                                            classDiagram</span>
+<span class="sd">    </span>
+<span class="sd">                                                    """</span>
             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">__mermaid_str__</span><span class="p">()</span>
         <span class="p">)</span>
 
@@ -1777,14 +1714,6 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">json</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">non_empty_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">"""Return the set fields of the current document that are not empty</span>
-
-<span class="sd">        :return: the tuple of non-empty fields</span>
-<span class="sd">        """</span>
-        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">field</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ListFields</span><span class="p">())</span>
-
 <div class="viewcode-block" id="Document.attributes"><a class="viewcode-back" href="../../../../api/jina.types.document/#jina.Document.attributes">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">attributes</span><span class="p">(</span>
         <span class="n">include_proto_fields</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -1841,6 +1770,48 @@
             <span class="n">all_tokens</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_text_to_word_sequence</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">)))</span>
 
         <span class="k">return</span> <span class="n">all_tokens</span></div></div>
+
+
+<span class="k">def</span> <span class="nf">_get_array_type</span><span class="p">(</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
+    <span class="sd">"""Get the type of ndarray without importing the framework</span>
+
+<span class="sd">    :param array: any array, scipy, numpy, tf, torch, etc.</span>
+<span class="sd">    :return: a tuple where the first element represents the framework, the second represents if it is sparse array</span>
+<span class="sd">    """</span>
+    <span class="n">module_tags</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)</span>
+    <span class="n">class_name</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+
+    <span class="k">if</span> <span class="s1">'numpy'</span> <span class="ow">in</span> <span class="n">module_tags</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">'numpy'</span><span class="p">,</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="s1">'jina'</span> <span class="ow">in</span> <span class="n">module_tags</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">class_name</span> <span class="o">==</span> <span class="s1">'NdArray'</span> <span class="ow">or</span> <span class="n">class_name</span> <span class="o">==</span> <span class="s1">'DenseNdArray'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">'jina'</span><span class="p">,</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">class_name</span> <span class="o">==</span> <span class="s1">'SparseNdArray'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">'jina'</span><span class="p">,</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="s1">'jina_pb2'</span> <span class="ow">in</span> <span class="n">module_tags</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">class_name</span> <span class="o">==</span> <span class="s1">'DenseNdArrayProto'</span> <span class="ow">or</span> <span class="n">class_name</span> <span class="o">==</span> <span class="s1">'NdArrayProto'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">'jina_proto'</span><span class="p">,</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">class_name</span> <span class="o">==</span> <span class="s1">'SparseNdArrayProto'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">'jina_proto'</span><span class="p">,</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="s1">'tensorflow'</span> <span class="ow">in</span> <span class="n">module_tags</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">class_name</span> <span class="o">==</span> <span class="s1">'SparseTensor'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">'tensorflow'</span><span class="p">,</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">class_name</span> <span class="o">==</span> <span class="s1">'Tensor'</span> <span class="ow">or</span> <span class="n">class_name</span> <span class="o">==</span> <span class="s1">'EagerTensor'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">'tensorflow'</span><span class="p">,</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="s1">'torch'</span> <span class="ow">in</span> <span class="n">module_tags</span> <span class="ow">and</span> <span class="n">class_name</span> <span class="o">==</span> <span class="s1">'Tensor'</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">is_sparse</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">'torch'</span><span class="p">,</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">'torch'</span><span class="p">,</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="s1">'scipy'</span> <span class="ow">in</span> <span class="n">module_tags</span> <span class="ow">and</span> <span class="s1">'sparse'</span> <span class="ow">in</span> <span class="n">module_tags</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">'scipy'</span><span class="p">,</span> <span class="kc">True</span>
+
+    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'can not determine the array type: </span><span class="si">{</span><span class="n">module_tags</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 </pre></div>
             </article>
             <footer>
