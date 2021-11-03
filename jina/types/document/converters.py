@@ -6,7 +6,6 @@ import urllib.parse
 import urllib.request
 import warnings
 import wave
-from collections import defaultdict
 from contextlib import nullcontext
 from typing import Optional, Union, BinaryIO, TYPE_CHECKING, Dict, Tuple
 
@@ -606,20 +605,6 @@ class ContentConversionMixin:
         else:
             self.blob = _move_channel_axis(expanded_img, -1, channel_axis)
         return self
-
-    def get_vocabulary(self, text_attrs: Tuple[str, ...] = ('text',)) -> Dict[str, int]:
-        """Get the text vocabulary in a counter dict that maps from the word to its frequency from all :attr:`text_fields`.
-
-        :param text_attrs: the textual attributes where vocabulary will be derived from
-        :return: a vocabulary in dictionary where key is the word, value is the frequency of that word in all text fields.
-        """
-        all_tokens = defaultdict(int)
-
-        for f in text_attrs:
-            for s in _text_to_word_sequence(getattr(self, f)):
-                all_tokens[s] += 1
-
-        return all_tokens
 
     convert_image_buffer_to_blob = _deprecate(convert_buffer_to_image_blob)
     normalize_image_blob = _deprecate(set_image_blob_normalization)
