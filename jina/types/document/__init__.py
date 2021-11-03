@@ -1215,3 +1215,46 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
             all_tokens.update(_text_to_word_sequence(getattr(self, f)))
 
         return all_tokens
+
+
+def _get_array_type(array) -> Tuple[str, bool]:
+    """Get the type of ndarray without importing the framework
+
+    :param array: any array, scipy, numpy, tf, torch, etc.
+    :return: a tuple where the first element represents the framework, the second represents if it is sparse array
+    """
+    module_tags = array.__class__.__module__.split('.')
+    class_name = array.__class__.__name__
+    print(module_tags, class_name)
+
+    if 'numpy' in module_tags:
+        return 'numpy', False
+
+    if 'jina' in module_tags:
+        if class_name == 'NdArray' or class_name == 'DenseNdArray':
+            return 'jina', False
+        if class_name == 'SparseNdArray':
+            return 'jina', True
+
+    if 'jina_pb2' in module_tags:
+        if class_name == 'DenseNdArrayProto':
+            return 'jina_proto', False
+        if class_name == 'SparseNdArrayProto':
+            return 'jina_proto', True
+
+    if 'tensorflow' in module_tags:
+        if class_name == 'SparseTensor':
+            return 'tensorflow', True
+        if class_name == 'Tensor':
+            return 'tensorflow', False
+
+    if 'torch' in module_tags and class_name == 'Tensor':
+        if array.is_sparse:
+            return 'torch', True
+        else:
+            return 'torch', False
+
+    if 'scipy' in module_tags and 'sparse' in module_tags:
+        return 'scipy', True
+
+    raise TypeError(f'can not determine the array type: {module_tags}.{class_name}')
