@@ -1088,14 +1088,6 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
         else:
             return super().json(*args, **kwargs)
 
-    @property
-    def non_empty_fields(self) -> Tuple[str]:
-        """Return the set fields of the current document that are not empty
-
-        :return: the tuple of non-empty fields
-        """
-        return tuple(field[0].name for field in self.ListFields())
-
     @staticmethod
     def attributes(
         include_proto_fields: bool = True,

@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Tuple
 
 from google.protobuf.json_format import MessageToJson, MessageToDict
 
@@ -57,25 +57,15 @@ class ProtoTypeMixin:
     def __getattr__(self, name: str):
         return getattr(self._pb_body, name)
 
-    def __str__(self):
-        return str(self._build_content_dict())
-
     def __repr__(self):
-        d = self._build_content_dict()
-        if isinstance(d, list):
-            content = ' '.join(f'{v}' for v in self._build_content_dict())
-        else:
-            content = ' '.join(
-                f'{k}={v}' for k, v in self._build_content_dict().items()
-            )
+        content = str(self.non_empty_fields)
         content += f' at {id(self)}'
-        content = content.strip()
-        return f'<{typename(self)} {content}>'
+        return f'<{typename(self)} {content.strip()}>'
 
-    def _build_content_dict(self):
-        """Helper method for __str__ and __repr__
+    @property
+    def non_empty_fields(self) -> Tuple[str, ...]:
+        """Return the set fields of the current Protobuf message that are not empty
 
-        :return: the dict representation for the object
+        :return: the tuple of non-empty fields
         """
-        content = self.dict()
-        return content
+        return tuple(field[0].name for field in self.ListFields())
