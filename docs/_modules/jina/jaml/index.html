@@ -1160,6 +1160,7 @@
 <span class="sd">        :param kwargs: kwargs for parse_config_source</span>
 <span class="sd">        :return: :class:`JAMLCompatible` object</span>
 <span class="sd">        """</span>
+
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">source</span><span class="p">):</span>
             <span class="n">extra_search_paths</span> <span class="o">=</span> <span class="p">(</span><span class="n">extra_search_paths</span> <span class="ow">or</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">source</span><span class="p">)]</span>
 

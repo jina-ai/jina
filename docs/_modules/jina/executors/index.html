@@ -631,7 +631,7 @@
 
 <span class="kn">from</span> <span class="nn">.decorators</span> <span class="kn">import</span> <span class="n">store_init_kwargs</span><span class="p">,</span> <span class="n">wrap_func</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__default_endpoint__</span><span class="p">,</span> <span class="n">__args_executor_init__</span>
-<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">typename</span>
+<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">typename</span><span class="p">,</span> <span class="n">ArgNamespace</span>
 <span class="kn">from</span> <span class="nn">..jaml</span> <span class="kn">import</span> <span class="n">JAMLCompatible</span><span class="p">,</span> <span class="n">JAML</span><span class="p">,</span> <span class="n">subvar_regex</span><span class="p">,</span> <span class="n">internal_var_regex</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'BaseExecutor'</span><span class="p">,</span> <span class="s1">'AnyExecutor'</span><span class="p">,</span> <span class="s1">'ExecutorType'</span><span class="p">]</span>
@@ -861,7 +861,36 @@
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<div class="viewcode-block" id="BaseExecutor.from_hub"><a class="viewcode-back" href="../../../api/jina.executors/#jina.executors.BaseExecutor.from_hub">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_hub</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'BaseExecutor'</span><span class="p">:</span>
+        <span class="sd">"""Construct an Executor from Hub.</span>
+
+<span class="sd">        :param uri: a hub Executor scheme starts with `jinahub://`</span>
+<span class="sd">        :param kwargs: other kwargs accepted by the CLI ``jina hub pull``</span>
+<span class="sd">        :return: the Hub Executor object.</span>
+<span class="sd">        """</span>
+        <span class="kn">from</span> <span class="nn">..hubble.helper</span> <span class="kn">import</span> <span class="n">is_valid_huburi</span>
+
+        <span class="n">_source</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">is_valid_huburi</span><span class="p">(</span><span class="n">uri</span><span class="p">):</span>
+            <span class="kn">from</span> <span class="nn">..hubble.hubio</span> <span class="kn">import</span> <span class="n">HubIO</span>
+            <span class="kn">from</span> <span class="nn">..parsers.hubble</span> <span class="kn">import</span> <span class="n">set_hub_pull_parser</span>
+
+            <span class="n">_args</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2namespace</span><span class="p">(</span>
+                <span class="p">{</span><span class="s1">'no_usage'</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">},</span>
+                <span class="n">set_hub_pull_parser</span><span class="p">(),</span>
+                <span class="n">positional_args</span><span class="o">=</span><span class="p">(</span><span class="n">uri</span><span class="p">,),</span>
+            <span class="p">)</span>
+            <span class="n">_source</span> <span class="o">=</span> <span class="n">HubIO</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="n">_args</span><span class="p">)</span><span class="o">.</span><span class="n">pull</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_source</span> <span class="ow">or</span> <span class="n">_source</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'docker://'</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'Can not construct a native Executor from </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">. Looks like you want to use it as a '</span>
+                <span class="sa">f</span><span class="s1">'Docker container, you may want to use it in the Flow via `.add(uses=</span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">)` instead.'</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="n">_source</span><span class="p">)</span></div></div>
 </pre></div>
             </article>
             <footer>
