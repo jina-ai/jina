@@ -149,7 +149,7 @@ This guide helps you to create your own Executor in 30 seconds.''',
                 if self.args.keywords
                 else (
                     Prompt.ask(
-                        ':grey_question: Please give some [bold]keywords[/bold] to help people search your executor [dim](separated by space)[/dim]\n'
+                        ':grey_question: Please give some [bold]keywords[/bold] to help people search your executor [dim](separated by comma)[/dim]\n'
                         f'[dim]Example: image cv embedding encoding resnet[/dim]'
                     )
                 )
@@ -196,7 +196,7 @@ your executor has non-trivial dependencies or must be run under certain environm
                         fp.read()
                         .replace('{{exec_name}}', exec_name)
                         .replace('{{exec_description}}', exec_description)
-                        .replace('{{exec_keywords}}', exec_keywords)
+                        .replace('{{exec_keywords}}', str(exec_keywords.split(',')))
                         .replace('{{exec_url}}', exec_url)
                     )
 
