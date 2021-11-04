@@ -217,8 +217,8 @@ shuffled_da_with_seed = da.shuffle(seed=1)  # shuffle the DocumentArray with see
 
 ### Split elements by tags
 
-`DocumentArray` provides function `.split` that split the `DocumentArray` into multiple :class:`DocumentArray` according to the tag value (stored in `tags`) of each :class:`Document`.
-It returns a python `dict` where `Documents` with the same value on `tag` are grouped together, their orders are preserved from the original :class:`DocumentArray`.
+`DocumentArray` provides function `.split` that split the `DocumentArray` into multiple `DocumentArray` according to the tag value (stored in `tags`) of each `Document`.
+It returns a python `dict` where `Documents` with the same value on `tag` are grouped together, their orders are preserved from the original `DocumentArray`.
 
 To make use of the function:
 
