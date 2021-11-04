@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.10.09"/>
-        <title>jina.hubble.hubio - Jina 2.2.4 documentation</title>
+        <title>jina.hubble.hubio - Jina 2.2.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -145,7 +145,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 2.2.4 documentation</div>
+                <div class="brand">Jina 2.2.5 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -775,7 +775,7 @@
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">keywords</span>
                 <span class="k">else</span> <span class="p">(</span>
                     <span class="n">Prompt</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span>
-                        <span class="s1">':grey_question: Please give some [bold]keywords[/bold] to help people search your executor [dim](separated by space)[/dim]</span><span class="se">\n</span><span class="s1">'</span>
+                        <span class="s1">':grey_question: Please give some [bold]keywords[/bold] to help people search your executor [dim](separated by comma)[/dim]</span><span class="se">\n</span><span class="s1">'</span>
                         <span class="sa">f</span><span class="s1">'[dim]Example: image cv embedding encoding resnet[/dim]'</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
@@ -822,7 +822,7 @@
                         <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
                         <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'{{exec_name}}'</span><span class="p">,</span> <span class="n">exec_name</span><span class="p">)</span>
                         <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'{{exec_description}}'</span><span class="p">,</span> <span class="n">exec_description</span><span class="p">)</span>
-                        <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'{{exec_keywords}}'</span><span class="p">,</span> <span class="n">exec_keywords</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'{{exec_keywords}}'</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">exec_keywords</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">','</span><span class="p">)))</span>
                         <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'{{exec_url}}'</span><span class="p">,</span> <span class="n">exec_url</span><span class="p">)</span>
                     <span class="p">)</span>
 
@@ -1011,8 +1011,8 @@
                     <span class="n">form_data</span><span class="p">[</span><span class="s1">'dockerfile'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dockerfile</span><span class="p">)</span>
 
                 <span class="n">uuid8</span><span class="p">,</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">load_secret</span><span class="p">(</span><span class="n">work_path</span><span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span> <span class="ow">or</span> <span class="n">uuid8</span><span class="p">:</span>
-                    <span class="n">form_data</span><span class="p">[</span><span class="s1">'force'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span> <span class="ow">or</span> <span class="n">uuid8</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force_update</span> <span class="ow">or</span> <span class="n">uuid8</span><span class="p">:</span>
+                    <span class="n">form_data</span><span class="p">[</span><span class="s1">'force'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force_update</span> <span class="ow">or</span> <span class="n">uuid8</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">secret</span> <span class="ow">or</span> <span class="n">secret</span><span class="p">:</span>
                     <span class="n">form_data</span><span class="p">[</span><span class="s1">'secret'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">secret</span> <span class="ow">or</span> <span class="n">secret</span>
 
@@ -1294,7 +1294,7 @@
         <span class="n">usage_kind</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">need_pull</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span>
+            <span class="n">need_pull</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force_update</span>
             <span class="k">with</span> <span class="n">console</span><span class="o">.</span><span class="n">status</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Pulling </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1">...'</span><span class="p">)</span> <span class="k">as</span> <span class="n">st</span><span class="p">:</span>
                 <span class="n">scheme</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">parse_hub_uri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
 
@@ -1414,7 +1414,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 03, 2021.
+                    Last updated on Nov 04, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
