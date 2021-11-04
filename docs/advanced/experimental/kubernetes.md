@@ -65,7 +65,7 @@ embedding size:  512
 
 You might have noticed that the above `Flow` has been deployed to the Namespace `example-clip`.
 By default, we use the `Flow` name as the `Kubernetes` namespace.
-However, you can deploy `Flow` to a given `Namespace` you want, such as:
+However, you can deploy `Flow` to any given `Namespace`, like this:
 
 ```{code-block} python
 ---
