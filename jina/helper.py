@@ -720,8 +720,8 @@ class ArgNamespace:
         kwargs: Dict[str, Union[str, int, bool]],
         parser: ArgumentParser,
         warn_unknown: bool = False,
-        fallback_parsers: List[ArgumentParser] = None,
-        positional_args: Tuple[str, ...] = None,
+        fallback_parsers: Optional[List[ArgumentParser]] = None,
+        positional_args: Optional[Tuple[str, ...]] = None,
     ) -> Namespace:
         """
         Convert dict to a namespace.
