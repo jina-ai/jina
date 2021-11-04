@@ -204,6 +204,26 @@ def test_convert_text_to_uri_and_back():
     assert doc.text == text_from_file
 
 
+def test_convert_text_diff_encoding(tmpfile):
+    otext = 'testä'
+    text = otext.encode('iso8859')
+    with open(tmpfile, 'wb') as fp:
+        fp.write(text)
+    with pytest.raises(UnicodeDecodeError):
+        d = Document(uri=str(tmpfile)).convert_uri_to_text()
+
+    d = Document(uri=str(tmpfile)).convert_uri_to_text(charset='iso8859')
+    assert d.text == otext
+
+    with open(tmpfile, 'w', encoding='iso8859') as fp:
+        fp.write(otext)
+    with pytest.raises(UnicodeDecodeError):
+        d = Document(uri=str(tmpfile)).convert_uri_to_text()
+
+    d = Document(uri=str(tmpfile)).convert_uri_to_text(charset='iso8859')
+    assert d.text == otext
+
+
 def test_convert_content_to_uri():
     d = Document(content=np.random.random([10, 10]))
     with pytest.raises(NotImplementedError):

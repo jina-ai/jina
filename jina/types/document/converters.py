@@ -460,13 +460,14 @@ class ContentConversionMixin:
         self.uri = _to_datauri(self.mime_type, self.text, charset, base64, binary=False)
         return self
 
-    def convert_uri_to_text(self) -> 'Document':
+    def convert_uri_to_text(self, charset: str = 'utf-8') -> 'Document':
         """Convert :attr:`.uri` to :attr`.text` inplace.
 
+        :param charset: charset may be any character set registered with IANA
         :return: itself after processed
         """
         buffer = _uri_to_buffer(self.uri)
-        self.text = buffer.decode()
+        self.text = buffer.decode(charset)
         return self
 
     def convert_content_to_uri(self) -> 'Document':
