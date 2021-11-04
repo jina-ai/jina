@@ -84,7 +84,7 @@ f = Flow(
 
 ```{admonition} Caution
 :class: caution
-We heavily recommend you to deploy different `Flow` into separated namespaces. To be more concrete,
+We heavily recommend you to deploy each `Flow` into a separate namespace. In particular it should not be deployed into namespaces, where other essential non Jina services are running. 
 if `custom-namespace` has been used by another `Flow`, please set a different `k8s_namespace` name.
 ```
 
