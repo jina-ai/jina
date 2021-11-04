@@ -640,7 +640,6 @@
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">ExitStack</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">overload</span><span class="p">,</span> <span class="n">Type</span>
@@ -994,7 +993,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">k8s_infrastructure_manager</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">infrastructure</span> <span class="o">==</span> <span class="n">InfrastructureType</span><span class="o">.</span><span class="n">K8S</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">k8s_infrastructure_manager</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_FlowK8sInfraResourcesManager</span><span class="p">(</span>
-                <span class="n">k8s_namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">k8s_namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">k8s_namespace</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="n">k8s_custom_resource_dir</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'k8s_custom_resource_dir'</span><span class="p">,</span> <span class="kc">None</span>
                 <span class="p">),</span>
@@ -1099,13 +1098,13 @@
                 <span class="n">port_expose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="p">,</span>
                 <span class="n">pod_role</span><span class="o">=</span><span class="n">PodRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">,</span>
                 <span class="n">expose_endpoints</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_endpoints_mapping</span><span class="p">),</span>
-                <span class="n">k8s_namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">k8s_namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">k8s_namespace</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
 
         <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">)</span>
         <span class="n">args</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2namespace</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">set_gateway_parser</span><span class="p">())</span>
-        <span class="n">args</span><span class="o">.</span><span class="n">k8s_namespace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">k8s_namespace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">k8s_namespace</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span>
         <span class="n">args</span><span class="o">.</span><span class="n">connect_to_predecessor</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span> <span class="o">=</span> <span class="n">PodFactory</span><span class="o">.</span><span class="n">build_pod</span><span class="p">(</span>
@@ -1422,7 +1421,7 @@
         <span class="c1"># pod workspace if not set then derive from flow workspace</span>
         <span class="n">args</span><span class="o">.</span><span class="n">workspace</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">workspace</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">workspace</span><span class="p">)</span>
 
-        <span class="n">args</span><span class="o">.</span><span class="n">k8s_namespace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">k8s_namespace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">k8s_namespace</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span>
         <span class="n">args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">args</span><span class="o">.</span><span class="n">extra_search_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">extra_search_paths</span>
         <span class="n">args</span><span class="o">.</span><span class="n">zmq_identity</span> <span class="o">=</span> <span class="kc">None</span>

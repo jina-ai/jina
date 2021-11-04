@@ -716,6 +716,25 @@ Forwarding from [::1]:8080 -&gt; 8080
 embedding size:  512                                                                                       
 </pre></div>
 </div>
+<p>You might have noticed that the above <code class="docutils literal notranslate"><span class="pre">Flow</span></code> has been deployed to the Namespace <code class="docutils literal notranslate"><span class="pre">example-clip</span></code>.
+By default, we use the <code class="docutils literal notranslate"><span class="pre">Flow</span></code> name as the <code class="docutils literal notranslate"><span class="pre">Kubernetes</span></code> namespace.
+However, you can deploy <code class="docutils literal notranslate"><span class="pre">Flow</span></code> to any given <code class="docutils literal notranslate"><span class="pre">Namespace</span></code>, like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">'example-clip'</span><span class="p">,</span>
+    <span class="n">port_expose</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span>
+    <span class="n">infrastructure</span><span class="o">=</span><span class="s1">'K8S'</span><span class="p">,</span>
+    <span class="n">protocol</span><span class="o">=</span><span class="s1">'http'</span><span class="p">,</span>
+<span class="hll">    <span class="n">k8s_namespace</span><span class="o">=</span><span class="s1">'custom-namespace'</span><span class="p">,</span>
+</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">'jinahub+docker://CLIPImageEncoder'</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="caution admonition">
+<p class="admonition-title">Caution</p>
+<p>We heavily recommend you to deploy each <code class="docutils literal notranslate"><span class="pre">Flow</span></code> into a separate namespace. In particular it should not be deployed into namespaces, where other essential non Jina services are running.
+if <code class="docutils literal notranslate"><span class="pre">custom-namespace</span></code> has been used by another <code class="docutils literal notranslate"><span class="pre">Flow</span></code>, please set a different <code class="docutils literal notranslate"><span class="pre">k8s_namespace</span></code> name.</p>
+</div>
 </section>
 <section id="postgres-indexer">
 <h3>Postgres indexer<a class="headerlink" href="#postgres-indexer" title="Permalink to this headline">¶</a></h3>

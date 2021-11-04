@@ -696,7 +696,7 @@
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">infrastructure</span> <span class="o">==</span> <span class="n">InfrastructureType</span><span class="o">.</span><span class="n">K8S</span>
         <span class="p">):</span>
             <span class="n">context_mgr</span> <span class="o">=</span> <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">get_port_forward_contextmanager</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">k8s_namespace</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">context_mgr</span> <span class="o">=</span> <span class="n">nullcontext</span><span class="p">()</span>
