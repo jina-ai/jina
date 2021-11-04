@@ -234,7 +234,6 @@ class Message:
         if routing_table is not None and not static_routing_table:
             envelope.routing_table.CopyFrom(RoutingTable(routing_table).proto)
         self._add_version(envelope)
-        self._add_route(pod_name, identity, envelope)
         envelope.check_version = check_version
         return envelope
 
@@ -344,28 +343,6 @@ class Message:
         route_str = [_pod_str(r) for r in self.envelope.routes]
         route_str.append('⚐')
         return colored('▸', 'green').join(route_str)
-
-    def add_route(self, name: str, identity: str):
-        """Add a route to the envelope.
-
-        :param name: the name of the pod service
-        :param identity: the identity of the pod service
-        """
-        self._add_route(name, identity, self.envelope)
-
-    def _add_route(
-        self, name: str, identity: str, envelope: 'jina_pb2.EnvelopeProto'
-    ) -> None:
-        """Add a route to the envelope.
-
-        :param name: the name of the pod service
-        :param identity: the identity of the pod service
-        :param envelope: protobuf definition of the envelope
-        """
-        r = envelope.routes.add()
-        r.pod = name
-        r.start_time.GetCurrentTime()
-        r.pod_id = identity
 
     @property
     def size(self):

@@ -1,11 +1,9 @@
-import ast
 import asyncio
 import ipaddress
-import socket
-from abc import abstractmethod
+import random
 from argparse import Namespace
 from threading import Thread
-from typing import Optional
+from typing import Optional, List, Dict, Callable
 
 import grpc
 
@@ -20,22 +18,21 @@ if False:
     import kubernetes
 
 
-class ConnectionList:
+class ReplicaList:
     """
-    Maintains a list of connections and uses round roubin for selecting a connection
-
-    :param port: port to use for the connections
+    Maintains a list of connections to replicas and uses round robin for selecting a replica
     """
 
-    def __init__(self, port: int):
-        self.port = port
+    def __init__(self):
         self._connections = []
         self._address_to_connection_idx = {}
         self._rr_counter = 0
 
-    def add_connection(self, address: str, connection):
+    def add_connection(
+        self, address: str, connection: jina_pb2_grpc.JinaDataRequestRPCStub
+    ):
         """
-        Add connection with ip to the connection list
+        Add connection with address to the connection list
         :param address: Target address of this connection
         :param connection: The connection to add
         """
@@ -45,9 +42,9 @@ class ConnectionList:
 
     def remove_connection(self, address: str):
         """
-        Remove connection with ip from the connection list
+        Remove connection with address from the connection list
         :param address: Remove connection for this address
-        :returns: The removed connection or None if there was not any for the given ip
+        :returns: The removed connection or None if there was not any for the given address
         """
         if address in self._address_to_connection_idx:
             self._rr_counter = (
@@ -104,67 +101,206 @@ class ConnectionList:
         """
         return address in self._address_to_connection_idx
 
+    def has_connections(self) -> bool:
+        """
+        Checks if this contains any connection
+        :returns: True if any connection is managed, False otherwise
+        """
+        return len(self._address_to_connection_idx) > 0
 
-class ConnectionPool:
+
+class GrpcConnectionPool:
     """
-    Manages a list of connections.
+    Manages a list of grpc connections.
 
     :param logger: the logger to use
-    :param on_demand_connection: Flag to indicate if connections should be created on demand
     """
 
-    def __init__(self, logger: Optional[JinaLogger] = None, on_demand_connection=True):
-        self._connections = {}
-        self._on_demand_connection = on_demand_connection
+    class _ConnectionPoolMap:
+        def __init__(self, logger: Optional[JinaLogger]):
+            self._logger = logger
+            # this maps pods to shards or heads
+            self._pods: Dict[str, Dict[str, Dict[int, ReplicaList]]] = {}
 
+        def add_replica(
+            self,
+            pod: str,
+            shard_id: int,
+            address: str,
+            connection: Callable[[str], jina_pb2_grpc.JinaDataRequestRPCStub],
+        ):
+            self._add_connection(pod, shard_id, address, connection, 'shards')
+
+        def add_head(
+            self,
+            pod: str,
+            address: str,
+            connection: Callable[[str], jina_pb2_grpc.JinaDataRequestRPCStub],
+            head_id: Optional[int] = 0,
+        ):  # the head_id is always 0 for now, this will change when scaling the head
+            self._add_connection(pod, head_id, address, connection, 'heads')
+
+        def get_replicas(
+            self, pod: str, head: bool, entity_id: Optional[int] = None
+        ) -> ReplicaList:
+            if pod in self._pods:
+                type = 'heads' if head else 'shards'
+                if entity_id is None and head:
+                    entity_id = 0
+                return self._get_connection_list(pod, type, entity_id)
+            else:
+                return None
+
+        def get_replicas_all_shards(self, pod: str) -> List[ReplicaList]:
+            replicas = []
+            for shard_id in self._pods[pod]['shards']:
+                replicas.append(self._get_connection_list(pod, 'shards', shard_id))
+            return replicas
+
+        def clear(self):
+            self._pods.clear()
+
+        def _get_connection_list(
+            self, pod: str, type: str, entity_id: Optional[int] = None
+        ) -> ReplicaList:
+            try:
+                if entity_id is None:
+                    # select a random entity
+                    return self._pods[pod][type][
+                        random.randrange(0, len(self._pods[pod][type]))
+                    ]
+                else:
+                    return self._pods[pod][type][entity_id]
+            except KeyError:
+                if (
+                    entity_id is None
+                    and pod in self._pods
+                    and len(self._pods[pod][type])
+                ):
+                    # This can happen as a race condition when removing connections while accessing it
+                    # In this case we dont care for the concrete entity, so retry with the first one
+                    return self._get_connection_list(pod, type, 0)
+                return None
+
+        def _add_pod(self, pod: str):
+            if pod not in self._pods:
+                self._pods[pod] = {'shards': {}, 'heads': {}}
+
+        def _add_connection(
+            self,
+            pod: str,
+            entity_id: int,
+            address: str,
+            connection: Callable[[str], jina_pb2_grpc.JinaDataRequestRPCStub],
+            type: str,
+        ):
+            self._add_pod(pod)
+            if entity_id not in self._pods[pod][type]:
+                connection_list = ReplicaList()
+                self._pods[pod][type][entity_id] = connection_list
+
+            if not self._pods[pod][type][entity_id].has_connection(address):
+                self._logger.debug(
+                    f'Adding connection for pod {pod}/{type}/{entity_id} to {address}'
+                )
+                self._pods[pod][type][entity_id].add_connection(
+                    address, connection(address)
+                )
+
+        def remove_head(self, pod, address, head_id: Optional[int] = 0):
+            return self._remove_connection(pod, head_id, address, 'heads')
+
+        def remove_replica(self, pod, address, shard_id: Optional[int] = 0):
+            return self._remove_connection(pod, shard_id, address, 'shards')
+
+        def _remove_connection(self, pod, entity_id, address, type):
+            if pod in self._pods and entity_id in self._pods[pod][type]:
+                self._logger.debug(
+                    f'Removing connection for pod {pod}/{type}/{entity_id} to {address}'
+                )
+                connection = self._pods[pod][type][entity_id].remove_connection(address)
+                if not self._pods[pod][type][entity_id].has_connections():
+                    del self._pods[pod][type][entity_id]
+                return connection
+            return None
+
+    def __init__(self, logger: Optional[JinaLogger] = None):
         self._logger = logger or JinaLogger(self.__class__.__name__)
+        self._connections = self._ConnectionPoolMap(self._logger)
 
     def send_message(
         self,
         msg: Message,
-        target_address: str,
+        pod: str,
+        head: bool,
+        shard_id: Optional[int] = None,
         polling_type: PollingType = PollingType.ANY,
-    ):
-        """Send msg to target_address via one or all of the pooled connections
+    ) -> List[asyncio.Task]:
+        """Send msg to target via one or all of the pooled connections, depending on polling_type
 
         :param msg: message to send
-        :param target_address: address to send to, should include the port like 1.1.1.1:53
-        :param polling_type: defines if the message should be send to any or all pooled connections for target_address
-        :return: result of the actual send method
+        :param pod: name of the Jina pod to send the message to
+        :param head: If True it is send to the head, otherwise to the worker peas
+        :param shard_id: Send to a specific shard of the pod, ignored for polling ALL
+        :param polling_type: defines if the message should be send to any or all pooled connections for the target
+        :return: list of asyncio.Task items for each send call
         """
-        if target_address in self._connections:
-            connections = []
-            if polling_type == PollingType.ANY:
-                connections.append(
-                    self._connections[target_address].get_next_connection()
-                )
-            elif polling_type == PollingType.ALL:
-                connections.extend(
-                    self._connections[target_address].get_all_connections()
-                )
-            else:
-                raise ValueError(f'Unsupported polling type {polling_type}')
-
-            results = []
-            for connection in connections:
-                results.append(self._send_message(msg, connection))
-
-            return results
-        elif self._on_demand_connection:
-            # If the pool is disabled and an unknown connection is requested: create it
-            connection_pool = self._create_connection_pool(target_address)
-            return self._send_message(msg, connection_pool.get_next_connection())
+        results = []
+        connections = []
+        if polling_type == PollingType.ANY:
+            connection_list = self._connections.get_replicas(pod, head, shard_id)
+            if connection_list:
+                connections.append(connection_list.get_next_connection())
+        elif polling_type == PollingType.ALL:
+            connection_lists = self._connections.get_replicas_all_shards(pod)
+            for connection_list in connection_lists:
+                connections.append(connection_list.get_next_connection())
         else:
-            raise ValueError(f'Unknown address {target_address}')
+            raise ValueError(f'Unsupported polling type {polling_type}')
 
-    def _create_connection_pool(self, target_address):
-        port = target_address[target_address.rfind(':') + 1 :]
-        connection_pool = ConnectionList(port=port)
-        connection_pool.add_connection(
-            target_address, self._create_connection(target=target_address)
-        )
-        self._connections[target_address] = connection_pool
-        return connection_pool
+        for connection in connections:
+            results.append(self._send_message(msg, connection))
+
+        return results
+
+    def add_connection(
+        self, pod: str, head: bool, address: str, shard_id: Optional[int] = None
+    ):
+        """
+        Adds a connection for a pod to this connection pool
+
+        :param pod: The pod the connection belongs to, like 'encoder'
+        :param head: True if the connection is for a head
+        :param address: Address used for the grpc connection, format is <host>:<port>
+        :param shard_id: Optional parameter to indicate this connection belongs to a shard, ignored for heads
+        """
+        if head:
+            self._connections.add_head(pod, address, self._create_connection, 0)
+        else:
+            if shard_id is None:
+                shard_id = 0
+            self._connections.add_replica(
+                pod, shard_id, address, self._create_connection
+            )
+
+    def remove_connection(
+        self, pod: str, head: bool, address: str, shard_id: Optional[int] = None
+    ):
+        """
+        Removes a connection to a pod
+
+        :param pod: The pod the connection belongs to, like 'encoder'
+        :param head: True if the connection is for a head
+        :param address: Address used for the grpc connection, format is <host>:<port>
+        :param shard_id: Optional parameter to indicate this connection belongs to a shard, ignored for heads
+        :return: The removed connection, None if it did not exist
+        """
+        if head:
+            return self._connections.remove_head(pod, address)
+        else:
+            if shard_id is None:
+                shard_id = 0
+            return self._connections.remove_replica(pod, address, shard_id)
 
     def start(self):
         """
@@ -178,29 +314,15 @@ class ConnectionPool:
         """
         self._connections.clear()
 
-    @abstractmethod
-    def _send_message(self, msg: Message, connection):
-        ...
-
-    @abstractmethod
-    def _create_connection(self, target):
-        ...
-
-
-class GrpcConnectionPool(ConnectionPool):
-    """
-    GrpcConnectionPool which uses gRPC as the communication mechanism
-    """
-
-    def _send_message(self, msg: Message, connection):
+    def _send_message(self, msg: Message, connection) -> asyncio.Task:
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
         async def task_wrapper(new_message, stub):
-            await stub.Call(new_message)
+            return await stub.Call(new_message)
 
         return asyncio.create_task(task_wrapper(msg, connection))
 
-    def _create_connection(self, target):
+    def _create_connection(self, target) -> jina_pb2_grpc.JinaDataRequestRPCStub:
         self._logger.debug(f'create connection to {target}')
         channel = grpc.aio.insecure_channel(
             target,
@@ -231,7 +353,6 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         super().__init__(logger=logger, on_demand_connection=False)
 
         self._namespace = namespace
-        self._deployment_clusteraddresses = {}
         self._k8s_client = client
         self._k8s_event_queue = asyncio.Queue()
         self.enabled = False
@@ -288,18 +409,6 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         self._api_watch.stop()
         super().close()
 
-    def send_message(self, msg: Message, target_address: str):
-        """
-        Send msg to target_address via one of the pooled connections.
-
-        :param msg: message to send
-        :param target_address: address to send to, should include the port like 1.1.1.1:53
-        :return: result of the actual send method
-        """
-        host, port = target_address.split(':')
-        # host can be a domain instead of IP Address, resolve it to IP Address
-        return super().send_message(msg, f'{socket.gethostbyname(host)}:{port}')
-
     @staticmethod
     def _pod_is_up(item):
         return item.status.pod_ip is not None and item.status.phase == 'Running'
@@ -312,79 +421,36 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
 
     def _process_item(self, item):
         deployment_name = item.metadata.labels["app"]
+        jina_pod_name = item.metadata.labels["jina_pod_name"]
+        is_head = item.metadata.labels["pea_type"] == 'head'
+        shard_id = (
+            int(item.metadata.labels["shard_id"])
+            if item.metadata.labels["shard_id"] and not is_head
+            else None
+        )
+
         is_deleted = item.metadata.deletion_timestamp is not None
+        ip = item.status.pod_ip
+        port = item.status.port  # TODO this does not work
 
         if not is_deleted and self._pod_is_up(item) and self._pod_is_ready(item):
-            if deployment_name in self._deployment_clusteraddresses:
-                self._add_pod_connection(deployment_name, item)
-            else:
-                cluster_ip, port = self._find_cluster_ip(deployment_name)
-                if cluster_ip:
-                    self._deployment_clusteraddresses[
-                        deployment_name
-                    ] = f'{cluster_ip}:{port}'
-                    self._connections[f'{cluster_ip}:{port}'] = ConnectionList(port)
-                    self._add_pod_connection(deployment_name, item)
-                else:
-                    self._logger.debug(
-                        f'Observed state change in unknown deployment {deployment_name}'
-                    )
+            self.add_connection(
+                pod=jina_pod_name,
+                head=is_head,
+                address=f'{ip}:{port}',
+                shard_id=shard_id,
+            )
         elif (
             is_deleted
             and self._pod_is_up(item)
             and deployment_name in self._deployment_clusteraddresses
         ):
-            self._remove_pod_connection(deployment_name, item)
-
-    def _remove_pod_connection(self, deployment_name, item):
-        target = item.status.pod_ip
-        connection_pool = self._connections[
-            self._deployment_clusteraddresses[deployment_name]
-        ]
-        if connection_pool.has_connection(f'{target}:{connection_pool.port}'):
-            self._logger.debug(
-                f'Removing connection to {target}:{connection_pool.port} for deployment {deployment_name} at {self._deployment_clusteraddresses[deployment_name]}'
+            self.remove_connection(
+                pod=jina_pod_name,
+                head=is_head,
+                address=f'{ip}:{port}',
+                shard_id=shard_id,
             )
-            self._connections[
-                self._deployment_clusteraddresses[deployment_name]
-            ].remove_connection(f'{target}:{connection_pool.port}')
-
-    def _add_pod_connection(self, deployment_name, item):
-        target = item.status.pod_ip
-        connection_pool = self._connections[
-            self._deployment_clusteraddresses[deployment_name]
-        ]
-        if not connection_pool.has_connection(f'{target}:{connection_pool.port}'):
-            self._logger.debug(
-                f'Adding connection to {target}:{connection_pool.port} for deployment {deployment_name} at {self._deployment_clusteraddresses[deployment_name]}'
-            )
-
-            connection_pool.add_connection(
-                f'{target}:{connection_pool.port}',
-                self._create_connection(target=f'{target}:{connection_pool.port}'),
-            )
-
-    def _extract_app(self, service_item):
-        if service_item.metadata.annotations:
-            return ast.literal_eval(
-                list(service_item.metadata.annotations.values())[0]
-            )['spec']['selector']['app']
-        elif service_item.metadata.labels:
-            return service_item.metadata.labels['app']
-
-        return None
-
-    def _find_cluster_ip(self, deployment_name):
-        service_resp = self._k8s_client.list_namespaced_service(self._namespace)
-        for s in service_resp.items:
-            app = self._extract_app(s)
-            if app and deployment_name == app and s.spec.cluster_ip:
-                # find the port-in for this deployment
-                for p in s.spec.ports:
-                    if p.name == 'port-in':
-                        return s.spec.cluster_ip, p.port
-
-        return None, None
 
 
 def is_remote_local_connection(first: str, second: str):
@@ -479,7 +545,7 @@ def get_connect_host(
 
 def create_connection_pool(
     k8s_namespace: str = None, k8s_connection_pool: bool = True
-) -> ConnectionPool:
+) -> GrpcConnectionPool:
     """
     Creates the appropriate connection pool based on parameters
     :param k8s_namespace: k8s namespace the pool will live in, None if outside K8s
