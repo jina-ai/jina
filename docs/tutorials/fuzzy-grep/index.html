@@ -8,9 +8,9 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/tutorials/fuzzy-grep.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="Han @ Jina AI July 15, 2021 Now that you understand all fundamental concepts, let’s practice the learnings and build a simple end-to-end demo. We will use Jina to implement a fuzzy search solution on source code: given a snippet source code and a query, find all lines that are similar to the quer..." />
-  <meta property="og:image" content="../../_images/han.jpg" />
-  <meta property="og:image:alt" content="" />
+  <meta property="og:description" content="Now that you understand all fundamental concepts, let’s practice the learnings and build a simple end-to-end demo. We will use Jina to implement a fuzzy search solution on source code: given a snippet source code and a query, find all lines that are similar to the query. It is like grep but in fu..." />
+  <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
+  <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -28,10 +28,10 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Question-Answering Chatbot via Transformer" href="../chatbot/" /><link rel="prev" title="Text" href="../../datatype/text/" />
+    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Full Text Search via Feature Hashing" href="../../datatype/text/full-text-search/" /><link rel="prev" title="Text" href="../../datatype/text/" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.10.09"/>
-        <title>Fuzzy String Matching in 30 Lines - Jina 2.2.5 documentation</title>
+        <title>Fuzzy String Matching in 30 Lines - Jina 2.2.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -171,7 +171,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 2.2.5 documentation</div>
+                <div class="brand">Jina 2.2.6 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -267,6 +267,7 @@
 <ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../../datatype/text/"><svg aria-hidden="true" class="sd-octicon sd-octicon-typography" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M6.21 8.5L4.574 3.594 2.857 8.5H6.21zm.5 1.5l.829 2.487a.75.75 0 001.423-.474L5.735 2.332a1.216 1.216 0 00-2.302-.018l-3.39 9.688a.75.75 0 001.415.496L2.332 10H6.71zm3.13-4.358C10.53 4.374 11.87 4 13 4c1.5 0 3 .939 3 2.601v5.649a.75.75 0 01-1.448.275C13.995 12.82 13.3 13 12.5 13c-.77 0-1.514-.231-2.078-.709-.577-.488-.922-1.199-.922-2.041 0-.694.265-1.411.887-1.944C11 7.78 11.88 7.5 13 7.5h1.5v-.899c0-.54-.5-1.101-1.5-1.101-.869 0-1.528.282-1.84.858a.75.75 0 11-1.32-.716zM14.5 9H13c-.881 0-1.375.22-1.637.444-.253.217-.363.5-.363.806 0 .408.155.697.39.896.249.21.63.354 1.11.354.732 0 1.26-.209 1.588-.449.35-.257.412-.495.412-.551V9z" fill-rule="evenodd"></path></svg> Text</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Fuzzy String Matching in 30 Lines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../datatype/text/full-text-search/">Full Text Search via Feature Hashing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../chatbot/">Question-Answering Chatbot via Transformer</a></li>
 </ul>
 </li>
@@ -651,25 +652,6 @@
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="fuzzy-string-matching-in-30-lines">
 <h1>Fuzzy String Matching in 30 Lines<a class="headerlink" href="#fuzzy-string-matching-in-30-lines" title="Permalink to this headline">¶</a></h1>
-<div class="sd-container-fluid sd-sphinx-override sd-p-0 sd-mt-2 sd-mb-4 docutils">
-<div class="sd-row sd-row-cols-2 sd-gx-2 sd-gy-1 docutils">
-<div class="sd-col sd-col-auto sd-d-flex-row sd-align-minor-center docutils">
-<a class="reference external image-reference" href="https://jobs.jina.ai"><img alt="" class="sd-avatar-sm sd-outline-muted" src="../../_images/han.jpg"/></a>
-</div>
-<div class="sd-col sd-d-flex-row sd-align-minor-center docutils">
-<div class="sd-container-fluid sd-sphinx-override docutils">
-<div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-3 sd-row-cols-md-3 sd-row-cols-lg-3 sd-gx-3 sd-gy-1 docutils">
-<div class="sd-col sd-col-auto sd-d-flex-row sd-align-minor-center docutils">
-<p class="sd-p-0 sd-m-0">Han @ Jina AI</p>
-</div>
-<div class="sd-col sd-col-auto sd-d-flex-row sd-align-minor-center docutils">
-<p class="sd-p-0 sd-m-0"><span class="sd-pr-2"><svg aria-hidden="true" class="sd-octicon sd-octicon-calendar" height="16.0px" version="1.1" viewbox="0 0 16 16" width="16.0px"><path d="M4.75 0a.75.75 0 01.75.75V2h5V.75a.75.75 0 011.5 0V2h1.25c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0113.25 16H2.75A1.75 1.75 0 011 14.25V3.75C1 2.784 1.784 2 2.75 2H4V.75A.75.75 0 014.75 0zm0 3.5h8.5a.25.25 0 01.25.25V6h-11V3.75a.25.25 0 01.25-.25h2zm-2.25 4v6.75c0 .138.112.25.25.25h10.5a.25.25 0 00.25-.25V7.5h-11z" fill-rule="evenodd"></path></svg></span>July 15, 2021</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
 <div class="warning admonition">
 <p class="admonition-title">Different behavior on Jupyter Notebook</p>
 <p>Be aware of the following when running this tutorial in jupyter notebook. Some python built-in attributes such as <code class="docutils literal notranslate"><span class="pre">__file__</span></code> do not exist. You can change <code class="docutils literal notranslate"><span class="pre">__file__</span></code> for any other file path existing in your system.</p>
@@ -806,12 +788,12 @@ click <kbd>Execute</kbd> button!</p>
             <footer>
                 
                 <div class="related-pages">
-                    <a class="next-page" href="../chatbot/">
+                    <a class="next-page" href="../../datatype/text/full-text-search/">
                         <div class="page-info">
                             <div class="context">
                                 <span>Next</span>
                             </div>
-                            <div class="title">Question-Answering Chatbot via Transformer</div>
+                            <div class="title">Full Text Search via Feature Hashing</div>
                         </div>
                         <svg>
                             <use href="#svg-arrow-right"></use>

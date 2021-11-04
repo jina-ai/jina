@@ -1,11 +1,13 @@
 (use-hub-executor)=
 # Use Hub Executor
 
-## Use as-is
-
 ```{tip}
 Starting `jina>=2.2.5`, you can directly use Hub Executor as native Python object *without* putting it into a Flow.  
 ```
+
+We provide three ways of using Hub Executors in your project, each has its own niche and benefit.
+
+## Use as-is
 
 You can use Hub Executor as-is via `Executor.from_hub()`:
 
