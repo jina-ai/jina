@@ -8,7 +8,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/advanced/hub/use-hub-executor.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="via Docker: Use the prebuilt images from Hub in your python codes, from jina import Flow # SECRET must be provided for private Executor f = Flow().add(uses='jinahub+docker://<UUID>[:<SECRET>][/<TAG>]') If there is no/<TAG> provided when using, it by default equals to/latest, which means using the..." />
+  <meta property="og:description" content="Use as-is: You can use Hub Executor as-is via Executor.from_hub(): from jina import Executor, DocumentArray, Document exec = Executor.from_hub('jinahub://DummyHubExecutor') da = DocumentArray([Document()]) exec.foo(da) assert da.texts == ['hello'] The Hub Executor will be pulled to local and run ..." />
   <meta property="og:image" content="../../../_images/secret.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -651,8 +651,34 @@
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="use-hub-executor">
 <span id="id1"></span><h1>Use Hub Executor<a class="headerlink" href="#use-hub-executor" title="Permalink to this headline">¶</a></h1>
-<section id="via-docker">
-<h2>via Docker<a class="headerlink" href="#via-docker" title="Permalink to this headline">¶</a></h2>
+<section id="use-as-is">
+<h2>Use as-is<a class="headerlink" href="#use-as-is" title="Permalink to this headline">¶</a></h2>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Starting <code class="docutils literal notranslate"><span class="pre">jina&gt;=2.2.5</span></code>, you can directly use Hub Executor as native Python object <em>without</em> putting it into a Flow.</p>
+</div>
+<p>You can use Hub Executor as-is via <code class="docutils literal notranslate"><span class="pre">Executor.from_hub()</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
+
+<span class="n">exec</span> <span class="o">=</span> <span class="n">Executor</span><span class="o">.</span><span class="n">from_hub</span><span class="p">(</span><span class="s1">'jinahub://DummyHubExecutor'</span><span class="p">)</span>
+<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">()])</span>
+<span class="n">exec</span><span class="o">.</span><span class="n">foo</span><span class="p">(</span><span class="n">da</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">da</span><span class="o">.</span><span class="n">texts</span> <span class="o">==</span> <span class="p">[</span><span class="s1">'hello'</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The Hub Executor will be pulled to local and run as a native Python object. You can use line-debugger to step in/out <code class="docutils literal notranslate"><span class="pre">exec</span></code> object, set breakpoint, and observe how it behaves. You can directly feed <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> to it. After you build some confidence about that Executor, you can move to the next step: using it as a part of your Flow pipeline.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>Not all executors on the Hub can be directly run in this way, some requires extra dependencies. In that case you can add <code class="docutils literal notranslate"><span class="pre">.from_hub(...,</span> <span class="pre">install_requirements=True)</span></code>, it will install the requirements automatically. Be careful, these dependencies may not be compatible to your local packages and may override your local dev environment.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Hub Executor are cached to local on the first pulling. Afterwards, it will not be updated.</p>
+<p>To keep up-to-date with upstream, use <code class="docutils literal notranslate"><span class="pre">.from_hub(...,</span> <span class="pre">force_update=True)</span></code>.</p>
+</div>
+</section>
+<section id="use-in-a-flow-via-docker">
+<h2>Use in a Flow: via Docker<a class="headerlink" href="#use-in-a-flow-via-docker" title="Permalink to this headline">¶</a></h2>
 <p>Use the prebuilt images from Hub in your python codes,</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
@@ -685,8 +711,8 @@ will connect PostgreSQL server which was started at local. Then you must use it 
 </div>
 </div>
 </section>
-<section id="via-source-code">
-<h2>via source code<a class="headerlink" href="#via-source-code" title="Permalink to this headline">¶</a></h2>
+<section id="use-in-a-flow-via-source-code">
+<h2>Use in a Flow: via source code<a class="headerlink" href="#use-in-a-flow-via-source-code" title="Permalink to this headline">¶</a></h2>
 <p>Use the source codes from <code class="docutils literal notranslate"><span class="pre">Hubble</span></code> in your python codes,</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
@@ -788,8 +814,9 @@ any of these parameters by passing <code class="docutils literal notranslate"><s
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">Use Hub Executor</a><ul>
-<li><a class="reference internal" href="#via-docker">via Docker</a></li>
-<li><a class="reference internal" href="#via-source-code">via source code</a></li>
+<li><a class="reference internal" href="#use-as-is">Use as-is</a></li>
+<li><a class="reference internal" href="#use-in-a-flow-via-docker">Use in a Flow: via Docker</a></li>
+<li><a class="reference internal" href="#use-in-a-flow-via-source-code">Use in a Flow: via source code</a></li>
 <li><a class="reference internal" href="#override-default-parameters">Override default parameters</a></li>
 <li><a class="reference internal" href="#pulling-without-using">Pulling without using</a><ul>
 <li><a class="reference internal" href="#pull-the-docker-image">Pull the Docker image</a></li>
