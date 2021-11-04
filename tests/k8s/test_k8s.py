@@ -29,6 +29,7 @@ def k8s_flow_with_init_container(
         infrastructure='K8S',
         protocol='http',
         timeout_ready=120000,
+        k8s_namespace='test-flow-with-init-container-ns',
     ).add(
         name='test_executor',
         uses=test_executor_image,
@@ -50,6 +51,7 @@ def k8s_flow_with_sharding(
         infrastructure='K8S',
         protocol='http',
         timeout_ready=120000,
+        k8s_namespace='test-flow-with-sharding-ns',
     ).add(
         name='test_executor',
         shards=2,
@@ -61,7 +63,7 @@ def k8s_flow_with_sharding(
     return flow
 
 
-@pytest.fixture()
+@pytest.fixture
 def k8s_flow_configmap(test_executor_image: str) -> Flow:
     flow = Flow(
         name='k8s-flow-configmap',
@@ -87,6 +89,7 @@ def k8s_flow_gpu(test_executor_image: str) -> Flow:
         infrastructure='K8S',
         protocol='http',
         timeout_ready=120000,
+        k8s_namespace='k8s-flow-gpu-ns',
     ).add(
         name='test_executor',
         uses=test_executor_image,
@@ -118,6 +121,7 @@ def test_flow_with_needs(
             protocol='http',
             timeout_ready=120000,
             k8s_disable_connection_pool=not k8s_connection_pool,
+            k8s_namespace=name + '-ns',
         )
         .add(
             name='segmenter',
@@ -235,6 +239,26 @@ def test_flow_with_configmap(
         assert doc.tags.get('k1') == 'v1'
         assert doc.tags.get('k2') == 'v2'
         assert doc.tags.get('env') == {'k1': 'v1', 'k2': 'v2'}
+
+
+@pytest.mark.timeout(3600)
+def test_flow_with_namespace(
+    k8s_cluster,
+    k8s_flow_with_namespace,
+    load_images_in_kind,
+    set_test_pip_version,
+    logger,
+):
+    resp = run_test(
+        k8s_flow_with_namespace,
+        endpoint='/namespace',
+        port_expose=9090,
+    )
+
+    docs = resp[0].docs
+    assert len(docs) == 10
+    for doc in docs:
+        assert doc.tags.get('namespace') == 'k8s-flow-with-namespace-ns'
 
 
 @pytest.mark.timeout(3600)
