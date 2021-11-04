@@ -242,26 +242,6 @@ def test_flow_with_configmap(
 
 
 @pytest.mark.timeout(3600)
-def test_flow_with_namespace(
-    k8s_cluster,
-    k8s_flow_with_namespace,
-    load_images_in_kind,
-    set_test_pip_version,
-    logger,
-):
-    resp = run_test(
-        k8s_flow_with_namespace,
-        endpoint='/namespace',
-        port_expose=9090,
-    )
-
-    docs = resp[0].docs
-    assert len(docs) == 10
-    for doc in docs:
-        assert doc.tags.get('namespace') == 'k8s-flow-with-namespace-ns'
-
-
-@pytest.mark.timeout(3600)
 @pytest.mark.skip('Need to config gpu host.')
 def test_flow_with_gpu(
     k8s_cluster,
