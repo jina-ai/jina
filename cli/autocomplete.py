@@ -231,6 +231,7 @@ ac_table = {
             '--no-usage',
             '--dockerfile',
             '--tag',
+            '--force-update',
             '--force',
             '--secret',
             '--public',
