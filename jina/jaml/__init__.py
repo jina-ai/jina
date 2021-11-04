@@ -534,6 +534,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :param kwargs: kwargs for parse_config_source
         :return: :class:`JAMLCompatible` object
         """
+
         if isinstance(source, str) and os.path.exists(source):
             extra_search_paths = (extra_search_paths or []) + [os.path.dirname(source)]
 
