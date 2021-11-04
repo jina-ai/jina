@@ -721,6 +721,7 @@ class ArgNamespace:
         parser: ArgumentParser,
         warn_unknown: bool = False,
         fallback_parsers: List[ArgumentParser] = None,
+        positional_args: Tuple[str, ...] = None,
     ) -> Namespace:
         """
         Convert dict to a namespace.
@@ -729,9 +730,12 @@ class ArgNamespace:
         :param parser: the parser for building kwargs into a namespace
         :param warn_unknown: True, if unknown arguments should be logged
         :param fallback_parsers: a list of parsers to help resolving the args
+        :param positional_args: some parser requires positional arguments to be presented
         :return: argument list
         """
         args = ArgNamespace.kwargs2list(kwargs)
+        if positional_args:
+            args += positional_args
         p_args, unknown_args = parser.parse_known_args(args)
         if warn_unknown and unknown_args:
             _leftovers = set(unknown_args)

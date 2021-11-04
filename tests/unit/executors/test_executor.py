@@ -2,8 +2,15 @@ import os
 
 import pytest
 
-from jina import Executor, requests
+from jina import Executor, requests, DocumentArray, Document
 from jina.executors.metas import get_default_metas
+
+
+def test_executor_load_from_hub():
+    exec = Executor.load_config('jinahub://DummyHubExecutor')
+    da = DocumentArray([Document()])
+    exec.foo(da)
+    assert da.texts == ['hello']
 
 
 def test_executor_import_with_external_dependencies(capsys):
