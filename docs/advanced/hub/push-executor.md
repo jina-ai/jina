@@ -39,7 +39,7 @@ Anyone can use any public Executor, but to use a private Executor one must know 
 To override or update a published Executor, you must have both `NAME` and `SECRET`.
 
 ```bash
-jina hub push [--public/--private] --force <NAME> --secret <SECRET> <path_to_executor_folder>
+jina hub push [--public/--private] --force-update <NAME> --secret <SECRET> <path_to_executor_folder>
 ```
 
 (hub_tags)=
@@ -64,5 +64,5 @@ jina hub push . -t v1.0.0 -t latest # Result in two tags: v1.0.0, latest
 If you want to create a new tag for an existing Executor, you can also add the `-t` option here:
 
 ```bash
-jina hub push [--public/--private] --force <NAME> --secret <SECRET> -t TAG <path_to_executor_folder>
+jina hub push [--public/--private] --force-update <NAME> --secret <SECRET> -t TAG <path_to_executor_folder>
 ```

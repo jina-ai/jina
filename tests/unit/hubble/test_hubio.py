@@ -314,7 +314,7 @@ def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
     )
     assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder:v1'
 
-    args.force = False
+    args.force_update = False
     fail_meta_fetch = False
     version = 'v2'
     # expect successful but outdated pull because force == False
