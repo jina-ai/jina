@@ -115,6 +115,7 @@ ac_table = {
             '--parallel',
             '--replicas',
             '--install-requirements',
+            '--force-update',
             '--force',
         ],
         'flow': [
@@ -235,7 +236,13 @@ ac_table = {
             '--public',
             '--private',
         ],
-        'hub pull': ['--help', '--no-usage', '--install-requirements', '--force'],
+        'hub pull': [
+            '--help',
+            '--no-usage',
+            '--install-requirements',
+            '--force-update',
+            '--force',
+        ],
         'hub': ['--help', 'new', 'push', 'pull'],
         'help': ['--help'],
         'pea': [
@@ -307,6 +314,7 @@ ac_table = {
             '--parallel',
             '--replicas',
             '--install-requirements',
+            '--force-update',
             '--force',
         ],
         'pod': [
@@ -378,6 +386,7 @@ ac_table = {
             '--parallel',
             '--replicas',
             '--install-requirements',
+            '--force-update',
             '--force',
             '--uses-before',
             '--uses-after',

@@ -533,7 +533,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         env: Optional[dict] = None,
         expose_public: Optional[bool] = False,
         external: Optional[bool] = False,
-        force: Optional[bool] = False,
+        force_update: Optional[bool] = False,
         gpus: Optional[str] = None,
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
@@ -595,7 +595,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param env: The map of environment variables that are available inside runtime
         :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas
         :param external: The Pod will be considered an external Pod that has been started independently from the Flow.This Pod will not be context managed by the Flow.
-        :param force: If set, always pull the latest Hub Executor bundle even it exists on local
+        :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local
         :param gpus: This argument allows dockerized Jina executor discover local gpu devices.
 
               Note,
