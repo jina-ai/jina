@@ -1,7 +1,36 @@
 (use-hub-executor)=
 # Use Hub Executor
 
-## via Docker
+## Use as-is
+
+```{tip}
+Starting `jina>=2.2.5`, you can directly use Hub Executor as native Python object *without* putting it into a Flow.  
+```
+
+You can use Hub Executor as-is via `Executor.from_hub()`:
+
+```python
+from jina import Executor, DocumentArray, Document
+
+exec = Executor.from_hub('jinahub://DummyHubExecutor')
+da = DocumentArray([Document()])
+exec.foo(da)
+assert da.texts == ['hello']
+```
+
+The Hub Executor will be pulled to local and run as a native Python object. You can use line-debugger to step in/out `exec` object, set breakpoint, and observe how it behaves. You can directly feed `DocumentArray` to it. After you build some confidence about that Executor, you can move to the next step: using it as a part of your Flow pipeline.
+
+```{caution}
+Not all executors on the Hub can be directly run in this way, some requires extra dependencies. In that case you can add `.from_hub(..., install_requirements=True)`, it will install the requirements automatically. Be careful, these dependencies may not be compatible to your local packages and may override your local dev environment.
+```
+
+```{tip}
+Hub Executor are cached to local on the first pulling. Afterwards, it will not be updated. 
+
+To keep up-to-date with upstream, use `.from_hub(..., force_update=True)`.
+```
+
+## Use in a Flow: via Docker
 
 Use the prebuilt images from Hub in your python codes,
 
@@ -43,7 +72,7 @@ with f:
 ```
 ````
 
-## via source code
+## Use in a Flow: via source code
 
 Use the source codes from `Hubble` in your python codes,
 
