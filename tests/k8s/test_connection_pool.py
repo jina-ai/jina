@@ -20,7 +20,6 @@ async def test_wait_for_ready(
         name='test-flow-slow-executor',
         infrastructure='K8S',
         timeout_ready=120000,
-        k8s_namespace='test-flow-slow-executor-ns',
     ).add(
         name='slow_init_executor',
         uses=slow_init_executor_image,

@@ -287,7 +287,7 @@ def test_linear_processing_time_scaling(
 
     with flow:
         with kubernetes_tools.get_port_forward_contextmanager(
-            'test-flow-slow-process-executor', flow.port_expose
+            'test-flow-slow-process-executor-ns', flow.port_expose
         ):
             # sleep as the port forward setup can take some time
             time.sleep(0.1)
