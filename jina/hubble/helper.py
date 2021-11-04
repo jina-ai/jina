@@ -340,9 +340,7 @@ def is_requirements_installed(
     except (DistributionNotFound, VersionConflict, RequirementParseError) as ex:
         if show_warning:
             warnings.warn(repr(ex))
-        if isinstance(ex, VersionConflict):
-            return True
-        return False
+        return isinstance(ex, VersionConflict)
     return True
 
 
