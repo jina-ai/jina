@@ -14,7 +14,7 @@ from .helper import JinaResolver, JinaLoader, parse_config_source, load_py_modul
 __all__ = ['JAML', 'JAMLCompatible']
 
 from ..excepts import BadConfigSource
-from ..helper import expand_env_var, ArgNamespace
+from ..helper import expand_env_var
 
 subvar_regex = re.compile(
     r'\${{\s*([\w\[\].]+)\s*}}'
@@ -534,25 +534,6 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :param kwargs: kwargs for parse_config_source, it can be also arguments accepted by ``jina hub pull``
         :return: :class:`JAMLCompatible` object
         """
-
-        from ..hubble.helper import is_valid_huburi
-
-        if is_valid_huburi(source):
-            from ..hubble.hubio import HubIO
-            from ..parsers.hubble import set_hub_pull_parser
-
-            _args = ArgNamespace.kwargs2namespace(
-                {'no_usage': True, **kwargs},
-                set_hub_pull_parser(),
-                positional_args=(source,),
-            )
-            _source = HubIO(args=_args).pull()
-            if _source.startswith('docker://'):
-                raise BadConfigSource(
-                    f'Can not construct a native Executor from {source}. Looks like you want to use it as a '
-                    f'Docker container, you may want to use it in the Flow via `.add(uses={source})` instead.'
-                )
-            source = _source
 
         if isinstance(source, str) and os.path.exists(source):
             extra_search_paths = (extra_search_paths or []) + [os.path.dirname(source)]
