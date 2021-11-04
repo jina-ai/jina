@@ -309,7 +309,7 @@ def test_flow_with_k8s_namespace(
     with k8s_flow_with_namespace as f:
         client = K8sClients().core_v1
         namespaces = client.list_namespace().items
-        namespaces = [item['metadata']['name'] for item in namespaces]
+        namespaces = [item.metadata.name for item in namespaces]
         assert 'my-custom-namespace' in namespaces
 
 
