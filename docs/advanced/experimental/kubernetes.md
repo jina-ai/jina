@@ -30,11 +30,6 @@ The context manager makes sure to deploy the `Flow` when entering the context an
 All Executors in the Flow should be used with `jinahub+docker://...` or `docker://...`.
 ```
 
-```{admonition} Caution
-:class: caution
-We heavily recommend you to deploy `Flow` in a separate K8s namespace by passing `k8s_namespace` into the `Flow` arguments.
-```
-
 ## Examples
 
 ### CLIP image encoder
@@ -85,6 +80,12 @@ f = Flow(
     protocol='http',
     k8s_namespace='custom-namespace',
 ).add(uses='jinahub+docker://CLIPImageEncoder')
+```
+
+```{admonition} Caution
+:class: caution
+We heavily recommend you to deploy different `Flow` into separated namespaces. To be more concrete,
+if `custom-namespace` has been used by another `Flow`, please set a different `k8s_namespace` name.
 ```
 
 ### Postgres indexer
