@@ -412,7 +412,7 @@ def test_new_with_arguments(
         '--description',
         'args description',
         '--keywords',
-        'args keywords',
+        'args,keywords',
         '--url',
         'args url',
     ]
@@ -465,5 +465,5 @@ def test_new_with_arguments(
             temp = yaml.load(fp, Loader=yaml.FullLoader)
             assert temp['name'] == 'argsExecutor'
             assert temp['description'] == 'args description'
-            assert temp['keywords'] == 'args keywords'
+            assert temp['keywords'] == ['args', 'keywords']
             assert temp['url'] == 'args url'
