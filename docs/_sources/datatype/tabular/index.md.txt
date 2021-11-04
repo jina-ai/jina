@@ -113,3 +113,10 @@ id,tags
 418dec52-3830-11ec-aad8-1e008a366d48,"{'english': 'world', 'german': 'welt'}"
 ```
 ````
+
+
+```{toctree}
+:hidden:
+
+filter-via-neural-search
+```

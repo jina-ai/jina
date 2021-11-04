@@ -1,7 +1,7 @@
 # Full Text Search via Feature Hashing
 
 ```{tip}
-Try [FeatureHasher](https://hub.jina.ai/executor/7skg25gs/) on Jina Hub.
+Find the full source code and run [FeatureHasher](https://hub.jina.ai/executor/7skg25gs/) on Jina Hub.
 ```
 
 Full-text search often indicates solutions that are based on good-old term-frequency. Can Jina do that? Yes! And you know you come to the right community when we skip the question of why and directly comes to how. Jokes asides, there are real-world use cases that have such requirement. In practice, not all text are necessarily to be embedded via heavy DNN, some texts such as keywords, phrases, simple sentences, source codes, commands, especially those semi-structured text are probably better by searching as-is.
@@ -34,6 +34,7 @@ The problem of this approach is the dimension of the final vector is **unbounded
 
 This is basically the methodology we used in the first tutorial. 
 
+(feature-hashing)=
 ## Feature hashing
 
 Feature hashing is a fast and space-efficient way of turning arbitrary features into fixed-length vectors. It works by applying a hash function to the features and using their hash values as indices directly, rather than looking the indices up in an associative array.
@@ -44,6 +45,7 @@ Let's see how it works. We first define the number of dimensions we want embed o
 
 Then we need a function that maps any word into [0, 255] so that each word will correspond to one column. For example,
 
+(str-hash)=
 ```python
 import hashlib
 
@@ -202,3 +204,5 @@ whatsoever. You may copy it, give it away or re-use it under the terms
 
 In practice, you can implement matching and storing via an indexer inside `Flow`. 
 This tutorial is only for demo purpose hence any non-feature hashing related ops are implemented without the Flow to avoid distraction.
+
+Feature hashing is a simple yet elegant method not only for full-text search. It can be also used on tabular data, as we shall {ref}`see in this tutorial<filter-row>`. 
