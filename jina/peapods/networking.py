@@ -52,7 +52,15 @@ class ReplicaList:
                 if (len(self._connections) - 1)
                 else 0
             )
-            return self._connections.pop(self._address_to_connection_idx.pop(address))
+            idx_to_delete = self._address_to_connection_idx.pop(address)
+
+            popped_connection = self._connections.pop(idx_to_delete)
+            # update the address/idx mapping
+            for address in self._address_to_connection_idx:
+                if self._address_to_connection_idx[address] > idx_to_delete:
+                    self._address_to_connection_idx[address] -= 1
+
+            return popped_connection
 
         return None
 
@@ -76,22 +84,6 @@ class ReplicaList:
         :returns: A complete list of all connections from the pool
         """
         return self._connections
-
-    def pop_connection(self):
-        """
-        Removes and returns a connection from the list. Strategy is round robin
-        :returns: The connection removed from the pool
-        """
-        if self._connections:
-            connection = self._connections.pop(self._rr_counter)
-            self._rr_counter = (
-                (self._rr_counter + 1) % len(self._connections)
-                if len(self._connections)
-                else 0
-            )
-            return connection
-        else:
-            return None
 
     def has_connection(self, address: str) -> bool:
         """
@@ -153,8 +145,9 @@ class GrpcConnectionPool:
 
         def get_replicas_all_shards(self, pod: str) -> List[ReplicaList]:
             replicas = []
-            for shard_id in self._pods[pod]['shards']:
-                replicas.append(self._get_connection_list(pod, 'shards', shard_id))
+            if pod in self._pods:
+                for shard_id in self._pods[pod]['shards']:
+                    replicas.append(self._get_connection_list(pod, 'shards', shard_id))
             return replicas
 
         def clear(self):
@@ -350,7 +343,7 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         client: 'kubernetes.client.CoreV1Api',
         logger: JinaLogger = None,
     ):
-        super().__init__(logger=logger, on_demand_connection=False)
+        super().__init__(logger=logger)
 
         self._namespace = namespace
         self._k8s_client = client
@@ -420,7 +413,6 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         )
 
     def _process_item(self, item):
-        deployment_name = item.metadata.labels["app"]
         jina_pod_name = item.metadata.labels["jina_pod_name"]
         is_head = item.metadata.labels["pea_type"] == 'head'
         shard_id = (
@@ -431,26 +423,64 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
 
         is_deleted = item.metadata.deletion_timestamp is not None
         ip = item.status.pod_ip
-        port = item.status.port  # TODO this does not work
+        port = self._extract_port(item)
 
-        if not is_deleted and self._pod_is_up(item) and self._pod_is_ready(item):
-            self.add_connection(
-                pod=jina_pod_name,
-                head=is_head,
-                address=f'{ip}:{port}',
-                shard_id=shard_id,
-            )
-        elif (
-            is_deleted
+        if (
+            ip
+            and port
+            and not is_deleted
             and self._pod_is_up(item)
-            and deployment_name in self._deployment_clusteraddresses
+            and self._pod_is_ready(item)
         ):
-            self.remove_connection(
+            super().add_connection(
                 pod=jina_pod_name,
                 head=is_head,
                 address=f'{ip}:{port}',
                 shard_id=shard_id,
             )
+        elif ip and port and is_deleted and self._pod_is_up(item):
+            super().remove_connection(
+                pod=jina_pod_name,
+                head=is_head,
+                address=f'{ip}:{port}',
+                shard_id=shard_id,
+            )
+
+    @staticmethod
+    def _extract_port(item):
+        for container in item.spec.containers:
+            if container.name == 'executor':
+                return container.ports[0].container_port
+        return None
+
+    def add_connection(
+        self, pod: str, head: bool, address: str, shard_id: Optional[int] = None
+    ):
+        """
+        In K8s the connection pool is auto configured by subscribing to K8s API.
+        It can not be managed manually, so add_connection is a not doing anything
+
+        :param pod: The pod the connection belongs to, like 'encoder'
+        :param head: True if the connection is for a head
+        :param address: Address used for the grpc connection, format is <host>:<port>
+        :param shard_id: Optional parameter to indicate this connection belongs to a shard, ignored for heads
+        """
+        pass
+
+    def remove_connection(
+        self, pod: str, head: bool, address: str, shard_id: Optional[int] = None
+    ):
+        """
+        In K8s the connection pool is auto configured by subscribing to K8s API.
+        It can not be managed manually, so remove_connection is a not doing anything
+
+        :param pod: The pod the connection belongs to, like 'encoder'
+        :param head: True if the connection is for a head
+        :param address: Address used for the grpc connection, format is <host>:<port>
+        :param shard_id: Optional parameter to indicate this connection belongs to a shard, ignored for heads
+        :return: Always None as this is a Noop
+        """
+        return None
 
 
 def is_remote_local_connection(first: str, second: str):

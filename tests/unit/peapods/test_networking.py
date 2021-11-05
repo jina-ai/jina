@@ -173,6 +173,12 @@ def test_connection_pool(mocker):
     assert len(results) == 0
     assert send_mock.call_count == 11
 
+    # check that remove/add order is handled well
+    pool.add_connection(pod='encoder', head=False, address='1.1.1.4:53')
+    assert pool.remove_connection(pod='encoder', head=False, address='1.1.1.1:53')
+    assert pool.remove_connection(pod='encoder', head=False, address='1.1.1.4:53')
+    assert not (pool.remove_connection(pod='encoder', head=False, address='1.1.1.2:53'))
+
     pool.close()
 
 
