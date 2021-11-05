@@ -9,11 +9,15 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 @pytest.fixture()
 def docker_image():
-    docker_file = os.path.join(cur_dir, 'Dockerfile')
-    os.system(f"docker build -f {docker_file} -t clitest {cur_dir}")
-    time.sleep(3)
+    import docker
+
+    client = docker.from_env()
+    client.images.build(path=os.path.join(cur_dir), tag='clitest')
+    client.close()
     yield
-    os.system(f"docker rmi -f $(docker images | grep 'clitest')")
+    time.sleep(2)
+    client = docker.from_env()
+    client.containers.prune()
 
 
 def test_executor_cli_docker(docker_image):

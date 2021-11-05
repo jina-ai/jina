@@ -75,7 +75,7 @@ def get_parser(
             warnings.warn(
                 f'can not find parser for version: {version}, '
                 f'fallback to legacy parser. '
-                f'this usually mean you are using a depreciated YAML format.',
+                f'this usually mean you are using a deprecated YAML format.',
                 DeprecationWarning,
             )
         # fallback to legacy parser

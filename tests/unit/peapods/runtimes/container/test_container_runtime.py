@@ -324,12 +324,13 @@ def test_container_override_params(docker_image_built, tmpdir, mocker):
     )
 
     with f:
-        f.index(random_docs(10), on_done=mock)
+        responses = f.index(random_docs(10), return_results=True)
 
+    assert len(responses) > 0
     assert os.path.exists(
         os.path.join(abc_path, 'ext-mwu-encoder', '0', 'ext-mwu-encoder.bin')
     )
-    validate_callback(mock, validate_response)
+    validate_response(responses[0])
 
 
 def test_container_volume(docker_image_built, tmpdir):
@@ -345,11 +346,12 @@ def test_container_volume(docker_image_built, tmpdir):
     )
 
     with f:
-        f.index(random_docs(10))
+        responses = f.index(random_docs(10), return_results=True)
 
     assert os.path.exists(
         os.path.join(abc_path, 'ext-mwu-encoder', '0', 'ext-mwu-encoder.bin')
     )
+    assert len(responses) > 0
 
 
 @pytest.mark.parametrize(

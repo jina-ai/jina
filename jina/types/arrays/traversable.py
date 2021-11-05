@@ -1,5 +1,15 @@
+import warnings
 from abc import abstractmethod
-from typing import Iterable, Sequence, TYPE_CHECKING, Optional, Generator, Callable
+from typing import (
+    Iterable,
+    Sequence,
+    TYPE_CHECKING,
+    Optional,
+    Generator,
+    Callable,
+    Union,
+)
+import numpy as np
 
 if TYPE_CHECKING:
     from .document import DocumentArray
@@ -24,7 +34,7 @@ class TraversableSequence:
     def traverse(
         self,
         traversal_paths: Sequence[str],
-        filter_fn: Optional[Callable] = None,
+        filter_fn: Optional[Callable[['Document'], bool]] = None,
     ) -> Iterable['TraversableSequence']:
         """
         Return an Iterator of :class:``TraversableSequence`` of the leaves when applying the traversal_paths.
@@ -52,7 +62,9 @@ class TraversableSequence:
 
     @staticmethod
     def _traverse(
-        docs: 'TraversableSequence', path: str, filter_fn: Optional[Callable] = None
+        docs: 'TraversableSequence',
+        path: str,
+        filter_fn: Optional[Callable[['Document'], bool]] = None,
     ):
         if path:
             loc = path[0]
@@ -82,7 +94,9 @@ class TraversableSequence:
             yield DocumentArray(list(filter(filter_fn, docs)))
 
     def traverse_flat_per_path(
-        self, traversal_paths: Sequence[str], filter_fn: Optional[Callable] = None
+        self,
+        traversal_paths: Sequence[str],
+        filter_fn: Optional[Callable[['Document'], bool]] = None,
     ):
         """
         Returns a flattened :class:``TraversableSequence`` per path in :param:``traversal_paths``
@@ -98,8 +112,10 @@ class TraversableSequence:
             yield self._flatten(self._traverse(self, p, filter_fn=filter_fn))
 
     def traverse_flat(
-        self, traversal_paths: Sequence[str], filter_fn: Optional[Callable] = None
-    ) -> Iterable['Document']:
+        self,
+        traversal_paths: Sequence[str],
+        filter_fn: Optional[Callable[['Document'], bool]] = None,
+    ) -> Union['DocumentArray', Iterable['Document']]:
         """
         Returns a single flattened :class:``TraversableSequence`` with all Documents, that are reached
         via the :param:``traversal_paths``.
@@ -129,6 +145,7 @@ class TraversableSequence:
         batch_size: int,
         traversal_paths: Sequence[str] = None,
         require_attr: Optional[str] = None,
+        shuffle: bool = False,
     ) -> Generator['DocumentArray', None, None]:
         """
         Creates a `Generator` that yields `DocumentArray` of size `batch_size` until `docs` is fully traversed along
@@ -139,6 +156,7 @@ class TraversableSequence:
         :param traversal_paths: Specifies along which "axis" the document shall be traversed. (defaults to ['r'])
         :param batch_size: Size of each generated batch (except the last one, which might be smaller, default: 32)
         :param require_attr: Optionally, you can filter out docs which don't have this attribute
+        :param shuffle: If set, shuffle the Documents before dividing into minibatches.
         :yield: a Generator of `DocumentArray`, each in the length of `batch_size`
         """
 
@@ -146,6 +164,11 @@ class TraversableSequence:
             raise ValueError('`batch_size` should be a positive integer')
 
         if traversal_paths:
+            warnings.warn(
+                'using `traversal_paths` as an argument inside `.batch()` is deprecated. '
+                'please use `.traverse_flat(traversal_paths=...).batch()` instead',
+                DeprecationWarning,
+            )
             _check_traversal_path_type(traversal_paths)
             docs = self.traverse_flat(traversal_paths)
         else:
@@ -153,24 +176,43 @@ class TraversableSequence:
 
         from .document import DocumentArray
 
-        _batch = DocumentArray()
-        for d in docs:
-            # For array-valued attributes we need to compare to None
-            if require_attr in ['embedding', 'blob']:
-                if getattr(d, require_attr) is not None:
-                    _batch.append(d)
-            elif require_attr is not None:
-                if getattr(d, require_attr):
-                    _batch.append(d)
-            else:
-                _batch.append(d)
+        if not require_attr:
+            N = len(self)
+            ix = np.arange(N)
+            n_batches = int(np.ceil(N / batch_size))
 
-            if len(_batch) == batch_size:
+            if shuffle:
+                np.random.shuffle(ix)
+
+            for i in range(n_batches):
+                yield DocumentArray(docs[i * batch_size : (i + 1) * batch_size])
+
+        else:
+            warnings.warn(
+                'using `require_attr` as an argument inside `.batch()` is deprecated. '
+                'please use `.traverse_flat(filter_fn=...).batch()` instead',
+                DeprecationWarning,
+            )
+
+            # less efficient batching algorithm, will be removed soon
+            _batch = DocumentArray()
+            for d in docs:
+                # For array-valued attributes we need to compare to None
+                if require_attr in ['embedding', 'blob']:
+                    if getattr(d, require_attr) is not None:
+                        _batch.append(d)
+                elif require_attr is not None:
+                    if getattr(d, require_attr):
+                        _batch.append(d)
+                else:
+                    _batch.append(d)
+
+                if len(_batch) == batch_size:
+                    yield _batch
+                    _batch = DocumentArray()
+
+            if _batch:
                 yield _batch
-                _batch = DocumentArray()
-
-        if _batch:
-            yield _batch
 
     @staticmethod
     @abstractmethod

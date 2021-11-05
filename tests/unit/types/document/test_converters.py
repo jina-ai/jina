@@ -25,11 +25,22 @@ def test_self_as_return():
     assert num_fn
 
 
+def test_video_convert_pipe(pytestconfig, tmpdir):
+    num_d = 0
+    for d in from_files(f'{pytestconfig.rootdir}/docs/**/*.mp4'):
+        fname = str(tmpdir / f'tmp{num_d}.mp4')
+        d.convert_uri_to_video_blob()
+        d.dump_video_blob_to_file(fname)
+        assert os.path.exists(fname)
+        num_d += 1
+    assert num_d
+
+
 def test_audio_convert_pipe(pytestconfig, tmpdir):
     num_d = 0
     for d in from_files(f'{pytestconfig.rootdir}/docs/**/*.wav'):
         fname = str(tmpdir / f'tmp{num_d}.wav')
-        d.convert_audio_uri_to_blob()
+        d.convert_uri_to_audio_blob()
         d.blob = d.blob[::-1]
         d.dump_audio_blob_to_file(fname)
         assert os.path.exists(fname)
@@ -40,10 +51,10 @@ def test_audio_convert_pipe(pytestconfig, tmpdir):
 def test_image_convert_pipe(pytestconfig):
     for d in from_files(f'{pytestconfig.rootdir}/.github/**/*.png'):
         (
-            d.convert_image_uri_to_blob()
+            d.convert_uri_to_image_blob()
             .convert_uri_to_datauri()
-            .resize_image_blob(64, 64)
-            .normalize_image_blob()
+            .set_image_blob_shape((64, 64))
+            .set_image_blob_normalization()
             .set_image_blob_channel_axis(-1, 0)
         )
         assert d.blob.shape == (3, 64, 64)
@@ -52,7 +63,7 @@ def test_image_convert_pipe(pytestconfig):
 
 def test_uri_to_blob():
     doc = Document(uri=os.path.join(cur_dir, 'test.png'))
-    doc.convert_image_uri_to_blob()
+    doc.convert_uri_to_image_blob()
     assert isinstance(doc.blob, np.ndarray)
     assert doc.mime_type == 'image/png'
     assert doc.blob.shape == (85, 152, 3)  # h,w,c
@@ -68,7 +79,7 @@ def test_datauri_to_blob():
 def test_buffer_to_blob():
     doc = Document(uri=os.path.join(cur_dir, 'test.png'))
     doc.convert_uri_to_buffer()
-    doc.convert_image_buffer_to_blob()
+    doc.convert_buffer_to_image_blob()
     assert isinstance(doc.blob, np.ndarray)
     assert doc.mime_type == 'image/png'
     assert doc.blob.shape == (85, 152, 3)  # h,w,c
@@ -91,7 +102,7 @@ def test_convert_buffer_to_blob():
 @pytest.mark.parametrize('shape, channel_axis', [((3, 32, 32), 0), ((32, 32, 3), -1)])
 def test_image_normalize(shape, channel_axis):
     doc = Document(content=np.random.randint(0, 255, shape, dtype=np.uint8))
-    doc.normalize_image_blob(channel_axis=channel_axis)
+    doc.set_image_blob_normalization(channel_axis=channel_axis)
     assert doc.blob.ndim == 3
     assert doc.blob.shape == shape
     assert doc.blob.dtype == np.float32
@@ -100,14 +111,6 @@ def test_image_normalize(shape, channel_axis):
 @pytest.mark.parametrize(
     'arr_size, channel_axis, height, width',
     [
-        ((32 * 28), -1, None, None),  # single line
-        ([32, 28], -1, None, None),  # without channel info
-        ([32, 28, 3], -1, None, None),  # h, w, c (rgb)
-        ([3, 32, 28], 0, None, None),  # c, h, w  (rgb)
-        ([1, 32, 28], 0, None, None),  # c, h, w, (greyscale)
-        ([32, 28, 1], -1, None, None),  # h, w, c, (greyscale)
-        ((32 * 28), -1, 896, 1),  # single line
-        ([32, 28], -1, 32, 28),  # without channel info
         ([32, 28, 3], -1, 32, 28),  # h, w, c (rgb)
         ([3, 32, 28], 0, 32, 28),  # c, h, w  (rgb)
         ([1, 32, 28], 0, 32, 28),  # c, h, w, (greyscale)
@@ -118,7 +121,7 @@ def test_convert_image_blob_to_uri(arr_size, channel_axis, width, height):
     doc = Document(content=np.random.randint(0, 255, arr_size))
     assert doc.blob.any()
     assert not doc.uri
-    doc.resize_image_blob(channel_axis=channel_axis, width=width, height=height)
+    doc.set_image_blob_shape(channel_axis=channel_axis, shape=(width, height))
 
     doc.convert_image_blob_to_uri()
     assert doc.uri.startswith('data:image/png;base64,')
@@ -199,6 +202,26 @@ def test_convert_text_to_uri_and_back():
     doc.convert_uri_to_text()
     assert doc.mime_type == 'text/plain'
     assert doc.text == text_from_file
+
+
+def test_convert_text_diff_encoding(tmpfile):
+    otext = 'testä'
+    text = otext.encode('iso8859')
+    with open(tmpfile, 'wb') as fp:
+        fp.write(text)
+    with pytest.raises(UnicodeDecodeError):
+        d = Document(uri=str(tmpfile)).convert_uri_to_text()
+
+    d = Document(uri=str(tmpfile)).convert_uri_to_text(charset='iso8859')
+    assert d.text == otext
+
+    with open(tmpfile, 'w', encoding='iso8859') as fp:
+        fp.write(otext)
+    with pytest.raises(UnicodeDecodeError):
+        d = Document(uri=str(tmpfile)).convert_uri_to_text()
+
+    d = Document(uri=str(tmpfile)).convert_uri_to_text(charset='iso8859')
+    assert d.text == otext
 
 
 def test_convert_content_to_uri():
@@ -307,3 +330,21 @@ def test_convert_text_blob_random_text():
 
     assert texts
     assert da.texts == texts
+
+
+def test_deprecate_fn():
+    doc = Document(uri=os.path.join(cur_dir, 'test.png'))
+
+    with pytest.warns(DeprecationWarning):
+        doc.convert_image_uri_to_blob()
+
+    with pytest.warns(None) as record:
+        doc.convert_uri_to_image_blob()
+
+    assert len(record) == 0
+
+
+def test_glb_converters():
+    doc = Document(uri=os.path.join(cur_dir, 'test.glb'))
+    doc.convert_uri_to_point_cloud_blob(2000)
+    assert doc.blob.shape == (2000, 3)

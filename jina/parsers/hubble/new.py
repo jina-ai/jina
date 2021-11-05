@@ -34,7 +34,7 @@ def mixin_hub_new_parser(parser):
 
     gp.add_argument(
         '--keywords',
-        help='some keywords to help people search your Executor (separated by space)',
+        help='some keywords to help people search your Executor (separated by comma)',
         type=str,
     )
 

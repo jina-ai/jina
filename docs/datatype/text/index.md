@@ -159,5 +159,6 @@ That's all you need to know for textual data. Good luck with building text searc
 :hidden:
 
 ../../tutorials/fuzzy-grep
+full-text-search
 ../../tutorials/chatbot
 ```

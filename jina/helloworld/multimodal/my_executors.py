@@ -103,8 +103,8 @@ class ImageCrafter(Executor):
         )
         target_size = 224
         for doc in filtered_docs:
-            doc.convert_image_uri_to_blob()
-            doc.resize_image_blob(target_size, target_size)
+            doc.convert_uri_to_image_blob()
+            doc.set_image_blob_shape(shape=(target_size, target_size))
             doc.set_image_blob_channel_axis(-1, 0)
         return filtered_docs
 

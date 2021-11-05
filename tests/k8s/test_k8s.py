@@ -6,6 +6,7 @@ cluster.KIND_VERSION = 'v0.11.1'
 import pytest
 
 from jina import Flow, Document
+from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
 
 
 def run_test(flow, endpoint, port_expose):
@@ -29,6 +30,7 @@ def k8s_flow_with_init_container(
         infrastructure='K8S',
         protocol='http',
         timeout_ready=120000,
+        k8s_namespace='test-flow-with-init-container-ns',
     ).add(
         name='test_executor',
         uses=test_executor_image,
@@ -50,6 +52,7 @@ def k8s_flow_with_sharding(
         infrastructure='K8S',
         protocol='http',
         timeout_ready=120000,
+        k8s_namespace='test-flow-with-sharding-ns',
     ).add(
         name='test_executor',
         shards=2,
@@ -61,7 +64,7 @@ def k8s_flow_with_sharding(
     return flow
 
 
-@pytest.fixture()
+@pytest.fixture
 def k8s_flow_configmap(test_executor_image: str) -> Flow:
     flow = Flow(
         name='k8s-flow-configmap',
@@ -69,6 +72,7 @@ def k8s_flow_configmap(test_executor_image: str) -> Flow:
         infrastructure='K8S',
         protocol='http',
         timeout_ready=120000,
+        k8s_namespace='k8s-flow-configmap-ns',
     ).add(
         name='test_executor',
         uses=test_executor_image,
@@ -86,11 +90,47 @@ def k8s_flow_gpu(test_executor_image: str) -> Flow:
         infrastructure='K8S',
         protocol='http',
         timeout_ready=120000,
+        k8s_namespace='k8s-flow-gpu-ns',
     ).add(
         name='test_executor',
         uses=test_executor_image,
         timeout_ready=12000,
         gpus=1,
+    )
+    return flow
+
+
+@pytest.fixture
+def k8s_flow_with_reload_executor(
+    reload_executor_image: str,
+) -> Flow:
+    flow = Flow(
+        name='test-flow-with-reload',
+        port_expose=9090,
+        infrastructure='K8S',
+        protocol='http',
+        timeout_ready=120000,
+    ).add(
+        name='test_executor',
+        replicas=2,
+        uses_with={'argument': 'value1'},
+        uses=reload_executor_image,
+        timeout_ready=120000,
+    )
+    return flow
+
+
+@pytest.fixture
+def k8s_flow_with_namespace() -> Flow:
+    flow = Flow(
+        name='test-flow-with-namespace',
+        port_expose=9090,
+        infrastructure='K8S',
+        protocol='http',
+        timeout_ready=120000,
+        k8s_namespace='my-custom-namespace',
+    ).add(
+        name='test_executor',
     )
     return flow
 
@@ -117,6 +157,7 @@ def test_flow_with_needs(
             protocol='http',
             timeout_ready=120000,
             k8s_disable_connection_pool=not k8s_connection_pool,
+            k8s_namespace=name + '-ns',
         )
         .add(
             name='segmenter',
@@ -257,24 +298,19 @@ def test_flow_with_gpu(
         assert doc.tags['resources']['limits'] == {'nvidia.com/gpu:': 1}
 
 
-@pytest.fixture()
-def k8s_flow_with_reload_executor(
-    reload_executor_image: str,
-) -> Flow:
-    flow = Flow(
-        name='test-flow-with-reload',
-        port_expose=9090,
-        infrastructure='K8S',
-        protocol='http',
-        timeout_ready=120000,
-    ).add(
-        name='test_executor',
-        replicas=2,
-        uses_with={'argument': 'value1'},
-        uses=reload_executor_image,
-        timeout_ready=120000,
-    )
-    return flow
+@pytest.mark.timeout(3600)
+def test_flow_with_k8s_namespace(
+    k8s_cluster,
+    k8s_flow_with_namespace,
+    load_images_in_kind,
+    set_test_pip_version,
+    logger,
+):
+    with k8s_flow_with_namespace as f:
+        client = K8sClients().core_v1
+        namespaces = client.list_namespace().items
+        namespaces = [item.metadata.name for item in namespaces]
+        assert 'my-custom-namespace' in namespaces
 
 
 def test_rolling_update_simple(

@@ -3,7 +3,6 @@ import os
 import docker
 import pytest
 from pytest_kind import KindCluster
-from typing import Optional
 
 from jina.logging.logger import JinaLogger
 

@@ -82,18 +82,21 @@ def test_install_requirements():
 
 def test_is_requirement_installed(tmpfile):
     with open(tmpfile, 'w') as f:
-        f.writelines(['jina==0.0.1', 'pytest=0.0.1'])
+        f.write('jina==0.0.1\npydatest==0.0.1\nfinefinetuner==0.0.1')
     assert not helper.is_requirements_installed(tmpfile)
+
+    with open(tmpfile, 'w') as f:
+        f.write('pytest==0.0.1')
     with pytest.warns(None, match='VersionConflict') as record:
-        assert not helper.is_requirements_installed(tmpfile, show_warning=True)
+        assert helper.is_requirements_installed(tmpfile, show_warning=True)
     assert len(record) == 1
 
     with pytest.warns(None) as record:
-        assert not helper.is_requirements_installed(tmpfile, show_warning=False)
+        assert helper.is_requirements_installed(tmpfile, show_warning=False)
     assert len(record) == 0
 
     with open(tmpfile, 'w') as f:
-        f.writelines(['jina-awesome-nonexist'])
+        f.write('jina-awesome-nonexist')
     assert not helper.is_requirements_installed(tmpfile)
     with pytest.warns(None) as record:
         assert not helper.is_requirements_installed(tmpfile, show_warning=True)

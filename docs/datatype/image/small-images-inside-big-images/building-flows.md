@@ -39,7 +39,7 @@ from jina import Document
 def input_generator():
     for filename in glob('images/*.jpg'):
         doc = Document(uri=filename, tags={'filename': filename})
-        doc.convert_image_uri_to_blob()
+        doc.convert_uri_to_image_blob()
         yield doc
 ```
 
@@ -108,7 +108,7 @@ import glob
 with query_flow:
     docs = [Document(uri=filename) for filename in glob.glob('query/*.jpg')]
     for doc in docs:
-        doc.convert_image_uri_to_blob()
+        doc.convert_uri_to_image_blob()
     resp = query_flow.post('/search', docs, return_results=True)
 for doc in resp[0].docs:
     print('query:')

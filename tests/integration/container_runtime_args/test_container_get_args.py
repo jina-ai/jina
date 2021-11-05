@@ -1,8 +1,9 @@
-import pytest
 import time
 import os
 
-from jina import Flow, Executor, Document, DocumentArray, requests
+import pytest
+
+from jina import Flow, Document, DocumentArray
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -53,3 +54,8 @@ def test_containerruntime_args(docker_image_built, shards, replicas):
 
     assert replica_ids == set(range(replicas))
     assert shard_ids == set(range(shards))
+
+    if replicas > 1:
+        assert replica_ids == set(range(replicas))
+    else:
+        assert replica_ids == {-1.0}
