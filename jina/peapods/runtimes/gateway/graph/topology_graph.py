@@ -1,23 +1,7 @@
-import copy
 import asyncio
 
 from collections import defaultdict
 from typing import List, Optional, Dict
-
-
-class DummyMockConnectionPool:
-    def __init__(self, *args, **kwargs):
-        self.args = None
-
-    async def wait_async(self, msg):
-        import random
-
-        await asyncio.sleep(1 / (random.randint(1, 3) * 10))
-        req_id = msg[-1]
-        return f'Response-{req_id}'
-
-    async def send(self, msg, pod, head=True) -> str:
-        return await self.wait_async(msg)
 
 
 # pod6 -> needs: pod5, pod4
@@ -38,56 +22,82 @@ class TopologyGraph:
     class _ReqReplyNode:
         def __init__(
             self,
-            node_name: str,
+            name: str,
             number_of_parts=1,
         ):
-            self.node_name = node_name
+            self.name = name
             self.outgoing_nodes = []
             self.number_of_parts = number_of_parts
             self.parts_to_send = []
 
         @property
-        def last(self):
+        def leaf(self):
             return len(self.outgoing_nodes) == 0
 
-        def send_and_forward(
+        async def _wait_previous_and_send(
+            self, msg, previous_task: Optional[asyncio.Task], connection_pool
+        ):
+            if previous_task is not None:
+                msg = await previous_task
+            if msg is not None:
+                self.parts_to_send.append(msg)
+                # this is a specific needs
+                if len(self.parts_to_send) == self.number_of_parts:
+                    resp = await connection_pool.send(self.parts_to_send[-1], self.name)
+                    return resp
+
+        def get_leaf_tasks(
             self,
             connection_pool,
             msg_to_send: Optional[str],
             previous_task: Optional[asyncio.Task],
-            previous_pod: Optional[str] = None,
         ) -> List[asyncio.Task]:
-            async def _wait_previous_and_send(msg, t):
-                if t is not None:
-                    msg = await t
-                    print(f' {self.node_name} await from {previous_pod} => {msg}')
-                if msg is not None:
-                    self.parts_to_send.append(msg)
-                    # this is a specific needs
-                    if len(self.parts_to_send) == self.number_of_parts:
-                        resp = await connection_pool.send(
-                            self.parts_to_send[-1], self.node_name
-                        )
-                        resp = f'from {self.node_name} ' + resp
-                        return resp
-                else:
-                    return f'waiting for other parts in {self.node_name}'
+            """
+            Gets all the tasks corresponding from all the subgraphs born from this node
 
-            wait_and_send_task = asyncio.create_task(
-                _wait_previous_and_send(msg_to_send, previous_task)
+            :param connection_pool: The connection_pool need to actually send the messages
+            :param msg_to_send: Optional message to be sent when the node is an origin of a graph
+            :param previous_task: Optional task coming from the predecessor of the Node
+
+            .. note:
+                pod1 -> outgoing_nodes: pod2
+                pod2 -> outgoing_nodes: pod4
+                pod3 -> outgoing_nodes: pod4
+                pod4 -> outgoing_nodes: pod6
+                pod5 -> outgoing_nodes: pod6
+                pod6 -> outgoing_nodes: []
+
+
+                |-> pod1 -> pod2 -->
+                |                   | -> pod4 --->
+                |-> pod3 ---------->             | -> pod6
+                |-> pod5 ------------------------>
+
+                Let's imagine a graph from this. Node corresponding to Pod6 will receive 2 calls from pod4 and pod5.
+                The task returned by `pod6` will backpropagated to the caller of pod1.get_leaf_tasks, pod3.get_leaf_tasks and pod5.get_leaf_tasks.
+
+                When the caller of these methods await them, they will fire the logic of sending requests and responses from and to every pod
+
+            :return: Return a list of tasks corresponding to the leafs of all the subgraphs born from this node.
+                These tasks will be based on awaiting for the task from previous_node and sending a message to the corresponding node.
+            """
+            wait_previous_and_send_task = asyncio.create_task(
+                self._wait_previous_and_send(
+                    msg_to_send, previous_task, connection_pool
+                )
             )
-            if self.last:  # I am like a leaf
-                return [wait_and_send_task]  # I am the last in the chain
+            if self.leaf:  # I am like a leaf
+                return [wait_previous_and_send_task]  # I am the last in the chain
             tasks = []
             for outgoing_node in self.outgoing_nodes:
-                t = outgoing_node.send_and_forward(
-                    connection_pool, None, wait_and_send_task, self.node_name
+                t = outgoing_node.get_leaf_tasks(
+                    connection_pool, None, wait_previous_and_send_task
                 )
+                # We are interested in the last one, that will be the task that awaits all the previous
                 tasks.append(t[-1])
             return tasks
 
     def __init__(self, graph_representation: Dict, *args, **kwargs):
-
         num_parts_per_node = defaultdict(int)
         node_names_in_outgoing = set()
         node_set = set()
@@ -101,7 +111,7 @@ class TopologyGraph:
         nodes = {}
         for node_name in node_set:
             nodes[node_name] = self._ReqReplyNode(
-                node_name=node_name,
+                name=node_name,
                 number_of_parts=num_parts_per_node[node_name]
                 if num_parts_per_node[node_name] > 0
                 else 1,
@@ -117,34 +127,3 @@ class TopologyGraph:
     @property
     def origin_nodes(self):
         return self._origin_nodes
-
-
-class DummyMockGatewayRuntime:
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.connection_pool = DummyMockConnectionPool(*args, **kwargs)
-        self.graph = TopologyGraph(*args, **kwargs)
-
-    async def receive_from_client(self, msg):
-        graph = copy.deepcopy(self.graph)
-        tasks = []
-        for origin_node in graph.origin_nodes:
-            ts = origin_node.send_and_forward(self.connection_pool, msg, None)
-            tasks.extend(ts)
-        resp = await asyncio.gather(*tasks)
-        return resp
-        # merge responses and send back to client
-
-
-if __name__ == '__main__':
-
-    async def main():
-        runtime = DummyMockGatewayRuntime()
-        resps = await asyncio.gather(
-            runtime.receive_from_client('Request-1'),
-            runtime.receive_from_client('Request-2'),
-            runtime.receive_from_client('Request-3'),
-        )
-        print(f' resps {resps}')
-
-    asyncio.run(main())
