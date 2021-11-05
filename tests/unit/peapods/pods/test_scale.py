@@ -28,3 +28,25 @@ async def test_scale_given_replicas_greater_than_num_peas_fail(mocker):
     with Pod(args) as p:
         with pytest.raises(ScalingFails):
             await p.scale(replicas=5)
+
+
+@pytest.mark.asyncio
+async def test_scale_given_replicas_equal_to_num_peas():
+    # trigger scale up and success
+    args = set_pod_parser().parse_args(['--replicas', '3', '--name', 'test'])
+    with Pod(args) as p:
+        assert len(p.peas_args['peas']) == 3
+        await p.scale(replicas=3)
+        assert p.replica_set.num_peas == 3
+        assert len(p.peas_args['peas']) == 3
+
+
+@pytest.mark.asyncio
+async def test_scale_given_replicas_less_than_num_peas_success():
+    # trigger scale up and success
+    args = set_pod_parser().parse_args(['--replicas', '3', '--name', 'test'])
+    with Pod(args) as p:
+        assert len(p.peas_args['peas']) == 3
+        await p.scale(replicas=1)
+        assert p.replica_set.num_peas == 1
+        assert len(p.peas_args['peas']) == 1
