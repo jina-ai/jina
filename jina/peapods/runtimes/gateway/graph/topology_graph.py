@@ -1,7 +1,8 @@
 import copy
 import asyncio
 
-from typing import List, Optional
+from collections import defaultdict
+from typing import List, Optional, Dict
 
 
 class DummyMockConnectionPool:
@@ -38,11 +39,10 @@ class TopologyGraph:
         def __init__(
             self,
             node_name: str,
-            outgoing_nodes: List['TopologyGraph._ReqReplyNode'],
             number_of_parts=1,
         ):
             self.node_name = node_name
-            self.outgoing_nodes = outgoing_nodes
+            self.outgoing_nodes = []
             self.number_of_parts = number_of_parts
             self.parts_to_send = []
 
@@ -86,43 +86,33 @@ class TopologyGraph:
                 tasks.append(t[-1])
             return tasks
 
-    def __init__(self, *args, **kwargs):
-        merge_node = self._ReqReplyNode(
-            node_name='merger',
-            number_of_parts=2,
-            outgoing_nodes=[
-                self._ReqReplyNode(node_name='pod_last', outgoing_nodes=[])
-            ],
-        )
-        self._origin_nodes = [
-            self._ReqReplyNode(
-                node_name='pod0',
-                outgoing_nodes=[
-                    self._ReqReplyNode(
-                        node_name='pod1',
-                        outgoing_nodes=[],
-                    ),
-                    self._ReqReplyNode(
-                        node_name='pod2',
-                        outgoing_nodes=[
-                            self._ReqReplyNode(
-                                node_name='pod3',
-                                outgoing_nodes=[merge_node],
-                            )
-                        ],
-                    ),
-                ],
-            ),
-            self._ReqReplyNode(
-                node_name='pod4',
-                outgoing_nodes=[
-                    self._ReqReplyNode(
-                        node_name='pod5',
-                        outgoing_nodes=[merge_node],
-                    )
-                ],
-            ),
-        ]
+    def __init__(self, graph_representation: Dict, *args, **kwargs):
+
+        num_parts_per_node = defaultdict(int)
+        node_names_in_outgoing = set()
+        node_set = set()
+        for node_name, outgoing_node_names in graph_representation.items():
+            node_set.add(node_name)
+            for out_node_name in outgoing_node_names:
+                node_set.add(out_node_name)
+                node_names_in_outgoing.add(out_node_name)
+                num_parts_per_node[out_node_name] += 1
+
+        nodes = {}
+        for node_name in node_set:
+            nodes[node_name] = self._ReqReplyNode(
+                node_name=node_name,
+                number_of_parts=num_parts_per_node[node_name]
+                if num_parts_per_node[node_name] > 0
+                else 1,
+            )
+
+        for node_name, outgoing_node_names in graph_representation.items():
+            for out_node_name in outgoing_node_names:
+                nodes[node_name].outgoing_nodes.append(nodes[out_node_name])
+
+        origin_node_names = node_set.difference(node_names_in_outgoing)
+        self._origin_nodes = [nodes[node_name] for node_name in origin_node_names]
 
     @property
     def origin_nodes(self):
