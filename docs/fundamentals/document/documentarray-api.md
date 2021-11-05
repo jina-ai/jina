@@ -277,27 +277,23 @@ structure:
 ```python
 from jina import DocumentArray, Document
 
-da = DocumentArray()
-
-root1 = Document(id='r1')
+root = Document(id='r1')
 
 chunk1 = Document(id='r1c1')
-root1.chunks.append(chunk1)
-root1.chunks[0].matches.append(Document(id='r1c1m1'))
+root.chunks.append(chunk1)
+root.chunks[0].matches.append(Document(id='r1c1m1'))
 
 chunk2 = Document(id='r1c2')
-root1.chunks.append(chunk2)
+root.chunks.append(chunk2)
 chunk2_chunk1 = Document(id='r1c2c1')
 chunk2_chunk2 = Document(id='r1c2c2')
-root1.chunks[1].chunks.extend([chunk2_chunk1, chunk2_chunk2])
-root1.chunks[1].chunks[0].matches.extend([Document(id='r1c2c1m1'), Document(id='r1c2c1m2')])
+root.chunks[1].chunks.extend([chunk2_chunk1, chunk2_chunk2])
+root.chunks[1].chunks[0].matches.extend([Document(id='r1c2c1m1'), Document(id='r1c2c1m2')])
 
 chunk3 = Document(id='r1c3')
-root1.chunks.append(chunk3)
+root.chunks.append(chunk3)
 
-root2 = Document(id='r2')
-
-da.extend([root1, root2])
+da = DocumentArray([root])
 ```
 
 When calling `da.traverse(['cm', 'ccm'])` you get a generator over two `DocumentArrays`. The first `DocumentArray`
