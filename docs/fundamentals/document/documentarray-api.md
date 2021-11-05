@@ -296,21 +296,80 @@ root.chunks.append(chunk3)
 da = DocumentArray([root])
 ```
 
-When calling `da.traverse(['cm', 'ccm'])` you get a generator over two `DocumentArrays`. The first `DocumentArray`
-contains the `Matches` of the `Chunks` and the second `DocumentArray` contains the `Matches` of the `Chunks` of
-the `Chunks`. The following `DocumentArrays` are emitted from the generator:
+````{dropdown} Visualization of Root Document
 
 ```python
-from jina import Document
-from jina.types.arrays import MatchArray
-
-MatchArray([Document(id='r1c1m1', adjacency=1)], reference_doc=da['r1'].chunks['c1'])
-MatchArray([], reference_doc=da['r1'].chunks['c2'])
-MatchArray([], reference_doc=da['r1'].chunks['c3'])
-MatchArray([Document(id='r1c2c1m1', adjacency=1, granularity=2), Document(id='r1c2c1m2', adjacency=1, granularity=2)],
-           reference_doc=da['r1'].chunks['c2'].chunks['c2c1'])
-MatchArray([], reference_doc=da['r1'].chunks['c2'].chunks['c2c2'])
+root.plot()
 ```
+
+```{figure} ../../../.github/images/traverse-example-docs.svg
+:align: center
+```
+
+````
+
+`DocumentArray.traverse` can be used in this way `da.traverse(['c'])` to get all the `Chunks` of the root `Document`. You can also use `m` to present the `Matches`, for example, `da.traverse['m']` can get all the `Matches` of the root `Document`.
+
+It allows us to composite the `c` and `m` to find `Chunks`/`Matches` which are in deeper level, for example:
+
+- `da.traverse['cm']` will find all `Matches` of the `Chunks` of root `Document`.
+- `da.traverse['cmc']` will find all `Chunks` of the `Matches` of `Chunks` of root `Document`.
+- `da.traverse['c', 'm']` will find all `Chunks` and `Matches` of root `Document`.
+
+````{dropdown} Examples
+
+```python
+for ma in da.traverse(['cm']):
+  for m in ma:
+    print(m.json())
+
+# {
+#   "adjacency": 1,
+#   "granularity": 1,
+#   "id": "r1c1m1"
+# }
+```
+
+```python
+for ma in da.traverse(['ccm']):
+  for m in ma:
+    print(m.json())
+
+# {
+#   "adjacency": 1,
+#   "granularity": 2,
+#   "id": "r1c2c1m1"
+# }
+# {
+#   "adjacency": 1,
+#   "granularity": 2,
+#   "id": "r1c2c1m2"
+# }
+```
+
+```python
+for ma in da.traverse(['cm', 'ccm']):
+  for m in ma:
+    print(m.json())
+
+# {
+#   "adjacency": 1,
+#   "granularity": 1,
+#   "id": "r1c1m1"
+# }
+# {
+#   "adjacency": 1,
+#   "granularity": 2,
+#   "id": "r1c2c1m1"
+# }
+# {
+#   "adjacency": 1,
+#   "granularity": 2,
+#   "id": "r1c2c1m2"
+# }
+```
+
+````
 
 `DocumentArray.traverse_flat` is doing the same but flattens all `DocumentArrays` in the generator. When
 calling `da.traverse_flat(['cm', 'ccm'])` the result in our example will be the following:
