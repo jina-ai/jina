@@ -5,11 +5,15 @@ from jina.parsers import set_pod_parser
 from jina.excepts import RuntimeFailToStart, ScalingFails
 
 
+@pytest.fixture
+def pod_args():
+    return set_pod_parser().parse_args(['--replicas', '3', '--name', 'test'])
+
+
 @pytest.mark.asyncio
-async def test_scale_given_replicas_greater_than_num_peas_success():
+async def test_scale_given_replicas_greater_than_num_peas_success(pod_args):
     # trigger scale up and success
-    args = set_pod_parser().parse_args(['--replicas', '3', '--name', 'test'])
-    with Pod(args) as p:
+    with Pod(pod_args) as p:
         assert len(p.peas_args['peas']) == 3
         await p.scale(replicas=5)
         assert p.replica_set.num_peas == 5
@@ -18,23 +22,21 @@ async def test_scale_given_replicas_greater_than_num_peas_success():
 
 @pytest.mark.asyncio
 @pytest.mark.timeout(2)
-async def test_scale_given_replicas_greater_than_num_peas_fail(mocker):
+async def test_scale_given_replicas_greater_than_num_peas_fail(mocker, pod_args):
     # trigger scale up and fail
-    args = set_pod_parser().parse_args(['--replicas', '3', '--name', 'test'])
     mocker.patch(
         'jina.peapods.peas.BasePea.async_wait_start_success',
         side_effect=RuntimeFailToStart,
     )
-    with Pod(args) as p:
+    with Pod(pod_args) as p:
         with pytest.raises(ScalingFails):
             await p.scale(replicas=5)
 
 
 @pytest.mark.asyncio
-async def test_scale_given_replicas_equal_to_num_peas():
-    # trigger scale up and success
-    args = set_pod_parser().parse_args(['--replicas', '3', '--name', 'test'])
-    with Pod(args) as p:
+async def test_scale_given_replicas_equal_to_num_peas(pod_args):
+    # trigger scale number equal to current num_peas
+    with Pod(pod_args) as p:
         assert len(p.peas_args['peas']) == 3
         await p.scale(replicas=3)
         assert p.replica_set.num_peas == 3
@@ -42,10 +44,9 @@ async def test_scale_given_replicas_equal_to_num_peas():
 
 
 @pytest.mark.asyncio
-async def test_scale_given_replicas_less_than_num_peas_success():
-    # trigger scale up and success
-    args = set_pod_parser().parse_args(['--replicas', '3', '--name', 'test'])
-    with Pod(args) as p:
+async def test_scale_given_replicas_less_than_num_peas_success(pod_args):
+    # trigger scale down and success
+    with Pod(pod_args) as p:
         assert len(p.peas_args['peas']) == 3
         await p.scale(replicas=1)
         assert p.replica_set.num_peas == 1
