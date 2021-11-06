@@ -3,44 +3,31 @@ import mmap
 import os
 import shutil
 import tempfile
+import warnings
 from collections import OrderedDict
-from collections.abc import Iterable as Itr
+from collections.abc import MutableSequence
 from pathlib import Path
-from typing import (
-    Union,
-    Iterable,
-    Iterator,
-    List,
-    Tuple,
-    Optional,
-)
+from typing import Union, Iterable, Iterator, Optional, TYPE_CHECKING, List
 
 import numpy as np
 
-from ... import __windows__
-
-from .abstract import AbstractDocumentArray
 from .bpm import BufferPoolManager
-from .document import DocumentArray, DocumentArrayGetAttrMixin
-from .neural_ops import DocumentArrayNeuralOpsMixin
-from .search_ops import DocumentArraySearchOpsMixin
-from .traversable import TraversableSequence
-from ..document import Document
-from ..struct import StructView
-from ...logging.predefined import default_logger
-
+from ..mixins import AllMixins, ContentPropertyMixin
+from .... import __windows__
 
 HEADER_NONE_ENTRY = (-1, -1, -1)
 PAGE_SIZE = mmap.ALLOCATIONGRANULARITY
 
+if TYPE_CHECKING:
+    from ...document import Document
+    from ..document import DocumentArray
+
+__all__ = ['DocumentArrayMemmap']
+
 
 class DocumentArrayMemmap(
-    TraversableSequence,
-    DocumentArrayGetAttrMixin,
-    DocumentArrayNeuralOpsMixin,
-    DocumentArraySearchOpsMixin,
-    Itr,
-    AbstractDocumentArray,
+    AllMixins,
+    MutableSequence,
 ):
     """
     Create a memory-map to an :class:`DocumentArray` stored in binary files on disk.
@@ -87,8 +74,16 @@ class DocumentArrayMemmap(
         dam2.extend(da)
     """
 
-    def __init__(self, path: str, key_length: int = 36, buffer_pool_size: int = 1000):
-        Path(path).mkdir(parents=True, exist_ok=True)
+    def __init__(
+        self,
+        path: Optional[str] = None,
+        key_length: int = 36,
+        buffer_pool_size: int = 1000,
+    ):
+        if path:
+            Path(path).mkdir(parents=True, exist_ok=True)
+        else:
+            path = tempfile.mkdtemp()
         self._path = path
         self._header_path = os.path.join(path, 'header.bin')
         self._body_path = os.path.join(path, 'body.bin')
@@ -97,7 +92,17 @@ class DocumentArrayMemmap(
         self._last_mmap = None
         self._load_header_body()
         self._embeddings_shape = None
-        self.buffer_pool = BufferPoolManager(pool_size=buffer_pool_size)
+        self._buffer_pool = BufferPoolManager(pool_size=buffer_pool_size)
+
+    def insert(self, index: int, doc: 'Document') -> None:
+        """Insert :param:`doc.proto` at :param:`index`.
+
+        :param index: the offset index of the insertion.
+        :param doc: the doc needs to be inserted.
+        """
+        # This however must be here as inheriting from MutableSequence requires this method
+        # TODO(team): implement this function if necessary and have time.
+        raise NotImplementedError
 
     def reload(self):
         """Reload header of this object from the disk.
@@ -108,7 +113,7 @@ class DocumentArrayMemmap(
         This function only reloads the header, not the body.
         """
         self._load_header_body()
-        self.buffer_pool.clear()
+        self._buffer_pool.clear()
 
     def _load_header_body(self, mode: str = 'a'):
         if hasattr(self, '_header'):
@@ -132,7 +137,7 @@ class DocumentArrayMemmap(
             ],
         )
         self._header_entry_size = 24 + 4 * self._key_length
-        self.last_header_entry = len(tmp)
+        self._last_header_entry = len(tmp)
 
         self._header_map = OrderedDict()
         for idx, r in enumerate(tmp):
@@ -151,12 +156,15 @@ class DocumentArrayMemmap(
     def __len__(self):
         return len(self._header_map)
 
-    def extend(self, values: Iterable['Document']) -> None:
+    def extend(self, docs: Iterable['Document']) -> None:
         """Extend the :class:`DocumentArrayMemmap` by appending all the items from the iterable.
 
-        :param values: the iterable of Documents to extend this array with
+        :param docs: the iterable of Documents to extend this array with
         """
-        for d in values:
+        if not docs:
+            return
+
+        for d in docs:
             self.append(d, flush=False)
         self._header.flush()
         self._body.flush()
@@ -185,7 +193,7 @@ class DocumentArrayMemmap(
             self._header.seek(idx * self._header_entry_size, 0)
 
         if (doc.id is not None) and len(doc.id) > self._key_length:
-            default_logger.warning(
+            warnings.warn(
                 f'The ID of doc ({doc.id}) will be truncated to the maximum length {self._key_length}'
             )
 
@@ -201,8 +209,8 @@ class DocumentArrayMemmap(
             ).tobytes()
         )
         if idx is None:
-            self._header_map[doc.id] = (self.last_header_entry, p, r, r + l)
-            self.last_header_entry = self.last_header_entry + 1
+            self._header_map[doc.id] = (self._last_header_entry, p, r, r + l)
+            self._last_header_entry = self._last_header_entry + 1
             self._header_keys.append(doc.id)
         else:
             self._header_map[doc.id] = (idx, p, r, r + l)
@@ -216,7 +224,7 @@ class DocumentArrayMemmap(
             self._body.flush()
             self._last_mmap = None
         if update_buffer:
-            result = self.buffer_pool.add_or_update(doc.id, doc)
+            result = self._buffer_pool.add_or_update(doc.id, doc)
             if result:
                 _key, _doc = result
                 self._update(_doc, self._str2int_id(_key), update_buffer=False)
@@ -274,7 +282,7 @@ class DocumentArrayMemmap(
         return range(start, stop, step)
 
     def _get_doc_array_by_slice(self, s: slice):
-        from .document import DocumentArray
+        from ..document import DocumentArray
 
         da = DocumentArray()
         for i in self._iteridx_by_slice(s):
@@ -294,7 +302,7 @@ class DocumentArrayMemmap(
             self._body.seek(self._start)
         return self._last_mmap
 
-    def get_doc_by_key(self, key: str):
+    def _get_doc_by_key(self, key: str):
         """
         returns a document by key (ID) from disk
 
@@ -303,14 +311,16 @@ class DocumentArrayMemmap(
         """
         pos_info = self._header_map[key]
         _, p, r, r_plus_l = pos_info
+        from ...document import Document
+
         return Document(self._mmap[p + r : p + r_plus_l])
 
-    def __getitem__(self, key: Union[int, str, slice]):
+    def __getitem__(self, key: Union[int, str, slice, List]):
         if isinstance(key, str):
-            if key in self.buffer_pool:
-                return self.buffer_pool[key]
-            doc = self.get_doc_by_key(key)
-            result = self.buffer_pool.add_or_update(key, doc)
+            if key in self._buffer_pool:
+                return self._buffer_pool[key]
+            doc = self._get_doc_by_key(key)
+            result = self._buffer_pool.add_or_update(key, doc)
             if result:
                 _key, _doc = result
                 self._update(_doc, self._str2int_id(_key), update_buffer=False)
@@ -320,6 +330,10 @@ class DocumentArrayMemmap(
             return self[self._int2str_id(key)]
         elif isinstance(key, slice):
             return self._get_doc_array_by_slice(key)
+        elif isinstance(key, list):
+            from ..document import DocumentArray
+
+            return DocumentArray(self[k] for k in key)
         else:
             raise TypeError(f'`key` must be int, str or slice, but receiving {key!r}')
 
@@ -344,7 +358,7 @@ class DocumentArrayMemmap(
         pop_idx = self._header_keys.index(str_key)
         self._header_map.pop(str_key)
         self._header_keys.pop(pop_idx)
-        self.buffer_pool.delete_if_exists(str_key)
+        self._buffer_pool.delete_if_exists(str_key)
         self._invalidate_embeddings_memmap()
 
     def __delitem__(self, key: Union[int, str, slice]):
@@ -390,8 +404,8 @@ class DocumentArrayMemmap(
                             for k, v in self._header_map.items()
                         ]
                     )
-                    if str_key in self.buffer_pool.doc_map:
-                        self.buffer_pool.doc_map.pop(str_key)
+                    if str_key in self._buffer_pool.doc_map:
+                        self._buffer_pool.doc_map.pop(str_key)
             else:
                 raise IndexError(f'`key`={key} is out of range')
         elif isinstance(key, str):
@@ -400,13 +414,6 @@ class DocumentArrayMemmap(
             self._update(value, self._str2int_id(key))
         else:
             raise TypeError(f'`key` must be int or str, but receiving {key!r}')
-
-    def __bool__(self):
-        """To simulate ```l = []; if l: ...```
-
-        :return: returns true if the length of the array is larger than 0
-        """
-        return len(self) > 0
 
     def __eq__(self, other):
         return (
@@ -418,9 +425,9 @@ class DocumentArrayMemmap(
     def __contains__(self, item: str):
         return item in self._header_map
 
-    def save(self) -> None:
+    def flush(self) -> None:
         """Persists memory loaded documents to disk"""
-        docs_to_flush = self.buffer_pool.docs_to_flush()
+        docs_to_flush = self._buffer_pool.docs_to_flush()
         for key, doc in docs_to_flush:
             self._update(doc, self._str2int_id(key), flush=False)
         self._header.flush()
@@ -428,12 +435,11 @@ class DocumentArrayMemmap(
         self._last_mmap = None
 
     def __del__(self):
-        self.save()
+        self.flush()
 
     def prune(self) -> None:
         """Prune deleted Documents from this object, this yields a smaller on-disk storage. """
-        tdir = tempfile.mkdtemp()
-        dam = DocumentArrayMemmap(tdir, key_length=self._key_length)
+        dam = DocumentArrayMemmap(key_length=self._key_length)
         dam.extend(self)
         dam.reload()
         if hasattr(self, '_body'):
@@ -442,8 +448,8 @@ class DocumentArrayMemmap(
         if hasattr(self, '_header'):
             self._header.close()
         os.remove(self._header_path)
-        shutil.copy(os.path.join(tdir, 'header.bin'), self._header_path)
-        shutil.copy(os.path.join(tdir, 'body.bin'), self._body_path)
+        shutil.copy(os.path.join(dam.path, 'header.bin'), self._header_path)
+        shutil.copy(os.path.join(dam.path, 'body.bin'), self._body_path)
         self.reload()
 
     @property
@@ -453,53 +459,6 @@ class DocumentArrayMemmap(
         :return: the number of bytes
         """
         return os.stat(self._header_path).st_size + os.stat(self._body_path).st_size
-
-    def get_attributes(self, *fields: str) -> Union[List, List[List]]:
-        """Return all nonempty values of the fields from all docs this array contains
-
-        :param fields: Variable length argument with the name of the fields to extract
-        :return: Returns a list of the values for these fields.
-            When `fields` has multiple values, then it returns a list of list.
-        """
-        index = None
-        fields = list(fields)
-        if 'embedding' in fields:
-            embeddings = list(self.embeddings)  # type: List[np.ndarray]
-            index = fields.index('embedding')
-            fields.remove('embedding')
-        if fields:
-            contents = [doc.get_attributes(*fields) for doc in self]
-            if len(fields) > 1:
-                contents = list(map(list, zip(*contents)))
-            if index:
-                contents = [contents]
-                contents.insert(index, embeddings)
-            return contents
-        else:
-            return embeddings
-
-    def get_attributes_with_docs(
-        self,
-        *fields: str,
-    ) -> Tuple[Union[List, List[List]], 'DocumentArray']:
-        """Return all nonempty values of the fields together with their nonempty docs
-
-        :param fields: Variable length argument with the name of the fields to extract
-        :return: Returns a tuple. The first element is  a list of the values for these fields.
-            When `fields` has multiple values, then it returns a list of list. The second element is the non-empty docs.
-        """
-
-        contents = []
-        docs_pts = []
-
-        for doc in self:
-            contents.append(doc.get_attributes(*fields))
-            docs_pts.append(doc)
-
-        if len(fields) > 1:
-            contents = list(map(list, zip(*contents)))
-
-        return contents, DocumentArray(docs_pts)
 
     @property
     def _embeddings_memmap(self) -> Optional[np.ndarray]:
@@ -536,7 +495,7 @@ class DocumentArrayMemmap(
             fp.flush()
             del fp
 
-    @property
+    @ContentPropertyMixin.embeddings.getter
     def embeddings(self) -> np.ndarray:
         """Return a `np.ndarray` stacking all the `embedding` attributes as rows.
 
@@ -548,75 +507,9 @@ class DocumentArrayMemmap(
 
         .. warning:: This operation currently does not support sparse arrays.
         """
-        if self._embeddings_memmap is not None:
-            return self._embeddings_memmap
-
-        x_mat = b''.join(d.proto.embedding.dense.buffer for d in self)
-        embeds = np.frombuffer(
-            x_mat, dtype=self[0].proto.embedding.dense.dtype
-        ).reshape((len(self), self[0].proto.embedding.dense.shape[0]))
-
-        self._embeddings_memmap = embeds
-
-        return embeds
-
-    @embeddings.setter
-    def embeddings(self, emb: np.ndarray):
-        """Set the embeddings of the Documents
-
-        :param emb: The embedding matrix to set
-        """
-        if len(emb) != len(self):
-            raise ValueError(
-                f'the number of rows in the input ({len(emb)}), should match the'
-                f'number of Documents ({len(self)})'
-            )
-
-        for d, x in zip(self, emb):
-            d.embedding = x
-
-    @DocumentArrayGetAttrMixin.tags.getter
-    def tags(self) -> List[StructView]:
-        """Get the tags attribute of all Documents
-
-        :return: List of ``tags`` attributes for all Documents
-        """
-        return self.get_attributes('tags')
-
-    @DocumentArrayGetAttrMixin.texts.getter
-    def texts(self) -> List[str]:
-        """Get the text attribute of all Documents
-
-        :return: List of ``text`` attributes for all Documents
-        """
-        return self.get_attributes('text')
-
-    @DocumentArrayGetAttrMixin.buffers.getter
-    def buffers(self) -> List[bytes]:
-        """Get the buffer attribute of all Documents
-
-        :return: List of ``buffer`` attributes for all Documents
-        """
-        return self.get_attributes('buffer')
-
-    @DocumentArrayGetAttrMixin.blobs.getter
-    def blobs(self) -> np.ndarray:
-        """Return a `np.ndarray` stacking all the `blob` attributes.
-
-        The `blob` attributes are stacked together along a newly created first
-        dimension (as if you would stack using ``np.stack(X, axis=0)``).
-
-        .. warning:: This operation assumes all blobs have the same shape and dtype.
-                 All dtype and shape values are assumed to be equal to the values of the
-                 first element in the DocumentArray / DocumentArrayMemmap
-
-        .. warning:: This operation currently does not support sparse arrays.
-
-        :return: blobs stacked per row as `np.ndarray`.
-        """
-
-        blobs = np.stack(self.get_attributes('blob'))
-        return blobs
+        if self._embeddings_memmap is None:
+            self._embeddings_memmap = ContentPropertyMixin.embeddings.fget(self)
+        return self._embeddings_memmap
 
     def _invalidate_embeddings_memmap(self):
         self._embeddings_memmap = None
@@ -633,3 +526,8 @@ class DocumentArrayMemmap(
         :returns: The stored path of the memmap instance.
         """
         return self._path
+
+    @property
+    def _pb_body(self):
+        for v in self:
+            yield v.proto

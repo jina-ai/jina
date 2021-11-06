@@ -56,17 +56,16 @@ if False:
         NdArray,
     )
 
-__all__ = ['Document', 'DocumentContentType', 'DocumentSourceType']
-DIGEST_SIZE = 8
-
-# This list is not exhaustive because we cannot add the `sparse` types without adding the `dependencies`
 DocumentContentType = TypeVar('DocumentContentType', bytes, str, 'ArrayType')
 DocumentSourceType = TypeVar(
-    'DocumentSourceType', jina_pb2.DocumentProto, bytes, str, Dict, 'Document'
+    'DocumentSourceType', jina_pb2.DocumentProto, bytes, str, Dict
 )
 
-_all_mime_types = set(mimetypes.types_map.values())
+__all__ = ['Document']
 
+DIGEST_SIZE = 8
+
+_all_mime_types = set(mimetypes.types_map.values())
 _all_doc_content_keys = {'content', 'blob', 'text', 'buffer', 'graph'}
 _all_doc_array_keys = ('blob', 'embedding')
 _special_mapped_keys = ('scores', 'evaluations')
@@ -135,7 +134,7 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
         blob: Optional['ArrayType'] = None,
         buffer: Optional[bytes] = None,
         chunks: Optional[Iterable['Document']] = None,
-        content: Optional[DocumentContentType] = None,
+        content: Optional['DocumentContentType'] = None,
         embedding: Optional['ArrayType'] = None,
         granularity: Optional[int] = None,
         id: Optional[str] = None,
@@ -173,7 +172,7 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
 
     def __init__(
         self,
-        document: Optional[DocumentSourceType] = None,
+        document: Optional[Union['DocumentSourceType', 'Document']] = None,
         field_resolver: Dict[str, str] = None,
         copy: bool = False,
         **kwargs,
@@ -805,7 +804,7 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
         return self._pb_body.WhichOneof('content')
 
     @property
-    def content(self) -> DocumentContentType:
+    def content(self) -> 'DocumentContentType':
         """Return the content of the document. It checks whichever field among :attr:`blob`, :attr:`text`,
         :attr:`buffer` has value and return it.
 
@@ -819,7 +818,7 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
             return getattr(self, attr)
 
     @content.setter
-    def content(self, value: DocumentContentType):
+    def content(self, value: 'DocumentContentType'):
         """Set the content of the document. It assigns the value to field with the right type.
 
         .. seealso::

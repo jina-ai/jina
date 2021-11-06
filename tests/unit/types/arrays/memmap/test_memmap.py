@@ -351,18 +351,18 @@ def test_memmap_save_reload(tmpdir):
         # from memory
         assert doc.content == 'new'
         # from disk
-        assert dam.get_doc_by_key(doc.id).content == 'hello world'
+        assert dam._get_doc_by_key(doc.id).content == 'hello world'
 
     # dam1 from disk (empty memory buffer + dam not persisted)
     for doc in dam1:
         assert doc.content == 'hello world'
 
-    dam.save()
+    dam.flush()
     dam1.reload()
 
     # dam from disk
     for doc in dam:
-        assert dam.get_doc_by_key(doc.id).content == 'new'
+        assert dam._get_doc_by_key(doc.id).content == 'new'
 
     # dam1 up-to-date
     for doc in dam1:
@@ -376,7 +376,7 @@ def test_memmap_buffer_synched(tmpdir):
 
     for i, doc in enumerate(docs[50:]):
         dam[i] = doc
-        assert dam.buffer_pool[doc.id].id == dam[i].id
+        assert dam._buffer_pool[doc.id].id == dam[i].id
         doc.content = 'new'
         assert dam[doc.id].content == 'new'
 
@@ -509,7 +509,7 @@ def test_embeddings_wrong_len(tmpdir):
     dam.extend([Document() for x in range(100)])
     embeddings = np.ones((2, 10, 10))
 
-    with pytest.raises(ValueError, match='the number of rows in the'):
+    with pytest.raises(ValueError):
         dam.embeddings = embeddings
 
 
@@ -529,33 +529,6 @@ def test_blobs_setter_dam(tmpdir):
     np.testing.assert_almost_equal(dam.blobs, blobs)
     for x, doc in zip(blobs, dam):
         np.testing.assert_almost_equal(x, doc.blob)
-
-
-def test_tags_getter_dam(tmpdir):
-    dam = DocumentArrayMemmap(tmpdir)
-    dam.extend([Document(tags={'a': 2, 'c': 'd'}) for _ in range(100)])
-    assert len(dam.tags) == 100
-    assert dam.tags == dam.get_attributes('tags')
-
-
-def test_tags_setter_dam(tmpdir):
-    dam = DocumentArrayMemmap(tmpdir)
-    tags = [{'a': 2, 'c': 'd'} for _ in range(100)]
-    dam.extend([Document() for _ in range(100)])
-    dam.tags = tags
-    assert dam.tags == tags
-
-    for x, doc in zip(tags, dam):
-        assert x == doc.tags
-
-
-def test_setter_wrong_len(tmpdir):
-    dam = DocumentArrayMemmap(tmpdir)
-    dam.extend([Document() for _ in range(100)])
-    tags = [{'1': 2}]
-
-    with pytest.raises(ValueError, match='the number of tags in the'):
-        dam.tags = tags
 
 
 def test_texts_getter_dam(tmpdir):
@@ -583,7 +556,7 @@ def test_texts_wrong_len(tmpdir):
     dam.extend([Document() for _ in range(100)])
     texts = ['hello']
 
-    with pytest.raises(ValueError, match='the number of texts in the'):
+    with pytest.raises(ValueError):
         dam.texts = texts
 
 
@@ -592,7 +565,7 @@ def test_blobs_wrong_len(tmpdir):
     dam.extend([Document() for x in range(100)])
     blobs = np.ones((2, 10, 10))
 
-    with pytest.raises(ValueError, match='the number of rows in the'):
+    with pytest.raises(ValueError):
         dam.blobs = blobs
 
 

@@ -1,20 +1,16 @@
-from math import sqrt, ceil, floor
 from typing import Optional, Union, Callable, Tuple, Sequence, TYPE_CHECKING
 
 import numpy as np
 
-from ... import Document
-from ...helper import deprecated_method
-from ...importer import ImportExtensions
-from ...logging.profile import ProgressBar
-from ...math.helper import top_k, minmax_normalize, update_rows_x_mat_best
+from .... import Document
+from ....math.helper import top_k, minmax_normalize, update_rows_x_mat_best
 
 if TYPE_CHECKING:
-    from .document import DocumentArray
-    from .memmap import DocumentArrayMemmap
+    from ..document import DocumentArray
+    from ..memmap import DocumentArrayMemmap
 
 
-class DocumentArrayNeuralOpsMixin:
+class MatchMixin:
     """ A mixin that provides match functionality to DocumentArrays """
 
     def match(
@@ -86,7 +82,7 @@ class DocumentArrayNeuralOpsMixin:
         if traversal_ldarray:
             lhv = self.traverse_flat(traversal_ldarray)
 
-            from .document import DocumentArray
+            from ..document import DocumentArray
 
             if not isinstance(lhv, DocumentArray):
                 lhv = DocumentArray(lhv)
@@ -95,7 +91,7 @@ class DocumentArrayNeuralOpsMixin:
         if traversal_rdarray or filter_fn:
             rhv = darray.traverse_flat(traversal_rdarray or ['r'], filter_fn=filter_fn)
 
-            from .document import DocumentArray
+            from ..document import DocumentArray
 
             if not isinstance(rhv, DocumentArray):
                 rhv = DocumentArray(rhv)
@@ -109,7 +105,7 @@ class DocumentArrayNeuralOpsMixin:
             if use_scipy:
                 from scipy.spatial.distance import cdist as cdist
             else:
-                from ...math.distance import cdist as cdist
+                from ....math.distance import cdist as cdist
         else:
             raise TypeError(
                 f'metric must be either string or a 2-arity function, received: {metric!r}'
@@ -133,7 +129,7 @@ class DocumentArrayNeuralOpsMixin:
         def _get_id_from_dam(rhv, int_offset):
             return rhv._int2str_id(int_offset)
 
-        from .memmap import DocumentArrayMemmap
+        from ..memmap import DocumentArrayMemmap
 
         if isinstance(rhv, DocumentArrayMemmap):
             _get_id = _get_id_from_dam
@@ -254,99 +250,6 @@ class DocumentArrayNeuralOpsMixin:
 
         return dist, idx
 
-    @deprecated_method(new_function_name='plot_embeddings')
-    def visualize(self, *args, **kwargs):
-        """Deprecated! Please use :meth:`.plot_embeddings` instead.
-
-        Plot embeddings in a 2D projection with the PCA algorithm. This function requires ``matplotlib`` installed.
-
-        :param args: extra args
-        :param kwargs: extra kwargs
-        """
-        self.plot_embeddings(*args, **kwargs)
-
-    def plot_embeddings(
-        self,
-        output: Optional[str] = None,
-        title: Optional[str] = None,
-        colored_attr: Optional[str] = None,
-        colormap: str = 'rainbow',
-        method: str = 'pca',
-        show_axis: bool = False,
-        **kwargs,
-    ):
-        """Plot embeddings in a 2D projection with the PCA algorithm. This function requires ``matplotlib`` installed.
-
-        If `tag_name` is provided the plot uses a distinct color for each unique tag value in the
-        documents of the DocumentArray.
-
-        :param output: Optional path to store the visualization. If not given, show in UI
-        :param title: Optional title of the plot. When not given, the default title is used.
-        :param colored_attr: Optional str that specifies attribute used to color the plot, it supports dunder expression
-            such as `tags__label`, `matches__0__id`.
-        :param colormap: the colormap string supported by matplotlib.
-        :param method: the visualization method, available `pca`, `tsne`. `pca` is fast but may not well represent
-                nonlinear relationship of high-dimensional data. `tsne` requires scikit-learn to be installed and is
-                much slower.
-        :param show_axis: If set, axis and bounding box of the plot will be printed.
-        :param kwargs: extra kwargs pass to matplotlib.plot
-        """
-
-        x_mat = self.embeddings
-        assert isinstance(
-            x_mat, np.ndarray
-        ), f'Type {type(x_mat)} not currently supported, use np.ndarray embeddings'
-
-        if method == 'tsne':
-            from sklearn.manifold import TSNE
-
-            x_mat_2d = TSNE(n_components=2).fit_transform(x_mat)
-        else:
-            from ...math.dimensionality_reduction import PCA
-
-            x_mat_2d = PCA(n_components=2).fit_transform(x_mat)
-
-        plt_kwargs = {
-            'x': x_mat_2d[:, 0],
-            'y': x_mat_2d[:, 1],
-            'alpha': 0.2,
-            'marker': '.',
-        }
-
-        with ImportExtensions(required=True):
-            import matplotlib.pyplot as plt
-
-        plt.figure(figsize=(8, 8))
-
-        plt.title(title or f'{len(x_mat)} Documents with {method}')
-
-        if colored_attr:
-            tags = []
-
-            for x in self:
-                try:
-                    tags.append(getattr(x, colored_attr))
-                except (KeyError, AttributeError, ValueError):
-                    tags.append(None)
-            tag_to_num = {tag: num for num, tag in enumerate(set(tags))}
-            plt_kwargs['c'] = np.array([tag_to_num[ni] for ni in tags])
-            plt_kwargs['cmap'] = plt.get_cmap(colormap)
-
-        # update the plt_kwargs
-        plt_kwargs.update(kwargs)
-
-        plt.scatter(**plt_kwargs)
-
-        if not show_axis:
-            plt.gca().set_axis_off()
-            plt.gca().xaxis.set_major_locator(plt.NullLocator())
-            plt.gca().yaxis.set_major_locator(plt.NullLocator())
-
-        if output:
-            plt.savefig(output, bbox_inches='tight', pad_inches=0.1)
-        else:
-            plt.show()
-
     def _get_embeddings(self, indices: Optional[slice] = None) -> np.ndarray:
         """Return a `np.ndarray` stacking  the `embedding` attributes as rows.
         If indices is passed the embeddings from the indices are retrieved, otherwise
@@ -376,80 +279,3 @@ class DocumentArrayNeuralOpsMixin:
         return np.frombuffer(x_mat, dtype=self[0].proto.embedding.dense.dtype).reshape(
             (len_slice, self[0].proto.embedding.dense.shape[0])
         )
-
-    def plot_image_sprites(
-        self,
-        output: Optional[str] = None,
-        canvas_size: int = 512,
-        min_size: int = 16,
-        channel_axis: int = -1,
-    ):
-        """Generate a sprite image for all image blobs in this DocumentArray-like object.
-
-        An image sprite is a collection of images put into a single image. It is always square-sized.
-        Each sub-image is also square-sized and equally-sized.
-
-        :param output: Optional path to store the visualization. If not given, show in UI
-        :param canvas_size: the size of the canvas
-        :param min_size: the minimum size of the image
-        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
-        """
-        if not self:
-            raise ValueError(f'{self!r} is empty')
-
-        with ImportExtensions(required=True):
-            import matplotlib.pyplot as plt
-
-        img_per_row = ceil(sqrt(len(self)))
-        img_size = int(canvas_size / img_per_row)
-
-        if img_size < min_size:
-            # image is too small, recompute the size
-            img_size = min_size
-            img_per_row = int(canvas_size / img_size)
-
-        max_num_img = img_per_row ** 2
-        sprite_img = np.zeros(
-            [img_size * img_per_row, img_size * img_per_row, 3], dtype='uint8'
-        )
-        img_id = 0
-
-        actual_num_img = min(len(self), max_num_img)
-
-        with ProgressBar(
-            description='Generating sprite', total_length=actual_num_img
-        ) as pg:
-            for d in self:
-                d: Document
-                _d = Document(d, copy=True)
-                if _d.content_type != 'blob':
-                    _d.convert_uri_to_image_blob()
-                    channel_axis = -1
-
-                _d.set_image_blob_channel_axis(channel_axis, -1).set_image_blob_shape(
-                    shape=(img_size, img_size)
-                )
-
-                row_id = floor(img_id / img_per_row)
-                col_id = img_id % img_per_row
-                sprite_img[
-                    (row_id * img_size) : ((row_id + 1) * img_size),
-                    (col_id * img_size) : ((col_id + 1) * img_size),
-                ] = _d.blob
-
-                img_id += 1
-                pg.update()
-                if img_id >= max_num_img:
-                    break
-
-        plt.gca().set_axis_off()
-        plt.subplots_adjust(top=1, bottom=0, right=1, left=0, hspace=0, wspace=0)
-        plt.margins(0, 0)
-        plt.gca().xaxis.set_major_locator(plt.NullLocator())
-        plt.gca().yaxis.set_major_locator(plt.NullLocator())
-
-        plt.imshow(sprite_img)
-        if output:
-            plt.savefig(output, bbox_inches='tight', pad_inches=0.1, transparent=True)
-        else:
-            plt.show()

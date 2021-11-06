@@ -1,13 +1,12 @@
 import operator
 import random
-from collections import defaultdict
-from typing import Dict, Optional, Any
+from typing import Optional, TYPE_CHECKING
 
-if False:
-    from .document import DocumentArray
+if TYPE_CHECKING:
+    from ..document import DocumentArray
 
 
-class DocumentArraySearchOpsMixin:
+class SampleMixin:
     """ A mixin that provides search functionality to DocumentArrays"""
 
     def sample(self, k: int, seed: Optional[int] = None) -> 'DocumentArray':
@@ -27,7 +26,7 @@ class DocumentArraySearchOpsMixin:
         indices = random.sample(range(len(self)), k)
         sampled = operator.itemgetter(*indices)(self)
 
-        from .document import DocumentArray
+        from ..document import DocumentArray
 
         return DocumentArray(sampled)
 
@@ -38,32 +37,5 @@ class DocumentArraySearchOpsMixin:
             save the state of the random function to produce certain outputs.
         :return: The shuffled list of :class:`Document` represented as :class:`DocumentArray`.
         """
-        from .document import DocumentArray
 
-        return DocumentArray(self.sample(len(self), seed=seed))
-
-    def split(self, tag: str) -> Dict[Any, 'DocumentArray']:
-        """Split the `DocumentArray` into multiple DocumentArray according to the tag value of each `Document`.
-
-        :param tag: the tag name to split stored in tags.
-        :return: a dict where Documents with the same value on `tag` are grouped together, their orders
-            are preserved from the original :class:`DocumentArray`.
-
-        .. note::
-            If the :attr:`tags` of :class:`Document` do not contains the specified :attr:`tag`,
-            return an empty dict.
-        """
-        from .document import DocumentArray
-        from ...helper import dunder_get
-
-        rv = defaultdict(DocumentArray)
-        for doc in self:
-            if '__' in tag:
-                value = dunder_get(doc.tags, tag)
-            else:
-                value = doc.tags.get(tag, None)
-
-            if value is None:
-                continue
-            rv[value].append(doc)
-        return dict(rv)
+        return self.sample(len(self), seed=seed)

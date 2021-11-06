@@ -1,6 +1,8 @@
+from typing import TYPE_CHECKING
+
 from .document import DocumentArray
 
-if False:
+if TYPE_CHECKING:
     from ..document import Document
 
 

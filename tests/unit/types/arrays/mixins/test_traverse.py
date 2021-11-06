@@ -3,6 +3,7 @@ import types
 
 import numpy as np
 import pytest
+
 from jina import Document, DocumentArray, DocumentArrayMemmap
 from jina.clients.request import request_generator
 from tests import random_docs
@@ -341,3 +342,56 @@ def test_filter_fn_traverse_flat_per_path(
     for seq, length in zip(ds, docs_len):
         assert isinstance(seq, DocumentArray if not use_dam else itertools.chain)
         assert len(list(seq)) == length
+
+
+def test_traversal_path():
+    da = DocumentArray([Document() for _ in range(6)])
+    assert len(da) == 6
+
+    da.traverse_flat(['r'])
+
+    with pytest.raises(TypeError):
+        da.traverse_flat('r')
+
+    da.traverse(['r'])
+    with pytest.raises(TypeError):
+        for _ in da.traverse('r'):
+            pass
+
+    da.traverse(['r'])
+    with pytest.raises(TypeError):
+        for _ in da.traverse('r'):
+            pass
+
+
+def test_traverse_flat_root_itself():
+    da = DocumentArray([Document() for _ in range(100)])
+    res = da.traverse_flat(['r'])
+    assert id(res) == id(da)
+
+
+def da_and_dam(N):
+    da = DocumentArray(random_docs(N))
+    dam = DocumentArrayMemmap()
+    dam.extend(da)
+    return da, dam
+
+
+@pytest.mark.parametrize('da', da_and_dam(100))
+def test_flatten(da):
+    daf = da.flatten()
+    assert len(daf) == 600
+    assert isinstance(daf, DocumentArray)
+    assert len(set(d.id for d in daf)) == 600
+
+    # flattened DA can not be flattened again
+    daf = daf.flatten()
+    assert len(daf) == 600
+
+
+def test_flatten_no_copy():
+    da = da_and_dam(100)[0]
+    daf = da.flatten(copy=False)
+    new_text = 'hi i changed it!'
+    daf[53].text = new_text
+    assert da[daf[53].id].text == new_text
