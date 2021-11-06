@@ -32,7 +32,7 @@ class CrudIndexer(Executor):
 
     def close(self) -> None:
         self.logger.info(f'Dumping {len(self._docs)} to {self._dump_location}')
-        self._docs.flush(self._dump_location)
+        self._docs.save(self._dump_location)
 
     @requests(on='/delete')
     def delete(self, docs: 'DocumentArray', **kwargs):

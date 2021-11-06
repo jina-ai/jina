@@ -50,7 +50,7 @@ def create_test_img(path, file_name):
     if not os.path.exists(img_path):
         os.makedirs(img_path)
     image = Image.new("RGBA", size=(50, 50), color=(256, 0, 0))
-    image.flush(img_path + file_name, 'png')
+    image.save(img_path + file_name, 'png')
 
 
 def test_segmenter(segmenter_doc_array, tmpdir):
