@@ -22,7 +22,7 @@ class DumpExecutor(Executor):
         for i in range(shards):
             dump_file = f'{dump_path}/{i}.ndjson'
             docs_to_be_dumped = docs[int(i * shard_size) : int((i + 1) * shard_size)]
-            docs_to_be_dumped.save(dump_file)
+            docs_to_be_dumped.flush(dump_file)
 
 
 class ErrorExecutor(Executor):

@@ -3,6 +3,7 @@ import types
 
 import numpy as np
 import pytest
+
 from jina import Document, DocumentArray, DocumentArrayMemmap
 from jina.clients.request import request_generator
 from tests import random_docs
@@ -341,3 +342,29 @@ def test_filter_fn_traverse_flat_per_path(
     for seq, length in zip(ds, docs_len):
         assert isinstance(seq, DocumentArray if not use_dam else itertools.chain)
         assert len(list(seq)) == length
+
+
+def test_traversal_path():
+    da = DocumentArray([Document() for _ in range(6)])
+    assert len(da) == 6
+
+    da.traverse_flat(['r'])
+
+    with pytest.raises(TypeError):
+        da.traverse_flat('r')
+
+    da.traverse(['r'])
+    with pytest.raises(TypeError):
+        for _ in da.traverse('r'):
+            pass
+
+    da.traverse(['r'])
+    with pytest.raises(TypeError):
+        for _ in da.traverse('r'):
+            pass
+
+
+def test_traverse_flat_root_itself():
+    da = DocumentArray([Document() for _ in range(100)])
+    res = da.traverse_flat(['r'])
+    assert id(res) == id(da)

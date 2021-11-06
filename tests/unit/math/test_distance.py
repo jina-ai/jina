@@ -10,11 +10,6 @@ from scipy.spatial.distance import cdist, pdist
 
 
 @pytest.fixture
-def embeddings():
-    return np.array([[1, 0, 0], [2, 0, 0], [3, 0, 0]])
-
-
-@pytest.fixture
 def embedding_query():
     return np.array([[1, 0, 0]])
 

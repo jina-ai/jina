@@ -1,7 +1,6 @@
 import pytest
 
-from jina.types.arrays.bpm import BufferPoolManager
-from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina.types.arrays.memmap import DocumentArrayMemmap, BufferPoolManager
 from tests import random_docs
 
 

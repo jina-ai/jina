@@ -321,7 +321,7 @@ dam2.reload()
 assert len(dam2) == 1
 assert dam2[0].text == 'hello'
 
-dam.save()
+dam.flush()
 dam2.reload()
 assert dam2[0].text == 'goodbye'
 ```
