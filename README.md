@@ -127,7 +127,7 @@ with f:
 }
 ```
 
-That means, **we want to find lines from the above code snippet that are most similar to `@request(on=something)`.**Now
+That means, **we want to find lines from the above code snippet that are most similar to** `@request(on=something)`. Now
 click <kbd>Execute</kbd> button!
 
 <p align="center">
