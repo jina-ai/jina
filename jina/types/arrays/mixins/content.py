@@ -1,6 +1,9 @@
-from typing import List, Sequence
+from typing import List, Sequence, TYPE_CHECKING
 
 import numpy as np
+
+if TYPE_CHECKING:
+    from ...document import ArrayType
 
 
 class ContentPropertyMixin:
