@@ -4,10 +4,11 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  <meta property="og:title" content="jina.types.arrays.memmap module" />
+  <meta property="og:title" content="jina.types.arrays.memmap package" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/api/jina.types.arrays.memmap.html" />
   <meta property="og:site_name" content="Jina Documentation" />
+  <meta property="og:description" content="Submodules: jina.types.arrays.memmap.bpm module. Module contents:" />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -27,10 +28,10 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.types.arrays.neural_ops module" href="../jina.types.arrays.neural_ops/" /><link rel="prev" title="jina.types.arrays.match module" href="../jina.types.arrays.match/" />
+    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.types.arrays.memmap.bpm module" href="../jina.types.arrays.memmap.bpm/" /><link rel="prev" title="jina.types.arrays package" href="../jina.types.arrays/" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.10.09"/>
-        <title>jina.types.arrays.memmap module - Jina 2.2.6 documentation</title>
+        <title>jina.types.arrays.memmap package - Jina 2.2.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -188,7 +189,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -532,34 +533,53 @@
 </li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../jina.types/">jina.types package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-52" name="toctree-checkbox-52" role="switch" type="checkbox"/><label for="toctree-checkbox-52"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3 current has-children"><a class="reference internal" href="../jina.types.arrays/">jina.types.arrays package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-53" name="toctree-checkbox-53" role="switch" type="checkbox"/><label for="toctree-checkbox-53"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.abstract/">jina.types.arrays.abstract module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.bpm/">jina.types.arrays.bpm module</a></li>
+<li class="toctree-l4 current has-children current-page"><a class="current reference internal" href="#">jina.types.arrays.memmap package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-54" name="toctree-checkbox-54" role="switch" type="checkbox"/><label for="toctree-checkbox-54"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.memmap.bpm/">jina.types.arrays.memmap.bpm module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.types.arrays.mixins/">jina.types.arrays.mixins package</a><input class="toctree-checkbox" id="toctree-checkbox-55" name="toctree-checkbox-55" role="switch" type="checkbox"/><label for="toctree-checkbox-55"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../jina.types.arrays.mixins.io/">jina.types.arrays.mixins.io package</a><input class="toctree-checkbox" id="toctree-checkbox-56" name="toctree-checkbox-56" role="switch" type="checkbox"/><label for="toctree-checkbox-56"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../jina.types.arrays.mixins.io.binary/">jina.types.arrays.mixins.io.binary module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../jina.types.arrays.mixins.io.common/">jina.types.arrays.mixins.io.common module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../jina.types.arrays.mixins.io.csv/">jina.types.arrays.mixins.io.csv module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../jina.types.arrays.mixins.io.json/">jina.types.arrays.mixins.io.json module</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.content/">jina.types.arrays.mixins.content module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.empty/">jina.types.arrays.mixins.empty module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.getattr/">jina.types.arrays.mixins.getattr module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.group/">jina.types.arrays.mixins.group module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.magic/">jina.types.arrays.mixins.magic module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.match/">jina.types.arrays.mixins.match module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.plot/">jina.types.arrays.mixins.plot module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.sample/">jina.types.arrays.mixins.sample module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.text/">jina.types.arrays.mixins.text module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.traverse/">jina.types.arrays.mixins.traverse module</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.chunk/">jina.types.arrays.chunk module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.document/">jina.types.arrays.document module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.match/">jina.types.arrays.match module</a></li>
-<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">jina.types.arrays.memmap module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.neural_ops/">jina.types.arrays.neural_ops module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.search_ops/">jina.types.arrays.search_ops module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.traversable/">jina.types.arrays.traversable module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.types/">jina.types.arrays.types module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.document/">jina.types.document package</a><input class="toctree-checkbox" id="toctree-checkbox-54" name="toctree-checkbox-54" role="switch" type="checkbox"/><label for="toctree-checkbox-54"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.document/">jina.types.document package</a><input class="toctree-checkbox" id="toctree-checkbox-57" name="toctree-checkbox-57" role="switch" type="checkbox"/><label for="toctree-checkbox-57"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.document.converters/">jina.types.document.converters module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.document.helper/">jina.types.document.helper module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-55" name="toctree-checkbox-55" role="switch" type="checkbox"/><label for="toctree-checkbox-55"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-58" name="toctree-checkbox-58" role="switch" type="checkbox"/><label for="toctree-checkbox-58"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.message.common/">jina.types.message.common module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.ndarray/">jina.types.ndarray package</a><input class="toctree-checkbox" id="toctree-checkbox-56" name="toctree-checkbox-56" role="switch" type="checkbox"/><label for="toctree-checkbox-56"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.types.ndarray.dense/">jina.types.ndarray.dense package</a><input class="toctree-checkbox" id="toctree-checkbox-57" name="toctree-checkbox-57" role="switch" type="checkbox"/><label for="toctree-checkbox-57"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.ndarray/">jina.types.ndarray package</a><input class="toctree-checkbox" id="toctree-checkbox-59" name="toctree-checkbox-59" role="switch" type="checkbox"/><label for="toctree-checkbox-59"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.types.ndarray.dense/">jina.types.ndarray.dense package</a><input class="toctree-checkbox" id="toctree-checkbox-60" name="toctree-checkbox-60" role="switch" type="checkbox"/><label for="toctree-checkbox-60"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../jina.types.ndarray.dense.numpy/">jina.types.ndarray.dense.numpy module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.types.ndarray.sparse/">jina.types.ndarray.sparse package</a><input class="toctree-checkbox" id="toctree-checkbox-58" name="toctree-checkbox-58" role="switch" type="checkbox"/><label for="toctree-checkbox-58"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.types.ndarray.sparse/">jina.types.ndarray.sparse package</a><input class="toctree-checkbox" id="toctree-checkbox-61" name="toctree-checkbox-61" role="switch" type="checkbox"/><label for="toctree-checkbox-61"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../jina.types.ndarray.sparse.numpy/">jina.types.ndarray.sparse.numpy module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../jina.types.ndarray.sparse.pytorch/">jina.types.ndarray.sparse.pytorch module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../jina.types.ndarray.sparse.scipy/">jina.types.ndarray.sparse.scipy module</a></li>
@@ -569,17 +589,17 @@
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.ndarray.generic/">jina.types.ndarray.generic module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-59" name="toctree-checkbox-59" role="switch" type="checkbox"/><label for="toctree-checkbox-59"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-62" name="toctree-checkbox-62" role="switch" type="checkbox"/><label for="toctree-checkbox-62"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.request.control/">jina.types.request.control module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.request.data/">jina.types.request.data module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.request.mixin/">jina.types.request.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-60" name="toctree-checkbox-60" role="switch" type="checkbox"/><label for="toctree-checkbox-60"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-63" name="toctree-checkbox-63" role="switch" type="checkbox"/><label for="toctree-checkbox-63"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.routing.table/">jina.types.routing.table module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-61" name="toctree-checkbox-61" role="switch" type="checkbox"/><label for="toctree-checkbox-61"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-64" name="toctree-checkbox-64" role="switch" type="checkbox"/><label for="toctree-checkbox-64"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.score.map/">jina.types.score.map module</a></li>
 </ul>
 </li>
@@ -596,7 +616,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-62" name="toctree-checkbox-62" role="switch" type="checkbox"/><label for="toctree-checkbox-62"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-65" name="toctree-checkbox-65" role="switch" type="checkbox"/><label for="toctree-checkbox-65"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
 </ul>
 </li>
@@ -652,12 +672,22 @@
                         </i>
                     </label>
                 </div>
-                <section id="module-jina.types.arrays.memmap">
-<span id="jina-types-arrays-memmap-module"></span><h1>jina.types.arrays.memmap module<a class="headerlink" href="#module-jina.types.arrays.memmap" title="Permalink to this headline">¶</a></h1>
+                <section id="jina-types-arrays-memmap-package">
+<h1>jina.types.arrays.memmap package<a class="headerlink" href="#jina-types-arrays-memmap-package" title="Permalink to this headline">¶</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../jina.types.arrays.memmap.bpm/">jina.types.arrays.memmap.bpm module</a></li>
+</ul>
+</div>
+</section>
+<section id="module-jina.types.arrays.memmap">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.types.arrays.memmap" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.types.arrays.memmap.DocumentArrayMemmap">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.types.arrays.memmap.</span></span><span class="sig-name descname"><span class="pre">DocumentArrayMemmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">36</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer_pool_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence" title="jina.types.arrays.traversable.TraversableSequence"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.traversable.TraversableSequence</span></code></a>, <a class="reference internal" href="../jina.types.arrays.document/#jina.types.arrays.document.DocumentArrayGetAttrMixin" title="jina.types.arrays.document.DocumentArrayGetAttrMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.document.DocumentArrayGetAttrMixin</span></code></a>, <a class="reference internal" href="../jina.types.arrays.neural_ops/#jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin" title="jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin</span></code></a>, <a class="reference internal" href="../jina.types.arrays.search_ops/#jina.types.arrays.search_ops.DocumentArraySearchOpsMixin" title="jina.types.arrays.search_ops.DocumentArraySearchOpsMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.search_ops.DocumentArraySearchOpsMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Iterable</span></code>, <a class="reference internal" href="../jina.types.arrays.abstract/#jina.types.arrays.abstract.AbstractDocumentArray" title="jina.types.arrays.abstract.AbstractDocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.abstract.AbstractDocumentArray</span></code></a></p>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.types.arrays.memmap.</span></span><span class="sig-name descname"><span class="pre">DocumentArrayMemmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">36</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer_pool_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../jina.types.arrays.mixins/#jina.types.arrays.mixins.AllMixins" title="jina.types.arrays.mixins.AllMixins"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.mixins.AllMixins</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.MutableSequence</span></code></p>
 <p>Create a memory-map to an <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code> stored in binary files on disk.</p>
 <p>Memory-mapped files are used for accessing <code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code> of large <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code> on disk,
 without reading the entire file into memory.</p>
@@ -702,6 +732,22 @@ The best practice is to always reference documents using DAM.</p>
 </pre></div>
 </div>
 <dl class="py method">
+<dt class="sig sig-object py" id="jina.types.arrays.memmap.DocumentArrayMemmap.insert">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap.insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert <a href="#id1"><span class="problematic" id="id2">:param:`doc.proto`</span></a> at <a href="#id3"><span class="problematic" id="id4">:param:`index`</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the offset index of the insertion.</p></li>
+<li><p><strong>doc</strong> (<a class="reference internal" href="../jina/#jina.Document" title="jina.Document"><em>Document</em></a>) – the doc needs to be inserted.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
 <dt class="sig sig-object py" id="jina.types.arrays.memmap.DocumentArrayMemmap.reload">
 <span class="sig-name descname"><span class="pre">reload</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap.reload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.reload" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reload header of this object from the disk.</p>
@@ -711,11 +757,11 @@ the change has not been reflected in this <code class="xref py py-class docutils
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.arrays.memmap.DocumentArrayMemmap.extend">
-<span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap.extend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.extend" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap.extend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.extend" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extend the <a class="reference internal" href="#jina.types.arrays.memmap.DocumentArrayMemmap" title="jina.types.arrays.memmap.DocumentArrayMemmap"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code></a> by appending all the items from the iterable.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>values</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>]) – the iterable of Documents to extend this array with</p>
+<dd class="field-odd"><p><strong>docs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>]) – the iterable of Documents to extend this array with</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -735,11 +781,11 @@ the change has not been reflected in this <code class="xref py py-class docutils
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.arrays.memmap.DocumentArrayMemmap.append">
 <span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flush</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.append" title="Permalink to this definition">¶</a></dt>
-<dd><p>Append <a href="#id1"><span class="problematic" id="id2">:param:`doc`</span></a> in <a class="reference internal" href="#jina.types.arrays.memmap.DocumentArrayMemmap" title="jina.types.arrays.memmap.DocumentArrayMemmap"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code></a>.</p>
+<dd><p>Append <a href="#id5"><span class="problematic" id="id6">:param:`doc`</span></a> in <a class="reference internal" href="#jina.types.arrays.memmap.DocumentArrayMemmap" title="jina.types.arrays.memmap.DocumentArrayMemmap"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>doc</strong> (<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>) – The doc needs to be appended.</p></li>
+<li><p><strong>doc</strong> (<a class="reference internal" href="../jina/#jina.Document" title="jina.Document"><em>Document</em></a>) – The doc needs to be appended.</p></li>
 <li><p><strong>update_buffer</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If set, update the buffer.</p></li>
 <li><p><strong>flush</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If set, then flush to disk on done.</p></li>
 </ul>
@@ -750,21 +796,8 @@ the change has not been reflected in this <code class="xref py py-class docutils
 </dl>
 </dd></dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.types.arrays.memmap.DocumentArrayMemmap.get_doc_by_key">
-<span class="sig-name descname"><span class="pre">get_doc_by_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap.get_doc_by_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.get_doc_by_key" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns a document by key (ID) from disk</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>key</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – id of the document</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>returns a document</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.arrays.memmap.DocumentArrayMemmap.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.save" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="jina.types.arrays.memmap.DocumentArrayMemmap.flush">
+<span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap.flush"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.flush" title="Permalink to this definition">¶</a></dt>
 <dd><p>Persists memory loaded documents to disk</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -795,40 +828,6 @@ the change has not been reflected in this <code class="xref py py-class docutils
 </dd>
 </dl>
 </dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.arrays.memmap.DocumentArrayMemmap.get_attributes">
-<span class="sig-name descname"><span class="pre">get_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fields</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap.get_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.get_attributes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return all nonempty values of the fields from all docs this array contains</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fields</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Variable length argument with the name of the fields to extract</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>]]</p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Returns a list of the values for these fields.
-When <cite>fields</cite> has multiple values, then it returns a list of list.</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.arrays.memmap.DocumentArrayMemmap.get_attributes_with_docs">
-<span class="sig-name descname"><span class="pre">get_attributes_with_docs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fields</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap.get_attributes_with_docs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.get_attributes_with_docs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return all nonempty values of the fields together with their nonempty docs</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fields</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Variable length argument with the name of the fields to extract</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>]], <a class="reference internal" href="../jina.types.arrays.document/#jina.types.arrays.document.DocumentArray" title="jina.types.arrays.document.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>]</p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Returns a tuple. The first element is  a list of the values for these fields.
-When <cite>fields</cite> has multiple values, then it returns a list of list. The second element is the non-empty docs.</p>
-</dd>
-</dl>
-</dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.arrays.memmap.DocumentArrayMemmap.embeddings">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">embeddings</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.embeddings" title="Permalink to this definition">¶</a></dt>
@@ -853,70 +852,6 @@ first element in the DocumentArray / DocumentArrayMemmap.</p>
 </div>
 </dd></dl>
 <dl class="py property">
-<dt class="sig sig-object py" id="jina.types.arrays.memmap.DocumentArrayMemmap.tags">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">tags</span></span><em class="property"><span class="pre">:</span> <span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../jina.types.struct/#jina.types.struct.StructView" title="jina.types.struct.StructView"><span class="pre">jina.types.struct.StructView</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.tags" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the tags attribute of all Documents</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="../jina.types.struct/#jina.types.struct.StructView" title="jina.types.struct.StructView"><code class="xref py py-class docutils literal notranslate"><span class="pre">StructView</span></code></a>]</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>List of <code class="docutils literal notranslate"><span class="pre">tags</span></code> attributes for all Documents</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.types.arrays.memmap.DocumentArrayMemmap.texts">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">texts</span></span><em class="property"><span class="pre">:</span> <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.texts" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the text attribute of all Documents</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>List of <code class="docutils literal notranslate"><span class="pre">text</span></code> attributes for all Documents</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.types.arrays.memmap.DocumentArrayMemmap.buffers">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">buffers</span></span><em class="property"><span class="pre">:</span> <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.buffers" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the buffer attribute of all Documents</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>]</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>List of <code class="docutils literal notranslate"><span class="pre">buffer</span></code> attributes for all Documents</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.types.arrays.memmap.DocumentArrayMemmap.blobs">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">blobs</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.blobs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a <cite>np.ndarray</cite> stacking all the <cite>blob</cite> attributes.</p>
-<p>The <cite>blob</cite> attributes are stacked together along a newly created first
-dimension (as if you would stack using <code class="docutils literal notranslate"><span class="pre">np.stack(X,</span> <span class="pre">axis=0)</span></code>).</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This operation assumes all blobs have the same shape and dtype.
-All dtype and shape values are assumed to be equal to the values of the
-first element in the DocumentArray / DocumentArrayMemmap</p>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This operation currently does not support sparse arrays.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>blobs stacked per row as <cite>np.ndarray</cite>.</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py property">
 <dt class="sig sig-object py" id="jina.types.arrays.memmap.DocumentArrayMemmap.path">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the path where the instance is stored.</p>
@@ -931,23 +866,24 @@ first element in the DocumentArray / DocumentArrayMemmap</p>
 </dd></dl>
 </dd></dl>
 </section>
+</section>
 
             </article>
             <footer>
                 
                 <div class="related-pages">
-                    <a class="next-page" href="../jina.types.arrays.neural_ops/">
+                    <a class="next-page" href="../jina.types.arrays.memmap.bpm/">
                         <div class="page-info">
                             <div class="context">
                                 <span>Next</span>
                             </div>
-                            <div class="title">jina.types.arrays.neural_ops module</div>
+                            <div class="title">jina.types.arrays.memmap.bpm module</div>
                         </div>
                         <svg>
                             <use href="#svg-arrow-right"></use>
                         </svg>
                     </a>
-                    <a class="prev-page" href="../jina.types.arrays.match/">
+                    <a class="prev-page" href="../jina.types.arrays/">
                         <svg>
                             <use href="#svg-arrow-right"></use>
                         </svg>
@@ -956,7 +892,7 @@ first element in the DocumentArray / DocumentArrayMemmap</p>
                                 <span>Previous</span>
                             </div>
                             
-                            <div class="title">jina.types.arrays.match module</div>
+                            <div class="title">jina.types.arrays package</div>
                             
                         </div>
                     </a>
@@ -964,7 +900,7 @@ first element in the DocumentArray / DocumentArrayMemmap</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 05, 2021.
+                    Last updated on Nov 06, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -980,6 +916,24 @@ first element in the DocumentArray / DocumentArrayMemmap</p>
             
 
             <div class="toc-sticky toc-scroll">
+                
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">jina.types.arrays.memmap package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-jina.types.arrays.memmap">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
                 
                 <details id='jina-docbot' class="jina-doc-bot sd-sphinx-override sd-dropdown sd-card">
     <summary class="sd-summary-title sd-card-header">
