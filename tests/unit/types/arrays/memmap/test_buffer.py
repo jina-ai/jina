@@ -109,14 +109,14 @@ def test_buffer_dam_getitem(tmpdir):
     dam.extend(docs)
     for i, doc in enumerate(docs):
         # assert same doc when getting by key
-        assert dam.buffer_pool[doc.id].content_hash == doc.content_hash
-        assert dam.buffer_pool[doc.id].id == doc.id
+        assert dam._buffer_pool[doc.id].content_hash == doc.content_hash
+        assert dam._buffer_pool[doc.id].id == doc.id
 
     with pytest.raises(TypeError):
-        dam.buffer_pool[1:5]
+        dam._buffer_pool[1:5]
 
     with pytest.raises(TypeError):
-        dam.buffer_pool[0]
+        dam._buffer_pool[0]
 
 
 def test_buffer_dam_delete(tmpdir):
@@ -128,10 +128,10 @@ def test_buffer_dam_delete(tmpdir):
 
     # the first element should be out of buffer
     with pytest.raises(KeyError):
-        del dam.buffer_pool[first_doc.id]
+        del dam._buffer_pool[first_doc.id]
 
     # no exception raised
-    dam.buffer_pool.delete_if_exists(first_doc.id)
+    dam._buffer_pool.delete_if_exists(first_doc.id)
 
 
 def test_buffer_dam_lru(tmpdir):
@@ -141,8 +141,8 @@ def test_buffer_dam_lru(tmpdir):
 
     # make the first doc most recently used, the second doc is the LRU
     doc1 = dam[0]
-    assert next(reversed(dam.buffer_pool.doc_map.keys())) == doc1.id
-    assert next(iter(dam.buffer_pool.doc_map.keys())) == docs[1].id
+    assert next(reversed(dam._buffer_pool.doc_map.keys())) == doc1.id
+    assert next(iter(dam._buffer_pool.doc_map.keys())) == docs[1].id
 
     doc2 = docs[1]
 
@@ -150,9 +150,9 @@ def test_buffer_dam_lru(tmpdir):
     dam.append(docs[5])
 
     # doc1 was not LRU, doc2 was LRU
-    assert doc1.id in dam.buffer_pool
-    assert doc2.id not in dam.buffer_pool
-    assert docs[5].id in dam.buffer_pool
+    assert doc1.id in dam._buffer_pool
+    assert doc2.id not in dam._buffer_pool
+    assert docs[5].id in dam._buffer_pool
 
 
 def test_buffer_dam_clear(tmpdir):
@@ -160,9 +160,9 @@ def test_buffer_dam_clear(tmpdir):
     docs = list(random_docs(5))
     dam.extend(docs)
 
-    dam.buffer_pool.clear()
+    dam._buffer_pool.clear()
     for doc in docs:
-        assert doc.id not in dam.buffer_pool
+        assert doc.id not in dam._buffer_pool
 
 
 def test_buffer_dam_add_or_update(tmpdir):
@@ -174,22 +174,22 @@ def test_buffer_dam_add_or_update(tmpdir):
     doc1.content = 'new'
 
     # doc1 already exists => update
-    dam.buffer_pool.add_or_update(doc1.id, doc1)
+    dam._buffer_pool.add_or_update(doc1.id, doc1)
     assert dam[0].content == doc1.content
-    assert len(dam.buffer_pool.buffer) == 5
+    assert len(dam._buffer_pool.buffer) == 5
 
     # doc does not exist => add to buffer
-    dam.buffer_pool.add_or_update(docs[5].id, docs[5])
-    assert len(dam.buffer_pool.buffer) == 6
+    dam._buffer_pool.add_or_update(docs[5].id, docs[5])
+    assert len(dam._buffer_pool.buffer) == 6
 
     # buffer is full => remove the LRU (docs[1], because docs[0] was used before)
-    dam.buffer_pool.add_or_update(docs[6].id, docs[6])
-    assert docs[6].id in dam.buffer_pool
-    assert docs[1].id not in dam.buffer_pool
+    dam._buffer_pool.add_or_update(docs[6].id, docs[6])
+    assert docs[6].id in dam._buffer_pool
+    assert docs[1].id not in dam._buffer_pool
 
-    del dam.buffer_pool[docs[4].id]
+    del dam._buffer_pool[docs[4].id]
 
     # spot number 4 becomes empty
-    assert 4 in dam.buffer_pool._empty
-    dam.buffer_pool.add_or_update(docs[7].id, docs[7])
-    assert dam.buffer_pool.doc_map[docs[7].id][0] == 4
+    assert 4 in dam._buffer_pool._empty
+    dam._buffer_pool.add_or_update(docs[7].id, docs[7])
+    assert dam._buffer_pool.doc_map[docs[7].id][0] == 4

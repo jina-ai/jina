@@ -351,7 +351,7 @@ def test_memmap_save_reload(tmpdir):
         # from memory
         assert doc.content == 'new'
         # from disk
-        assert dam.get_doc_by_key(doc.id).content == 'hello world'
+        assert dam._get_doc_by_key(doc.id).content == 'hello world'
 
     # dam1 from disk (empty memory buffer + dam not persisted)
     for doc in dam1:
@@ -362,7 +362,7 @@ def test_memmap_save_reload(tmpdir):
 
     # dam from disk
     for doc in dam:
-        assert dam.get_doc_by_key(doc.id).content == 'new'
+        assert dam._get_doc_by_key(doc.id).content == 'new'
 
     # dam1 up-to-date
     for doc in dam1:
@@ -376,7 +376,7 @@ def test_memmap_buffer_synched(tmpdir):
 
     for i, doc in enumerate(docs[50:]):
         dam[i] = doc
-        assert dam.buffer_pool[doc.id].id == dam[i].id
+        assert dam._buffer_pool[doc.id].id == dam[i].id
         doc.content = 'new'
         assert dam[doc.id].content == 'new'
 

@@ -368,3 +368,30 @@ def test_traverse_flat_root_itself():
     da = DocumentArray([Document() for _ in range(100)])
     res = da.traverse_flat(['r'])
     assert id(res) == id(da)
+
+
+def da_and_dam(N):
+    da = DocumentArray(random_docs(N))
+    dam = DocumentArrayMemmap()
+    dam.extend(da)
+    return da, dam
+
+
+@pytest.mark.parametrize('da', da_and_dam(100))
+def test_flatten(da):
+    daf = da.flatten()
+    assert len(daf) == 600
+    assert isinstance(daf, DocumentArray)
+    assert len(set(d.id for d in daf)) == 600
+
+    # flattened DA can not be flattened again
+    daf = daf.flatten()
+    assert len(daf) == 600
+
+
+def test_flatten_no_copy():
+    da = da_and_dam(100)[0]
+    daf = da.flatten(copy=False)
+    new_text = 'hi i changed it!'
+    daf[53].text = new_text
+    assert da[daf[53].id].text == new_text

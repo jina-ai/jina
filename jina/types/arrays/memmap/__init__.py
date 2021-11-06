@@ -92,7 +92,7 @@ class DocumentArrayMemmap(
         self._last_mmap = None
         self._load_header_body()
         self._embeddings_shape = None
-        self.buffer_pool = BufferPoolManager(pool_size=buffer_pool_size)
+        self._buffer_pool = BufferPoolManager(pool_size=buffer_pool_size)
 
     def insert(self, index: int, doc: 'Document') -> None:
         """Insert :param:`doc.proto` at :param:`index`.
@@ -100,6 +100,8 @@ class DocumentArrayMemmap(
         :param index: the offset index of the insertion.
         :param doc: the doc needs to be inserted.
         """
+        # This however must be here as inheriting from MutableSequence requires this method
+        # TODO(team): implement this function if necessary and have time.
         raise NotImplementedError
 
     def reload(self):
@@ -111,7 +113,7 @@ class DocumentArrayMemmap(
         This function only reloads the header, not the body.
         """
         self._load_header_body()
-        self.buffer_pool.clear()
+        self._buffer_pool.clear()
 
     def _load_header_body(self, mode: str = 'a'):
         if hasattr(self, '_header'):
@@ -135,7 +137,7 @@ class DocumentArrayMemmap(
             ],
         )
         self._header_entry_size = 24 + 4 * self._key_length
-        self.last_header_entry = len(tmp)
+        self._last_header_entry = len(tmp)
 
         self._header_map = OrderedDict()
         for idx, r in enumerate(tmp):
@@ -207,8 +209,8 @@ class DocumentArrayMemmap(
             ).tobytes()
         )
         if idx is None:
-            self._header_map[doc.id] = (self.last_header_entry, p, r, r + l)
-            self.last_header_entry = self.last_header_entry + 1
+            self._header_map[doc.id] = (self._last_header_entry, p, r, r + l)
+            self._last_header_entry = self._last_header_entry + 1
             self._header_keys.append(doc.id)
         else:
             self._header_map[doc.id] = (idx, p, r, r + l)
@@ -222,7 +224,7 @@ class DocumentArrayMemmap(
             self._body.flush()
             self._last_mmap = None
         if update_buffer:
-            result = self.buffer_pool.add_or_update(doc.id, doc)
+            result = self._buffer_pool.add_or_update(doc.id, doc)
             if result:
                 _key, _doc = result
                 self._update(_doc, self._str2int_id(_key), update_buffer=False)
@@ -300,7 +302,7 @@ class DocumentArrayMemmap(
             self._body.seek(self._start)
         return self._last_mmap
 
-    def get_doc_by_key(self, key: str):
+    def _get_doc_by_key(self, key: str):
         """
         returns a document by key (ID) from disk
 
@@ -315,10 +317,10 @@ class DocumentArrayMemmap(
 
     def __getitem__(self, key: Union[int, str, slice, List]):
         if isinstance(key, str):
-            if key in self.buffer_pool:
-                return self.buffer_pool[key]
-            doc = self.get_doc_by_key(key)
-            result = self.buffer_pool.add_or_update(key, doc)
+            if key in self._buffer_pool:
+                return self._buffer_pool[key]
+            doc = self._get_doc_by_key(key)
+            result = self._buffer_pool.add_or_update(key, doc)
             if result:
                 _key, _doc = result
                 self._update(_doc, self._str2int_id(_key), update_buffer=False)
@@ -356,7 +358,7 @@ class DocumentArrayMemmap(
         pop_idx = self._header_keys.index(str_key)
         self._header_map.pop(str_key)
         self._header_keys.pop(pop_idx)
-        self.buffer_pool.delete_if_exists(str_key)
+        self._buffer_pool.delete_if_exists(str_key)
         self._invalidate_embeddings_memmap()
 
     def __delitem__(self, key: Union[int, str, slice]):
@@ -402,8 +404,8 @@ class DocumentArrayMemmap(
                             for k, v in self._header_map.items()
                         ]
                     )
-                    if str_key in self.buffer_pool.doc_map:
-                        self.buffer_pool.doc_map.pop(str_key)
+                    if str_key in self._buffer_pool.doc_map:
+                        self._buffer_pool.doc_map.pop(str_key)
             else:
                 raise IndexError(f'`key`={key} is out of range')
         elif isinstance(key, str):
@@ -425,7 +427,7 @@ class DocumentArrayMemmap(
 
     def flush(self) -> None:
         """Persists memory loaded documents to disk"""
-        docs_to_flush = self.buffer_pool.docs_to_flush()
+        docs_to_flush = self._buffer_pool.docs_to_flush()
         for key, doc in docs_to_flush:
             self._update(doc, self._str2int_id(key), flush=False)
         self._header.flush()
