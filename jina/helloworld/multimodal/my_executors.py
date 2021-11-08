@@ -61,7 +61,7 @@ class TextEncoder(Executor):
 
     @requests
     def encode(self, docs: 'DocumentArray', **kwargs):
-        with torch.no_grad():
+        with torch.inference_mode():
             if not self.tokenizer.pad_token:
                 self.tokenizer.add_special_tokens({'pad_token': '[PAD]'})
                 self.model.resize_token_embeddings(len(self.tokenizer.vocab))
@@ -137,11 +137,12 @@ class ImageEncoder(Executor):
 
     @requests
     def encode(self, docs: DocumentArray, **kwargs):
-        _input = torch.from_numpy(docs.blobs.astype('float32'))
-        _features = self._get_features(_input).detach()
-        _features = _features.numpy()
-        _features = self._get_pooling(_features)
-        docs.embeddings = _features
+        with torch.inference_mode():
+            _input = torch.from_numpy(docs.blobs.astype('float32'))
+            _features = self._get_features(_input).detach()
+            _features = _features.numpy()
+            _features = self._get_pooling(_features)
+            docs.embeddings = _features
 
 
 class DocVectorIndexer(Executor):
