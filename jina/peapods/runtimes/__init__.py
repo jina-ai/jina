@@ -11,7 +11,7 @@ def list_all_runtimes():
     from .container import ContainerRuntime
     from .jinad import JinadRuntime
     from .zmq.zed import ZEDRuntime
-    from .grpc import WorkerRuntime
+    from .worker import WorkerRuntime
 
     return [
         k
