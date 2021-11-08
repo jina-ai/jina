@@ -1,12 +1,9 @@
 import argparse
-import inspect
 import json
-from typing import Dict
+from typing import Dict, TYPE_CHECKING
 
 from google.protobuf.json_format import MessageToDict
 
-from ....grpc import Grpclet
-from ....zmq import AsyncZmqlet
 from ..... import __version__
 from .....clients.request import request_generator
 from .....helper import get_full_version
@@ -14,12 +11,23 @@ from .....importer import ImportExtensions
 from .....logging.logger import JinaLogger
 from .....logging.profile import used_memory_readable
 
+if TYPE_CHECKING:
+    from ..graph.topology_graph import TopologyGraph
+    from ....networking import GrpcConnectionPool
 
-def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
+
+def get_fastapi_app(
+    args: 'argparse.Namespace',
+    topology_graph: 'TopologyGraph',
+    connection_pool: 'GrpcConnectionPool',
+    logger: 'JinaLogger',
+):
     """
     Get the app from FastAPI as the REST interface.
 
     :param args: passed arguments.
+    :param topology_graph: topology graph that manages the logic of sending to the proper executors.
+    :param connection_pool: Connection Pool to handle multiple replicas and sending to different of them
     :param logger: Jina logger.
     :return: fastapi app
     """
@@ -58,27 +66,15 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             'CORS is enabled. This service is now accessible from any website!'
         )
 
-    if args.grpc_data_requests:
-        from ....stream.gateway import GrpcGatewayStreamer
+    from ....stream.gateway import GatewayStreamer
 
-        iolet = Grpclet(
-            args=args,
-            message_callback=None,
-            logger=logger,
-        )
-        streamer = GrpcGatewayStreamer(args, iolet)
-    else:
-        from ....stream.gateway import ZmqGatewayStreamer
-
-        iolet = AsyncZmqlet(args, logger)
-        streamer = ZmqGatewayStreamer(args, iolet)
+    streamer = GatewayStreamer(
+        args, graph=topology_graph, connection_pool=connection_pool
+    )
 
     @app.on_event('shutdown')
     async def _shutdown():
-        if inspect.iscoroutinefunction(iolet.close):
-            await iolet.close()
-        else:
-            iolet.close()
+        connection_pool.close()
 
     openapi_tags = []
     if not args.no_debug_endpoints:

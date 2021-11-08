@@ -3,18 +3,16 @@ import os
 import grpc
 
 from jina import __default_host__
-from ....grpc import Grpclet
 
 from .....proto import jina_pb2_grpc
-from ....zmq import AsyncZmqlet
-from ...zmq.asyncio import AsyncNewLoopRuntime
-from ....stream.gateway import GrpcGatewayStreamer, ZmqGatewayStreamer
+from .. import GatewayRuntime
+from ....stream.gateway import GatewayStreamer
 
-__all__ = ['GRPCRuntime']
+__all__ = ['GRPCGatewayRuntime']
 
 
-class GRPCRuntime(AsyncNewLoopRuntime):
-    """Runtime for gRPC."""
+class GRPCGatewayRuntime(GatewayRuntime):
+    """Gateway Runtime for gRPC."""
 
     async def async_setup(self):
         """
@@ -33,16 +31,9 @@ class GRPCRuntime(AsyncNewLoopRuntime):
             ]
         )
 
-        if self.args.grpc_data_requests:
-            self._grpclet = Grpclet(
-                args=self.args,
-                message_callback=None,
-                logger=self.logger,
-            )
-            self.streamer = GrpcGatewayStreamer(self.args, iolet=self._grpclet)
-        else:
-            self.zmqlet = AsyncZmqlet(self.args, logger=self.logger)
-            self.streamer = ZmqGatewayStreamer(self.args, iolet=self.zmqlet)
+        self.streamer = GatewayStreamer(
+            self.args, graph=self._topology_graph, connection_pool=self._connection_pool
+        )
 
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self.streamer, self.server)
         bind_addr = f'{__default_host__}:{self.args.port_expose}'
@@ -50,11 +41,8 @@ class GRPCRuntime(AsyncNewLoopRuntime):
         await self.server.start()
 
     async def async_teardown(self):
-        """Close the iolet"""
-        if self.args.grpc_data_requests:
-            await self._grpclet.close()
-        else:
-            self.zmqlet.close()
+        """Close the connection pool"""
+        await self._connection_pool.close()
 
     async def async_cancel(self):
         """The async method to stop server."""

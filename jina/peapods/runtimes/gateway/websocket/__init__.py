@@ -4,13 +4,13 @@ import asyncio
 from jina import __default_host__
 
 from .....importer import ImportExtensions
-from ...zmq.asyncio import AsyncNewLoopRuntime
+from .. import GatewayRuntime
 from .app import get_fastapi_app
 
 __all__ = ['WebSocketRuntime']
 
 
-class WebSocketRuntime(AsyncNewLoopRuntime):
+class WebSocketRuntime(GatewayRuntime):
     """Runtime for Websocket interface."""
 
     async def async_setup(self):
@@ -53,7 +53,14 @@ class WebSocketRuntime(AsyncNewLoopRuntime):
         uvicorn_kwargs = self.args.uvicorn_kwargs or {}
         self._server = UviServer(
             config=Config(
-                app=extend_rest_interface(get_fastapi_app(self.args, self.logger)),
+                app=extend_rest_interface(
+                    get_fastapi_app(
+                        self.args,
+                        topology_graph=self._topology_graph,
+                        connection_pool=self._connection_pool,
+                        logger=self.logger,
+                    )
+                ),
                 host=__default_host__,
                 port=self.args.port_expose,
                 ws_max_size=1024 * 1024 * 1024,
