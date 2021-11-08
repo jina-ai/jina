@@ -41,6 +41,10 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         # Keep this initialization order, otherwise readiness check is not valid
         self._data_request_handler = DataRequestHandler(args, self.logger)
 
+    async def async_setup(self):
+        """
+        Wait for the GRPC server to start
+        """
         self._grpc_server = grpc.aio.server(
             options=[
                 ('grpc.max_send_message_length', -1),
@@ -50,11 +54,6 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
         jina_pb2_grpc.add_JinaDataRequestRPCServicer_to_server(self, self._grpc_server)
         self._grpc_server.add_insecure_port(f'0.0.0.0:{self.args.port_in}')
-
-    async def async_setup(self):
-        """
-        Wait for the GRPC server to start
-        """
         await self._grpc_server.start()
 
     async def async_run_forever(self):
@@ -63,7 +62,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
     async def async_cancel(self):
         """Stop the GRPC server"""
-        self.logger.debug('Cancel GRPCDataRuntime')
+        self.logger.debug('Cancel WorkerRuntime')
 
         await self._grpc_server.stop(0)
 
@@ -83,9 +82,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
 
         try:
-            _ = GrpcConnectionPool.send_message_sync(
-                ControlMessage('STATUS'), ctrl_address
-            )
+            GrpcConnectionPool.send_message_sync(ControlMessage('STATUS'), ctrl_address)
         except RpcError:
             return False
 
@@ -154,7 +151,6 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             return msg
 
         self._data_request_handler.handle(msg=msg)
-
         return msg
 
     def _log_info_msg(self, msg):
