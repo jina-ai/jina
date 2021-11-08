@@ -6,10 +6,93 @@ import pytest
 
 from jina import Flow
 from jina.peapods.networking import K8sGrpcConnectionPool
+from jina.peapods.pods.k8slib import kubernetes_tools, kubernetes_deployment
 from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
 
 client = docker.from_env()
 cur_dir = os.path.dirname(__file__)
+
+
+@pytest.mark.asyncio
+async def test_process_up_down_events(
+    alpine_image, k8s_cluster, load_images_in_kind, logger, test_dir: str
+):
+    namespace = 'pool-test-namespace'
+
+    kubernetes_tools.create(
+        'namespace',
+        {'name': namespace},
+    )
+    custom_resource_dir = os.path.join(test_dir, 'custom-resource')
+    kubernetes_deployment.deploy_service(
+        name='dummy-deployment',
+        namespace=namespace,
+        image_name=alpine_image,
+        container_cmd='["tail"]',
+        container_args='["-f", "/dev/null"]',
+        logger=logger,
+        replicas=1,
+        pull_policy='IfNotPresent',
+        jina_pod_name='some-pod',
+        pea_type='worker',
+        custom_resource_dir=custom_resource_dir,
+    )
+
+    k8s_clients = K8sClients()
+    pool = K8sGrpcConnectionPool(
+        namespace=namespace,
+        client=k8s_clients.core_v1,
+    )
+    pool.start()
+
+    namespaced_pods = k8s_clients.core_v1.list_namespaced_pod(namespace)
+    assigned_pod_ip = namespaced_pods.items[0].status.pod_ip
+    for container in namespaced_pods.items[0].spec.containers:
+        if container.name == 'executor':
+            assigned_port = container.ports[0].container_port
+            break
+
+    expected_replicas = 1
+
+    while True:
+        api_response = k8s_clients.apps_v1.read_namespaced_deployment(
+            name='dummy-deployment', namespace=namespace
+        )
+        if (
+            api_response.status.ready_replicas is not None
+            and api_response.status.ready_replicas == expected_replicas
+            or (api_response.status.ready_replicas is None and expected_replicas == 0)
+        ):
+            replica_lists = pool._connections.get_replicas_all_shards('some-pod')
+            assert expected_replicas == sum(
+                [
+                    len(replica_list.get_all_connections())
+                    for replica_list in replica_lists
+                ]
+            )
+
+            if expected_replicas == 1:
+                replica_lists[0].has_connection(f'{assigned_pod_ip}:{assigned_port}')
+                # scale up to 2 replicas
+                k8s_clients.apps_v1.patch_namespaced_deployment_scale(
+                    'dummy-deployment',
+                    namespace=namespace,
+                    body={"spec": {"replicas": 2}},
+                )
+                expected_replicas += 1
+            elif expected_replicas == 2:
+                # scale down by 2 replicas
+                k8s_clients.apps_v1.patch_namespaced_deployment_scale(
+                    'dummy-deployment',
+                    namespace=namespace,
+                    body={"spec": {"replicas": 0}},
+                )
+                expected_replicas = 0
+            else:
+                break
+        else:
+            await asyncio.sleep(1.0)
+    pool.close()
 
 
 @pytest.mark.asyncio

@@ -26,6 +26,9 @@ def restart_deployment(
     logger: JinaLogger,
     replicas: int,
     pull_policy: str,
+    jina_pod_name: str,
+    pea_type: str,
+    shard_id: Optional[int] = None,
     custom_resource_dir: Optional[str] = None,
     port_expose: Optional[int] = None,
 ) -> str:
@@ -39,6 +42,9 @@ def restart_deployment(
     :param logger: used logger
     :param replicas: number of replicas
     :param pull_policy: pull policy used for fetching the Docker images from the registry.
+    :param jina_pod_name: Name of the Jina Pod this deployment belongs to
+    :param pea_type: type os this pea, can be gateway/head/worker
+    :param shard_id: id of this shard, None if shards=1 or this is gateway/head
     :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.
         Defaults to the standard location jina.resources if not specified.
     :param port_expose: port which will be exposed by the deployed containers
@@ -72,6 +78,9 @@ def restart_deployment(
             'port_out': port_out,
             'port_ctrl': port_ctrl,
             'pull_policy': pull_policy,
+            'jina_pod_name': jina_pod_name,
+            'shard_id': str(shard_id) if shard_id else '',
+            'pea_type': pea_type,
         },
         custom_resource_dir=custom_resource_dir,
     )
@@ -87,6 +96,9 @@ def deploy_service(
     logger: JinaLogger,
     replicas: int,
     pull_policy: str,
+    jina_pod_name: str,
+    pea_type: str,
+    shard_id: Optional[int] = None,
     init_container: Optional[Dict] = None,
     custom_resource_dir: Optional[str] = None,
     port_expose: Optional[int] = None,
@@ -103,6 +115,9 @@ def deploy_service(
     :param logger: used logger
     :param replicas: number of replicas
     :param pull_policy: pull policy used for fetching the Docker images from the registry.
+    :param jina_pod_name: Name of the Jina Pod this deployment belongs to
+    :param pea_type: type os this pea, can be gateway/head/worker
+    :param shard_id: id of this shard, None if shards=1 or this is gateway/head
     :param init_container: additional arguments used for the init container
     :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.
         Defaults to the standard location jina.resources if not specified.
@@ -166,6 +181,9 @@ def deploy_service(
         'port_out': port_out,
         'port_ctrl': port_ctrl,
         'pull_policy': pull_policy,
+        'jina_pod_name': jina_pod_name,
+        'shard_id': f'\"{shard_id}\"' if shard_id is not None else '\"\"',
+        'pea_type': pea_type,
     }
 
     if init_container:
