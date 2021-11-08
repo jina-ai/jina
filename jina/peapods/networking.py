@@ -413,11 +413,11 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         )
 
     def _process_item(self, item):
-        jina_pod_name = item.metadata.labels["jina_pod_name"]
-        is_head = item.metadata.labels["pea_type"] == 'head'
+        jina_pod_name = item.metadata.labels['jina_pod_name']
+        is_head = item.metadata.labels['pea_type'] == 'head'
         shard_id = (
-            int(item.metadata.labels["shard_id"])
-            if item.metadata.labels["shard_id"] and not is_head
+            int(item.metadata.labels['shard_id'])
+            if item.metadata.labels['shard_id'] and not is_head
             else None
         )
 
