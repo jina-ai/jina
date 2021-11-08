@@ -23,6 +23,8 @@ class K8sPod(BasePod):
             tail_port_out: int,
             head_zmq_identity: bytes,
             version: str,
+            pea_type: str,
+            jina_pod_name: str,
             shard_id: Optional[int],
             common_args: Union['Namespace', Dict],
             deployment_args: Union['Namespace', Dict],
@@ -33,6 +35,8 @@ class K8sPod(BasePod):
             self.tail_port_out = tail_port_out
             self.head_zmq_identity = head_zmq_identity
             self.version = version
+            self.pea_type = pea_type
+            self.jina_pod_name = jina_pod_name
             self.shard_id = shard_id
             self.common_args = common_args
             self.deployment_args = deployment_args
@@ -57,6 +61,8 @@ class K8sPod(BasePod):
                 logger=JinaLogger(f'deploy_{self.name}'),
                 replicas=1,
                 pull_policy='IfNotPresent',
+                jina_pod_name='gateway',
+                pea_type='gateway',
                 port_expose=self.common_args.port_expose,
             )
 
@@ -120,6 +126,9 @@ class K8sPod(BasePod):
                 logger=JinaLogger(f'deploy_{self.name}'),
                 replicas=self.num_replicas,
                 pull_policy='IfNotPresent',
+                jina_pod_name=self.jina_pod_name,
+                pea_type=self.pea_type,
+                shard_id=self.shard_id,
                 init_container=init_container_args,
                 env=self.deployment_args.env,
                 gpus=self.deployment_args.gpus,
@@ -141,6 +150,9 @@ class K8sPod(BasePod):
                 logger=JinaLogger(f'restart_{self.name}'),
                 replicas=self.num_replicas,
                 pull_policy='IfNotPresent',
+                jina_pod_name=self.jina_pod_name,
+                pea_type=self.pea_type,
+                shard_id=self.shard_id,
                 custom_resource_dir=getattr(
                     self.common_args, 'k8s_custom_resource_dir', None
                 ),
@@ -369,8 +381,10 @@ class K8sPod(BasePod):
                 head_zmq_identity=self.head_zmq_identity,
                 version=self.version,
                 shard_id=None,
+                jina_pod_name=self.name,
                 common_args=self.args,
                 deployment_args=self.deployment_args['head_deployment'],
+                pea_type='head',
             )
         if self.deployment_args['tail_deployment'] is not None:
             name = f'{self.name}-tail'
@@ -381,8 +395,10 @@ class K8sPod(BasePod):
                 head_zmq_identity=self.head_zmq_identity,
                 version=self.version,
                 shard_id=None,
+                jina_pod_name=self.name,
                 common_args=self.args,
                 deployment_args=self.deployment_args['tail_deployment'],
+                pea_type='tail',
             )
 
         self.k8s_deployments = []
@@ -402,6 +418,8 @@ class K8sPod(BasePod):
                     shard_id=i,
                     common_args=self.args,
                     deployment_args=args,
+                    pea_type='worker',
+                    jina_pod_name=self.name,
                 )
             )
 
