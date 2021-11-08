@@ -33,17 +33,8 @@ spec:
           - containerPort: {port_in}
           - containerPort: {port_out}
           - containerPort: {port_ctrl}
-        envFrom:
-          - configMapRef:
-              name: {name}-configmap
         env:
         - name: POD_UID
           valueFrom:
             fieldRef:
               fieldPath: metadata.uid
-
-        readinessProbe:
-          tcpSocket:
-            port: {port_in}
-          initialDelaySeconds: 5
-          periodSeconds: 10
