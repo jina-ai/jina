@@ -11,7 +11,7 @@ def list_all_runtimes():
     from .container import ContainerRuntime
     from .jinad import JinadRuntime
     from .zmq.zed import ZEDRuntime
-    from .grpc import GRPCDataRuntime
+    from .worker import WorkerRuntime
 
     return [
         k
@@ -33,7 +33,7 @@ def get_runtime(name: str):
     from .container import ContainerRuntime
     from .jinad import JinadRuntime
     from .zmq.zed import ZEDRuntime
-    from .grpc import GRPCDataRuntime
+    from .grpc import WorkerRuntime
 
     s = locals()[name]
     if isinstance(s, type) and issubclass(s, BaseRuntime):

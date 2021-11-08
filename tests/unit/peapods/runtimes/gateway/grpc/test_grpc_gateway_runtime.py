@@ -119,6 +119,10 @@ def graph_hanging_pod_after_merge():
 
 
 class DummyMockConnectionPool:
+
+    def __int__(self, *args, **kwargs):
+        print(f' JOAN HERE DUMMY CONNECTION POOL')
+
     def send_message(self, msg: Message, pod: str, head: bool) -> asyncio.Task:
         assert head
         response_msg = copy.deepcopy(msg)
@@ -143,11 +147,11 @@ class DummyMockConnectionPool:
 
 
 def test_grpc_gateway_runtime_handle_messages_linear(linear_graph_dict, monkeypatch):
-    monkeypatch.setattr(
-        networking,
-        'create_connection_pool',
-        lambda *args, **kwargs: DummyMockConnectionPool(),
-    )
+    # monkeypatch.setattr(
+    #     networking,
+    #     'create_connection_pool',
+    #     lambda *args, **kwargs: DummyMockConnectionPool(),
+    # )
     port_in = 5555  # need to randomize
 
     def create_runtime():
@@ -157,8 +161,8 @@ def test_grpc_gateway_runtime_handle_messages_linear(linear_graph_dict, monkeypa
         with GRPCGatewayRuntime(
             set_gateway_parser().parse_args(
                 [
-                    '--port-in',
-                    '3235',
+                    '--port-expose',
+                    f'{port_in}',
                     '--graph-description',
                     f'{graph_description}',
                     '--pods-addresses',
@@ -178,14 +182,14 @@ def test_grpc_gateway_runtime_handle_messages_linear(linear_graph_dict, monkeypa
         )[0]
         msg = Message(None, req, 'test', '123')
         # send message
-        response = GrpcConnectionPool.send_message_sync(msg, f'0.0.0.0:{port_in}')
+        response = GrpcConnectionPool.send_message_sync(msg.request, f'0.0.0.0:5555')
         print(f' response {response}')
 
     p = multiprocessing.Process(target=create_runtime)
     p.start()
     time.sleep(1.0)
     client_processes = []
-    for i in range(10):
+    for i in range(2):
         cp = multiprocessing.Process(target=client_send, kwargs={'client_id': i})
         cp.start()
         client_processes.append(cp)
