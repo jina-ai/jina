@@ -51,6 +51,8 @@ class WebSocketRuntime(GatewayRuntime):
         from .....helper import extend_rest_interface
 
         uvicorn_kwargs = self.args.uvicorn_kwargs or {}
+        self._set_topology_graph()
+        self._set_connection_pool()
         self._server = UviServer(
             config=Config(
                 app=extend_rest_interface(

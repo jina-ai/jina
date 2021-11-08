@@ -30,6 +30,8 @@ class GRPCGatewayRuntime(GatewayRuntime):
                 ('grpc.max_receive_message_length', -1),
             ]
         )
+        self._set_topology_graph()
+        self._set_connection_pool()
 
         self.streamer = GatewayStreamer(
             self.args, graph=self._topology_graph, connection_pool=self._connection_pool
@@ -42,7 +44,7 @@ class GRPCGatewayRuntime(GatewayRuntime):
 
     async def async_teardown(self):
         """Close the connection pool"""
-        await self._connection_pool.close()
+        self._connection_pool.close()
 
     async def async_cancel(self):
         """The async method to stop server."""
