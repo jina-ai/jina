@@ -29,7 +29,6 @@
     - [StatusProto.ExceptionProto](#jina.StatusProto.ExceptionProto)
     - [TargetPodProto](#jina.TargetPodProto)
   
-    - [DenseNdArrayProto.QuantizationMode](#jina.DenseNdArrayProto.QuantizationMode)
     - [RequestProto.ControlRequestProto.Command](#jina.RequestProto.ControlRequestProto.Command)
     - [StatusProto.StatusCode](#jina.StatusProto.StatusCode)
   
@@ -58,11 +57,6 @@ Represents a (quantized) dense n-dim array
 | buffer | [bytes](#bytes) |  | the actual array data, in bytes |
 | shape | [uint32](#uint32) | repeated | the shape (dimensions) of the array |
 | dtype | [string](#string) |  | the data type of the array |
-| quantization | [DenseNdArrayProto.QuantizationMode](#jina.DenseNdArrayProto.QuantizationMode) |  | quantization mode |
-| max_val | [float](#float) |  | the max value of the ndarray |
-| min_val | [float](#float) |  | the min value of the ndarray |
-| scale | [float](#float) |  | the scale of the ndarray |
-| original_dtype | [string](#string) |  | the original dtype of the array |
 
 
 
@@ -219,7 +213,7 @@ Represents a Graph
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| adjacency | [SparseNdArrayProto](#jina.SparseNdArrayProto) |  | adjacency list |
+| adjacency | [NdArrayProto](#jina.NdArrayProto) |  | adjacency list |
 | edge_features | [google.protobuf.Struct](#google.protobuf.Struct) |  | Container structure to store edge features |
 | undirected | [bool](#bool) |  | Flag indicating if the graph is to be interpreted as an undirected graph |
 
@@ -294,6 +288,8 @@ Represents a general n-dim array, can be either dense or sparse
 | ----- | ---- | ----- | ----------- |
 | dense | [DenseNdArrayProto](#jina.DenseNdArrayProto) |  | dense representation of the ndarray |
 | sparse | [SparseNdArrayProto](#jina.SparseNdArrayProto) |  | sparse representation of the ndarray |
+| cls_name | [string](#string) |  | the name of the ndarray class |
+| parameters | [google.protobuf.Struct](#google.protobuf.Struct) |  |  |
 
 
 
@@ -491,20 +487,6 @@ Represents a Status
 
 
  
-
-
-<a name="jina.DenseNdArrayProto.QuantizationMode"></a>
-
-### DenseNdArrayProto.QuantizationMode
-
-
-| Name | Number | Description |
-| ---- | ------ | ----------- |
-| NONE | 0 | no quantization is performed, stored in the original ``dtype`` |
-| FP16 | 1 | 4x smaller if original dtype FP64, lossy |
-| UINT8 | 2 | 4x smaller if original dtype FP32, lossy |
-| FP32 | 3 | 2x smaller if dtype is set to FP64 |
-
 
 
 <a name="jina.RequestProto.ControlRequestProto.Command"></a>
