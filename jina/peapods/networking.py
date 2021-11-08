@@ -268,12 +268,12 @@ class GrpcConnectionPool:
         :param shard_id: Optional parameter to indicate this connection belongs to a shard, ignored for heads
         """
         if head:
-            self._connections.add_head(pod, address, self._create_connection, 0)
+            self._connections.add_head(pod, address, self.create_connection, 0)
         else:
             if shard_id is None:
                 shard_id = 0
             self._connections.add_replica(
-                pod, shard_id, address, self._create_connection
+                pod, shard_id, address, self.create_connection
             )
 
     def remove_connection(
@@ -315,15 +315,47 @@ class GrpcConnectionPool:
 
         return asyncio.create_task(task_wrapper(msg, connection))
 
-    def _create_connection(self, target) -> jina_pb2_grpc.JinaDataRequestRPCStub:
-        self._logger.debug(f'create connection to {target}')
-        channel = grpc.aio.insecure_channel(
-            target,
-            options=[
-                ('grpc.max_send_message_length', -1),
-                ('grpc.max_receive_message_length', -1),
-            ],
+    @staticmethod
+    def send_message_sync(msg: Message, target: str, timeout=1.0) -> Message:
+        """
+        Sends a message synchronizly to the target via grpc
+
+        :param msg: the message to send
+        :param target: where to send the message to, like 127.0.0.1:8080
+        :param timeout: timeout for the send
+        :returns: the response message
+        """
+        return GrpcConnectionPool.create_connection(target, is_async=False).Call(
+            msg, timeout=timeout
         )
+
+    @staticmethod
+    def create_connection(
+        target: str, is_async=True
+    ) -> jina_pb2_grpc.JinaDataRequestRPCStub:
+        """
+        Creates a grpc stub to the given target address
+
+        :param target: the adress to create the connection to, like 127.0.0.0.1:8080
+        :param is_async: describes if the async version of the connction should be created, true by default
+        :returns: a grpc stub
+        """
+        if is_async:
+            channel = grpc.aio.insecure_channel(
+                target,
+                options=[
+                    ('grpc.max_send_message_length', -1),
+                    ('grpc.max_receive_message_length', -1),
+                ],
+            )
+        else:
+            channel = grpc.insecure_channel(
+                target,
+                options=[
+                    ('grpc.max_send_message_length', -1),
+                    ('grpc.max_receive_message_length', -1),
+                ],
+            )
 
         return jina_pb2_grpc.JinaDataRequestRPCStub(channel)
 

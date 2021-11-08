@@ -39,10 +39,10 @@ def executor_native(args: 'Namespace'):
     :param args: arguments coming from the CLI.
     """
     from jina.peapods.runtimes.zmq.zed import ZEDRuntime
-    from jina.peapods.runtimes.grpc import GRPCDataRuntime
+    from jina.peapods.runtimes.grpc import WorkerRuntime
 
     if args.runtime_cls == 'GRPCDataRuntime' or args.grpc_data_requests:
-        runtime_cls = GRPCDataRuntime
+        runtime_cls = WorkerRuntime
     elif args.runtime_cls == 'ZEDRuntime':
         runtime_cls = ZEDRuntime
     else:
@@ -77,9 +77,9 @@ def grpc_data_runtime(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-    from jina.peapods.runtimes.grpc import GRPCDataRuntime
+    from jina.peapods.runtimes.grpc import WorkerRuntime
 
-    with GRPCDataRuntime(args) as runtime:
+    with WorkerRuntime(args) as runtime:
         runtime.logger.success(
             f' Executor {runtime._data_request_handler._executor.metas.name} started'
         )
