@@ -161,3 +161,14 @@ class AsyncNewLoopRuntime(BaseRuntime, ABC):
         :return: True if is ready or it needs to be shutdown
         """
         return ready_or_shutdown_event.wait(timeout)
+
+    def _log_info_msg(self, msg):
+        info_msg = f'recv {msg.envelope.request_type} '
+        req_type = msg.envelope.request_type
+        if req_type == 'DataRequest':
+            info_msg += (
+                f'({msg.envelope.header.exec_endpoint}) - ({msg.envelope.request_id}) '
+            )
+        elif req_type == 'ControlRequest':
+            info_msg += f'({msg.request.command}) '
+        self.logger.debug(info_msg)

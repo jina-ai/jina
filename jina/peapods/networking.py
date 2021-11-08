@@ -225,7 +225,7 @@ class GrpcConnectionPool:
         self,
         msg: Message,
         pod: str,
-        head: bool,
+        head: bool = False,
         shard_id: Optional[int] = None,
         polling_type: PollingType = PollingType.ANY,
     ) -> List[asyncio.Task]:
@@ -257,7 +257,7 @@ class GrpcConnectionPool:
         return results
 
     def add_connection(
-        self, pod: str, head: bool, address: str, shard_id: Optional[int] = None
+        self, pod: str, address: str, head: bool = False, shard_id: Optional[int] = None
     ):
         """
         Adds a connection for a pod to this connection pool
