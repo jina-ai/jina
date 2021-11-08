@@ -16,4 +16,7 @@ That said, have fun!
 :hidden:
 
 kubernetes
+indexers
+compound-executor
+graph-document
 ```

@@ -1,0 +1,53 @@
+name: Update Announcement
+
+on:
+  workflow_dispatch:
+    inputs:
+      announce_text:
+        description: 'Announcement text (to delete current, leave it empty)'
+        required: false
+      announce_url:
+        description: 'Announcement URL (to delete current, leave it empty)'
+        required: false
+      release_token:
+        description: 'Your token'
+        required: true
+
+jobs:
+  token-check:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "success!"
+        if: "${{ github.event.inputs.release_token }} == ${{ env.release_token }}"
+        env:
+          release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}
+
+  update-announcement:
+    needs: token-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.JINA_DEV_BOT }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - run: |
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
+          python scripts/announcement.py "${{ github.event.inputs.announce_text }}" "${{ github.event.inputs.announce_url }}"
+          git add -u
+          git commit -m "chore: update announcement in readme and docs"
+      - name: push to master
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.JINA_DEV_BOT }}
+          branch: master
+      - uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: Manual Docs Build
+          inputs: '{ "release_token": "${{ env.release_token }}", "triggered_by": "CD"}'
+          token: ${{ secrets.JINA_DEV_BOT }}
+        env:
+          release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}

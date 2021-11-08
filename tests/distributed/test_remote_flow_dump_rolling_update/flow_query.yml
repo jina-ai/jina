@@ -4,11 +4,11 @@ with:
   protocol: http
   port_expose: 9001
   cors: true
-pods:
+executors:
   - name: indexer_query
-    uses: indexer_query.yml
+    uses: executors/indexer_query.yml
     replicas: 2
-    parallel: 3
+    shards: 3
     polling: all
-    uses_after: merge_matches.yml
+    uses_after: executors/merge_matches.yml
     timeout_ready: '-1'

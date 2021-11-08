@@ -8,19 +8,18 @@ from tests import random_docs
 @pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['http', 'websocket', 'grpc'])
 @pytest.mark.parametrize('changeto_protocol', ['grpc', 'http', 'websocket'])
-def test_change_gateway(protocol, changeto_protocol, mocker):
-    f = Flow(protocol=protocol).add().add().add(needs='pod1').needs_all()
+def test_change_gateway(protocol, changeto_protocol):
+    f = Flow(protocol=protocol).add().add().add(needs='executor1').needs_all()
 
     with f:
-        mock = mocker.Mock()
-        f.post('/', random_docs(10), on_done=mock)
-        mock.assert_called()
-
-        mock = mocker.Mock()
+        results = f.post('/', random_docs(10), return_results=True)
+        assert len(results) > 0
+        assert len(results[0].docs) == 10
         f.protocol = changeto_protocol
 
-        f.post('/', random_docs(10), on_done=mock)
-        mock.assert_called()
+        f.post('/', random_docs(10), return_results=True)
+        assert len(results) > 0
+        assert len(results[0].docs) == 10
 
 
 @pytest.mark.parametrize('protocol', ['http', 'websocket', 'grpc'])

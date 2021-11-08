@@ -7,9 +7,8 @@ from ....excepts import (
     BadConfigSource,
 )
 from ....executors import BaseExecutor
-from ....helper import typename
 from ....types.arrays.document import DocumentArray
-from ....types.arrays.abstract import AbstractDocumentArray
+from ....types.arrays.memmap import DocumentArrayMemmap
 from ....types.message import Message, Request
 
 if TYPE_CHECKING:
@@ -46,10 +45,7 @@ def _get_docs_from_msg(
     else:
         result = getattr(msg.request, field)
 
-    # to unify all length=0 DocumentArray (or any other results) will simply considered as None
-    # otherwise the executor has to handle DocArray(0)
-    if len(result):
-        return result
+    return result
 
 
 class DataRequestHandler:
@@ -64,7 +60,10 @@ class DataRequestHandler:
         """
         super().__init__()
         self.args = args
+        self.args.pea_id = self.args.shard_id
+        self.args.parallel = self.args.shards
         self.logger = logger
+        self._is_closed = False
         self._load_executor()
 
     def _load_executor(self):
@@ -76,6 +75,7 @@ class DataRequestHandler:
                 override_metas=self.args.uses_metas,
                 override_requests=self.args.uses_requests,
                 runtime_args=vars(self.args),
+                extra_search_paths=self.args.extra_search_paths,
             )
         except BadConfigSource as ex:
             self.logger.error(
@@ -136,7 +136,9 @@ class DataRequestHandler:
                 )
             return
 
-        params = self._parse_params(msg.request.parameters, self._executor.metas.name)
+        params = self._parse_params(
+            msg.request.parameters.dict(), self._executor.metas.name
+        )
         docs = _get_docs_from_msg(
             msg,
             partial_request=partial_requests,
@@ -170,13 +172,17 @@ class DataRequestHandler:
         # 3. Return DocArray, but the memory pointer says it is the same as self.docs: do nothing
         # 4. Return DocArray and its not a shallow copy of self.docs: assign self.request.docs
         if r_docs is not None:
-            if not isinstance(r_docs, AbstractDocumentArray):
+            if isinstance(r_docs, (DocumentArray, DocumentArrayMemmap)):
+                if r_docs != msg.request.docs:
+                    # this means the returned DocArray is a completely new one
+                    DataRequestHandler.replace_docs(msg, r_docs)
+            elif isinstance(r_docs, dict):
+                msg.request.parameters.update(r_docs)
+            else:
                 raise TypeError(
-                    f'return type must be {DocumentArray!r} or None, but getting {typename(r_docs)}'
+                    f'The return type must be DocumentArray / DocumentArrayMemmap / Dict / `None`, '
+                    f'but getting {r_docs!r}'
                 )
-            elif r_docs != msg.request.docs:
-                # this means the returned DocArray is a completely new one
-                DataRequestHandler.replace_docs(msg, r_docs)
         elif partial_requests:
             DataRequestHandler.replace_docs(msg, docs)
 
@@ -192,4 +198,6 @@ class DataRequestHandler:
 
     def close(self):
         """ Close the data request handler, by closing the executor """
-        self._executor.close()
+        if not self._is_closed:
+            self._executor.close()
+            self._is_closed = True

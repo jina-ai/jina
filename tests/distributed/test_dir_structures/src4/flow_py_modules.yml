@@ -1,0 +1,11 @@
+jtype: Flow
+with:
+  port_expose: $PORT_EXPOSE
+executors:
+  - name: remote_io_executor
+    uses: IOExecutor
+    py_modules: executors/__init__.py
+  - name: remote_data_executor
+    uses: DataExecutor
+    py_modules: executors/__init__.py
+  

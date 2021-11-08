@@ -36,6 +36,14 @@ When not given, then the default naming strategy will apply.
         'If not set, then derive from its parent `workspace`.',
     )
 
+    parser.add_argument(
+        '--k8s-namespace',
+        type=str,
+        help='Name of the namespace where Kubernetes deployment should be deployed, to be filled by flow name'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+
     from ... import __resources_path__
 
     gp.add_argument(
@@ -93,4 +101,23 @@ When not given, then the default naming strategy will apply.
         '--routing-table',
         type=str,
         help='Routing graph for the gateway' if _SHOW_ALL_ARGS else argparse.SUPPRESS,
+    )
+
+    parser.add_argument(
+        '--dynamic-routing',
+        action='store_true',
+        default=True,
+        help='The Pod will setup the socket types of the HeadPea and TailPea depending on this argument.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+
+    parser.add_argument(
+        '--extra-search-paths',
+        type=str,
+        default=[],
+        nargs='*',
+        help='Extra search paths to be used when loading modules and finding YAML config files.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
     )

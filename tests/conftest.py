@@ -58,7 +58,6 @@ def partial_pea_client(monkeypatch):
 
 
 def get_partial_client(mode, monkeypatch):
-    monkeypatch.setattr(os, "kill", lambda *args, **kwargs: None)
     from daemon import __root_workspace__
 
     pathlib.Path(__root_workspace__).mkdir(parents=True, exist_ok=True)
@@ -191,7 +190,7 @@ def tmpfile(tmpdir):
     return tmpdir / tmpfile
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope='session')
 def event_loop(request):
     """
     Valid only for `pytest.mark.asyncio` tests

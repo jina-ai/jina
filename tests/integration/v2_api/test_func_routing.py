@@ -111,7 +111,7 @@ def test_func_joiner(mocker):
         Flow()
         .add(uses=M1)
         .add(uses=M2, needs='gateway')
-        .add(uses=Joiner, needs=['pod0', 'pod1'])
+        .add(uses=Joiner, needs=['executor0', 'executor1'])
     )
 
     mock = mocker.Mock()
@@ -142,7 +142,7 @@ def test_func_joiner(mocker):
 
 
 def test_dealer_routing(mocker):
-    f = Flow().add(parallel=3)
+    f = Flow().add(shards=3)
     mock = mocker.Mock()
     with f:
         f.post(
@@ -225,7 +225,7 @@ def test_target_peapod_with_one_pathways():
 
 
 def test_target_peapod_with_two_pathways():
-    f = Flow().add().add(needs=['gateway', 'pod0'], name='my_target')
+    f = Flow().add().add(needs=['gateway', 'executor0'], name='my_target')
     with f:
         results = f.post(
             on='/search',
@@ -237,7 +237,7 @@ def test_target_peapod_with_two_pathways():
 
 
 def test_target_peapod_with_two_pathways_one_skip():
-    f = Flow().add().add(needs=['gateway', 'pod0']).add(name='my_target')
+    f = Flow().add().add(needs=['gateway', 'executor0']).add(name='my_target')
     with f:
         results = f.post(
             on='/search',
@@ -248,7 +248,7 @@ def test_target_peapod_with_two_pathways_one_skip():
         assert len(results[0].data.docs) == 1
 
 
-def test_target_peapod_with_parallel():
+def test_target_peapod_with_shards():
     f = Flow().add(shards=2).add(name='my_target')
     with f:
         results = f.post(

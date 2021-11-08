@@ -9,11 +9,16 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 @pytest.fixture()
 def docker_image():
-    docker_file = os.path.join(cur_dir, 'Dockerfile')
-    os.system(f"docker build -f {docker_file} -t override-config-test {cur_dir}")
-    time.sleep(3)
+    import docker
+
+    client = docker.from_env()
+    client.images.build(path=os.path.join(cur_dir), tag='override-config-test')
+    client.close()
     yield
-    os.system(f"docker rmi $(docker images | grep 'override-config-test')")
+    time.sleep(2)
+    client = docker.from_env()
+    client.containers.prune()
+    client.close()
 
 
 @pytest.fixture()
@@ -41,12 +46,12 @@ def test_override_config_params(docker_image, flow):
     assert doc.tags['workspace'] == 'different_workspace'
 
 
-def test_override_config_params_parallel(docker_image):
+def test_override_config_params_shards(docker_image):
     flow = Flow(return_results=True).add(
         uses='docker://override-config-test',
         uses_with={'param1': 50, 'param2': 30},
         uses_metas={'workspace': 'different_workspace'},
-        parallel=2,
+        shards=2,
     )
     with flow:
         resps = flow.search(inputs=[Document()], return_results=True)

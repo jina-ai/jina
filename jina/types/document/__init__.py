@@ -1,21 +1,18 @@
 import base64
-import io
 import json
 import mimetypes
-import os
-import urllib.parse
-import urllib.request
+from collections import Counter
 from hashlib import blake2b
 from typing import (
-    Iterable,
-    Union,
-    Dict,
-    Optional,
-    TypeVar,
     Any,
-    Tuple,
+    Dict,
+    Iterable,
     List,
+    Optional,
+    Tuple,
     Type,
+    TypeVar,
+    Union,
     overload,
 )
 
@@ -23,35 +20,26 @@ import numpy as np
 from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 
-from .converters import png_to_buffer, to_datauri, to_image_blob
-from .helper import versioned, VersionedMixin
+from .converters import ContentConversionMixin, _text_to_word_sequence
+from .helper import VersionedMixin, versioned
 from ..mixin import ProtoTypeMixin
-from ..ndarray.generic import NdArray, BaseSparseNdArray
+from ..ndarray.generic import BaseSparseNdArray, NdArray
 from ..score import NamedScore
 from ..score.map import NamedScoreMapping
 from ..struct import StructView
 from ...excepts import BadDocType
-from ...helper import (
-    typename,
-    random_identity,
-    download_mermaid_url,
-    dunder_get,
-    cached_property,
-)
-from ...importer import ImportExtensions
+from ...helper import download_mermaid_url, dunder_get, random_identity, typename
 from ...logging.predefined import default_logger
 from ...proto import jina_pb2
 
 if False:
+    # fix type-hint complain for sphinx and flake
+    import scipy.sparse
+    import tensorflow
+    import torch
+
     from ..arrays.chunk import ChunkArray
     from ..arrays.match import MatchArray
-
-    from scipy.sparse import coo_matrix
-
-    # fix type-hint complain for sphinx and flake
-    import scipy
-    import tensorflow as tf
-    import torch
 
     ArrayType = TypeVar(
         'ArrayType',
@@ -61,37 +49,29 @@ if False:
         scipy.sparse.bsr_matrix,
         scipy.sparse.csc_matrix,
         torch.sparse_coo_tensor,
-        tf.SparseTensor,
+        tensorflow.SparseTensor,
+        tensorflow.Tensor,
+        torch.Tensor,
+        jina_pb2.NdArrayProto,
+        NdArray,
     )
 
-    SparseArrayType = TypeVar(
-        'SparseArrayType',
-        np.ndarray,
-        scipy.sparse.csr_matrix,
-        scipy.sparse.coo_matrix,
-        scipy.sparse.bsr_matrix,
-        scipy.sparse.csc_matrix,
-        torch.sparse_coo_tensor,
-        tf.SparseTensor,
-    )
-
-__all__ = ['Document', 'DocumentContentType', 'DocumentSourceType']
-DIGEST_SIZE = 8
-
-# This list is not exhaustive because we cannot add the `sparse` types without adding the `dependencies`
 DocumentContentType = TypeVar('DocumentContentType', bytes, str, 'ArrayType')
 DocumentSourceType = TypeVar(
-    'DocumentSourceType', jina_pb2.DocumentProto, bytes, str, Dict, 'Document'
+    'DocumentSourceType', jina_pb2.DocumentProto, bytes, str, Dict
 )
 
-_all_mime_types = set(mimetypes.types_map.values())
+__all__ = ['Document']
 
+DIGEST_SIZE = 8
+
+_all_mime_types = set(mimetypes.types_map.values())
 _all_doc_content_keys = {'content', 'blob', 'text', 'buffer', 'graph'}
 _all_doc_array_keys = ('blob', 'embedding')
 _special_mapped_keys = ('scores', 'evaluations')
 
 
-class Document(ProtoTypeMixin, VersionedMixin):
+class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
     """
     :class:`Document` is one of the **primitive data type** in Jina.
 
@@ -144,20 +124,18 @@ class Document(ProtoTypeMixin, VersionedMixin):
     """
 
     ON_GETATTR = ['matches', 'chunks']
-    CNT = 0
 
     # overload_inject_start_document
     @overload
     def __init__(
         self,
+        *,
         adjacency: Optional[int] = None,
-        blob: Optional[Union['ArrayType', 'jina_pb2.NdArrayProto', 'NdArray']] = None,
+        blob: Optional['ArrayType'] = None,
         buffer: Optional[bytes] = None,
         chunks: Optional[Iterable['Document']] = None,
-        content: Optional[DocumentContentType] = None,
-        embedding: Optional[
-            Union['ArrayType', 'jina_pb2.NdArrayProto', 'NdArray']
-        ] = None,
+        content: Optional['DocumentContentType'] = None,
+        embedding: Optional['ArrayType'] = None,
         granularity: Optional[int] = None,
         id: Optional[str] = None,
         matches: Optional[Iterable['Document']] = None,
@@ -194,7 +172,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
 
     def __init__(
         self,
-        document: Optional[DocumentSourceType] = None,
+        document: Optional[Union['DocumentSourceType', 'Document']] = None,
         field_resolver: Dict[str, str] = None,
         copy: bool = False,
         **kwargs,
@@ -208,9 +186,8 @@ class Document(ProtoTypeMixin, VersionedMixin):
                 it builds a view or a copy from it.
         :param copy: when ``document`` is given as a :class:`DocumentProto` object, build a
                 view (i.e. weak reference) from it or a deep copy from it.
-        :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field
-                names defined in Protobuf. This is only used when the given ``document`` is
-                a JSON string or a Python dict.
+        :param field_resolver: a map from field names defined in JSON, dict to the field
+            names defined in Document.
         :param kwargs: other parameters to be set _after_ the document is constructed
 
         .. note::
@@ -227,8 +204,6 @@ class Document(ProtoTypeMixin, VersionedMixin):
                 assert d.tags['hello'] == 'world'  # true
                 assert d.tags['good'] == 'bye'  # true
         """
-        Document.CNT += 1
-
         try:
             if isinstance(document, jina_pb2.DocumentProto):
                 if copy:
@@ -326,7 +301,17 @@ class Document(ProtoTypeMixin, VersionedMixin):
                     f'Document content fields are mutually exclusive, please provide only one of {_all_doc_content_keys}'
                 )
             self.set_attributes(**kwargs)
-        self._mermaid_id = str(Document.CNT) + self._pb_body.id
+        self.__mermaid_id = None
+
+    @property
+    def _mermaid_id(self):
+        if self.__mermaid_id is None:
+            self.__mermaid_id = random_identity()
+        return self.__mermaid_id
+
+    @_mermaid_id.setter
+    def _mermaid_id(self, m_id):
+        self.__mermaid_id = m_id
 
     def pop(self, *fields) -> None:
         """Remove the values from the given fields of this Document.
@@ -507,7 +492,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
 
     def get_sparse_blob(
         self, sparse_ndarray_cls_type: Type[BaseSparseNdArray], **kwargs
-    ) -> 'SparseArrayType':
+    ) -> 'ArrayType':
         """Return ``blob`` of the content of a Document as an sparse array.
 
         :param sparse_ndarray_cls_type: Sparse class type, such as `SparseNdArray`.
@@ -524,7 +509,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
         ).value
 
     @blob.setter
-    def blob(self, value: Union['ArrayType', 'jina_pb2.NdArrayProto', 'NdArray']):
+    def blob(self, value: 'ArrayType'):
         """Set the `blob` to :param:`value`.
 
         :param value: the array value to set the blob
@@ -532,7 +517,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
         self._update_ndarray('blob', value)
 
     @property
-    def embedding(self) -> 'SparseArrayType':
+    def embedding(self) -> 'ArrayType':
         """Return ``embedding`` of the content of a Document.
 
          .. note::
@@ -546,7 +531,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
 
     def get_sparse_embedding(
         self, sparse_ndarray_cls_type: Type[BaseSparseNdArray], **kwargs
-    ) -> 'SparseArrayType':
+    ) -> 'ArrayType':
         """Return ``embedding`` of the content of a Document as an sparse array.
 
         :param sparse_ndarray_cls_type: Sparse class type, such as `SparseNdArray`.
@@ -563,94 +548,43 @@ class Document(ProtoTypeMixin, VersionedMixin):
         ).value
 
     @embedding.setter
-    def embedding(self, value: Union['ArrayType', 'jina_pb2.NdArrayProto', 'NdArray']):
+    def embedding(self, value: 'ArrayType'):
         """Set the ``embedding`` of the content of a Document.
 
         :param value: the array value to set the embedding
         """
         self._update_ndarray('embedding', value)
 
-    def _update_sparse_ndarray(self, k, v, sparse_cls):
-        NdArray(
-            is_sparse=True,
-            sparse_cls=sparse_cls,
-            proto=getattr(self._pb_body, k),
-        ).value = v
+    def _update_ndarray(self, k, v):
+        framework, is_sparse = _get_array_type(v)
 
-    @staticmethod
-    def _check_installed_array_packages():
-        from ... import JINA_GLOBAL
+        if framework == 'jina':
+            _t = NdArray(getattr(self._pb_body, k))
+            _t.is_sparse = v.is_sparse
+            _t.value = v.value
+        elif framework == 'jina_proto':
+            getattr(self._pb_body, k).CopyFrom(v)
 
-        if JINA_GLOBAL.scipy_installed is None:
-            JINA_GLOBAL.scipy_installed = False
-            with ImportExtensions(required=False, pkg_name='scipy'):
-                import scipy
-
-                JINA_GLOBAL.scipy_installed = True
-
-        if JINA_GLOBAL.tensorflow_installed is None:
-            JINA_GLOBAL.tensorflow_installed = False
-            with ImportExtensions(required=False, pkg_name='tensorflow'):
-                import tensorflow
-
-                JINA_GLOBAL.tensorflow_installed = True
-
-        if JINA_GLOBAL.torch_installed is None:
-            JINA_GLOBAL.torch_installed = False
-            with ImportExtensions(required=False, pkg_name='torch'):
-                import torch
-
-                JINA_GLOBAL.torch_installed = True
-
-    def _update_if_sparse(self, k, v):
-
-        from ... import JINA_GLOBAL
-
-        v_valid_sparse_type = False
-        Document._check_installed_array_packages()
-
-        if JINA_GLOBAL.scipy_installed:
-            import scipy
-
-            if scipy.sparse.issparse(v):
+        if is_sparse:
+            if framework == 'scipy':
                 from ..ndarray.sparse.scipy import SparseNdArray
-
-                self._update_sparse_ndarray(k=k, v=v, sparse_cls=SparseNdArray)
-                v_valid_sparse_type = True
-
-        if JINA_GLOBAL.tensorflow_installed:
-            import tensorflow
-
-            if isinstance(v, tensorflow.SparseTensor):
+            if framework == 'tensorflow':
                 from ..ndarray.sparse.tensorflow import SparseNdArray
-
-                self._update_sparse_ndarray(k=k, v=v, sparse_cls=SparseNdArray)
-                v_valid_sparse_type = True
-
-        if JINA_GLOBAL.torch_installed:
-            import torch
-
-            if isinstance(v, torch.Tensor) and v.is_sparse:
+            if framework == 'torch':
                 from ..ndarray.sparse.pytorch import SparseNdArray
 
-                self._update_sparse_ndarray(k=k, v=v, sparse_cls=SparseNdArray)
-                v_valid_sparse_type = True
-
-        return v_valid_sparse_type
-
-    def _update_ndarray(self, k, v):
-        if isinstance(v, jina_pb2.NdArrayProto):
-            getattr(self._pb_body, k).CopyFrom(v)
-        elif isinstance(v, np.ndarray):
-            NdArray(getattr(self._pb_body, k)).value = v
-        elif isinstance(v, NdArray):
-            NdArray(getattr(self._pb_body, k)).is_sparse = v.is_sparse
-            NdArray(getattr(self._pb_body, k)).value = v.value
+            NdArray(
+                is_sparse=True,
+                sparse_cls=SparseNdArray,
+                proto=getattr(self._pb_body, k),
+            ).value = v
         else:
-            v_valid_sparse_type = self._update_if_sparse(k, v)
-
-            if not v_valid_sparse_type:
-                raise TypeError(f'{k} is in unsupported type {typename(v)}')
+            if framework == 'numpy':
+                NdArray(getattr(self._pb_body, k)).value = v
+            if framework == 'tensorflow':
+                NdArray(getattr(self._pb_body, k)).value = v.numpy()
+            if framework == 'torch':
+                NdArray(getattr(self._pb_body, k)).value = v.detach().cpu().numpy()
 
     @property
     @versioned
@@ -870,7 +804,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
         return self._pb_body.WhichOneof('content')
 
     @property
-    def content(self) -> DocumentContentType:
+    def content(self) -> 'DocumentContentType':
         """Return the content of the document. It checks whichever field among :attr:`blob`, :attr:`text`,
         :attr:`buffer` has value and return it.
 
@@ -884,7 +818,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
             return getattr(self, attr)
 
     @content.setter
-    def content(self, value: DocumentContentType):
+    def content(self, value: 'DocumentContentType'):
         """Set the content of the document. It assigns the value to field with the right type.
 
         .. seealso::
@@ -998,135 +932,6 @@ class Document(ProtoTypeMixin, VersionedMixin):
         for k, v in value.items():
             scores[k] = v
 
-    def convert_image_buffer_to_blob(self, color_axis: int = -1):
-        """Convert an image buffer to blob
-
-        :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
-        """
-        self.blob = to_image_blob(io.BytesIO(self.buffer), color_axis)
-
-    def convert_image_blob_to_uri(
-        self, width: int, height: int, resize_method: str = 'BILINEAR'
-    ):
-        """Assuming :attr:`blob` is a _valid_ image, set :attr:`uri` accordingly
-        :param width: the width of the blob
-        :param height: the height of the blob
-        :param resize_method: the resize method name
-        """
-        png_bytes = png_to_buffer(self.blob, width, height, resize_method)
-        self.uri = 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
-
-    def convert_image_uri_to_blob(
-        self, color_axis: int = -1, uri_prefix: Optional[str] = None
-    ):
-        """Convert uri to blob
-
-        :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
-        :param uri_prefix: the prefix of the uri
-        """
-        self.blob = to_image_blob(
-            (uri_prefix + self.uri) if uri_prefix else self.uri, color_axis
-        )
-
-    def convert_image_datauri_to_blob(self, color_axis: int = -1):
-        """Convert data URI to image blob
-
-        :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
-        """
-        req = urllib.request.Request(self.uri, headers={'User-Agent': 'Mozilla/5.0'})
-        with urllib.request.urlopen(req) as fp:
-            buffer = fp.read()
-        self.blob = to_image_blob(io.BytesIO(buffer), color_axis)
-
-    def convert_buffer_to_blob(self, dtype=None, count=-1, offset=0):
-        """Assuming the :attr:`buffer` is a _valid_ buffer of Numpy ndarray,
-        set :attr:`blob` accordingly.
-
-        :param dtype: Data-type of the returned array; default: float.
-        :param count: Number of items to read. ``-1`` means all data in the buffer.
-        :param offset: Start reading the buffer from this offset (in bytes); default: 0.
-
-        .. note::
-            One can only recover values not shape information from pure buffer.
-        """
-        self.blob = np.frombuffer(self.buffer, dtype, count, offset)
-
-    def convert_blob_to_buffer(self):
-        """Convert blob to buffer"""
-        self.buffer = self.blob.tobytes()
-
-    def convert_uri_to_buffer(self):
-        """Convert uri to buffer
-        Internally it downloads from the URI and set :attr:`buffer`.
-
-        """
-        if urllib.parse.urlparse(self.uri).scheme in {'http', 'https', 'data'}:
-            req = urllib.request.Request(
-                self.uri, headers={'User-Agent': 'Mozilla/5.0'}
-            )
-            with urllib.request.urlopen(req) as fp:
-                self.buffer = fp.read()
-        elif os.path.exists(self.uri):
-            with open(self.uri, 'rb') as fp:
-                self.buffer = fp.read()
-        else:
-            raise FileNotFoundError(f'{self.uri} is not a URL or a valid local path')
-
-    def convert_uri_to_datauri(self, charset: str = 'utf-8', base64: bool = False):
-        """Convert uri to data uri.
-        Internally it reads uri into buffer and convert it to data uri
-
-        :param charset: charset may be any character set registered with IANA
-        :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit. Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that frequently uses non-US-ASCII characters.
-        """
-        if not _is_datauri(self.uri):
-            self.convert_uri_to_buffer()
-            self.uri = to_datauri(
-                self.mime_type, self.buffer, charset, base64, binary=True
-            )
-
-    def convert_buffer_to_uri(self, charset: str = 'utf-8', base64: bool = False):
-        """Convert buffer to data uri.
-        Internally it first reads into buffer and then converts it to data URI.
-
-        :param charset: charset may be any character set registered with IANA
-        :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit.
-            Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that
-            frequently uses non-US-ASCII characters.
-        """
-
-        if not self.mime_type:
-            raise ValueError(
-                f'{self.mime_type} is unset, can not convert it to data uri'
-            )
-
-        self.uri = to_datauri(self.mime_type, self.buffer, charset, base64, binary=True)
-
-    def convert_text_to_uri(self, charset: str = 'utf-8', base64: bool = False):
-        """Convert text to data uri.
-
-        :param charset: charset may be any character set registered with IANA
-        :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit.
-            Designed to be efficient for non-text 8 bit and binary data.
-            Sometimes used for text data that frequently uses non-US-ASCII characters.
-        """
-
-        self.uri = to_datauri(self.mime_type, self.text, charset, base64, binary=False)
-
-    def convert_uri_to_text(self):
-        """Assuming URI is text, convert it to text"""
-        self.convert_uri_to_buffer()
-        self.text = self.buffer.decode()
-
-    def convert_content_to_uri(self):
-        """Convert content in URI with best effort"""
-        if self.text:
-            self.convert_text_to_uri()
-        elif self.buffer:
-            self.convert_buffer_to_uri()
-        elif self.content_type:
-            raise NotImplementedError
-
     def MergeFrom(self, doc: 'Document'):
         """Merge the content of target
 
@@ -1187,10 +992,10 @@ class Document(ProtoTypeMixin, VersionedMixin):
 
         mermaid_str = (
             """
-                                    %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
-                                    classDiagram
+                                            %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
+                                            classDiagram
     
-                                            """
+                                                    """
             + self.__mermaid_str__()
         )
 
@@ -1220,7 +1025,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
         showed = False
         if inline_display:
             try:
-                from IPython.display import display, Image
+                from IPython.display import Image, display
 
                 display(Image(url=url))
                 showed = True
@@ -1282,14 +1087,6 @@ class Document(ProtoTypeMixin, VersionedMixin):
         else:
             return super().json(*args, **kwargs)
 
-    @property
-    def non_empty_fields(self) -> Tuple[str]:
-        """Return the set fields of the current document that are not empty
-
-        :return: the tuple of non-empty fields
-        """
-        return tuple(field[0].name for field in self.ListFields())
-
     @staticmethod
     def attributes(
         include_proto_fields: bool = True,
@@ -1331,20 +1128,60 @@ class Document(ProtoTypeMixin, VersionedMixin):
         elif '__' in item:
             value = dunder_get(self._pb_body, item)
         else:
-            raise AttributeError
+            raise AttributeError(f'no attribute named `{item}`')
         return value
 
+    def get_vocabulary(self, text_attrs: Tuple[str, ...] = ('text',)) -> Dict[str, int]:
+        """Get the text vocabulary in a counter dict that maps from the word to its frequency from all :attr:`text_fields`.
 
-def _is_uri(value: str) -> bool:
-    scheme = urllib.parse.urlparse(value).scheme
-    return (
-        (scheme in {'http', 'https'})
-        or (scheme in {'data'})
-        or os.path.exists(value)
-        or os.access(os.path.dirname(value), os.W_OK)
-    )
+        :param text_attrs: the textual attributes where vocabulary will be derived from
+        :return: a vocabulary in dictionary where key is the word, value is the frequency of that word in all text fields.
+        """
+        all_tokens = Counter()
+
+        for f in text_attrs:
+            all_tokens.update(_text_to_word_sequence(getattr(self, f)))
+
+        return all_tokens
 
 
-def _is_datauri(value: str) -> bool:
-    scheme = urllib.parse.urlparse(value).scheme
-    return scheme in {'data'}
+def _get_array_type(array) -> Tuple[str, bool]:
+    """Get the type of ndarray without importing the framework
+
+    :param array: any array, scipy, numpy, tf, torch, etc.
+    :return: a tuple where the first element represents the framework, the second represents if it is sparse array
+    """
+    module_tags = array.__class__.__module__.split('.')
+    class_name = array.__class__.__name__
+
+    if 'numpy' in module_tags:
+        return 'numpy', False
+
+    if 'jina' in module_tags:
+        if class_name == 'NdArray' or class_name == 'DenseNdArray':
+            return 'jina', False
+        if class_name == 'SparseNdArray':
+            return 'jina', True
+
+    if 'jina_pb2' in module_tags:
+        if class_name == 'DenseNdArrayProto' or class_name == 'NdArrayProto':
+            return 'jina_proto', False
+        if class_name == 'SparseNdArrayProto':
+            return 'jina_proto', True
+
+    if 'tensorflow' in module_tags:
+        if class_name == 'SparseTensor':
+            return 'tensorflow', True
+        if class_name == 'Tensor' or class_name == 'EagerTensor':
+            return 'tensorflow', False
+
+    if 'torch' in module_tags and class_name == 'Tensor':
+        if array.is_sparse:
+            return 'torch', True
+        else:
+            return 'torch', False
+
+    if 'scipy' in module_tags and 'sparse' in module_tags:
+        return 'scipy', True
+
+    raise TypeError(f'can not determine the array type: {module_tags}.{class_name}')

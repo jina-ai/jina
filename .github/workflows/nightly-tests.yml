@@ -1,0 +1,85 @@
+name: Nightly Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        default: master
+  schedule:
+    - cron: "0 6 * * 1-5"   # runs at 6AM UTC (mon-fri)
+  # pull_request:             # uncomment this if you want to run nightly tests in your PR
+
+jobs:
+  prep-testbed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - id: set-matrix
+        run: |
+          sudo apt-get install jq
+          echo "::set-output name=windows::$(bash scripts/get-all-test-paths.sh windows)"
+    outputs:
+      windows: ${{ steps.set-matrix.outputs.windows }}
+
+  windows-test:
+    needs: prep-testbed
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.7, 3.8]
+        test-path: ${{fromJson(needs.prep-testbed.outputs.windows)}}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.branch }}
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: x64
+      - name: Prepare envionment
+        run: |
+          docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+          python -m pip install --upgrade pip
+          python -m pip install wheel
+          pip install ".[all]" --no-cache-dir
+          $env:PYTHONIOENCODING='utf-8'
+          jina
+          $env:JINA_LOG_LEVEL='ERROR'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Test
+        id: test
+        run: |
+          $env:PYTHONIOENCODING='utf-8'
+          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --timeout=360 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+        timeout-minutes: 20
+        env:
+          JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
+          JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: eventName,job
+          text: |
+            :no_entry: pytest run for `${{ matrix.test-path }}` failed on :windows:
+          author_name: Nightly tests
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NIGHTLY_TESTS_WEBHOOK }}
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
+
+  success-all-test:
+    needs: [prep-testbed, windows-test]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: technote-space/workflow-conclusion-action@v2
+      - name: Check Failure
+        if: env.WORKFLOW_CONCLUSION == 'failure'
+        run: exit 1
+      - name: Success
+        if: ${{ success() }}
+        run: echo "All Done"

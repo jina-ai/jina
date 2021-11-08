@@ -20,7 +20,7 @@ def get_extra_requires(path):
 
                     k = re.split('([<>=])', k, 1)
 
-                    # If we have some version requrement, it will be returned as a
+                    # If we have some version requirement, it will be returned as a
                     # separate item by the split function
                     if len(k) == 3:
                         k = [k[0], k[1] + k[2]]
@@ -28,6 +28,10 @@ def get_extra_requires(path):
 
                     # Can not use extra requirements in conda - i.e. uvicorn[standard]
                     k[0] = re.sub(r'\[\w+\]', '', k[0])
+
+                    # The kubernetes package is python-kubernetes on conda-forge
+                    if k[0] == 'kubernetes':
+                        k[0] = 'python-kubernetes'
 
                     # The docker package is docker-py on conda-forge
                     if k[0] == 'docker':

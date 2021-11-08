@@ -1,5 +1,5 @@
 (daemon-cookbook)=
-# Remote Management via JinaD
+# Remote Executors and Flows via JinaD
 
 `JinaD` is a [daemon](https://en.wikipedia.org/wiki/Daemon_(computing)) for deploying and managing Jina on remote via a
 RESTful interface. It allows users to create/update/delete Executors and Flows on remote hosts. It achieves isolation of
@@ -42,11 +42,11 @@ with f:
 ```{toctree}
 :hidden:
 
-setup-jinad-server
-start-jinad-client
+jinad-server
+jinad-client
+remote-executors
 workspace
-create-remote-executors
-create-remote-flows
+remote-flows
 stream-remote-logs
 development-using-jinad
 ```

@@ -34,18 +34,18 @@ def docker_image():
     client.containers.prune()
 
 
-@pytest.mark.parametrize('parallels', [1, 2])
-def test_r_l_docker(parallels, docker_image, mocker):
+@pytest.mark.parametrize('replicas', [1, 2])
+def test_r_l_docker(replicas, docker_image, mocker):
     response_mock = mocker.Mock()
     f = (
         Flow()
         .add(
             uses=f'docker://{docker_image}',
             host=CLOUD_HOST,
-            parallel=parallels,
+            replicas=replicas,
             timeout_ready=-1,
         )
-        .add(parallel=parallels)
+        .add(replicas=replicas)
     )
     with f:
         f.index(
@@ -56,14 +56,14 @@ def test_r_l_docker(parallels, docker_image, mocker):
     response_mock.assert_called()
 
 
-@pytest.mark.parametrize('parallels', [1, 2])
-def test_l_r_docker(parallels, docker_image, mocker):
+@pytest.mark.parametrize('replicas', [1, 2])
+def test_l_r_docker(replicas, docker_image, mocker):
     response_mock = mocker.Mock()
 
     f = (
         Flow()
-        .add(parallel=parallels)
-        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, parallel=parallels)
+        .add(replicas=replicas)
+        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, replicas=replicas)
     )
     with f:
         f.index(
@@ -73,15 +73,15 @@ def test_l_r_docker(parallels, docker_image, mocker):
     response_mock.assert_called()
 
 
-@pytest.mark.parametrize('parallels', [1, 2])
-def test_r_l_r_docker(parallels, docker_image, mocker):
+@pytest.mark.parametrize('replicas', [1, 2])
+def test_r_l_r_docker(replicas, docker_image, mocker):
     response_mock = mocker.Mock()
 
     f = (
         Flow()
-        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, parallel=parallels)
+        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, replicas=replicas)
         .add()
-        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, parallel=parallels)
+        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, replicas=replicas)
     )
     with f:
         f.index(
@@ -91,15 +91,15 @@ def test_r_l_r_docker(parallels, docker_image, mocker):
     response_mock.assert_called()
 
 
-@pytest.mark.parametrize('parallels', [1])
-def test_r_r_r_docker(parallels, docker_image, mocker):
+@pytest.mark.parametrize('replicas', [1])
+def test_r_r_r_docker(replicas, docker_image, mocker):
     response_mock = mocker.Mock()
 
     f = (
         Flow()
-        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, parallel=parallels)
-        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, parallel=parallels)
-        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, parallel=parallels)
+        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, replicas=replicas)
+        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, replicas=replicas)
+        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, replicas=replicas)
     )
     with f:
         f.index(
@@ -109,13 +109,13 @@ def test_r_r_r_docker(parallels, docker_image, mocker):
     response_mock.assert_called()
 
 
-@pytest.mark.parametrize('parallels', [1, 2])
-def test_l_r_l_docker(parallels, docker_image, mocker):
+@pytest.mark.parametrize('replicas', [1, 2])
+def test_l_r_l_docker(replicas, docker_image, mocker):
     response_mock = mocker.Mock()
     f = (
         Flow()
         .add()
-        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, parallel=parallels)
+        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, replicas=replicas)
         .add()
     )
     with f:
@@ -127,7 +127,6 @@ def test_l_r_l_docker(parallels, docker_image, mocker):
 
 
 def test_remote_flow_containerized_executors(docker_image, mocker):
-    response_mock = mocker.Mock()
     client = JinaDClient(host=__default_host__, port=8000)
     workspace_id = client.workspaces.create(paths=[os.path.join(cur_dir, 'yamls')])
 
@@ -142,6 +141,7 @@ def test_remote_flow_containerized_executors(docker_image, mocker):
         GATEWAY_LOCAL_CONTAINER_GATEWAY,
         GATEWAY_CONTAINER_LOCAL_CONTAINER_GATEWAY,
     ]:
+        response_mock = mocker.Mock()
         flow_id = client.flows.create(workspace_id=workspace_id, filename=flow_yaml)
         args = client.flows.get(flow_id)['arguments']['object']['arguments']
         Client(

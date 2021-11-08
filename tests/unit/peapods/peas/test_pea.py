@@ -132,24 +132,25 @@ def test_base_pea_with_runtime_bad_cancel(mocker):
 def fake_env():
     os.environ['key_parent'] = 'value3'
     yield
-    os.unsetenv('key_parent')
+    os.environ.pop('key_parent', None)
+
+
+class EnvChecker1(BaseExecutor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # pea/pod-specific
+        assert os.environ['key1'] == 'value1'
+        assert os.environ['key2'] == 'value2'
+        # inherit from parent process
+        assert os.environ['key_parent'] == 'value3'
 
 
 def test_pea_runtime_env_setting_in_process(fake_env):
-    class EnvChecker(BaseExecutor):
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            # pea/pod-specific
-            assert os.environ['key1'] == 'value1'
-            assert os.environ['key2'] == 'value2'
-            # inherit from parent process
-            assert os.environ['key_parent'] == 'value3'
-
     with Pea(
         set_pea_parser().parse_args(
             [
                 '--uses',
-                'EnvChecker',
+                'EnvChecker1',
                 '--env',
                 'key1=value1',
                 '--env',
@@ -167,23 +168,24 @@ def test_pea_runtime_env_setting_in_process(fake_env):
     assert 'key_parent' in os.environ
 
 
-def test_pea_runtime_env_setting_in_thread(fake_env):
-    class EnvChecker(BaseExecutor):
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            # pea/pod-specific
-            assert 'key1' not in os.environ
-            assert 'key2' not in os.environ
-            # inherit from parent process
-            assert os.environ['key_parent'] == 'value3'
+class EnvChecker2(BaseExecutor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # pea/pod-specific
+        assert 'key1' not in os.environ
+        assert 'key2' not in os.environ
+        # inherit from parent process
+        assert os.environ['key_parent'] == 'value3'
 
+
+def test_pea_runtime_env_setting_in_thread(fake_env):
     os.environ['key_parent'] = 'value3'
 
     with Pea(
         set_pea_parser().parse_args(
             [
                 '--uses',
-                'EnvChecker',
+                'EnvChecker2',
                 '--env',
                 'key1=value1',
                 '--env',
@@ -199,8 +201,7 @@ def test_pea_runtime_env_setting_in_thread(fake_env):
     assert 'key1' not in os.environ
     assert 'key2' not in os.environ
     assert 'key_parent' in os.environ
-
-    os.unsetenv('key_parent')
+    os.environ.pop('key_parent')
 
 
 @pytest.mark.parametrize(
@@ -249,3 +250,14 @@ def test_idle_does_not_create_response(command, response_expected):
             socket.connect(f'tcp://localhost:{p.args.port_ctrl}')
             socket.send_multipart(msg.dump())
             assert socket.poll(timeout=1000) == response_expected
+
+
+def test_pea_set_shard_pea_id():
+    args = set_pea_parser().parse_args(['--shard-id', '1', '--shards', '3'])
+
+    pea = Pea(args)
+    assert pea.args.shard_id == 1
+    assert pea.args.pea_id == 1
+
+    assert pea.args.shards == 3
+    assert pea.args.parallel == 3

@@ -1,9 +1,7 @@
 # Serving Flow
 
-
 If you come to this page, most likely you have already built some cool stuff with Jina and now want to share it to the world. This cookbook will
 guide you from basic serving for demo purpose to advanced serving in production.
-
 
 ## Minimum working example
 
@@ -34,7 +32,6 @@ c.post('/', Document())
 
 A `Flow` _is_ a service by nature. Though implicitly, you are already using it as a service.
 
-
 When you start a `Flow` and call `.post()` inside the context, a `jina.Client` object is created and used for
 communication.
 
@@ -57,18 +54,17 @@ Flow in an explicit C/S style.
 
 Jina supports `grpc`, `websocket`, `http` three communication protocols between `Flow` and `Client`.
 
-| Protocol | Requirements | Description | Performance on large data |
-| --- | --- | --- | --- |
-| `grpc` | - |  Default gRPC protocol, mainly for streaming data | Super |
-| `websocket` | `pip install "jina[client,http]"` | WebSocket protocol, used in frontend language that supports websocket, mainly for streaming data | Super |
-| `http` |`pip install "jina[client,http]"` | HTTP protocol, mainly for allow any client to have HTTP access | Good |
+| Protocol    | Requirements                      | Description                                                                                      | Performance on large data |
+| ----------- | --------------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------- |
+| `grpc`      | -                                 | Default gRPC protocol, mainly for streaming data                                                 | Super                     |
+| `websocket` | `pip install "jina[client,http]"` | WebSocket protocol, used in frontend language that supports websocket, mainly for streaming data | Super                     |
+| `http`      | `pip install "jina[client,http]"` | HTTP protocol, mainly for allow any client to have HTTP access                                   | Good                      |
 
 The protocol is controlled by `protocol=` argument in `Flow`/`Client`'s constructor.
 
 ```{figure} ../../../.github/2.0/client-server.svg
 :align: center
 ```
-
 
 ### via gRPC
 
@@ -107,8 +103,13 @@ GRPCClient@14744[S]:connected to the gateway at 0.0.0.0:12345!
 ```
 
 
-### via WebSocket
+````{warning}
 
+Multiple gRPC Client cannot be spawned using `Threads` because of an [upstream issue](https://github.com/grpc/grpc/issues/25364). Use `multiprocessing` instead.
+````
+
+
+### via WebSocket
 
 ```python
 from jina import Flow
@@ -171,7 +172,7 @@ You can switch to other protocol also via `.protocol` property setter. This sett
 ```python
 from jina import Flow, Document
 
-f = Flow(protocol='grpc') 
+f = Flow(protocol='grpc')
 
 with f:
     f.post('/', Document())
@@ -190,7 +191,6 @@ from jina import Flow
 
 f = Flow(cors=True, protocol='http')
 ```
-
 
 ### Use swagger UI to send HTTP request
 
@@ -269,21 +269,20 @@ c = Client(protocol='http', port=12345)
 c.post('/', ...)
 ```
 
-````{admonition} Warning
+```{admonition} Warning
 :class: warning
 This HTTP client is less-performant on large data, it does not stream. Hence, it should be only used for debugging & testing.
-````
-
+```
 
 ### Extend HTTP Interface
 
 By default the following endpoints are exposed to the public:
 
-| Endpoint | Description |
-| --- | ---|
-| `/status` | Check Jina service running status |
-| `/post` | Corresponds to `f.post()` method in Python |
-| `/index` | Corresponds to `f.post('/index')` method in Python |
+| Endpoint  | Description                                         |
+| --------- | --------------------------------------------------- |
+| `/status` | Check Jina service running status                   |
+| `/post`   | Corresponds to `f.post()` method in Python          |
+| `/index`  | Corresponds to `f.post('/index')` method in Python  |
 | `/search` | Corresponds to `f.post('/search')` method in Python |
 | `/update` | Corresponds to `f.post('/update')` method in Python |
 | `/delete` | Corresponds to `f.post('/delete')` method in Python |
@@ -294,15 +293,14 @@ User can decide to hide CRUD and debug endpoints in production, or when the cont
 
 ```python
 from jina import Flow
-f = Flow(protocol='http', 
-         no_debug_endpoints=True, 
+f = Flow(protocol='http',
+         no_debug_endpoints=True,
          no_crud_endpoints=True)
 ```
 
 ```{figure} ../../../.github/2.0/hide-crud-debug-endpoints.png
 :align: center
 ```
-
 
 #### Expose customized endpoints to HTTP interface
 
@@ -336,17 +334,35 @@ Now, sending HTTP data request to `/foo` is equivalent as calling `f.post('/foo'
 You can add more kwargs to build richer semantics on your HTTP endpoint. Those meta information will be rendered by Swagger UI and be forwarded to the OpenAPI schema.
 
 ```python
-f.expose_endpoint('/bar', 
+f.expose_endpoint('/bar',
                   summary='my endpoint',
                   tags=['fine-tuning'],
                   methods=['PUT']
                   )
 ```
 
+You can enable custom endpoints in a Flow using yaml syntax as well.
+
+```yaml
+jtype: Flow
+with:
+  protocol: http
+  expose_endpoints:
+    /foo:
+      methods: ["GET"]
+    /bar:
+      methods: ["PUT"]
+      summary: my endpoint
+      tags:
+        - fine-tuning
+    /foobar: {}
+executors:
+  - name: indexer
+```
+
 ```{figure} ../../../.github/2.0/rich-openapi.png
 :align: center
 ```
-
 
 #### Add non-Jina related routes
 
@@ -378,4 +394,3 @@ And you will see `/hello` is now available:
 ```{figure} ../../../.github/2.0/swagger-extend.png
 :align: center
 ```
-

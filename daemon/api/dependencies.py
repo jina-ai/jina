@@ -12,6 +12,7 @@ from jina import Flow, __docker_host__
 from jina.helper import cached_property
 from jina.peapods import CompoundPod
 from jina.peapods.peas.helper import update_runtime_cls
+from jina.peapods.runtimes.container.helper import get_gpu_device_requests
 from jina.enums import (
     PeaRoleType,
     SocketType,
@@ -68,6 +69,9 @@ class FlowDepends:
         self.envs = envs.vars
         self._ports = {}
         self.load_and_dump()
+        # Unlike `PeaModel` / `PodModel`, `gpus` arg doesn't exist in FlowModel
+        # We try assigning `all` gpus to the Flow container by default.
+        self.device_requests = get_gpu_device_requests('all')
 
     def localpath(self) -> Path:
         """Validates local filepath in workspace from filename.
@@ -86,13 +90,28 @@ class FlowDepends:
             )
 
     @property
+    def newname(self) -> str:
+        """Return newfile path in following format
+        `flow.yml` -> `<root-workspace>/<workspace-id>/<flow-id>_flow.yml`
+        `flow1.yml` -> `<root-workspace>/<workspace-id>/<flow-id>_flow1.yml`
+        `src/flow.yml` -> `<root-workspace>/<workspace-id>/src/<flow-id>_flow.yml`
+        `src/abc/flow.yml` -> `<root-workspace>/<workspace-id>/src/abc/<flow-id>_flow.yml`
+
+        :return: newname for the flow yaml file
+        """
+        parts = Path(self.filename).parts
+        if len(parts) == 1:
+            return f'{self.id}_{self.filename}'
+        else:
+            return os.path.join(*parts[:-1], f'{self.id}_{parts[-1]}')
+
+    @property
     def newfile(self) -> str:
-        """return newfile path in format
-        `<root-workspace>/<workspace-id>/<flow-id>_<original-filename>`
+        """Return newfile path fetched from newname
 
         :return: return filepath to save flow config in
         """
-        return get_workspace_path(self.workspace_id, f'{self.id}_{self.filename}')
+        return get_workspace_path(self.workspace_id, self.newname)
 
     def load_and_dump(self) -> None:
         """
@@ -138,31 +157,23 @@ class FlowDepends:
             for pod_name, pod in f._pod_nodes.items():
                 runtime_cls = update_runtime_cls(pod.args, copy=True).runtime_cls
                 if isinstance(pod, CompoundPod):
-                    if runtime_cls in ['ZEDRuntime', 'ContainerRuntime'] + list(
-                        GATEWAY_RUNTIME_DICT.values()
+                    if (
+                        runtime_cls
+                        in [
+                            'ZEDRuntime',
+                            'GRPCDataRuntime',
+                            'ContainerRuntime',
+                        ]
+                        + list(GATEWAY_RUNTIME_DICT.values())
                     ):
                         # For a `CompoundPod`, publish ports for head Pea & tail Pea
                         # Check daemon.stores.partial.PartialFlowStore.add() for addtional logic
                         # to handle `CompoundPod` inside partial-daemon.
                         for pea_args in [pod.head_args, pod.tail_args]:
                             pea_args.runs_in_docker = False
-                            current_ports = Ports()
-                            for port_name in Ports.__fields__:
-                                # Get port from Namespace args & set to PortMappings
-                                setattr(
-                                    current_ports,
-                                    port_name,
-                                    getattr(pea_args, port_name, None),
-                                )
-                            port_mapping.append(
-                                PortMapping(
-                                    pod_name=pod_name,
-                                    pea_name=pea_args.name,
-                                    ports=current_ports,
-                                )
-                            )
+                            self._update_port_mapping(pea_args, pod_name, port_mapping)
                 else:
-                    if runtime_cls in ['ZEDRuntime'] + list(
+                    if runtime_cls in ['ZEDRuntime', 'GRPCDataRuntime'] + list(
                         GATEWAY_RUNTIME_DICT.values()
                     ):
                         pod.args.runs_in_docker = True
@@ -173,16 +184,41 @@ class FlowDepends:
                                 port_name,
                                 getattr(pod.args, port_name, None),
                             )
+
                         port_mapping.append(
                             PortMapping(
                                 pod_name=pod_name, pea_name='', ports=current_ports
                             )
                         )
+                    elif (
+                        runtime_cls in ['ContainerRuntime']
+                        and hasattr(pod.args, 'replicas')
+                        and pod.args.replicas > 1
+                    ):
+                        for pea_args in [pod.peas_args['head'], pod.peas_args['tail']]:
+                            self._update_port_mapping(pea_args, pod_name, port_mapping)
 
             self.ports = port_mapping
             # save to a new file & set it for partial-daemon
             f.save_config(filename=self.newfile)
-            self.params.uses = os.path.basename(self.newfile)
+            self.params.uses = self.newname
+
+    def _update_port_mapping(self, pea_args, pod_name, port_mapping):
+        current_ports = Ports()
+        for port_name in Ports.__fields__:
+            # Get port from Namespace args & set to PortMappings
+            setattr(
+                current_ports,
+                port_name,
+                getattr(pea_args, port_name, None),
+            )
+        port_mapping.append(
+            PortMapping(
+                pod_name=pod_name,
+                pea_name=pea_args.name,
+                ports=current_ports,
+            )
+        )
 
     @property
     def ports(self) -> PortMappings:
@@ -323,6 +359,9 @@ class PeaDepends:
         self.params.identity = self.id
         self.params.workspace_id = self.workspace_id
         self.params.runs_in_docker = True
+        self.device_requests = (
+            get_gpu_device_requests(self.params.gpus) if self.params.gpus else None
+        )
 
 
 class PodDepends(PeaDepends):

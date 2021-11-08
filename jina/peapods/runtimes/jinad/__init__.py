@@ -2,7 +2,8 @@ import os
 import copy
 import asyncio
 import argparse
-from typing import Union
+from pathlib import Path
+from typing import TYPE_CHECKING, List, Optional, Union
 
 from ....enums import SocketType
 
@@ -17,7 +18,7 @@ from ....excepts import (
     DaemonWorkspaceCreationFailed,
 )
 
-if False:
+if TYPE_CHECKING:
     import multiprocessing
     import threading
     from ....logging.logger import JinaLogger
@@ -38,6 +39,8 @@ class JinadRuntime(AsyncNewLoopRuntime):
         self.timeout_ctrl = args.timeout_ctrl
         self.host = args.host
         self.port_jinad = args.port_jinad
+        self.pea_id = None
+        self.logstream = None
 
     async def async_setup(self):
         """Create Workspace, Pea on remote JinaD server"""
@@ -55,106 +58,115 @@ class JinadRuntime(AsyncNewLoopRuntime):
         self.client = AsyncJinaDClient(
             host=self.args.host, port=self.args.port_jinad, logger=self.logger
         )
+
         if not await self.client.alive:
             raise DaemonConnectivityError
 
         # Create a remote workspace with upload_files
-        self.workspace_id = await self.client.workspaces.create(
-            paths=self.args.upload_files,
+        workspace_id = await self.client.workspaces.create(
+            paths=self.filepaths,
             id=self.args.workspace_id,
             complete=True,
         )
-        if not self.workspace_id:
+        if not workspace_id:
             self.logger.critical(f'remote workspace creation failed')
             raise DaemonWorkspaceCreationFailed
 
-        payload = replace_enum_to_str(vars(self._mask_args(self.args)))
+        payload = replace_enum_to_str(vars(self._mask_args()))
         # Create a remote Pea in the above workspace
-        success, self.pea_id = await self.client.peas.create(
-            workspace_id=self.workspace_id, payload=payload
+        success, response = await self.client.peas.create(
+            workspace_id=workspace_id, payload=payload
         )
         if not success:
             self.logger.critical(f'remote pea creation failed')
-            raise DaemonPeaCreationFailed
+            raise DaemonPeaCreationFailed(response)
+        else:
+            self.pea_id = response
 
     async def _wait_for_cancel(self):
         while not self.is_cancel.is_set():
             await asyncio.sleep(0.1)
 
-        await self.async_cancel()
         send_ctrl_message(self.ctrl_addr, 'TERMINATE', self.timeout_ctrl)
 
     async def async_run_forever(self):
         """
         Streams log messages using websocket from remote server
         """
-        self.logstream = asyncio.create_task(
-            self._sleep_forever()
-            if self.args.quiet_remote_logs
-            else self.client.logs(id=self.pea_id)
-        )
+        if self.pea_id is not None:
+            self.logstream = asyncio.create_task(
+                self._sleep_forever()
+                if self.args.quiet_remote_logs
+                else self.client.logs(id=self.pea_id)
+            )
 
     async def async_cancel(self):
-        """Cancels the logstream task, removes the remote Pea & Workspace"""
-        self.logstream.cancel()
-        await self.client.peas.delete(id=self.pea_id)
-        # NOTE: don't fail if workspace deletion fails here
-        await self.client.workspaces.delete(id=self.workspace_id)
+        """Cancels the logstream task, removes the remote Pea"""
+        if self.logstream is not None:
+            self.logstream.cancel()
+        if self.pea_id is not None:
+            if await self.client.peas.delete(id=self.pea_id):
+                self.logger.success(f'Successfully terminated remote Pea {self.pea_id}')
+            # Don't delete workspace here, as other Executors might use them.
+            # TODO(Deepankar): probably enable an arg here?
 
     async def _sleep_forever(self):
         """Sleep forever, no prince will come."""
         await asyncio.sleep(1e10)
 
-    def _mask_args(self, args: 'argparse.Namespace'):
-        _args = copy.deepcopy(args)
+    @property
+    def filepaths(self) -> List[Path]:
+        """Get file/directories to be uploaded to remote workspace
+
+        :return: filepaths to be uploaded to remote
+        """
+        paths = set()
+        if not self.args.upload_files:
+            self.logger.warning(f'no files passed to upload to remote')
+        else:
+            for path in self.args.upload_files:
+                try:
+                    fullpath = Path(complete_path(path))
+                    paths.add(fullpath)
+                except FileNotFoundError:
+                    self.logger.error(f'invalid path {path} passed')
+
+        return list(paths)
+
+    def _mask_args(self):
+        cargs = copy.deepcopy(self.args)
 
         # reset the runtime to ZEDRuntime/GRPCDataRuntime or ContainerRuntime
-        if _args.runtime_cls == 'JinadRuntime':
-            if _args.uses.startswith(('docker://', 'jinahub+docker://')):
-                _args.runtime_cls = 'ContainerRuntime'
+        if cargs.runtime_cls == 'JinadRuntime':
+            if cargs.uses.startswith(('docker://', 'jinahub+docker://')):
+                cargs.runtime_cls = 'ContainerRuntime'
             else:
-                if _args.grpc_data_requests:
-                    _args.runtime_cls = 'GRPCDataRuntime'
+                if cargs.grpc_data_requests:
+                    cargs.runtime_cls = 'GRPCDataRuntime'
                 else:
-                    _args.runtime_cls = 'ZEDRuntime'
+                    cargs.runtime_cls = 'ZEDRuntime'
 
         # TODO:/NOTE this prevents jumping from remote to another remote (Han: 2021.1.17)
         # _args.host = __default_host__
         # host resetting disables dynamic routing. Use `disable_remote` instead
-        _args.disable_remote = True
-
-        # NOTE: on remote relative filepaths should be converted to filename only
-        def basename(field):
-            if field and not field.startswith(('docker://', 'jinahub')):
-                try:
-                    return os.path.basename(complete_path(field))
-                except FileNotFoundError:
-                    pass
-            return field
-
-        for f in ('uses', 'uses_after', 'uses_before', 'py_modules'):
-            attr = getattr(_args, f, None)
-            if not attr:
-                continue
-            setattr(_args, f, [basename(m) for m in attr]) if isinstance(
-                attr, list
-            ) else setattr(_args, f, basename(attr))
-
-        _args.log_config = ''  # do not use local log_config
-        _args.upload_files = []  # reset upload files
-        _args.noblock_on_start = False  # wait until start success
+        cargs.disable_remote = True
+        cargs.log_config = ''  # do not use local log_config
+        cargs.upload_files = []  # reset upload files
+        cargs.noblock_on_start = False  # wait until start success
 
         changes = []
-        for k, v in vars(_args).items():
-            if v != getattr(args, k):
-                changes.append(f'{k:>30s}: {str(getattr(args, k)):30s} -> {str(v):30s}')
+        for k, v in vars(cargs).items():
+            if v != getattr(self.args, k):
+                changes.append(
+                    f'{k:>30s}: {str(getattr(self.args, k)):30s} -> {str(v):30s}'
+                )
         if changes:
             changes = [
                 'note the following arguments have been masked or altered for remote purpose:'
             ] + changes
             self.logger.debug('\n'.join(changes))
 
-        return _args
+        return cargs
 
     # Static methods used by the Pea to communicate with the `Runtime` in the separate process
 

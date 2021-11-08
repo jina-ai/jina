@@ -43,18 +43,17 @@ def test_load_legacy_and_v1():
 def test_add_needs_inspect(tmpdir):
     f1 = (
         Flow()
-        .add(name='pod0', needs='gateway')
-        .add(name='pod1', needs='gateway')
+        .add(name='executor0', needs='gateway')
+        .add(name='executor1', needs='gateway')
         .inspect()
-        .needs(['pod0', 'pod1'])
+        .needs(['executor0', 'executor1'])
     )
     with f1:
-        f1.index(from_ndarray(np.random.random([5, 5])), on_done=print)
-
+        _ = f1.index(from_ndarray(np.random.random([5, 5])), return_results=True)
     f2 = Flow.load_config('yaml/flow-v1.0-syntax.yml')
 
     with f2:
-        f2.index(from_ndarray(np.random.random([5, 5])), on_done=print)
+        _ = f2.index(from_ndarray(np.random.random([5, 5])), return_results=True)
 
     assert f1 == f2
 
@@ -113,13 +112,13 @@ def test_dump_load_build(monkeypatch):
     executors:
         - name: executor1
           port_in: 45678
-          parallel: 2
+          shards: 2
         - name: executor2
           uses: docker://exec
           host: 1.2.3.4
         - name: executor3
           uses: docker://exec
-          parallel: 2
+          shards: 2
     '''
     ).build()
     f['gateway'].args.runs_in_docker = True
@@ -195,10 +194,11 @@ def test_flow_yaml_from_string():
     assert f3.num_pods == 2
 
 
-def test_flow_uses_from_dict():
-    class DummyEncoder(Executor):
-        pass
+class DummyEncoder(Executor):
+    pass
 
+
+def test_flow_uses_from_dict():
     d1 = {'jtype': 'DummyEncoder', 'metas': {'name': 'dummy1'}}
     with Flow().add(uses=d1):
         pass

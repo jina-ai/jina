@@ -2,7 +2,6 @@
 
 `.post()` is the core method for sending data to a `Flow` object, it provides multiple callbacks for fetching results from the Flow.
 
-
 ```python
 from jina import Flow
 
@@ -15,42 +14,6 @@ with f:
 ```{caution}
 
 `.post()` must be called *inside* the `with` context.
-```
-
-## Input data to Flow
-
-```python
-def post(
-        self,
-        on: str,
-        inputs: Optional[InputType] = None,
-        on_done: CallbackFnType = None,
-        on_error: CallbackFnType = None,
-        on_always: CallbackFnType = None,
-        parameters: Optional[dict] = None,
-        target_peapod: Optional[str] = None,
-        request_size: int = 100,
-        show_progress: bool = False,
-        continue_on_error: bool = False,
-        return_results: bool = False,
-        **kwargs,
-) -> None:
-    """Post a general data request to the Flow.
-  
-    :param on: the endpoint is used for identifying the user-defined ``request_type``, labeled by ``@requests(on='/abc')``
-    :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id.
-    :param on_done: the function to be called when the :class:`Request` object is resolved.
-    :param on_error: the function to be called when the :class:`Request` object is rejected.
-    :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
-    :param target_peapod: a regex string represent the certain peas/pods request targeted
-    :param parameters: the kwargs that will be sent to the executor
-    :param request_size: the number of Documents per request. <=0 means all inputs in one request.
-    :param show_progress: if set, client will show a progress bar on receiving every request.
-    :param continue_on_error: if set, a Request that causes callback error will be logged only without blocking the further requests.
-    :param return_results: if set, the results of all Requests will be returned as a list. This is useful when one wants process Responses in bulk instead of using callback.
-    :param kwargs: additional parameters
-    :return: None
-    """
 ```
 
 ````{admonition} Hint
@@ -67,8 +30,57 @@ delete = partialmethod(post, '/delete')
 ```
 ````
 
+## Request data
 
-### Send request parameters
+Request data can be a single `Document` object, an iterator of `Document`, a generator of `Document`, a `DocumentArray`
+object, and None.
+
+For example:
+
+```python
+from jina import Flow, DocumentArray, Document, DocumentArrayMemmap
+
+d1 = Document(content='hello')
+d2 = Document(content='world')
+
+
+def doc_gen():
+    for j in range(10):
+        yield Document(content=f'hello {j}')
+
+
+with Flow() as f:
+    f.post('/', d1)  # Single document
+
+    f.post('/', [d1, d2])  # a list of Document
+
+    f.post('/', doc_gen)  # Document generator
+
+    f.post('/', DocumentArray([d1, d2]))  # DocumentArray
+
+    f.post('/', DocumentArrayMemmap('./my-mmap'))  # DocumentArray
+
+    f.post('/')  # empty
+```
+
+`Document` module provides some methods that lets you build `Document` generator, e.g. [`from_csv`
+, `from_files`, `from_ndarray`, `from_ndjson`](Document.md#construct-from-json-csv-ndarray-and-files). They can be used
+in conjunction with `.post()`, e.g.
+
+```{code-block} python
+---
+emphasize-lines: 7
+---
+from jina import Flow
+from jina.types.document.generators import from_csv
+
+f = Flow()
+
+with f, open('my.csv') as fp:
+    f.index(from_csv(fp, field_resolver={'question': 'text'}))
+```
+
+## Request parameters
 
 To send parameters to the Executor, use
 
@@ -104,9 +116,87 @@ with f:
 This is useful to control `Executor` objects in the runtime.
 ````
 
-### Fine-grained control on input
+If user wants different executors to have different values of the same parameters, one can specify specific parameters for the specific `executor` by adding a dictionary inside parameters
+with the `executor` name as `key`. Jina will then take all these specific parameters and copy to the root of the
+parameters dictionary before calling the executor `method`.
 
-#### Size of the request
+```{code-block} python
+---
+emphasize-lines: 24
+---
+from typing import Optional
+from jina import Executor, requests, DocumentArray, Flow
+
+
+class MyExecutor(Executor):
+    def __init__(self, default_param: int = 1, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.default_param = default_param
+
+    @requests
+    def foo(self, docs: Optional[DocumentArray], parameters: dict, **kwargs):
+        param = parameters.get('param', self.default_param)
+        # param may be overriden for this specific request.
+        # The first instance will receive 10, and the second one will receive 5
+        if self.metas.name == 'my-executor-1':
+            assert param == 10
+        elif self.metas.name == 'my-executor-2':
+            assert param == 5
+
+
+with (Flow().
+        add(uses={'jtype': 'MyExecutor', 'metas': {'name': 'my-executor-1'}}).
+        add(uses={'jtype': 'MyExecutor', 'metas': {'name': 'my-executor-2'}})) as f:
+    f.post(on='/endpoint', inputs=DocumentArray([]), parameters={'param': 5, 'my-executor-1': {'param': 10}})
+```
+
+Note, as `parameters` does not have a fixed schema, it is declared with type `google.protobuf.Struct` in the `RequestProto`
+protobuf declaration. However, `google.protobuf.Struct` follows the JSON specification and does not
+differentiate `int` from `float`. **So, data of type `int` in `parameters` will be casted to `float` when request is
+sent to executor.**
+
+As a result, users need be explicit and cast the data to the expected type as follows.
+
+````{tab} ✅ Do
+```{code-block} python
+---
+emphasize-lines: 6, 7
+---
+
+class MyExecutor(Executor):
+    animals = ['cat', 'dog', 'turtle']
+    @request
+    def foo(self, docs, parameters: dict, **kwargs):
+        # need to cast to int since list indices must be integers not float
+        index = int(parameters.get('index', 0))
+        assert self.animals[index] == 'dog'
+
+with Flow().add(uses=MyExecutor) as f:
+    f.post(on='/endpoint', inputs=DocumentArray([]), parameters={'index': 1})
+```
+````
+
+````{tab} 😔 Don't
+```{code-block} python
+---
+emphasize-lines: 6, 7
+---
+
+class MyIndexer(Executor):
+    animals = ['cat', 'dog', 'turtle']
+    @request
+    def foo(self, docs, parameters: dict, **kwargs):
+          # ERROR: list indices must be integer not float
+          index = parameters.get('index', 0)
+          assert self.animals[index] == 'dog'
+
+with Flow().add(uses=MyExecutor) as f:
+    f.post(on='/endpoint',
+    inputs=DocumentArray([]), parameters={'index': 1})
+```
+````
+
+## Size of request
 
 You can control how many `Documents` in each request by `request_size`. Say your `inputs` has length of 100, whereas
 you `request_size` is set to `10`. Then `f.post` will send ten requests and return 10 responses:
@@ -148,56 +238,30 @@ with f:
 
 ```
 
+## Limiting outstanding requests
 
-### Input data types
-
-`inputs` can take a single `Document` object, an iterator of `Document`, a generator of `Document`, a `DocumentArray`
-object, and None.
-
-For example:
-
-```python
-from jina import Flow, DocumentArray, Document
-
-d1 = Document(content='hello')
-d2 = Document(content='world')
-
-
-def doc_gen():
-    for j in range(10):
-        yield Document(content=f'hello {j}')
-
-
-with Flow() as f:
-    f.post('/', d1)  # Single document
-
-    f.post('/', [d1, d2])  # a list of Document
-
-    f.post('/', doc_gen)  # Document generator
-
-    f.post('/', DocumentArray([d1, d2]))  # DocumentArray
-
-    f.post('/')  # empty
-```
-
-`Document` module provides some methods that lets you build `Document` generator, e.g. [`from_csv`
-, `from_files`, `from_ndarray`, `from_ndjson`](Document.md#construct-from-json-csv-ndarray-and-files). They can be used
-in conjunction with `.post()`, e.g.
+You can control the number of requests fetched at a time from the Client generator into the Executor using `prefetch` argument, e.g.- Setting `prefetch=2` would make sure only 2 requests reach the Executors at a time, hence controlling the overload. By default, prefetch is disabled (set to 0). In cases where an Executor is a slow worker, you can assign a higher value to prefetch.
 
 ```{code-block} python
 ---
-emphasize-lines: 7
+emphasize-lines: 8, 10
 ---
-from jina import Flow
-from jina.types.document.generators import from_csv
 
-f = Flow()
+def requests_generator():
+    while True:
+        yield Document(...)
 
-with f, open('my.csv') as fp:
-    f.index(from_csv(fp, field_resolver={'question': 'text'}))
+class MyExecutor(Executor):
+    @request
+    def foo(self, **kwargs):
+        slow_operation()
+
+# Makes sure only 2 requests reach the Executor at a time.
+with Flow(prefetch=2).add(uses=MyExecutor) as f:
+    f.post(on='/', inputs=requests_generator)
 ```
 
-## Fetch Flow output
+## Response result
 
 Once a request is returned, callback functions are fired. Jina Flow implements a Promise-like interface. You can add
 callback functions `on_done`, `on_error`, `on_always` to hook different events.
@@ -272,10 +336,43 @@ with f:
 
 ```
 
-````{admonition} Caution
+```{admonition} Caution
 :class: caution
 Turning on `return_results` breaks the streaming of the system. If you are sending 1000 requests,
 then `return_results=True` means you will get nothing until the 1000th response returns. Moreover, if each response
 takes 10MB memory, it means you will consume upto 10GB memory! On contrary, with callback and `return_results=False`,
 your memory usage will stay constant at 10MB.
-````
+```
+
+## Environment Variables
+
+In some scenarios, you may want to set environment variables to the Flow and use it inside Executor.
+To do that, you can use `env`:
+
+```python
+import os
+from jina import Flow, Executor, requests
+
+
+class MyExecutor(Executor):
+    @requests
+    def foo(self, **kwargs):
+        print('MY_ENV', '->', os.environ.get('MY_ENV'))
+
+
+f = Flow().add(uses=MyExecutor, env={'MY_ENV': 'MY_ENV_VALUE'})
+
+with f:
+    f.post('/foo')
+```
+
+```console
+           Flow@23340[I]:🎉 Flow is ready to use!
+	🔗 Protocol: 		GRPC
+	🏠 Local access:	0.0.0.0:51587
+	🔒 Private network:	172.18.0.253:51587
+	🌐 Public address:	94.135.231.132:51587
+MY_ENV -> MY_ENV_VALUE
+
+Process finished with exit code 0
+```

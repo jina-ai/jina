@@ -4,6 +4,6 @@ with:
   protocol: http
   port_expose: 9000
   cors: true
-pods:
+executors:
   - name: indexer_dbms
-    uses: indexer_dbms.yml
+    uses: executors/indexer_dbms.yml

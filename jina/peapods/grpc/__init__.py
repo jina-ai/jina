@@ -6,6 +6,8 @@ import grpc
 from google.protobuf import struct_pb2
 
 from jina.logging.logger import JinaLogger
+from jina.peapods.networking import create_connection_pool
+
 from jina.proto import jina_pb2_grpc, jina_pb2
 from jina.types.message import Message
 from jina.types.message.common import ControlMessage
@@ -27,9 +29,11 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         logger: Optional['JinaLogger'] = None,
     ):
         self.args = args
-        self._stubs = {}
         self._logger = logger or JinaLogger(self.__class__.__name__)
         self.callback = message_callback
+
+        self._connection_pool = create_connection_pool(args)
+
         self.msg_recv = 0
         self.msg_sent = 0
         self._pending_tasks = []
@@ -61,19 +65,13 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
                 )
 
     def _send_message(self, msg, pod_address):
-        if pod_address not in self._stubs:
-            self._stubs[pod_address] = Grpclet._create_grpc_stub(pod_address)
         try:
             self.msg_sent += 1
 
-            # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
-            # the grpc call function is not a coroutine but some _AioCall
-            async def task_wrapper(new_message, pod_address):
-                await self._stubs[pod_address].Call(new_message)
-
             self._pending_tasks.append(
-                asyncio.create_task(task_wrapper(msg, pod_address))
+                self._connection_pool.send_message(msg, pod_address)
             )
+
             self._update_pending_tasks()
         except grpc.RpcError as ex:
             self._logger.error('Sending data request via grpc failed', ex)
@@ -126,11 +124,25 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         else:
             return msg
 
+    async def stop_receiving(self, grace_period=None):
+        """Stop accepting new messages
+        :param grace_period: Time to wait for message processing to finish before killing the grpc server
+        """
+        self._logger.debug('Close grpc server')
+        await self._grpc_server.stop(grace_period)
+
     async def close(self, grace_period=None, *args, **kwargs):
         """Stop the Grpc server
         :param grace_period: Time to wait for message processing to finish before killing the grpc server
         :param args: Extra positional arguments
         :param kwargs: Extra key-value arguments
+        """
+        await self.stop_receiving(grace_period)
+        await self.stop_sending()
+
+    async def stop_sending(self):
+        """
+        Flush pending messages and stop sending new messages
         """
         self._update_pending_tasks()
         try:
@@ -140,8 +152,7 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
             self._logger.warning(
                 f'Could not gracefully complete {len(self._pending_tasks)} pending tasks on close.'
             )
-        self._logger.debug('Close grpc server')
-        await self._grpc_server.stop(grace_period)
+        self._connection_pool.close()
 
     async def start(self):
         """
@@ -158,11 +169,14 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         bind_addr = f'{self.args.host}:{self.args.port_in}'
         self._grpc_server.add_insecure_port(bind_addr)
         self._logger.debug(f'Binding gRPC server for data requests to {bind_addr}')
+        self._connection_pool.start()
         await self._grpc_server.start()
         await self._grpc_server.wait_for_termination()
 
     def _update_pending_tasks(self):
-        self._pending_tasks = [task for task in self._pending_tasks if not task.done()]
+        self._pending_tasks = [
+            task for task in self._pending_tasks if task and not task.done()
+        ]
 
     async def Call(self, msg, *args):
         """Processes messages received by the GRPC server

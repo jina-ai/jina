@@ -1,21 +1,22 @@
-import glob
 import os
+import re
+from zipfile import ZipFile, is_zipfile
 from itertools import chain
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Union
 
 from fastapi import UploadFile
 
-from jina.helper import cached_property
 from jina.logging.logger import JinaLogger
+from jina.excepts import DaemonInvalidDockerfile
 from . import __rootdir__, __dockerfiles__, jinad_args
 from .helper import get_workspace_path
 from .models import DaemonID
-from .models.enums import DaemonBuild, PythonVersion
+from .models.enums import DaemonDockerfile, PythonVersion
 
 
-def workspace_files(
-    workspace_id: DaemonID, files: List[UploadFile], logger: 'JinaLogger'
+def store_files_in_workspace(
+    workspace_id: DaemonID, files: List[UploadFile], logger: "JinaLogger"
 ) -> None:
     """Store the uploaded files in local disk
 
@@ -31,9 +32,6 @@ def workspace_files(
     for f in files:
         dest = os.path.join(workdir, f.filename)
         if os.path.isfile(dest):
-            if f.filename == 'requirements.txt':
-                _merge_requirement_file(dest, f)
-                continue
             logger.warning(
                 f'file {f.filename} already exists in workspace {workspace_id}, will be replaced'
             )
@@ -42,34 +40,20 @@ def workspace_files(
             fp.write(content)
         logger.debug(f'saved uploads to {dest}')
 
+        if is_zipfile(dest):
+            logger.debug(f'unzipping {dest}')
+            with ZipFile(dest, 'r') as f:
+                f.extractall(path=workdir)
+            os.remove(dest)
 
-def _merge_requirement_file(dest: str, f: UploadFile) -> None:
-    """Merge requirement files
 
-    :param dest: existing requirements file location
-    :param f: file obj for the new requirements file
+def is_requirements_txt(filename) -> bool:
+    """Check if filename is of requirements.txt format
+
+    :param filename: filename
+    :return: True if filename is in requirements.txt format
     """
-    # Open existing requirements in binary mode
-    # UploadFile is also in binary mode
-    with open(dest, "rb") as existing_requirements_file:
-        old_requirements = _read_requirements_file(existing_requirements_file)
-    old_requirements.update(_read_requirements_file(f.file))
-    # Store merged requirements
-    with open(dest, "w") as req_file:
-        req_file.write("\n".join(list(old_requirements.values())))
-
-
-def _read_requirements_file(f) -> Dict:
-    """Read requirement.txt file
-
-    :param f: req file object
-    :return: dict representing pip requirements
-    """
-    requirements = {}
-    for line in f.readlines():
-        line = line.decode()
-        requirements[line.split('=')[0]] = line.replace("\n", "")
-    return requirements
+    return True if re.match(r'.*requirements.*\.txt$', filename) else False
 
 
 class DaemonFile:
@@ -87,7 +71,10 @@ class DaemonFile:
         self._logger.debug(
             f'analysing {self.extension} files in workdir: {self._workdir}'
         )
-        self._build = DaemonBuild.default
+        self._build = DaemonDockerfile.default
+        self._dockerfile = os.path.join(
+            __dockerfiles__, f'{DaemonDockerfile.default}.Dockerfile'
+        )
         self._python = PythonVersion.default
         self._jina = 'master'
         self._run = ''
@@ -95,26 +82,36 @@ class DaemonFile:
         self.process_file()
 
     @property
-    def build(self) -> str:
-        """Property representing build value
+    def dockerfile(self) -> str:
+        """Property representing dockerfile value
 
-        :return: daemon build in the daemonfile
+        :return: daemon dockerfile in the daemonfile
         """
-        return self._build
+        return self._dockerfile
 
-    @build.setter
-    def build(self, build: DaemonBuild):
-        """Property setter for build
+    @dockerfile.setter
+    def dockerfile(self, value: Union[DaemonDockerfile, str]):
+        """Property setter for dockerfile
 
-        :param build: allowed values in DaemonBuild
+        :param value: allowed values in DaemonDockerfile
         """
         try:
-            self._build = DaemonBuild(build)
-        except ValueError:
-            self._logger.warning(
-                f'invalid value `{build}` passed for \'build\'. allowed values: {DaemonBuild.values}. '
-                f'picking default build: {self._build}'
+            self._dockerfile = os.path.join(
+                __dockerfiles__, f'{DaemonDockerfile(value).value}.Dockerfile'
             )
+            self._build = DaemonDockerfile(value)
+        except ValueError:
+            self._logger.debug(
+                f'value passed for `dockerfile` not in default list of values: {DaemonDockerfile.values}.'
+            )
+            if os.path.isfile(os.path.join(self._workdir, value)):
+                self._dockerfile = os.path.join(self._workdir, value)
+                self._build = DaemonDockerfile.OTHERS
+            else:
+                self._logger.critical(
+                    f'unable to find dockerfile passed at {value}, cannot proceed with the build'
+                )
+                raise DaemonInvalidDockerfile()
 
     @property
     def python(self):
@@ -188,38 +185,34 @@ class DaemonFile:
         except ValueError:
             self._logger.warning(f'invalid value `{ports}` passed for \'ports\'')
 
-    @cached_property
+    @property
     def requirements(self) -> str:
         """pip packages mentioned in requirements.txt
 
         :return: space separated values
         """
-        # TODO: merge this with _read_requirements_file()
-        _req = f'{self._workdir}/requirements.txt'
-        if not Path(_req).is_file():
+        requirements = ''
+        for filename in os.listdir(self._workdir):
+            if is_requirements_txt(filename):
+                with open(os.path.join(self._workdir, filename)) as f:
+                    requirements += ' '.join(f.read().splitlines())
+                requirements += ' '
+        if not requirements:
             self._logger.warning(
                 'please add a requirements.txt file to manage python dependencies in the workspace'
             )
             return ''
-        with open(_req) as f:
-            return ' '.join(f.read().splitlines())
+        else:
+            return requirements.strip()
 
-    @cached_property
+    @property
     def dockercontext(self) -> str:
         """directory for docker context during docker build
 
         :return: docker context directory"""
-        return __rootdir__ if self.build == DaemonBuild.DEVEL else self._workdir
+        return __rootdir__ if self._build == DaemonDockerfile.DEVEL else self._workdir
 
-    @cached_property
-    def dockerfile(self) -> str:
-        """location of dockerfile
-
-        :return: location of dockerfile in local directory
-        """
-        return f'{__dockerfiles__}/{self.build.value}.Dockerfile'
-
-    @cached_property
+    @property
     def dockerargs(self) -> Dict:
         """dict of args to be passed during docker build
 
@@ -233,7 +226,7 @@ class DaemonFile:
         """
         return (
             {'PIP_REQUIREMENTS': self.requirements}
-            if self.build == DaemonBuild.DEVEL
+            if self._build == DaemonDockerfile.DEVEL
             else {
                 'PIP_REQUIREMENTS': self.requirements,
                 'PY_VERSION': self.python.name.lower(),
@@ -264,14 +257,14 @@ class DaemonFile:
         with open(file) as fp:
             config.read_file(chain([f'[{DEFAULTSECT}]'], fp))
             params = dict(config.items(DEFAULTSECT))
-        self.build = params.get('build')
+        self.dockerfile = params.get('dockerfile', DaemonDockerfile.default)
         self.python = params.get('python')
         self.run = params.get('run', '').strip()
         self.ports = params.get('ports', '')
 
     def __repr__(self) -> str:
         return (
-            f'DaemonFile(build={self.build}, python={self.python}, jina={self.jinav}, '
+            f'DaemonFile(dockerfile={self.dockerfile}, python={self.python}, jina={self.jinav}, '
             f'run={self.run}, context={self.dockercontext}, args={self.dockerargs}), '
             f'ports={self.ports})'
         )

@@ -12,7 +12,7 @@ if __name__ == '__main__':
         index_generator,
         query_generator,
     )
-    from my_executors import MyEncoder, MyIndexer, MyEvaluator, MyConverter
+    from my_executors import MyEncoder, MyIndexer, MyEvaluator
 else:
     from .helper import (
         print_result,
@@ -21,7 +21,7 @@ else:
         index_generator,
         query_generator,
     )
-    from .my_executors import MyEncoder, MyIndexer, MyEvaluator, MyConverter
+    from .my_executors import MyEncoder, MyIndexer, MyEvaluator
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -67,13 +67,11 @@ def hello_world(args):
     # download the data
     download_data(targets, args.download_proxy)
 
-    # reduce the network load by using `fp16`, or even `uint8`
-    os.environ['JINA_ARRAY_QUANT'] = 'fp16'
     # now comes the real work
     # load index flow from a YAML file
     f = (
         Flow()
-        .add(uses=MyEncoder, parallel=2)
+        .add(uses=MyEncoder, replicas=2)
         .add(uses=MyIndexer, workspace=args.workdir)
         .add(uses=MyEvaluator)
     )

@@ -2,7 +2,7 @@
 version: '1'
 metas:
   prefetch: 10
-pods:
+executors:
   - name: crafter
     parallel: 4
   - name: encoder

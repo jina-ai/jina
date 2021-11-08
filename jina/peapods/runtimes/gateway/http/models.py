@@ -295,7 +295,7 @@ class JinaRequestModel(BaseModel):
     )
     target_peapod: Optional[str] = Field(
         None,
-        example='pod0/*',
+        example='executor0/*',
         description='A regex string represent the certain peas/pods request targeted.',
     )
     parameters: Optional[Dict] = Field(

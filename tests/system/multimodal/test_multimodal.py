@@ -3,10 +3,16 @@ import os
 import pytest
 
 import jina
-from jina import Document, Flow
+from jina import Document, Flow, __windows__
 from jina.helloworld.multimodal.app import hello_world
 from jina.parsers.helloworld import set_hw_multimodal_parser
 from tests import validate_callback
+
+if __windows__:
+    # MemoryError: Unable to allocate internal buffer.
+    pytest.skip(
+        msg='Multimodal example breaks in CI with MemoryError', allow_module_level=True
+    )
 
 
 @pytest.fixture
@@ -17,7 +23,7 @@ def helloworld_args(tmpdir):
             str(tmpdir),
             '--unblock-query-flow',
             '--index-data-url',
-            'https://static.jina.ai/multimodal/people-img-cicd.zip',
+            'https://static.jina.ai/multimodal/people-img.zip',
         ]
     )
 

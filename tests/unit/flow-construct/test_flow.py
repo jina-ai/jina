@@ -6,8 +6,8 @@ import os
 import numpy as np
 import pytest
 
-from jina import Flow, Document
-from jina.enums import SocketType, FlowBuildLevel
+from jina import Flow, Document, Executor, requests, __windows__
+from jina.enums import InfrastructureType, SocketType, FlowBuildLevel, PollingType
 from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
 from jina.helper import random_identity
@@ -89,7 +89,7 @@ def test_simple_flow(protocol):
         for _ in range(100):
             yield Document()
 
-    f = Flow(protocol=protocol).add()
+    f = Flow(protocol=protocol).add(name='executor0')
 
     with f:
         f.index(inputs=bytes_gen)
@@ -107,7 +107,7 @@ def test_simple_flow(protocol):
 
     assert 'gateway' not in f
 
-    node = f._pod_nodes['pod0']
+    node = f._pod_nodes['executor0']
     assert node.head_args.socket_in == SocketType.ROUTER_BIND
     assert node.tail_args.socket_out == SocketType.ROUTER_BIND
 
@@ -123,9 +123,9 @@ def test_flow_identical(tmpdir):
 
     b = (
         Flow()
-        .add(name='chunk_seg', parallel=3)
-        .add(name='wqncode1', parallel=2)
-        .add(name='encode2', parallel=2, needs='chunk_seg')
+        .add(name='chunk_seg', shards=3)
+        .add(name='wqncode1', shards=2)
+        .add(name='encode2', shards=2, needs='chunk_seg')
         .join(['wqncode1', 'encode2'])
     )
 
@@ -144,7 +144,7 @@ def test_flow_identical(tmpdir):
         node = f._pod_nodes['chunk_seg']
         assert node.head_args.socket_in == SocketType.ROUTER_BIND
         assert node.head_args.socket_out == SocketType.ROUTER_BIND
-        for arg in node.peas_args['peas']:
+        for arg in node.shards_args:
             assert arg.socket_in == SocketType.DEALER_CONNECT
             assert arg.socket_out == SocketType.PUSH_CONNECT
         assert node.tail_args.socket_in == SocketType.PULL_BIND
@@ -153,7 +153,7 @@ def test_flow_identical(tmpdir):
         node = f._pod_nodes['wqncode1']
         assert node.head_args.socket_in == SocketType.ROUTER_BIND
         assert node.head_args.socket_out == SocketType.ROUTER_BIND
-        for arg in node.peas_args['peas']:
+        for arg in node.shards_args:
             assert arg.socket_in == SocketType.DEALER_CONNECT
             assert arg.socket_out == SocketType.PUSH_CONNECT
         assert node.tail_args.socket_in == SocketType.PULL_BIND
@@ -162,7 +162,7 @@ def test_flow_identical(tmpdir):
         node = f._pod_nodes['encode2']
         assert node.head_args.socket_in == SocketType.ROUTER_BIND
         assert node.head_args.socket_out == SocketType.ROUTER_BIND
-        for arg in node.peas_args['peas']:
+        for arg in node.shards_args:
             assert arg.socket_in == SocketType.DEALER_CONNECT
             assert arg.socket_out == SocketType.PUSH_CONNECT
         assert node.tail_args.socket_in == SocketType.PULL_BIND
@@ -363,8 +363,8 @@ def test_refactor_num_part_proxy_2(protocol):
     f = (
         Flow(protocol=protocol)
         .add(name='r1')
-        .add(name='r2', needs='r1', parallel=2)
-        .add(name='r3', needs='r1', parallel=3, polling='ALL')
+        .add(name='r2', needs='r1', shards=2)
+        .add(name='r3', needs='r1', shards=3, polling='ALL')
         .needs(['r2', 'r3'])
     )
 
@@ -375,14 +375,12 @@ def test_refactor_num_part_proxy_2(protocol):
 @pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_refactor_num_part_2(protocol):
-    f = Flow(protocol=protocol).add(
-        name='r1', needs='gateway', parallel=3, polling='ALL'
-    )
+    f = Flow(protocol=protocol).add(name='r1', needs='gateway', shards=3, polling='ALL')
 
     with f:
         f.index([Document(text='abbcs'), Document(text='efgh')])
 
-    f = Flow(protocol=protocol).add(name='r1', needs='gateway', parallel=3)
+    f = Flow(protocol=protocol).add(name='r1', needs='gateway', shards=3)
 
     with f:
         f.index([Document(text='abbcs'), Document(text='efgh')])
@@ -395,22 +393,19 @@ def datauri_workspace(tmpdir):
     del os.environ['TEST_DATAURIINDEX_WORKSPACE']
 
 
+class DummyOneHotTextEncoder(Executor):
+    @requests
+    def foo(self, docs, **kwargs):
+        for d in docs:
+            d.embedding = np.array([1, 2, 3])
+
+
 @pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
-def test_flow_with_publish_driver(mocker, protocol):
-    from jina import Executor, requests
-
-    class DummyOneHotTextEncoder(Executor):
-        @requests
-        def foo(self, docs, **kwargs):
-            for d in docs:
-                d.embedding = np.array([1, 2, 3])
-
+def test_flow_with_publish_driver(protocol):
     def validate(req):
         for d in req.docs:
             assert d.embedding is not None
-
-    response_mock = mocker.Mock()
 
     f = (
         Flow(protocol=protocol)
@@ -420,11 +415,11 @@ def test_flow_with_publish_driver(mocker, protocol):
     )
 
     with f:
-        f.index(
-            [Document(text='text_1'), Document(text='text_2')], on_done=response_mock
+        results = f.index(
+            [Document(text='text_1'), Document(text='text_2')], return_results=True
         )
 
-    validate_callback(response_mock, validate)
+    validate(results[0])
 
 
 @pytest.mark.slow
@@ -482,31 +477,32 @@ def test_flow_needs_all(protocol):
         f.index(from_ndarray(np.random.random([10, 10])))
 
 
+class EnvChecker1(BaseExecutor):
+    """Class used in Flow YAML"""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # pea/pod-specific
+        assert os.environ['key1'] == 'value1'
+        assert os.environ['key2'] == 'value2'
+        # inherit from parent process
+        assert os.environ['key_parent'] == 'value3'
+
+
+class EnvChecker2(BaseExecutor):
+    """Class used in Flow YAML"""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # pea/pod-specific
+        assert 'key1' not in os.environ
+        assert 'key2' not in os.environ
+        # inherit from parent process
+        assert os.environ['key_parent'] == 'value3'
+
+
 def test_flow_with_pod_envs():
     f = Flow.load_config(os.path.join(cur_dir, 'yaml/flow-with-envs.yml'))
-
-    class EnvChecker1(BaseExecutor):
-        """Class used in Flow YAML"""
-
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            # pea/pod-specific
-            assert os.environ['key1'] == 'value1'
-            assert os.environ['key2'] == 'value2'
-            # inherit from parent process
-            assert os.environ['key_parent'] == 'value3'
-
-    class EnvChecker2(BaseExecutor):
-        """Class used in Flow YAML"""
-
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            # pea/pod-specific
-            assert 'key1' not in os.environ
-            assert 'key2' not in os.environ
-            # inherit from parent process
-            assert os.environ['key_parent'] == 'value3'
-
     with f:
         pass
 
@@ -545,9 +541,9 @@ def test_return_results_sync_flow(return_results, protocol):
 )
 def test_flow_host_expose_shortcut(input, expect_host, expect_port):
     f = Flow().add(host=input).build()
-    assert f['pod0'].args.host == expect_host
+    assert f['executor0'].args.host == expect_host
     if expect_port is not None:
-        assert f['pod0'].args.port_jinad == expect_port
+        assert f['executor0'].args.port_jinad == expect_port
 
 
 def test_flow_workspace_id():
@@ -580,12 +576,12 @@ def test_flow_identity():
 
 @pytest.mark.slow
 def test_flow_identity_override():
-    f = Flow().add().add(parallel=2).add(parallel=2)
+    f = Flow().add().add(shards=2).add(shards=2)
 
     with f:
         assert len(set(p.args.identity for _, p in f)) == f.num_pods
 
-    f = Flow(identity='123456').add().add(parallel=2).add(parallel=2)
+    f = Flow(identity='123456').add().add(shards=2).add(shards=2)
 
     with f:
         assert len(set(p.args.identity for _, p in f)) == 1
@@ -593,10 +589,10 @@ def test_flow_identity_override():
     y = '''
 !Flow
 version: '1.0'
-pods:
+executors:
     - name: hello
     - name: world
-      parallel: 3
+      shards: 3
     '''
 
     f = Flow.load_config(y)
@@ -618,54 +614,54 @@ def test_bad_pod_graceful_termination():
                 assert f._build_level == FlowBuildLevel.EMPTY
 
     # bad remote pod
-    asset_bad_flow(Flow().add(host='hello-there'))
+    asset_bad_flow(Flow().add(name='exec1', host='hello-there'))
 
     # bad local pod
-    asset_bad_flow(Flow().add(uses='hello-there'))
+    asset_bad_flow(Flow().add(name='exec2', uses='hello-there'))
 
     # bad local pod at second
-    asset_bad_flow(Flow().add().add(uses='hello-there'))
+    asset_bad_flow(Flow().add().add(name='exec3', uses='hello-there'))
 
     # bad remote pod at second
-    asset_bad_flow(Flow().add().add(host='hello-there'))
+    asset_bad_flow(Flow().add().add(name='exec4', host='hello-there'))
 
     # bad local pod at second, with correct pod at last
-    asset_bad_flow(Flow().add().add(uses='hello-there').add())
+    asset_bad_flow(Flow().add().add(name='exec5', uses='hello-there').add())
 
     # bad remote pod at second, with correct pod at last
-    asset_bad_flow(Flow().add().add(host='hello-there').add())
+    asset_bad_flow(Flow().add().add(name='exec6', host='hello-there').add())
 
 
 def test_socket_types_2_remote_one_local():
     f = (
         Flow()
-        .add(name='pod1', host='0.0.0.1')
-        .add(name='pod2', parallel=2, host='0.0.0.2')
-        .add(name='pod3', parallel=2, host='1.2.3.4', needs=['gateway'])
-        .join(name='join', needs=['pod2', 'pod3'])
+        .add(name='executor1', host='0.0.0.1')
+        .add(name='executor2', shards=2, host='0.0.0.2')
+        .add(name='executor3', shards=2, host='1.2.3.4', needs=['gateway'])
+        .join(name='join', needs=['executor2', 'executor3'])
     )
 
     f.build()
 
     assert f._pod_nodes['join'].head_args.socket_in == SocketType.ROUTER_BIND
-    assert f._pod_nodes['pod2'].tail_args.socket_out == SocketType.ROUTER_BIND
-    assert f._pod_nodes['pod3'].tail_args.socket_out == SocketType.ROUTER_BIND
+    assert f._pod_nodes['executor2'].tail_args.socket_out == SocketType.ROUTER_BIND
+    assert f._pod_nodes['executor3'].tail_args.socket_out == SocketType.ROUTER_BIND
 
 
 def test_socket_types_2_remote_one_local_input_socket_pull_connect_from_remote():
     f = (
         Flow()
-        .add(name='pod1', host='0.0.0.1')
-        .add(name='pod2', parallel=2, host='0.0.0.2')
-        .add(name='pod3', parallel=2, host='1.2.3.4', needs=['gateway'])
-        .join(name='join', needs=['pod2', 'pod3'])
+        .add(name='executor1', host='0.0.0.1')
+        .add(name='executor2', shards=2, host='0.0.0.2')
+        .add(name='executor3', shards=2, host='1.2.3.4', needs=['gateway'])
+        .join(name='join', needs=['executor2', 'executor3'])
     )
 
     f.build()
 
     assert f._pod_nodes['join'].head_args.socket_in == SocketType.ROUTER_BIND
-    assert f._pod_nodes['pod2'].tail_args.socket_out == SocketType.ROUTER_BIND
-    assert f._pod_nodes['pod3'].tail_args.socket_out == SocketType.ROUTER_BIND
+    assert f._pod_nodes['executor2'].tail_args.socket_out == SocketType.ROUTER_BIND
+    assert f._pod_nodes['executor3'].tail_args.socket_out == SocketType.ROUTER_BIND
 
 
 def test_single_document_flow_index():
@@ -676,29 +672,35 @@ def test_single_document_flow_index():
 
 
 def test_flow_equalities():
-    f1 = Flow().add().add(needs='gateway').needs_all(name='joiner')
+    f1 = (
+        Flow()
+        .add(name='executor0')
+        .add(name='executor1', needs='gateway')
+        .needs_all(name='joiner')
+    )
     f2 = (
         Flow()
-        .add(name='pod0')
-        .add(name='pod1', needs='gateway')
-        .add(name='joiner', needs=['pod0', 'pod1'])
+        .add(name='executor0')
+        .add(name='executor1', needs='gateway')
+        .add(name='joiner', needs=['executor0', 'executor1'])
     )
     assert f1 == f2
 
-    f2 = f2.add()
+    f2 = f2.add(name='executor0')
     assert f1 != f2
 
 
 def test_flow_get_item():
     f1 = Flow().add().add(needs='gateway').needs_all(name='joiner')
     assert isinstance(f1[1], BasePod)
-    assert isinstance(f1['pod0'], BasePod)
+    assert isinstance(f1['executor0'], BasePod)
+
+
+class CustomizedExecutor(BaseExecutor):
+    pass
 
 
 def test_flow_add_class():
-    class CustomizedExecutor(BaseExecutor):
-        pass
-
     f = Flow().add(uses=BaseExecutor).add(uses=CustomizedExecutor)
 
     with f:
@@ -707,11 +709,6 @@ def test_flow_add_class():
 
 @pytest.mark.slow
 def test_flow_allinone_yaml():
-    from jina import Executor
-
-    class CustomizedEncoder(Executor):
-        pass
-
     f = Flow.load_config(os.path.join(cur_dir, 'yaml/flow-allinone.yml'))
     with f:
         pass
@@ -721,14 +718,13 @@ def test_flow_allinone_yaml():
         pass
 
 
+class MyExec(Executor):
+    @requests
+    def foo(self, parameters, **kwargs):
+        assert parameters['hello'] == 'world'
+
+
 def test_flow_empty_data_request(mocker):
-    from jina import Executor, requests
-
-    class MyExec(Executor):
-        @requests
-        def foo(self, parameters, **kwargs):
-            assert parameters['hello'] == 'world'
-
     f = Flow().add(uses=MyExec)
 
     mock = mocker.Mock()
@@ -766,16 +762,17 @@ async def delayed_send_message_via(self, socket, msg):
         self.logger.error(f'sending message error: {ex!r}, gateway cancelled?')
 
 
+@pytest.mark.skipif(__windows__, reason='timing comparison is broken for 2nd Flow')
 def test_flow_routes_list(monkeypatch):
     def _time(time: str):
         return datetime.datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.%fZ')
 
-    with Flow().add(name='pod1') as simple_flow:
+    with Flow().add(name='executor1') as simple_flow:
 
         def validate_routes(x):
             gateway_entry, pod1_entry = json.loads(x.json())['routes']
             assert gateway_entry['pod'] == 'gateway'
-            assert pod1_entry['pod'].startswith('pod1')
+            assert pod1_entry['pod'].startswith('executor1')
             assert (
                 _time(gateway_entry['end_time'])
                 > _time(pod1_entry['end_time'])
@@ -792,7 +789,7 @@ def test_flow_routes_list(monkeypatch):
 
     with Flow().add(name='a1').add(name='a2').add(name='b1', needs='gateway').add(
         name='merge', needs=['a2', 'b1']
-    ) as parallel_flow:
+    ) as shards_flow:
 
         def validate_routes(x):
             gateway_entry, a1_entry, a2_entry, b1_entry, merge_entry = json.loads(
@@ -816,14 +813,95 @@ def test_flow_routes_list(monkeypatch):
                 > _time(gateway_entry['start_time'])
             )
 
-        parallel_flow.index(inputs=Document(), on_done=validate_routes)
+        shards_flow.index(inputs=Document(), on_done=validate_routes)
 
 
 def test_connect_to_predecessor():
-    f = Flow().add(name='pod1').add(name='pod2', connect_to_predecessor=True)
+    f = Flow().add(name='executor1').add(name='executor2', connect_to_predecessor=True)
 
     f.build()
 
     assert len(f._pod_nodes['gateway'].head_args.hosts_in_connect) == 0
-    assert len(f._pod_nodes['pod1'].head_args.hosts_in_connect) == 0
-    assert len(f._pod_nodes['pod2'].head_args.hosts_in_connect) == 1
+    assert len(f._pod_nodes['executor1'].head_args.hosts_in_connect) == 0
+    assert len(f._pod_nodes['executor2'].head_args.hosts_in_connect) == 1
+
+
+def test_flow_grpc_with_shard():
+    with pytest.raises(
+        NotImplementedError, match='GRPC data runtime does not support sharding'
+    ):
+        Flow(grpc_data_requests=True).add(shards=2)
+        Flow(grpc_data_requests=True).add(shards=None)
+
+    Flow(grpc_data_requests=False).add(shards=1)
+    Flow(grpc_data_requests=False).add()
+    Flow(grpc_data_requests=True, infrastructure=InfrastructureType.K8S).add(shards=2)
+
+
+def test_flow_auto_polling():
+    f = (
+        Flow()
+        .add(name='pod_replica_only_polling_any', replicas=2)
+        .add(name='pod_replica_only_polling_ignored', replicas=2, polling='ALL')
+        .add(name='pod_replicas_shards_auto_polling_all', replicas=2, shards=2)
+        .add(name='pod_shards_default_polling_any', shards=2)
+        .add(
+            name='pod_replicas_shards_manual_polling_any',
+            replicas=2,
+            shards=2,
+            polling='ANY',
+        )
+        .add(
+            name='pod_replicas_shards_manual_polling_all',
+            replicas=2,
+            shards=2,
+            polling='ALL',
+        )
+    )
+
+    assert f['pod_replica_only_polling_any'].args.polling == PollingType.ANY
+    assert f['pod_replica_only_polling_ignored'].args.polling == PollingType.ANY
+    assert f['pod_replicas_shards_auto_polling_all'].args.polling == PollingType.ALL
+    assert f['pod_shards_default_polling_any'].args.polling == PollingType.ANY
+    assert f['pod_replicas_shards_manual_polling_any'].args.polling == PollingType.ANY
+    assert f['pod_replicas_shards_manual_polling_all'].args.polling == PollingType.ALL
+
+
+def test_flow_change_parameters():
+    class MyExec(Executor):
+        @requests
+        def foo(self, **kwargs):
+            return {'a': 1}
+
+    f = Flow().add(uses=MyExec)
+    with f:
+        r = f.post('/', parameters={'a': 2}, return_results=True)
+        assert r[0].parameters['a'] == 1.0
+        r = f.post('/', parameters={}, return_results=True)
+        assert r[0].parameters['a'] == 1.0
+
+
+def test_flow_load_executor_yaml_extra_search_paths():
+    f = Flow(extra_search_paths=[os.path.join(cur_dir, 'executor')]).add(
+        uses='config.yml'
+    )
+    with f:
+        r = f.post('/', inputs=Document(), return_results=True)
+    assert r[0].docs[0].text == 'done'
+
+
+def test_flow_load_yaml_extra_search_paths():
+    f = Flow.load_config(os.path.join(cur_dir, 'flow/flow.yml'))
+    with f:
+        r = f.post('/', inputs=Document(), return_results=True)
+    assert r[0].docs[0].text == 'done'
+
+
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+@pytest.mark.parametrize('grpc_data_requests', [True, False])
+def test_gateway_only_flows_no_error(capsys, protocol, grpc_data_requests):
+    f = Flow(grpc_data_requests=grpc_data_requests, protocol=protocol)
+    with f:
+        pass
+    captured = capsys.readouterr()
+    assert not captured.err

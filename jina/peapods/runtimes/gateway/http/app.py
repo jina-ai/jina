@@ -5,7 +5,6 @@ from typing import Dict
 
 from google.protobuf.json_format import MessageToDict
 
-from ..prefetch import PrefetchCaller
 from ....grpc import Grpclet
 from ....zmq import AsyncZmqlet
 from ..... import __version__
@@ -60,19 +59,23 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         )
 
     if args.grpc_data_requests:
+        from ....stream.gateway import GrpcGatewayStreamer
+
         iolet = Grpclet(
             args=args,
             message_callback=None,
             logger=logger,
         )
+        streamer = GrpcGatewayStreamer(args, iolet)
     else:
+        from ....stream.gateway import ZmqGatewayStreamer
+
         iolet = AsyncZmqlet(args, logger)
-    servicer = PrefetchCaller(args, iolet)
+        streamer = ZmqGatewayStreamer(args, iolet)
 
     @app.on_event('shutdown')
     async def _shutdown():
-        await servicer.close()
-        if inspect.iscoroutine(iolet.close):
+        if inspect.iscoroutinefunction(iolet.close):
             await iolet.close()
         else:
             iolet.close()
@@ -203,14 +206,14 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
 
         app.add_route(docs_url, _render_custom_swagger_html, include_in_schema=False)
 
-    async def _get_singleton_result(req_iter) -> Dict:
+    async def _get_singleton_result(request_iterator) -> Dict:
         """
         Streams results from AsyncPrefetchCall as a dict
 
-        :param req_iter: request iterator, with length of 1
+        :param request_iterator: request iterator, with length of 1
         :return: the first result from the request iterator
         """
-        async for k in servicer.send(request_iterator=req_iter):
+        async for k in streamer.stream(request_iterator=request_iterator):
             return MessageToDict(
                 k, including_default_value_fields=True, use_integers_for_enums=True
             )  # DO NOT customize other serialization here. Scheme is handled by Pydantic in `models.py`

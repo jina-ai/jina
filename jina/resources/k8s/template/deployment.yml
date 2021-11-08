@@ -5,6 +5,11 @@ metadata:
   namespace: {namespace}
 spec:
   replicas: {replicas}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: {name}
@@ -25,11 +30,17 @@ spec:
           - containerPort: {port_in}
           - containerPort: {port_out}
           - containerPort: {port_ctrl}
+        envFrom:
+          - configMapRef:
+              name: {name}-configmap
         env:
-        - name: JINA_LOG_LEVEL
-          value: debug
-        - name: PYTHONUNBUFFERED
-          value: "1"
-        - name: WORKER_CLASS
-          value: "uvicorn.workers.UvicornH11Worker"
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
 
+        readinessProbe:
+          tcpSocket:
+            port: {port_in}
+          initialDelaySeconds: 5
+          periodSeconds: 10

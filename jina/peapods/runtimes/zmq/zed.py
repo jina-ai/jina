@@ -1,12 +1,14 @@
 import argparse
 import time
+import threading
 from collections import defaultdict
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, TYPE_CHECKING
 
 import zmq
+import signal
 
-
-from .base import ZMQRuntime
+from .... import __windows__
+from ..base import BaseRuntime
 from ..request_handlers.data_request_handler import DataRequestHandler
 from ...zmq import ZmqStreamlet
 from ....enums import OnErrorStrategy, SocketType
@@ -22,14 +24,15 @@ from ....logging.profile import used_memory
 from ....proto import jina_pb2
 from ....types.message import Message
 from ....types.routing.table import RoutingTable
+from ....importer import ImportExtensions
 
-if False:
+if TYPE_CHECKING:
     import multiprocessing
-    import threading
+
     from ....logging.logger import JinaLogger
 
 
-class ZEDRuntime(ZMQRuntime):
+class ZEDRuntime(BaseRuntime):
     """Runtime procedure leveraging :class:`ZmqStreamlet` for Executor."""
 
     def __init__(self, args: 'argparse.Namespace', **kwargs):
@@ -39,6 +42,23 @@ class ZEDRuntime(ZMQRuntime):
         :param kwargs: extra keyword arguments
         """
         super().__init__(args, **kwargs)
+        if not __windows__:
+            try:
+                signal.signal(signal.SIGTERM, self._handle_sig_term)
+            except ValueError:
+                self.logger.warning(
+                    'Runtime is being run in a thread. Threads can not receive signals and may not shutdown as expected.'
+                )
+        else:
+            with ImportExtensions(
+                required=True,
+                logger=self.logger,
+                help_text='''If you see a 'DLL load failed' error, please reinstall `pywin32`.
+                If you're using conda, please use the command `conda install -c anaconda pywin32`''',
+            ):
+                import win32api
+
+            win32api.SetConsoleCtrlHandler(self._handle_sig_term)
         self._id = random_identity()
         self._last_active_time = time.perf_counter()
         self.ctrl_addr = self.get_control_address(args.host, args.port_ctrl)
@@ -57,6 +77,9 @@ class ZEDRuntime(ZMQRuntime):
     def run_forever(self):
         """Start the `ZmqStreamlet`."""
         self._zmqstreamlet.start(self._msg_callback)
+
+    def _handle_sig_term(self, *args):
+        self.teardown()
 
     def teardown(self):
         """Close the `ZmqStreamlet` and `Executor`."""
@@ -188,7 +211,7 @@ class ZEDRuntime(ZMQRuntime):
 
             # when no available dealer, pause the pollin from upstream
             if not self._idle_dealer_ids:
-                self._zmqstreamlet.pause_pollin()
+                self._pause_pollin()
             self.logger.debug(
                 f'using route, set receiver_id: {msg.envelope.receiver_id}'
             )
@@ -204,6 +227,10 @@ class ZEDRuntime(ZMQRuntime):
         )
 
         return msg
+
+    def _pause_pollin(self):
+        self.logger.debug('No idle dealers available, pause pollin')
+        self._zmqstreamlet.pause_pollin()
 
     def _handle_control_req(self, msg: 'Message'):
         # migrated from previous ControlDriver logic
@@ -221,7 +248,15 @@ class ZEDRuntime(ZMQRuntime):
             )
         elif msg.request.command == 'CANCEL':
             if msg.envelope.receiver_id in self._idle_dealer_ids:
+                self.logger.debug(
+                    f'Removing idle dealer {msg.envelope.receiver_id}, now I know these idle peas {self._idle_dealer_ids}'
+                )
                 self._idle_dealer_ids.remove(msg.envelope.receiver_id)
+
+                # when no available dealer, pause the pollin from upstream
+                if not self._idle_dealer_ids:
+                    self._pause_pollin()
+
         elif msg.request.command == 'ACTIVATE':
             self._zmqstreamlet._send_idle_to_router()
         elif msg.request.command == 'DEACTIVATE':
@@ -377,7 +412,7 @@ class ZEDRuntime(ZMQRuntime):
         :param kwargs: extra keyword arguments
         :return: True if is ready or it needs to be shutdown
         """
-        timeout_ns = 1000000000 * timeout if timeout else None
+        timeout_ns = 1e9 * timeout if timeout else None
         now = time.time_ns()
         while timeout_ns is None or time.time_ns() - now < timeout_ns:
             if shutdown_event.is_set() or ZEDRuntime.is_ready(

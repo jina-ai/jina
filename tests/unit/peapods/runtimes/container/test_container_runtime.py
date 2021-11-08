@@ -8,13 +8,18 @@ import pytest
 from jina.checker import NetworkChecker
 from jina.executors import BaseExecutor
 from jina.executors.decorators import requests
-from jina import Flow
+from jina import Flow, __windows__
 from jina.helper import random_name
 from jina.parsers import set_pea_parser
 from jina.parsers.ping import set_ping_parser
 from jina.peapods import Pea
 from jina.peapods.runtimes.container import ContainerRuntime
+from jina.peapods.runtimes.container.helper import get_gpu_device_requests
 from tests import random_docs, validate_callback
+
+if __windows__:
+    pytest.skip(msg='Windows containers are not supported yet', allow_module_level=True)
+
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -63,11 +68,23 @@ def test_flow_with_one_container_pod(docker_image_built):
         f.post(on='/index', inputs=random_docs(10))
 
 
+def test_flow_with_one_container_pod_shards(docker_image_built):
+    f = Flow().add(name='dummyEncoder1', shards=2, uses=f'docker://{img_name}')
+
+    with f:
+        pod = f._pod_nodes['dummyEncoder1']
+        assert pod.args.shards == pod.args.parallel == 2
+        for idx, shard in enumerate(pod.shards):
+            assert shard.args.pea_id == shard.args.shard_id == idx
+            assert shard.args.shards == shard.args.parallel == 2
+        f.post(on='/index', inputs=random_docs(10))
+
+
 def test_flow_with_replica_container_ext_yaml(docker_image_built):
     f = Flow().add(
         name='dummyEncoder3',
         uses=f'docker://{img_name}',
-        parallel=3,
+        shards=3,
         entrypoint='jina pea',
     )
 
@@ -125,16 +142,16 @@ def test_flow_topo_mixed(docker_image_built, _logforward):
         f.post(on='/index', inputs=random_docs(10))
 
 
-def test_flow_topo_parallel():
+def test_flow_topo_shards():
     f = (
         Flow()
         .add(
             name='d7',
             uses='docker://jinaai/jina:test-pip',
             entrypoint='jina executor',
-            parallel=3,
+            shards=3,
         )
-        .add(name='d8', parallel=3)
+        .add(name='d8', shards=3)
         .add(
             name='d9',
             uses='docker://jinaai/jina:test-pip',
@@ -148,7 +165,7 @@ def test_flow_topo_parallel():
         f.post(on='/index', inputs=random_docs(10))
 
 
-def test_flow_topo_ldl_parallel():
+def test_flow_topo_ldl_shards():
     f = (
         Flow()
         .add(name='d10')
@@ -156,7 +173,7 @@ def test_flow_topo_ldl_parallel():
             name='d11',
             uses='docker://jinaai/jina:test-pip',
             entrypoint='jina executor',
-            parallel=3,
+            shards=3,
         )
         .add(name='d12')
     )
@@ -179,19 +196,19 @@ def test_container_ping(docker_image_built):
     assert cm.value.code == 0
 
 
-def test_tail_host_docker2local_parallel():
+def test_tail_host_docker2local_shards():
     f = (
         Flow()
         .add(
             name='d10',
             uses='docker://jinaai/jina:test-pip',
             entrypoint='jina executor',
-            parallel=3,
+            shards=3,
         )
         .add(name='d11')
     )
     with f:
-        assert getattr(f._pod_nodes['d10'].peas_args['tail'], 'host_out') == defaulthost
+        assert getattr(f._pod_nodes['d10'].tail_args, 'host_out') == defaulthost
 
 
 def test_tail_host_docker2local():
@@ -232,10 +249,9 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
             pass
 
         def run(self, *args, **kwargs):
-            mock_kwargs = {k: kwargs[k] for k in ['hello', 'ports', 'environment']}
+            mock_kwargs = {k: kwargs[k] for k in ['hello', 'environment']}
             mock(**mock_kwargs)
             assert 'ports' in kwargs
-            assert kwargs['ports'] is None
             assert 'environment' in kwargs
             assert kwargs['environment'] == ['VAR1=BAR', 'VAR2=FOO']
             assert 'hello' in kwargs
@@ -275,13 +291,13 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
         ]
     )
     _ = ContainerRuntime(args, ctrl_addr='', ready_event=multiprocessing.Event())
-    expected_args = {'hello': 0, 'ports': None, 'environment': ['VAR1=BAR', 'VAR2=FOO']}
+    expected_args = {'hello': 0, 'environment': ['VAR1=BAR', 'VAR2=FOO']}
     mock.assert_called_with(**expected_args)
 
 
 def test_pass_arbitrary_kwargs_from_yaml():
     f = Flow.load_config(os.path.join(cur_dir, 'flow.yml'))
-    assert f._pod_nodes['pod1'].args.docker_kwargs == {
+    assert f._pod_nodes['executor1'].args.docker_kwargs == {
         'hello': 0,
         'environment': ['VAR1=BAR', 'VAR2=FOO'],
     }
@@ -308,12 +324,13 @@ def test_container_override_params(docker_image_built, tmpdir, mocker):
     )
 
     with f:
-        f.index(random_docs(10), on_done=mock)
+        responses = f.index(random_docs(10), return_results=True)
 
+    assert len(responses) > 0
     assert os.path.exists(
         os.path.join(abc_path, 'ext-mwu-encoder', '0', 'ext-mwu-encoder.bin')
     )
-    validate_callback(mock, validate_response)
+    validate_response(responses[0])
 
 
 def test_container_volume(docker_image_built, tmpdir):
@@ -329,11 +346,12 @@ def test_container_volume(docker_image_built, tmpdir):
     )
 
     with f:
-        f.index(random_docs(10))
+        responses = f.index(random_docs(10), return_results=True)
 
     assert os.path.exists(
         os.path.join(abc_path, 'ext-mwu-encoder', '0', 'ext-mwu-encoder.bin')
     )
+    assert len(responses) > 0
 
 
 @pytest.mark.parametrize(
@@ -384,7 +402,7 @@ def test_gpu_container(
         ['--uses', f'docker://{img_name}', '--gpus', gpus_value]
     )
 
-    device_requests = ContainerRuntime._get_gpu_device_requests(args.gpus)
+    device_requests = get_gpu_device_requests(args.gpus)
     assert device_requests[0]['Count'] == expected_count
     assert device_requests[0]['DeviceIDs'] == expected_device
     assert device_requests[0]['Driver'] == expected_driver
@@ -444,6 +462,78 @@ def test_pass_native_arg(monkeypatch, mocker):
         [
             '--uses',
             'docker://jinahub/pod',
+        ]
+    )
+    _ = ContainerRuntime(args, ctrl_addr='', ready_event=multiprocessing.Event())
+
+
+def test_pass_replica_id_shard_id(monkeypatch, mocker):
+    import docker
+
+    mocker.patch(
+        'jina.peapods.runtimes.container.ContainerRuntime.is_ready',
+        return_value=True,
+    )
+
+    class MockContainers:
+        class MockContainer:
+            def reload(self):
+                pass
+
+            def logs(self, **kwargs):
+                return []
+
+        def __init__(self):
+            pass
+
+        def get(self, *args):
+            pass
+
+        def run(self, *args, **kwargs):
+            assert '--shard-id' in list(args[1])
+            assert '--shards' in list(args[1])
+            assert '--replica-id' in list(args[1])
+            assert list(args[1])[list(args[1]).index('--shard-id') + 1] == '1'
+            assert list(args[1])[list(args[1]).index('--shards') + 1] == '5'
+            assert list(args[1])[list(args[1]).index('--replica-id') + 1] == '1'
+            return MockContainers.MockContainer()
+
+    class MockClient:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def close(self):
+            pass
+
+        def version(self):
+            return {'Version': '20.0.1'}
+
+        @property
+        def networks(self):
+            return {'bridge': None}
+
+        @property
+        def containers(self):
+            return MockContainers()
+
+        @property
+        def images(self):
+            return {}
+
+    monkeypatch.setattr(docker, 'from_env', MockClient)
+    args = set_pea_parser().parse_args(
+        [
+            '--uses',
+            'docker://jinahub/pod',
+            '--docker-kwargs',
+            'hello: 0',
+            'environment: ["VAR1=BAR", "VAR2=FOO"]',
+            '--shards',
+            '5',
+            '--shard-id',
+            '1',
+            '--replica-id',
+            '1',
         ]
     )
     _ = ContainerRuntime(args, ctrl_addr='', ready_event=multiprocessing.Event())

@@ -35,15 +35,15 @@ class V1Parser(VersionedYAMLParser):
             !Flow
             version: '1.0'
             pods:
-              - name: pod0  # notice the change here, name is now an attribute
+              - name: executor0  # notice the change here, name is now an attribute
                 method: add  # by default method is always add, available: add, needs, inspect
                 needs: gateway
-              - name: pod1  # notice the change here, name is now an attribute
+              - name: executor1  # notice the change here, name is now an attribute
                 method: add  # by default method is always add, available: add, needs, inspect
                 needs: gateway
-              - method: inspect  # add an inspect node on pod1
+              - method: inspect  # add an inspect node on executor1
               - method: needs  # let's try something new in Flow YAML v1: needs
-                needs: [pod1, pod0]
+                needs: [executor1, executor0]
 
 
     """
@@ -57,6 +57,7 @@ class V1Parser(VersionedYAMLParser):
         :return: the Flow YAML parser given the syntax version number
         """
         p = data.get('with', {})  # type: Dict[str, Any]
+
         a = p.pop('args') if 'args' in p else ()
         k = p.pop('kwargs') if 'kwargs' in p else {}
         # maybe there are some hanging kwargs in "parameters"

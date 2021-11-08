@@ -1,3 +1,5 @@
+from typing import Optional, Dict, Any
+
 from fastapi import Depends, APIRouter, HTTPException
 
 from ... import Runtime400Exception
@@ -36,6 +38,7 @@ async def _create(pod: PodDepends = Depends(PodDepends)):
             params=pod.params,
             ports=pod.ports,
             envs=pod.envs,
+            device_requests=pod.device_requests,
         )
     except Exception as ex:
         raise Runtime400Exception from ex
@@ -46,9 +49,19 @@ async def _create(pod: PodDepends = Depends(PodDepends)):
     summary='Trigger a rolling update on this Pod',
     description='Types supported: "rolling_update"',
 )
-async def _update(id: DaemonID, kind: UpdateOperation, dump_path: str):
+async def _update(
+    id: DaemonID,
+    kind: UpdateOperation,
+    dump_path: Optional[str] = None,
+    uses_with: Optional[Dict[str, Any]] = None,
+):
     try:
-        return await store.update(id, kind, dump_path)
+        if dump_path is not None:
+            if uses_with is not None:
+                uses_with['dump_path'] = dump_path
+            else:
+                uses_with = {'dump_path': dump_path}
+        return await store.update(id, kind, uses_with=uses_with)
     except Exception as ex:
         raise Runtime400Exception from ex
 
@@ -70,7 +83,7 @@ async def _delete(id: DaemonID, workspace: bool = False):
     try:
         await store.delete(id=id, workspace=workspace)
     except KeyError:
-        raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
+        raise HTTPException(status_code=404, detail=f'{id} not found in store')
 
 
 @router.get(
@@ -80,4 +93,4 @@ async def _status(id: DaemonID):
     try:
         return store[id]
     except KeyError:
-        raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
+        raise HTTPException(status_code=404, detail=f'{id} not found in store')

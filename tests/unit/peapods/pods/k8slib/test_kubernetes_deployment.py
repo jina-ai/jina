@@ -50,9 +50,10 @@ def test_deploy_service(init_container: Dict, custom_resource: str, monkeypatch)
         pull_policy='test-pull-policy',
         init_container=init_container,
         custom_resource_dir=custom_resource,
+        env={'k1': 'v1', 'k2': 'v2'},
     )
 
-    assert mock_create.call_count == 2
+    assert mock_create.call_count == 5
 
     service_call_args = mock_create.call_args_list[0][0]
     service_call_kwargs = mock_create.call_args_list[0][1]
@@ -60,8 +61,14 @@ def test_deploy_service(init_container: Dict, custom_resource: str, monkeypatch)
     assert service_call_args[0] == 'service'
     assert service_call_kwargs['custom_resource_dir'] == custom_resource
 
-    deployment_call_args = mock_create.call_args_list[1][0]
-    deployment_call_kwargs = mock_create.call_args_list[1][1]
+    configmap_call_args = mock_create.call_args_list[1][0]
+    configmap_call_kwargs = mock_create.call_args_list[1][1]
+
+    assert configmap_call_args[0] == 'configmap'
+    assert configmap_call_kwargs['custom_resource_dir'] is None
+
+    deployment_call_args = mock_create.call_args_list[2][0]
+    deployment_call_kwargs = mock_create.call_args_list[2][1]
     assert deployment_call_kwargs['custom_resource_dir'] == custom_resource
 
     if init_container:
@@ -71,7 +78,7 @@ def test_deploy_service(init_container: Dict, custom_resource: str, monkeypatch)
     else:
         assert deployment_call_args[0] == 'deployment'
 
-    assert service_name == 'test-executor.test-ns.svc.cluster.local'
+    assert service_name == 'test-executor.test-ns.svc'
 
 
 @pytest.mark.parametrize(
@@ -99,7 +106,7 @@ def test_deploy_service(init_container: Dict, custom_resource: str, monkeypatch)
 )
 def test_get_cli_params(namespace: Dict, skip_attr: Tuple, expected_string: str):
     base_string = (
-        ', "--host", "0.0.0.0", "--port-expose", "8080", "--port-in",'
+        ', "--host", "0.0.0.0", "--port-in",'
         ' "8081", "--port-out", "8082", "--port-ctrl", "8083"'
     )
     namespace = Namespace(**namespace)
@@ -150,7 +157,7 @@ def test_init_container_args(pod_args):
     args = set_pod_parser().parse_args(pod_args)
     pod = K8sPod(args)
 
-    init_container = get_init_container_args(pod)
+    init_container = get_init_container_args(pod.args)
 
     if any(['--k8s-uses-init' in arg for arg in pod_args]):
         assert init_container == {

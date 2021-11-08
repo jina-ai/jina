@@ -1,8 +1,8 @@
-from typing import Iterable
+from typing import Iterable, TYPE_CHECKING
 
 from .document import DocumentArray
 
-if False:
+if TYPE_CHECKING:
     from ..document import Document
 
 

@@ -1,29 +1,19 @@
+import heapq
 import itertools
-import json
-from abc import abstractmethod
-from collections.abc import MutableSequence, Iterable as Itr
-from contextlib import nullcontext
+from collections.abc import MutableSequence
 from typing import (
     Union,
     Iterable,
-    Tuple,
-    List,
     Iterator,
-    TextIO,
     Optional,
     Generator,
-    BinaryIO,
-    TypeVar,
     Dict,
-    Sequence,
+    Callable,
+    List,
 )
 
-import numpy as np
-
-from .abstract import AbstractDocumentArray
-from .neural_ops import DocumentArrayNeuralOpsMixin
-from .search_ops import DocumentArraySearchOpsMixin
-from .traversable import TraversableSequence
+from .mixins import AllMixins
+from .types import DocumentArraySourceType
 from ..document import Document
 from ...helper import typename
 from ...proto import jina_pb2
@@ -39,129 +29,12 @@ except:
         RepeatedCompositeFieldContainer as RepeatedContainer,
     )
 
-__all__ = ['DocumentArray', 'DocumentArrayGetAttrMixin']
-
-DocumentArraySourceType = TypeVar(
-    'DocumentArraySourceType',
-    jina_pb2.DocumentArrayProto,
-    Sequence[Document],
-    Sequence[jina_pb2.DocumentProto],
-    Document,
-)
-
-
-class DocumentArrayGetAttrMixin:
-    """A mixin that provides attributes getter in bulk """
-
-    @abstractmethod
-    def __iter__(self):
-        ...
-
-    @abstractmethod
-    def __len__(self):
-        """Any implementation needs to implement the `length` method"""
-        ...
-
-    @abstractmethod
-    def __getitem__(self, item: int):
-        """Any implementation needs to implement access via integer item
-
-        :param item: the item index to access
-        """
-        ...
-
-    def get_attributes(self, *fields: str) -> Union[List, List[List]]:
-        """Return all nonempty values of the fields from all docs this array contains
-
-        :param fields: Variable length argument with the name of the fields to extract
-        :return: Returns a list of the values for these fields.
-            When `fields` has multiple values, then it returns a list of list.
-        """
-        contents = [doc.get_attributes(*fields) for doc in self]
-
-        if len(fields) > 1:
-            contents = list(map(list, zip(*contents)))
-
-        return contents
-
-    def get_attributes_with_docs(
-        self,
-        *fields: str,
-    ) -> Tuple[Union[List, List[List]], 'DocumentArray']:
-        """Return all nonempty values of the fields together with their nonempty docs
-
-        :param fields: Variable length argument with the name of the fields to extract
-        :return: Returns a tuple. The first element is  a list of the values for these fields.
-            When `fields` has multiple values, then it returns a list of list. The second element is the non-empty docs.
-        """
-
-        contents = []
-        docs_pts = []
-
-        for doc in self:
-            contents.append(doc.get_attributes(*fields))
-            docs_pts.append(doc)
-
-        if len(fields) > 1:
-            contents = list(map(list, zip(*contents)))
-
-        return contents, DocumentArray(docs_pts)
-
-    @property
-    @abstractmethod
-    def embeddings(self) -> np.ndarray:
-        """Return a `np.ndarray` stacking all the `embedding` attributes as rows."""
-        ...
-
-    @embeddings.setter
-    @abstractmethod
-    def embeddings(self, emb: np.ndarray):
-        """Set the embeddings of the Documents
-        :param emb: the embeddings to set
-        """
-        ...
-
-    @property
-    def blobs(self) -> np.ndarray:
-        """Return a `np.ndarray` stacking all the `blob` attributes as rows.
-
-        .. warning:: This operation assumes all Documents have `blob` as content, blobs have the same shape and dtype.
-                 All dtype and shape values are assumed to be equal to the values of the
-                 first element in the DocumentArray / DocumentArrayMemmap
-
-        .. warning:: This operation currently does not support sparse arrays.
-
-        :return: blobs stacked per row as `np.ndarray`.
-        """
-        x_mat = b''.join(d.proto.blob.dense.buffer for d in self)
-
-        return np.frombuffer(x_mat, dtype=self[0].proto.blob.dense.dtype).reshape(
-            (len(self), *self[0].proto.blob.dense.shape)
-        )
-
-    @blobs.setter
-    def blobs(self, b: np.ndarray):
-        """Set the blobs of the Documents
-
-        :param b: The blobs matrix to set
-        """
-
-        assert len(b) == len(
-            self
-        ), f'the number of rows in the input ({len(b)}), should match the number of Documents ({len(self)})'
-
-        for d, x in zip(self, b):
-            d.blob = x
+__all__ = ['DocumentArray']
 
 
 class DocumentArray(
-    TraversableSequence,
+    AllMixins,
     MutableSequence,
-    DocumentArrayGetAttrMixin,
-    DocumentArrayNeuralOpsMixin,
-    DocumentArraySearchOpsMixin,
-    Itr,
-    AbstractDocumentArray,
 ):
     """
     :class:`DocumentArray` is a mutable sequence of :class:`Document`.
@@ -195,7 +68,9 @@ class DocumentArray(
 
                 from .memmap import DocumentArrayMemmap
 
-                if isinstance(docs, (list, tuple, Generator, DocumentArrayMemmap)):
+                if isinstance(
+                    docs, (list, tuple, Generator, DocumentArrayMemmap, itertools.chain)
+                ):
                     # This would happen in the client
                     for doc in docs:
                         if isinstance(doc, Document):
@@ -221,8 +96,7 @@ class DocumentArray(
         }  # type: Dict[str, int]
 
     def insert(self, index: int, doc: 'Document') -> None:
-        """
-        Insert :param:`doc.proto` at :param:`index` into the list of `:class:`DocumentArray` .
+        """Insert :param:`doc` at :param:`index`.
 
         :param index: Position of the insertion.
         :param doc: The doc needs to be inserted.
@@ -254,7 +128,8 @@ class DocumentArray(
 
     def __eq__(self, other):
         return (
-            type(self._pb_body) is type(other._pb_body)
+            type(self) is type(other)
+            and type(self._pb_body) is type(other._pb_body)
             and self._pb_body == other._pb_body
         )
 
@@ -268,28 +143,17 @@ class DocumentArray(
     def __contains__(self, item: str):
         return item in self._id_to_index
 
-    def __getitem__(self, item: Union[int, str, slice]):
+    def __getitem__(self, item: Union[int, str, slice, List]):
         if isinstance(item, int):
             return Document(self._pb_body[item])
         elif isinstance(item, str):
             return self[self._id_to_index[item]]
         elif isinstance(item, slice):
             return DocumentArray(self._pb_body[item])
+        elif isinstance(item, list):
+            return DocumentArray(self._pb_body[t] for t in item)
         else:
             raise IndexError(f'do not support this index type {typename(item)}: {item}')
-
-    def __add__(self, other: Iterable['Document']):
-        v = DocumentArray()
-        for doc in self:
-            v.append(doc)
-        for doc in other:
-            v.append(doc)
-        return v
-
-    def __iadd__(self, other: Iterable['Document']):
-        for doc in other:
-            self.append(doc)
-        return self
 
     def append(self, doc: 'Document'):
         """
@@ -300,13 +164,16 @@ class DocumentArray(
         self._id_to_index[doc.id] = len(self._pb_body)
         self._pb_body.append(doc.proto)
 
-    def extend(self, iterable: Iterable['Document']) -> None:
+    def extend(self, docs: Iterable['Document']) -> None:
         """
         Extend the :class:`DocumentArray` by appending all the items from the iterable.
 
-        :param iterable: the iterable of Documents to extend this array with
+        :param docs: the iterable of Documents to extend this array with
         """
-        for doc in iterable:
+        if not docs:
+            return
+
+        for doc in docs:
             self.append(doc)
 
     def clear(self):
@@ -326,214 +193,69 @@ class DocumentArray(
             hi_idx -= 1
         self._update_id_to_index_map()
 
-    def sort(self, key=None, *args, **kwargs):
+    def sort(
+        self,
+        key: Callable,
+        top_k: Optional[int] = None,
+        reverse: bool = False,
+    ):
         """
         Sort the items of the :class:`DocumentArray` in place.
 
         :param key: key callable to sort based upon
-        :param args: variable set of arguments to pass to the sorting underlying function
-        :param kwargs: keyword arguments to pass to the sorting underlying function
+        :param top_k: make sure that the first `topk` elements are correctly sorted rather than
+            sorting the entire list
+        :param reverse: reverse=True will sort the list in descending order. Default is False
         """
-        if key:
 
-            def overriden_key(proto):
-                # Function to override the `proto` and wrap it around a `Document` to enable sorting via
-                # `Document-like` interface
-                d = Document(proto)
-                return key(d)
+        def overriden_key(proto):
+            # Function to override the `proto` and wrap it around a `Document` to enable sorting via
+            # `Document-like` interface
+            d = Document(proto)
+            return key(d)
 
-            # Logic here: `overriden_key` is offered to allow the user sort via pythonic `Document` syntax. However,
-            # maybe there may be cases where this won't work and the user may enter `proto-like` interface. To make
-            # sure (quite fragile) the `sort` will work seamlessly, it tries to apply `key` to the first element and
-            # see if it works. If it works it can sort with `proto` interface, otherwise use `Document` interface one.
-            # (Very often the 2 interfaces are both the same and valid, so proto will have less overhead
-            overriden = False
-            try:
-                key(self._pb_body[0])
-            except:
-                overriden = True
+        # Logic here: `overriden_key` is offered to allow the user sort via pythonic `Document` syntax. However,
+        # maybe there may be cases where this won't work and the user may enter `proto-like` interface. To make
+        # sure (quite fragile) the `sort` will work seamlessly, it tries to apply `key` to the first element and
+        # see if it works. If it works it can sort with `proto` interface, otherwise use `Document` interface one.
+        # (Very often the 2 interfaces are both the same and valid, so proto will have less overhead
+        _key = key
+        try:
+            key(self._pb_body[0])
+        except:
+            _key = overriden_key
 
-            if not overriden:
-                self._pb_body.sort(key=key, *args, **kwargs)
-            else:
-                self._pb_body.sort(key=overriden_key, *args, **kwargs)
+        if top_k is None or top_k >= len(self._pb_body):
+            self._pb_body.sort(key=_key, reverse=reverse)
         else:
-            self._pb_body.sort(*args, **kwargs)
+            # heap based sorting
+            # makes sure that the top_k elements are correctly sorted and leaves the rest unsorted
+            if _key is None:
+                # heap is a list of documents
+                heap = [element for element in self._pb_body]
+            else:
+                # heap is a list of tuples (key, document)
+                heap = [
+                    (_key(element), i, element)
+                    for i, element in enumerate(self._pb_body)
+                ]
+            # if reverse use the maxheap operations for .heapify and .heappop
+            heapify = heapq._heapify_max if reverse else heapq.heapify
+            heappop = heapq._heappop_max if reverse else heapq.heappop
+
+            # transform the original list to a heap and pop the top k elements
+            heapify(heap)
+            topk = [heappop(heap) for _ in range(top_k)]
+
+            # get back to lists of docs from the lists of tuples
+            _, _, topk = zip(*topk)
+            _, _, heap = zip(*heap)
+            topk, heap = list(topk), list(heap)
+            # update the protobuf body
+            self._pb_body = topk + heap
 
         self._update_id_to_index_map()
 
-    def __bool__(self):
-        """To simulate ```l = []; if l: ...```
-
-        :return: returns true if the length of the array is larger than 0
-        """
-        return len(self) > 0
-
-    def __str__(self):
-
-        content = f'{self.__class__.__name__} has {len(self._pb_body)} items'
-
-        if len(self._pb_body) > 3:
-            content += ' (showing first three)'
-
-        content += ':\n'
-        content += ',\n'.join(str(Document(d)) for d in self._pb_body[:3])
-
-        return content
-
-    def __repr__(self):
-        content = ' '.join(
-            f'{k}={v}' for k, v in {'length': len(self._pb_body)}.items()
-        )
-        content += f' at {id(self)}'
-        content = content.strip()
-        return f'<{typename(self)} {content}>'
-
-    def save(
-        self, file: Union[str, TextIO, BinaryIO], file_format: str = 'json'
-    ) -> None:
-        """Save array elements into a JSON or a binary file.
-
-        :param file: File or filename to which the data is saved.
-        :param file_format: `json` or `binary`. JSON file is human-readable,
-            but binary format gives much smaller size and faster save/load speed.
-        """
-        if file_format == 'json':
-            self.save_json(file)
-        elif file_format == 'binary':
-            self.save_binary(file)
-        else:
-            raise ValueError('`format` must be one of [`json`, `binary`]')
-
-    @classmethod
-    def load(
-        cls, file: Union[str, TextIO, BinaryIO], file_format: str = 'json'
-    ) -> 'DocumentArray':
-        """Load array elements from a JSON or a binary file.
-
-        :param file: File or filename to which the data is saved.
-        :param file_format: `json` or `binary`. JSON file is human-readable,
-            but binary format gives much smaller size and faster save/load speed.
-
-        :return: the loaded DocumentArray object
-        """
-        if file_format == 'json':
-            return cls.load_json(file)
-        elif file_format == 'binary':
-            return cls.load_binary(file)
-        else:
-            raise ValueError('`format` must be one of [`json`, `binary`]')
-
-    def save_binary(self, file: Union[str, BinaryIO]) -> None:
-        """Save array elements into a binary file.
-
-        Comparing to :meth:`save_json`, it is faster and the file is smaller, but not human-readable.
-
-        :param file: File or filename to which the data is saved.
-        """
-        if hasattr(file, 'write'):
-            file_ctx = nullcontext(file)
-        else:
-            file_ctx = open(file, 'wb')
-
-        with file_ctx as fp:
-            dap = jina_pb2.DocumentArrayProto()
-            if self._pb_body:
-                dap.docs.extend(self._pb_body)
-            fp.write(dap.SerializePartialToString())
-
-    def save_json(self, file: Union[str, TextIO]) -> None:
-        """Save array elements into a JSON file.
-
-        Comparing to :meth:`save_binary`, it is human-readable but slower to save/load and the file size larger.
-
-        :param file: File or filename to which the data is saved.
-        """
-        if hasattr(file, 'write'):
-            file_ctx = nullcontext(file)
-        else:
-            file_ctx = open(file, 'w')
-
-        with file_ctx as fp:
-            for d in self:
-                json.dump(d.dict(), fp)
-                fp.write('\n')
-
-    @classmethod
-    def load_json(cls, file: Union[str, TextIO]) -> 'DocumentArray':
-        """Load array elements from a JSON file.
-
-        :param file: File or filename to which the data is saved.
-
-        :return: a DocumentArray object
-        """
-
-        if hasattr(file, 'read'):
-            file_ctx = nullcontext(file)
-        else:
-            file_ctx = open(file)
-
-        with file_ctx as fp:
-            da = DocumentArray()
-            for v in fp:
-                da.append(Document(v))
-            return da
-
-    @classmethod
-    def load_binary(cls, file: Union[str, BinaryIO]) -> 'DocumentArray':
-        """Load array elements from a binary file.
-
-        :param file: File or filename to which the data is saved.
-
-        :return: a DocumentArray object
-        """
-
-        if hasattr(file, 'read'):
-            file_ctx = nullcontext(file)
-        else:
-            file_ctx = open(file, 'rb')
-
-        dap = jina_pb2.DocumentArrayProto()
-
-        with file_ctx as fp:
-            dap.ParseFromString(fp.read())
-            da = DocumentArray(dap.docs)
-            return da
-
     @staticmethod
-    def _flatten(sequence):
+    def _flatten(sequence) -> 'DocumentArray':
         return DocumentArray(list(itertools.chain.from_iterable(sequence)))
-
-    # Properties for fast access of commonly used attributes
-    @property
-    def embeddings(self) -> np.ndarray:
-        """Return a `np.ndarray` stacking all the `embedding` attributes as rows.
-
-        .. warning:: This operation assumes all embeddings have the same shape and dtype.
-                 All dtype and shape values are assumed to be equal to the values of the
-                 first element in the DocumentArray / DocumentArrayMemmap
-
-        .. warning:: This operation currently does not support sparse arrays.
-
-        :return: embeddings stacked per row as `np.ndarray`.
-        """
-        x_mat = b''.join(d.embedding.dense.buffer for d in self._pb_body)
-        proto = self[0].proto.embedding.dense
-
-        return np.frombuffer(x_mat, dtype=proto.dtype).reshape(
-            (len(self), proto.shape[0])
-        )
-
-    @embeddings.setter
-    def embeddings(self, emb: np.ndarray):
-        """Set the embeddings of the Documents
-
-        :param emb: The embedding matrix to set
-        """
-
-        assert len(emb) == len(
-            self
-        ), f'the number of rows in the input ({len(emb)}), should match the number of Documents ({len(self)})'
-
-        for d, x in zip(self, emb):
-            d.embedding = x

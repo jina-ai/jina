@@ -81,8 +81,7 @@ class LegacyParser(VersionedYAMLParser):
         # only log warnings about unknown args for main Pea
         if any(difference_set) and not LegacyParser.is_tail_or_head(data):
             default_logger.warning(
-                f'The arguments {difference_set} defined in the YAML are not expected in the '
-                f'class {cls.__name__}'
+                f'The given arguments {difference_set} are not defined in `{cls.__name__}.__init__`'
             )
 
         if not _meta_config:

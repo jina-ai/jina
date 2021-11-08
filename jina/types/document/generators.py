@@ -4,11 +4,23 @@ import itertools
 import json
 import os
 import random
-from typing import Optional, Generator, Union, List, Iterable, Dict
+from contextlib import nullcontext
+from typing import (
+    Optional,
+    Generator,
+    Union,
+    List,
+    Iterable,
+    Dict,
+    TYPE_CHECKING,
+    TextIO,
+)
 
 import numpy as np
 
-if False:
+from ...importer import ImportExtensions
+
+if TYPE_CHECKING:
     from . import Document
 
 
@@ -46,6 +58,7 @@ def from_files(
     size: Optional[int] = None,
     sampling_rate: Optional[float] = None,
     read_mode: Optional[str] = None,
+    to_dataturi: bool = False,
 ) -> Generator['Document', None, None]:
     """Creates an iterator over a list of file path or the content of the files.
 
@@ -57,6 +70,7 @@ def from_files(
     :param read_mode: specifies the mode in which the file is opened.
         'r' for reading in text mode, 'rb' for reading in binary mode.
         If `read_mode` is None, will iterate over filenames.
+    :param to_dataturi: if set, then the Document.uri will be filled with DataURI instead of the plan URI
     :yield: file paths or binary content
 
     .. note::
@@ -69,51 +83,136 @@ def from_files(
 
     def _iter_file_exts(ps):
         return itertools.chain.from_iterable(
-            glob.iglob(p, recursive=recursive) for p in ps
+            glob.iglob(os.path.expanduser(p), recursive=recursive) for p in ps
         )
 
-    d = 0
+    num_docs = 0
     if isinstance(patterns, str):
         patterns = [patterns]
     for g in _iter_file_exts(patterns):
+        if os.path.isdir(g):
+            continue
         if sampling_rate is None or random.random() < sampling_rate:
             if read_mode is None:
-                yield Document(uri=g)
+                d = Document(uri=g)
+                if to_dataturi:
+                    d.convert_uri_to_datauri()
+                yield d
             elif read_mode in {'r', 'rb'}:
                 with open(g, read_mode) as fp:
-                    yield Document(content=fp.read())
-            d += 1
-        if size is not None and d > size:
+                    d = Document(content=fp.read(), uri=g)
+                    if to_dataturi:
+                        d.convert_uri_to_datauri()
+                    yield d
+            num_docs += 1
+        if size is not None and num_docs >= size:
             break
 
 
 def from_csv(
-    fp: Iterable[str],
+    file: Union[str, TextIO],
     field_resolver: Optional[Dict[str, str]] = None,
     size: Optional[int] = None,
     sampling_rate: Optional[float] = None,
+    dialect: Union[str, 'csv.Dialect'] = 'excel',
 ) -> Generator['Document', None, None]:
     """Generator function for CSV. Yields documents.
 
-    :param fp: file paths
-    :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field
-            names defined in Protobuf. This is only used when the given ``document`` is
-            a JSON string or a Python dict.
+    :param file: file paths or file handler
+    :param field_resolver: a map from field names defined in JSON, dict to the field
+            names defined in Document.
     :param size: the maximum number of the documents
     :param sampling_rate: the sampling rate between [0, 1]
+    :param dialect: define a set of parameters specific to a particular CSV dialect. could be a string that represents
+        predefined dialects in your system, or could be a :class:`csv.Dialect` class that groups specific formatting
+        parameters together. If you don't know the dialect and the default one does not work for you,
+        you can try set it to ``auto``.
     :yield: documents
 
     """
     from ..document import Document
 
-    lines = csv.DictReader(fp)
-    for value in _subsample(lines, size, sampling_rate):
-        if 'groundtruth' in value and 'document' in value:
-            yield Document(value['document'], field_resolver), Document(
-                value['groundtruth'], field_resolver
+    if hasattr(file, 'read'):
+        file_ctx = nullcontext(file)
+    else:
+        file_ctx = open(file, 'r')
+
+    with file_ctx as fp:
+        # when set to auto, then sniff
+        try:
+            if isinstance(dialect, str) and dialect == 'auto':
+                dialect = csv.Sniffer().sniff(fp.read(1024))
+                fp.seek(0)
+        except:
+            dialect = 'excel'  #: can not sniff delimiter, use default dialect
+
+        lines = csv.DictReader(fp, dialect=dialect)
+        for value in _subsample(lines, size, sampling_rate):
+            if 'groundtruth' in value and 'document' in value:
+                yield Document(value['document'], field_resolver), Document(
+                    value['groundtruth'], field_resolver
+                )
+            else:
+                yield Document(value, field_resolver)
+
+
+def from_huggingface_datasets(
+    dataset_path: str,
+    field_resolver: Optional[Dict[str, str]] = None,
+    size: Optional[int] = None,
+    sampling_rate: Optional[float] = None,
+    filter_fields: bool = False,
+    **datasets_kwargs,
+) -> Generator['Document', None, None]:
+    """Generator function for Hugging Face Datasets. Yields documents.
+
+    This function helps to load datasets from Hugging Face Datasets Hub
+    (https://huggingface.co/datasets) in Jina. Additional parameters can be
+    passed to the ``datasets`` library using keyword arguments. The ``load_dataset``
+    method from ``datasets`` library is used to load the datasets.
+
+    :param dataset_path: a valid dataset path for Hugging Face Datasets library.
+    :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field
+            names defined in Protobuf. This is only used when the given ``document`` is
+            a JSON string or a Python dict.
+    :param size: the maximum number of the documents
+    :param sampling_rate: the sampling rate between [0, 1]
+    :param filter_fields: specifies whether to filter the dataset with the fields
+            given in ```field_resolver`` argument.
+    :param **datasets_kwargs: additional arguments for ``load_dataset`` method
+            from Datasets library. More details at
+            https://huggingface.co/docs/datasets/package_reference/loading_methods.html#datasets.load_dataset
+    :yield: documents
+    """
+    from ..document import Document
+
+    with ImportExtensions(required=True):
+        import datasets
+
+    # Load the dataset using given arguments
+    data = datasets.load_dataset(dataset_path, **datasets_kwargs)
+
+    # Validate loaded dataset for splits
+    if isinstance(data, (datasets.DatasetDict, datasets.IterableDatasetDict)):
+        raise ValueError(
+            (
+                'Please provide a split for dataset using "split" argument. '
+                f'The following splits are available for this dataset: {list(data.keys())}'
+            )
+        )
+
+    # Filter dataset if needed
+    if filter_fields:
+        if not field_resolver:
+            raise ValueError(
+                'Filter fields option requires "field_resolver" to be provided.'
             )
         else:
-            yield Document(value, field_resolver)
+            data.set_format(type=None, columns=list(field_resolver.keys()))
+
+    # Return documents from dataset instances with subsampling if required
+    for value in _subsample(data, size, sampling_rate):
+        yield Document(value, field_resolver)
 
 
 def from_ndjson(
@@ -171,7 +270,7 @@ def from_lines(
     """
     if filepath:
         file_type = os.path.splitext(filepath)[1]
-        with open(filepath, read_mode) as f:
+        with open(os.path.expanduser(filepath), read_mode) as f:
             if file_type in _jsonl_ext:
                 yield from from_ndjson(f, field_resolver, size, sampling_rate)
             elif file_type in _csv_ext:

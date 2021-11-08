@@ -26,21 +26,21 @@ Common methods supported by `DocumentArray`:
 
 You can construct a `DocumentArray` from an iterable of `Document`s:
 
-````{tab}From List
+````{tab} From List
 ```python
 from jina import DocumentArray, Document
 
 da = DocumentArray([Document(), Document()])
 ```
 ````
-````{tab}From generator
+````{tab} From generator
 ```python
 from jina import DocumentArray, Document
 
 da = DocumentArray((Document() for _ in range(10)))
 ```
 ````
-````{tab}From another DocumentArray
+````{tab} From another DocumentArray
 ```python
 from jina import DocumentArray, Document
 
@@ -173,66 +173,6 @@ DocumentArray has 3 items:
 ```
 
 
-#### Advanced filtering via `.find`
-
-`DocumentArray` provides function `.find` that finds the documents in the `DocumentArray`  whose tag values match a
-dictionary of user provided regular expressions. Since a `Document` can have many tags, the function expects one regular
-expression for each tag that a user wants to consider.
-
-The simplest way to use this function is to provide only the `regexes` dict. In this case, documents will be selected if
-all regular expressions passed are matched. Sometimes, a user might want to be less restrictive and might want to select
-documents only if a subset of the regular expressions is verified. In this case, `threshold` can be used to set the
-number of regular expressions that need to be matched in order to select a document.
-
-Let us consider the following example, where we want to select documents form a `DocumentArray` if the `city` tag
-contains a city that starts with `'B'`.
-
-```{code-block} python
----
-emphasize-lines: 9
----
-d1 = Document(tags={'city': 'Barcelona', 'phone': 'None'})
-d2 = Document(tags={'city': 'Berlin', 'phone': '648907348'})
-d3 = Document(tags={'city': 'Paris', 'phone': 'None'})
-d4 = Document(tags={'city': 'Brussels', 'phone': 'None'})
-
-docarray = DocumentArray([d1, d2, d3, d4])
-
-regexes = {'city': r'B.*'}
-docarray_filtered = docarray.find(regexes=regexes)
-print(f'len(docarray_filtered)={len(docarray_filtered)}')
-for d in docarray_filtered:
-    print(f'dict(d.tags)={dict(d.tags)}')
-```
-
-Will print
-
-```text
-len(docarray_filtered) = 3
-dict(d.tags) = {'phone': 'None', 'city': 'Barcelona'}
-dict(d.tags) = {'phone': '648907348', 'city': 'Berlin'}
-dict(d.tags) = {'phone': 'None', 'city': 'Brussels'}
-```
-
-We can consider more conditions, for example a subset of the previous documents that have `None` in the `'phone'` tag.
-We could do this as follows:
-
-```python
-regexes = {'city': r'B.*', 'phone': 'None'}
-docarray_filtered = docarray.find(regexes=regexes)
-print(f'len(docarray_filtered)={len(docarray_filtered)}')
-for d in docarray_filtered:
-    print(f'dict(d.tags)={dict(d.tags)}')
-```
-
-Will print
-
-```text
-len(docarray_filtered)=2
-dict(d.tags)={'city': 'Barcelona', 'phone': 'None'}
-dict(d.tags)={'phone': 'None', 'city': 'Brussels'}
-```
-
 ### Sample elements
 
 `DocumentArray` provides function `.sample` that sample `k` elements without replacement. It accepts 2 parameters, `k`
@@ -277,8 +217,8 @@ shuffled_da_with_seed = da.shuffle(seed=1)  # shuffle the DocumentArray with see
 
 ### Split elements by tags
 
-`DocumentArray` provides function `.split` that split the `DocumentArray` into multiple :class:`DocumentArray` according to the tag value (stored in `tags`) of each :class:`Document`.
-It returns a python `dict` where `Documents` with the same value on `tag` are grouped together, their orders are preserved from the original :class:`DocumentArray`.
+`DocumentArray` provides function `.split` that split the `DocumentArray` into multiple `DocumentArray` according to the tag value (stored in `tags`) of each `Document`.
+It returns a python `dict` where `Documents` with the same value on `tag` are grouped together, their orders are preserved from the original `DocumentArray`.
 
 To make use of the function:
 
@@ -337,44 +277,99 @@ structure:
 ```python
 from jina import DocumentArray, Document
 
-da = DocumentArray()
-
-root1 = Document(id='r1')
+root = Document(id='r1')
 
 chunk1 = Document(id='r1c1')
-root1.chunks.append(chunk1)
-root1.chunks[0].matches.append(Document(id='r1c1m1'))
+root.chunks.append(chunk1)
+root.chunks[0].matches.append(Document(id='r1c1m1'))
 
 chunk2 = Document(id='r1c2')
-root1.chunks.append(chunk2)
+root.chunks.append(chunk2)
 chunk2_chunk1 = Document(id='r1c2c1')
 chunk2_chunk2 = Document(id='r1c2c2')
-root1.chunks[1].chunks.extend([chunk2_chunk1, chunk2_chunk2])
-root1.chunks[1].chunks[0].matches.extend([Document(id='r1c2c1m1'), Document(id='r1c2c1m2')])
+root.chunks[1].chunks.extend([chunk2_chunk1, chunk2_chunk2])
+root.chunks[1].chunks[0].matches.extend([Document(id='r1c2c1m1'), Document(id='r1c2c1m2')])
 
 chunk3 = Document(id='r1c3')
-root1.chunks.append(chunk3)
+root.chunks.append(chunk3)
 
-root2 = Document(id='r2')
-
-da.extend([root1, root2])
+da = DocumentArray([root])
 ```
 
-When calling `da.traverse(['cm', 'ccm'])` you get a generator over two `DocumentArrays`. The first `DocumentArray`
-contains the `Matches` of the `Chunks` and the second `DocumentArray` contains the `Matches` of the `Chunks` of
-the `Chunks`. The following `DocumentArrays` are emitted from the generator:
+````{dropdown} Visualization of Root Document
 
 ```python
-from jina import Document
-from jina.types.arrays import MatchArray
-
-MatchArray([Document(id='r1c1m1', adjacency=1)], reference_doc=da['r1'].chunks['c1'])
-MatchArray([], reference_doc=da['r1'].chunks['c2'])
-MatchArray([], reference_doc=da['r1'].chunks['c3'])
-MatchArray([Document(id='r1c2c1m1', adjacency=1, granularity=2), Document(id='r1c2c1m2', adjacency=1, granularity=2)],
-           reference_doc=da['r1'].chunks['c2'].chunks['c2c1'])
-MatchArray([], reference_doc=da['r1'].chunks['c2'].chunks['c2c2'])
+root.plot()
 ```
+
+```{figure} ../../../.github/images/traverse-example-docs.svg
+:align: center
+```
+
+````
+
+`DocumentArray.traverse` can be used in this way `da.traverse(['c'])` to get all the `Chunks` of the root `Document`. You can also use `m` to present the `Matches`, for example, `da.traverse['m']` can get all the `Matches` of the root `Document`.
+
+It allows us to composite the `c` and `m` to find `Chunks`/`Matches` which are in deeper level, for example:
+
+- `da.traverse['cm']` will find all `Matches` of the `Chunks` of root `Document`.
+- `da.traverse['cmc']` will find all `Chunks` of the `Matches` of `Chunks` of root `Document`.
+- `da.traverse['c', 'm']` will find all `Chunks` and `Matches` of root `Document`.
+
+````{dropdown} Examples
+
+```python
+for ma in da.traverse(['cm']):
+  for m in ma:
+    print(m.json())
+
+# {
+#   "adjacency": 1,
+#   "granularity": 1,
+#   "id": "r1c1m1"
+# }
+```
+
+```python
+for ma in da.traverse(['ccm']):
+  for m in ma:
+    print(m.json())
+
+# {
+#   "adjacency": 1,
+#   "granularity": 2,
+#   "id": "r1c2c1m1"
+# }
+# {
+#   "adjacency": 1,
+#   "granularity": 2,
+#   "id": "r1c2c1m2"
+# }
+```
+
+```python
+for ma in da.traverse(['cm', 'ccm']):
+  for m in ma:
+    print(m.json())
+
+# {
+#   "adjacency": 1,
+#   "granularity": 1,
+#   "id": "r1c1m1"
+# }
+# {
+#   "adjacency": 1,
+#   "granularity": 2,
+#   "id": "r1c2c1m1"
+# }
+# {
+#   "adjacency": 1,
+#   "granularity": 2,
+#   "id": "r1c2c1m2"
+# }
+```
+
+````
 
 `DocumentArray.traverse_flat` is doing the same but flattens all `DocumentArrays` in the generator. When
 calling `da.traverse_flat(['cm', 'ccm'])` the result in our example will be the following:
@@ -464,7 +459,7 @@ Using `.embeddings` in a DocumenArray or DocumentArrayMemmap with different shap
 ````
 
 
-### Visualize embeddings
+### Plot embeddings
 
 `DocumentArray` provides function `.visualize` to plot document embeddings in a 2D graph. `visualize` supports 2 methods
 to project in 2D space: `pca` and `tsne`.
@@ -487,7 +482,7 @@ da = DocumentArray(
         Document(embedding=np.random.normal(2, 5, 50)) for _ in range(500)
     ]
 )
-da.visualize()
+da.plot_embeddings()
 
 ```
 
@@ -496,6 +491,7 @@ da.visualize()
 ```
 
 
+(match-documentarray)=
 ## Matching DocumentArray to another
 
 `DocumentArray` provides a`.match` function that finds the closest documents between two `DocumentArray` objects. This

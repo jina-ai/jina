@@ -4,10 +4,13 @@ import asyncio
 import inspect
 from pathlib import Path
 from http import HTTPStatus
-from contextlib import AsyncExitStack
-from typing import Dict, Iterable, List, Optional, Union, TYPE_CHECKING
+from shutil import make_archive
+from tempfile import TemporaryDirectory
+from contextlib import AsyncExitStack, ExitStack
+from typing import Any, List, Optional, Union, TYPE_CHECKING
 
 import aiohttp
+from aiohttp import FormData as aiohttpFormData
 from rich.console import Console
 
 from jina.helper import colored
@@ -18,12 +21,96 @@ from ..models.id import daemonize
 from .base import AsyncBaseClient
 from .mixin import AsyncToSyncMixin
 from ..models.workspaces import WorkspaceItem
-from ..helper import error_msg_from, if_alive
+from ..helper import error_msg_from, if_alive, change_cwd
 
 
 if TYPE_CHECKING:
     from ..models import DaemonID
     from rich.status import Status
+    from jina.logging.logger import JinaLogger
+
+
+class FormData(aiohttpFormData):
+    """FormData used to upload files to remote"""
+
+    def __init__(
+        self,
+        paths: Optional[List[str]] = None,
+        logger: 'JinaLogger' = None,
+        complete: bool = False,
+    ) -> None:
+        super().__init__()
+        self._logger = logger
+        self._complete = complete
+        self._cur_dir = os.getcwd()
+        self.paths = paths
+        self._stack = ExitStack()
+
+    def add(self, path: Path):
+        """add a field to Form
+
+        :param path: filepath
+        """
+        self.add_field(
+            name='files',
+            value=self._stack.enter_context(
+                open(
+                    complete_path(path, extra_search_paths=[self._cur_dir])
+                    if self._complete
+                    else path,
+                    'rb',
+                )
+            ),
+            filename=path.name,
+        )
+
+    @property
+    def fields(self) -> List[Any]:
+        """all fields in current Form
+
+        :return: list of fields
+        """
+        return self._fields
+
+    @property
+    def filenames(self) -> List[str]:
+        """all filenames in current Form
+
+        :return: list of filenames
+        """
+        return [os.path.basename(f[-1].name) for f in self.fields]
+
+    def __len__(self):
+        return len(self._fields)
+
+    def __enter__(self):
+        self._stack.__enter__()
+        if not self.paths:
+            return self
+        tmpdir = self._stack.enter_context(TemporaryDirectory())
+        self._stack.enter_context(change_cwd(tmpdir))
+        for path in map(Path, self.paths):
+            try:
+                filename = path.name
+                if path.is_file():
+                    self.add(path)
+                elif path.is_dir():
+                    make_archive(base_name=filename, format='zip', root_dir=path)
+                    self.add(Path(tmpdir) / f'{filename}.zip')
+            except TypeError:
+                self._logger.error(f'invalid path passed {path}')
+                continue
+        self._logger.info(
+            (
+                f'{len(self)} file(s) ready to be uploaded: {", ".join(self.filenames)}'
+                if len(self) > 0
+                else 'No file to be uploaded'
+            )
+        )
+        return self
+
+    def __exit__(self, *args, **kwargs):
+        self._stack.__exit__(*args, **kwargs)
 
 
 class AsyncWorkspaceClient(AsyncBaseClient):
@@ -33,62 +120,8 @@ class AsyncWorkspaceClient(AsyncBaseClient):
     _endpoint = '/workspaces'
     _item_model_cls = WorkspaceItem
 
-    def _files_in(
-        self,
-        paths: Union[str, List[str]],
-        exitstack: AsyncExitStack,
-        complete: bool = False,
-    ) -> 'aiohttp.FormData':
-        """Walk through paths & prepare formdata to be uploaded
-
-        :param paths: local file/directory paths
-        :param exitstack: exitstack used to enter context
-        :param complete: True if files need to searched over call stack, defaults to False
-        :return: formdata including file information
-        """
-
-        data = aiohttp.FormData()
-
-        def add_field_from(path: Path):
-            data.add_field(
-                name='files',
-                value=exitstack.enter_context(
-                    open(complete_path(path) if complete else path, 'rb')
-                ),
-                filename=path.name,
-            )
-
-        if not isinstance(paths, Iterable):
-            paths = [paths]
-
-        for path in paths:
-            try:
-                _path = Path(path)
-                if complete:
-                    add_field_from(_path)
-                else:
-                    if _path.is_file():
-                        add_field_from(_path)
-                    elif _path.is_dir():
-                        [add_field_from(p) for p in _path.rglob('*') if p.is_file()]
-            except TypeError:
-                self._logger.error(f'invalid path {path}')
-                continue
-
-        self._logger.info(
-            f'uploading {len(data._fields)} file(s): '
-            f'{", ".join([os.path.basename(f[-1].name) for f in data._fields])}'
-        )
-        return data
-
     async def _get_helper(self, id: 'DaemonID', status: 'Status') -> bool:
-        """
-        This is to handle a special case when JinadRuntime knows the workspace id already
-        (during Pea creation). It should get invoked only by :meth:`create`.
-
-        For parallel > 1
-        - pea0 throws TypeError & we create a workspace
-        - peaN (all other Peas) wait for workspace creation & don't emit logs
+        """Helper get with known workspace_id
 
         :param id: workspace id
         :param status: rich.console.status object to be updated
@@ -106,7 +139,9 @@ class AsyncWorkspaceClient(AsyncBaseClient):
         elif state == RemoteWorkspaceState.FAILED:
             return False
         else:
-            return await self.wait(id=id, status=status, logs=False)
+            return await self.wait(
+                id=id, status=status, logs=False
+            )  # NOTE: we don't emit logs here
 
     @if_alive
     async def create(
@@ -134,6 +169,14 @@ class AsyncWorkspaceClient(AsyncBaseClient):
             )
             workspace_id = None
             if id:
+                """When creating `Peas` with `shards > 1`, `JinadRuntime` knows the workspace_id already.
+                For shards > 1:
+                - shard 0 throws TypeError & we create a workspace
+                - shard N (all other shards) wait for workspace creation & don't emit logs
+
+                For shards = 0:
+                - Throws a TypeError & we create a workspace
+                """
                 workspace_id = daemonize(id)
                 try:
                     return (
@@ -145,10 +188,8 @@ class AsyncWorkspaceClient(AsyncBaseClient):
                     self._logger.debug('workspace doesn\'t exist, creating..')
 
             status.update('Workspace: Getting files to upload...')
-            data = (
-                self._files_in(paths=paths, exitstack=stack, complete=complete)
-                if paths
-                else None
+            data = stack.enter_context(
+                FormData(paths=paths, logger=self._logger, complete=complete)
             )
             status.update('Workspace: Sending request...')
             response = await stack.enter_async_context(
@@ -250,10 +291,8 @@ class AsyncWorkspaceClient(AsyncBaseClient):
                 console.status('Workspace update: ...', spinner='earth')
             )
             status.update('Workspace: Getting files to upload...')
-            data = (
-                self._files_in(paths=paths, exitstack=stack, complete=complete)
-                if paths
-                else None
+            data = stack.enter_context(
+                FormData(paths=paths, logger=self._logger, complete=complete)
             )
             status.update('Workspace: Sending request for update...')
             response = await stack.enter_async_context(
@@ -309,7 +348,7 @@ class AsyncWorkspaceClient(AsyncBaseClient):
             response_json = await response.json()
             if response.status != HTTPStatus.OK:
                 self._logger.error(
-                    f'deletion of {self._kind.title()} {id} failed: {error_msg_from(response_json)}'
+                    f'deletion of {self._kind.title()} failed as {error_msg_from(response_json)}'
                 )
             return response.status == HTTPStatus.OK
 

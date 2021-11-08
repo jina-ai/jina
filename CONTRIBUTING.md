@@ -117,7 +117,7 @@ feat: add hat wobble
 |     |
 |     +-> Summary in present tense.
 |
-+-------> Type: chore, docs, feat, fix, refactor, style, or test.
++-------> Type: build, ci, chore, docs, feat, fix, refactor, style, or test.
 ```
 
 - build: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)

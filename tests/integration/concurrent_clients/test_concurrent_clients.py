@@ -15,11 +15,11 @@ class MyExecutor(Executor):
 
 
 @pytest.mark.parametrize('protocal', ['http', 'grpc'])
-@pytest.mark.parametrize('parallel', [10])
+@pytest.mark.parametrize('shards', [10])
 @pytest.mark.parametrize('polling', ['ANY', 'ALL'])
 @pytest.mark.parametrize('prefetch', [1, 10])
 @pytest.mark.parametrize('concurrent', [15])
-def test_concurrent_clients(concurrent, protocal, parallel, polling, prefetch, reraise):
+def test_concurrent_clients(concurrent, protocal, shards, polling, prefetch, reraise):
     def pong(peer_hash, resp: Response):
         with reraise:
             for d in resp.docs:
@@ -33,7 +33,7 @@ def test_concurrent_clients(concurrent, protocal, parallel, polling, prefetch, r
             )
 
     f = Flow(protocol=protocal, prefetch=prefetch).add(
-        uses=MyExecutor, parallel=parallel, polling=polling
+        uses=MyExecutor, shards=shards, polling=polling
     )
 
     with f:

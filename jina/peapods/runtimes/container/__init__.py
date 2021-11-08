@@ -7,13 +7,13 @@ from typing import Union, Optional, Dict, TYPE_CHECKING
 from pathlib import Path
 from platform import uname
 
-from ..zmq.base import ZMQRuntime
+from ..base import BaseRuntime
 from ...zmq import Zmqlet
 from .... import __docker_host__
-from .helper import get_docker_network
+from .helper import get_docker_network, get_gpu_device_requests
 from ....excepts import BadImageNameError, DockerVersionError
 from ...zmq import send_ctrl_message
-from ....helper import ArgNamespace, slugify
+from ....helper import ArgNamespace, slugify, random_name
 from ....enums import SocketType
 
 if TYPE_CHECKING:
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from ....logging.logger import JinaLogger
 
 
-class ContainerRuntime(ZMQRuntime):
+class ContainerRuntime(BaseRuntime):
     """Runtime procedure for container."""
 
     def __init__(self, args: 'argparse.Namespace', **kwargs):
@@ -91,38 +91,6 @@ class ContainerRuntime(ZMQRuntime):
                     f' Control address set to {self.ctrl_addr}'
                 )
         client.close()
-
-    @staticmethod
-    def _get_gpu_device_requests(gpu_args):
-        import docker
-
-        _gpus = {
-            'count': 0,
-            'capabilities': ['gpu'],
-            'device': [],
-            'driver': '',
-        }
-        for gpu_arg in gpu_args.split(','):
-            if gpu_arg == 'all':
-                _gpus['count'] = -1
-            if gpu_arg.isdigit():
-                _gpus['count'] = int(gpu_arg)
-            if '=' in gpu_arg:
-                gpu_arg_key, gpu_arg_value = gpu_arg.split('=')
-                if gpu_arg_key in _gpus.keys():
-                    if isinstance(_gpus[gpu_arg_key], list):
-                        _gpus[gpu_arg_key].append(gpu_arg_value)
-                    else:
-                        _gpus[gpu_arg_key] = gpu_arg_value
-        device_requests = [
-            docker.types.DeviceRequest(
-                count=_gpus['count'],
-                driver=_gpus['driver'],
-                device_ids=_gpus['device'],
-                capabilities=[_gpus['capabilities']],
-            )
-        ]
-        return device_requests
 
     def _docker_run(self, replay: bool = False):
         # important to notice, that client is not assigned as instance member to avoid potential
@@ -216,7 +184,7 @@ class ContainerRuntime(ZMQRuntime):
 
         device_requests = []
         if self.args.gpus:
-            device_requests = self._get_gpu_device_requests(self.args.gpus)
+            device_requests = get_gpu_device_requests(self.args.gpus)
             del self.args.gpus
 
         _expose_port = [self.args.port_ctrl]
@@ -228,6 +196,10 @@ class ContainerRuntime(ZMQRuntime):
         _args = ArgNamespace.kwargs2list(non_defaults)
         ports = {f'{v}/tcp': v for v in _expose_port} if not self._net_mode else None
 
+        # WORKAROUND: we cant automatically find these true/false flags, this needs to be fixed
+        if 'dynamic_routing' in non_defaults and not non_defaults['dynamic_routing']:
+            _args.append('--no-dynamic-routing')
+
         docker_kwargs = self.args.docker_kwargs or {}
         self._container = client.containers.run(
             uses_img,
@@ -235,7 +207,7 @@ class ContainerRuntime(ZMQRuntime):
             detach=True,
             auto_remove=True,
             ports=ports,
-            name=slugify(self.name),
+            name=slugify(f'{self.name}/{random_name()}'),
             volumes=_volumes,
             network_mode=self._net_mode,
             entrypoint=self.args.entrypoint,

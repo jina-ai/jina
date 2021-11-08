@@ -27,11 +27,10 @@ CLOUD_HOST = 'localhost:8000'  # consider it as the staged version
 NUM_DOCS = 100
 
 
-@pytest.mark.parametrize('parallels', [1, 2])
-def test_upload_via_pymodule(parallels, mocker):
+@pytest.mark.parametrize('replicas', [1, 2])
+def test_upload_via_pymodule(replicas):
     from .mwu_encoder import MWUEncoder
 
-    response_mock = mocker.Mock()
     f = (
         Flow()
         .add()
@@ -39,81 +38,76 @@ def test_upload_via_pymodule(parallels, mocker):
             uses=MWUEncoder,
             uses_with={'greetings': 'hi'},
             host=CLOUD_HOST,
-            parallel=parallels,
-            py_modules=['mwu_encoder.py'],
+            replicas=replicas,
+            py_modules='mwu_encoder.py',
+            upload_files=cur_dir,
         )
         .add()
     )
     with f:
-        f.index(
+        responses = f.index(
             inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
-            on_done=response_mock,
+            return_results=True,
         )
-    response_mock.assert_called()
+    assert len(responses) > 0
+    assert len(responses[0].docs) > 0
+    for doc in responses[0].docs:
+        assert doc.tags['greetings'] == 'hi'
 
 
-@pytest.mark.parametrize('parallels', [1, 2])
-def test_upload_via_yaml(parallels, mocker):
-    response_mock = mocker.Mock()
+@pytest.mark.parametrize('replicas', [1, 2])
+def test_upload_via_yaml(replicas):
     f = (
         Flow()
         .add()
         .add(
             uses='mwu_encoder.yml',
             host=CLOUD_HOST,
-            parallel=parallels,
-            upload_files=['mwu_encoder.py'],
+            replicas=replicas,
+            upload_files=cur_dir,
         )
         .add()
     )
     with f:
-        f.index(
+        responses = f.index(
             inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
-            on_done=response_mock,
+            return_results=True,
         )
-    response_mock.assert_called()
+    assert len(responses) > 0
+    assert len(responses[0].docs) > 0
 
 
-@pytest.mark.parametrize('parallels', [2])
-def test_upload_multiple_workspaces(parallels, mocker):
-    response_mock = mocker.Mock()
+@pytest.mark.parametrize('replicas', [2])
+def test_upload_multiple_workspaces(replicas):
     encoder_workspace = 'sklearn_encoder_ws'
     indexer_workspace = 'tdb_indexer_ws'
-
-    def _path(dir, filename):
-        return os.path.join(cur_dir, dir, filename)
 
     f = (
         Flow()
         .add(
             name='sklearn_encoder',
-            uses=_path(encoder_workspace, 'sklearn.yml'),
+            uses='sklearn.yml',
             host=CLOUD_HOST,
-            parallel=parallels,
-            py_modules=[_path(encoder_workspace, 'encoder.py')],
-            upload_files=[
-                _path(encoder_workspace, '.jinad'),
-                _path(encoder_workspace, 'requirements.txt'),
-            ],
+            replicas=replicas,
+            py_modules='encoder.py',
+            upload_files=encoder_workspace,
         )
         .add(
             name='tdb_indexer',
-            uses=_path(indexer_workspace, 'tdb.yml'),
+            uses='tdb.yml',
             host=CLOUD_HOST,
-            parallel=parallels,
-            py_modules=[_path(indexer_workspace, 'tdb_indexer.py')],
-            upload_files=[
-                _path(indexer_workspace, '.jinad'),
-                _path(indexer_workspace, 'requirements.txt'),
-            ],
+            replicas=replicas,
+            py_modules='tdb_indexer.py',
+            upload_files=indexer_workspace,
         )
     )
     with f:
-        f.index(
+        responses = f.index(
             inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
-            on_done=response_mock,
+            return_results=True,
         )
-    response_mock.assert_called()
+    assert len(responses) > 0
+    assert len(responses[0].docs) > 0
 
 
 def test_remote_flow():
@@ -144,6 +138,21 @@ def test_workspace_delete():
         )
         assert workspace_id in client.workspaces.list()
         assert client.workspaces.delete(workspace_id)
+
+
+def test_workspace_clear():
+    client = JinaDClient(host=__default_host__, port=8000)
+    for _ in range(2):
+        workspace_id = client.workspaces.create(
+            paths=[os.path.join(cur_dir, 'empty_flow.yml')]
+        )
+        assert DaemonID(workspace_id).type == 'workspace'
+        assert (
+            WorkspaceItem(**client.workspaces.get(id=workspace_id)).state
+            == RemoteWorkspaceState.ACTIVE
+        )
+        assert workspace_id in client.workspaces.list()
+        assert client.workspaces.clear()
 
 
 @pytest.mark.asyncio
@@ -203,21 +212,21 @@ def docker_compose(request):
 
 
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
-def test_upload_simple_non_standard_rootworkspace(docker_compose, mocker):
-    response_mock = mocker.Mock()
+def test_upload_simple_non_standard_rootworkspace(docker_compose):
     f = (
         Flow()
         .add()
         .add(
             uses='mwu_encoder.yml',
             host='localhost:9000',
-            upload_files=['mwu_encoder.py'],
+            upload_files=cur_dir,
         )
         .add()
     )
     with f:
-        f.index(
+        responses = f.index(
             inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
-            on_done=response_mock,
+            return_results=True,
         )
-    response_mock.assert_called()
+    assert len(responses) > 0
+    assert len(responses[0].docs) > 0
