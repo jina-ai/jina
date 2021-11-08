@@ -11,16 +11,16 @@
 This tutorial will take you through the process of creating your own question-answering chatbot. 
 This is an inherently difficult task, due to the fuzzyness of human language and the infinite number of questions one could ask. </br> 
 
-One way to solve this is by prediction the answers using a neural network that was trained on pairs of quesitons and their corresponding answers. In many cases such a dataset is not available, like in the case of most software documentation. Let's say we want to build a chatbot to answer questions about the jina documentation. What if I told you that there is a way to reframe this task as a search problem and that this would alleviate the need for a large dataset of matching questions and answers. </br>
+One way to solve this is by predicting answers using a neural network that was trained on pairs of quesitons and their corresponding answers. In many cases such a dataset is not available, like in the case of most software documentation. Let's say we want to build a chatbot to answer questions about the jina documentation. What if I told you that there is a way to reframe this task as a search problem and that this would alleviate the need for a large dataset of matching questions and answers? </br>
 
 How you ask? <em>Let me explain!</em>
 
 ## Overview 
-Our approach to the problem leverages the [Doc2query method](https://arxiv.org/pdf/1904.08375.pdf), which, form text, predicts different questions the text could potentially answer. E. g. given a sentence such as `Jina is an open source framework for neural search.`, the model predicts questions such as `What is jina?` or `Is jina open source?`. </br>
-The idea here is to predict a number of questions for every part of the document. Then we use an encoder to create a vector representation of each of the predicted questions. These representations are stored and privide the index for our document. When a user prompts bot with a question, we encode it in the same way we encoded our generated questions. Now we can run a similarity search agains our index and find the questions that are closest to the user's question. </br>
-Since we know what part of the documentation was used to generate the question that was most similar to the user's query, we can return the original text as an answer to the user. </br> 
+Our approach to the problem leverages the [Doc2query method](https://arxiv.org/pdf/1904.08375.pdf), which, form a piece of text, predicts different questions the text could potentially answer. For example, given a sentence such as `Jina is an open source framework for neural search.`, the model predicts questions such as `What is jina?` or `Is jina open source?`. </br>
+The idea here is to predict a number of questions for every part of the original text document, in our case the jina documentation. Then we use an encoder to create a vector representation for each of the predicted questions. These representations are stored and provide the index for our body of text. When a user prompts the bot with a question, we encode it in the same way we encoded our generated questions. Now we can run a similarity search on the encodings. The encoding of the user's query is compared with the encodings in our index to find the closes match. </br>
+Since we know what part of the original text was used to generate the question, that was most similar to the user's query, we can return the original text as an answer to the user. </br> 
 
-Now that you have a general idea of what we will be doing, the following section will show you how to define our `Flow`s in jina. Then we will take a look at how to implement the necessary `Executor`s and  implementatation of a search-based question-answering system.  
+Now that you have a general idea of what we will be doing, the following section will show you how to define our `Flow`s in jina. Then we will take a look at how to implement the necessary `Executor`s for our search-based question-answering system.  
 
 ## Indexing the text document 
 Let's imagine we extracted a bunch of sentences from jina's documentation and stored them in a `DocumentArray`, as shown below. 
@@ -36,43 +36,36 @@ example_sentences = [
 docs = DocumentArray([Document(content=sentence) for sentence in example_sentences])
 ```
 
-As described in the last section, we first need to predict potential questions for each of the elements in the `DocumentArray`. Then we have to use another model to encode to create vector encodings from the the predicted questions. Finally, we store them as the index. 
+As described in the last section, we first need to predict potential questions for each of the elements in the `DocumentArray`. Then we have to use another model to create vector encodings from the the predicted questions. Finally, we store them as the index. 
 At this point we have enough information to start defining our `Flows`.
 
 <em> Without further ado, let's build! </em>
 
 ``` python
 indexing_flow = Flow(
-# Generate potential answers from a body of text
-# by separating the sentences
-).add(name="answer_generator", 
-      uses=AnswerGenerator, 
-      uses_with={'docs_dir': docs_dir}
-# Add an executor that wraps doc2query model to 
-# predict questions from text 
+# Generate potential questions using doc2query
 ).add(name="question_transformer", 
       uses=QuestionGenerator, 
       uses_with={"random_seed": 12345}
-# Use language encoder to encode all questions 
-# in their vector representation
+# Create vector representations for generated questions 
 ).add(name="text_encoder", 
       uses=TextEncoder, 
       uses_with={"parameters": {"traversal_paths": ["c"]}}
-# Index the document, by storing vector representation 
-# of generated questions as link to resp. parts fo text
+# Store embeddings for all generated questions as index
 ).add(name="my_indexer", 
       uses=MyIndexer
 )
 
 with indexing_flow: 
+    # Run the indexing on all extracted sentences
     indexing_flow.post(on="/index", inputs=docs, on_done=print)
 ```
 
 ## Searching of the user's query against the index
 
-After having defined the `Flow` for indexing our document, we are now ready to work on the flow for user input. Incoming user queries also need to be encoded. We can use the same encoder that we used for encoding our generated questions. Then we need `MyIndexer` to perform similarity search, in order to retrieve generated questions and eventually answers that fit the query. 
+After having defined the `Flow` for indexing our document, we are now ready to work on answering user queries. Incoming queries also need to be encoded. For that, we use the same encoder that we used for encoding our generated questions. Then we need `SimpleIndexer` to perform similarity search, in order to retrieve generated questions and eventually answers the query. 
 
-The flow for searching is much simpler and looks like this: 
+The flow for searching is much simpler than the one for indexing and looks like this: 
 
 ``` python
 query_flow = Flow(
@@ -85,12 +78,12 @@ with query_flow:
     indexing_flow.post(on="/query", inputs=user_queries, on_done=print)
 ```
 
-Now that we have seen the overall structure to the approach and have defined our `Flows`, we can code the `Executor`s.
+Now that we have seen the overall structure of the approach and have defined our `Flows`, we can code up the `Executor`s.
 
 ## Building the Executor to Generate Potential Questions 
 
-The first `Executor` that we implement is the `QuestionGenerator`. It is basically a wrapper around the model that predicts potential questions, which a given piece of text can answer. </br>
-Apart from that all that our the `QuestionGenerator` does is looping all provided parts of input text. After potential questions are predicted for each of the inputs, they are stored as `chunks` alongside the original text. 
+The first `Executor`, that we implement, is the `QuestionGenerator`. It is basically a wrapper around the model that predicts potential questions, which a given piece of text can answer. </br>
+Apart from that, all that it does is looping all provided parts of input text. After potential questions are predicted for each of the inputs, they are stored as `chunks` alongside the original text. 
 
 ``` python 
 class QuestionGenerator(Executor): 
@@ -143,13 +136,14 @@ class TextEncoder(Executor):
             embeddings = model.encode(target.texts)
             target.embeddings = embeddings
 ```
-Similar to the `QuestionGenerator` the `TextEncoder` is simply a wrapper around the SentenceTransformer from the sentence_transformer package. When provided with a `DocumentArray` containing text, it will encode the text of each element and store the result in a `embedding` attribute it creates
+Similar to the `QuestionGenerator` the `TextEncoder` is simply a wrapper around the SentenceTransformer from the sentence_transformer package. When provided with a `DocumentArray` containing text, it will encode the text of each element and store the result in the `embedding` attribute it creates. </br>
+Now let's move on to the last part and create the indexer. 
 
 ## Putting it Together with the Indexer
-The indexer is the only one of our `Executor` that can handle more than one task. 
+The indexer is the only one of our `Executor`s that can handle more than one task. 
 Namely, the indexing as well as performing search. </br>
-When it is used to perform indexing, `index()` is called. This stores all provided documents, together with their embeddings as a `DocumentArrayMemmap`. 
-However, when the `SimpleIndexer` is used to handle an incoming query, it also performs similarity search and ranks the results. 
+When it is used to perform indexing, `index()` is called. This stores all provided documents, together with their embeddings, as a `DocumentArrayMemmap`. 
+However, when the `SimpleIndexer` is used to handle an incoming query, the `search()` function is called, it performs similarity search and ranks the results. 
 
 
 ```python 
