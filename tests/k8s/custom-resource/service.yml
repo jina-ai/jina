@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {name}
+  namespace: {namespace}
+  labels:
+    app: {target}
+spec:
+  type: {type}
+  ports:
+    - port: {port_expose}
+      targetPort: {port_expose}
+      name: port-expose
+      protocol: TCP
+    - port: {port_in}
+      targetPort: {port_in}
+      name: port-in
+      protocol: TCP
+    - port: {port_out}
+      targetPort: {port_out}
+      name: port-out
+      protocol: TCP
+    - port: {port_ctrl}
+      targetPort: {port_ctrl}
+      name: port-ctrl
+      protocol: TCP
+  selector:
+    app: {target}
