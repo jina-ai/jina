@@ -68,4 +68,4 @@ class ProtoTypeMixin:
 
         :return: the tuple of non-empty fields
         """
-        return tuple(field[0].name for field in self.ListFields())
+        return tuple(field[0].name for field in self._pb_body.ListFields())

@@ -2,6 +2,8 @@ from typing import List, Sequence, TYPE_CHECKING
 
 import numpy as np
 
+from ...ndarray import NdArray
+
 if TYPE_CHECKING:
     from ...document import ArrayType
 
@@ -21,14 +23,7 @@ class ContentPropertyMixin:
 
         :return: a ndarray of embedding
         """
-        x_mat = b''.join(d.embedding.dense.buffer for d in self._pb_body)
-        # this is more general than self._pb_body[0], gives full compat to DA & DAM
-        proto = next(iter(self._pb_body)).embedding.dense
-
-        if proto.dtype:
-            return np.frombuffer(x_mat, dtype=proto.dtype).reshape(
-                (len(self), proto.shape[0])
-            )
+        return NdArray.unravel([d.embedding for d in self._pb_body])
 
     @embeddings.setter
     def embeddings(self, value: 'ArrayType'):
@@ -67,13 +62,7 @@ class ContentPropertyMixin:
 
         :return: a ndarray of blobs
         """
-        x_mat = b''.join(d.blob.dense.buffer for d in self._pb_body)
-        proto = next(iter(self._pb_body)).blob.dense
-
-        if proto.dtype:
-            return np.frombuffer(x_mat, dtype=proto.dtype).reshape(
-                (len(self), *proto.shape)
-            )
+        return NdArray.unravel([d.blob for d in self._pb_body])
 
     @blobs.setter
     def blobs(self, value: 'ArrayType'):

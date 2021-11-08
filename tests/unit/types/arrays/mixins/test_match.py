@@ -667,7 +667,7 @@ def test_filter_fn(doc_lists, tmp_path, first_memmap, second_memmap, buffer_pool
     # match docs1 with a doc without embedding against docs2
     docs1.append(Document())
     with pytest.raises(ValueError, match='cannot reshape array'):
-        docs1.match(docs2, filter_fn=filter_fn(), limit=len(docs2))
+        docs1.match(docs2, limit=len(docs2))
 
     # match docs1 with a doc that has invalid embedding shape against docs2
     docs1[len(docs1) - 1] = Document(embedding=np.array([1]))
