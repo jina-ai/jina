@@ -110,6 +110,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -11325,4 +11326,28 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```9c1aa619```](https://github.com/jina-ai/jina/commit/9c1aa619f76b8ec46c0ec3d0351d2cb6353ae94d)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```38c0cd15```](https://github.com/jina-ai/jina/commit/38c0cd15e0ba4711def98f640f692bb5639092b1)] __-__ __docs__: fix typo in readme (*Han Xiao*)
  - [[```a5257853```](https://github.com/jina-ai/jina/commit/a5257853d8c8c7595ce3d1d7da28f7503de59400)] __-__ __version__: the next version will be 2.2.6 (*Jina Dev Bot*)
+
+<a name=release-note-2-4-0></a>
+## Release Note (`2.4.0`)
+
+> Release time: 2021-11-08 22:32:01
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Wang Bo,  Jina Dev Bot,  Yang Ruiyi,  🙇
+
+
+### 🧼 Code Refactoring
+
+ - [[```ef9e4f75```](https://github.com/jina-ai/jina/commit/ef9e4f75a20ed350f9978aa027dae7731bb1bdea)] __-__ __types__: new implementation on ndarray types (#3889) (*Han Xiao*)
+ - [[```dd752ff9```](https://github.com/jina-ai/jina/commit/dd752ff919a9278c8d275710420c00fd551904c4)] __-__ __helloworld__: use inference mode (#3885) (*Wang Bo*)
+
+### 🍹 Other Improvements
+
+ - [[```8b5af8fc```](https://github.com/jina-ai/jina/commit/8b5af8fcbde60be9d9d3046461c55bb97834ce4f)] __-__ version bump (*Han Xiao*)
+ - [[```1617be85```](https://github.com/jina-ai/jina/commit/1617be85bbff0ce02317300cb017032d6ed3e583)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```1b939c4c```](https://github.com/jina-ai/jina/commit/1b939c4cbcbc0e9a7317e159e9926256061e0f68)] __-__ logo change (#3867) (*Yang Ruiyi*)
+ - [[```826a79f5```](https://github.com/jina-ai/jina/commit/826a79f541a3fd97c8b62892e459884419c0e9e6)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```560142a0```](https://github.com/jina-ai/jina/commit/560142a0b20af443a2ad1297ac6670328bd780f3)] __-__ __version__: the next version will be 2.3.1 (*Jina Dev Bot*)
 
