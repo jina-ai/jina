@@ -1,5 +1,4 @@
-import re
-from typing import Dict, List, Optional, TYPE_CHECKING
+from typing import Dict, List, TYPE_CHECKING
 
 from .... import __default_endpoint__
 from ....excepts import (
@@ -9,7 +8,7 @@ from ....excepts import (
 from ....executors import BaseExecutor
 from ....types.arrays.abstract import AbstractDocumentArray
 from ....types.arrays.document import DocumentArray
-from ....types.message import Message, Request
+from ....types.message import Message
 
 if TYPE_CHECKING:
     import argparse
@@ -18,13 +17,9 @@ if TYPE_CHECKING:
 
 def _get_docs_matrix_from_message(
     msg: 'Message',
-    partial_request: Optional[List[Request]],
     field: str,
 ) -> List['DocumentArray']:
-    if partial_request is not None:
-        result = [getattr(r, field) for r in reversed(partial_request)]
-    else:
-        result = [getattr(msg.request, field)]
+    result = [getattr(msg.request, field)]
 
     # to unify all length=0 DocumentArray (or any other results) will simply considered as None
     # otherwise, the executor has to handle [None, None, None] or [DocArray(0), DocArray(0), DocArray(0)]
@@ -35,17 +30,9 @@ def _get_docs_matrix_from_message(
 
 def _get_docs_from_msg(
     msg: 'Message',
-    partial_request: Optional[List[Request]],
     field: str,
 ) -> 'DocumentArray':
-    if partial_request is not None:
-        result = DocumentArray(
-            [d for r in reversed(partial_request) for d in getattr(r, field)]
-        )
-    else:
-        result = getattr(msg.request, field)
-
-    return result
+    return getattr(msg.request, field)
 
 
 class DataRequestHandler:
@@ -98,25 +85,11 @@ class DataRequestHandler:
             parsed_params.update(**specific_parameters)
         return parsed_params
 
-    def handle(
-        self,
-        msg: 'Message',
-        partial_requests: Optional[List[Request]],
-        peapod_name: str,
-    ):
+    def handle(self, msg: 'Message'):
         """Initialize private parameters and execute private loading functions.
 
         :param msg: The message to handle containing a DataRequest
-        :param partial_requests: All the partial requests, to be considered when more than one expected part
-        :param peapod_name: the name of the peapod owning this handler
         """
-        # skip executor if target_peapod mismatch
-        if not re.match(msg.envelope.header.target_peapod, peapod_name):
-            self.logger.debug(
-                f'skip executor: mismatch target, target: {msg.envelope.header.target_peapod}, name: {peapod_name}'
-            )
-            return
-
         # skip executor if endpoints mismatch
         if (
             msg.envelope.header.exec_endpoint not in self._executor.requests
@@ -125,15 +98,6 @@ class DataRequestHandler:
             self.logger.debug(
                 f'skip executor: mismatch request, exec_endpoint: {msg.envelope.header.exec_endpoint}, requests: {self._executor.requests}'
             )
-            if partial_requests:
-                DataRequestHandler.replace_docs(
-                    msg,
-                    docs=_get_docs_from_msg(
-                        msg,
-                        partial_request=partial_requests,
-                        field='docs',
-                    ),
-                )
             return
 
         params = self._parse_params(
@@ -141,7 +105,6 @@ class DataRequestHandler:
         )
         docs = _get_docs_from_msg(
             msg,
-            partial_request=partial_requests,
             field='docs',
         )
         # executor logic
@@ -151,17 +114,14 @@ class DataRequestHandler:
             parameters=params,
             docs_matrix=_get_docs_matrix_from_message(
                 msg,
-                partial_request=partial_requests,
                 field='docs',
             ),
             groundtruths=_get_docs_from_msg(
                 msg,
-                partial_request=partial_requests,
                 field='groundtruths',
             ),
             groundtruths_matrix=_get_docs_matrix_from_message(
                 msg,
-                partial_request=partial_requests,
                 field='groundtruths',
             ),
         )
@@ -182,8 +142,6 @@ class DataRequestHandler:
                 raise TypeError(
                     f'return type must be {DocumentArray!r}, `None` or Dict, but getting {r_docs!r}'
                 )
-        elif partial_requests:
-            DataRequestHandler.replace_docs(msg, docs)
 
     @staticmethod
     def replace_docs(msg, docs):

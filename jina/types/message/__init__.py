@@ -410,10 +410,6 @@ class Message:
         envelope.version.proto = __proto_version__
         envelope.version.vcs = os.environ.get('JINA_VCS_VERSION', '')
 
-    def update_timestamp(self):
-        """Update the timestamp of the last route"""
-        self.envelope.routes[-1].end_time.GetCurrentTime()
-
     @property
     def response(self) -> 'Request':
         """Get the response of the message in protobuf.
