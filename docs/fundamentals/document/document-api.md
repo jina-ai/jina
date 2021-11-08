@@ -313,37 +313,6 @@ d.dict()
 ```
 ````
 
-````{tip}
-
-To have a nicer representation of
-the `embeddings` and any `ndarray` field, you can call `dict` and `json` with the option `prettify_ndarrays=True`.
-
-```python
-import pprint
-import numpy as np
-
-from jina import Document
-
-d0 = Document(id='🐲identifier', text='I am a Jina Document', tags={'cool': True}, embedding=np.array([0, 0]))
-pprint.pprint(d0.dict(prettify_ndarrays=True))
-pprint.pprint(d0.json(prettify_ndarrays=True))
-```
-
-```text
-{'embedding': [0, 0],
- 'id': '🐲identifier',
- 'mime_type': 'text/plain',
- 'tags': {'cool': True},
- 'text': 'I am a Jina Document'}
-
-('{"embedding": [0, 0], "id": "identifier", "mime_type": '
- '"text/plain", "tags": {"cool": true}, "text": "I am a Jina Document"}')
-```
-
-This can be useful to understand the contents of the `Document` and to send to backends that can process vectors
-as `lists` of values.
-
-````
 
 ## Set/unset attributes
 
