@@ -11,7 +11,7 @@ from jina import DocumentArray
 from jina.clients.request import request_generator
 from jina.parsers import set_pea_parser
 from jina.peapods.grpc import Grpclet
-from jina.peapods.runtimes.grpc import GRPCDataRuntime
+from jina.peapods.runtimes.grpc import WorkerRuntime
 from jina.types.document import Document
 from jina.types.message import Message
 
@@ -25,7 +25,7 @@ def test_grpc_data_runtime(mocker):
     cancel_event = multiprocessing.Event()
 
     def start_runtime(args, handle_mock, cancel_event):
-        with GRPCDataRuntime(args, cancel_event) as runtime:
+        with WorkerRuntime(args, cancel_event) as runtime:
             runtime._data_request_handler.handle = (
                 lambda *args, **kwargs: handle_mock.set()
             )
@@ -38,7 +38,7 @@ def test_grpc_data_runtime(mocker):
     )
     runtime_thread.start()
 
-    assert GRPCDataRuntime.wait_for_ready_or_shutdown(
+    assert WorkerRuntime.wait_for_ready_or_shutdown(
         timeout=5.0, ctrl_address=f'{args.host}:{args.port_in}', shutdown_event=Event()
     )
 
@@ -48,10 +48,10 @@ def test_grpc_data_runtime(mocker):
     time.sleep(0.1)
     assert handle_mock.is_set()
 
-    GRPCDataRuntime.cancel(cancel_event)
+    WorkerRuntime.cancel(cancel_event)
     runtime_thread.join()
 
-    assert not GRPCDataRuntime.is_ready(f'{args.host}:{args.port_in}')
+    assert not WorkerRuntime.is_ready(f'{args.host}:{args.port_in}')
 
 
 @pytest.mark.slow
@@ -67,7 +67,7 @@ def test_grpc_data_runtime_waits_for_pending_messages_shutdown(close_method):
     sent_queue = multiprocessing.Queue()
 
     def start_runtime(args, cancel_event, sent_queue, handler_closed_event):
-        with GRPCDataRuntime(args, cancel_event) as runtime:
+        with WorkerRuntime(args, cancel_event) as runtime:
             runtime._data_request_handler.handle = lambda *args, **kwargs: time.sleep(
                 slow_executor_block_time
             )
@@ -89,7 +89,7 @@ def test_grpc_data_runtime_waits_for_pending_messages_shutdown(close_method):
     )
     runtime_thread.start()
 
-    assert GRPCDataRuntime.wait_for_ready_or_shutdown(
+    assert WorkerRuntime.wait_for_ready_or_shutdown(
         timeout=5.0, ctrl_address=f'{args.host}:{args.port_in}', shutdown_event=Event()
     )
 
@@ -103,7 +103,7 @@ def test_grpc_data_runtime_waits_for_pending_messages_shutdown(close_method):
     if close_method == 'TERMINATE':
         runtime_thread.terminate()
     else:
-        GRPCDataRuntime.cancel(cancel_event)
+        WorkerRuntime.cancel(cancel_event)
     assert not handler_closed_event.is_set()
     runtime_thread.join()
 
@@ -113,7 +113,7 @@ def test_grpc_data_runtime_waits_for_pending_messages_shutdown(close_method):
     assert sent_queue.qsize() == pending_requests
     assert handler_closed_event.is_set()
 
-    assert not GRPCDataRuntime.is_ready(f'{args.host}:{args.port_in}')
+    assert not WorkerRuntime.is_ready(f'{args.host}:{args.port_in}')
 
 
 @pytest.mark.slow
@@ -135,7 +135,7 @@ async def test_grpc_data_runtime_graceful_shutdown(close_method):
     sent_queue = multiprocessing.Queue()
 
     def start_runtime(args, cancel_event, sent_queue, handler_closed_event):
-        with GRPCDataRuntime(args, cancel_event) as runtime:
+        with WorkerRuntime(args, cancel_event) as runtime:
             runtime._data_request_handler.handle = lambda *args, **kwargs: time.sleep(
                 slow_executor_block_time
             )
@@ -157,7 +157,7 @@ async def test_grpc_data_runtime_graceful_shutdown(close_method):
     )
     runtime_thread.start()
 
-    assert GRPCDataRuntime.wait_for_ready_or_shutdown(
+    assert WorkerRuntime.wait_for_ready_or_shutdown(
         timeout=5.0, ctrl_address=f'{args.host}:{args.port_in}', shutdown_event=Event()
     )
 
@@ -184,7 +184,7 @@ async def test_grpc_data_runtime_graceful_shutdown(close_method):
     if close_method == 'TERMINATE':
         runtime_thread.terminate()
     else:
-        GRPCDataRuntime.cancel(cancel_event)
+        WorkerRuntime.cancel(cancel_event)
 
     assert not handler_closed_event.is_set()
     runtime_thread.join()
@@ -197,7 +197,7 @@ async def test_grpc_data_runtime_graceful_shutdown(close_method):
         time.time() - request_start_time >= slow_executor_block_time * pending_requests
     )
     assert handler_closed_event.is_set()
-    assert not GRPCDataRuntime.is_ready(f'{args.host}:{args.port_in}')
+    assert not WorkerRuntime.is_ready(f'{args.host}:{args.port_in}')
 
 
 def _create_test_data_message(counter=0):
