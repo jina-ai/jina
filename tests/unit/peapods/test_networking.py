@@ -1,8 +1,6 @@
 import asyncio
-import multiprocessing
 import time
 from multiprocessing import Process
-from threading import Event
 
 import grpc
 import pytest
@@ -11,9 +9,7 @@ from jina import DocumentArray, Document
 from jina.clients.request import request_generator
 from jina.enums import PollingType
 from jina.helper import random_port
-from jina.parsers import set_pea_parser
 from jina.peapods.networking import ReplicaList, GrpcConnectionPool
-from jina.peapods.runtimes.worker import GRPCDataRuntime
 from jina.proto import jina_pb2_grpc
 from jina.types.message import Message
 from jina.types.message.common import ControlMessage
@@ -52,7 +48,7 @@ def test_connection_pool(mocker):
     create_mock = mocker.Mock()
     send_mock = mocker.Mock()
     pool = GrpcConnectionPool()
-    pool._create_connection = create_mock
+    pool.create_connection = create_mock
     pool._send_message = send_mock
 
     pool.add_connection(pod='encoder', head=False, address='1.1.1.1:53')
