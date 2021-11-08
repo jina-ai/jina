@@ -1,9 +1,11 @@
-from typing import List, Sequence, TYPE_CHECKING
+from typing import List, Sequence, TYPE_CHECKING, Union
 
 import numpy as np
 
 if TYPE_CHECKING:
     from ...document import ArrayType
+    import scipy
+    import scipy.sparse
 
 
 class ContentPropertyMixin:
@@ -16,19 +18,46 @@ class ContentPropertyMixin:
             )
 
     @property
-    def embeddings(self) -> np.ndarray:
-        """Return a `np.ndarray` stacking all the `embedding` attributes as rows.
+    def embeddings(self) -> Union[np.ndarray, 'scipy.sparse.csr_matrix']:
+        """Return a `np.ndarray` or   `scipy.sparse.csr_matrix` stacking all the `embedding` attributes as rows.
 
-        :return: a ndarray of embedding
+        :return: a ndarray or csr_matrix of embeddings
         """
-        x_mat = b''.join(d.embedding.dense.buffer for d in self._pb_body)
         # this is more general than self._pb_body[0], gives full compat to DA & DAM
-        proto = next(iter(self._pb_body)).embedding.dense
+        proto = next(iter(self._pb_body)).embedding
 
-        if proto.dtype:
-            return np.frombuffer(x_mat, dtype=proto.dtype).reshape(
-                (len(self), proto.shape[0])
-            )
+        if proto.dense:
+
+            x_mat = b''.join(d.embedding.dense.buffer for d in self._pb_body)
+            if proto.dense.dtype:
+                return np.frombuffer(x_mat, dtype=proto.dense.dtype).reshape(
+                    (len(self), proto.dense.shape[0])
+                )
+
+        if proto.sparse:
+            import scipy.sparse
+
+            n_examples = len(self)
+            n_features = proto.sparse.shape[1]
+            indices_dtype = proto.sparse.indices.dtype
+            values_dtype = proto.sparse.values.dtype
+
+            indices_bytes = b''
+            values_bytes = b''
+
+            row_indices = []
+            for k, pb_body_k in enumerate(self._pb_body):
+                indices_bytes += pb_body_k.embedding.sparse.indices.buffer
+                values_bytes += pb_body_k.embedding.sparse.values.buffer
+                row_indices += [k] * pb_body_k.embedding.sparse.values.shape[0]
+
+            if proto.sparse.values.dtype:
+                indices_np = np.frombuffer(indices_bytes, dtype=indices_dtype)
+                cols_np = indices_np.reshape(2, -1)[1, :]
+                vals_np = np.frombuffer(values_bytes, dtype=values_dtype)
+                return scipy.sparse.csr_matrix(
+                    (vals_np, (row_indices, cols_np)), shape=(n_examples, n_features)
+                )
 
     @embeddings.setter
     def embeddings(self, value: 'ArrayType'):
