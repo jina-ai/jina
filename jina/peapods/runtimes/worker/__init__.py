@@ -13,7 +13,6 @@ from ..request_handlers.data_request_handler import (
     DataRequestHandler,
 )
 from ..zmq.asyncio import AsyncNewLoopRuntime
-from ...grpc import Grpclet
 from ....enums import OnErrorStrategy
 from ....excepts import NoExplicitMessage, ChainedPodException, RuntimeTerminated
 from ....helper import random_identity

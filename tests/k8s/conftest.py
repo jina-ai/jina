@@ -119,6 +119,11 @@ def slow_init_executor_image(logger: JinaLogger):
 
 
 @pytest.fixture()
+def alpine_image():
+    return 'alpine:3.14'
+
+
+@pytest.fixture()
 def load_images_in_kind(
     logger,
     test_executor_image,
@@ -127,6 +132,7 @@ def load_images_in_kind(
     reload_executor_image,
     slow_process_executor_image,
     slow_init_executor_image,
+    alpine_image,
     k8s_cluster,
 ):
     logger.debug(f'Loading docker image into kind cluster...')
