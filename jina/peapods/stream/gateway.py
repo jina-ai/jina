@@ -1,8 +1,7 @@
 import copy
-import argparse
 import asyncio
 
-from typing import TYPE_CHECKING, AsyncIterator
+from typing import List, AsyncIterator
 
 from .base import BaseStreamer
 from ...types.message import Message
@@ -44,7 +43,43 @@ class GatewayStreamer(BaseStreamer):
             # It starts like a chain of waiting for tasks from previous nodes
             tasks_to_respond.extend([task for ret, task in leaf_tasks if ret])
             tasks_to_ignore.extend([task for ret, task in leaf_tasks if not ret])
-        return tasks_to_respond[0]
+
+        async def _merge_results_at_end_gateway(
+            tasks: List[asyncio.Task],
+        ) -> asyncio.Future:
+            from jina import DocumentArray
+
+            # TODO: Should the order be deterministic by the graph structure, or depending on the response speed?
+            # partial_responses = [await result for result in asyncio.as_completed(*tasks)]
+            partial_responses = await asyncio.gather(*tasks)
+
+            # when merging comes, one task may return None
+            filtered_partial_responses = list(
+                filter(lambda x: x is not None, partial_responses)
+            )
+            if len(filtered_partial_responses) > 1:
+                docs = DocumentArray(
+                    [
+                        d
+                        for r in filtered_partial_responses
+                        for d in getattr(r.request, 'docs')
+                    ]
+                )
+                groundtruths = DocumentArray(
+                    [
+                        d
+                        for r in filtered_partial_responses
+                        for d in getattr(r.request, 'groundtruths')
+                    ]
+                )
+                filtered_partial_responses[0].request.docs.clear()
+                filtered_partial_responses[0].request.docs.extend(docs)
+                filtered_partial_responses[0].request.groundtruths.clear()
+                filtered_partial_responses[0].request.groundtruths.extend(groundtruths)
+
+            return filtered_partial_responses[0]
+
+        return asyncio.ensure_future(_merge_results_at_end_gateway(tasks_to_respond))
 
     def _convert_to_message(self, request: 'Request') -> Message:
         """Convert `Request` to `Message`

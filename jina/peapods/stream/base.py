@@ -116,7 +116,7 @@ class BaseStreamer(ABC):
             try:
                 response: 'asyncio.Future' = result_queue.get_nowait()
                 result_queue.task_done()
-                yield response.result()
+                yield response.result().request
             except asyncio.QueueEmpty:
                 await asyncio.sleep(0.2)
                 continue
