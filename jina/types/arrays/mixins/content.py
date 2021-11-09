@@ -42,7 +42,7 @@ class ContentPropertyMixin:
         else:
             emb_shape0 = value.shape[0]
             self._check_length(emb_shape0)
-            NdArray.ravel(self, value, 'embedding')
+            NdArray.ravel(value, self, 'embedding')
 
     @property
     def blobs(self) -> 'ArrayType':
@@ -73,7 +73,7 @@ class ContentPropertyMixin:
             blobs_shape0 = value.shape[0]
             self._check_length(blobs_shape0)
 
-            NdArray.ravel(self, value, 'blob')
+            NdArray.ravel(value, self, 'blob')
 
     @property
     def texts(self) -> List[str]:
