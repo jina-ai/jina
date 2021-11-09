@@ -1,3 +1,9 @@
+html.loaded-in-iframe #announcement,
+html.loaded-in-iframe #sidebar-drawer,
+html.loaded-in-iframe #toc-drawer {
+  display: none!important;
+}
+
 .sidebar-logo {
     max-width: 50%;
 }
