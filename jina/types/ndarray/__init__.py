@@ -85,32 +85,62 @@ class NdArray(ProtoTypeMixin):
         framework, is_sparse = first._pb_body.cls_name, first.is_sparse
 
         if is_sparse:
-            if framework in {'tensorflow', 'scipy'}:
+
+            if framework in {'tensorflow'}:
                 raise NotImplementedError(
                     f'fast ravel on sparse {framework} is not supported yet.'
                 )
 
-            all_ds = []
-            for j, p in enumerate(protos):
-                _d = _get_dense_array(p.sparse.indices)
+            if framework == 'scipy':
+                import scipy.sparse
 
-                _idx = np.array([j] * _d.shape[-1], dtype=np.int32)
-                if framework == 'torch':
-                    _idx = _idx.reshape([1, -1])
-                    _d = np.vstack([_idx, _d])
-                all_ds.append(_d)
+                n_examples = len(protos)
 
-            val = _unravel_dense_array(
-                (d.sparse.values.buffer for d in protos),
-                shape=[],
-                dtype=first.sparse.values.dtype,
-            )
+                n_features = first.proto.sparse.shape[1]
+                indices_dtype = first.proto.sparse.indices.dtype
+                values_dtype = first.proto.sparse.values.dtype
 
-            idx = np.concatenate(all_ds, axis=-1)
-            shape = [len(protos)] + list(first.sparse.shape)
-            from torch import sparse_coo_tensor
+                indices_bytes = b''
+                values_bytes = b''
 
-            return sparse_coo_tensor(idx, val, shape)
+                row_indices = []
+                for k, pb_body_k in enumerate(protos):
+                    indices_bytes += pb_body_k.sparse.indices.buffer
+                    values_bytes += pb_body_k.sparse.values.buffer
+                    row_indices += [k] * pb_body_k.sparse.values.shape[0]
+
+                if first.proto.sparse.values.dtype:
+                    indices_np = np.frombuffer(indices_bytes, dtype=indices_dtype)
+                    # we can make this better if we refactor store sparse as 3 arrays (x_ind, y_ind, value)
+                    cols_np = indices_np.reshape(2, -1)[1, :]
+                    vals_np = np.frombuffer(values_bytes, dtype=values_dtype)
+                    return scipy.sparse.csr_matrix(
+                        (vals_np, (row_indices, cols_np)),
+                        shape=(n_examples, n_features),
+                    )
+
+            if framework == 'torch':
+                all_ds = []
+                for j, p in enumerate(protos):
+                    _d = _get_dense_array(p.sparse.indices)
+
+                    _idx = np.array([j] * _d.shape[-1], dtype=np.int32)
+                    if framework == 'torch':
+                        _idx = _idx.reshape([1, -1])
+                        _d = np.vstack([_idx, _d])
+                    all_ds.append(_d)
+
+                val = _unravel_dense_array(
+                    (d.sparse.values.buffer for d in protos),
+                    shape=[],
+                    dtype=first.sparse.values.dtype,
+                )
+
+                idx = np.concatenate(all_ds, axis=-1)
+                shape = [len(protos)] + list(first.sparse.shape)
+                from torch import sparse_coo_tensor
+
+                return sparse_coo_tensor(idx, val, shape)
         else:
             if framework in {'numpy', 'torch', 'paddle', 'tensorflow'}:
                 x = _unravel_dense_array(
