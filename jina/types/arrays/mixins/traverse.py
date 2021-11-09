@@ -1,19 +1,17 @@
-import warnings
+import itertools
 from abc import abstractmethod
 from typing import (
     Iterable,
     Sequence,
     TYPE_CHECKING,
     Optional,
-    Generator,
     Callable,
     Union,
 )
-import numpy as np
 
 if TYPE_CHECKING:
-    from .document import DocumentArray
-    from ..document import Document
+    from ..document import DocumentArray
+    from ...document import Document
 
 
 def _check_traversal_path_type(tp):
@@ -26,16 +24,16 @@ def _check_traversal_path_type(tp):
         raise TypeError('`traversal_paths` needs to be `Sequence[str]`')
 
 
-class TraversableSequence:
+class TraverseMixin:
     """
-    A mixin used for traversing a `Sequence[Traversable]`.
+    A mixin used for traversing :class:`DocumentArray` or :class:`DocumentArrayMemmap`.
     """
 
     def traverse(
         self,
         traversal_paths: Sequence[str],
         filter_fn: Optional[Callable[['Document'], bool]] = None,
-    ) -> Iterable['TraversableSequence']:
+    ) -> Iterable['TraverseMixin']:
         """
         Return an Iterator of :class:``TraversableSequence`` of the leaves when applying the traversal_paths.
         Each :class:``TraversableSequence`` is either the root Documents, a ChunkArray or a MatchArray.
@@ -62,24 +60,22 @@ class TraversableSequence:
 
     @staticmethod
     def _traverse(
-        docs: 'TraversableSequence',
+        docs: 'TraverseMixin',
         path: str,
         filter_fn: Optional[Callable[['Document'], bool]] = None,
     ):
         if path:
             loc = path[0]
             if loc == 'r':
-                yield from TraversableSequence._traverse(
-                    docs, path[1:], filter_fn=filter_fn
-                )
+                yield from TraverseMixin._traverse(docs, path[1:], filter_fn=filter_fn)
             elif loc == 'm':
                 for d in docs:
-                    yield from TraversableSequence._traverse(
+                    yield from TraverseMixin._traverse(
                         d.matches, path[1:], filter_fn=filter_fn
                     )
             elif loc == 'c':
                 for d in docs:
-                    yield from TraversableSequence._traverse(
+                    yield from TraverseMixin._traverse(
                         d.chunks, path[1:], filter_fn=filter_fn
                     )
             else:
@@ -89,7 +85,7 @@ class TraversableSequence:
         elif filter_fn is None:
             yield docs
         else:
-            from .document import DocumentArray
+            from ..document import DocumentArray
 
             yield DocumentArray(list(filter(filter_fn, docs)))
 
@@ -140,79 +136,43 @@ class TraversableSequence:
         leaves = self.traverse(traversal_paths, filter_fn=filter_fn)
         return self._flatten(leaves)
 
-    def batch(
-        self,
-        batch_size: int,
-        traversal_paths: Sequence[str] = None,
-        require_attr: Optional[str] = None,
-        shuffle: bool = False,
-    ) -> Generator['DocumentArray', None, None]:
+    def flatten(self, copy: bool = True) -> 'DocumentArray':
+        """Flatten all nested chunks and matches into one :class:`DocumentArray`.
+
+        .. note::
+            Flatten an already flattened DocumentArray will have no effect.
+
+        .. warning::
+            DocumentArrayMemmap do not support `copy=False`.
+
+        :param copy: copy the document (DAM only supports copy=True), otherwise returns a view of the original
+        :return: a flattened :class:`DocumentArray` object.
         """
-        Creates a `Generator` that yields `DocumentArray` of size `batch_size` until `docs` is fully traversed along
-        the `traversal_path`. The None `docs` are filtered out and optionally the `docs` can be filtered by checking for
-        the existence of a `Document` attribute.
-        Note, that the last batch might be smaller than `batch_size`.
+        from ..document import DocumentArray
 
-        :param traversal_paths: Specifies along which "axis" the document shall be traversed. (defaults to ['r'])
-        :param batch_size: Size of each generated batch (except the last one, which might be smaller, default: 32)
-        :param require_attr: Optionally, you can filter out docs which don't have this attribute
-        :param shuffle: If set, shuffle the Documents before dividing into minibatches.
-        :yield: a Generator of `DocumentArray`, each in the length of `batch_size`
-        """
+        def _yield_all():
+            for d in self:
+                yield from _yield_nest(d)
 
-        if not (isinstance(batch_size, int) and batch_size > 0):
-            raise ValueError('`batch_size` should be a positive integer')
+        def _yield_nest(doc: 'Document'):
+            from ...document import Document
 
-        if traversal_paths:
-            warnings.warn(
-                'using `traversal_paths` as an argument inside `.batch()` is deprecated. '
-                'please use `.traverse_flat(traversal_paths=...).batch()` instead',
-                DeprecationWarning,
-            )
-            _check_traversal_path_type(traversal_paths)
-            docs = self.traverse_flat(traversal_paths)
-        else:
-            docs = self
+            for d in doc.chunks:
+                yield from _yield_nest(d)
+            for m in doc.matches:
+                yield from _yield_nest(m)
 
-        from .document import DocumentArray
+            if copy:
+                d = Document(doc, copy=True)
+                d.chunks.clear()
+                d.matches.clear()
+                yield d
+            else:
+                doc.matches.clear()
+                doc.chunks.clear()
+                yield doc
 
-        if not require_attr:
-            N = len(self)
-            ix = np.arange(N)
-            n_batches = int(np.ceil(N / batch_size))
-
-            if shuffle:
-                np.random.shuffle(ix)
-
-            for i in range(n_batches):
-                yield DocumentArray(docs[i * batch_size : (i + 1) * batch_size])
-
-        else:
-            warnings.warn(
-                'using `require_attr` as an argument inside `.batch()` is deprecated. '
-                'please use `.traverse_flat(filter_fn=...).batch()` instead',
-                DeprecationWarning,
-            )
-
-            # less efficient batching algorithm, will be removed soon
-            _batch = DocumentArray()
-            for d in docs:
-                # For array-valued attributes we need to compare to None
-                if require_attr in ['embedding', 'blob']:
-                    if getattr(d, require_attr) is not None:
-                        _batch.append(d)
-                elif require_attr is not None:
-                    if getattr(d, require_attr):
-                        _batch.append(d)
-                else:
-                    _batch.append(d)
-
-                if len(_batch) == batch_size:
-                    yield _batch
-                    _batch = DocumentArray()
-
-            if _batch:
-                yield _batch
+        return DocumentArray(_yield_all())
 
     @staticmethod
     @abstractmethod

@@ -79,3 +79,4 @@ pytest-lazy-fixture:        test
 datasets:                   cicd
 av:                         cicd
 trimesh:                    cicd
+paddlepaddle:               cicd

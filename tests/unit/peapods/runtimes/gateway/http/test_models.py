@@ -17,7 +17,6 @@ def test_schema_invocation():
 def test_existing_definitions():
     """This tests: all internal schema definitions are part of parent"""
     for i in [
-        'QuantizationMode',
         'DenseNdArrayProto',
         'SparseNdArrayProto',
         'NdArrayProto',
@@ -31,11 +30,6 @@ def test_existing_definitions():
 
 def test_enum_definitions():
     """This tests: all enums are defined properly as different levels"""
-    quantization_enum_definition = PROTO_TO_PYDANTIC_MODELS.DocumentProto().schema()[
-        'definitions'
-    ]['QuantizationMode']
-    assert quantization_enum_definition['enum'] == [0, 1, 2, 3]
-
     status_code_enum_definition = PROTO_TO_PYDANTIC_MODELS.StatusProto().schema()[
         'definitions'
     ]['StatusCode']

@@ -1,16 +1,14 @@
 import copy
-import os
-import random
 
 import numpy as np
 import pytest
 import scipy.sparse as sp
 from scipy.spatial.distance import cdist as scipy_cdist
 
-from jina import Document, DocumentArray, __windows__
+from jina import Document, DocumentArray
 from jina.math.dimensionality_reduction import PCA
 from jina.types.arrays.memmap import DocumentArrayMemmap
-from jina.types.document.generators import from_files
+from tests import random_docs
 
 
 @pytest.fixture()
@@ -371,20 +369,6 @@ def test_pca_projection(embeddings, whiten):
     assert embeddings_transformed.shape[1] == n_components
 
 
-@pytest.mark.parametrize('colored_tag', [None, 'tags__label', 'id', 'mime_type'])
-@pytest.mark.parametrize('kwargs', [{}, dict(s=100, marker='^')])
-def test_pca_plot_generated(embeddings, tmpdir, colored_tag, kwargs):
-    doc_array = DocumentArray(
-        [
-            Document(embedding=x, tags={'label': random.randint(0, 5)})
-            for x in embeddings
-        ]
-    )
-    file_path = os.path.join(tmpdir, 'pca_plot.png')
-    doc_array.plot_embeddings(file_path, colored_attr=colored_tag, **kwargs)
-    assert os.path.exists(file_path)
-
-
 @pytest.mark.parametrize('only_id', [True, False])
 def test_match_inclusive(only_id):
     """Call match function, while the other :class:`DocumentArray` is itself
@@ -683,7 +667,7 @@ def test_filter_fn(doc_lists, tmp_path, first_memmap, second_memmap, buffer_pool
     # match docs1 with a doc without embedding against docs2
     docs1.append(Document())
     with pytest.raises(ValueError, match='cannot reshape array'):
-        docs1.match(docs2, filter_fn=filter_fn(), limit=len(docs2))
+        docs1.match(docs2, limit=len(docs2))
 
     # match docs1 with a doc that has invalid embedding shape against docs2
     docs1[len(docs1) - 1] = Document(embedding=np.array([1]))
@@ -696,12 +680,6 @@ def test_filter_fn(doc_lists, tmp_path, first_memmap, second_memmap, buffer_pool
     assert all(len(d1.matches) == expected_len for d1 in docs1)
 
 
-def test_sprite_image_generator(pytestconfig, tmpdir):
-    da = DocumentArray(from_files(f'{pytestconfig.rootdir}/.github/**/*.png'))
-    da.plot_image_sprites(tmpdir / 'sprint.png')
-    assert os.path.exists(tmpdir / 'sprint.png')
-
-
 @pytest.mark.parametrize('only_id', [True, False])
 def test_only_id(docarrays_for_embedding_distance_computation, only_id):
     D1, D2 = docarrays_for_embedding_distance_computation
@@ -710,3 +688,10 @@ def test_only_id(docarrays_for_embedding_distance_computation, only_id):
         for m in d.matches:
             assert (m.embedding is None) == only_id
             assert m.id
+
+
+def test_da_get_embeddings_slice():
+    da = DocumentArray(random_docs(100))
+    np.testing.assert_almost_equal(
+        da.get_attributes('embedding')[10:20], da._get_embeddings(slice(10, 20))
+    )
