@@ -110,23 +110,6 @@ def complete_graph_dict():
     }
 
 
-@pytest.fixture
-def graph_hanging_pod_after_merge():
-    return {
-        'start-gateway': ['pod0', 'pod4', 'pod6', 'pod8'],
-        'pod0': ['pod1', 'pod2'],
-        'pod1': [],  # hanging_pod
-        'pod2': ['pod3'],
-        'pod4': ['pod5'],
-        'pod5': ['end-gateway'],
-        'pod3': ['end-gateway'],
-        'pod6': ['pod7'],
-        'pod8': ['pod7'],
-        'pod7': ['pod9'],
-        'pod9': [],  # hanging_pod
-    }
-
-
 class DummyMockConnectionPool:
     def send_message(self, msg: Message, pod: str, head: bool) -> asyncio.Task:
         assert head
@@ -194,7 +177,7 @@ def test_grpc_gateway_runtime_handle_messages_linear(linear_graph_dict, monkeypa
     )
     port_in = random_port()
 
-    def client_validate(client_id: int, port_in: int):
+    def client_validate(client_id: int):
         responses = client_send(client_id, port_in)
         assert len(responses) > 0
         assert len(responses[0].docs) == 1
@@ -211,9 +194,7 @@ def test_grpc_gateway_runtime_handle_messages_linear(linear_graph_dict, monkeypa
     time.sleep(1.0)
     client_processes = []
     for i in range(NUM_PARALLEL_CLIENTS):
-        cp = multiprocessing.Process(
-            target=client_validate, kwargs={'client_id': i, 'port_in': port_in}
-        )
+        cp = multiprocessing.Process(target=client_validate, kwargs={'client_id': i})
         cp.start()
         client_processes.append(cp)
 
@@ -235,7 +216,7 @@ def test_grpc_gateway_runtime_handle_messages_bifurcation(
     )
     port_in = random_port()
 
-    def client_validate(client_id: int, port_in: int):
+    def client_validate(client_id: int):
         responses = client_send(client_id, port_in)
         assert len(responses) > 0
         assert len(responses[0].docs) == 2
@@ -256,9 +237,7 @@ def test_grpc_gateway_runtime_handle_messages_bifurcation(
     time.sleep(1.0)
     client_processes = []
     for i in range(NUM_PARALLEL_CLIENTS):
-        cp = multiprocessing.Process(
-            target=client_validate, kwargs={'client_id': i, 'port_in': port_in}
-        )
+        cp = multiprocessing.Process(target=client_validate, kwargs={'client_id': i})
         cp.start()
         client_processes.append(cp)
 
@@ -281,7 +260,7 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
     )
     port_in = random_port()
 
-    def client_validate(client_id: int, port_in: int):
+    def client_validate(client_id: int):
         responses = client_send(client_id, port_in)
         assert len(responses) > 0
         assert len(responses[0].docs) == 1
@@ -306,9 +285,7 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
     time.sleep(1.0)
     client_processes = []
     for i in range(NUM_PARALLEL_CLIENTS):
-        cp = multiprocessing.Process(
-            target=client_validate, kwargs={'client_id': i, 'port_in': port_in}
-        )
+        cp = multiprocessing.Process(target=client_validate, kwargs={'client_id': i})
         cp.start()
         client_processes.append(cp)
 
@@ -331,7 +308,7 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_last_pod(
     )
     port_in = random_port()
 
-    def client_validate(client_id: int, port_in: int):
+    def client_validate(client_id: int):
         responses = client_send(client_id, port_in)
         assert len(responses) > 0
         assert len(responses[0].docs) == 1
@@ -356,9 +333,7 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_last_pod(
     time.sleep(1.0)
     client_processes = []
     for i in range(NUM_PARALLEL_CLIENTS):
-        cp = multiprocessing.Process(
-            target=client_validate, kwargs={'client_id': i, 'port_in': port_in}
-        )
+        cp = multiprocessing.Process(target=client_validate, kwargs={'client_id': i})
         cp.start()
         client_processes.append(cp)
 
@@ -381,7 +356,7 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
     )
     port_in = random_port()
 
-    def client_validate(client_id: int, port_in: int):
+    def client_validate(client_id: int):
         responses = client_send(client_id, port_in)
         assert len(responses) > 0
         assert len(responses[0].docs) == 2
@@ -409,9 +384,7 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
     time.sleep(1.0)
     client_processes = []
     for i in range(NUM_PARALLEL_CLIENTS):
-        cp = multiprocessing.Process(
-            target=client_validate, kwargs={'client_id': i, 'port_in': port_in}
-        )
+        cp = multiprocessing.Process(target=client_validate, kwargs={'client_id': i})
         cp.start()
         client_processes.append(cp)
 
