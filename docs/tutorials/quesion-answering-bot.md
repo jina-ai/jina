@@ -37,6 +37,7 @@ docs = DocumentArray([Document(content=sentence) for sentence in example_sentenc
 ```
 
 As described in the last section, we first need to predict potential questions for each of the elements in the `DocumentArray`. Then we have to use another model to create vector encodings from the the predicted questions. Finally, we store them as the index. 
+
 At this point we have enough information to start defining our `Flows`.
 
 <em> Without further ado, let's build! </em>
