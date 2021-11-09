@@ -157,6 +157,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         env: Optional[dict] = None,
         expose_endpoints: Optional[str] = None,
         expose_public: Optional[bool] = False,
+        graph_description: Optional[str] = None,
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
         host_out: Optional[str] = '0.0.0.0',
@@ -168,6 +169,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
         on_error_strategy: Optional[str] = 'IGNORE',
+        pods_addresses: Optional[str] = None,
         port_ctrl: Optional[int] = None,
         port_expose: Optional[int] = None,
         port_in: Optional[int] = None,
@@ -217,6 +219,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param env: The map of environment variables that are available inside runtime
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas
+        :param graph_description: Routing graph for the gateway
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for input, by default it is 0.0.0.0
         :param host_out: The host address for output, by default it is 0.0.0.0
@@ -245,6 +248,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
           Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something
           is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.
+        :param pods_addresses: dictionary JSON with the input addresses of each Pod
         :param port_ctrl: The port for controlling the runtime, default a random port between [49152, 65535]
         :param port_expose: The port that the gateway exposes for clients for GRPC connections.
         :param port_in: The port for input data, default a random port between [49152, 65535]
