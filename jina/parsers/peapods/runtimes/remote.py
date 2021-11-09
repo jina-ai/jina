@@ -58,6 +58,16 @@ def mixin_gateway_parser(parser):
         help='The port that the gateway exposes for clients for GRPC connections.',
     )
 
+    parser.add_argument(
+        '--graph-description', type=str, help='Routing graph for the gateway'
+    )
+
+    parser.add_argument(
+        '--pods-addresses',
+        type=str,
+        help='dictionary JSON with the input addresses of each Pod',
+    )
+
 
 def _add_host(arg_group):
     arg_group.add_argument(
