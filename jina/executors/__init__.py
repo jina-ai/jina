@@ -5,7 +5,7 @@ from typing import Dict, TypeVar, Optional, Callable
 
 from .decorators import store_init_kwargs, wrap_func
 from .. import __default_endpoint__, __args_executor_init__
-from ..helper import typename
+from ..helper import typename, ArgNamespace
 from ..jaml import JAMLCompatible, JAML, subvar_regex, internal_var_regex
 
 __all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
@@ -213,22 +213,22 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         if workspace:
             complete_workspace = os.path.join(workspace, self.metas.name)
             replica_id = getattr(self.runtime_args, 'replica_id', None)
-            pea_id = getattr(
+            shard_id = getattr(
                 self.runtime_args,
-                'pea_id',
-                getattr(self.runtime_args, 'shard_id', None),
+                'shard_id',
+                getattr(self.runtime_args, 'pea_id', None),
             )
             if replica_id is not None and replica_id != -1:
                 complete_workspace = os.path.join(complete_workspace, str(replica_id))
-            if pea_id is not None and pea_id != -1:
-                complete_workspace = os.path.join(complete_workspace, str(pea_id))
+            if shard_id is not None and shard_id != -1:
+                complete_workspace = os.path.join(complete_workspace, str(shard_id))
             if not os.path.exists(complete_workspace):
                 os.makedirs(complete_workspace)
             return os.path.abspath(complete_workspace)
         else:
             raise ValueError(
                 'Neither `metas.workspace` nor `runtime_args.workspace` is set, '
-                'are you using this Executor is a Flow?'
+                'are you using this Executor in a Flow?'
             )
 
     def __enter__(self):
@@ -236,3 +236,32 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
+
+    @classmethod
+    def from_hub(cls, uri: str, **kwargs) -> 'BaseExecutor':
+        """Construct an Executor from Hub.
+
+        :param uri: a hub Executor scheme starts with `jinahub://`
+        :param kwargs: other kwargs accepted by the CLI ``jina hub pull``
+        :return: the Hub Executor object.
+        """
+        from ..hubble.helper import is_valid_huburi
+
+        _source = None
+        if is_valid_huburi(uri):
+            from ..hubble.hubio import HubIO
+            from ..parsers.hubble import set_hub_pull_parser
+
+            _args = ArgNamespace.kwargs2namespace(
+                {'no_usage': True, **kwargs},
+                set_hub_pull_parser(),
+                positional_args=(uri,),
+            )
+            _source = HubIO(args=_args).pull()
+
+        if not _source or _source.startswith('docker://'):
+            raise ValueError(
+                f'Can not construct a native Executor from {uri}. Looks like you want to use it as a '
+                f'Docker container, you may want to use it in the Flow via `.add(uses={uri})` instead.'
+            )
+        return cls.load_config(_source)

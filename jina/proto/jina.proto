@@ -17,21 +17,6 @@ message DenseNdArrayProto {
 
     // the data type of the array
     string dtype = 3;
-
-    enum QuantizationMode {
-        NONE = 0; // no quantization is performed, stored in the original ``dtype``
-        FP16 = 1; // 4x smaller if original dtype FP64, lossy
-        UINT8 = 2; // 4x smaller if original dtype FP32, lossy
-        FP32 = 3; // 2x smaller if dtype is set to FP64
-    }
-
-    // quantization mode
-    QuantizationMode quantization = 4;
-
-    float max_val = 5; // the max value of the ndarray
-    float min_val = 6; // the min value of the ndarray
-    float scale = 7; // the scale of the ndarray
-    string original_dtype = 8; // the original dtype of the array
 }
 
 /**
@@ -42,6 +27,11 @@ message NdArrayProto {
         DenseNdArrayProto dense = 1; // dense representation of the ndarray
         SparseNdArrayProto sparse = 2; // sparse representation of the ndarray
     }
+
+    // the name of the ndarray class
+    string cls_name = 3;
+
+    google.protobuf.Struct parameters = 4;
 }
 
 /**
@@ -74,7 +64,7 @@ message NamedScoreProto {
  * Represents a Graph
  */
 message GraphProto {
-    SparseNdArrayProto adjacency = 1; // adjacency list
+    NdArrayProto adjacency = 1; // adjacency list
     google.protobuf.Struct edge_features = 2; // Container structure to store edge features
     bool undirected = 3; //Flag indicating if the graph is to be interpreted as an undirected graph
 }

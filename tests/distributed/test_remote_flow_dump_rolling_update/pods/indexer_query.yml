@@ -1,7 +1,0 @@
-jtype: CompoundQueryExecutor
-with:
-  dump_path: /workspace/dump # TEMPORARY SOLUTION UNTIL WE FIND HOW TO RESTART WITH DUMP_PATH
-metas:
-  name: compound_indexer
-  workspace: workspace_query
-  py_modules: [executors.py]

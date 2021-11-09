@@ -47,7 +47,7 @@ class MyTransformer(Executor):
 
     @requests
     def encode(self, docs: 'DocumentArray', **kwargs):
-        with torch.no_grad():
+        with torch.inference_mode():
             if not self.tokenizer.pad_token:
                 self.tokenizer.add_special_tokens({'pad_token': '[PAD]'})
                 self.model.resize_token_embeddings(len(self.tokenizer.vocab))

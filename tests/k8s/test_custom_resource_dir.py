@@ -9,7 +9,11 @@ def test_custom_resource_dir():
     custom_resource_dir = '/test'
 
     flow = Flow(
-        name='test-flow', port_expose=8080, infrastructure='K8S', protocol='http'
+        name='test-flow',
+        port_expose=8080,
+        infrastructure='K8S',
+        protocol='http',
+        k8s_namespace='test-flow-ns',
     ).add(name='test_executor', k8s_custom_resource_dir=custom_resource_dir)
     assert (
         flow._pod_nodes['test_executor'].args.k8s_custom_resource_dir
@@ -19,15 +23,22 @@ def test_custom_resource_dir():
 
 def test_no_resource_dir_specified():
     flow = Flow(
-        name='test-flow', port_expose=8080, infrastructure='K8S', protocol='http'
+        name='test-flow',
+        port_expose=8080,
+        infrastructure='K8S',
+        protocol='http',
+        k8s_namespace='test-flow-ns',
     ).add(name='test_executor')
     assert flow._pod_nodes['test_executor'].args.k8s_custom_resource_dir is None
 
 
 def test_default_k8s_connection_pooling():
-    flow = Flow(name='test-flow', port_expose=8080, infrastructure='K8S').add(
-        name='test_executor'
-    )
+    flow = Flow(
+        name='test-flow',
+        port_expose=8080,
+        infrastructure='K8S',
+        k8s_namespace='test-flow-ns',
+    ).add(name='test_executor')
     assert flow._pod_nodes['test_executor'].args.k8s_connection_pool
 
 
@@ -39,6 +50,7 @@ def test_disable_k8s_connection_pooling(k8s_connection_pool):
             port_expose=8080,
             infrastructure='K8S',
             k8s_disable_connection_pool=not k8s_connection_pool,
+            k8s_namespace='test-flow-ns',
         )
         .add(name='test_executor1', replicas=3)
         .add(name='test_executor2')

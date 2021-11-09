@@ -23,7 +23,6 @@ def send_requests(
     received_resposes: multiprocessing.Queue,
     response_arrival_times: multiprocessing.Queue,
     logger,
-    namespace,
 ):
     from jina.clients import Client
 
@@ -57,16 +56,12 @@ def send_requests(
             else:
                 await asyncio.sleep(1.0 if scale_event.is_set() else 0.05)
 
-    with kubernetes_tools.get_port_forward_contextmanager(
-        namespace, client_kwargs['port']
-    ):
-        client.post(
-            '/',
-            inputs=async_inputs,
-            request_size=1,
-            port_expose=9090,
-            on_done=validator.process_response,
-        )
+    client.post(
+        '/',
+        inputs=async_inputs,
+        request_size=1,
+        on_done=validator.process_response,
+    )
 
 
 @pytest.mark.asyncio
@@ -85,6 +80,7 @@ async def test_no_message_lost_during_scaling(
         name='test-flow-slow-process-executor',
         infrastructure='K8S',
         timeout_ready=120000,
+        k8s_namespace='test-flow-slow-process-executor-ns',
     ).add(
         name='slow_process_executor',
         uses=slow_process_executor_image,
@@ -94,70 +90,74 @@ async def test_no_message_lost_during_scaling(
     )
 
     with flow:
-        client_kwargs = dict(
-            host='localhost',
-            port=flow.port_expose,
-        )
-        client_kwargs.update(flow._common_kwargs)
-
-        stop_event = multiprocessing.Event()
-        scale_event = multiprocessing.Event()
-        received_resposes = multiprocessing.Queue()
-        process = Process(
-            target=send_requests,
-            kwargs={
-                'client_kwargs': client_kwargs,
-                'stop_event': stop_event,
-                'scale_event': scale_event,
-                'received_resposes': received_resposes,
-                'logger': logger,
-                'namespace': 'test-flow-slow-process-executor',
-            },
-            daemon=True,
-        )
-        process.start()
-
-        time.sleep(1.0)
-
-        # scale slow init executor up
-        k8s_clients = K8sClients()
-        logger.debug('Scale down executor to 1 replica')
-        k8s_clients.apps_v1.patch_namespaced_deployment_scale(
-            'slow-process-executor',
-            namespace='test-flow-slow-process-executor',
-            body={"spec": {"replicas": 1}},
-        )
-        scale_event.set()
-
-        # wait for replicas to be dead
-        while True:
-            pods = k8s_clients.core_v1.list_namespaced_pod(
-                namespace='test-flow-slow-process-executor',
-                label_selector=f'app=slow-process-executor',
+        with kubernetes_tools.get_port_forward_contextmanager(
+            'test-flow-slow-process-executor', flow.port_expose
+        ):
+            # sleep as the port forward setup can take some time
+            time.sleep(0.1)
+            client_kwargs = dict(
+                host='localhost',
+                port=flow.port_expose,
             )
-            if len(pods.items) == 1:
-                # still continue for a bit to hit the new replica only
-                logger.debug('Scale down complete')
-                time.sleep(1.0)
-                stop_event.set()
-                break
-            await asyncio.sleep(1.0)
+            client_kwargs.update(flow._common_kwargs)
 
-        # allow some time for responses to complete
-        await asyncio.sleep(10.0)
-        # kill the process as the client can hang due to lost responsed
-        if process.is_alive():
-            process.kill()
-        process.join()
+            stop_event = multiprocessing.Event()
+            scale_event = multiprocessing.Event()
+            received_resposes = multiprocessing.Queue()
+            process = Process(
+                target=send_requests,
+                kwargs={
+                    'client_kwargs': client_kwargs,
+                    'stop_event': stop_event,
+                    'scale_event': scale_event,
+                    'received_resposes': received_resposes,
+                    'logger': logger,
+                },
+                daemon=True,
+            )
+            process.start()
 
-        responses_list = []
-        while received_resposes.qsize():
-            responses_list.append(int(received_resposes.get()))
+            time.sleep(1.0)
 
-        logger.debug(f'Got the following responses {sorted(responses_list)}')
-        assert sorted(responses_list) == list(
-            range(min(responses_list), max(responses_list) + 1)
-        )
+            # scale slow init executor up
+            k8s_clients = K8sClients()
+            logger.debug('Scale down executor to 1 replica')
+            k8s_clients.apps_v1.patch_namespaced_deployment_scale(
+                'slow-process-executor',
+                namespace='test-flow-slow-process-executor',
+                body={"spec": {"replicas": 1}},
+            )
+            scale_event.set()
+
+            # wait for replicas to be dead
+            while True:
+                pods = k8s_clients.core_v1.list_namespaced_pod(
+                    namespace='test-flow-slow-process-executor',
+                    label_selector=f'app=slow-process-executor',
+                )
+                if len(pods.items) == 1:
+                    # still continue for a bit to hit the new replica only
+                    logger.debug('Scale down complete')
+                    time.sleep(1.0)
+                    stop_event.set()
+                    break
+                await asyncio.sleep(1.0)
+
+            # allow some time for responses to complete
+            await asyncio.sleep(10.0)
+            # kill the process as the client can hang due to lost responsed
+            if process.is_alive():
+                process.kill()
+            process.join()
+
+            responses_list = []
+            while received_resposes.qsize():
+                responses_list.append(int(received_resposes.get()))
+
+            logger.debug(f'Got the following responses {sorted(responses_list)}')
+            assert sorted(responses_list) == list(
+                range(min(responses_list), max(responses_list) + 1)
+            )
 
 
 @pytest.mark.asyncio
@@ -176,6 +176,7 @@ async def test_no_message_lost_during_kill(
         name='test-flow-slow-process-executor',
         infrastructure='K8S',
         timeout_ready=120000,
+        k8s_namespace='test-flow-slow-process-executor-ns',
     ).add(
         name='slow_process_executor',
         uses=slow_process_executor_image,
@@ -185,78 +186,83 @@ async def test_no_message_lost_during_kill(
     )
 
     with flow:
-        client_kwargs = dict(
-            host='localhost',
-            port=flow.port_expose,
-        )
-        client_kwargs.update(flow._common_kwargs)
+        with kubernetes_tools.get_port_forward_contextmanager(
+            'test-flow-slow-process-executor', flow.port_expose
+        ):
+            client_kwargs = dict(
+                host='localhost',
+                port=flow.port_expose,
+            )
+            client_kwargs.update(flow._common_kwargs)
 
-        stop_event = multiprocessing.Event()
-        scale_event = multiprocessing.Event()
-        received_resposes = multiprocessing.Queue()
-        process = Process(
-            target=send_requests,
-            kwargs={
-                'client_kwargs': client_kwargs,
-                'stop_event': stop_event,
-                'scale_event': scale_event,
-                'received_resposes': received_resposes,
-                'logger': logger,
-                'namespace': 'test-flow-slow-process-executor',
-            },
-            daemon=True,
-        )
-        process.start()
+            stop_event = multiprocessing.Event()
+            scale_event = multiprocessing.Event()
+            received_resposes = multiprocessing.Queue()
+            process = Process(
+                target=send_requests,
+                kwargs={
+                    'client_kwargs': client_kwargs,
+                    'stop_event': stop_event,
+                    'scale_event': scale_event,
+                    'received_resposes': received_resposes,
+                    'logger': logger,
+                },
+                daemon=True,
+            )
+            process.start()
 
-        time.sleep(1.0)
+            time.sleep(1.0)
 
-        # scale slow init executor up
-        k8s_clients = K8sClients()
-        logger.debug('Kill 2 replicas')
+            # scale slow init executor up
+            k8s_clients = K8sClients()
+            logger.debug('Kill 2 replicas')
 
-        pods = k8s_clients.core_v1.list_namespaced_pod(
-            namespace='test-flow-slow-process-executor',
-            label_selector=f'app=slow-process-executor',
-        )
-
-        names = [item.metadata.name for item in pods.items]
-        k8s_clients.core_v1.delete_namespaced_pod(
-            names[0], namespace='test-flow-slow-process-executor'
-        )
-        k8s_clients.core_v1.delete_namespaced_pod(
-            names[1], namespace='test-flow-slow-process-executor'
-        )
-
-        scale_event.set()
-
-        # wait for replicas to be dead
-        while True:
             pods = k8s_clients.core_v1.list_namespaced_pod(
                 namespace='test-flow-slow-process-executor',
                 label_selector=f'app=slow-process-executor',
             )
-            current_pod_names = [item.metadata.name for item in pods.items]
-            if names[0] not in current_pod_names and names[1] not in current_pod_names:
-                logger.debug('Killing pods complete')
-                time.sleep(1.0)
-                stop_event.set()
-                break
-            else:
-                logger.debug(
-                    f'not dead yet {current_pod_names} waiting for {names[0]} and {names[1]}'
+
+            names = [item.metadata.name for item in pods.items]
+            k8s_clients.core_v1.delete_namespaced_pod(
+                names[0], namespace='test-flow-slow-process-executor'
+            )
+            k8s_clients.core_v1.delete_namespaced_pod(
+                names[1], namespace='test-flow-slow-process-executor'
+            )
+
+            scale_event.set()
+
+            # wait for replicas to be dead
+            while True:
+                pods = k8s_clients.core_v1.list_namespaced_pod(
+                    namespace='test-flow-slow-process-executor',
+                    label_selector=f'app=slow-process-executor',
                 )
-            time.sleep(1.0)
+                current_pod_names = [item.metadata.name for item in pods.items]
+                if (
+                    names[0] not in current_pod_names
+                    and names[1] not in current_pod_names
+                ):
+                    logger.debug('Killing pods complete')
+                    time.sleep(1.0)
+                    stop_event.set()
+                    break
+                else:
+                    logger.debug(
+                        f'not dead yet {current_pod_names} waiting for {names[0]} and {names[1]}'
+                    )
+                time.sleep(1.0)
 
-        process.join()
+            process.join()
 
-        responses_list = []
-        while received_resposes.qsize():
-            responses_list.append(int(received_resposes.get()))
+            responses_list = []
+            while received_resposes.qsize():
+                responses_list.append(int(received_resposes.get()))
 
-        logger.debug(f'Got the following responses {sorted(responses_list)}')
-        assert sorted(responses_list) == list(
-            range(min(responses_list), max(responses_list) + 1)
-        )
+            logger.debug(f'Got the following responses {sorted(responses_list)}')
+            assert sorted(responses_list) == list(
+                range(min(responses_list), max(responses_list) + 1)
+            )
 
 
 def test_linear_processing_time_scaling(
@@ -270,6 +276,7 @@ def test_linear_processing_time_scaling(
         name='test-flow-slow-process-executor',
         infrastructure='K8S',
         timeout_ready=120000,
+        k8s_namespace='test-flow-slow-process-executor-ns',
     ).add(
         name='slow_process_executor',
         uses=slow_process_executor_image,
@@ -279,48 +286,52 @@ def test_linear_processing_time_scaling(
     )
 
     with flow:
-        client_kwargs = dict(
-            host='localhost',
-            port=flow.port_expose,
-        )
-        client_kwargs.update(flow._common_kwargs)
+        with kubernetes_tools.get_port_forward_contextmanager(
+            'test-flow-slow-process-executor-ns', flow.port_expose
+        ):
+            # sleep as the port forward setup can take some time
+            time.sleep(0.1)
+            client_kwargs = dict(
+                host='localhost',
+                port=flow.port_expose,
+            )
+            client_kwargs.update(flow._common_kwargs)
 
-        stop_event = multiprocessing.Event()
-        scale_event = multiprocessing.Event()
-        received_resposes = multiprocessing.Queue()
-        response_arrival_times = multiprocessing.Queue()
-        process = Process(
-            target=send_requests,
-            kwargs={
-                'client_kwargs': client_kwargs,
-                'stop_event': stop_event,
-                'scale_event': scale_event,
-                'received_resposes': received_resposes,
-                'response_arrival_times': response_arrival_times,
-                'logger': logger,
-                'namespace': 'test-flow-slow-process-executor',
-            },
-        )
+            stop_event = multiprocessing.Event()
+            scale_event = multiprocessing.Event()
+            received_resposes = multiprocessing.Queue()
+            response_arrival_times = multiprocessing.Queue()
+            process = Process(
+                target=send_requests,
+                kwargs={
+                    'client_kwargs': client_kwargs,
+                    'stop_event': stop_event,
+                    'scale_event': scale_event,
+                    'received_resposes': received_resposes,
+                    'response_arrival_times': response_arrival_times,
+                    'logger': logger,
+                },
+            )
 
-        process.start()
-        process.join()
+            process.start()
+            process.join()
 
-        import numpy as np
+            import numpy as np
 
-        response_times = []
-        while response_arrival_times.qsize():
-            response_times.append(response_arrival_times.get())
-        mean_response_time = np.mean(response_times)
-        logger.debug(
-            f'Mean time between responses is {mean_response_time}, expected is 1/3 second'
-        )
-        assert mean_response_time < 0.4
+            response_times = []
+            while response_arrival_times.qsize():
+                response_times.append(response_arrival_times.get())
+            mean_response_time = np.mean(response_times)
+            logger.debug(
+                f'Mean time between responses is {mean_response_time}, expected is 1/3 second'
+            )
+            assert mean_response_time < 0.4
 
-        responses_list = []
-        while received_resposes.qsize():
-            responses_list.append(int(received_resposes.get()))
+            responses_list = []
+            while received_resposes.qsize():
+                responses_list.append(int(received_resposes.get()))
 
-        logger.debug(f'Got the following responses {sorted(responses_list)}')
-        assert sorted(responses_list) == list(
-            range(min(responses_list), max(responses_list) + 1)
-        )
+            logger.debug(f'Got the following responses {sorted(responses_list)}')
+            assert sorted(responses_list) == list(
+                range(min(responses_list), max(responses_list) + 1)
+            )

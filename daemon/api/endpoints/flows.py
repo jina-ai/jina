@@ -1,3 +1,5 @@
+from typing import Optional, Dict, Any
+
 from fastapi import APIRouter, Depends
 from fastapi.exceptions import HTTPException
 
@@ -50,12 +52,18 @@ async def _create(flow: FlowDepends = Depends(FlowDepends)):
 async def _update(
     id: DaemonID,
     kind: UpdateOperation,
-    dump_path: str,
     pod_name: str,
-    shards: int = None,
+    dump_path: Optional[str] = None,
+    uses_with: Optional[Dict[str, Any]] = None,
 ):
     try:
-        return await store.update(id, kind, dump_path, pod_name, shards)
+        if dump_path is not None:
+            if uses_with is not None:
+                uses_with['dump_path'] = dump_path
+            else:
+                uses_with = {'dump_path': dump_path}
+
+        return await store.update(id, kind, pod_name=pod_name, uses_with=uses_with)
     except Exception as ex:
         raise Runtime400Exception from ex
 

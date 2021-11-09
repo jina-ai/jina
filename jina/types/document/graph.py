@@ -1,10 +1,19 @@
-from typing import Optional, Iterator, Tuple, Dict, Iterable, Sequence, Union
+from typing import (
+    Optional,
+    Iterator,
+    Tuple,
+    Dict,
+    Iterable,
+    Sequence,
+    Union,
+    TYPE_CHECKING,
+)
 
 import numpy as np
 
 from . import Document, DocumentSourceType
 from ..arrays import ChunkArray
-from ..ndarray.sparse.scipy import SparseNdArray
+from ..ndarray import NdArray
 from ..struct import StructView
 from ...importer import ImportExtensions
 from ...logging.predefined import default_logger
@@ -12,9 +21,11 @@ from ...helper import deprecated_method
 
 __all__ = ['GraphDocument']
 
-if False:
+if TYPE_CHECKING:
     from scipy.sparse import coo_matrix
     from dgl import DGLGraph
+
+    from ..ndarray import ArrayType
 
 
 class GraphDocument(Document):
@@ -148,9 +159,9 @@ class GraphDocument(Document):
                         row[i] = row[i] - 1
                     if self.adjacency.col[i] > offset:
                         col[i] = col[i] - 1
-                SparseNdArray(
-                    self._pb_body.graph.adjacency, sp_format='coo'
-                ).value = coo_matrix((data, (row, col)))
+                NdArray(self._pb_body.graph.adjacency).value = coo_matrix(
+                    (data, (row, col))
+                )
 
         del self.nodes[offset]
         self._update_nodes_cache()
@@ -234,9 +245,9 @@ class GraphDocument(Document):
                 col = np.append(current_adjacency.col, target_node_offset)
                 data = np.append(current_adjacency.data, 1)
 
-            SparseNdArray(
-                self._pb_body.graph.adjacency, sp_format='coo'
-            ).value = coo_matrix((data, (row, col)))
+            NdArray(self._pb_body.graph.adjacency).value = coo_matrix(
+                (data, (row, col))
+            )
 
     @deprecated_method(new_function_name='add_single_edge')
     def add_edge(self, *args, **kwargs):
@@ -323,8 +334,8 @@ class GraphDocument(Document):
                 current_adjacency.data, np.ones(len(source_node_offsets), dtype=int)
             )
 
-        SparseNdArray(
-            self._pb_body.graph.adjacency, sp_format='coo'
+        NdArray(
+            self._pb_body.graph.adjacency,
         ).value = coo_matrix((data, (row, col)))
 
     def _remove_edge_id(self, edge_id: int, edge_feature_key: str):
@@ -339,13 +350,11 @@ class GraphDocument(Document):
             col = np.delete(self.adjacency.col, edge_id)
             data = np.delete(self.adjacency.data, edge_id)
             if row.shape[0] > 0:
-                SparseNdArray(
-                    self._pb_body.graph.adjacency, sp_format='coo'
-                ).value = coo_matrix((data, (row, col)))
+                NdArray(self._pb_body.graph.adjacency).value = coo_matrix(
+                    (data, (row, col))
+                )
             else:
-                SparseNdArray(
-                    self._pb_body.graph.adjacency, sp_format='coo'
-                ).value = coo_matrix((0, 0))
+                NdArray(self._pb_body.graph.adjacency).value = coo_matrix((0, 0))
 
             if edge_feature_key in self.edge_features:
                 del self.edge_features[edge_feature_key]
@@ -392,13 +401,13 @@ class GraphDocument(Document):
         return StructView(self._pb_body.graph.edge_features)
 
     @property
-    def adjacency(self) -> SparseNdArray:
+    def adjacency(self) -> 'ArrayType':
         """
         The adjacency list for this graph.
 
         .. # noqa: DAR201
         """
-        return SparseNdArray(self._pb_body.graph.adjacency, sp_format='coo').value
+        return NdArray(self._pb_body.graph.adjacency).value
 
     @property
     def undirected(self) -> bool:

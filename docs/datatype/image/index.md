@@ -1,8 +1,18 @@
 # {octicon}`image` Image
 
+````{tip}
+
+To enable the full feature of Document API on image, you need to install `Pillow` and `matplotlib`.
+
+```shell
+pip install matplotlib pillow
+```
+````
+
 Images and pictures are probably the most intuitive data for a lot of people. Comparing to textual data, image data is more universal and easier to comprehend. Neural search on image can be fun: from good-old content-based image retrieval to text2image or image2text cross-modality retrieval. With Jina, one can build all kinds of fancy applications on image data. In this chapter, we will introduce some common tasks that can be built with Jina.
 
 Before we get started, let's recap what we know about image data.
+
 
 
 ## Image is `ndarray`
@@ -24,7 +34,7 @@ You can load image data by specifying the image URI and then convert it into `.b
 from jina import Document
 
 d = Document(uri='apple.png')
-d.convert_image_uri_to_blob()
+d.convert_uri_to_image_blob()
 
 print(d.blob)
 print(d.blob.shape)
@@ -48,9 +58,9 @@ from jina import Document
 
 d = (
     Document(uri='apple.png')
-    .convert_image_uri_to_blob()
-    .resize_image_blob(224, 224)
-    .normalize_image_blob()
+    .convert_uri_to_image_blob()
+    .set_image_blob_shape(shape=(224, 224))
+    .set_image_blob_normalization()
     .set_image_blob_channel_axis(-1, 0)
 )
 
@@ -123,7 +133,7 @@ It contains rich information in details, and it is complicated as there is no si
 from jina import Document
 
 d = Document(uri='docs/datatype/image/complicated-image.jpeg')
-d.convert_image_uri_to_blob()
+d.convert_uri_to_image_blob()
 print(d.blob.shape)
 
 d.convert_image_blob_to_sliding_windows(window_shape=(64, 64))
@@ -179,4 +189,5 @@ Yep, that definitely looks better.
 
 image2image
 text2image
+small-images-inside-big-images/index
 ```
