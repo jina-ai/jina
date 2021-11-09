@@ -625,23 +625,13 @@
                     </label>
                 </div>
                 <h1>Source code for jina.math.helper</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">scipy</span>
-
-<span class="n">_SPARSE_SCIPY_TYPES</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
-    <span class="s1">'scipy.sparse.csr_matrix'</span><span class="p">,</span>
-    <span class="s1">'scipy.sparse.csc_matrix'</span><span class="p">,</span>
-    <span class="s1">'scipy.sparse.bsr_matrix'</span><span class="p">,</span>
-    <span class="s1">'scipy.sparse.coo_matrix'</span><span class="p">,</span>
-<span class="p">]</span>
-
 
 <div class="viewcode-block" id="minmax_normalize"><a class="viewcode-back" href="../../../../api/jina.math.helper/#jina.math.helper.minmax_normalize">[docs]</a><span class="k">def</span> <span class="nf">minmax_normalize</span><span class="p">(</span>
-    <span class="n">x</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'np.ndarray'</span><span class="p">,</span> <span class="n">_SPARSE_SCIPY_TYPES</span><span class="p">],</span>
+    <span class="n">x</span><span class="p">:</span> <span class="s1">'np.ndarray'</span><span class="p">,</span>
     <span class="n">t_range</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
     <span class="n">x_range</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-7</span><span class="p">,</span>
