@@ -1,4 +1,5 @@
 from functools import lru_cache
+from typing import List, Union, Iterable
 
 from . import jina_pb2
 from ..types.message import Message
@@ -56,3 +57,42 @@ class MessageProto:
         mp = jina_pb2.MessageProto()
         mp.ParseFromString(x)
         return Message.from_proto(mp)
+
+
+class MessageListProto:
+    """This class is a drop-in replacement for gRPC default serializer.
+    It replace default serializer to make sure the message sending interface is convenient.
+    It can handle sending single messages or a list of messages. It also returns a list of messages.
+    Effectively this is hiding MessageListProto from the consumer
+    """
+
+    @staticmethod
+    def SerializeToString(x: 'Union[List[Message], Message]'):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
+        protos = []
+        if not isinstance(x, Iterable):
+            protos.append(x.proto)
+        else:
+            for m in x:
+                protos.append(m.proto)
+
+        return jina_pb2.MessageListProto(messages=protos).SerializeToString()
+
+    @staticmethod
+    def FromString(x: bytes):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
+        mlp = jina_pb2.MessageListProto()
+        mlp.ParseFromString(x)
+        messages = []
+        for message in mlp.messages:
+            messages.append(Message.from_proto(message))
+
+        return messages
