@@ -115,6 +115,8 @@ ac_table = {
             '--replicas',
             '--install-requirements',
             '--force',
+            '--uses-before-address',
+            '--uses-after-address',
         ],
         'flow': [
             '--help',
@@ -307,6 +309,8 @@ ac_table = {
             '--replicas',
             '--install-requirements',
             '--force',
+            '--uses-before-address',
+            '--uses-after-address',
         ],
         'pod': [
             '--help',
@@ -377,6 +381,8 @@ ac_table = {
             '--replicas',
             '--install-requirements',
             '--force',
+            '--uses-before-address',
+            '--uses-after-address',
             '--uses-before',
             '--uses-after',
             '--polling',
