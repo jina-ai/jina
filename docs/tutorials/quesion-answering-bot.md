@@ -16,9 +16,11 @@ One way to solve this is by predicting answers using a neural network that was t
 How you ask? *Let me explain!*
 
 ## Overview 
-Our approach to the problem leverages the [Doc2query method](https://arxiv.org/pdf/1904.08375.pdf), which, form a piece of text, predicts different questions the text could potentially answer. For example, given a sentence such as `Jina is an open source framework for neural search.`, the model predicts questions such as `What is jina?` or `Is jina open source?`. </br>
-The idea here is to predict a number of questions for every part of the original text document, in our case the jina documentation. Then we use an encoder to create a vector representation for each of the predicted questions. These representations are stored and provide the index for our body of text. When a user prompts the bot with a question, we encode it in the same way we encoded our generated questions. Now we can run a similarity search on the encodings. The encoding of the user's query is compared with the encodings in our index to find the closes match. </br>
-Since we know what part of the original text was used to generate the question, that was most similar to the user's query, we can return the original text as an answer to the user. </br> 
+Our approach to the problem leverages the [Doc2query method](https://arxiv.org/pdf/1904.08375.pdf), which, form a piece of text, predicts different questions the text could potentially answer. For example, given a sentence such as `Jina is an open source framework for neural search.`, the model predicts questions such as `What is jina?` or `Is jina open source?`.
+
+The idea here is to predict a number of questions for every part of the original text document, in our case the jina documentation. Then we use an encoder to create a vector representation for each of the predicted questions. These representations are stored and provide the index for our body of text. When a user prompts the bot with a question, we encode it in the same way we encoded our generated questions. Now we can run a similarity search on the encodings. The encoding of the user's query is compared with the encodings in our index to find the closes match.
+
+Since we know what part of the original text was used to generate the question, that was most similar to the user's query, we can return the original text as an answer to the user.
 
 Now that you have a general idea of what we will be doing, the following section will show you how to define our `Flow`s in jina. Then we will take a look at how to implement the necessary `Executor`s for our search-based question-answering system.  
 
