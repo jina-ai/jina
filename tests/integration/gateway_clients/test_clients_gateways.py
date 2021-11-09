@@ -8,6 +8,9 @@ from typing import Dict
 
 from jina.parsers import set_gateway_parser
 from jina.peapods.runtimes.gateway.grpc import GRPCGatewayRuntime
+from jina.peapods.runtimes.gateway.http import HTTPGatewayRuntime
+from jina.peapods.runtimes.gateway.websocket import WebSocketGatewayRuntime
+
 from jina.types.message import Message
 from jina.types.request import Request
 from jina import Document, DocumentArray
@@ -50,11 +53,18 @@ class DummyMockConnectionPool:
         return asyncio.create_task(task_wrapper())
 
 
-def create_runtime(graph_dict: Dict, port_in: int):
+def create_runtime(graph_dict: Dict, protocol: str, port_in: int):
     import json
 
     graph_description = json.dumps(graph_dict)
-    with GRPCGatewayRuntime(
+    runtime_cls = None
+    if protocol == 'grpc':
+        runtime_cls = GRPCGatewayRuntime
+    elif protocol == 'http':
+        runtime_cls = HTTPGatewayRuntime
+    elif protocol == 'websocket':
+        runtime_cls = WebSocketGatewayRuntime
+    with runtime_cls(
         set_gateway_parser().parse_args(
             [
                 '--port-expose',
@@ -85,7 +95,6 @@ def client_send(client_id: int, port_in: int, protocol: str):
 NUM_PARALLEL_CLIENTS = 10
 
 
-@pytest.mark.skip
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_grpc_gateway_runtime_handle_messages_linear(
     linear_graph_dict, monkeypatch, protocol
@@ -108,7 +117,11 @@ def test_grpc_gateway_runtime_handle_messages_linear(
 
     p = multiprocessing.Process(
         target=create_runtime,
-        kwargs={'port_in': port_in, 'graph_dict': linear_graph_dict},
+        kwargs={
+            'protocol': protocol,
+            'port_in': port_in,
+            'graph_dict': linear_graph_dict,
+        },
     )
     p.start()
     time.sleep(1.0)

@@ -16,8 +16,8 @@ PeaModel = build_pydantic_model(model_name='PeaModel', module='pea')
 
 GATEWAY_RUNTIME_DICT = {
     GatewayProtocolType.GRPC: 'GRPCRuntime',
-    GatewayProtocolType.WEBSOCKET: 'WebSocketRuntime',
-    GatewayProtocolType.HTTP: 'HTTPRuntime',
+    GatewayProtocolType.WEBSOCKET: 'WebSocketGatewayRuntime',
+    GatewayProtocolType.HTTP: 'HTTPGatewayRuntime',
 }
 
 

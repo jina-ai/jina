@@ -11,8 +11,8 @@ from jina.helper import random_port
 from jina import Executor, requests, Flow, DocumentArray
 from jina.logging.logger import JinaLogger
 from jina.parsers import set_gateway_parser
-from jina.peapods.runtimes.gateway.websocket import WebSocketRuntime
-from jina.peapods.runtimes.gateway.http import HTTPRuntime, get_fastapi_app
+from jina.peapods.runtimes.gateway.websocket import WebSocketGatewayRuntime
+from jina.peapods.runtimes.gateway.http import HTTPGatewayRuntime, get_fastapi_app
 
 
 @pytest.mark.parametrize('p', [['--default-swagger-ui'], []])
@@ -167,7 +167,7 @@ xZ36Vrgc4hfaUiifsIiDwA==
     os.unlink(tmp.name)
 
 
-@pytest.mark.parametrize('runtime_cls', [HTTPRuntime, WebSocketRuntime])
+@pytest.mark.parametrize('runtime_cls', [HTTPGatewayRuntime, WebSocketGatewayRuntime])
 def test_uvicorn_ssl(cert_pem, key_pem, runtime_cls):
     args = set_gateway_parser().parse_args(
         [
@@ -181,7 +181,7 @@ def test_uvicorn_ssl(cert_pem, key_pem, runtime_cls):
         pass
 
 
-@pytest.mark.parametrize('runtime_cls', [HTTPRuntime, WebSocketRuntime])
+@pytest.mark.parametrize('runtime_cls', [HTTPGatewayRuntime, WebSocketGatewayRuntime])
 def test_uvicorn_ssl_wrong_password(cert_pem, key_pem, runtime_cls):
     args = set_gateway_parser().parse_args(
         [

@@ -7,10 +7,10 @@ from .....importer import ImportExtensions
 from ...gateway import GatewayRuntime
 from .app import get_fastapi_app
 
-__all__ = ['HTTPRuntime']
+__all__ = ['HTTPGatewayRuntime']
 
 
-class HTTPRuntime(GatewayRuntime):
+class HTTPGatewayRuntime(GatewayRuntime):
     """Runtime for HTTP interface."""
 
     async def async_setup(self):

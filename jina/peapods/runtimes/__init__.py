@@ -6,8 +6,8 @@ def list_all_runtimes():
     """
     from ...peapods.runtimes.base import BaseRuntime
     from .gateway.grpc import GRPCRuntime
-    from .gateway.http import HTTPRuntime
-    from .gateway.websocket import WebSocketRuntime
+    from .gateway.http import HTTPGatewayRuntime
+    from .gateway.websocket import WebSocketGatewayRuntime
     from .container import ContainerRuntime
     from .jinad import JinadRuntime
     from .zmq.zed import ZEDRuntime
@@ -28,8 +28,8 @@ def get_runtime(name: str):
     """
     from ...peapods.runtimes.base import BaseRuntime
     from .gateway.grpc import GRPCRuntime
-    from .gateway.http import HTTPRuntime
-    from .gateway.websocket import WebSocketRuntime
+    from .gateway.http import HTTPGatewayRuntime
+    from .gateway.websocket import WebSocketGatewayRuntime
     from .container import ContainerRuntime
     from .jinad import JinadRuntime
     from .zmq.zed import ZEDRuntime

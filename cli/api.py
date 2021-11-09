@@ -101,8 +101,8 @@ def gateway(args: 'Namespace'):
 
     gateway_runtime_dict = {
         GatewayProtocolType.GRPC: 'GRPCRuntime',
-        GatewayProtocolType.WEBSOCKET: 'WebSocketRuntime',
-        GatewayProtocolType.HTTP: 'HTTPRuntime',
+        GatewayProtocolType.WEBSOCKET: 'WebSocketGatewayRuntime',
+        GatewayProtocolType.HTTP: 'HTTPGatewayRuntime',
     }
     runtime_cls = get_runtime(gateway_runtime_dict[args.protocol])
 
