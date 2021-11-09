@@ -144,8 +144,10 @@ Now let's move on to the last part and create the indexer.
 
 ## Putting it Together with the Indexer
 The indexer is the only one of our `Executor`s that can handle more than one task. 
-Namely, the indexing as well as performing search. </br>
+Namely, the indexing as well as performing search.
+
 When it is used to perform indexing, `index()` is called. This stores all provided documents, together with their embeddings, as a `DocumentArrayMemmap`. 
+
 However, when the `SimpleIndexer` is used to handle an incoming query, the `search()` function is called, it performs similarity search and ranks the results. 
 
 
