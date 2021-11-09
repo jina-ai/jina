@@ -1,10 +1,16 @@
+from abc import ABC
+
 from .graph.topology_graph import TopologyGraph
 from ...networking import create_connection_pool
 
-from ..zmq.asyncio import AsyncNewLoopRuntime
+from ..asyncio import AsyncNewLoopRuntime
 
 
-class GatewayRuntime(AsyncNewLoopRuntime):
+class GatewayRuntime(AsyncNewLoopRuntime, ABC):
+    """
+    The Runtime from which the GatewayRuntimes need to inherit
+    """
+
     def _set_topology_graph(self):
         # check if it should be in K8s, maybe ConnectionPoolFactory to be created
         import json

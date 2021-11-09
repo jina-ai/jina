@@ -7,10 +7,10 @@ from .....importer import ImportExtensions
 from .. import GatewayRuntime
 from .app import get_fastapi_app
 
-__all__ = ['WebSocketRuntime']
+__all__ = ['WebSocketGatewayRuntime']
 
 
-class WebSocketRuntime(GatewayRuntime):
+class WebSocketGatewayRuntime(GatewayRuntime):
     """Runtime for Websocket interface."""
 
     async def async_setup(self):

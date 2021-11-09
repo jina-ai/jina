@@ -4,9 +4,9 @@ import signal
 from abc import ABC, abstractmethod
 from typing import Union, Optional, TYPE_CHECKING
 
-from ..base import BaseRuntime
-from .... import __windows__
-from ....importer import ImportExtensions
+from jina.peapods.runtimes.base import BaseRuntime
+from jina import __windows__
+from jina.importer import ImportExtensions
 
 if TYPE_CHECKING:
     import multiprocessing
