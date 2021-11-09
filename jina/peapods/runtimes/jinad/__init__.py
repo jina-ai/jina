@@ -1,9 +1,8 @@
-import os
 import copy
 import asyncio
 import argparse
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Optional, Union
+from typing import TYPE_CHECKING, List, Union
 
 from ....enums import SocketType
 
@@ -11,7 +10,7 @@ from ...zmq import send_ctrl_message
 from ....jaml.helper import complete_path
 from ....importer import ImportExtensions
 from ....enums import replace_enum_to_str
-from ..zmq.asyncio import AsyncNewLoopRuntime
+from ..asyncio import AsyncNewLoopRuntime
 from ....excepts import (
     DaemonConnectivityError,
     DaemonPeaCreationFailed,
