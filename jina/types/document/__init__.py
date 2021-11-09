@@ -10,10 +10,10 @@ from typing import (
     List,
     Optional,
     Tuple,
-    Type,
     TypeVar,
     Union,
     overload,
+    TYPE_CHECKING,
 )
 
 import numpy as np
@@ -23,7 +23,7 @@ from google.protobuf.field_mask_pb2 import FieldMask
 from .converters import ContentConversionMixin, _text_to_word_sequence
 from .helper import VersionedMixin, versioned
 from ..mixin import ProtoTypeMixin
-from ..ndarray.generic import BaseSparseNdArray, NdArray
+from ..ndarray import NdArray
 from ..score import NamedScore
 from ..score.map import NamedScoreMapping
 from ..struct import StructView
@@ -32,29 +32,10 @@ from ...helper import download_mermaid_url, dunder_get, random_identity, typenam
 from ...logging.predefined import default_logger
 from ...proto import jina_pb2
 
-if False:
-    # fix type-hint complain for sphinx and flake
-    import scipy.sparse
-    import tensorflow
-    import torch
-
+if TYPE_CHECKING:
     from ..arrays.chunk import ChunkArray
     from ..arrays.match import MatchArray
-
-    ArrayType = TypeVar(
-        'ArrayType',
-        np.ndarray,
-        scipy.sparse.csr_matrix,
-        scipy.sparse.coo_matrix,
-        scipy.sparse.bsr_matrix,
-        scipy.sparse.csc_matrix,
-        torch.sparse_coo_tensor,
-        tensorflow.SparseTensor,
-        tensorflow.Tensor,
-        torch.Tensor,
-        jina_pb2.NdArrayProto,
-        NdArray,
-    )
+    from ..ndarray import ArrayType
 
 DocumentContentType = TypeVar('DocumentContentType', bytes, str, 'ArrayType')
 DocumentSourceType = TypeVar(
@@ -223,7 +204,7 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
                         if key in d:
                             value = d[key]
                             if isinstance(value, list):
-                                d[key] = NdArray(np.array(d[key])).dict()
+                                d[key] = np.array(d[key])
                         if 'chunks' in d:
                             for chunk in d['chunks']:
                                 _update_doc(chunk)
@@ -490,31 +471,13 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
         """
         return NdArray(self._pb_body.blob).value
 
-    def get_sparse_blob(
-        self, sparse_ndarray_cls_type: Type[BaseSparseNdArray], **kwargs
-    ) -> 'ArrayType':
-        """Return ``blob`` of the content of a Document as an sparse array.
-
-        :param sparse_ndarray_cls_type: Sparse class type, such as `SparseNdArray`.
-        :param kwargs: Additional key value argument, for `scipy` backend, we need to set
-            the keyword `sp_format` as one of the scipy supported sparse format, such as `coo`
-            or `csr`.
-        :return: the blob of this Document but as an sparse array
-        """
-        return NdArray(
-            self._pb_body.blob,
-            sparse_cls=sparse_ndarray_cls_type,
-            is_sparse=True,
-            **kwargs,
-        ).value
-
     @blob.setter
     def blob(self, value: 'ArrayType'):
         """Set the `blob` to :param:`value`.
 
         :param value: the array value to set the blob
         """
-        self._update_ndarray('blob', value)
+        NdArray(self._pb_body.blob).value = value
 
     @property
     def embedding(self) -> 'ArrayType':
@@ -529,62 +492,13 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
         """
         return NdArray(self._pb_body.embedding).value
 
-    def get_sparse_embedding(
-        self, sparse_ndarray_cls_type: Type[BaseSparseNdArray], **kwargs
-    ) -> 'ArrayType':
-        """Return ``embedding`` of the content of a Document as an sparse array.
-
-        :param sparse_ndarray_cls_type: Sparse class type, such as `SparseNdArray`.
-        :param kwargs: Additional key value argument, for `scipy` backend, we need to set
-            the keyword `sp_format` as one of the scipy supported sparse format, such as `coo`
-            or `csr`.
-        :return: the embedding of this Document but as as an sparse array
-        """
-        return NdArray(
-            self._pb_body.embedding,
-            sparse_cls=sparse_ndarray_cls_type,
-            is_sparse=True,
-            **kwargs,
-        ).value
-
     @embedding.setter
     def embedding(self, value: 'ArrayType'):
         """Set the ``embedding`` of the content of a Document.
 
         :param value: the array value to set the embedding
         """
-        self._update_ndarray('embedding', value)
-
-    def _update_ndarray(self, k, v):
-        framework, is_sparse = _get_array_type(v)
-
-        if framework == 'jina':
-            _t = NdArray(getattr(self._pb_body, k))
-            _t.is_sparse = v.is_sparse
-            _t.value = v.value
-        elif framework == 'jina_proto':
-            getattr(self._pb_body, k).CopyFrom(v)
-
-        if is_sparse:
-            if framework == 'scipy':
-                from ..ndarray.sparse.scipy import SparseNdArray
-            if framework == 'tensorflow':
-                from ..ndarray.sparse.tensorflow import SparseNdArray
-            if framework == 'torch':
-                from ..ndarray.sparse.pytorch import SparseNdArray
-
-            NdArray(
-                is_sparse=True,
-                sparse_cls=SparseNdArray,
-                proto=getattr(self._pb_body, k),
-            ).value = v
-        else:
-            if framework == 'numpy':
-                NdArray(getattr(self._pb_body, k)).value = v
-            if framework == 'tensorflow':
-                NdArray(getattr(self._pb_body, k)).value = v.numpy()
-            if framework == 'torch':
-                NdArray(getattr(self._pb_body, k)).value = v.detach().cpu().numpy()
+        NdArray(self._pb_body.embedding).value = value
 
     @property
     @versioned
@@ -992,10 +906,10 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
 
         mermaid_str = (
             """
-                                            %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
-                                            classDiagram
-    
-                                                    """
+                                                %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
+                                                classDiagram
+        
+                                                        """
             + self.__mermaid_str__()
         )
 
@@ -1057,36 +971,6 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
                 for match_doc, match_dict in zip(self.matches, d['matches']):
                     match_doc._prettify_doc_dict(match_dict)
 
-    def dict(self, prettify_ndarrays=False, *args, **kwargs):
-        """Return the object in Python dictionary
-
-        :param prettify_ndarrays: boolean indicating if the ndarrays need to be prettified to be shown as lists of values
-        :param args: Extra positional arguments
-        :param kwargs: Extra keyword arguments
-        :return: dict representation of the object
-        """
-        d = super().dict(*args, **kwargs)
-        if prettify_ndarrays:
-            self._prettify_doc_dict(d)
-        return d
-
-    def json(self, prettify_ndarrays=False, *args, **kwargs):
-        """Return the object in JSON string
-
-        :param prettify_ndarrays: boolean indicating if the ndarrays need to be prettified to be shown as lists of values
-        :param args: Extra positional arguments
-        :param kwargs: Extra keyword arguments
-        :return: JSON string of the object
-        """
-        if prettify_ndarrays:
-            import json
-
-            d = super().dict(*args, **kwargs)
-            self._prettify_doc_dict(d)
-            return json.dumps(d, sort_keys=True, **kwargs)
-        else:
-            return super().json(*args, **kwargs)
-
     @staticmethod
     def attributes(
         include_proto_fields: bool = True,
@@ -1143,45 +1027,3 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
             all_tokens.update(_text_to_word_sequence(getattr(self, f)))
 
         return all_tokens
-
-
-def _get_array_type(array) -> Tuple[str, bool]:
-    """Get the type of ndarray without importing the framework
-
-    :param array: any array, scipy, numpy, tf, torch, etc.
-    :return: a tuple where the first element represents the framework, the second represents if it is sparse array
-    """
-    module_tags = array.__class__.__module__.split('.')
-    class_name = array.__class__.__name__
-
-    if 'numpy' in module_tags:
-        return 'numpy', False
-
-    if 'jina' in module_tags:
-        if class_name == 'NdArray' or class_name == 'DenseNdArray':
-            return 'jina', False
-        if class_name == 'SparseNdArray':
-            return 'jina', True
-
-    if 'jina_pb2' in module_tags:
-        if class_name == 'DenseNdArrayProto' or class_name == 'NdArrayProto':
-            return 'jina_proto', False
-        if class_name == 'SparseNdArrayProto':
-            return 'jina_proto', True
-
-    if 'tensorflow' in module_tags:
-        if class_name == 'SparseTensor':
-            return 'tensorflow', True
-        if class_name == 'Tensor' or class_name == 'EagerTensor':
-            return 'tensorflow', False
-
-    if 'torch' in module_tags and class_name == 'Tensor':
-        if array.is_sparse:
-            return 'torch', True
-        else:
-            return 'torch', False
-
-    if 'scipy' in module_tags and 'sparse' in module_tags:
-        return 'scipy', True
-
-    raise TypeError(f'can not determine the array type: {module_tags}.{class_name}')

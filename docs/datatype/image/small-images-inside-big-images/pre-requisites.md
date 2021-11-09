@@ -6,6 +6,7 @@ pip install Pillow jina==2.1.13 torch==1.9.0 torchvision==0.10.0 transformers==4
 ```
 
 We also need to download [the dataset](https://open-images.s3.eu-central-1.amazonaws.com/data.zip) and unzip it.
+
 You can use the link or the following commands:
 ```shell
 wget https://open-images.s3.eu-central-1.amazonaws.com/data.zip

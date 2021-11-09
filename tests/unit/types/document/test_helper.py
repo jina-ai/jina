@@ -1,17 +1,9 @@
 import types
 
-import numpy as np
 import pytest
-import tensorflow
-import torch
-from scipy.sparse import csr_matrix
-from tensorflow import SparseTensor
 
 from jina import Document
-from jina.proto.jina_pb2 import DenseNdArrayProto, SparseNdArrayProto
-from jina.types.document import _get_array_type
 from jina.types.document.helper import DocGroundtruthPair
-from jina.types.ndarray.generic import NdArray
 
 
 @pytest.fixture(scope='function')
@@ -91,27 +83,3 @@ def test_chunks_fail(document_factory, document, groundtruth):
     with pytest.raises(AssertionError):
         for _ in pair.chunks:
             pass
-
-
-@pytest.mark.parametrize(
-    'array, expect',
-    [
-        (np.array([1, 2, 3]), ('numpy', False)),
-        (tensorflow.constant([[1.0, 2.0], [3.0, 4.0]]), ('tensorflow', False)),
-        (torch.Tensor([1, 2, 3]), ('torch', False)),
-        (
-            SparseTensor(indices=[[0, 0], [1, 2]], values=[1, 2], dense_shape=[3, 4]),
-            ('tensorflow', True),
-        ),
-        (csr_matrix([0, 0, 0, 1, 0]), ('scipy', True)),
-        (
-            torch.sparse_coo_tensor([[0, 1, 1], [2, 0, 2]], [3, 4, 5], (2, 3)),
-            ('torch', True),
-        ),
-        (NdArray(np.random.random([3, 5])), ('jina', False)),
-        (DenseNdArrayProto(), ('jina_proto', False)),
-        (SparseNdArrayProto(), ('jina_proto', True)),
-    ],
-)
-def test_get_array_type(array, expect):
-    _get_array_type(array) == expect
