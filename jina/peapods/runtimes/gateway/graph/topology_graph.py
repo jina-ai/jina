@@ -3,6 +3,9 @@ import asyncio
 from collections import defaultdict
 from typing import List, Optional, Dict, Tuple
 
+from .....types.message import Message
+from ....networking import GrpcConnectionPool
+
 
 class TopologyGraph:
     """
@@ -27,7 +30,10 @@ class TopologyGraph:
             return len(self.outgoing_nodes) == 0
 
         async def _wait_previous_and_send(
-            self, msg, previous_task: Optional[asyncio.Task], connection_pool
+            self,
+            msg: Message,
+            previous_task: Optional[asyncio.Task],
+            connection_pool: GrpcConnectionPool,
         ):
             if previous_task is not None:
                 msg = await previous_task
@@ -35,13 +41,15 @@ class TopologyGraph:
                 self.parts_to_send.append(msg)
                 # this is a specific needs
                 if len(self.parts_to_send) == self.number_of_parts:
-                    resp = await connection_pool.send(self.parts_to_send[-1], self.name)
+                    resp = await connection_pool.send_message(
+                        msg=self.parts_to_send[-1], pod=self.name, head=True
+                    )
                     return resp
 
         def get_leaf_tasks(
             self,
-            connection_pool,
-            msg_to_send: Optional[str],
+            connection_pool: GrpcConnectionPool,
+            msg_to_send: Optional[Message],
             previous_task: Optional[asyncio.Task],
         ) -> List[Tuple[bool, asyncio.Task]]:
             """
