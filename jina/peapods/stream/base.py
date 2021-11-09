@@ -3,25 +3,21 @@ import argparse
 from abc import ABC, abstractmethod
 from typing import (
     List,
-    Dict,
     Union,
-    Awaitable,
     Iterator,
     AsyncIterator,
     TYPE_CHECKING,
 )
 
 from .helper import AsyncRequestsIterator
-from ...helper import get_or_reuse_loop
 from ...logging.logger import JinaLogger
 from ...types.message import Message
+from ..networking import GrpcConnectionPool
 
 __all__ = ['BaseStreamer']
 
 if TYPE_CHECKING:
-    from ..grpc import Grpclet
-    from ..zmq import AsyncZmqlet
-    from ...types.request import Request, Response
+    from ...types.request import Request
     from ...clients.base.helper import HTTPClientlet, WebsocketClientlet
 
 
@@ -31,62 +27,29 @@ class BaseStreamer(ABC):
     def __init__(
         self,
         args: argparse.Namespace,
-        iolet: Union['AsyncZmqlet', 'Grpclet', 'HTTPClientlet', 'WebsocketClientlet'],
+        connection_pool: Union[
+            'GrpcConnectionPool', 'HTTPClientlet', 'WebsocketClientlet'
+        ],
     ):
         """
         :param args: args from CLI
         :param iolet: One of AsyncZmqlet or Grpclet. Used for sending/receiving data to/from the Flow
         """
         self.args = args
-        self.iolet = iolet
+        self._connection_pool = connection_pool
         self.logger = JinaLogger(self.__class__.__name__, **vars(args))
-        self.request_buffer: Dict[str, asyncio.Future] = dict()
-        self.receive_task = get_or_reuse_loop().create_task(self._receive())
-
-    @abstractmethod
-    async def _receive(self) -> Awaitable:
-        """Receive background task"""
-        ...
 
     @abstractmethod
     def _convert_to_message(self, request: 'Request') -> Union['Message', 'Request']:
-        """Convert request to iolet message
+        """Convert request to message
 
         :param request: current request in the iterator
         """
         ...
 
-    def _handle_request(self, request: 'Request') -> 'asyncio.Future':
-        """
-        For zmq & grpc data requests from gateway, for each request in the iterator, we send the `Message`
-        using `iolet.send_message()`.
-
-        For websocket requests from client, for each request in the iterator, we send the request in `bytes`
-        using using `iolet.send_message()`.
-
-        Then add {<request-id>: <an-empty-future>} to the request buffer.
-        This empty future is used to track the `result` of this request during `receive`.
-
-        :param request: current request in the iterator
-        :return: asyncio Future for sending message
-        """
-        future = get_or_reuse_loop().create_future()
-        self.request_buffer[request.request_id] = future
-        asyncio.create_task(self.iolet.send_message(self._convert_to_message(request)))
-        return future
-
-    def _handle_response(self, response: 'Response') -> None:
-        """Set result of each response received in the request buffer
-
-        :param response: response received during `iolet.recv_message`
-        """
-        if response.request_id in self.request_buffer:
-            future = self.request_buffer.pop(response.request_id)
-            future.set_result(response)
-        else:
-            self.logger.warning(
-                f'discarding unexpected response with request id {response.request_id}'
-            )
+    @abstractmethod
+    def _handle_request(self, request: 'Request'):
+        ...
 
     def _handle_end_of_iter(self) -> None:
         """Send end of iterator signal to Gateway"""
@@ -153,7 +116,7 @@ class BaseStreamer(ABC):
             try:
                 response: 'asyncio.Future' = result_queue.get_nowait()
                 result_queue.task_done()
-                yield response.result()
+                yield response.result().request
             except asyncio.QueueEmpty:
                 await asyncio.sleep(0.2)
                 continue
@@ -208,9 +171,9 @@ class BaseStreamer(ABC):
             while prefetch_task:
                 if self.logger.debug_enabled:
                     self.logger.debug(
-                        f'send: {self.iolet.msg_sent} '
-                        f'recv: {self.iolet.msg_recv} '
-                        f'pending: {self.iolet.msg_sent - self.iolet.msg_recv}'
+                        f'send: {self.connection_pool.msg_sent} '
+                        f'recv: {self.connection_pool.msg_recv} '
+                        f'pending: {self.connection_pool.msg_sent - self.connection_pool.msg_recv}'
                     )
                 onrecv_task.clear()
                 for r in asyncio.as_completed(prefetch_task):
