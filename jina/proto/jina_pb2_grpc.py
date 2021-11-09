@@ -86,7 +86,7 @@ class JinaDataRequestRPCStub(object):
         """
         self.Call = channel.unary_unary(
                 '/jina.JinaDataRequestRPC/Call',
-                request_serializer=jina__pb2.MessageProto.SerializeToString,
+                request_serializer=jina__pb2.MessageListProto.SerializeToString,
                 response_deserializer=jina__pb2.MessageProto.FromString,
                 )
 
@@ -108,7 +108,7 @@ def add_JinaDataRequestRPCServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'Call': grpc.unary_unary_rpc_method_handler(
                     servicer.Call,
-                    request_deserializer=jina__pb2.MessageProto.FromString,
+                    request_deserializer=jina__pb2.MessageListProto.FromString,
                     response_serializer=jina__pb2.MessageProto.SerializeToString,
             ),
     }
@@ -135,7 +135,7 @@ class JinaDataRequestRPC(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/jina.JinaDataRequestRPC/Call',
-            jina__pb2.MessageProto.SerializeToString,
+            jina__pb2.MessageListProto.SerializeToString,
             jina__pb2.MessageProto.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
