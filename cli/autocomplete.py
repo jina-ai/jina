@@ -194,6 +194,8 @@ ac_table = {
             '--host',
             '--proxy',
             '--port-expose',
+            '--graph-description',
+            '--pods-addresses',
             '--daemon',
             '--runtime-backend',
             '--runtime',
