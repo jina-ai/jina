@@ -3,8 +3,9 @@ import asyncio
 import time
 import copy
 import multiprocessing
+import json
 
-from typing import Dict
+from jina.clients.request import request_generator
 
 from jina.parsers import set_gateway_parser
 from jina.peapods.runtimes.gateway.grpc import GRPCGatewayRuntime
@@ -134,41 +135,7 @@ class DummyMockConnectionPool:
         return asyncio.create_task(task_wrapper())
 
 
-def create_runtime(graph_dict: Dict, port_in: int):
-    import json
-
-    graph_description = json.dumps(graph_dict)
-    with GRPCGatewayRuntime(
-        set_gateway_parser().parse_args(
-            [
-                '--port-expose',
-                f'{port_in}',
-                '--graph-description',
-                f'{graph_description}',
-                '--pods-addresses',
-                '{}',
-            ]
-        )
-    ) as runtime:
-        runtime.run_forever()
-
-
-def client_send(client_id: int, port_in: int):
-    from jina.clients import Client
-
-    c = Client(protocol='grpc', port=port_in)
-
-    # send requests
-    return c.post(
-        on='/',
-        inputs=DocumentArray([Document(text=f'client{client_id}-Request')]),
-        return_results=True,
-    )
-
-
-NUM_PARALLEL_CLIENTS = 10
-
-
+@pytest.mark.asyncio
 def test_grpc_gateway_runtime_handle_messages_linear(linear_graph_dict, monkeypatch):
     monkeypatch.setattr(
         networking.GrpcConnectionPool,
@@ -177,33 +144,33 @@ def test_grpc_gateway_runtime_handle_messages_linear(linear_graph_dict, monkeypa
     )
     port_in = random_port()
 
-    def client_validate(client_id: int):
-        responses = client_send(client_id, port_in)
-        assert len(responses) > 0
-        assert len(responses[0].docs) == 1
-        assert (
-            responses[0].docs[0].text
-            == f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod1-client{client_id}-pod2-client{client_id}-pod3'
+    runtime = GRPCGatewayRuntime(
+        set_gateway_parser().parse_args(
+            [
+                '--port-expose',
+                f'{port_in}',
+                '--graph-description',
+                f'{json.dumps(linear_graph_dict)}',
+                '--pods-addresses',
+                '{}',
+            ]
         )
-
-    p = multiprocessing.Process(
-        target=create_runtime,
-        kwargs={'port_in': port_in, 'graph_dict': linear_graph_dict},
     )
-    p.start()
-    time.sleep(1.0)
-    client_processes = []
-    for i in range(NUM_PARALLEL_CLIENTS):
-        cp = multiprocessing.Process(target=client_validate, kwargs={'client_id': i})
-        cp.start()
-        client_processes.append(cp)
 
-    for cp in client_processes:
-        cp.join()
-    p.terminate()
-    p.join()
-    for cp in client_processes:
-        assert cp.exitcode == 0
+    async def _test():
+        responses = []
+        req = request_generator('/', DocumentArray([Document(text='client0-Request')]))
+        async for resp in runtime.streamer.Call(request_iterator=req):
+            responses.append(resp)
+        return responses
+
+    responses = asyncio.run(_test())
+    assert len(responses) > 0
+    assert len(responses[0].docs) == 1
+    assert (
+        responses[0].docs[0].text
+        == f'client0-Request-client0-pod0-client0-pod1-client0-pod2-client0-pod3'
+    )
 
 
 def test_grpc_gateway_runtime_handle_messages_bifurcation(
@@ -216,43 +183,39 @@ def test_grpc_gateway_runtime_handle_messages_bifurcation(
     )
     port_in = random_port()
 
-    def client_validate(client_id: int):
-        responses = client_send(client_id, port_in)
-        assert len(responses) > 0
-        assert len(responses[0].docs) == 2
-        assert (
-            responses[0].docs[0].text
-            == f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod2-client{client_id}-pod3'
+    runtime = GRPCGatewayRuntime(
+        set_gateway_parser().parse_args(
+            [
+                '--port-expose',
+                f'{port_in}',
+                '--graph-description',
+                f'{json.dumps(bifurcation_graph_dict)}',
+                '--pods-addresses',
+                '{}',
+            ]
         )
-        assert (
-            responses[0].docs[1].text
-            == f'client{client_id}-Request-client{client_id}-pod4-client{client_id}-pod5'
-        )
-
-    p = multiprocessing.Process(
-        target=create_runtime,
-        kwargs={'port_in': port_in, 'graph_dict': bifurcation_graph_dict},
     )
-    p.start()
-    time.sleep(1.0)
-    client_processes = []
-    for i in range(NUM_PARALLEL_CLIENTS):
-        cp = multiprocessing.Process(target=client_validate, kwargs={'client_id': i})
-        cp.start()
-        client_processes.append(cp)
 
-    for cp in client_processes:
-        cp.join()
-    p.terminate()
-    p.join()
-    for cp in client_processes:
-        assert cp.exitcode == 0
+    async def _test():
+        responses = []
+        req = request_generator('/', DocumentArray([Document(text='client0-Request')]))
+        async for resp in runtime.streamer.Call(request_iterator=req):
+            responses.append(resp)
+        return responses
+
+    responses = asyncio.run(_test())
+    assert len(responses) > 0
+    assert len(responses[0].docs) == 2
+    assert (
+        responses[0].docs[0].text
+        == f'client0-Request-client0-pod0-client0-pod2-client0-pod3'
+    )
+    assert responses[0].docs[1].text == f'client0-Request-client0-pod4-client0-pod5'
 
 
 def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
     merge_graph_dict_directly_merge_in_gateway, monkeypatch
 ):
-    # TODO: Test incomplete until merging of responses is ready
     monkeypatch.setattr(
         networking.GrpcConnectionPool,
         'send_message',
@@ -260,47 +223,43 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
     )
     port_in = random_port()
 
-    def client_validate(client_id: int):
-        responses = client_send(client_id, port_in)
-        assert len(responses) > 0
-        assert len(responses[0].docs) == 1
-        pod1_path = (
-            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod1-client{client_id}-merger'
-            in responses[0].docs[0].text
+    runtime = GRPCGatewayRuntime(
+        set_gateway_parser().parse_args(
+            [
+                '--port-expose',
+                f'{port_in}',
+                '--graph-description',
+                f'{json.dumps(merge_graph_dict_directly_merge_in_gateway)}',
+                '--pods-addresses',
+                '{}',
+            ]
         )
-        pod2_path = (
-            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod2-client{client_id}-merger'
-            in responses[0].docs[0].text
-        )
-        assert pod1_path or pod2_path
-
-    p = multiprocessing.Process(
-        target=create_runtime,
-        kwargs={
-            'port_in': port_in,
-            'graph_dict': merge_graph_dict_directly_merge_in_gateway,
-        },
     )
-    p.start()
-    time.sleep(1.0)
-    client_processes = []
-    for i in range(NUM_PARALLEL_CLIENTS):
-        cp = multiprocessing.Process(target=client_validate, kwargs={'client_id': i})
-        cp.start()
-        client_processes.append(cp)
 
-    for cp in client_processes:
-        cp.join()
-    p.terminate()
-    p.join()
-    for cp in client_processes:
-        assert cp.exitcode == 0
+    async def _test():
+        responses = []
+        req = request_generator('/', DocumentArray([Document(text='client0-Request')]))
+        async for resp in runtime.streamer.Call(request_iterator=req):
+            responses.append(resp)
+        return responses
+
+    responses = asyncio.run(_test())
+    assert len(responses) > 0
+    assert len(responses[0].docs) == 1
+    pod1_path = (
+        f'client0-Request-client0-pod0-client0-pod1-client0-merger'
+        in responses[0].docs[0].text
+    )
+    pod2_path = (
+        f'client0-Request-client0-pod0-client0-pod2-client0-merger'
+        in responses[0].docs[0].text
+    )
+    assert pod1_path or pod2_path
 
 
 def test_grpc_gateway_runtime_handle_messages_merge_in_last_pod(
     merge_graph_dict_directly_merge_in_last_pod, monkeypatch
 ):
-    # TODO: Test incomplete until merging of responses is ready
     monkeypatch.setattr(
         networking.GrpcConnectionPool,
         'send_message',
@@ -308,47 +267,43 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_last_pod(
     )
     port_in = random_port()
 
-    def client_validate(client_id: int):
-        responses = client_send(client_id, port_in)
-        assert len(responses) > 0
-        assert len(responses[0].docs) == 1
-        pod1_path = (
-            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod1-client{client_id}-merger-client{client_id}-pod_last'
-            in responses[0].docs[0].text
+    runtime = GRPCGatewayRuntime(
+        set_gateway_parser().parse_args(
+            [
+                '--port-expose',
+                f'{port_in}',
+                '--graph-description',
+                f'{json.dumps(merge_graph_dict_directly_merge_in_last_pod)}',
+                '--pods-addresses',
+                '{}',
+            ]
         )
-        pod2_path = (
-            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod2-client{client_id}-merger-client{client_id}-pod_last'
-            in responses[0].docs[0].text
-        )
-        assert pod1_path or pod2_path
-
-    p = multiprocessing.Process(
-        target=create_runtime,
-        kwargs={
-            'port_in': port_in,
-            'graph_dict': merge_graph_dict_directly_merge_in_last_pod,
-        },
     )
-    p.start()
-    time.sleep(1.0)
-    client_processes = []
-    for i in range(NUM_PARALLEL_CLIENTS):
-        cp = multiprocessing.Process(target=client_validate, kwargs={'client_id': i})
-        cp.start()
-        client_processes.append(cp)
 
-    for cp in client_processes:
-        cp.join()
-    p.terminate()
-    p.join()
-    for cp in client_processes:
-        assert cp.exitcode == 0
+    async def _test():
+        responses = []
+        req = request_generator('/', DocumentArray([Document(text='client0-Request')]))
+        async for resp in runtime.streamer.Call(request_iterator=req):
+            responses.append(resp)
+        return responses
+
+    responses = asyncio.run(_test())
+    assert len(responses) > 0
+    assert len(responses[0].docs) == 1
+    pod1_path = (
+        f'client0-Request-client0-pod0-client0-pod1-client0-merger-client0-pod_last'
+        in responses[0].docs[0].text
+    )
+    pod2_path = (
+        f'client0-Request-client0-pod0-client0-pod2-client0-merger-client0-pod_last'
+        in responses[0].docs[0].text
+    )
+    assert pod1_path or pod2_path
 
 
 def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
     complete_graph_dict, monkeypatch
 ):
-    # TODO: Test incomplete until merging of responses is ready
     monkeypatch.setattr(
         networking.GrpcConnectionPool,
         'send_message',
@@ -356,41 +311,38 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
     )
     port_in = random_port()
 
-    def client_validate(client_id: int):
-        responses = client_send(client_id, port_in)
-        assert len(responses) > 0
-        assert len(responses[0].docs) == 2
-        assert (
-            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod1'
-            == responses[0].docs[0].text
+    runtime = GRPCGatewayRuntime(
+        set_gateway_parser().parse_args(
+            [
+                '--port-expose',
+                f'{port_in}',
+                '--graph-description',
+                f'{json.dumps(complete_graph_dict)}',
+                '--pods-addresses',
+                '{}',
+            ]
         )
-
-        pod2_path = (
-            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod2-client{client_id}-pod3-client{client_id}-merger-client{client_id}-pod_last'
-            == responses[0].docs[1].text
-        )
-        pod4_path = (
-            f'client{client_id}-Request-client{client_id}-pod4-client{client_id}-pod5-client{client_id}-merger-client{client_id}-pod_last'
-            == responses[0].docs[1].text
-        )
-
-        assert pod2_path or pod4_path
-
-    p = multiprocessing.Process(
-        target=create_runtime,
-        kwargs={'port_in': port_in, 'graph_dict': complete_graph_dict},
     )
-    p.start()
-    time.sleep(1.0)
-    client_processes = []
-    for i in range(NUM_PARALLEL_CLIENTS):
-        cp = multiprocessing.Process(target=client_validate, kwargs={'client_id': i})
-        cp.start()
-        client_processes.append(cp)
 
-    for cp in client_processes:
-        cp.join()
-    p.terminate()
-    p.join()
-    for cp in client_processes:
-        assert cp.exitcode == 0
+    async def _test():
+        responses = []
+        req = request_generator('/', DocumentArray([Document(text='client0-Request')]))
+        async for resp in runtime.streamer.Call(request_iterator=req):
+            responses.append(resp)
+        return responses
+
+    responses = asyncio.run(_test())
+    assert len(responses) > 0
+    assert len(responses[0].docs) == 2
+    assert f'client0-Request-client0-pod0-client0-pod1' == responses[0].docs[0].text
+
+    pod2_path = (
+        f'client0-Request-client0-pod0-client0-pod2-client0-pod3-client0-merger-client0-pod_last'
+        == responses[0].docs[1].text
+    )
+    pod4_path = (
+        f'client0-Request-client0-pod4-client0-pod5-client0-merger-client0-pod_last'
+        == responses[0].docs[1].text
+    )
+
+    assert pod2_path or pod4_path

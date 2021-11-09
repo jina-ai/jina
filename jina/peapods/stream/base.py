@@ -12,13 +12,11 @@ from typing import (
 from .helper import AsyncRequestsIterator
 from ...logging.logger import JinaLogger
 from ...types.message import Message
-from ..networking import GrpcConnectionPool
 
 __all__ = ['BaseStreamer']
 
 if TYPE_CHECKING:
     from ...types.request import Request
-    from ...clients.base.helper import HTTPClientlet, WebsocketClientlet
 
 
 class BaseStreamer(ABC):
@@ -27,17 +25,17 @@ class BaseStreamer(ABC):
     def __init__(
         self,
         args: argparse.Namespace,
-        connection_pool: Union[
-            'GrpcConnectionPool', 'HTTPClientlet', 'WebsocketClientlet'
-        ],
     ):
         """
         :param args: args from CLI
-        :param iolet: One of AsyncZmqlet or Grpclet. Used for sending/receiving data to/from the Flow
         """
         self.args = args
-        self._connection_pool = connection_pool
         self.logger = JinaLogger(self.__class__.__name__, **vars(args))
+
+    @property
+    @abstractmethod
+    def msg_handler(self):
+        ...
 
     @abstractmethod
     def _convert_to_message(self, request: 'Request') -> Union['Message', 'Request']:
@@ -50,6 +48,9 @@ class BaseStreamer(ABC):
     @abstractmethod
     def _handle_request(self, request: 'Request'):
         ...
+
+    def _handle_result(self, result):
+        return result
 
     def _handle_end_of_iter(self) -> None:
         """Send end of iterator signal to Gateway"""
@@ -116,7 +117,7 @@ class BaseStreamer(ABC):
             try:
                 response: 'asyncio.Future' = result_queue.get_nowait()
                 result_queue.task_done()
-                yield response.result().request
+                yield self._handle_result(response.result())
             except asyncio.QueueEmpty:
                 await asyncio.sleep(0.2)
                 continue
@@ -171,9 +172,9 @@ class BaseStreamer(ABC):
             while prefetch_task:
                 if self.logger.debug_enabled:
                     self.logger.debug(
-                        f'send: {self.connection_pool.msg_sent} '
-                        f'recv: {self.connection_pool.msg_recv} '
-                        f'pending: {self.connection_pool.msg_sent - self.connection_pool.msg_recv}'
+                        f'send: {self.msg_handler.msg_sent} '
+                        f'recv: {self.msg_handler.msg_recv} '
+                        f'pending: {self.msg_handler.msg_sent - self.msg_handler.msg_recv}'
                     )
                 onrecv_task.clear()
                 for r in asyncio.as_completed(prefetch_task):
