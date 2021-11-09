@@ -1,5 +1,3 @@
-import argparse
-
 from jina.parsers.client import mixin_comm_protocol_parser
 from .helper import _SHOW_ALL_ARGS
 
@@ -98,7 +96,7 @@ def set_gateway_parser(parser=None):
         socket_in=SocketType.PULL_CONNECT,  # otherwise there can be only one client at a time
         socket_out=SocketType.PUSH_CONNECT,
         ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
-        runtime_cls='GRPCRuntime',
+        runtime_cls='GRPCGatewayRuntime',
         pod_role=PodRoleType.GATEWAY,
     )
 

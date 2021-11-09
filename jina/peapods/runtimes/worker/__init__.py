@@ -12,7 +12,7 @@ from grpc import RpcError
 from ..request_handlers.data_request_handler import (
     DataRequestHandler,
 )
-from ..zmq.asyncio import AsyncNewLoopRuntime
+from ..asyncio import AsyncNewLoopRuntime
 from ...networking import GrpcConnectionPool
 from ....excepts import RuntimeTerminated
 from ....proto import jina_pb2_grpc
@@ -129,7 +129,8 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                 WorkerRuntime.cancel(self.is_cancel)
             except (RuntimeError, Exception) as ex:
                 self.logger.error(
-                    f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
+                    f'{ex!r}'
+                    + f'\n add "--quiet-error" to suppress the exception details'
                     if not self.args.quiet_error
                     else '',
                     exc_info=not self.args.quiet_error,
