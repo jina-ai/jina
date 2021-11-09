@@ -717,28 +717,29 @@ retrieve those documents by IDs.</p>
 <figure class="align-center">
 <img alt="../../../../_images/query_flow_brainstorming.svg" src="../../../../_images/query_flow_brainstorming.svg"/></figure>
 <p>Oh, because we use the ranker, we will need something to help us retrieve original parent documents by IDs.
-Well that can be any storage executors. Actually <span class="xref myst">Jina Hub</span> includes many storage executors but in this
+Well that can be any storage executor. Actually <a class="reference external" href="https://hub.jina.ai">Jina Hub</a> includes many storage executors but in this
 tutorial, we will build our own storage executor. Since this executor should store parent documents, we will call it
 the <code class="docutils literal notranslate"><span class="pre">root_indexer</span></code>. Also, since we need it in the query Flow, we also have to add it to the index Flow. One more note,
-this root_indexer will index documents as they are, so it makes sense to put it in parallel to the other processing
-steps (segmenting, encoding,…).
-Now, the technology behind this executor will be <a class="reference external" href="https://en.wikipedia.org/wiki/Lightning_Memory-Mapped_Database">LMDB</a>.</p>
+this <code class="docutils literal notranslate"><span class="pre">root_indexer</span></code> will index documents as they are, so it makes sense to put it in parallel to the other processing
+steps (segmenting, encoding,…).</p>
+<p>Now, the technology behind this executor will be <a class="reference external" href="https://en.wikipedia.org/wiki/Lightning_Memory-Mapped_Database">LMDB</a>.</p>
 <div class="seealso admonition">
 <p class="admonition-title">See Also</p>
 <p>Jina natively supports complex toplogies of Flow where you can put executors in parallel. Checkout
 <a class="reference internal" href="../../../../fundamentals/flow/topology/#flow-topology"><span class="std std-ref">this section</span></a> to learn more.</p>
 </div>
-<p>Cool, but what about the other indexer ? Well, it should support matching and indexing chunks of images after they are
-segmented. Therefore, it needs to support vector search along with indexing. The <span class="xref myst">Jina Hub</span> already
+<p>Cool, but what about the other indexer ?</p>
+<p>Well, it should support matching and indexing chunks of images after they are
+segmented. Therefore, it needs to support vector search along with indexing. The <a class="reference external" href="https://hub.jina.ai">Jina Hub</a> already
 includes such indexers (for example, <code class="docutils literal notranslate"><span class="pre">SimpleIndexer</span></code>), however, we will create our own version of simple indexer. And
-BTW, it will be convenient to rename this indexer to <code class="docutils literal notranslate"><span class="pre">chunks_indexer</span></code>.</p>
+by the way, it will be convenient to rename this indexer to <code class="docutils literal notranslate"><span class="pre">chunks_indexer</span></code>.</p>
 <p>Alright, before seeing the final architecture, let’s agree on names for our executors:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">chunks_indexer</span></code>: <code class="docutils literal notranslate"><span class="pre">SimpleIndexer</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">root_indexer</span></code>: <code class="docutils literal notranslate"><span class="pre">LMDBStorage</span></code> (well because we use LMDB)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">encoder</span></code>: <code class="docutils literal notranslate"><span class="pre">CLIPImageEncoder</span></code> (yes we will be using the <code class="docutils literal notranslate"><span class="pre">CLIP</span></code> model)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">encoder</span></code>: <code class="docutils literal notranslate"><span class="pre">CLIPImageEncoder</span></code> (yes we will be using the <code class="docutils literal notranslate"><span class="pre">CLIP</span></code> model to encode images)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">segmenter</span></code>: <code class="docutils literal notranslate"><span class="pre">YoloV5Segmenter</span></code>. Actually we could name <code class="docutils literal notranslate"><span class="pre">object-detector</span></code> but <code class="docutils literal notranslate"><span class="pre">segmenter</span></code> is a term that aligns
-more with Jina’s terminology</p></li>
+better with Jina’s terminology</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ranker</span></code>: <code class="docutils literal notranslate"><span class="pre">SimpleRanker</span></code> (trust me it’s going to be simple)</p></li>
 </ul>
 <p>Finally, here is what our Flows will look like.

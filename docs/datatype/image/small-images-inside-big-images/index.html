@@ -8,9 +8,9 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/datatype/image/small-images-inside-big-images/index.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="In purpose of this tutorial is to build an image search engine capable of finding small images inside bigger ones. This requires a different architecture than typical image search engines where we need to perform object detection. Understanding And Formulating the Problem: As we want to find smal..." />
-  <meta property="og:image" content="../../../_images/cat-bird.jpg" />
-  <meta property="og:image:alt" content="Jina Documentation" />
+  <meta property="og:description" content="Alaeddine @ Jina AI October 29, 2021 Open In Colab The purpose of this tutorial is to build an image search engine capable of finding small images inside bigger ones. This requires a different architecture than typical image search engines since we need to perform object detection. Understanding ..." />
+  <meta property="og:image" content="../../../_images/alaeddine.jpg" />
+  <meta property="og:image:alt" content="" />
   <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -660,8 +660,28 @@
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="find-small-images-inside-large-images">
 <h1>Find Small Images Inside Large Images<a class="headerlink" href="#find-small-images-inside-large-images" title="Permalink to this headline">¶</a></h1>
-<p>In purpose of this tutorial is to build an image search engine capable of finding small images inside bigger ones.
-This requires a different architecture than typical image search engines where we need to perform object detection.</p>
+<div class="sd-container-fluid sd-sphinx-override sd-p-0 sd-mt-2 sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-2 sd-gx-2 sd-gy-1 docutils">
+<div class="sd-col sd-col-auto sd-d-flex-row sd-align-minor-center docutils">
+<a class="reference external image-reference" href="https://jobs.jina.ai"><img alt="" class="sd-avatar-sm sd-outline-muted" src="../../../_images/alaeddine.jpg"/></a>
+</div>
+<div class="sd-col sd-d-flex-row sd-align-minor-center docutils">
+<div class="sd-container-fluid sd-sphinx-override docutils">
+<div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-3 sd-row-cols-md-3 sd-row-cols-lg-3 sd-gx-3 sd-gy-1 docutils">
+<div class="sd-col sd-col-auto sd-d-flex-row sd-align-minor-center docutils">
+<p class="sd-p-0 sd-m-0">Alaeddine @ Jina AI</p>
+</div>
+<div class="sd-col sd-col-auto sd-d-flex-row sd-align-minor-center docutils">
+<p class="sd-p-0 sd-m-0"><span class="sd-pr-2"><svg aria-hidden="true" class="sd-octicon sd-octicon-calendar" height="16.0px" version="1.1" viewbox="0 0 16 16" width="16.0px"><path d="M4.75 0a.75.75 0 01.75.75V2h5V.75a.75.75 0 011.5 0V2h1.25c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0113.25 16H2.75A1.75 1.75 0 011 14.25V3.75C1 2.784 1.784 2 2.75 2H4V.75A.75.75 0 014.75 0zm0 3.5h8.5a.25.25 0 01.25.25V6h-11V3.75a.25.25 0 01.25-.25h2zm-2.25 4v6.75c0 .138.112.25.25.25h10.5a.25.25 0 00.25-.25V7.5h-11z" fill-rule="evenodd"></path></svg></span>October 29, 2021</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p><a class="reference external" href="https://colab.research.google.com/drive/1gKNhJYl_qfy-ZKoEF7mMED6K1a4-CXHP?usp=sharing"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg"/></a></p>
+<p>The purpose of this tutorial is to build an image search engine capable of finding small images inside bigger ones.
+This requires a different architecture than typical image search engines since we need to perform object detection.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>The full source code of this tutorial is available in this <a class="reference external" href="https://colab.research.google.com/drive/1gKNhJYl_qfy-ZKoEF7mMED6K1a4-CXHP?usp=sharing">google colab notebook</a></p>
@@ -725,28 +745,29 @@ retrieve those documents by IDs.</p>
 <figure class="align-center">
 <img alt="../../../_images/query_flow_brainstorming.svg" src="../../../_images/query_flow_brainstorming.svg"/></figure>
 <p>Oh, because we use the ranker, we will need something to help us retrieve original parent documents by IDs.
-Well that can be any storage executors. Actually <span class="xref myst">Jina Hub</span> includes many storage executors but in this
+Well that can be any storage executor. Actually <a class="reference external" href="https://hub.jina.ai">Jina Hub</a> includes many storage executors but in this
 tutorial, we will build our own storage executor. Since this executor should store parent documents, we will call it
 the <code class="docutils literal notranslate"><span class="pre">root_indexer</span></code>. Also, since we need it in the query Flow, we also have to add it to the index Flow. One more note,
-this root_indexer will index documents as they are, so it makes sense to put it in parallel to the other processing
-steps (segmenting, encoding,…).
-Now, the technology behind this executor will be <a class="reference external" href="https://en.wikipedia.org/wiki/Lightning_Memory-Mapped_Database">LMDB</a>.</p>
+this <code class="docutils literal notranslate"><span class="pre">root_indexer</span></code> will index documents as they are, so it makes sense to put it in parallel to the other processing
+steps (segmenting, encoding,…).</p>
+<p>Now, the technology behind this executor will be <a class="reference external" href="https://en.wikipedia.org/wiki/Lightning_Memory-Mapped_Database">LMDB</a>.</p>
 <div class="seealso admonition">
 <p class="admonition-title">See Also</p>
 <p>Jina natively supports complex toplogies of Flow where you can put executors in parallel. Checkout
 <a class="reference internal" href="../../../fundamentals/flow/topology/#flow-topology"><span class="std std-ref">this section</span></a> to learn more.</p>
 </div>
-<p>Cool, but what about the other indexer ? Well, it should support matching and indexing chunks of images after they are
-segmented. Therefore, it needs to support vector search along with indexing. The <span class="xref myst">Jina Hub</span> already
+<p>Cool, but what about the other indexer ?</p>
+<p>Well, it should support matching and indexing chunks of images after they are
+segmented. Therefore, it needs to support vector search along with indexing. The <a class="reference external" href="https://hub.jina.ai">Jina Hub</a> already
 includes such indexers (for example, <code class="docutils literal notranslate"><span class="pre">SimpleIndexer</span></code>), however, we will create our own version of simple indexer. And
-BTW, it will be convenient to rename this indexer to <code class="docutils literal notranslate"><span class="pre">chunks_indexer</span></code>.</p>
+by the way, it will be convenient to rename this indexer to <code class="docutils literal notranslate"><span class="pre">chunks_indexer</span></code>.</p>
 <p>Alright, before seeing the final architecture, let’s agree on names for our executors:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">chunks_indexer</span></code>: <code class="docutils literal notranslate"><span class="pre">SimpleIndexer</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">root_indexer</span></code>: <code class="docutils literal notranslate"><span class="pre">LMDBStorage</span></code> (well because we use LMDB)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">encoder</span></code>: <code class="docutils literal notranslate"><span class="pre">CLIPImageEncoder</span></code> (yes we will be using the <code class="docutils literal notranslate"><span class="pre">CLIP</span></code> model)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">encoder</span></code>: <code class="docutils literal notranslate"><span class="pre">CLIPImageEncoder</span></code> (yes we will be using the <code class="docutils literal notranslate"><span class="pre">CLIP</span></code> model to encode images)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">segmenter</span></code>: <code class="docutils literal notranslate"><span class="pre">YoloV5Segmenter</span></code>. Actually we could name <code class="docutils literal notranslate"><span class="pre">object-detector</span></code> but <code class="docutils literal notranslate"><span class="pre">segmenter</span></code> is a term that aligns
-more with Jina’s terminology</p></li>
+better with Jina’s terminology</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ranker</span></code>: <code class="docutils literal notranslate"><span class="pre">SimpleRanker</span></code> (trust me it’s going to be simple)</p></li>
 </ul>
 <p>Finally, here is what our Flows will look like.
@@ -763,8 +784,8 @@ Index Flow:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install Pillow <span class="nv">jina</span><span class="o">==</span><span class="m">2</span>.1.13 <span class="nv">torch</span><span class="o">==</span><span class="m">1</span>.9.0 <span class="nv">torchvision</span><span class="o">==</span><span class="m">0</span>.10.0 <span class="nv">transformers</span><span class="o">==</span><span class="m">4</span>.9.1 <span class="nv">yolov5</span><span class="o">==</span><span class="m">5</span>.0.7 <span class="nv">lmdb</span><span class="o">==</span><span class="m">1</span>.2.1 matplotlib jina-commons@git+https://github.com/jina-ai/jina-commons.git#egg<span class="o">=</span>jina-commons
 </pre></div>
 </div>
-<p>We also need to download <a class="reference external" href="https://open-images.s3.eu-central-1.amazonaws.com/data.zip">the dataset</a> and unzip it.
-You can use the link or the following commands:</p>
+<p>We also need to download <a class="reference external" href="https://open-images.s3.eu-central-1.amazonaws.com/data.zip">the dataset</a> and unzip it.</p>
+<p>You can use the link or the following commands:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>wget https://open-images.s3.eu-central-1.amazonaws.com/data.zip
 unzip data.zip
 </pre></div>
@@ -861,11 +882,11 @@ achieved with <code class="docutils literal notranslate"><span class="pre">trave
 </section>
 <section id="yolov5segmenter">
 <h3><strong>YoloV5Segmenter</strong><a class="headerlink" href="#yolov5segmenter" title="Permalink to this headline">¶</a></h3>
-<p>Since we want to retrieve small images in bigger images, the technique that we will havily rely on is segmenting.
+<p>Since we want to retrieve small images in bigger images, the technique that we will heavily rely on is segmenting.
 Basicly, we want to do object detection on the indexed images. This will generate bounding boxes around objects
-detected in side the images. The detected objects will be extracted and added as chunks to the original documents.
-BTW, guess what is the state-of-the-art object detection model ?
-Right, we will use YoloV5.</p>
+detected inside the images. The detected objects will be extracted and added as chunks to the original documents.
+By the way, guess what is the state-of-the-art object detection model ?</p>
+<p>Right, we will use YoloV5.</p>
 <p>Our <strong>YoloV5Segmenter</strong> should be able to load the <code class="docutils literal notranslate"><span class="pre">ultralytics/yolov5</span></code> model from Torch hub, otherwise, load a custom
 model. To achieve this, the executor accepts parameter <code class="docutils literal notranslate"><span class="pre">model_name_or_path</span></code> which will be used when loading. We will
 implement the method <code class="docutils literal notranslate"><span class="pre">load</span></code> which checks if the model exists in the the Torch Hub, otherwise, loads it as a custom model.</p>
@@ -880,7 +901,7 @@ batches. Again, this is as simple as adding parameters <code class="docutils lit
 possible, along with their confidence scores). We will filter out detections whose scores are below the <code class="docutils literal notranslate"><span class="pre">confidence_threshold</span></code> to keep good quality.</p></li>
 </ol>
 <p>Each detection is actually 2 points -top left (x1, y1) and bottom right (x2, y2)- a confidence score and a class.
-We want be using the class of the detection, but it can be useful in other search applications.</p>
+We will not use the class of the detection, but it can be useful in other search applications.</p>
 <ol class="simple">
 <li><p>With the detections that we have, we create crops (using the 2 points returned). Finally, we add these crops to
 image documents as chunks.</p></li>
@@ -889,7 +910,6 @@ image documents as chunks.</p></li>
 
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
-<span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">jina_commons.batching</span> <span class="kn">import</span> <span class="n">get_docs_batch_generator</span>
 
 
@@ -966,39 +986,36 @@ image documents as chunks.</p></li>
             <span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>Indexers</strong>
-After developing the encoder, we will need 2 kinds of indexers:</p>
+<p><strong>Indexers</strong></p>
+<p>After developing the encoder, we will need 2 kinds of indexers:</p>
 <ol class="simple">
-<li><p>SimpleIndexer: This indexer will take care of storing chunks of images. It also supports vector similarity search
-which is important match small query images against segments of original images.</p></li>
+<li><p>SimpleIndexer: This indexer will take care of storing chunks of images. It also should support vector similarity
+search which is important to match small query images against segments of original images.</p></li>
 <li><p>LMDBStorage: LMDB is a simple memory-mapped transactional key-value store. It is convenient for this example
-because we can use it to store original indexed images so that we can retrieve them later. We will use it to create
-LMDBStorage which offers 2 functionnalities: indexing documents and retrieving documents by ID.</p></li>
+because we can use it to store the original images (so that we can retrieve them later). We will use it to create
+LMDBStorage which offers 2 functionalities: indexing documents and retrieving documents by ID.</p></li>
 </ol>
 </section>
 <section id="simpleindexer">
 <h3><strong>SimpleIndexer</strong><a class="headerlink" href="#simpleindexer" title="Permalink to this headline">¶</a></h3>
-<p>To implement SimpleIndexer, we can leverage jina’s <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code>. You can read about this data type
+<p>To implement SimpleIndexer, we can leverage Jina’s <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code>. You can read about this data type
 <a class="reference external" href="https://docs.jina.ai/fundamentals/document/documentarraymemmap-api/">here</a>.</p>
 <p>Our indexer will create an instance of <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> when it’s initialized. We want to store indexed documents
 inside the workspace folder that’s why we pass the <code class="docutils literal notranslate"><span class="pre">workspace</span></code> attribute of the executor to <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code>.</p>
 <p>To index, we implement the method <code class="docutils literal notranslate"><span class="pre">index</span></code> which is bound to the index flow. It’s as simple as extending the received
 docs to <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> instance.</p>
 <p>On the other hand, for search, we implement the method <code class="docutils literal notranslate"><span class="pre">search</span></code>. We bind it to the query flow using the decorator
-<code class="docutils literal notranslate"><span class="pre">@requests(on='/search')</span></code>.
-In jina, searching for query documents can be done by adding the results to the <code class="docutils literal notranslate"><span class="pre">matches</span></code> attribute of each query
+<code class="docutils literal notranslate"><span class="pre">@requests(on='/search')</span></code>.</p>
+<p>In jina, searching for query documents can be done by adding the results to the <code class="docutils literal notranslate"><span class="pre">matches</span></code> attribute of each query
 document. Since docs is a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> we can use method <code class="docutils literal notranslate"><span class="pre">match</span></code> to match query against the indexed documents.
 Read more about <code class="docutils literal notranslate"><span class="pre">match</span></code> <a class="reference external" href="https://docs.jina.ai/fundamentals/document/documentarray-api/#matching-documentarray-to-another">here</a>.
 There’s another detail here. We already indexed documents before search, but we need to match query documents against
 chunks of the indexed images. Luckily, <code class="docutils literal notranslate"><span class="pre">DocumentArray.match</span></code> allows us to specify the traversal paths of
-right-hand-side parameter with parameter <code class="docutils literal notranslate"><span class="pre">traversal_rdarray</span></code>. Since we want to match the left side docs (query)
+the right-hand-side parameter with parameter <code class="docutils literal notranslate"><span class="pre">traversal_rdarray</span></code>. Since we want to match the left side docs (query)
 against the chunks of the right side docs (indexed docs), we can specify that <code class="docutils literal notranslate"><span class="pre">traversal_rdarray=['c']</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
-<span class="kn">import</span> <span class="nn">inspect</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
-<span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">jina.types.arrays.memmap</span> <span class="kn">import</span> <span class="n">DocumentArrayMemmap</span>
 
 
@@ -1044,18 +1061,18 @@ class.</p>
 <p>The constructor should initialize a few attributes:</p>
 <ul class="simple">
 <li><p>the <code class="docutils literal notranslate"><span class="pre">map_size</span></code> of the database</p></li>
-<li><p>the <code class="docutils literal notranslate"><span class="pre">default_traversal_paths</span></code>. Actually we need traversal paths because we will not be traversing documents in</p></li>
-<li><p>the same way during index and query flows. During index, we want to store the root documents. However, during query,</p></li>
-<li><p>we need to get the matches of documents by ID.</p></li>
-<li><p>the index file: again, to keep things clean, we will store the index file inside the workspace folder. Therefore we</p></li>
-<li><p>can use the <code class="docutils literal notranslate"><span class="pre">workspace</span></code> attribute.</p></li>
+<li><p>the <code class="docutils literal notranslate"><span class="pre">default_traversal_paths</span></code>. Actually we need traversal paths because we will not be traversing documents in
+the same way during index and query flows. During index, we want to store the root documents. However, during query,<br/>
+we need to get the matches of documents by ID.</p></li>
+<li><p>the index file: again, to keep things clean, we will store the index file inside the workspace folder. Therefore we
+can use the <code class="docutils literal notranslate"><span class="pre">workspace</span></code> attribute.</p></li>
 </ul>
 <p><strong>III. <code class="docutils literal notranslate"><span class="pre">LMDBStorage.index</span></code></strong></p>
 <p>In order to index documents, we first start a transaction (so that our Storage executor is ACID-compliant). Then, we
-traverse them according to the <code class="docutils literal notranslate"><span class="pre">traversal_paths</span></code> (will be root during). Finally, each document is serialized to string
-and then added to the database (the key is the document ID)</p>
+traverse them according to the <code class="docutils literal notranslate"><span class="pre">traversal_paths</span></code> (will be root in the index Flow). Finally, each document is serialized
+to string and then added to the database (the key is the document ID)</p>
 <p><strong>IV. <code class="docutils literal notranslate"><span class="pre">LMDBStorage.search</span></code></strong></p>
-<p>Unlike search in the SimpleIndexer, we only which to get the matched Documents by ID and return them. Actually, the
+<p>Unlike search in the SimpleIndexer, we only wish to get the matched Documents by ID and return them. Actually, the
 matched documents will be empty and will only contain the IDs. The goal is to return full matched documents using IDs.
 To accomplish this, again, we start a transaction, traverse the matched documents, get each matched document by ID and
 use the results to fill our documents.</p>
@@ -1064,8 +1081,6 @@ use the results to fill our documents.</p>
 
 <span class="kn">import</span> <span class="nn">lmdb</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
-<span class="kn">from</span> <span class="nn">jina_commons</span> <span class="kn">import</span> <span class="n">get_logger</span>
-<span class="kn">from</span> <span class="nn">jina_commons.indexers.dump</span> <span class="kn">import</span> <span class="n">export_dump_streaming</span><span class="p">,</span> <span class="n">import_metas</span>
 
 
 <span class="k">class</span> <span class="nc">_LMDBHandler</span><span class="p">:</span>
@@ -1155,23 +1170,24 @@ use the results to fill our documents.</p>
 </section>
 <section id="simpleranker">
 <h3><strong>SimpleRanker</strong><a class="headerlink" href="#simpleranker" title="Permalink to this headline">¶</a></h3>
-<p>You might think why do we need a ranker at all ?
-Actually, a ranker is needed because we will matching small query images against chunks of parent documents. But how
-can we get back to parent documents (aka full images) given the chunks ? And what if 2 chunks belonging to the same parent are matched ?
+<p>You might think why do we need a ranker at all ?</p>
+<p>Actually, a ranker is needed because we will be matching small query images against chunks of parent documents. But how
+can we get back to parent documents (aka full images) given the chunks ? And what if 2 chunks belonging to the same
+parent are matched ?
 We can solve this by aggregating the similarity scores of chunks that belong to the same parent (using an aggregation
 method, in our case, will be the <code class="docutils literal notranslate"><span class="pre">min</span></code> value).
 So, for each query document, we perform the following:</p>
 <ol class="simple">
 <li><p>We create an empty collection of parent scores. This collection will store, for each parent, a list of scores of its
 chunk documents.</p></li>
-<li><p>For each match, since it’s a originally a chunk document, we can retrieve its <code class="docutils literal notranslate"><span class="pre">parent_id</span></code>. And it’s also a match
-document so we get its match score and add that value to the parent socres collection.</p></li>
+<li><p>For each match, since it’s a chunk document, we can retrieve its <code class="docutils literal notranslate"><span class="pre">parent_id</span></code>. And it’s also a match
+document so we get its match score and add that value to the parent scores collection.</p></li>
 <li><p>After processing all matches, we need to aggregate the scores of each parent using the <code class="docutils literal notranslate"><span class="pre">min</span></code> metric.</p></li>
 <li><p>Finally, using the aggregated score values of parents, we can create a new list of matches (this time consisting
 of parents, not chunks). We also need to sort the matches list by aggregated scores.</p></li>
 </ol>
 <p>When query documents exit the SimpleRanker, they now have matches consisting of parent documents. However, parent
-documents just have IDs. That why, during the previous steps, we created LMDBStorage so that we can actually
+documents just have IDs. That’s why, during the previous steps, we created LMDBStorage: to actually
 retrieve parent documents by IDs and fill them with data.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Optional</span>
@@ -1228,9 +1244,9 @@ retrieve parent documents by IDs and fill them with data.</p>
 <li><p>CLIPImageEncoder: It also receives the device parameter. And since we only encode the chunks, we specify
 <code class="docutils literal notranslate"><span class="pre">'traversal_paths':</span> <span class="pre">['c']</span></code></p></li>
 <li><p>SimpleIndexer: We need to specify the workspace parameter</p></li>
-<li><p>LMDBStorage: We also need to specify the workspace parameter. Furtheremore, the executor can be in parallel to the
+<li><p>LMDBStorage: We also need to specify the workspace parameter. Furthermore, the executor can run in parallel to the
 other branch. We can achieve this using <code class="docutils literal notranslate"><span class="pre">needs='gateway'</span></code>. Finally, we set <code class="docutils literal notranslate"><span class="pre">default_traversal_paths</span></code> to <code class="docutils literal notranslate"><span class="pre">['r']</span></code></p></li>
-<li><p>A final executor which just waits for both branchs.</p></li>
+<li><p>A final executor which just waits for both branches.</p></li>
 </ol>
 <p>After building the index Flow, we can plot it to verify that we’re using the correct architecture.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -1288,7 +1304,7 @@ Adding AutoShape...
 we specify that <code class="docutils literal notranslate"><span class="pre">'traversal_paths':</span> <span class="pre">['r']</span></code></p></li>
 <li><p>SimpleIndexer: We need to specify the workspace parameter</p></li>
 <li><p>SimpleRanker</p></li>
-<li><p>LMDBStorage: First we specify the workspace parameter. Then we need to use a different traversal paths. This time
+<li><p>LMDBStorage: First we specify the workspace parameter. Then we need to use different traversal paths. This time
 we will be traversing matches: <code class="docutils literal notranslate"><span class="pre">'default_traversal_paths':</span> <span class="pre">['m']</span></code></p></li>
 </ol>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -1305,9 +1321,9 @@ we will be traversing matches: <code class="docutils literal notranslate"><span 
 </div>
 <figure class="align-center">
 <img alt="../../../_images/query_flow.svg" src="../../../_images/query_flow.svg"/></figure>
-<p>Finally, we can start querying. We will use images inside the query folder.
+<p>Finally, we can start querying. We will use images inside the <code class="docutils literal notranslate"><span class="pre">query</span></code> folder.
 For each image, we will create a Jina Document. Then we send our documents to the query Flow and receive the response.</p>
-<p>For each query document, we can print the image and it’s top 3 search results</p>
+<p>For each query document, we can print the image and its top 3 search results</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">glob</span>
 <span class="k">with</span> <span class="n">query_flow</span><span class="p">:</span>
     <span class="n">docs</span> <span class="o">=</span> <span class="p">[</span><span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">filename</span><span class="p">)</span> <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">'query/*.jpg'</span><span class="p">)]</span>
@@ -1341,10 +1357,10 @@ For each image, we will create a Jina Document. Then we send our documents to th
 <figure class="align-center">
 <img alt="../../../_images/result_3.png" src="../../../_images/result_3.png"/>
 </figure>
-<p>Congratulations !
-The approach that we’ve adopted could effectively match the small bird image against bigger images containing birds.</p>
-<p>Again, the full source code of this tutorial is available in this <a class="reference external" href="https://colab.research.google.com/drive/1gKNhJYl_qfy-ZKoEF7mMED6K1a4-CXHP?usp=sharing">google colab notebook</a>.
-Feel free to try it !</p>
+<p>Congratulations !</p>
+<p>The approach that we’ve adopted could effectively match the small bird image against bigger images containing birds.</p>
+<p>Again, the full source code of this tutorial is available in this <a class="reference external" href="https://colab.research.google.com/drive/1gKNhJYl_qfy-ZKoEF7mMED6K1a4-CXHP?usp=sharing">google colab notebook</a>.</p>
+<p>Feel free to try it !</p>
 </section>
 </section>
 </section>

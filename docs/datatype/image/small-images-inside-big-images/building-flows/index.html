@@ -671,9 +671,9 @@
 <li><p>CLIPImageEncoder: It also receives the device parameter. And since we only encode the chunks, we specify
 <code class="docutils literal notranslate"><span class="pre">'traversal_paths':</span> <span class="pre">['c']</span></code></p></li>
 <li><p>SimpleIndexer: We need to specify the workspace parameter</p></li>
-<li><p>LMDBStorage: We also need to specify the workspace parameter. Furtheremore, the executor can be in parallel to the
+<li><p>LMDBStorage: We also need to specify the workspace parameter. Furthermore, the executor can run in parallel to the
 other branch. We can achieve this using <code class="docutils literal notranslate"><span class="pre">needs='gateway'</span></code>. Finally, we set <code class="docutils literal notranslate"><span class="pre">default_traversal_paths</span></code> to <code class="docutils literal notranslate"><span class="pre">['r']</span></code></p></li>
-<li><p>A final executor which just waits for both branchs.</p></li>
+<li><p>A final executor which just waits for both branches.</p></li>
 </ol>
 <p>After building the index Flow, we can plot it to verify that we’re using the correct architecture.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -731,7 +731,7 @@ Adding AutoShape...
 we specify that <code class="docutils literal notranslate"><span class="pre">'traversal_paths':</span> <span class="pre">['r']</span></code></p></li>
 <li><p>SimpleIndexer: We need to specify the workspace parameter</p></li>
 <li><p>SimpleRanker</p></li>
-<li><p>LMDBStorage: First we specify the workspace parameter. Then we need to use a different traversal paths. This time
+<li><p>LMDBStorage: First we specify the workspace parameter. Then we need to use different traversal paths. This time
 we will be traversing matches: <code class="docutils literal notranslate"><span class="pre">'default_traversal_paths':</span> <span class="pre">['m']</span></code></p></li>
 </ol>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -748,9 +748,9 @@ we will be traversing matches: <code class="docutils literal notranslate"><span 
 </div>
 <figure class="align-center">
 <img alt="../../../../_images/query_flow.svg" src="../../../../_images/query_flow.svg"/></figure>
-<p>Finally, we can start querying. We will use images inside the query folder.
+<p>Finally, we can start querying. We will use images inside the <code class="docutils literal notranslate"><span class="pre">query</span></code> folder.
 For each image, we will create a Jina Document. Then we send our documents to the query Flow and receive the response.</p>
-<p>For each query document, we can print the image and it’s top 3 search results</p>
+<p>For each query document, we can print the image and its top 3 search results</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">glob</span>
 <span class="k">with</span> <span class="n">query_flow</span><span class="p">:</span>
     <span class="n">docs</span> <span class="o">=</span> <span class="p">[</span><span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">filename</span><span class="p">)</span> <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">'query/*.jpg'</span><span class="p">)]</span>
@@ -784,10 +784,10 @@ For each image, we will create a Jina Document. Then we send our documents to th
 <figure class="align-center">
 <img alt="../../../../_images/result_3.png" src="../../../../_images/result_3.png"/>
 </figure>
-<p>Congratulations !
-The approach that we’ve adopted could effectively match the small bird image against bigger images containing birds.</p>
-<p>Again, the full source code of this tutorial is available in this <a class="reference external" href="https://colab.research.google.com/drive/1gKNhJYl_qfy-ZKoEF7mMED6K1a4-CXHP?usp=sharing">google colab notebook</a>.
-Feel free to try it !</p>
+<p>Congratulations !</p>
+<p>The approach that we’ve adopted could effectively match the small bird image against bigger images containing birds.</p>
+<p>Again, the full source code of this tutorial is available in this <a class="reference external" href="https://colab.research.google.com/drive/1gKNhJYl_qfy-ZKoEF7mMED6K1a4-CXHP?usp=sharing">google colab notebook</a>.</p>
+<p>Feel free to try it !</p>
 </section>
 </section>
 

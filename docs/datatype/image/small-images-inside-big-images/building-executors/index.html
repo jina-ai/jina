@@ -744,11 +744,11 @@ achieved with <code class="docutils literal notranslate"><span class="pre">trave
 </section>
 <section id="yolov5segmenter">
 <h2><strong>YoloV5Segmenter</strong><a class="headerlink" href="#yolov5segmenter" title="Permalink to this headline">¶</a></h2>
-<p>Since we want to retrieve small images in bigger images, the technique that we will havily rely on is segmenting.
+<p>Since we want to retrieve small images in bigger images, the technique that we will heavily rely on is segmenting.
 Basicly, we want to do object detection on the indexed images. This will generate bounding boxes around objects
-detected in side the images. The detected objects will be extracted and added as chunks to the original documents.
-BTW, guess what is the state-of-the-art object detection model ?
-Right, we will use YoloV5.</p>
+detected inside the images. The detected objects will be extracted and added as chunks to the original documents.
+By the way, guess what is the state-of-the-art object detection model ?</p>
+<p>Right, we will use YoloV5.</p>
 <p>Our <strong>YoloV5Segmenter</strong> should be able to load the <code class="docutils literal notranslate"><span class="pre">ultralytics/yolov5</span></code> model from Torch hub, otherwise, load a custom
 model. To achieve this, the executor accepts parameter <code class="docutils literal notranslate"><span class="pre">model_name_or_path</span></code> which will be used when loading. We will
 implement the method <code class="docutils literal notranslate"><span class="pre">load</span></code> which checks if the model exists in the the Torch Hub, otherwise, loads it as a custom model.</p>
@@ -763,7 +763,7 @@ batches. Again, this is as simple as adding parameters <code class="docutils lit
 possible, along with their confidence scores). We will filter out detections whose scores are below the <code class="docutils literal notranslate"><span class="pre">confidence_threshold</span></code> to keep good quality.</p></li>
 </ol>
 <p>Each detection is actually 2 points -top left (x1, y1) and bottom right (x2, y2)- a confidence score and a class.
-We want be using the class of the detection, but it can be useful in other search applications.</p>
+We will not use the class of the detection, but it can be useful in other search applications.</p>
 <ol class="simple">
 <li><p>With the detections that we have, we create crops (using the 2 points returned). Finally, we add these crops to
 image documents as chunks.</p></li>
@@ -772,7 +772,6 @@ image documents as chunks.</p></li>
 
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
-<span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">jina_commons.batching</span> <span class="kn">import</span> <span class="n">get_docs_batch_generator</span>
 
 
@@ -849,39 +848,36 @@ image documents as chunks.</p></li>
             <span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>Indexers</strong>
-After developing the encoder, we will need 2 kinds of indexers:</p>
+<p><strong>Indexers</strong></p>
+<p>After developing the encoder, we will need 2 kinds of indexers:</p>
 <ol class="simple">
-<li><p>SimpleIndexer: This indexer will take care of storing chunks of images. It also supports vector similarity search
-which is important match small query images against segments of original images.</p></li>
+<li><p>SimpleIndexer: This indexer will take care of storing chunks of images. It also should support vector similarity
+search which is important to match small query images against segments of original images.</p></li>
 <li><p>LMDBStorage: LMDB is a simple memory-mapped transactional key-value store. It is convenient for this example
-because we can use it to store original indexed images so that we can retrieve them later. We will use it to create
-LMDBStorage which offers 2 functionnalities: indexing documents and retrieving documents by ID.</p></li>
+because we can use it to store the original images (so that we can retrieve them later). We will use it to create
+LMDBStorage which offers 2 functionalities: indexing documents and retrieving documents by ID.</p></li>
 </ol>
 </section>
 <section id="simpleindexer">
 <h2><strong>SimpleIndexer</strong><a class="headerlink" href="#simpleindexer" title="Permalink to this headline">¶</a></h2>
-<p>To implement SimpleIndexer, we can leverage jina’s <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code>. You can read about this data type
+<p>To implement SimpleIndexer, we can leverage Jina’s <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code>. You can read about this data type
 <a class="reference external" href="https://docs.jina.ai/fundamentals/document/documentarraymemmap-api/">here</a>.</p>
 <p>Our indexer will create an instance of <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> when it’s initialized. We want to store indexed documents
 inside the workspace folder that’s why we pass the <code class="docutils literal notranslate"><span class="pre">workspace</span></code> attribute of the executor to <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code>.</p>
 <p>To index, we implement the method <code class="docutils literal notranslate"><span class="pre">index</span></code> which is bound to the index flow. It’s as simple as extending the received
 docs to <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> instance.</p>
 <p>On the other hand, for search, we implement the method <code class="docutils literal notranslate"><span class="pre">search</span></code>. We bind it to the query flow using the decorator
-<code class="docutils literal notranslate"><span class="pre">@requests(on='/search')</span></code>.
-In jina, searching for query documents can be done by adding the results to the <code class="docutils literal notranslate"><span class="pre">matches</span></code> attribute of each query
+<code class="docutils literal notranslate"><span class="pre">@requests(on='/search')</span></code>.</p>
+<p>In jina, searching for query documents can be done by adding the results to the <code class="docutils literal notranslate"><span class="pre">matches</span></code> attribute of each query
 document. Since docs is a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> we can use method <code class="docutils literal notranslate"><span class="pre">match</span></code> to match query against the indexed documents.
 Read more about <code class="docutils literal notranslate"><span class="pre">match</span></code> <a class="reference external" href="https://docs.jina.ai/fundamentals/document/documentarray-api/#matching-documentarray-to-another">here</a>.
 There’s another detail here. We already indexed documents before search, but we need to match query documents against
 chunks of the indexed images. Luckily, <code class="docutils literal notranslate"><span class="pre">DocumentArray.match</span></code> allows us to specify the traversal paths of
-right-hand-side parameter with parameter <code class="docutils literal notranslate"><span class="pre">traversal_rdarray</span></code>. Since we want to match the left side docs (query)
+the right-hand-side parameter with parameter <code class="docutils literal notranslate"><span class="pre">traversal_rdarray</span></code>. Since we want to match the left side docs (query)
 against the chunks of the right side docs (indexed docs), we can specify that <code class="docutils literal notranslate"><span class="pre">traversal_rdarray=['c']</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
-<span class="kn">import</span> <span class="nn">inspect</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
-<span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">jina.types.arrays.memmap</span> <span class="kn">import</span> <span class="n">DocumentArrayMemmap</span>
 
 
@@ -927,18 +923,18 @@ class.</p>
 <p>The constructor should initialize a few attributes:</p>
 <ul class="simple">
 <li><p>the <code class="docutils literal notranslate"><span class="pre">map_size</span></code> of the database</p></li>
-<li><p>the <code class="docutils literal notranslate"><span class="pre">default_traversal_paths</span></code>. Actually we need traversal paths because we will not be traversing documents in</p></li>
-<li><p>the same way during index and query flows. During index, we want to store the root documents. However, during query,</p></li>
-<li><p>we need to get the matches of documents by ID.</p></li>
-<li><p>the index file: again, to keep things clean, we will store the index file inside the workspace folder. Therefore we</p></li>
-<li><p>can use the <code class="docutils literal notranslate"><span class="pre">workspace</span></code> attribute.</p></li>
+<li><p>the <code class="docutils literal notranslate"><span class="pre">default_traversal_paths</span></code>. Actually we need traversal paths because we will not be traversing documents in
+the same way during index and query flows. During index, we want to store the root documents. However, during query,<br/>
+we need to get the matches of documents by ID.</p></li>
+<li><p>the index file: again, to keep things clean, we will store the index file inside the workspace folder. Therefore we
+can use the <code class="docutils literal notranslate"><span class="pre">workspace</span></code> attribute.</p></li>
 </ul>
 <p><strong>III. <code class="docutils literal notranslate"><span class="pre">LMDBStorage.index</span></code></strong></p>
 <p>In order to index documents, we first start a transaction (so that our Storage executor is ACID-compliant). Then, we
-traverse them according to the <code class="docutils literal notranslate"><span class="pre">traversal_paths</span></code> (will be root during). Finally, each document is serialized to string
-and then added to the database (the key is the document ID)</p>
+traverse them according to the <code class="docutils literal notranslate"><span class="pre">traversal_paths</span></code> (will be root in the index Flow). Finally, each document is serialized
+to string and then added to the database (the key is the document ID)</p>
 <p><strong>IV. <code class="docutils literal notranslate"><span class="pre">LMDBStorage.search</span></code></strong></p>
-<p>Unlike search in the SimpleIndexer, we only which to get the matched Documents by ID and return them. Actually, the
+<p>Unlike search in the SimpleIndexer, we only wish to get the matched Documents by ID and return them. Actually, the
 matched documents will be empty and will only contain the IDs. The goal is to return full matched documents using IDs.
 To accomplish this, again, we start a transaction, traverse the matched documents, get each matched document by ID and
 use the results to fill our documents.</p>
@@ -947,8 +943,6 @@ use the results to fill our documents.</p>
 
 <span class="kn">import</span> <span class="nn">lmdb</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
-<span class="kn">from</span> <span class="nn">jina_commons</span> <span class="kn">import</span> <span class="n">get_logger</span>
-<span class="kn">from</span> <span class="nn">jina_commons.indexers.dump</span> <span class="kn">import</span> <span class="n">export_dump_streaming</span><span class="p">,</span> <span class="n">import_metas</span>
 
 
 <span class="k">class</span> <span class="nc">_LMDBHandler</span><span class="p">:</span>
@@ -1038,23 +1032,24 @@ use the results to fill our documents.</p>
 </section>
 <section id="simpleranker">
 <h2><strong>SimpleRanker</strong><a class="headerlink" href="#simpleranker" title="Permalink to this headline">¶</a></h2>
-<p>You might think why do we need a ranker at all ?
-Actually, a ranker is needed because we will matching small query images against chunks of parent documents. But how
-can we get back to parent documents (aka full images) given the chunks ? And what if 2 chunks belonging to the same parent are matched ?
+<p>You might think why do we need a ranker at all ?</p>
+<p>Actually, a ranker is needed because we will be matching small query images against chunks of parent documents. But how
+can we get back to parent documents (aka full images) given the chunks ? And what if 2 chunks belonging to the same
+parent are matched ?
 We can solve this by aggregating the similarity scores of chunks that belong to the same parent (using an aggregation
 method, in our case, will be the <code class="docutils literal notranslate"><span class="pre">min</span></code> value).
 So, for each query document, we perform the following:</p>
 <ol class="simple">
 <li><p>We create an empty collection of parent scores. This collection will store, for each parent, a list of scores of its
 chunk documents.</p></li>
-<li><p>For each match, since it’s a originally a chunk document, we can retrieve its <code class="docutils literal notranslate"><span class="pre">parent_id</span></code>. And it’s also a match
-document so we get its match score and add that value to the parent socres collection.</p></li>
+<li><p>For each match, since it’s a chunk document, we can retrieve its <code class="docutils literal notranslate"><span class="pre">parent_id</span></code>. And it’s also a match
+document so we get its match score and add that value to the parent scores collection.</p></li>
 <li><p>After processing all matches, we need to aggregate the scores of each parent using the <code class="docutils literal notranslate"><span class="pre">min</span></code> metric.</p></li>
 <li><p>Finally, using the aggregated score values of parents, we can create a new list of matches (this time consisting
 of parents, not chunks). We also need to sort the matches list by aggregated scores.</p></li>
 </ol>
 <p>When query documents exit the SimpleRanker, they now have matches consisting of parent documents. However, parent
-documents just have IDs. That why, during the previous steps, we created LMDBStorage so that we can actually
+documents just have IDs. That’s why, during the previous steps, we created LMDBStorage: to actually
 retrieve parent documents by IDs and fill them with data.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Optional</span>
