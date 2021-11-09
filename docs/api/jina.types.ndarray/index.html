@@ -31,7 +31,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.types.request package" href="../jina.types.request/" /><link rel="prev" title="jina.types.message.common module" href="../jina.types.message.common/" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.10.09"/>
-        <title>jina.types.ndarray package - Jina 2.4.1 documentation</title>
+        <title>jina.types.ndarray package - Jina 2.4.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -171,7 +171,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 2.4.1 documentation</div>
+                <div class="brand">Jina 2.4.2 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -673,6 +673,23 @@
 <dd class="field-odd"><p><strong>proto</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">NdArrayProto</span></code>) – the protobuf message, when not given then create a new one via <code class="xref py py-meth docutils literal notranslate"><span class="pre">get_null_proto()</span></code></p>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.ndarray.NdArray.ravel">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">ravel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/ndarray/#NdArray.ravel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.ndarray.NdArray.ravel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ravel <a class="reference internal" href="#jina.types.ndarray.NdArray.value" title="jina.types.ndarray.NdArray.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> into <code class="docutils literal notranslate"><span class="pre">doc.field</span></code> of each documents</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>docs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]) – the docs to set</p></li>
+<li><p><strong>field</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the field of the doc to set</p></li>
+<li><p><strong>value</strong> (<em>ArrayType</em>) – the value to be set on <code class="docutils literal notranslate"><span class="pre">doc.field</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.ndarray.NdArray.unravel">
 <em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">unravel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">protos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/ndarray/#NdArray.unravel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.ndarray.NdArray.unravel" title="Permalink to this definition">¶</a></dt>

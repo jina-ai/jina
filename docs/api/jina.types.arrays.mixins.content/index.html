@@ -30,7 +30,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.types.arrays.mixins.empty module" href="../jina.types.arrays.mixins.empty/" /><link rel="prev" title="jina.types.arrays.mixins.io.json module" href="../jina.types.arrays.mixins.io.json/" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.10.09"/>
-        <title>jina.types.arrays.mixins.content module - Jina 2.4.1 documentation</title>
+        <title>jina.types.arrays.mixins.content module - Jina 2.4.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -170,7 +170,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 2.4.1 documentation</div>
+                <div class="brand">Jina 2.4.2 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -666,21 +666,21 @@
 <p>Helpers that provide faster getter &amp; setter for <a class="reference internal" href="../jina/#jina.Document.content" title="jina.Document.content"><code class="xref py py-attr docutils literal notranslate"><span class="pre">content</span></code></a> by using protobuf directly.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.arrays.mixins.content.ContentPropertyMixin.embeddings">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">embeddings</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#jina.types.arrays.mixins.content.ContentPropertyMixin.embeddings" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a <cite>np.ndarray</cite> stacking all the <cite>embedding</cite> attributes as rows.</p>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">embeddings</span></span><em class="property"><span class="pre">:</span> <span class="pre">ArrayType</span></em><a class="headerlink" href="#jina.types.arrays.mixins.content.ContentPropertyMixin.embeddings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a <code class="xref py py-class docutils literal notranslate"><span class="pre">ArrayType</span></code> stacking all the <cite>embedding</cite> attributes as rows.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+<dd class="field-odd"><p>ArrayType</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>a ndarray of embedding</p>
+<dd class="field-even"><p>a <code class="xref py py-class docutils literal notranslate"><span class="pre">ArrayType</span></code> of embedding</p>
 </dd>
 </dl>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.arrays.mixins.content.ContentPropertyMixin.blobs">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">blobs</span></span><em class="property"><span class="pre">:</span> <span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#jina.types.arrays.mixins.content.ContentPropertyMixin.blobs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a <cite>np.ndarray</cite> stacking all <a class="reference internal" href="../jina/#jina.Document.blob" title="jina.Document.blob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">blob</span></code></a>.</p>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">blobs</span></span><em class="property"><span class="pre">:</span> <span class="pre">ArrayType</span></em><a class="headerlink" href="#jina.types.arrays.mixins.content.ContentPropertyMixin.blobs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a <code class="xref py py-class docutils literal notranslate"><span class="pre">ArrayType</span></code> stacking all <a class="reference internal" href="../jina/#jina.Document.blob" title="jina.Document.blob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">blob</span></code></a>.</p>
 <p>The <cite>blob</cite> attributes are stacked together along a newly created first
 dimension (as if you would stack using <code class="docutils literal notranslate"><span class="pre">np.stack(X,</span> <span class="pre">axis=0)</span></code>).</p>
 <div class="admonition warning">
@@ -691,10 +691,10 @@ first element in the DocumentArray / DocumentArrayMemmap</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+<dd class="field-odd"><p>ArrayType</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>a ndarray of blobs</p>
+<dd class="field-even"><p>a <code class="xref py py-class docutils literal notranslate"><span class="pre">ArrayType</span></code> of blobs</p>
 </dd>
 </dl>
 </dd></dl>
