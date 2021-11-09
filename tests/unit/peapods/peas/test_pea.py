@@ -207,9 +207,9 @@ def test_pea_runtime_env_setting_in_thread(fake_env):
 @pytest.mark.parametrize(
     'protocol, expected',
     [
-        ('grpc', 'GRPCRuntime'),
-        ('websocket', 'WebSocketRuntime'),
-        ('http', 'HTTPRuntime'),
+        ('grpc', 'GRPCGatewayRuntime'),
+        ('websocket', 'WebSocketGatewayRuntime'),
+        ('http', 'HTTPGatewayRuntime'),
     ],
 )
 def test_gateway_args(protocol, expected):
