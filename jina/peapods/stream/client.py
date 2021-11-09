@@ -1,5 +1,7 @@
 import asyncio
-from typing import TYPE_CHECKING, AsyncIterator, Dict
+import argparse
+from abc import ABC
+from typing import TYPE_CHECKING, AsyncIterator, Dict, Union
 
 from ...helper import get_or_reuse_loop
 from .base import BaseStreamer
@@ -8,10 +10,23 @@ __all__ = ['HTTPClientStreamer', 'WebsocketClientStreamer']
 
 if TYPE_CHECKING:
     from ...types.request import Request
+    from ...clients.base.helper import HTTPClientlet, WebsocketClientlet
 
 
-class ClientStreamer(BaseStreamer):
+class ClientStreamer(BaseStreamer, ABC):
     """Streamer used at Client to stream requests/responses to/from Gateway"""
+
+    def __init__(
+        self,
+        args: argparse.Namespace,
+        iolet: Union['HTTPClientlet', 'WebsocketClientlet'],
+    ):
+        super().__init__(args)
+        self._iolet = iolet
+
+    @property
+    def msg_handler(self):
+        return self._iolet
 
     def _convert_to_message(self, request):
         return request
@@ -39,9 +54,7 @@ class HTTPClientStreamer(ClientStreamer):
         :param request: current request in the iterator
         :return: asyncio Task for sending message
         """
-        return asyncio.ensure_future(
-            self._connection_pool.send_message(request=request)
-        )
+        return asyncio.ensure_future(self.msg_handler.send_message(request=request))
 
 
 class WebsocketClientStreamer(ClientStreamer):
@@ -69,7 +82,7 @@ class WebsocketClientStreamer(ClientStreamer):
     async def _receive(self):
         """Await messages from WebsocketGateway and process them in the request buffer"""
         try:
-            async for response in self.iolet.recv_message():
+            async for response in self._iolet.recv_message():
                 self._handle_response(response)
         finally:
             if self.request_buffer:
@@ -96,9 +109,7 @@ class WebsocketClientStreamer(ClientStreamer):
         """
         future = get_or_reuse_loop().create_future()
         self.request_buffer[request.request_id] = future
-        asyncio.create_task(
-            self._connection_pool.send_message(self._convert_to_message(request))
-        )
+        asyncio.create_task(self._iolet.send_message(self._convert_to_message(request)))
         return future
 
     def _handle_response(self, response: 'Response') -> None:
@@ -116,4 +127,4 @@ class WebsocketClientStreamer(ClientStreamer):
 
     def _handle_end_of_iter(self):
         """Send End of iteration signal to the Gateway"""
-        asyncio.create_task(self._connection_pool.send_eoi())
+        asyncio.create_task(self._iolet.send_eoi())

@@ -1,11 +1,17 @@
 import copy
 import asyncio
+import argparse
 
-from typing import List, AsyncIterator
+from typing import List, AsyncIterator, TYPE_CHECKING
 
 from .base import BaseStreamer
 from ...types.message import Message
 from ..runtimes.gateway.graph.topology_graph import TopologyGraph
+
+if TYPE_CHECKING:
+    from ...types.request import Request
+    from ..networking import GrpcConnectionPool
+
 
 __all__ = ['GatewayStreamer']
 
@@ -13,9 +19,22 @@ __all__ = ['GatewayStreamer']
 class GatewayStreamer(BaseStreamer):
     """Streamer used at Gateway to stream requests/responses to/from Executors"""
 
-    def __init__(self, args, graph: TopologyGraph, **kwargs):
-        super().__init__(args, **kwargs)
+    def __init__(
+        self,
+        args: argparse.Namespace,
+        graph: TopologyGraph,
+        connection_pool: 'GrpcConnectionPool',
+    ):
+        super().__init__(args)
         self._graph = graph
+        self._connection_pool = connection_pool
+
+    @property
+    def msg_handler(self):
+        return self._connection_pool
+
+    def _handle_result(self, result: 'Message'):
+        return result.request
 
     def _handle_request(self, request: 'Request') -> 'asyncio.Future':
         """
