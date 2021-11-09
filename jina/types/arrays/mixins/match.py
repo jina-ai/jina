@@ -31,6 +31,7 @@ class MatchMixin:
         exclude_self: bool = False,
         filter_fn: Optional[Callable[['Document'], bool]] = None,
         only_id: bool = False,
+        use_scipy: bool = False,
         **kwargs,
     ) -> None:
         """Compute embedding based nearest neighbour in `another` for each Document in `self`,
@@ -63,6 +64,8 @@ class MatchMixin:
         :param exclude_self: if set, Documents in ``darray`` with same ``id`` as the left-hand values will not be
                         considered as matches.
         :param only_id: if set, then returning matches will only contain ``id``
+        :param use_scipy: if set, use ``scipy`` as the computation backend. Note, ``scipy`` does not support distance
+            on sparse matrix.
         :param kwargs: other kwargs.
         """
         if limit is not None:
@@ -115,7 +118,10 @@ class MatchMixin:
         if callable(metric):
             cdist = metric
         elif isinstance(metric, str):
-            from ....math.distance import cdist
+            if use_scipy:
+                from scipy.spatial.distance import cdist as cdist
+            else:
+                from ....math.distance import cdist as cdist
         else:
             raise TypeError(
                 f'metric must be either string or a 2-arity function, received: {metric!r}'
@@ -182,16 +188,7 @@ class MatchMixin:
         x_mat = self.embeddings
         y_mat = darray.embeddings
 
-        x_type = get_array_type(x_mat)
-        y_type = get_array_type(y_mat)
-
-        if x_type != y_type:
-            raise ValueError(
-                f'The type of your left-hand side is {x_type}, whereas your right-hand side is {y_type}. '
-                f'`.match()` requires left must be the same type as right.'
-            )
-
-        dists = cdist(x_mat, y_mat, metric_name, is_sparse=x_type[1])
+        dists = cdist(x_mat, y_mat, metric_name)
         dist, idx = top_k(dists, min(limit, len(darray)), descending=False)
         if isinstance(normalization, (tuple, list)) and normalization is not None:
             # normalization bound uses original distance not the top-k trimmed distance
@@ -220,7 +217,6 @@ class MatchMixin:
         """
 
         x_mat = self.embeddings
-        x_type = get_array_type(x_mat)
         n_x = x_mat.shape[0]
 
         idx = 0
@@ -229,7 +225,7 @@ class MatchMixin:
         for ld in darray.batch(batch_size=batch_size):
             y_batch = ld.embeddings
 
-            distances = cdist(x_mat, y_batch, metric_name, is_sparse=x_type[1])
+            distances = cdist(x_mat, y_batch, metric_name)
             dists, inds = top_k(distances, limit, descending=False)
 
             if isinstance(normalization, (tuple, list)) and normalization is not None:

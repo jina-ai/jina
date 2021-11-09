@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 import numpy as np
+from ..types.ndarray import get_array_type
 
 if TYPE_CHECKING:
     from ..types.ndarray import ArrayType
@@ -9,23 +10,20 @@ if TYPE_CHECKING:
 def pdist(
     x_mat: 'ArrayType',
     metric: str,
-    is_sparse: bool = False,
 ) -> 'np.ndarray':
     """Computes Pairwise distances between observations in n-dimensional space.
 
     :param x_mat: Union['np.ndarray','scipy.sparse.csr_matrix', 'scipy.sparse.coo_matrix'] of ndim 2
     :param metric: string describing the metric type
-    :param is_sparse: boolean stating if computation must be done with sparse data
     :return: np.ndarray of ndim 2
     """
-    return cdist(x_mat, x_mat, metric, is_sparse)
+    return cdist(x_mat, x_mat, metric)
 
 
 def cdist(
     x_mat: 'ArrayType',
     y_mat: 'ArrayType',
     metric: str,
-    is_sparse: bool = False,
 ) -> 'np.ndarray':
     """Computes the pairwise distance between each row of X and each row on Y according to `metric`.
     - Let `n_x = x_mat.shape[0]`
@@ -34,9 +32,20 @@ def cdist(
     :param x_mat: numpy or scipy array of ndim 2
     :param y_mat: numpy or scipy array of ndim 2
     :param metric: string describing the metric type
-    :param is_sparse: boolean describing if data type is sparse
     :return: np.ndarray of ndim 2
     """
+
+    x_type = get_array_type(x_mat)
+    y_type = get_array_type(y_mat)
+
+    if x_type != y_type:
+        raise ValueError(
+            f'The type of your left-hand side is {x_type}, whereas your right-hand side is {y_type}. '
+            f'`.match()` requires left must be the same type as right.'
+        )
+
+    is_sparse = get_array_type(x_mat)[1]
+
     if metric == 'cosine':
         if is_sparse:
             dists = sparse_cosine(x_mat, y_mat)

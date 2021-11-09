@@ -1,12 +1,11 @@
 import numpy as np
 import pytest
+import scipy.sparse as sp
+from scipy.spatial.distance import cdist
 
-from jina.math.distance import sqeuclidean, cosine, sparse_cosine, sparse_sqeuclidean
 from jina.math.distance import cdist as jina_cdist
 from jina.math.distance import pdist as jina_pdist
-
-import scipy.sparse as sp
-from scipy.spatial.distance import cdist, pdist
+from jina.math.distance import sqeuclidean, cosine, sparse_cosine, sparse_sqeuclidean
 
 
 @pytest.fixture
@@ -94,7 +93,6 @@ def test_cdist(metric, sparse_type, embeddings, other_embeddings):
         sparse_type(embeddings),
         sparse_type(other_embeddings),
         metric=metric,
-        is_sparse=True,
     )
     result_scipy = cdist(embeddings, other_embeddings, metric=metric)
 
@@ -133,7 +131,6 @@ def test_pdist(metric, sparse_type, embeddings, other_embeddings):
     result_sparse = jina_pdist(
         sparse_type(embeddings),
         metric=metric,
-        is_sparse=True,
     )
 
     np.testing.assert_almost_equal(result_sparse, result_dense)
