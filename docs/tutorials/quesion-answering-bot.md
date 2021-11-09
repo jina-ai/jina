@@ -220,4 +220,4 @@ def get_answer(docs, best_matching_id):
 print(get_answer(docs, best_matching_id))
 ```
 
-We have now seen how we can implement a basic question-answering bot using jina and without the need for a large dataset of matching questions and answers. Using this in practice would require us to experiment with a number of parameters such as the initial extraction of answers from the original text. In this tutorial we made the assumption that every sentence will be one potential answer. However, it is very likely that some user queries will require multiple sentences or complete paragraphs to answer. </br> 
+We have now seen how we can implement a basic question-answering bot using jina and without the need for a large dataset of matching questions and answers. Using this in practice would require us to experiment with a number of parameters such as the initial extraction of answers from the original text. In this tutorial we made the assumption that every sentence will be one potential answer. However, it is very likely that some user queries will require multiple sentences or complete paragraphs to answer.
