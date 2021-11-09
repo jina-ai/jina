@@ -4,7 +4,7 @@ import multiprocessing
 import threading
 import time
 from abc import ABC
-from typing import Optional, Union
+from typing import Optional, Union, List
 
 import grpc
 from grpc import RpcError
@@ -113,26 +113,28 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
         return False
 
-    async def Call(self, msg, *args) -> Message:
+    async def Call(self, messages: List[Message], *args) -> Message:
         """
         Process they received message and return the result as a new message
 
-        :param msg: the message to process
+        :param messages: the messages to process
         :param args: additional arguments in the grpc call, ignored
         :returns: the response message
         """
-        try:
-            return self._handle(msg)
-        except RuntimeTerminated:
-            WorkerRuntime.cancel(self.is_cancel)
-        except (RuntimeError, Exception) as ex:
-            self.logger.error(
-                f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
-                if not self.args.quiet_error
-                else '',
-                exc_info=not self.args.quiet_error,
-            )
-            raise
+        for msg in messages:
+            self.logger.debug('processing msg')
+            try:
+                return self._handle(msg)
+            except RuntimeTerminated:
+                WorkerRuntime.cancel(self.is_cancel)
+            except (RuntimeError, Exception) as ex:
+                self.logger.error(
+                    f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
+                    if not self.args.quiet_error
+                    else '',
+                    exc_info=not self.args.quiet_error,
+                )
+                raise
 
     def _handle(self, msg: Message) -> Message:
         """Process the given message, data requests are passed to the DataRequestHandler
