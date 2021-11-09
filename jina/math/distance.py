@@ -1,20 +1,13 @@
+from typing import TYPE_CHECKING
+
 import numpy as np
 
-from typing import Union, TYPE_CHECKING
-
 if TYPE_CHECKING:
-    import scipy
-
-_SPARSE_SCIPY_TYPES = Union[
-    'scipy.sparse.csr_matrix',
-    'scipy.sparse.csc_matrix',
-    'scipy.sparse.bsr_matrix',
-    'scipy.sparse.coo_matrix',
-]
+    from ..types.ndarray import ArrayType
 
 
 def pdist(
-    x_mat: Union['np.ndarray', _SPARSE_SCIPY_TYPES],
+    x_mat: 'ArrayType',
     metric: str,
     is_sparse: bool = False,
 ) -> 'np.ndarray':
@@ -29,12 +22,11 @@ def pdist(
 
 
 def cdist(
-    x_mat: Union['np.ndarray', _SPARSE_SCIPY_TYPES],
-    y_mat: Union['np.ndarray', _SPARSE_SCIPY_TYPES],
+    x_mat: 'ArrayType',
+    y_mat: 'ArrayType',
     metric: str,
     is_sparse: bool = False,
 ) -> 'np.ndarray':
-
     """Computes the pairwise distance between each row of X and each row on Y according to `metric`.
     - Let `n_x = x_mat.shape[0]`
     - Let `n_y = y_mat.shape[0]`
@@ -97,9 +89,7 @@ def sqeuclidean(x_mat: 'np.ndarray', y_mat: 'np.ndarray') -> 'np.ndarray':
     )
 
 
-def sparse_cosine(
-    x_mat: _SPARSE_SCIPY_TYPES, y_mat: _SPARSE_SCIPY_TYPES
-) -> 'np.ndarray':
+def sparse_cosine(x_mat: 'ArrayType', y_mat: 'ArrayType') -> 'np.ndarray':
     """Cosine distance between each row in x_mat and each row in y_mat.
     :param x_mat:  scipy.sparse like array with ndim=2
     :param y_mat:  scipy.sparse like array with ndim=2
@@ -117,9 +107,7 @@ def sparse_cosine(
     )
 
 
-def sparse_sqeuclidean(
-    x_mat: _SPARSE_SCIPY_TYPES, y_mat: _SPARSE_SCIPY_TYPES
-) -> 'np.ndarray':
+def sparse_sqeuclidean(x_mat: 'ArrayType', y_mat: 'ArrayType') -> 'np.ndarray':
     """Cosine distance between each row in x_mat and each row in y_mat.
     :param x_mat:  scipy.sparse like array with ndim=2
     :param y_mat:  scipy.sparse like array with ndim=2

@@ -186,7 +186,7 @@ class NdArray(ProtoTypeMixin):
 
         :param value: the framework ndarray to be set.
         """
-        framework, is_sparse = _get_array_type(value)
+        framework, is_sparse = get_array_type(value)
 
         if framework == 'jina':
             # it is Jina's NdArray, simply copy it
@@ -273,7 +273,7 @@ def _set_dense_array(value, target):
     target.dtype = value.dtype.str
 
 
-def _get_array_type(array) -> Tuple[str, bool]:
+def get_array_type(array) -> Tuple[str, bool]:
     """Get the type of ndarray without importing the framework
 
     :param array: any array, scipy, numpy, tf, torch, etc.

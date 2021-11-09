@@ -688,10 +688,3 @@ def test_only_id(docarrays_for_embedding_distance_computation, only_id):
         for m in d.matches:
             assert (m.embedding is None) == only_id
             assert m.id
-
-
-def test_da_get_embeddings_slice():
-    da = DocumentArray(random_docs(100))
-    np.testing.assert_almost_equal(
-        da.get_attributes('embedding')[10:20], da._get_embeddings(slice(10, 20))
-    )
