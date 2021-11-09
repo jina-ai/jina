@@ -135,6 +135,12 @@ message MessageProto {
     RequestProto request = 2; // the request body
 }
 
+/**
+ * Represents a list of Messages
+ */
+message MessageListProto {
+    repeated MessageProto messages = 1; // messages in this lis
+}
 
 /**
  * Represents a Request
@@ -207,7 +213,7 @@ service JinaRPC {
  */
 service JinaDataRequestRPC {
     // Pass in a Message, wrapping a DataRequest
-    rpc Call (MessageProto) returns (MessageProto) {
+    rpc Call (MessageListProto) returns (MessageProto) {
     }
 }
 
