@@ -140,7 +140,8 @@ class TextEncoder(Executor):
             embeddings = model.encode(target.texts)
             target.embeddings = embeddings
 ```
-Similar to the `QuestionGenerator` the `TextEncoder` is simply a wrapper around the SentenceTransformer from the sentence_transformer package. When provided with a `DocumentArray` containing text, it will encode the text of each element and store the result in the `embedding` attribute it creates. </br>
+Similar to the `QuestionGenerator` the `TextEncoder` is simply a wrapper around the SentenceTransformer from the sentence_transformer package. When provided with a `DocumentArray` containing text, it will encode the text of each element and store the result in the `embedding` attribute it creates.
+
 Now let's move on to the last part and create the indexer. 
 
 ## Putting it Together with the Indexer
