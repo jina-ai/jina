@@ -21,6 +21,7 @@ PAGE_SIZE = mmap.ALLOCATIONGRANULARITY
 if TYPE_CHECKING:
     from ...document import Document
     from ..document import DocumentArray
+    from ...ndarray import ArrayType
 
 __all__ = ['DocumentArrayMemmap']
 
@@ -496,7 +497,7 @@ class DocumentArrayMemmap(
             del fp
 
     @ContentPropertyMixin.embeddings.getter
-    def embeddings(self) -> np.ndarray:
+    def embeddings(self) -> 'ArrayType':
         """Return a `np.ndarray` stacking all the `embedding` attributes as rows.
 
         :return: embeddings stacked per row as `np.ndarray`.

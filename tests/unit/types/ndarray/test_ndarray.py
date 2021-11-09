@@ -1,10 +1,10 @@
 import numpy as np
 import paddle
 import pytest
-
 import tensorflow as tf
 import torch
 from scipy.sparse import csr_matrix, coo_matrix, bsr_matrix, csc_matrix
+
 from jina import Document, DocumentArray
 
 
@@ -66,10 +66,10 @@ def get_ndarrays_for_ravel():
         (paddle.to_tensor(a), False),
         (torch.tensor(a).to_sparse(), True),
         # (tf.sparse.from_dense(a), True),
-        # (csr_matrix(a), True),
-        # (bsr_matrix(a), True),
-        # (coo_matrix(a), True),
-        # (csc_matrix(a), True)
+        (csr_matrix(a), True),
+        (bsr_matrix(a), True),
+        (coo_matrix(a), True),
+        (csc_matrix(a), True),
     ]
 
 
@@ -102,3 +102,18 @@ def test_ravel_embeddings_blobs(ndarray_val, attr, is_sparse):
         ndarray_val = ndarray_val.numpy()
 
     np.testing.assert_almost_equal(ndav, ndarray_val)
+
+
+@pytest.mark.parametrize('sparse_cls', [csr_matrix, csc_matrix, bsr_matrix, coo_matrix])
+def test_bsr_coo_unravel(sparse_cls):
+    # it's hard to implement unravel setter for BSR and COO sparse
+    # matrix, but for unravel getter, they should work just fine.
+
+    a = np.random.random([10, 72])
+    a[a > 0.5] = 0
+
+    da = DocumentArray.empty(10)
+    for d, a_row in zip(da, a):
+        d.embedding = sparse_cls(a_row)
+
+    np.testing.assert_almost_equal(a, da.embeddings.todense())

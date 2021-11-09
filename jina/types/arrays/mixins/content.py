@@ -1,7 +1,5 @@
 from typing import List, Sequence, TYPE_CHECKING
 
-import numpy as np
-
 from ...ndarray import NdArray
 
 if TYPE_CHECKING:
@@ -18,10 +16,10 @@ class ContentPropertyMixin:
             )
 
     @property
-    def embeddings(self) -> np.ndarray:
-        """Return a `np.ndarray` stacking all the `embedding` attributes as rows.
+    def embeddings(self) -> 'ArrayType':
+        """Return a :class:`ArrayType` stacking all the `embedding` attributes as rows.
 
-        :return: a ndarray of embedding
+        :return: a :class:`ArrayType` of embedding
         """
         return NdArray.unravel([d.embedding for d in self._pb_body])
 
@@ -44,14 +42,11 @@ class ContentPropertyMixin:
         else:
             emb_shape0 = value.shape[0]
             self._check_length(emb_shape0)
-
-            # the best-effort & universal way to index ArrayType on torch, tf, numpy, scipy.sparse
-            for d, j in zip(self, range(emb_shape0)):
-                d.embedding = value[j, ...]
+            NdArray.ravel(self, value, 'embedding')
 
     @property
-    def blobs(self) -> np.ndarray:
-        """Return a `np.ndarray` stacking all :attr:`.blob`.
+    def blobs(self) -> 'ArrayType':
+        """Return a :class:`ArrayType` stacking all :attr:`.blob`.
 
         The `blob` attributes are stacked together along a newly created first
         dimension (as if you would stack using ``np.stack(X, axis=0)``).
@@ -60,7 +55,7 @@ class ContentPropertyMixin:
                  All dtype and shape values are assumed to be equal to the values of the
                  first element in the DocumentArray / DocumentArrayMemmap
 
-        :return: a ndarray of blobs
+        :return: a :class:`ArrayType` of blobs
         """
         return NdArray.unravel([d.blob for d in self._pb_body])
 
@@ -78,9 +73,7 @@ class ContentPropertyMixin:
             blobs_shape0 = value.shape[0]
             self._check_length(blobs_shape0)
 
-            # the best-effort & universal way to index ArrayType on torch, tf, numpy, scipy.sparse
-            for d, j in zip(self, range(blobs_shape0)):
-                d.blob = value[j, ...]
+            NdArray.ravel(self, value, 'blob')
 
     @property
     def texts(self) -> List[str]:
