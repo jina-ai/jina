@@ -1,19 +1,27 @@
 import argparse
-import inspect
-from typing import List
+from typing import List, TYPE_CHECKING
 
-from ....grpc import Grpclet
-from ....zmq import AsyncZmqlet
 from .....importer import ImportExtensions
 from .....logging.logger import JinaLogger
 from .....types.request import Request
 
+if TYPE_CHECKING:
+    from ..graph.topology_graph import TopologyGraph
+    from ....networking import GrpcConnectionPool
 
-def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
+
+def get_fastapi_app(
+    args: 'argparse.Namespace',
+    topology_graph: 'TopologyGraph',
+    connection_pool: 'GrpcConnectionPool',
+    logger: 'JinaLogger',
+):
     """
     Get the app from FastAPI as the Websocket interface.
 
     :param args: passed arguments.
+    :param topology_graph: topology graph that manages the logic of sending to the proper executors.
+    :param connection_pool: Connection Pool to handle multiple replicas and sending to different of them
     :param logger: Jina logger.
     :return: fastapi app
     """
@@ -39,27 +47,15 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
 
     app = FastAPI()
 
-    if args.grpc_data_requests:
-        from ....stream.gateway import GrpcGatewayStreamer
+    from ....stream.gateway import GatewayStreamer
 
-        iolet = Grpclet(
-            args=args,
-            message_callback=None,
-            logger=logger,
-        )
-        streamer = GrpcGatewayStreamer(args, iolet)
-    else:
-        from ....stream.gateway import ZmqGatewayStreamer
-
-        iolet = AsyncZmqlet(args, logger)
-        streamer = ZmqGatewayStreamer(args, iolet)
+    streamer = GatewayStreamer(
+        args, graph=topology_graph, connection_pool=connection_pool
+    )
 
     @app.on_event('shutdown')
     async def _shutdown():
-        if inspect.iscoroutinefunction(iolet.close):
-            await iolet.close()
-        else:
-            iolet.close()
+        connection_pool.close()
 
     @app.websocket('/')
     async def websocket_endpoint(websocket: WebSocket):
