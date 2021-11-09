@@ -84,7 +84,7 @@ def update_runtime_cls(args, copy=False) -> 'Namespace':
     """
     _args = deepcopy(args) if copy else args
     gateway_runtime_dict = {
-        GatewayProtocolType.GRPC: 'GRPCRuntime',
+        GatewayProtocolType.GRPC: 'GRPCGatewayRuntime',
         GatewayProtocolType.WEBSOCKET: 'WebSocketGatewayRuntime',
         GatewayProtocolType.HTTP: 'HTTPGatewayRuntime',
     }

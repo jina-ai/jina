@@ -177,7 +177,7 @@ def test_uvicorn_ssl(cert_pem, key_pem, runtime_cls):
             'ssl_keyfile_password: abcd',
         ]
     )
-    with runtime_cls(args) as r:
+    with runtime_cls(args):
         pass
 
 
@@ -192,7 +192,7 @@ def test_uvicorn_ssl_wrong_password(cert_pem, key_pem, runtime_cls):
         ]
     )
     with pytest.raises(ssl.SSLError):
-        with runtime_cls(args) as r:
+        with runtime_cls(args):
             pass
 
 

@@ -122,7 +122,7 @@ def test_pod_context_replicas(runtime, replicas, grpc_data_requests):
 @pytest.mark.parametrize(
     'protocol, runtime_cls',
     [
-        ('grpc', 'GRPCRuntime'),
+        ('grpc', 'GRPCGatewayRuntime'),
     ],
 )
 def test_gateway_pod(runtime, protocol, runtime_cls):

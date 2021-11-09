@@ -9,7 +9,7 @@ from jina.excepts import RuntimeFailToStart
 from jina.parsers import set_pea_parser, set_gateway_parser
 from jina.peapods import Pea
 from jina.peapods.peas import BasePea
-from jina.peapods.runtimes.gateway.grpc import GRPCRuntime
+from jina.peapods.runtimes.gateway.grpc import GRPCGatewayRuntime
 from jina.peapods.runtimes.gateway.websocket import WebSocketGatewayRuntime
 from jina.peapods.runtimes.container import ContainerRuntime
 from jina.peapods.runtimes.zmq.zed import ZEDRuntime
@@ -37,7 +37,7 @@ def test_zed_runtime(runtime, ctrl_ipc):
     reason='for unknown reason, this test is flaky on Github action, '
     'but locally it SHOULD work fine',
 )
-@pytest.mark.parametrize('cls', [GRPCRuntime, WebSocketGatewayRuntime])
+@pytest.mark.parametrize('cls', [GRPCGatewayRuntime, WebSocketGatewayRuntime])
 @pytest.mark.parametrize('runtime', ['thread', 'process'])
 def test_gateway_runtime(cls, runtime):
     class Pea1(BasePea):

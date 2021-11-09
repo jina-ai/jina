@@ -19,6 +19,8 @@ class MWUEncoder(Executor):
         import pickle
 
         os.makedirs(self.workspace, exist_ok=True)
+        print(f' \n\n\n\n\n\nworkspace {self.workspace}')
+        print(f' \n\n\n\n\n\nself.metas.name {self.metas.name}')
         bin_path = os.path.join(self.workspace, f'{self.metas.name}.bin')
         with open(bin_path, 'wb') as f:
             pickle.dump(self._greetings, f)

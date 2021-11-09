@@ -100,7 +100,7 @@ def gateway(args: 'Namespace'):
     from jina.peapods.runtimes import get_runtime
 
     gateway_runtime_dict = {
-        GatewayProtocolType.GRPC: 'GRPCRuntime',
+        GatewayProtocolType.GRPC: 'GRPCGatewayRuntime',
         GatewayProtocolType.WEBSOCKET: 'WebSocketGatewayRuntime',
         GatewayProtocolType.HTTP: 'HTTPGatewayRuntime',
     }
