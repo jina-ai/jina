@@ -42,7 +42,7 @@ As described in the last section, we first need to predict potential questions f
 
 At this point we have enough information to start defining our `Flows`.
 
-<em> Without further ado, let's build! </em>
+*Without further ado, let's build!*
 
 ``` python
 indexing_flow = Flow(
