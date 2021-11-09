@@ -82,10 +82,11 @@ class CLIPImageEncoder(Executor):
 ```
 
 ### **YoloV5Segmenter**
-Since we want to retrieve small images in bigger images, the technique that we will havily rely on is segmenting. 
+Since we want to retrieve small images in bigger images, the technique that we will heavily rely on is segmenting. 
 Basicly, we want to do object detection on the indexed images. This will generate bounding boxes around objects 
-detected in side the images. The detected objects will be extracted and added as chunks to the original documents.
-BTW, guess what is the state-of-the-art object detection model ?
+detected inside the images. The detected objects will be extracted and added as chunks to the original documents.
+By the way, guess what is the state-of-the-art object detection model ?
+
 Right, we will use YoloV5.
 
 
@@ -105,7 +106,7 @@ To perform segmenting, we will implement method `_segment_docs` which performs t
 possible, along with their confidence scores). We will filter out detections whose scores are below the `confidence_threshold` to keep good quality.
 
 Each detection is actually 2 points -top left (x1, y1) and bottom right (x2, y2)- a confidence score and a class. 
-We want be using the class of the detection, but it can be useful in other search applications.
+We will not use the class of the detection, but it can be useful in other search applications.
 
 3. With the detections that we have, we create crops (using the 2 points returned). Finally, we add these crops to 
 image documents as chunks.
@@ -116,7 +117,6 @@ from typing import Dict, Iterable, Optional
 
 import torch
 from jina import Document, DocumentArray, Executor, requests
-from jina.logging.logger import JinaLogger
 from jina_commons.batching import get_docs_batch_generator
 
 
@@ -194,17 +194,19 @@ class YoloV5Segmenter(Executor):
 ```
 
 **Indexers**
+
 After developing the encoder, we will need 2 kinds of indexers: 
-1. SimpleIndexer: This indexer will take care of storing chunks of images. It also supports vector similarity search 
-which is important match small query images against segments of original images.
+1. SimpleIndexer: This indexer will take care of storing chunks of images. It also should support vector similarity 
+search which is important to match small query images against segments of original images.
 
 2. LMDBStorage: LMDB is a simple memory-mapped transactional key-value store. It is convenient for this example 
-because we can use it to store original indexed images so that we can retrieve them later. We will use it to create 
-LMDBStorage which offers 2 functionnalities: indexing documents and retrieving documents by ID.
+because we can use it to store the original images (so that we can retrieve them later). We will use it to create 
+LMDBStorage which offers 2 functionalities: indexing documents and retrieving documents by ID.
 
 
 ### **SimpleIndexer**
-To implement SimpleIndexer, we can leverage jina's `DocumentArrayMemmap`. You can read about this data type 
+
+To implement SimpleIndexer, we can leverage Jina's `DocumentArrayMemmap`. You can read about this data type 
 [here](https://docs.jina.ai/fundamentals/document/documentarraymemmap-api/).
 
 Our indexer will create an instance of `DocumentArrayMemmap` when it's initialized. We want to store indexed documents 
@@ -215,21 +217,19 @@ docs to `DocumentArrayMemmap` instance.
 
 On the other hand, for search, we implement the method `search`. We bind it to the query flow using the decorator 
 `@requests(on='/search')`.
+
 In jina, searching for query documents can be done by adding the results to the `matches` attribute of each query 
 document. Since docs is a `DocumentArray` we can use method `match` to match query against the indexed documents.
 Read more about `match` [here](https://docs.jina.ai/fundamentals/document/documentarray-api/#matching-documentarray-to-another).
 There's another detail here. We already indexed documents before search, but we need to match query documents against 
 chunks of the indexed images. Luckily, `DocumentArray.match` allows us to specify the traversal paths of 
-right-hand-side parameter with parameter `traversal_rdarray`. Since we want to match the left side docs (query) 
+the right-hand-side parameter with parameter `traversal_rdarray`. Since we want to match the left side docs (query) 
 against the chunks of the right side docs (indexed docs), we can specify that `traversal_rdarray=['c']`.
 
 ```python
-from copy import deepcopy
 from typing import Dict, Optional
-import inspect
 
 from jina import DocumentArray, Executor, requests
-from jina.logging.logger import JinaLogger
 from jina.types.arrays.memmap import DocumentArrayMemmap
 
 
@@ -279,22 +279,22 @@ class.
 The constructor should initialize a few attributes:
 * the `map_size` of the database
 * the `default_traversal_paths`. Actually we need traversal paths because we will not be traversing documents in 
-* the same way during index and query flows. During index, we want to store the root documents. However, during query, 
-* we need to get the matches of documents by ID.
+the same way during index and query flows. During index, we want to store the root documents. However, during query,  
+we need to get the matches of documents by ID.
 * the index file: again, to keep things clean, we will store the index file inside the workspace folder. Therefore we 
-* can use the `workspace` attribute.
+can use the `workspace` attribute.
 
 
 **III. `LMDBStorage.index`**
 
 In order to index documents, we first start a transaction (so that our Storage executor is ACID-compliant). Then, we 
-traverse them according to the `traversal_paths` (will be root during). Finally, each document is serialized to string 
-and then added to the database (the key is the document ID)
+traverse them according to the `traversal_paths` (will be root in the index Flow). Finally, each document is serialized 
+to string and then added to the database (the key is the document ID)
 
 
 **IV. `LMDBStorage.search`**
 
-Unlike search in the SimpleIndexer, we only which to get the matched Documents by ID and return them. Actually, the 
+Unlike search in the SimpleIndexer, we only wish to get the matched Documents by ID and return them. Actually, the 
 matched documents will be empty and will only contain the IDs. The goal is to return full matched documents using IDs.
 To accomplish this, again, we start a transaction, traverse the matched documents, get each matched document by ID and 
 use the results to fill our documents.
@@ -305,8 +305,6 @@ from typing import Dict, List
 
 import lmdb
 from jina import Document, DocumentArray, Executor, requests
-from jina_commons import get_logger
-from jina_commons.indexers.dump import export_dump_streaming, import_metas
 
 
 class _LMDBHandler:
@@ -396,22 +394,24 @@ class LMDBStorage(Executor):
 ### **SimpleRanker**
 
 You might think why do we need a ranker at all ?
-Actually, a ranker is needed because we will matching small query images against chunks of parent documents. But how 
-can we get back to parent documents (aka full images) given the chunks ? And what if 2 chunks belonging to the same parent are matched ?
+
+Actually, a ranker is needed because we will be matching small query images against chunks of parent documents. But how 
+can we get back to parent documents (aka full images) given the chunks ? And what if 2 chunks belonging to the same 
+parent are matched ?
 We can solve this by aggregating the similarity scores of chunks that belong to the same parent (using an aggregation 
 method, in our case, will be the `min` value).
 So, for each query document, we perform the following:
 
 1. We create an empty collection of parent scores. This collection will store, for each parent, a list of scores of its 
 chunk documents.
-2. For each match, since it's a originally a chunk document, we can retrieve its `parent_id`. And it's also a match 
-document so we get its match score and add that value to the parent socres collection.
+2. For each match, since it's a chunk document, we can retrieve its `parent_id`. And it's also a match 
+document so we get its match score and add that value to the parent scores collection.
 3. After processing all matches, we need to aggregate the scores of each parent using the `min` metric.
 4. Finally, using the aggregated score values of parents, we can create a new list of matches (this time consisting 
 of parents, not chunks). We also need to sort the matches list by aggregated scores.
 
 When query documents exit the SimpleRanker, they now have matches consisting of parent documents. However, parent 
-documents just have IDs. That why, during the previous steps, we created LMDBStorage so that we can actually 
+documents just have IDs. That's why, during the previous steps, we created LMDBStorage: to actually 
 retrieve parent documents by IDs and fill them with data.
 
 ```python
