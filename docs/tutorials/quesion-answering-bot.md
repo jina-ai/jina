@@ -9,11 +9,11 @@
 ```
 
 This tutorial will take you through the process of creating your own question-answering chatbot. 
-This is an inherently difficult task, due to the fuzzyness of human language and the infinite number of questions one could ask. </br> 
+This is an inherently difficult task, due to the fuzzyness of human language and the infinite number of questions one could ask.
 
-One way to solve this is by predicting answers using a neural network that was trained on pairs of quesitons and their corresponding answers. In many cases such a dataset is not available, like in the case of most software documentation. Let's say we want to build a chatbot to answer questions about the jina documentation. What if I told you that there is a way to reframe this task as a search problem and that this would alleviate the need for a large dataset of matching questions and answers? </br>
+One way to solve this is by predicting answers using a neural network that was trained on pairs of quesitons and their corresponding answers. In many cases such a dataset is not available, like in the case of most software documentation. Let's say we want to build a chatbot to answer questions about the jina documentation. What if I told you that there is a way to reframe this task as a search problem and that this would alleviate the need for a large dataset of matching questions and answers?
 
-How you ask? <em>Let me explain!</em>
+How you ask? *Let me explain!*
 
 ## Overview 
 Our approach to the problem leverages the [Doc2query method](https://arxiv.org/pdf/1904.08375.pdf), which, form a piece of text, predicts different questions the text could potentially answer. For example, given a sentence such as `Jina is an open source framework for neural search.`, the model predicts questions such as `What is jina?` or `Is jina open source?`. </br>
