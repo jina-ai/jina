@@ -29,7 +29,7 @@ def docker_image_built():
     import docker
 
     client = docker.from_env()
-    client.images.build(path=os.path.join(cur_dir, 'scale-executor'), tag=img_name)
+    client.images.build(path=os.path.join(cur_dir, 'scale-executor'), tag=IMG_NAME)
     client.close()
     yield
     time.sleep(2)
@@ -109,12 +109,10 @@ def test_scale_success(flow_with_runtime, pod_params):
         assert replica_ids == set(range(scale_to))
 
 
-# @pytest.mark.parametrize('shards', [1, 2])
-# def test_scale_failure_zedruntime(shards):
-#     f = Flow().add(
-#         name='executor', uses=ScalableExecutor, replicas=2, shards=shards, polling='ANY'
-#     )
-#     with f:
+# @pytest.mark.parametrize('pod_params', [(2, 3, 1), (5, 4, 2)], indirect=True)
+# def test_scale_failure_zedruntime(flow_with_zed_runtime, pod_params):
+#     num_replicas, scale_to, shards = pod_params
+#     with flow_with_zed_runtime as f:
 #         ret1 = f.index(
 #             inputs=DocumentArray([Document() for _ in range(200)]),
 #             return_results=True,
@@ -145,8 +143,8 @@ def test_scale_success(flow_with_runtime, pod_params):
 #             replica_ids.add(replica_id)
 #
 #     assert replica_ids == {0, 1}
-#
-#
+
+
 # @pytest.mark.parametrize('shards', [1, 2])
 # def test_scale_failure_containerruntime(docker_image_built, shards):
 #     f = Flow().add(
