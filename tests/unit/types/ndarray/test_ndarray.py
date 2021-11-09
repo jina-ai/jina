@@ -106,9 +106,6 @@ def test_ravel_embeddings_blobs(ndarray_val, attr, is_sparse):
 
 @pytest.mark.parametrize('sparse_cls', [csr_matrix, csc_matrix, bsr_matrix, coo_matrix])
 def test_bsr_coo_unravel(sparse_cls):
-    # it's hard to implement unravel setter for BSR and COO sparse
-    # matrix, but for unravel getter, they should work just fine.
-
     a = np.random.random([10, 72])
     a[a > 0.5] = 0
 
