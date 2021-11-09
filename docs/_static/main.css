@@ -4,6 +4,10 @@ html.loaded-in-iframe #toc-drawer {
   display: none!important;
 }
 
+html.loaded-in-iframe .page .main {
+    justify-content: center;
+}
+
 .sidebar-logo {
     max-width: 50%;
 }
