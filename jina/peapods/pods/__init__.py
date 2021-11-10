@@ -390,7 +390,6 @@ class Pod(BasePod):
                 self._peas[i] = new_pea
 
         async def _scale_up(self, replicas: int):
-            assert replicas > len(self._peas)
             new_peas = []
             new_args_list = []
             for i in range(len(self._peas), replicas):
@@ -430,7 +429,6 @@ class Pod(BasePod):
                     self._peas.append(new_pea)
 
         async def _scale_down(self, replicas: int):
-            assert replicas < len(self._peas)
             for i in reversed(range(replicas, len(self._peas))):
                 # Close returns exception, but in theory `termination` should handle close properly
                 try:
@@ -450,6 +448,7 @@ class Pod(BasePod):
                 .. note: Scale is either successful or not. If one replica fails to start, the ReplicaSet remains in the same state
             """
             # TODO make scale robust, in what state this ReplicaSet ends when this fails?
+            assert replicas > 0
             if replicas > len(self._peas):
                 await self._scale_up(replicas)
             elif replicas < len(self._peas):

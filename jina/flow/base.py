@@ -1821,7 +1821,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def scale(
         self,
         pod_name: str,
-        *,
         replicas: int,
     ):
         """
