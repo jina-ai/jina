@@ -78,6 +78,7 @@ class AsyncFlowClient(AsyncBaseClient):
         id: Union[str, 'DaemonID'],
         pod_name: str,
         dump_path: Optional[str] = None,
+        operator_kind: UpdateOperation = UpdateOperation.ROLLING_UPDATE,
         *,
         uses_with: Optional[Dict] = None,
     ) -> str:
@@ -98,7 +99,7 @@ class AsyncFlowClient(AsyncBaseClient):
             method='PUT',
             url=f'{self.store_api}/{daemonize(id, self._kind)}',
             params={
-                'kind': UpdateOperation.ROLLING_UPDATE.value,
+                'kind': operator_kind.value,
                 'pod_name': pod_name,
             },
             json=uses_with,
