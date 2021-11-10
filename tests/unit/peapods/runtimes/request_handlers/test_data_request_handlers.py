@@ -46,11 +46,7 @@ def test_data_request_handler_new_docs(logger):
     )[0]
     msg = Message(None, req, 'test', '123')
     assert len(msg.request.docs) == 10
-    handler.handle(
-        msg=msg,
-        partial_requests=None,
-        peapod_name='name',
-    )
+    msg = handler.handle(messages=[msg])
 
     assert len(msg.request.docs) == 1
     assert msg.request.docs[0].text == 'new document'
@@ -67,11 +63,7 @@ def test_data_request_handler_change_docs(logger):
     )[0]
     msg = Message(None, req, 'test', '123')
     assert len(msg.request.docs) == 10
-    handler.handle(
-        msg=msg,
-        partial_requests=None,
-        peapod_name='name',
-    )
+    msg = handler.handle(messages=[msg])
 
     assert len(msg.request.docs) == 10
     for doc in msg.request.docs:
@@ -96,11 +88,7 @@ def test_data_request_handler_change_docs_dam(logger, tmpdir):
     )[0]
     msg = Message(None, req, 'test', '123')
     assert len(msg.request.docs) == 10
-    handler.handle(
-        msg=msg,
-        partial_requests=None,
-        peapod_name='name',
-    )
+    msg = handler.handle(messages=[msg])
 
     assert len(msg.request.docs) == 10
     for doc in msg.request.docs:
@@ -119,13 +107,12 @@ def test_data_request_handler_change_docs_from_partial_requests(logger):
             )
         )[0]
     ] * NUM_PARTIAL_REQUESTS
-    msg = Message(None, partial_reqs[-1], 'test', '123')
-    assert len(msg.request.docs) == 10
-    handler.handle(
-        msg=msg,
-        partial_requests=partial_reqs,
-        peapod_name='name',
-    )
+    messages = []
+    for request in partial_reqs:
+        messages.append(Message(None, request, 'test', '123'))
+    assert len(messages) == 5
+    assert len(messages[0].request.docs) == 10
+    msg = handler.handle(messages=messages)
 
     assert len(msg.request.docs) == 10 * NUM_PARTIAL_REQUESTS
     for doc in msg.request.docs:

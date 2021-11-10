@@ -3,7 +3,7 @@ import multiprocessing
 import os
 import time
 from multiprocessing import Process
-from threading import Event
+from threading import Event, Thread
 
 import pytest
 
@@ -20,20 +20,16 @@ from jina.types.message import Message
 @pytest.mark.timeout(5)
 def test_worker_runtime():
     args = set_pea_parser().parse_args([])
-    handle_mock = multiprocessing.Event()
 
     cancel_event = multiprocessing.Event()
 
-    def start_runtime(args, handle_mock, cancel_event):
+    def start_runtime(args, cancel_event):
         with WorkerRuntime(args, cancel_event) as runtime:
-            runtime._data_request_handler.handle = (
-                lambda *args, **kwargs: handle_mock.set()
-            )
             runtime.run_forever()
 
     runtime_thread = Process(
         target=start_runtime,
-        args=(args, handle_mock, cancel_event),
+        args=(args, cancel_event),
         daemon=True,
     )
     runtime_thread.start()
@@ -43,9 +39,45 @@ def test_worker_runtime():
     )
 
     assert GrpcConnectionPool.send_message_sync(
-        _create_test_data_message(), f'{args.host}:{args.port_in}'
+        _create_test_data_message(),
+        f'{args.host}:{args.port_in}',
     )
-    assert handle_mock.is_set()
+
+    WorkerRuntime.cancel(cancel_event)
+    runtime_thread.join()
+
+    assert not WorkerRuntime.is_ready(f'{args.host}:{args.port_in}')
+
+
+@pytest.mark.slow
+@pytest.mark.timeout(5)
+def test_worker_runtime_docs_merging():
+    args = set_pea_parser().parse_args([])
+
+    cancel_event = multiprocessing.Event()
+
+    def start_runtime(args, cancel_event):
+        with WorkerRuntime(args, cancel_event) as runtime:
+            runtime.run_forever()
+
+    runtime_thread = Process(
+        target=start_runtime,
+        args=(args, cancel_event),
+        daemon=True,
+    )
+    runtime_thread.start()
+
+    assert WorkerRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0, ctrl_address=f'{args.host}:{args.port_in}', shutdown_event=Event()
+    )
+
+    response = GrpcConnectionPool.send_messages_sync(
+        [_create_test_data_message(), _create_test_data_message()],
+        f'{args.host}:{args.port_in}',
+    )
+    assert response
+    # we send two messages, its documents should be merged by concatinating
+    assert len(response.response.docs) == 2
 
     WorkerRuntime.cancel(cancel_event)
     runtime_thread.join()
