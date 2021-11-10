@@ -125,7 +125,7 @@ class BaseStreamer(ABC):
     async def _stream_requests_with_prefetch(
         self, request_iterator: Union[Iterator, AsyncIterator], prefetch: int
     ):
-        """Implements request and response handling without prefetching
+        """Implements request and response handling with prefetching
 
         :param request_iterator: requests iterator from Client
         :param prefetch: number of requests to prefetch
@@ -164,21 +164,26 @@ class BaseStreamer(ABC):
         # the total num requests < prefetch
         if is_req_empty:
             for r in asyncio.as_completed(prefetch_task):
-                yield await r
+                res = await r
+                yield self._handle_result(res)
         else:
             # if there are left over (`else` clause above is unnecessary for code but for better readability)
             onrecv_task = []
             # the following code "interleaves" prefetch_task and onrecv_task, when one dries, it switches to the other
             while prefetch_task:
                 if self.logger.debug_enabled:
-                    self.logger.debug(
-                        f'send: {self.msg_handler.msg_sent} '
-                        f'recv: {self.msg_handler.msg_recv} '
-                        f'pending: {self.msg_handler.msg_sent - self.msg_handler.msg_recv}'
-                    )
+                    if hasattr(self.msg_handler, 'msg_sent') and hasattr(
+                        self.msg_handler, 'msg_recv'
+                    ):
+                        self.logger.debug(
+                            f'send: {self.msg_handler.msg_sent} '
+                            f'recv: {self.msg_handler.msg_recv} '
+                            f'pending: {self.msg_handler.msg_sent - self.msg_handler.msg_recv}'
+                        )
                 onrecv_task.clear()
                 for r in asyncio.as_completed(prefetch_task):
-                    yield await r
+                    res = await r
+                    yield self._handle_result(res)
                     if not is_req_empty:
                         is_req_empty = await iterate_requests(1, onrecv_task)
 
