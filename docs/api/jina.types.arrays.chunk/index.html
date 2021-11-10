@@ -29,7 +29,7 @@
 <script async defer src="https://buttons.github.io/buttons.js"></script>
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.types.arrays.document module" href="../jina.types.arrays.document/" /><link rel="prev" title="jina.types.arrays.mixins.traverse module" href="../jina.types.arrays.mixins.traverse/" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.10.09"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.0, furo 2021.10.09"/>
         <title>jina.types.arrays.chunk module - Jina 2.4.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
@@ -653,7 +653,7 @@
 <span id="jina-types-arrays-chunk-module"></span><h1>jina.types.arrays.chunk module<a class="headerlink" href="#module-jina.types.arrays.chunk" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.types.arrays.chunk.ChunkArray">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.types.arrays.chunk.</span></span><span class="sig-name descname"><span class="pre">ChunkArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc_views</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_doc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/chunk/#ChunkArray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.chunk.ChunkArray" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.types.arrays.chunk.</span></span><span class="sig-name descname"><span class="pre">ChunkArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc_views</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_doc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/chunk/#ChunkArray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.chunk.ChunkArray" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../jina.types.arrays.document/#jina.types.arrays.document.DocumentArray" title="jina.types.arrays.document.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.document.DocumentArray</span></code></a></p>
 <p><a class="reference internal" href="#jina.types.arrays.chunk.ChunkArray" title="jina.types.arrays.chunk.ChunkArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChunkArray</span></code></a> inherits from <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code>.
 It’s a subset of Documents.</p>
@@ -713,7 +713,7 @@ make sure the added chunk is legit.</p>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.arrays.chunk.ChunkArray.reference_doc">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">reference_doc</span></span><em class="property"><span class="pre">:</span> <span class="pre">Document</span></em><a class="headerlink" href="#jina.types.arrays.chunk.ChunkArray.reference_doc" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reference_doc</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Document</span></em><a class="headerlink" href="#jina.types.arrays.chunk.ChunkArray.reference_doc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the document that <a class="reference internal" href="#jina.types.arrays.chunk.ChunkArray" title="jina.types.arrays.chunk.ChunkArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChunkArray</span></code></a> belongs to.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -726,7 +726,7 @@ make sure the added chunk is legit.</p>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.arrays.chunk.ChunkArray.granularity">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">granularity</span></span><em class="property"><span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#jina.types.arrays.chunk.ChunkArray.granularity" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">granularity</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#jina.types.arrays.chunk.ChunkArray.granularity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get granularity of all document in this array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -739,7 +739,7 @@ make sure the added chunk is legit.</p>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.arrays.chunk.ChunkArray.adjacency">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">adjacency</span></span><em class="property"><span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#jina.types.arrays.chunk.ChunkArray.adjacency" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">adjacency</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#jina.types.arrays.chunk.ChunkArray.adjacency" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get adjacency of all document in this array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>

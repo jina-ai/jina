@@ -29,7 +29,7 @@
 <script async defer src="https://buttons.github.io/buttons.js"></script>
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.10.09"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.0, furo 2021.10.09"/>
         <title>daemon.models.id module - Jina 2.4.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
@@ -653,7 +653,7 @@
 <span id="daemon-models-id-module"></span><h1>daemon.models.id module<a class="headerlink" href="#module-daemon.models.id" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="daemon.models.id.DaemonID">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">daemon.models.id.</span></span><span class="sig-name descname"><span class="pre">DaemonID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../daemon.models.enums/#daemon.models.enums.IDLiterals" title="daemon.models.enums.IDLiterals"><span class="pre">daemon.models.enums.IDLiterals</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/models/id/#DaemonID"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.models.id.DaemonID" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.models.id.</span></span><span class="sig-name descname"><span class="pre">DaemonID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../daemon.models.enums/#daemon.models.enums.IDLiterals" title="daemon.models.enums.IDLiterals"><span class="pre">daemon.models.enums.IDLiterals</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/models/id/#DaemonID"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.models.id.DaemonID" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
 <p>Custom datatype defining an ID in Daemon</p>
 <p>Validate str and create <cite>DaemonID</cite> object</p>
@@ -671,11 +671,11 @@
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="daemon.models.id.DaemonID.pattern">
-<span class="sig-name descname"><span class="pre">pattern</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'^(jpod|jpea|jflow|jnetwork|jworkspace)-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'</span></em><a class="headerlink" href="#daemon.models.id.DaemonID.pattern" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">pattern</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'^(jpod|jpea|jflow|jnetwork|jworkspace)-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'</span></em><a class="headerlink" href="#daemon.models.id.DaemonID.pattern" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="daemon.models.id.DaemonID.jtype">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">jtype</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#daemon.models.id.DaemonID.jtype" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">jtype</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#daemon.models.id.DaemonID.jtype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get IDLiterals from DaemonID</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -688,7 +688,7 @@
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="daemon.models.id.DaemonID.jid">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">jid</span></span><a class="headerlink" href="#daemon.models.id.DaemonID.jid" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">jid</span></span><a class="headerlink" href="#daemon.models.id.DaemonID.jid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get uuid from DaemonID</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -698,7 +698,7 @@
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="daemon.models.id.DaemonID.type">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">type</span></span><a class="headerlink" href="#daemon.models.id.DaemonID.type" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><a class="headerlink" href="#daemon.models.id.DaemonID.type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get jina object type from DaemonID</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -708,7 +708,7 @@
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="daemon.models.id.DaemonID.tag">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#daemon.models.id.DaemonID.tag" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tag</span></span><a class="headerlink" href="#daemon.models.id.DaemonID.tag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get tag (: separated type &amp; id) from DaemonID</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -718,7 +718,7 @@
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="daemon.models.id.DaemonID.validate">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/models/id/#DaemonID.validate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.models.id.DaemonID.validate" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/models/id/#DaemonID.validate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.models.id.DaemonID.validate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate DaemonID</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -734,7 +734,7 @@
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="daemon.models.id.DaemonID.pydantic_validate">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">pydantic_validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/models/id/#DaemonID.pydantic_validate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.models.id.DaemonID.pydantic_validate" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pydantic_validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/models/id/#DaemonID.pydantic_validate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.models.id.DaemonID.pydantic_validate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate method for pydantic</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

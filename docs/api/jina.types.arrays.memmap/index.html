@@ -30,7 +30,7 @@
 <script async defer src="https://buttons.github.io/buttons.js"></script>
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.types.arrays.memmap.bpm module" href="../jina.types.arrays.memmap.bpm/" /><link rel="prev" title="jina.types.arrays package" href="../jina.types.arrays/" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.10.09"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.0, furo 2021.10.09"/>
         <title>jina.types.arrays.memmap package - Jina 2.4.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
@@ -664,7 +664,7 @@
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.types.arrays.memmap" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.types.arrays.memmap.DocumentArrayMemmap">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.types.arrays.memmap.</span></span><span class="sig-name descname"><span class="pre">DocumentArrayMemmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">36</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer_pool_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.types.arrays.memmap.</span></span><span class="sig-name descname"><span class="pre">DocumentArrayMemmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">36</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer_pool_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../jina.types.arrays.mixins/#jina.types.arrays.mixins.AllMixins" title="jina.types.arrays.mixins.AllMixins"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.mixins.AllMixins</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.MutableSequence</span></code></p>
 <p>Create a memory-map to an <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code> stored in binary files on disk.</p>
 <p>Memory-mapped files are used for accessing <code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code> of large <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code> on disk,
@@ -795,7 +795,7 @@ the change has not been reflected in this <code class="xref py py-class docutils
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.arrays.memmap.DocumentArrayMemmap.physical_size">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">physical_size</span></span><em class="property"><span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.physical_size" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">physical_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.physical_size" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the on-disk physical size of this DocumentArrayMemmap, in bytes</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -808,7 +808,7 @@ the change has not been reflected in this <code class="xref py py-class docutils
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.arrays.memmap.DocumentArrayMemmap.embeddings">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">embeddings</span></span><em class="property"><span class="pre">:</span> <span class="pre">ArrayType</span></em><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.embeddings" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">embeddings</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ArrayType</span></em><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.embeddings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a <cite>np.ndarray</cite> stacking all the <cite>embedding</cite> attributes as rows.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -831,7 +831,7 @@ first element in the DocumentArray / DocumentArrayMemmap.</p>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.arrays.memmap.DocumentArrayMemmap.path">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.path" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#jina.types.arrays.memmap.DocumentArrayMemmap.path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the path where the instance is stored.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>

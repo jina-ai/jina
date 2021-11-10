@@ -29,7 +29,7 @@
 <script async defer src="https://buttons.github.io/buttons.js"></script>
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.importer module" href="../jina.importer/" /><link rel="prev" title="jina.excepts module" href="../jina.excepts/" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.10.09"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.0, furo 2021.10.09"/>
         <title>jina.helper module - Jina 2.4.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
@@ -827,12 +827,12 @@ explicitly stored.</p>
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.helper.ArgNamespace">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">ArgNamespace</span></span><a class="reference internal" href="../../_modules/jina/helper/#ArgNamespace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.ArgNamespace" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">ArgNamespace</span></span><a class="reference internal" href="../../_modules/jina/helper/#ArgNamespace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.ArgNamespace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Helper function for argparse.Namespace object.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.helper.ArgNamespace.kwargs2list">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">kwargs2list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#ArgNamespace.kwargs2list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.ArgNamespace.kwargs2list" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kwargs2list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#ArgNamespace.kwargs2list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.ArgNamespace.kwargs2list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert dict to an argparse-friendly list.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -848,7 +848,7 @@ explicitly stored.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.helper.ArgNamespace.kwargs2namespace">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">kwargs2namespace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parser</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warn_unknown</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fallback_parsers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positional_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#ArgNamespace.kwargs2namespace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.ArgNamespace.kwargs2namespace" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kwargs2namespace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parser</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warn_unknown</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fallback_parsers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positional_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#ArgNamespace.kwargs2namespace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.ArgNamespace.kwargs2namespace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert dict to a namespace.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -870,7 +870,7 @@ explicitly stored.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.helper.ArgNamespace.get_non_defaults_args">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">get_non_defaults_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parser</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taboo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#ArgNamespace.get_non_defaults_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.ArgNamespace.get_non_defaults_args" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_non_defaults_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parser</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taboo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#ArgNamespace.get_non_defaults_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.ArgNamespace.get_non_defaults_args" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get non-default args in a dict.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -890,7 +890,7 @@ explicitly stored.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.helper.ArgNamespace.flatten_to_dict">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">flatten_to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#ArgNamespace.flatten_to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.ArgNamespace.flatten_to_dict" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">flatten_to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#ArgNamespace.flatten_to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.ArgNamespace.flatten_to_dict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert argparse.Namespace to dict to be uploaded via REST.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -923,7 +923,7 @@ explicitly stored.</p>
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.helper.cached_property">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">cached_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#cached_property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.cached_property" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">cached_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#cached_property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.cached_property" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>The decorator to cache property of a class.</p>
 <p>Create the <a class="reference internal" href="#jina.helper.cached_property" title="jina.helper.cached_property"><code class="xref py py-class docutils literal notranslate"><span class="pre">cached_property</span></code></a>.</p>
@@ -1038,7 +1038,7 @@ is running in the same thread.</p>
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.helper.CatchAllCleanupContextManager">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">CatchAllCleanupContextManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#CatchAllCleanupContextManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.CatchAllCleanupContextManager" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">CatchAllCleanupContextManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#CatchAllCleanupContextManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.CatchAllCleanupContextManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This context manager guarantees, that the :method:<code class="docutils literal notranslate"><span class="pre">__exit__</span></code> of the
 sub context is called, even when there is an Exception in the

@@ -29,7 +29,7 @@
 <script async defer src="https://buttons.github.io/buttons.js"></script>
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.types.message package" href="../jina.types.message/" /><link rel="prev" title="jina.types.document.graph module" href="../jina.types.document.graph/" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.10.09"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.0, furo 2021.10.09"/>
         <title>jina.types.document.helper module - Jina 2.4.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
@@ -653,7 +653,7 @@
 <span id="jina-types-document-helper-module"></span><h1>jina.types.document.helper module<a class="headerlink" href="#module-jina.types.document.helper" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.types.document.helper.DocGroundtruthPair">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.types.document.helper.</span></span><span class="sig-name descname"><span class="pre">DocGroundtruthPair</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groundtruth</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/helper/#DocGroundtruthPair"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.helper.DocGroundtruthPair" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.types.document.helper.</span></span><span class="sig-name descname"><span class="pre">DocGroundtruthPair</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groundtruth</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/helper/#DocGroundtruthPair"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.helper.DocGroundtruthPair" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Helper class to expose common interface to the traversal logic of the BaseExecutable Driver.
 It is important to note that it checks the matching structure of <cite>docs</cite> and <cite>groundtruths</cite>. It is important while
@@ -678,7 +678,7 @@ This does not imply that you can’t compare at the end a document with 10 match
 </dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.document.helper.DocGroundtruthPair.matches">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">matches</span></span><em class="property"><span class="pre">:</span> <span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#jina.types.document.helper.DocGroundtruthPair" title="jina.types.document.helper.DocGroundtruthPair"><span class="pre">jina.types.document.helper.DocGroundtruthPair</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.types.document.helper.DocGroundtruthPair.matches" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">matches</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#jina.types.document.helper.DocGroundtruthPair" title="jina.types.document.helper.DocGroundtruthPair"><span class="pre">jina.types.document.helper.DocGroundtruthPair</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.types.document.helper.DocGroundtruthPair.matches" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the pairs between matches and Groundtruth.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Yields</dt>
@@ -691,7 +691,7 @@ This does not imply that you can’t compare at the end a document with 10 match
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.document.helper.DocGroundtruthPair.chunks">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">chunks</span></span><em class="property"><span class="pre">:</span> <span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#jina.types.document.helper.DocGroundtruthPair" title="jina.types.document.helper.DocGroundtruthPair"><span class="pre">jina.types.document.helper.DocGroundtruthPair</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.types.document.helper.DocGroundtruthPair.chunks" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">chunks</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#jina.types.document.helper.DocGroundtruthPair" title="jina.types.document.helper.DocGroundtruthPair"><span class="pre">jina.types.document.helper.DocGroundtruthPair</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.types.document.helper.DocGroundtruthPair.chunks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the pairs between chunks and Groundtruth.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Yields</dt>

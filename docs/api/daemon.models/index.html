@@ -30,7 +30,7 @@
 <script async defer src="https://buttons.github.io/buttons.js"></script>
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.10.09"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.0, furo 2021.10.09"/>
         <title>daemon.models package - Jina 2.4.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
@@ -671,53 +671,53 @@
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-daemon.models" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="daemon.models.DaemonStatus">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">daemon.models.</span></span><span class="sig-name descname"><span class="pre">DaemonStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/models/#DaemonStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.models.DaemonStatus" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.models.</span></span><span class="sig-name descname"><span class="pre">DaemonStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/models/#DaemonStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.models.DaemonStatus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.main.BaseModel</span></code></p>
 <p>Pydantic model for DaemonStatus</p>
 <p>Create a new model by parsing and validating input data from keyword arguments.</p>
 <p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="daemon.models.DaemonStatus.jina">
-<span class="sig-name descname"><span class="pre">jina</span></span><em class="property"><span class="pre">:</span> <span class="pre">Dict</span></em><a class="headerlink" href="#daemon.models.DaemonStatus.jina" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">jina</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span></em><a class="headerlink" href="#daemon.models.DaemonStatus.jina" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="daemon.models.DaemonStatus.envs">
-<span class="sig-name descname"><span class="pre">envs</span></span><em class="property"><span class="pre">:</span> <span class="pre">Dict</span></em><a class="headerlink" href="#daemon.models.DaemonStatus.envs" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">envs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span></em><a class="headerlink" href="#daemon.models.DaemonStatus.envs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="daemon.models.DaemonStatus.workspaces">
-<span class="sig-name descname"><span class="pre">workspaces</span></span><em class="property"><span class="pre">:</span> <a class="reference internal" href="../daemon.models.workspaces/#daemon.models.workspaces.WorkspaceStoreStatus" title="daemon.models.workspaces.WorkspaceStoreStatus"><span class="pre">daemon.models.workspaces.WorkspaceStoreStatus</span></a></em><a class="headerlink" href="#daemon.models.DaemonStatus.workspaces" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">workspaces</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../daemon.models.workspaces/#daemon.models.workspaces.WorkspaceStoreStatus" title="daemon.models.workspaces.WorkspaceStoreStatus"><span class="pre">daemon.models.workspaces.WorkspaceStoreStatus</span></a></em><a class="headerlink" href="#daemon.models.DaemonStatus.workspaces" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="daemon.models.DaemonStatus.peas">
-<span class="sig-name descname"><span class="pre">peas</span></span><em class="property"><span class="pre">:</span> <a class="reference internal" href="../daemon.models.containers/#daemon.models.containers.ContainerStoreStatus" title="daemon.models.containers.ContainerStoreStatus"><span class="pre">daemon.models.containers.ContainerStoreStatus</span></a></em><a class="headerlink" href="#daemon.models.DaemonStatus.peas" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">peas</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../daemon.models.containers/#daemon.models.containers.ContainerStoreStatus" title="daemon.models.containers.ContainerStoreStatus"><span class="pre">daemon.models.containers.ContainerStoreStatus</span></a></em><a class="headerlink" href="#daemon.models.DaemonStatus.peas" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="daemon.models.DaemonStatus.pods">
-<span class="sig-name descname"><span class="pre">pods</span></span><em class="property"><span class="pre">:</span> <a class="reference internal" href="../daemon.models.containers/#daemon.models.containers.ContainerStoreStatus" title="daemon.models.containers.ContainerStoreStatus"><span class="pre">daemon.models.containers.ContainerStoreStatus</span></a></em><a class="headerlink" href="#daemon.models.DaemonStatus.pods" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">pods</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../daemon.models.containers/#daemon.models.containers.ContainerStoreStatus" title="daemon.models.containers.ContainerStoreStatus"><span class="pre">daemon.models.containers.ContainerStoreStatus</span></a></em><a class="headerlink" href="#daemon.models.DaemonStatus.pods" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="daemon.models.DaemonStatus.flows">
-<span class="sig-name descname"><span class="pre">flows</span></span><em class="property"><span class="pre">:</span> <a class="reference internal" href="../daemon.models.containers/#daemon.models.containers.ContainerStoreStatus" title="daemon.models.containers.ContainerStoreStatus"><span class="pre">daemon.models.containers.ContainerStoreStatus</span></a></em><a class="headerlink" href="#daemon.models.DaemonStatus.flows" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">flows</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../daemon.models.containers/#daemon.models.containers.ContainerStoreStatus" title="daemon.models.containers.ContainerStoreStatus"><span class="pre">daemon.models.containers.ContainerStoreStatus</span></a></em><a class="headerlink" href="#daemon.models.DaemonStatus.flows" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="daemon.models.DaemonStatus.used_memory">
-<span class="sig-name descname"><span class="pre">used_memory</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#daemon.models.DaemonStatus.used_memory" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">used_memory</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#daemon.models.DaemonStatus.used_memory" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="daemon.models.UpdateOperationEnum">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">daemon.models.</span></span><span class="sig-name descname"><span class="pre">UpdateOperationEnum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/models/#UpdateOperationEnum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.models.UpdateOperationEnum" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.models.</span></span><span class="sig-name descname"><span class="pre">UpdateOperationEnum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/models/#UpdateOperationEnum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.models.UpdateOperationEnum" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
 <p>Represents the type of operation to perform in the update</p>
 <p>We consider these an <cite>update</cite> operation since they <strong>change</strong> the underlying state</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="daemon.models.UpdateOperationEnum.rolling_update">
-<span class="sig-name descname"><span class="pre">rolling_update</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'rolling_update'</span></em><a class="headerlink" href="#daemon.models.UpdateOperationEnum.rolling_update" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">rolling_update</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'rolling_update'</span></em><a class="headerlink" href="#daemon.models.UpdateOperationEnum.rolling_update" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="daemon.models.UpdateOperationEnum.dump">
-<span class="sig-name descname"><span class="pre">dump</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'dump'</span></em><a class="headerlink" href="#daemon.models.UpdateOperationEnum.dump" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">dump</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dump'</span></em><a class="headerlink" href="#daemon.models.UpdateOperationEnum.dump" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 </dd></dl>
 </section>

@@ -29,7 +29,7 @@
 <script async defer src="https://buttons.github.io/buttons.js"></script>
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.clients.base.http module" href="../jina.clients.base.http/" /><link rel="prev" title="jina.clients.base.grpc module" href="../jina.clients.base.grpc/" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.2.0, furo 2021.10.09"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.0, furo 2021.10.09"/>
         <title>jina.clients.base.helper module - Jina 2.4.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
@@ -653,7 +653,7 @@
 <span id="jina-clients-base-helper-module"></span><h1>jina.clients.base.helper module<a class="headerlink" href="#module-jina.clients.base.helper" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.clients.base.helper.AioHttpClientlet">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.helper.</span></span><span class="sig-name descname"><span class="pre">AioHttpClientlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#AioHttpClientlet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.AioHttpClientlet" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.helper.</span></span><span class="sig-name descname"><span class="pre">AioHttpClientlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#AioHttpClientlet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.AioHttpClientlet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>aiohttp session manager</p>
 <p>HTTP Client to be used with the streamer</p>
@@ -667,17 +667,17 @@
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.clients.base.helper.AioHttpClientlet.send_message">
-<em class="property"><span class="pre">abstract</span> <span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">send_message</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#AioHttpClientlet.send_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.AioHttpClientlet.send_message" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_message</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#AioHttpClientlet.send_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.AioHttpClientlet.send_message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send message to Gateway</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.clients.base.helper.AioHttpClientlet.recv_message">
-<em class="property"><span class="pre">abstract</span> <span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">recv_message</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#AioHttpClientlet.recv_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.AioHttpClientlet.recv_message" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">recv_message</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#AioHttpClientlet.recv_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.AioHttpClientlet.recv_message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Receive message from Gateway</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.clients.base.helper.AioHttpClientlet.start">
-<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#AioHttpClientlet.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.AioHttpClientlet.start" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#AioHttpClientlet.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.AioHttpClientlet.start" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create ClientSession and enter context</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -687,7 +687,7 @@
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.clients.base.helper.AioHttpClientlet.close">
-<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#AioHttpClientlet.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.AioHttpClientlet.close" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#AioHttpClientlet.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.AioHttpClientlet.close" title="Permalink to this definition">¶</a></dt>
 <dd><p>Close ClientSession</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -701,7 +701,7 @@
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.clients.base.helper.HTTPClientlet">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.helper.</span></span><span class="sig-name descname"><span class="pre">HTTPClientlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#HTTPClientlet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.HTTPClientlet" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.helper.</span></span><span class="sig-name descname"><span class="pre">HTTPClientlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#HTTPClientlet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.HTTPClientlet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#jina.clients.base.helper.AioHttpClientlet" title="jina.clients.base.helper.AioHttpClientlet"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.clients.base.helper.AioHttpClientlet</span></code></a></p>
 <p>HTTP Client to be used with the streamer</p>
 <p>HTTP Client to be used with the streamer</p>
@@ -715,7 +715,7 @@
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.clients.base.helper.HTTPClientlet.send_message">
-<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">send_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#HTTPClientlet.send_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.HTTPClientlet.send_message" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#HTTPClientlet.send_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.HTTPClientlet.send_message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sends a POST request to the server</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -728,7 +728,7 @@
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.clients.base.helper.HTTPClientlet.recv_message">
-<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">recv_message</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#HTTPClientlet.recv_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.HTTPClientlet.recv_message" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">recv_message</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#HTTPClientlet.recv_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.HTTPClientlet.recv_message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Receive message for HTTP (sleep)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -739,7 +739,7 @@
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.clients.base.helper.WebsocketClientlet">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.helper.</span></span><span class="sig-name descname"><span class="pre">WebsocketClientlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#WebsocketClientlet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.WebsocketClientlet" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.helper.</span></span><span class="sig-name descname"><span class="pre">WebsocketClientlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#WebsocketClientlet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.WebsocketClientlet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#jina.clients.base.helper.AioHttpClientlet" title="jina.clients.base.helper.AioHttpClientlet"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.clients.base.helper.AioHttpClientlet</span></code></a></p>
 <p>Websocket Client to be used with the streamer</p>
 <p>HTTP Client to be used with the streamer</p>
@@ -753,7 +753,7 @@
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.clients.base.helper.WebsocketClientlet.send_message">
-<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">send_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#WebsocketClientlet.send_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.WebsocketClientlet.send_message" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#WebsocketClientlet.send_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.WebsocketClientlet.send_message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send request in bytes to the server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -766,7 +766,7 @@
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.clients.base.helper.WebsocketClientlet.send_eoi">
-<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">send_eoi</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#WebsocketClientlet.send_eoi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.WebsocketClientlet.send_eoi" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_eoi</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#WebsocketClientlet.send_eoi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.WebsocketClientlet.send_eoi" title="Permalink to this definition">¶</a></dt>
 <dd><p>To confirm end of iteration, we send <cite>bytes(True)</cite> to the server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -776,7 +776,7 @@
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.clients.base.helper.WebsocketClientlet.recv_message">
-<span class="sig-name descname"><span class="pre">recv_message</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#WebsocketClientlet.recv_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.WebsocketClientlet.recv_message" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">recv_message</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#WebsocketClientlet.recv_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.WebsocketClientlet.recv_message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Receive messages in bytes from server and convert to <cite>Response</cite></p>
 <dl class="simple">
 <dt>..note::</dt><dd><p>aiohttp allows only one task which can <cite>receive</cite> concurrently.
