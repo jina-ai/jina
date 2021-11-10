@@ -1,7 +1,8 @@
 function inIframe() {
     try {
       return window.self !== window.top;
-    } catch (Exception) {
+    } catch (err) {
+      console.log("Iframe error: ", err)
       return true;
     }
   }
