@@ -1,5 +1,6 @@
 from jina.parsers.client import mixin_comm_protocol_parser
 from .helper import _SHOW_ALL_ARGS
+from .peapods.runtimes.head import mixin_head_parser
 
 
 def set_pea_parser(parser=None):
@@ -30,6 +31,7 @@ def set_pea_parser(parser=None):
     mixin_distributed_feature_parser(parser)
     mixin_pea_parser(parser)
     mixin_hub_pull_options_parser(parser)
+    mixin_head_parser(parser)
 
     return parser
 
