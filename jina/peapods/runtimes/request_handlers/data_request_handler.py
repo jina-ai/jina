@@ -16,23 +16,48 @@ if TYPE_CHECKING:
 
 
 def _get_docs_matrix_from_message(
-    msg: 'Message',
+    messages: List['Message'],
     field: str,
 ) -> List['DocumentArray']:
-    result = [getattr(msg.request, field)]
+    if len(messages) > 1:
+        result = [
+            getattr(r, field)
+            for r in reversed([message.request for message in messages])
+        ]
+    else:
+        result = [getattr(messages[0].request, field)]
 
-    # to unify all length=0 DocumentArray (or any other results) will simply considered as None
-    # otherwise, the executor has to handle [None, None, None] or [DocArray(0), DocArray(0), DocArray(0)]
+        # to unify all length=0 DocumentArray (or any other results) will simply considered as None
+        # otherwise, the executor has to handle [None, None, None] or [DocArray(0), DocArray(0), DocArray(0)]
     len_r = sum(len(r) for r in result)
     if len_r:
         return result
 
 
-def _get_docs_from_msg(
-    msg: 'Message',
+def get_docs_from_messages(
+    messages: List['Message'],
     field: str,
 ) -> 'DocumentArray':
-    return getattr(msg.request, field)
+    """
+    Gets a field from the message
+
+    :param messages: messages to get the field from
+    :param field: field name to access
+
+    :returns: DocumentArray extraced from the field from all messages
+    """
+    if len(messages) > 1:
+        result = DocumentArray(
+            [
+                d
+                for r in reversed([message.request for message in messages])
+                for d in getattr(r, field)
+            ]
+        )
+    else:
+        result = getattr(messages[0].request, field)
+
+    return result
 
 
 class DataRequestHandler:
@@ -85,47 +110,52 @@ class DataRequestHandler:
             parsed_params.update(**specific_parameters)
         return parsed_params
 
-    def handle(self, msg: 'Message'):
+    def handle(self, messages: 'List[Message]') -> Message:
         """Initialize private parameters and execute private loading functions.
 
-        :param msg: The message to handle containing a DataRequest
+        :param messages: The messages to handle containing a DataRequest
+        :returns: the processed message
         """
         # skip executor if endpoints mismatch
         if (
-            msg.envelope.header.exec_endpoint not in self._executor.requests
+            messages[0].envelope.header.exec_endpoint not in self._executor.requests
             and __default_endpoint__ not in self._executor.requests
         ):
             self.logger.debug(
-                f'skip executor: mismatch request, exec_endpoint: {msg.envelope.header.exec_endpoint}, requests: {self._executor.requests}'
+                f'skip executor: mismatch request, exec_endpoint: {messages[0].envelope.header.exec_endpoint}, requests: {self._executor.requests}'
             )
-            return
+            if len(messages) > 1:
+                DataRequestHandler.replace_docs(
+                    messages[0],
+                    docs=get_docs_from_messages(messages, field='docs'),
+                )
+            return messages[0]
 
         params = self._parse_params(
-            msg.request.parameters.dict(), self._executor.metas.name
+            messages[0].request.parameters.dict(), self._executor.metas.name
         )
-        docs = _get_docs_from_msg(
-            msg,
+        docs = get_docs_from_messages(
+            messages,
             field='docs',
         )
         # executor logic
         r_docs = self._executor(
-            req_endpoint=msg.envelope.header.exec_endpoint,
+            req_endpoint=messages[0].envelope.header.exec_endpoint,
             docs=docs,
             parameters=params,
             docs_matrix=_get_docs_matrix_from_message(
-                msg,
+                messages,
                 field='docs',
             ),
-            groundtruths=_get_docs_from_msg(
-                msg,
+            groundtruths=get_docs_from_messages(
+                messages,
                 field='groundtruths',
             ),
             groundtruths_matrix=_get_docs_matrix_from_message(
-                msg,
+                messages,
                 field='groundtruths',
             ),
         )
-
         # assigning result back to request
         # 1. Return none: do nothing
         # 2. Return nonempty and non-DocumentArray: raise error
@@ -133,16 +163,20 @@ class DataRequestHandler:
         # 4. Return DocArray and its not a shallow copy of self.docs: assign self.request.docs
         if r_docs is not None:
             if isinstance(r_docs, (DocumentArray, DocumentArrayMemmap)):
-                if r_docs != msg.request.docs:
+                if r_docs != messages[0].request.docs:
                     # this means the returned DocArray is a completely new one
-                    DataRequestHandler.replace_docs(msg, r_docs)
+                    DataRequestHandler.replace_docs(messages[0], r_docs)
             elif isinstance(r_docs, dict):
-                msg.request.parameters.update(r_docs)
+                messages[0].request.parameters.update(r_docs)
             else:
                 raise TypeError(
                     f'The return type must be DocumentArray / DocumentArrayMemmap / Dict / `None`, '
                     f'but getting {r_docs!r}'
                 )
+        elif len(messages) > 1:
+            DataRequestHandler.replace_docs(messages[0], docs)
+
+        return messages[0]
 
     @staticmethod
     def replace_docs(msg, docs):
