@@ -1,5 +1,5 @@
 def list_all_runtimes():
-    """List all public runtimes that can be used directly with :class:`jina.peapods.peas.BasePea`
+    """List all public runtimes that can be used directly with :class:`jina.peapods.peas.Pea`
 
     # noqa: DAR101
     # noqa: DAR201

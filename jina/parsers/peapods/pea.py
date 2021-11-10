@@ -6,7 +6,7 @@ from ...enums import PeaRoleType, RuntimeBackendType
 
 
 def mixin_pea_parser(parser):
-    """Mixing in arguments required by :class:`BasePea` into the given parser.
+    """Mixing in arguments required by :class:`Pea` into the given parser.
     :param parser: the parser instance to which we add arguments
     """
 

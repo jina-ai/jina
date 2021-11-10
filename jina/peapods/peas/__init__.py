@@ -13,7 +13,7 @@ from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
 from ...helper import typename
 from ...logging.logger import JinaLogger
 
-__all__ = ['BasePea']
+__all__ = ['Pea']
 
 
 def run(
@@ -99,12 +99,12 @@ def run(
         logger.debug(f' Process terminated')
 
 
-class BasePea:
+class Pea:
     """
-    :class:`BasePea` is a thread/process- container of :class:`BaseRuntime`. It leverages :class:`threading.Thread`
+    :class:`Pea` is a thread/process- container of :class:`BaseRuntime`. It leverages :class:`threading.Thread`
     or :class:`multiprocessing.Process` to manage the lifecycle of a :class:`BaseRuntime` object in a robust way.
 
-    A :class:`BasePea` must be equipped with a proper :class:`Runtime` class to work.
+    A :class:`Pea` must be equipped with a proper :class:`Runtime` class to work.
     """
 
     def __init__(self, args: 'argparse.Namespace'):

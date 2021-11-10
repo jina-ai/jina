@@ -7,7 +7,7 @@ from itertools import cycle
 from typing import Dict, Union, Set, List, Optional
 
 from ..networking import get_connect_host
-from ..peas import BasePea
+from ..peas import Pea
 from ... import __default_executor__
 from ... import helper
 from ...enums import (
@@ -90,10 +90,10 @@ class BasePod(ExitFIFO):
 
     @abstractmethod
     def start(self) -> 'BasePod':
-        """Start to run all :class:`BasePea` in this BasePod.
+        """Start to run all :class:`Pea` in this BasePod.
 
         .. note::
-            If one of the :class:`BasePea` fails to start, make sure that all of them
+            If one of the :class:`Pea` fails to start, make sure that all of them
             are properly closed.
         """
         ...
@@ -370,7 +370,7 @@ class Pod(BasePod):
                 _args.dump_path = dump_path
                 ###
                 _args.uses_with = uses_with
-                new_pea = BasePea(_args)
+                new_pea = Pea(_args)
                 new_pea.__enter__()
                 await new_pea.async_wait_start_success()
                 new_pea.activate_runtime()
@@ -384,7 +384,7 @@ class Pod(BasePod):
                     self.pod_args.replicas == 1
                 ):  # keep backwards compatibility with `workspace` in `Executor`
                     _args.replica_id = -1
-                self._peas.append(BasePea(_args).start())
+                self._peas.append(Pea(_args).start())
             return self
 
         def __exit__(self, exc_type, exc_val, exc_tb):
@@ -555,7 +555,7 @@ class Pod(BasePod):
 
     @property
     def num_peas(self) -> int:
-        """Get the number of running :class:`BasePea`
+        """Get the number of running :class:`Pea`
 
         .. # noqa: DAR201
         """
@@ -585,19 +585,19 @@ class Pod(BasePod):
 
     def start(self) -> 'Pod':
         """
-        Start to run all :class:`BasePea` in this BasePod.
+        Start to run all :class:`Pea` in this BasePod.
 
         :return: started pod
 
         .. note::
-            If one of the :class:`BasePea` fails to start, make sure that all of them
+            If one of the :class:`Pea` fails to start, make sure that all of them
             are properly closed.
         """
         if self.peas_args['head'] is not None:
             _args = self.peas_args['head']
             if getattr(self.args, 'noblock_on_start', False):
                 _args.noblock_on_start = True
-            self.head_pea = BasePea(_args)
+            self.head_pea = Pea(_args)
             self.enter_context(self.head_pea)
         self.replica_set = self._ReplicaSet(self.args, self.peas_args['peas'])
         self.enter_context(self.replica_set)
@@ -605,7 +605,7 @@ class Pod(BasePod):
             _args = self.peas_args['tail']
             if getattr(self.args, 'noblock_on_start', False):
                 _args.noblock_on_start = True
-            self.tail_pea = BasePea(_args)
+            self.tail_pea = Pea(_args)
             self.enter_context(self.tail_pea)
 
         if not getattr(self.args, 'noblock_on_start', False):

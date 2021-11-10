@@ -122,7 +122,7 @@ class ContainerRuntime(BaseRuntime):
             uses_img = self.args.uses
 
         # the image arg should be ignored otherwise it keeps using ContainerPea in the container
-        # basically all args in BasePea-docker arg group should be ignored.
+        # basically all args in Pea-docker arg group should be ignored.
         # this prevent setting containerPea twice
         from ....parsers import set_pea_parser
 

@@ -8,7 +8,7 @@ from jina import __windows__
 from jina.excepts import RuntimeFailToStart
 from jina.parsers import set_pea_parser, set_gateway_parser
 from jina.peapods import Pea
-from jina.peapods.peas import BasePea
+from jina.peapods.peas import Pea
 from jina.peapods.runtimes.gateway.grpc import GRPCRuntime
 from jina.peapods.runtimes.gateway.websocket import WebSocketRuntime
 from jina.peapods.runtimes.container import ContainerRuntime
@@ -18,7 +18,7 @@ from jina.peapods.runtimes.zmq.zed import ZEDRuntime
 @pytest.mark.parametrize('runtime', ['thread', 'process'])
 @pytest.mark.parametrize('ctrl_ipc', [True, False])
 def test_zed_runtime(runtime, ctrl_ipc):
-    class Pea1(BasePea):
+    class Pea1(Pea):
         runtime_cls = ZEDRuntime
 
     arg = set_pea_parser().parse_args(
@@ -40,7 +40,7 @@ def test_zed_runtime(runtime, ctrl_ipc):
 @pytest.mark.parametrize('cls', [GRPCRuntime, WebSocketRuntime])
 @pytest.mark.parametrize('runtime', ['thread', 'process'])
 def test_gateway_runtime(cls, runtime):
-    class Pea1(BasePea):
+    class Pea1(Pea):
         runtime_cls = cls
 
     arg = set_gateway_parser().parse_args(['--runtime-backend', runtime])
@@ -51,7 +51,7 @@ def test_gateway_runtime(cls, runtime):
 @pytest.mark.skipif(__windows__, reason='Windows containers are not supported yet')
 @pytest.mark.parametrize('runtime', ['thread', 'process'])
 def test_container_runtime_bad_entrypoint(runtime):
-    class Pea1(BasePea):
+    class Pea1(Pea):
         runtime_cls = ContainerRuntime
 
     # without correct entrypoint this will fail
@@ -66,7 +66,7 @@ def test_container_runtime_bad_entrypoint(runtime):
 @pytest.mark.skipif(__windows__, reason='Windows containers are not supported yet')
 @pytest.mark.parametrize('runtime', ['thread', 'process'])
 def test_container_runtime_good_entrypoint(runtime):
-    class Pea1(BasePea):
+    class Pea1(Pea):
         runtime_cls = ContainerRuntime
 
     arg = set_pea_parser().parse_args(
@@ -113,5 +113,5 @@ def test_address_in_use(runtime):
 def test_runtime_thread_process(runtime, parser, args):
     args.extend(['--runtime-backend', runtime])
     arg = parser().parse_args(args)
-    with BasePea(arg):
+    with Pea(arg):
         pass
