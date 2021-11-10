@@ -148,7 +148,7 @@ def test_double_dynamic_routing_zmqlet():
 
 
 async def send_msg(zmqlet, msg):
-    await zmqlet.send_message(msg)
+    await zmqlet.send_messages(msg)
 
 
 @pytest.mark.asyncio

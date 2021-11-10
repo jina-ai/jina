@@ -577,7 +577,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         upload_files: Optional[List[str]] = None,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
         uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
+        uses_after_address: Optional[str] = None,
         uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
+        uses_before_address: Optional[str] = None,
         uses_metas: Optional[dict] = None,
         uses_requests: Optional[dict] = None,
         uses_with: Optional[dict] = None,
@@ -687,7 +689,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                   - a Python dict that represents the config
                   - a text file stream has `.read()` interface
         :param uses_after: The executor attached after the Peas described by --uses, typically used for receiving from all shards, accepted type follows `--uses`
+        :param uses_after_address: The address of the uses-before runtime
         :param uses_before: The executor attached after the Peas described by --uses, typically before sending to all shards, accepted type follows `--uses`
+        :param uses_before_address: The address of the uses-before runtime
         :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
         :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`

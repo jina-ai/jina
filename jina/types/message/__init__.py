@@ -418,9 +418,7 @@ class Message:
             This should be only called at Gateway
         :return: request object which contains the response
         """
-        self.envelope.routes[0].end_time.GetCurrentTime()
         self.request.status.CopyFrom(self.envelope.status)
-        self.request.routes.extend(self.envelope.routes)
         return self.request
 
     def merge_envelope_from(self, msgs: List['Message']):

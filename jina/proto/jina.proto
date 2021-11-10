@@ -286,6 +286,16 @@ message DocumentArrayProto {
 }
 
 /**
+ * Represents an entity (like an ExecutorRuntime)
+ */
+message RelatedEntity {
+    string id = 1; // unique id of the entity, like the name of a pea
+    string address = 2; // address of the entity, could be an IP address, domain name etc, does not include port
+    uint32 port = 3; // port this entity is listening on
+    optional uint32 shard_id = 4; // the id of the shard it belongs to, if it is a shard
+}
+
+/**
  * Represents a Request
  */
 message RequestProto {
@@ -317,15 +327,6 @@ message RequestProto {
             DEACTIVATE = 4; // used to remove Peas from a Pod
         }
         Command command = 1; // the control command
-
-        /**
-         * Represents an entity (like a Pea)
-         */
-        message RelatedEntity {
-            string id = 1; // unique id of the entity, like the name of a pea
-            string address = 2; // address of the entity, could be an IP address
-            uint32 port = 3; // port this entity is listening on
-        }
 
         repeated RelatedEntity relatedEntities = 2; // list of entities this ControlMessage is related to
     }
