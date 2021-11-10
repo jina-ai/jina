@@ -33,7 +33,6 @@ def _warning_on_one_line(message, category, filename, lineno, *args, **kwargs):
 _warnings.formatwarning = _warning_on_one_line
 _warnings.simplefilter('always', DeprecationWarning)
 
-
 # fix fork error on MacOS but seems no effect? must do EXPORT manually before jina start
 _os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
 
@@ -140,7 +139,10 @@ JINA_GLOBAL.tensorflow_installed = None
 JINA_GLOBAL.torch_installed = None
 JINA_GLOBAL.dgl_installed = None
 
-_signal.signal(_signal.SIGINT, _signal.default_int_handler)
+try:
+    _signal.signal(_signal.SIGINT, _signal.default_int_handler)
+except Exception as exc:
+    _warnings.warn(f'failed to set default signal handler: {exc!r}`')
 
 
 def _set_nofile(nofile_atleast=4096):
