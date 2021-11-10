@@ -11,7 +11,7 @@ from jina.checker import NetworkChecker
 from jina.jaml import JAML
 from jina.parsers import set_pod_parser, set_pea_parser
 from jina.parsers.ping import set_ping_parser
-from jina.peapods import Pea
+from jina.peapods.peas.factory import PeaFactory
 
 
 def test_export_api(tmpdir):
@@ -79,14 +79,14 @@ def test_ping():
     )
 
     with pytest.raises(SystemExit) as cm:
-        with Pea(a1):
+        with PeaFactory.build_pea(a1):
             NetworkChecker(a2)
 
     assert cm.value.code == 0
 
     # test with bad address
     with pytest.raises(SystemExit) as cm:
-        with Pea(a1):
+        with PeaFactory.build_pea(a1):
             NetworkChecker(a3)
 
     assert cm.value.code == 1

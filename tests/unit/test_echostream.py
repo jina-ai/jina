@@ -3,7 +3,7 @@ import pytest
 from jina import Flow
 from jina.logging.logger import JinaLogger
 from jina.parsers import set_pea_parser
-from jina.peapods.peas import Pea
+from jina.peapods.peas.factory import PeaFactory
 from jina.peapods.zmq import Zmqlet
 from jina.proto import jina_pb2
 from jina.types.message import Message
@@ -47,7 +47,7 @@ def test_simple_zmqlet():
     )
 
     logger = JinaLogger('zmq-test')
-    with Pea(args2), Zmqlet(args, logger) as z:
+    with PeaFactory.build_pea(args2), Zmqlet(args, logger) as z:
         req = jina_pb2.RequestProto()
         req.request_id = random_identity()
         d = req.data.docs.add()

@@ -4,7 +4,7 @@ from itertools import cycle
 from typing import Optional, Dict, List, Union, Set
 
 from .. import BasePod
-from .. import Pea
+from .. import BasePea
 from .. import Pod
 from ..networking import get_connect_host
 from ... import helper
@@ -97,7 +97,7 @@ class CompoundPod(BasePod):
     def __eq__(self, other: 'CompoundPod'):
         return self.num_peas == other.num_peas and self.name == other.name
 
-    def _enter_pea(self, pea: 'Pea') -> None:
+    def _enter_pea(self, pea: 'BasePea') -> None:
         self.enter_context(pea)
 
     def start(self) -> 'CompoundPod':

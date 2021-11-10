@@ -7,7 +7,7 @@ from itertools import cycle
 from typing import Dict, Union, Set, List, Optional
 
 from ..networking import get_connect_host
-from ..peas import Pea
+from ..peas.factory import PeaFactory
 from ... import __default_executor__
 from ... import helper
 from ...enums import (
@@ -370,7 +370,7 @@ class Pod(BasePod):
                 _args.dump_path = dump_path
                 ###
                 _args.uses_with = uses_with
-                new_pea = Pea(_args)
+                new_pea = PeaFactory.build_pea(_args)
                 new_pea.__enter__()
                 await new_pea.async_wait_start_success()
                 new_pea.activate_runtime()
@@ -384,7 +384,7 @@ class Pod(BasePod):
                     self.pod_args.replicas == 1
                 ):  # keep backwards compatibility with `workspace` in `Executor`
                     _args.replica_id = -1
-                self._peas.append(Pea(_args).start())
+                self._peas.append(PeaFactory.build_pea(_args).start())
             return self
 
         def __exit__(self, exc_type, exc_val, exc_tb):
@@ -597,7 +597,7 @@ class Pod(BasePod):
             _args = self.peas_args['head']
             if getattr(self.args, 'noblock_on_start', False):
                 _args.noblock_on_start = True
-            self.head_pea = Pea(_args)
+            self.head_pea = PeaFactory.build_pea(_args)
             self.enter_context(self.head_pea)
         self.replica_set = self._ReplicaSet(self.args, self.peas_args['peas'])
         self.enter_context(self.replica_set)
@@ -605,7 +605,7 @@ class Pod(BasePod):
             _args = self.peas_args['tail']
             if getattr(self.args, 'noblock_on_start', False):
                 _args.noblock_on_start = True
-            self.tail_pea = Pea(_args)
+            self.tail_pea = PeaFactory.build_pea(_args)
             self.enter_context(self.tail_pea)
 
         if not getattr(self.args, 'noblock_on_start', False):

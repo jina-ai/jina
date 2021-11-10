@@ -1,6 +1,5 @@
 import os
 import time
-from sys import platform
 import multiprocessing
 
 import pytest
@@ -12,10 +11,9 @@ from jina import Flow, __windows__
 from jina.helper import random_name
 from jina.parsers import set_pea_parser
 from jina.parsers.ping import set_ping_parser
-from jina.peapods import Pea
-from jina.peapods.runtimes.container import ContainerRuntime
-from jina.peapods.runtimes.container.helper import get_gpu_device_requests
-from tests import random_docs, validate_callback
+from jina.peapods.peas.factory import PeaFactory
+from jina.peapods.peas.container_helper import get_gpu_device_requests
+from tests import random_docs
 
 if __windows__:
     pytest.skip(msg='Windows containers are not supported yet', allow_module_level=True)
@@ -54,11 +52,11 @@ def docker_image_built():
 def test_simple_container(docker_image_built):
     args = set_pea_parser().parse_args(['--uses', f'docker://{img_name}'])
 
-    with Pea(args):
+    with PeaFactory.build_pea(args):
         pass
 
     time.sleep(2)
-    Pea(args).start().close()
+    PeaFactory.build_pea(args).start().close()
 
 
 def test_flow_with_one_container_pod(docker_image_built):
@@ -190,7 +188,7 @@ def test_container_ping(docker_image_built):
 
     # test with container
     with pytest.raises(SystemExit) as cm:
-        with Pea(a4):
+        with PeaFactory.build_pea(a4):
             NetworkChecker(a5)
 
     assert cm.value.code == 0
@@ -290,7 +288,7 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
             'environment: ["VAR1=BAR", "VAR2=FOO"]',
         ]
     )
-    _ = ContainerRuntime(args, ctrl_addr='', ready_event=multiprocessing.Event())
+    _ = PeaFactory.build_pea(args, ctrl_addr='', ready_event=multiprocessing.Event())
     expected_args = {'hello': 0, 'environment': ['VAR1=BAR', 'VAR2=FOO']}
     mock.assert_called_with(**expected_args)
 
@@ -464,7 +462,7 @@ def test_pass_native_arg(monkeypatch, mocker):
             'docker://jinahub/pod',
         ]
     )
-    _ = ContainerRuntime(args, ctrl_addr='', ready_event=multiprocessing.Event())
+    _ = PeaFactory.build_pea(args, ctrl_addr='', ready_event=multiprocessing.Event())
 
 
 def test_pass_replica_id_shard_id(monkeypatch, mocker):
@@ -536,4 +534,4 @@ def test_pass_replica_id_shard_id(monkeypatch, mocker):
             '1',
         ]
     )
-    _ = ContainerRuntime(args, ctrl_addr='', ready_event=multiprocessing.Event())
+    _ = PeaFactory.build_pea(args, ctrl_addr='', ready_event=multiprocessing.Event())
