@@ -118,6 +118,8 @@ ac_table = {
             '--install-requirements',
             '--force-update',
             '--force',
+            '--uses-before-address',
+            '--uses-after-address',
         ],
         'flow': [
             '--help',
@@ -323,6 +325,8 @@ ac_table = {
             '--install-requirements',
             '--force-update',
             '--force',
+            '--uses-before-address',
+            '--uses-after-address',
         ],
         'pod': [
             '--help',
@@ -396,6 +400,8 @@ ac_table = {
             '--install-requirements',
             '--force-update',
             '--force',
+            '--uses-before-address',
+            '--uses-after-address',
             '--uses-before',
             '--uses-after',
             '--polling',
