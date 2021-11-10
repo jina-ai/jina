@@ -10,6 +10,7 @@ __all__ = ['HTTPClientStreamer', 'WebsocketClientStreamer']
 
 if TYPE_CHECKING:
     from ...types.request import Request
+    from ...types.request import Response
     from ...clients.base.helper import HTTPClientlet, WebsocketClientlet
 
 
@@ -81,6 +82,7 @@ class WebsocketClientStreamer(ClientStreamer):
 
     async def _receive(self):
         """Await messages from WebsocketGateway and process them in the request buffer"""
+
         try:
             async for response in self._iolet.recv_message():
                 self._handle_response(response)
