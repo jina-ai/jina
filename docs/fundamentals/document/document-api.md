@@ -1,32 +1,31 @@
 # Document
 
-`Document` is the basic data type that Jina operates with text, picture, video, audio, image or 3D mesh: They are
+`Document` is the basic data type that Jina operates with text, picture, video, audio, image or 3D mesh: they are
 all `Document`s in Jina.
-
-A `Document` object has the following attributes, which can be put into the following categories:
-
-| Category | Attributes |
-|---|---|
-| Content attributes | `.buffer`, `.blob`, `.text`, `.content`, `.uri`, `.embedding`, `.tags` |
-| Recursive attributes | `.chunks`, `.matches`|
-| Meta attributes | `.id`, `.parent_id`, `.weight`, `.mime_type`, `.content_type`, `.modality`,`.granularity`, `.adjacency`  |
-| Relevance attributes | `.scores`, `.evaluations` |
 
 ## Minimum working example
 
 ```python
 from jina import Document
 
-d = Document(content='hello, world!') 
+d1 = Document(content='hello')
+d2 = Document(content=b'\f1')
+
+import numpy
+d3 = Document(content=numpy.array([1, 2, 3]))
 ```
 
 
 ## Document content
 
+`text`, `blob`, and `buffer` are three content attributes of a Document. They correspond to string-like data (e.g. for natural language), `ndarray`-like data (e.g. for image/audio/video data), and binary data for general purpose, respectively. Each Document can contain only one type of content.
 
-```{image} ../../../.github/2.0/doc.content.svg
-:align: center
-```
+````{admonition} Why a Document can contain only data type
+:class: question
+
+What if you want to represent more than one kind of information? Say, to fully represent a PDF slide you need to store both image and text. In this case, you can use {ref}`nested Document<nest-document>` by putting image into a sub-Document
+
+````
 
 | Attribute | Description |
 | --- | --- |
@@ -34,18 +33,11 @@ d = Document(content='hello, world!')
 | `doc.blob` | The `ndarray` of the image/audio/video Document |
 | `doc.text` | The text info of the Document |
 | `doc.content` | A sugar syntax to access one of the above non-empty field |
-| `doc.uri` | A uri of the Document could be: a local file path, a remote url starts with http or https or data URI scheme |
-| `doc.tags` | A structured data value, consisting of fields which map to dynamically typed values |
 
 You can assign `str`, `ndarray`, or `buffer` to a `Document`.
 
 ```python
-from jina import Document
-import numpy as np
 
-d1 = Document(content='hello')
-d2 = Document(content=b'\f1')
-d3 = Document(content=np.array([1, 2, 3]))
 ```
 
 ```text
