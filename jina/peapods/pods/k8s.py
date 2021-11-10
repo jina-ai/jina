@@ -133,7 +133,7 @@ class K8sPod(BasePod):
             k8s_client.patch_namespaced_deployment_scale(
                 self.dns_name,
                 namespace=self.k8s_namespace,
-                body={"spec": {"replicas": replicas}},
+                body={'spec': {'replicas': replicas}},
             )
 
         def _restart_runtime(self):
@@ -264,8 +264,64 @@ class K8sPod(BasePod):
                 fail_msg += f': {repr(exception_to_raise)}'
             raise RuntimeFailToStart(fail_msg)
 
-        async def wait_scale_success(self):
-            pass
+        async def wait_scale_success(self, replicas: int):
+            scale_to = replicas
+            _timeout = self.common_args.timeout_ready
+            if _timeout <= 0:
+                _timeout = None
+            else:
+                _timeout /= 1e3
+
+            import asyncio
+            from kubernetes import client
+
+            k8s_client = kubernetes_client.K8sClients().apps_v1
+
+            with JinaLogger(f'waiting_scale_for_{self.name}') as logger:
+                logger.info(
+                    f'🏝️\n\t\tWaiting for "{self.name}" to be scaled, with {self.num_replicas} replicas,'
+                    f'scale to {scale_to}.'
+                )
+                timeout_ns = 1000000000 * _timeout if _timeout else None
+                now = time.time_ns()
+                exception_to_raise = None
+                while timeout_ns is None or time.time_ns() - now < timeout_ns:
+                    try:
+                        api_response = k8s_client.read_namespaced_deployment_scale(
+                            name=self.dns_name, namespace=self.k8s_namespace
+                        )
+                        logger.debug(
+                            f'\n\t\t Scaled replicas: {api_response.status.replicas}.'
+                            f' Replicas: {api_response.status.replicas}.'
+                            f' Expected Replicas {scale_to}'
+                        )
+                        if (
+                            api_response.status.replicas is not None
+                            and api_response.status.replicas == scale_to
+                        ):
+                            logger.success(
+                                f' {self.name} has all its replicas updated!!'
+                            )
+                            return
+                        else:
+                            scaled_replicas = api_response.status.replicas or 0
+                            if scaled_replicas < scale_to:
+                                logger.debug(
+                                    f'\nNumber of replicas {scaled_replicas}, waiting for {scale_to - scaled_replicas} replicas to be scaled up.'
+                                )
+                            else:
+                                logger.debug(
+                                    f'\nNumber of replicas {scaled_replicas}, waiting for {scaled_replicas - scale_to} replicas to be scaled down.'
+                                )
+
+                            await asyncio.sleep(1.0)
+                    except client.ApiException as ex:
+                        exception_to_raise = ex
+                        break
+            fail_msg = f' Deployment {self.name} did not restart with a timeout of {self.common_args.timeout_ready}'
+            if exception_to_raise:
+                fail_msg += f': {repr(exception_to_raise)}'
+            raise RuntimeFailToStart(fail_msg)
 
         def rolling_update(
             self, dump_path: Optional[str] = None, *, uses_with: Optional[Dict] = None
@@ -501,7 +557,7 @@ class K8sPod(BasePod):
         for deployment in self.k8s_deployments:
             deployment.scale(replicas=replicas)
         for deployment in self.k8s_deployments:
-            await deployment.wait_scale_success()
+            await deployment.wait_scale_success(replicas=replicas)
             deployment.num_replicas = replicas
 
     def start(self) -> 'K8sPod':
