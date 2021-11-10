@@ -446,9 +446,6 @@ def _create_worker_runtime(port, name='', executor=None):
     args.name = name
     if executor:
         args.uses = executor
-    # args.polling = PollingType.ALL
-    # args.uses_before_address = 'fake_address'
-    # args.uses_after_address = 'fake_address'
     with WorkerRuntime(args) as runtime:
         runtime.run_forever()
 
