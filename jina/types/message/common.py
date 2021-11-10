@@ -1,3 +1,5 @@
+from typing import Optional
+
 from . import Message
 from ..request import Request
 from ...proto import jina_pb2
@@ -39,3 +41,18 @@ class ControlMessage(Message):
         args = kwargs.get('args', None)
         if args:
             req.args = args
+
+    def add_related_entity(
+        self, id: str, address: str, port: int, shard_id: Optional[int] = None
+    ):
+        """
+        Add a related entity to this ControlMessage
+
+        :param id: jina id of the entity
+        :param address: address of the entity
+        :param port: Port of the entity
+        :param shard_id: Optional id of the shard this entity belongs to
+        """
+        self.request.body.relatedEntities.append(
+            jina_pb2.RelatedEntity(id=id, address=address, port=port, shard_id=shard_id)
+        )
