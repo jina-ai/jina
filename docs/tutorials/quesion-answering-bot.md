@@ -126,18 +126,19 @@ The next step is to build the `Executor` that we will use to create vector repre
 
 ```python 
 class TextEncoder(Executor):
-    
+
+    def __init__(self): 
+        self.model = SentenceTransformer(
+            'paraphrase-mpnet-base-v2', device="cpu", cache_folder=".")
+
     @requests(on=['/search', '/index'])
     def encode(self, docs: DocumentArray, 
                traversal_paths: Tuple[str] = ('r',), **kwargs):
         """Wraps encoder from sentence-transformers package"""   
         target = docs.traverse_flat(traversal_paths)
-
-        model = SentenceTransformer(
-            'paraphrase-mpnet-base-v2', device="cpu", cache_folder=".")
-    
+ 
         with torch.inference_mode():
-            embeddings = model.encode(target.texts)
+            embeddings = self.model.encode(target.texts)
             target.embeddings = embeddings
 ```
 Similar to the `QuestionGenerator` the `TextEncoder` is simply a wrapper around the SentenceTransformer from the sentence_transformer package. When provided with a `DocumentArray` containing text, it will encode the text of each element and store the result in the `embedding` attribute it creates.
@@ -160,7 +161,6 @@ class SimpleIndexer(Executor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._docs = DocumentArrayMemmap(".")
-        self.matched_docs = None
 
     @requests(on='/index')
     def index(self, docs: 'DocumentArray', **kwargs):
@@ -171,8 +171,7 @@ class SimpleIndexer(Executor):
     @requests(on='/search')
     def search(self, docs: 'DocumentArray', **kwargs):
         """Append best matches to each document in docs"""
-        if self.matched_docs is None:
-            self.matched_docs = DocumentArray(self._docs)
+
         # Match query agains the index using cosine similarity
         docs.match(
             DocumentArray(self._docs),
@@ -194,14 +193,14 @@ class SimpleIndexer(Executor):
             
             # Rank the matches by similarity
             for k, v in sorted_similarities:
-                m = Document(self.matched_docs[k], copy=True)
+                m = Document(self._docs[k], copy=True)
                 d.matches.append(m)
                 if len(d.matches) >= 10:
                     break
             d.pop('embedding')
 ```
 
-The ranking of the results is thereby represented in the order of the matches inside the `matches` object. Hence, to provide the answer to the user, we could use a little helper function that get's the `id` of the best-fitting match and searches the index for the sentence with this `id`. 
+The ranking of the results is thereby represented in the order of the matches inside the `matches` object. Hence, to provide the answer to the user, we could use a little helper function that gets the `id` of the best-fitting match and searches the index for the sentence with this `id`. 
 
 ```python 
 best_matching_id = user_queries[0].matches[0].id
