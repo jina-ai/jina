@@ -27,7 +27,7 @@ async def test_http_clientlet():
             url='http://localhost:12345/post', logger=logger
         ) as iolet:
             request = _new_data_request('/', None, {'a': 'b'})
-            r = await iolet.send_message(request)
+            r = await iolet.send_messages(request)
             response = Request(await r.json())
             response = response.as_typed_request(response.request_type).as_response()
             assert response.header.exec_endpoint == '/'
