@@ -3,7 +3,7 @@ import multiprocessing
 import os
 import time
 from multiprocessing import Process
-from threading import Event, Thread
+from threading import Event
 
 import pytest
 
@@ -38,13 +38,15 @@ def test_worker_runtime():
         timeout=5.0, ctrl_address=f'{args.host}:{args.port_in}', shutdown_event=Event()
     )
 
-    assert GrpcConnectionPool.send_message_sync(
+    response = GrpcConnectionPool.send_message_sync(
         _create_test_data_message(),
         f'{args.host}:{args.port_in}',
     )
 
     WorkerRuntime.cancel(cancel_event)
     runtime_thread.join()
+
+    assert response
 
     assert not WorkerRuntime.is_ready(f'{args.host}:{args.port_in}')
 
@@ -75,12 +77,13 @@ def test_worker_runtime_docs_merging():
         [_create_test_data_message(), _create_test_data_message()],
         f'{args.host}:{args.port_in}',
     )
-    assert response
-    # we send two messages, its documents should be merged by concatinating
-    assert len(response.response.docs) == 2
 
     WorkerRuntime.cancel(cancel_event)
     runtime_thread.join()
+
+    assert response
+    # we send two messages, its documents should be merged by concatinating
+    assert len(response.response.docs) == 2
 
     assert not WorkerRuntime.is_ready(f'{args.host}:{args.port_in}')
 
