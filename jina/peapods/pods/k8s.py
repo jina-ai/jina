@@ -146,14 +146,6 @@ class K8sPod(BasePod):
                 ),
             )
 
-        def _scale_runtime(self, replicas: int):
-            k8s_client = kubernetes_client.K8sClients().apps_v1
-            k8s_client.patch_namespaced_deployment_scale(
-                self.dns_name,
-                namespace=self.k8s_namespace,
-                body={'spec': {'replicas': replicas}},
-            )
-
         def wait_start_success(self):
             _timeout = self.common_args.timeout_ready
             if _timeout <= 0:
@@ -287,9 +279,7 @@ class K8sPod(BasePod):
                 exception_to_raise = None
                 while timeout_ns is None or time.time_ns() - now < timeout_ns:
                     try:
-                        api_response = k8s_client.read_namespaced_deployment_scale(
-                            name=self.dns_name, namespace=self.k8s_namespace
-                        )
+                        api_response = self._read_namespaced_deployment_scale()
                         logger.debug(
                             f'\n\t\t Scaled replicas: {api_response.status.replicas}.'
                             f' Replicas: {api_response.status.replicas}.'
@@ -343,18 +333,7 @@ class K8sPod(BasePod):
             Scale the amount of replicas of a given Executor.
             :param replicas: The number of replicas to scale to
             """
-            self._scale_runtime(replicas)
-
-        async def scale(self, replicas: int):
-            """
-            Scale the amount of replicas of a given Executor.
-            :param replicas: The number of replicas to scale to
-            """
-            for deployment in self.k8s_deployments:
-                deployment.scale(replicas=replicas)
-            for deployment in self.k8s_deployments:
-                await deployment.wait_scale_success(replicas=replicas)
-                deployment.num_replicas = replicas
+            self._patch_namespaced_deployment_scale(replicas)
 
         def start(self):
             with JinaLogger(f'start_{self.name}') as logger:
@@ -394,6 +373,20 @@ class K8sPod(BasePod):
         def _read_namespaced_deployment(self):
             return kubernetes_client.K8sClients().apps_v1.read_namespaced_deployment(
                 name=self.dns_name, namespace=self.k8s_namespace
+            )
+
+        def _read_namespaced_deployment_scale(self):
+            return (
+                kubernetes_client.K8sClients().apps_v1.read_namespaced_deployment_scale(
+                    name=self.dns_name, namespace=self.k8s_namespace
+                )
+            )
+
+        def _patch_namespaced_deployment_scale(self, replicas: int):
+            kubernetes_client.K8sClients().apps_v1.patch_namespaced_deployment_scale(
+                self.dns_name,
+                namespace=self.k8s_namespace,
+                body={'spec': {'replicas': replicas}},
             )
 
         def get_pod_uids(self) -> List[str]:
@@ -557,6 +550,17 @@ class K8sPod(BasePod):
 
         for deployment in self.k8s_deployments:
             await deployment.wait_restart_success(old_uids[deployment.dns_name])
+
+    async def scale(self, replicas: int):
+        """
+        Scale the amount of replicas of a given Executor.
+        :param replicas: The number of replicas to scale to
+        """
+        for deployment in self.k8s_deployments:
+            deployment.scale(replicas=replicas)
+        for deployment in self.k8s_deployments:
+            await deployment.wait_scale_success(replicas=replicas)
+            deployment.num_replicas = replicas
 
     def start(self) -> 'K8sPod':
         """Deploy the kubernetes pods via k8s Deployment and k8s Service.
