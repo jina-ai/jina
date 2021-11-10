@@ -8,8 +8,8 @@
 :date: November 3, 2021
 ```
 
-This tutorial will take you through the process of creating your own question-answering chatbot. 
-This is an inherently difficult task, due to the fuzzyness of human language and the infinite number of questions one could ask.
+This tutorial will take you through the process of creating a question-answering chatbot. 
+This is an inherently difficult task, due to the fuzziness of human language and the infinite number of questions one could ask.
 
 One way to solve this is by predicting answers using a neural network that was trained on pairs of questions and their corresponding answers. In many cases such a dataset is not available, like in the case of most software documentation. Let's say we want to build a chatbot to answer questions about the Jina documentation. What if I told you that there is a way to reframe this task as a search problem and that this would alleviate the need for a large dataset of matching questions and answers?
 
@@ -18,7 +18,7 @@ How, you ask? *Let me explain!*
 ## Overview 
 Our approach to the problem leverages the [Doc2query method](https://arxiv.org/pdf/1904.08375.pdf), which, form a piece of text, predicts different questions the text could potentially answer. For example, given a sentence such as `Jina is an open source framework for neural search.`, the model predicts questions such as `What is Jina?` or `Is Jina open source?`.
 
-The idea here is to predict a number of questions for every part of the original text document, in our case the Jina documentation. Then we use an encoder to create a vector representation for each of the predicted questions. These representations are stored and provide the index for our body of text. When a user prompts the bot with a question, we encode it in the same way we encoded our generated questions. Now we can run a similarity search on the encodings. The encoding of the user's query is compared with the encodings in our index to find the closes match.
+The idea here is to predict several questions for every part of the original text document, in our case the Jina documentation. Then we use an encoder to create a vector representation for each of the predicted questions. These representations are stored and provide the index for our body of text. When a user prompts the bot with a question, we encode it in the same way we encoded our generated questions. Now we can run a similarity search on the encodings. The encoding of the user's query is compared with the encodings in our index to find the closes match.
 
 Since we know what part of the original text was used to generate the question, that was most similar to the user's query, we can return the original text as an answer to the user.
 
@@ -85,7 +85,7 @@ Now that we have seen the overall structure of the approach and have defined our
 
 ## Building the Executor to Generate Potential Questions 
 
-The first `Executor`, that we implement, is the `QuestionGenerator`. It is basically a wrapper around the model that predicts potential questions, which a given piece of text can answer.
+The first `Executor`, that we implement, is the `QuestionGenerator`. It is a wrapper around the model that predicts potential questions, which a given piece of text can answer.
 
 Apart from that, it just loops over all provided parts of input text. After potential questions are predicted for each of the inputs, they are stored as `chunks` alongside the original text. 
 
@@ -122,7 +122,7 @@ class QuestionGenerator(Executor):
 We try to give credit where credit is due and want to mention the paper, that introduced the doc2query approach [here](https://arxiv.org/pdf/1904.08375.pdf).
 
 ## Building the Encoder
-The next step is to build the `Executor` that we will use to create vector representations from human-readable text. 
+The next step is to build the `Executor`, which we will use to create vector representations from human-readable text. 
 
 ```python 
 class TextEncoder(Executor):
@@ -147,7 +147,7 @@ Now let's move on to the last part and create the indexer.
 
 ## Putting it Together with the Indexer
 The indexer is the only one of our `Executor`s that can handle more than one task. 
-Namely, the indexing as well as performing search.
+Namely, the indexing and the search.
 
 When it is used to perform indexing, `index()` is called. This stores all provided documents, together with their embeddings, as a `DocumentArrayMemmap`. 
 
@@ -220,4 +220,4 @@ def get_answer(docs, best_matching_id):
 print(get_answer(docs, best_matching_id))
 ```
 
-We have now seen how we can implement a basic question-answering bot using Jina and without the need for a large dataset of matching questions and answers. Using this in practice would require us to experiment with a number of parameters such as the initial extraction of answers from the original text. In this tutorial we made the assumption that every sentence will be one potential answer. However, it is very likely that some user queries will require multiple sentences or complete paragraphs to answer.
+We have now seen how to implement a question-answering bot using Jina without the need for a large dataset of matching questions and answers. In practice, we would need to experiment with several parameters, such as the initial extraction of answers from the original text. In this tutorial, we made the assumption that every sentence will be one potential answer. However, in reality, it is likely that some user queries will require multiple sentences or complete paragraphs to answer.
