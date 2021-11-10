@@ -41,8 +41,8 @@ class TopologyGraph:
                 self.parts_to_send.append(msg)
                 # this is a specific needs
                 if len(self.parts_to_send) == self.number_of_parts:
-                    resp = await connection_pool.send_message_once(
-                        msg=self.parts_to_send[-1], pod=self.name, head=True
+                    resp = await connection_pool.send_messages_once(
+                        messages=self.parts_to_send, pod=self.name, head=True
                     )
                     return resp
 
