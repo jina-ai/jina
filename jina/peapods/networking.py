@@ -348,7 +348,23 @@ class GrpcConnectionPool:
         :returns: the response message
         """
         return GrpcConnectionPool.create_connection(target, is_async=False).Call(
-            msg, timeout=timeout
+            [msg], timeout=timeout
+        )
+
+    @staticmethod
+    def send_messages_sync(
+        messages: List[Message], target: str, timeout=1.0
+    ) -> Message:
+        """
+        Sends messages synchronizly to the target via grpc
+
+        :param messages: the list of messages to send
+        :param target: where to send the message to, like 127.0.0.1:8080
+        :param timeout: timeout for the send
+        :returns: the response message
+        """
+        return GrpcConnectionPool.create_connection(target, is_async=False).Call(
+            messages, timeout=timeout
         )
 
     @staticmethod
