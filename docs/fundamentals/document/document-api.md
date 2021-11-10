@@ -89,18 +89,6 @@ the appropriate conversion method.
 You can convert a URI to a data URI (a data in-line URI scheme) using `doc.convert_uri_to_datauri()`. This will fetch
 the resource and make it inline.
 
-````{tip}
-
-In particular, when you work with an image `Document`, there are some extra helpers that enable more conversion:
-
-```python
-doc.convert_image_buffer_to_blob()
-doc.convert_image_blob_to_uri()
-doc.convert_image_uri_to_blob()
-doc.convert_image_datauri_to_blob()
-```
-````
-
 ## Document embedding
 
 An embedding is a multi-dimensional representation of a `Document`. You can assign any Numpy `ndarray` as a `Document`'s
@@ -325,37 +313,6 @@ d.dict()
 ```
 ````
 
-````{tip}
-
-To have a nicer representation of
-the `embeddings` and any `ndarray` field, you can call `dict` and `json` with the option `prettify_ndarrays=True`.
-
-```python
-import pprint
-import numpy as np
-
-from jina import Document
-
-d0 = Document(id='🐲identifier', text='I am a Jina Document', tags={'cool': True}, embedding=np.array([0, 0]))
-pprint.pprint(d0.dict(prettify_ndarrays=True))
-pprint.pprint(d0.json(prettify_ndarrays=True))
-```
-
-```text
-{'embedding': [0, 0],
- 'id': '🐲identifier',
- 'mime_type': 'text/plain',
- 'tags': {'cool': True},
- 'text': 'I am a Jina Document'}
-
-('{"embedding": [0, 0], "id": "identifier", "mime_type": '
- '"text/plain", "tags": {"cool": true}, "text": "I am a Jina Document"}')
-```
-
-This can be useful to understand the contents of the `Document` and to send to backends that can process vectors
-as `lists` of values.
-
-````
 
 ## Set/unset attributes
 
@@ -536,6 +493,7 @@ from jina.types.document.generators import from_files
 DocumentArray(from_files('/*.png'))
 ```
 
+(recursive-nested-document)=
 ## Recursive & nested Document
 
 `Document` can be recursive both horizontally and vertically. The following graphic illustrates the recursive `Document` structure. Each `Document` can have multiple "Chunks"

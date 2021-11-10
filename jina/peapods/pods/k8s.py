@@ -2,17 +2,17 @@ import copy
 import os
 import time
 from argparse import Namespace
-from typing import Optional, Dict, Union, Set, List
+from typing import Optional, Dict, Union, Set, List, Iterable
 
 import jina
 from .k8slib import kubernetes_deployment, kubernetes_client
-from ..pods import BasePod, ExitFIFO
+from ..pods import BasePod
 from ... import __default_executor__
 from ...logging.logger import JinaLogger
 from ...excepts import RuntimeFailToStart
 
 
-class K8sPod(BasePod, ExitFIFO):
+class K8sPod(BasePod):
     """The K8sPod (KubernetesPod)  is used for deployments on Kubernetes."""
 
     class _K8sDeployment:
@@ -122,6 +122,7 @@ class K8sPod(BasePod, ExitFIFO):
                 pull_policy='IfNotPresent',
                 init_container=init_container_args,
                 env=self.deployment_args.env,
+                gpus=self.deployment_args.gpus,
                 custom_resource_dir=getattr(
                     self.common_args, 'k8s_custom_resource_dir', None
                 ),
@@ -185,12 +186,15 @@ class K8sPod(BasePod, ExitFIFO):
                 fail_msg += f': {repr(exception_to_raise)}'
             raise RuntimeFailToStart(fail_msg)
 
-        async def wait_restart_success(self):
+        async def wait_restart_success(self, previous_uids: Iterable[str] = None):
             _timeout = self.common_args.timeout_ready
             if _timeout <= 0:
                 _timeout = None
             else:
                 _timeout /= 1e3
+
+            if previous_uids is None:
+                previous_uids = []
 
             from kubernetes import client
             import asyncio
@@ -214,11 +218,14 @@ class K8sPod(BasePod, ExitFIFO):
                             f' Replicas: {api_response.status.replicas}.'
                             f' Expected Replicas {self.num_replicas}'
                         )
+
+                        has_pod_with_uid = self._has_pod_with_uid(previous_uids)
                         if (
                             api_response.status.updated_replicas is not None
                             and api_response.status.updated_replicas
                             == self.num_replicas
                             and api_response.status.replicas == self.num_replicas
+                            and not has_pod_with_uid
                         ):
                             logger.success(
                                 f' {self.name} has all its replicas updated!!'
@@ -230,6 +237,10 @@ class K8sPod(BasePod, ExitFIFO):
                             if updated_replicas < self.num_replicas:
                                 logger.debug(
                                     f'\nNumber of updated replicas {updated_replicas}, waiting for {self.num_replicas - updated_replicas} replicas to be updated'
+                                )
+                            elif has_pod_with_uid:
+                                logger.debug(
+                                    f'\nWaiting for old replicas to be terminated'
                                 )
                             else:
                                 logger.debug(
@@ -299,6 +310,27 @@ class K8sPod(BasePod, ExitFIFO):
             return kubernetes_client.K8sClients().apps_v1.read_namespaced_deployment(
                 name=self.dns_name, namespace=self.k8s_namespace
             )
+
+        def get_pod_uids(self) -> List[str]:
+            """Get the UIDs for all Pods in this deployment
+
+            :return: list of uids as strings for all pods in the deployment
+            """
+            pods = kubernetes_client.K8sClients().core_v1.list_namespaced_pod(
+                namespace=self.k8s_namespace, label_selector=f'app={self.dns_name}'
+            )
+
+            return [item.metadata.uid for item in pods.items]
+
+        def _has_pod_with_uid(self, uids: Iterable[str]) -> bool:
+            """Check if this deployment has any Pod with a UID contained in uids
+
+            :param uids: list of UIDs to check
+            :return: True if any Pod has a UID in uids
+            """
+            current_pods_uids = self.get_pod_uids()
+
+            return any(uid in current_pods_uids for uid in uids)
 
         def __enter__(self):
             return self.start()
@@ -433,11 +465,13 @@ class K8sPod(BasePod, ExitFIFO):
         :param dump_path: **backwards compatibility** This function was only accepting dump_path as the only potential arg to override
         :param uses_with: a Dictionary of arguments to restart the executor with
         """
+        old_uids = {}
         for deployment in self.k8s_deployments:
+            old_uids[deployment.dns_name] = deployment.get_pod_uids()
             deployment.rolling_update(dump_path=dump_path, uses_with=uses_with)
 
         for deployment in self.k8s_deployments:
-            await deployment.wait_restart_success()
+            await deployment.wait_restart_success(old_uids[deployment.dns_name])
 
     def start(self) -> 'K8sPod':
         """Deploy the kubernetes pods via k8s Deployment and k8s Service.

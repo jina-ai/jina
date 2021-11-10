@@ -82,7 +82,7 @@ class ExitFIFO(ExitStack):
         return received_exc and suppressed_exc
 
 
-class BasePod:
+class BasePod(ExitFIFO):
     """A BasePod is an immutable set of peas. They share the same input and output socket.
     Internally, the peas can run with the process/thread backend.
     They can be also run in their own containers on remote machines.
@@ -322,12 +322,81 @@ class BasePod:
         ]
 
 
-class Pod(BasePod, ExitFIFO):
+class Pod(BasePod):
     """A Pod is an immutable set of peas, which run in replicas. They share the same input and output socket.
     Internally, the peas can run with the process/thread backend. They can be also run in their own containers
     :param args: arguments parsed from the CLI
     :param needs: pod names of preceding pods, the output of these pods are going into the input of this pod
     """
+
+    class _ReplicaSet:
+        def __init__(self, pod_args: Namespace, args: List[Namespace]):
+            self.pod_args = pod_args
+            self.args = args
+            self._peas = []
+
+        def activate(self):
+            for pea in self._peas:
+                pea.activate_runtime()
+
+        @property
+        def is_ready(self):
+            return all(p.is_ready.is_set() for p in self._peas)
+
+        def clear_peas(self):
+            self._peas.clear()
+
+        @property
+        def num_peas(self):
+            return len(self._peas)
+
+        def join(self):
+            for pea in self._peas:
+                pea.join()
+
+        def wait_start_success(self):
+            for pea in self._peas:
+                pea.wait_start_success()
+
+        async def rolling_update(
+            self, dump_path: Optional[str] = None, *, uses_with: Optional[Dict] = None
+        ):
+            for i in range(len(self._peas)):
+                old_pea = self._peas[i]
+                old_pea.close()
+                _args = self.args[i]
+                _args.noblock_on_start = True
+                ### BACKWARDS COMPATIBILITY, so THAT DUMP_PATH is in runtime_args
+                _args.dump_path = dump_path
+                ###
+                _args.uses_with = uses_with
+                new_pea = BasePea(_args)
+                new_pea.__enter__()
+                await new_pea.async_wait_start_success()
+                new_pea.activate_runtime()
+                self._peas[i] = new_pea
+
+        def __enter__(self):
+            for _args in self.args:
+                if getattr(self.pod_args, 'noblock_on_start', False):
+                    _args.noblock_on_start = True
+                if (
+                    self.pod_args.replicas == 1
+                ):  # keep backwards compatibility with `workspace` in `Executor`
+                    _args.replica_id = -1
+                self._peas.append(BasePea(_args).start())
+            return self
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            closing_exception = None
+            for pea in self._peas:
+                try:
+                    pea.close()
+                except Exception as exc:
+                    if closing_exception is None:
+                        closing_exception = exc
+            if exc_val is None and closing_exception is not None:
+                raise closing_exception
 
     def __init__(
         self,
@@ -343,11 +412,13 @@ class Pod(BasePod, ExitFIFO):
             needs or set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
 
+        self.head_pea = None
+        self.tail_pea = None
+        self.replica_set = None
         self.is_head_router = False
         self.is_tail_router = False
         self.deducted_head = None
         self.deducted_tail = None
-        self.peas = []  # type: List['BasePea']
         self.update_pea_args()
         self._activated = False
 
@@ -488,22 +559,27 @@ class Pod(BasePod, ExitFIFO):
 
         .. # noqa: DAR201
         """
-        return len(self.peas)
+        num_peas = 0
+        if self.head_pea is not None:
+            num_peas += 1
+        if self.tail_pea is not None:
+            num_peas += 1
+        if self.replica_set is not None:  # external pods
+            num_peas += self.replica_set.num_peas
+        return num_peas
 
     def __eq__(self, other: 'BasePod'):
         return self.num_peas == other.num_peas and self.name == other.name
-
-    def _enter_pea(self, pea: 'BasePea') -> None:
-        self.peas.append(pea)
-        self.enter_context(pea)
 
     def activate(self):
         """
         Activate all peas in this pod
         """
-        # order is good. Activate from tail to head
-        for pea in reversed(self.peas):
-            pea.activate_runtime()
+        if self.tail_pea is not None:
+            self.tail_pea.activate_runtime()
+        self.replica_set.activate()
+        if self.head_pea is not None:
+            self.head_pea.activate_runtime()
 
         self._activated = True
 
@@ -517,10 +593,21 @@ class Pod(BasePod, ExitFIFO):
             If one of the :class:`BasePea` fails to start, make sure that all of them
             are properly closed.
         """
-        for _args in self._fifo_args:
+        if self.peas_args['head'] is not None:
+            _args = self.peas_args['head']
             if getattr(self.args, 'noblock_on_start', False):
                 _args.noblock_on_start = True
-            self._enter_pea(BasePea(_args))
+            self.head_pea = BasePea(_args)
+            self.enter_context(self.head_pea)
+        self.replica_set = self._ReplicaSet(self.args, self.peas_args['peas'])
+        self.enter_context(self.replica_set)
+        if self.peas_args['tail'] is not None:
+            _args = self.peas_args['tail']
+            if getattr(self.args, 'noblock_on_start', False):
+                _args.noblock_on_start = True
+            self.tail_pea = BasePea(_args)
+            self.enter_context(self.tail_pea)
+
         if not getattr(self.args, 'noblock_on_start', False):
             self.activate()
         return self
@@ -535,8 +622,11 @@ class Pod(BasePod, ExitFIFO):
                 f'{self.wait_start_success!r} should only be called when `noblock_on_start` is set to True'
             )
         try:
-            for p in self.peas:
-                p.wait_start_success()
+            if self.head_pea is not None:
+                self.head_pea.wait_start_success()
+            self.replica_set.wait_start_success()
+            if self.tail_pea is not None:
+                self.tail_pea.wait_start_success()
             self.activate()
         except:
             self.close()
@@ -545,13 +635,20 @@ class Pod(BasePod, ExitFIFO):
     def join(self):
         """Wait until all peas exit"""
         try:
-            for p in self.peas:
-                p.join()
-                self._activated = False
+            if self.head_pea is not None:
+                self.head_pea.join()
+            if self.replica_set is not None:
+                self.replica_set.join()
+            if self.tail_pea is not None:
+                self.tail_pea.join()
+            self._activated = False
         except KeyboardInterrupt:
             pass
         finally:
-            self.peas.clear()
+            self.head_pea = None
+            self.tail_pea = None
+            if self.replica_set is not None:
+                self.replica_set.clear_peas()
             self._activated = False
 
     @property
@@ -564,7 +661,14 @@ class Pod(BasePod, ExitFIFO):
 
         .. # noqa: DAR201
         """
-        return all(p.is_ready.is_set() for p in self.peas) and self._activated
+        is_ready = True
+        if self.head_pea is not None:
+            is_ready = self.head_pea.is_ready.is_set()
+        if is_ready:
+            is_ready = self.replica_set.is_ready
+        if is_ready and self.tail_pea is not None:
+            is_ready = self.tail_pea.is_ready.is_set()
+        return is_ready and self._activated
 
     async def rolling_update(
         self, dump_path: Optional[str] = None, *, uses_with: Optional[Dict] = None
@@ -581,23 +685,9 @@ class Pod(BasePod, ExitFIFO):
             else:
                 uses_with = {'dump_path': dump_path}
         try:
-            pea_args_idx = 0
-            for i in range(len(self.peas)):
-                pea = self.peas[i]
-                if pea.role == PeaRoleType.PARALLEL:
-                    pea.close()
-                    _args = self.peas_args['peas'][pea_args_idx]
-                    _args.noblock_on_start = True
-                    ### BACKWARDS COMPATIBILITY, so THAT DUMP_PATH is in runtime_args
-                    _args.dump_path = dump_path
-                    ###
-                    _args.uses_with = uses_with
-                    new_pea = BasePea(_args)
-                    self.enter_context(new_pea)
-                    await new_pea.async_wait_start_success()
-                    new_pea.activate_runtime()
-                    self.peas[i] = new_pea
-                    pea_args_idx += 1
+            await self.replica_set.rolling_update(
+                dump_path=dump_path, uses_with=uses_with
+            )
         except:
             raise
 

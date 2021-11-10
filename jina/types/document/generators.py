@@ -4,7 +4,17 @@ import itertools
 import json
 import os
 import random
-from typing import Optional, Generator, Union, List, Iterable, Dict, TYPE_CHECKING
+from contextlib import nullcontext
+from typing import (
+    Optional,
+    Generator,
+    Union,
+    List,
+    Iterable,
+    Dict,
+    TYPE_CHECKING,
+    TextIO,
+)
 
 import numpy as np
 
@@ -73,7 +83,7 @@ def from_files(
 
     def _iter_file_exts(ps):
         return itertools.chain.from_iterable(
-            glob.iglob(p, recursive=recursive) for p in ps
+            glob.iglob(os.path.expanduser(p), recursive=recursive) for p in ps
         )
 
     num_docs = 0
@@ -100,32 +110,50 @@ def from_files(
 
 
 def from_csv(
-    fp: Iterable[str],
+    file: Union[str, TextIO],
     field_resolver: Optional[Dict[str, str]] = None,
     size: Optional[int] = None,
     sampling_rate: Optional[float] = None,
+    dialect: Union[str, 'csv.Dialect'] = 'excel',
 ) -> Generator['Document', None, None]:
     """Generator function for CSV. Yields documents.
 
-    :param fp: file paths
-    :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field
-            names defined in Protobuf. This is only used when the given ``document`` is
-            a JSON string or a Python dict.
+    :param file: file paths or file handler
+    :param field_resolver: a map from field names defined in JSON, dict to the field
+            names defined in Document.
     :param size: the maximum number of the documents
     :param sampling_rate: the sampling rate between [0, 1]
+    :param dialect: define a set of parameters specific to a particular CSV dialect. could be a string that represents
+        predefined dialects in your system, or could be a :class:`csv.Dialect` class that groups specific formatting
+        parameters together. If you don't know the dialect and the default one does not work for you,
+        you can try set it to ``auto``.
     :yield: documents
 
     """
     from ..document import Document
 
-    lines = csv.DictReader(fp)
-    for value in _subsample(lines, size, sampling_rate):
-        if 'groundtruth' in value and 'document' in value:
-            yield Document(value['document'], field_resolver), Document(
-                value['groundtruth'], field_resolver
-            )
-        else:
-            yield Document(value, field_resolver)
+    if hasattr(file, 'read'):
+        file_ctx = nullcontext(file)
+    else:
+        file_ctx = open(file, 'r')
+
+    with file_ctx as fp:
+        # when set to auto, then sniff
+        try:
+            if isinstance(dialect, str) and dialect == 'auto':
+                dialect = csv.Sniffer().sniff(fp.read(1024))
+                fp.seek(0)
+        except:
+            dialect = 'excel'  #: can not sniff delimiter, use default dialect
+
+        lines = csv.DictReader(fp, dialect=dialect)
+        for value in _subsample(lines, size, sampling_rate):
+            if 'groundtruth' in value and 'document' in value:
+                yield Document(value['document'], field_resolver), Document(
+                    value['groundtruth'], field_resolver
+                )
+            else:
+                yield Document(value, field_resolver)
 
 
 def from_huggingface_datasets(
@@ -242,7 +270,7 @@ def from_lines(
     """
     if filepath:
         file_type = os.path.splitext(filepath)[1]
-        with open(filepath, read_mode) as f:
+        with open(os.path.expanduser(filepath), read_mode) as f:
             if file_type in _jsonl_ext:
                 yield from from_ndjson(f, field_resolver, size, sampling_rate)
             elif file_type in _csv_ext:

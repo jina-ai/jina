@@ -90,7 +90,7 @@ def test_pod_context_sharded(runtime, shards, replicas):
             # count head and tail
             assert bp.num_peas == shards * (replicas + 2) + 2
 
-    with CompoundPod(args) as pod:
+    with CompoundPod(args):
         pass
 
 
@@ -113,28 +113,28 @@ def test_pod_naming_with_shards(runtime):
         assert bp.tail_pea.name == 'pod/tail'
 
         assert bp.shards[0].name == 'pod/shard-0'
-        assert bp.shards[0].peas[0].name == 'pod/shard-0/head'
-        assert bp.shards[0].peas[0]._is_inner_pea is False
-        assert bp.shards[0].peas[1].name == 'pod/shard-0/rep-0'
-        assert bp.shards[0].peas[1]._is_inner_pea
-        assert bp.shards[0].peas[2].name == 'pod/shard-0/rep-1'
-        assert bp.shards[0].peas[2]._is_inner_pea
-        assert bp.shards[0].peas[3].name == 'pod/shard-0/rep-2'
-        assert bp.shards[0].peas[3]._is_inner_pea
-        assert bp.shards[0].peas[4].name == 'pod/shard-0/tail'
-        assert bp.shards[0].peas[4]._is_inner_pea is False
+        assert bp.shards[0].head_pea.name == 'pod/shard-0/head'
+        assert bp.shards[0].head_pea._is_inner_pea is False
+        assert bp.shards[0].replica_set._peas[0].name == 'pod/shard-0/rep-0'
+        assert bp.shards[0].replica_set._peas[0]._is_inner_pea
+        assert bp.shards[0].replica_set._peas[1].name == 'pod/shard-0/rep-1'
+        assert bp.shards[0].replica_set._peas[1]._is_inner_pea
+        assert bp.shards[0].replica_set._peas[2].name == 'pod/shard-0/rep-2'
+        assert bp.shards[0].replica_set._peas[2]._is_inner_pea
+        assert bp.shards[0].tail_pea.name == 'pod/shard-0/tail'
+        assert bp.shards[0].tail_pea._is_inner_pea is False
 
         assert bp.shards[1].name == 'pod/shard-1'
-        assert bp.shards[1].peas[0].name == 'pod/shard-1/head'
-        assert bp.shards[1].peas[0]._is_inner_pea is False
-        assert bp.shards[1].peas[1].name == 'pod/shard-1/rep-0'
-        assert bp.shards[1].peas[1]._is_inner_pea
-        assert bp.shards[1].peas[2].name == 'pod/shard-1/rep-1'
-        assert bp.shards[1].peas[2]._is_inner_pea
-        assert bp.shards[1].peas[3].name == 'pod/shard-1/rep-2'
-        assert bp.shards[1].peas[3]._is_inner_pea
-        assert bp.shards[1].peas[4].name == 'pod/shard-1/tail'
-        assert bp.shards[1].peas[4]._is_inner_pea is False
+        assert bp.shards[1].head_pea.name == 'pod/shard-1/head'
+        assert bp.shards[1].head_pea._is_inner_pea is False
+        assert bp.shards[1].replica_set._peas[0].name == 'pod/shard-1/rep-0'
+        assert bp.shards[1].replica_set._peas[0]._is_inner_pea
+        assert bp.shards[1].replica_set._peas[1].name == 'pod/shard-1/rep-1'
+        assert bp.shards[1].replica_set._peas[1]._is_inner_pea
+        assert bp.shards[1].replica_set._peas[2].name == 'pod/shard-1/rep-2'
+        assert bp.shards[1].replica_set._peas[2]._is_inner_pea
+        assert bp.shards[1].tail_pea.name == 'pod/shard-1/tail'
+        assert bp.shards[1].tail_pea._is_inner_pea is False
 
 
 @pytest.mark.parametrize(
@@ -239,7 +239,7 @@ def test_sockets(polling, shards, pea_socket_in):
 
         pod_shards = compound_pod.shards
         for shard in pod_shards:
-            len(shard.peas) == 5
+            assert shard.num_peas == 5
 
             assert shard.head_args.socket_in == pea_socket_in
             assert shard.head_args.socket_out == SocketType.ROUTER_BIND

@@ -1,7 +1,7 @@
 import pytest
 import random
 
-from jina.types.arrays.ranking_evaluation import (
+from jina.types.arrays.mixins.ranking_evaluation import (
     precision,
     recall,
     reciprocal_rank,

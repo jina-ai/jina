@@ -149,7 +149,7 @@ This guide helps you to create your own Executor in 30 seconds.''',
                 if self.args.keywords
                 else (
                     Prompt.ask(
-                        ':grey_question: Please give some [bold]keywords[/bold] to help people search your executor [dim](separated by space)[/dim]\n'
+                        ':grey_question: Please give some [bold]keywords[/bold] to help people search your executor [dim](separated by comma)[/dim]\n'
                         f'[dim]Example: image cv embedding encoding resnet[/dim]'
                     )
                 )
@@ -196,7 +196,7 @@ your executor has non-trivial dependencies or must be run under certain environm
                         fp.read()
                         .replace('{{exec_name}}', exec_name)
                         .replace('{{exec_description}}', exec_description)
-                        .replace('{{exec_keywords}}', exec_keywords)
+                        .replace('{{exec_keywords}}', str(exec_keywords.split(',')))
                         .replace('{{exec_url}}', exec_url)
                     )
 
@@ -385,8 +385,8 @@ metas:
                     form_data['dockerfile'] = str(dockerfile)
 
                 uuid8, secret = load_secret(work_path)
-                if self.args.force or uuid8:
-                    form_data['force'] = self.args.force or uuid8
+                if self.args.force_update or uuid8:
+                    form_data['force'] = self.args.force_update or uuid8
                 if self.args.secret or secret:
                     form_data['secret'] = self.args.secret or secret
 
@@ -563,7 +563,6 @@ with f:
             The `name` and `tag` should be passed via ``args`` and `force` and `secret` as ``kwargs``, otherwise,
             cache does not work.
         """
-
         with ImportExtensions(required=True):
             import requests
 
@@ -669,7 +668,7 @@ with f:
         usage_kind = None
 
         try:
-            need_pull = self.args.force
+            need_pull = self.args.force_update
             with console.status(f'Pulling {self.args.uri}...') as st:
                 scheme, name, tag, secret = parse_hub_uri(self.args.uri)
 
@@ -732,6 +731,11 @@ with f:
                             need_pull = True
 
                         if need_pull:
+                            # pull the latest executor meta, as the cached data would expire
+                            executor = HubIO.fetch_meta(
+                                name, tag, secret=secret, force=True
+                            )
+
                             cache_dir = Path(
                                 os.environ.get(
                                     'JINA_HUB_CACHE_DIR',

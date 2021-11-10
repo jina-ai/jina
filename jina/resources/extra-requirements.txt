@@ -26,7 +26,7 @@
 # demo: required for the hello world demos
 
 scipy>=1.6.1:               devel
-fastapi<=0.68.2:            standard, daemon, devel, demo
+fastapi:                    standard, daemon, devel, demo
 uvicorn[standard]>=0.14.0:  standard, daemon, devel, demo
 fluent-logger:              daemon, devel
 docker:                     standard, daemon, devel
@@ -36,7 +36,7 @@ cryptography:               standard, daemon, devel
 filelock:                   standard, daemon, devel
 requests:                   standard, daemon, devel
 torch>=1.1.0:               demo
-transformers>=2.6.0:        demo
+transformers<=4.2.2:        demo
 tensorflow>=2.0:            cicd
 torchvision>=0.3.0:         demo
 Pillow:                     demo
@@ -77,3 +77,6 @@ kubernetes>=18.20.0:        perf, standard, devel
 pytest-kind==21.1.3:        test
 pytest-lazy-fixture:        test
 datasets:                   cicd
+av:                         cicd
+trimesh:                    cicd
+paddlepaddle:               cicd

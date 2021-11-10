@@ -7,8 +7,8 @@ from ....excepts import (
     BadConfigSource,
 )
 from ....executors import BaseExecutor
-from ....types.arrays.abstract import AbstractDocumentArray
 from ....types.arrays.document import DocumentArray
+from ....types.arrays.memmap import DocumentArrayMemmap
 from ....types.message import Message, Request
 
 if TYPE_CHECKING:
@@ -75,6 +75,7 @@ class DataRequestHandler:
                 override_metas=self.args.uses_metas,
                 override_requests=self.args.uses_requests,
                 runtime_args=vars(self.args),
+                extra_search_paths=self.args.extra_search_paths,
             )
         except BadConfigSource as ex:
             self.logger.error(
@@ -171,7 +172,7 @@ class DataRequestHandler:
         # 3. Return DocArray, but the memory pointer says it is the same as self.docs: do nothing
         # 4. Return DocArray and its not a shallow copy of self.docs: assign self.request.docs
         if r_docs is not None:
-            if isinstance(r_docs, AbstractDocumentArray):
+            if isinstance(r_docs, (DocumentArray, DocumentArrayMemmap)):
                 if r_docs != msg.request.docs:
                     # this means the returned DocArray is a completely new one
                     DataRequestHandler.replace_docs(msg, r_docs)
@@ -179,7 +180,8 @@ class DataRequestHandler:
                 msg.request.parameters.update(r_docs)
             else:
                 raise TypeError(
-                    f'return type must be {DocumentArray!r}, `None` or Dict, but getting {r_docs!r}'
+                    f'The return type must be DocumentArray / DocumentArrayMemmap / Dict / `None`, '
+                    f'but getting {r_docs!r}'
                 )
         elif partial_requests:
             DataRequestHandler.replace_docs(msg, docs)

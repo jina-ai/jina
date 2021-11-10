@@ -1,4 +1,4 @@
-import sys
+import copy
 import os
 import re
 import tempfile
@@ -480,6 +480,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         override_with: Optional[Dict] = None,
         override_metas: Optional[Dict] = None,
         override_requests: Optional[Dict] = None,
+        extra_search_paths: Optional[List[str]] = None,
         **kwargs,
     ) -> 'JAMLCompatible':
         """A high-level interface for loading configuration with features
@@ -529,11 +530,17 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :param override_with: dictionary of parameters to overwrite from the default config's with field
         :param override_metas: dictionary of parameters to overwrite from the default config's metas field
         :param override_requests: dictionary of parameters to overwrite from the default config's requests field
+        :param extra_search_paths: extra paths used when looking for executor yaml files
         :param kwargs: kwargs for parse_config_source
         :return: :class:`JAMLCompatible` object
         """
 
-        stream, s_path = parse_config_source(source, **kwargs)
+        if isinstance(source, str) and os.path.exists(source):
+            extra_search_paths = (extra_search_paths or []) + [os.path.dirname(source)]
+
+        stream, s_path = parse_config_source(
+            source, extra_search_paths=extra_search_paths, **kwargs
+        )
         with stream as fp:
             # first load yml with no tag
             no_tag_yml = JAML.load_no_tags(fp)
@@ -570,15 +577,30 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             if substitute:
                 # expand variables
                 no_tag_yml = JAML.expand_dict(no_tag_yml, context)
+
             if allow_py_modules:
+                _extra_search_paths = extra_search_paths or []
                 load_py_modules(
                     no_tag_yml,
-                    extra_search_paths=(os.path.dirname(s_path),) if s_path else None,
+                    extra_search_paths=(_extra_search_paths + [os.path.dirname(s_path)])
+                    if s_path
+                    else None,
                 )
 
             from ..flow.base import Flow
 
             if issubclass(cls, Flow):
+                no_tag_yml_copy = copy.copy(no_tag_yml)
+                # only needed for Flow
+                if no_tag_yml_copy.get('with') is None:
+                    no_tag_yml_copy['with'] = {}
+                no_tag_yml_copy['with']['extra_search_paths'] = (
+                    no_tag_yml_copy['with'].get('extra_search_paths') or []
+                ) + (extra_search_paths or [])
+
+                if cls.is_valid_jaml(no_tag_yml_copy):
+                    no_tag_yml = no_tag_yml_copy
+
                 tag_yml = JAML.unescape(
                     JAML.dump(no_tag_yml),
                     include_unknown_tags=False,
@@ -592,10 +614,30 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
 
     @classmethod
     def _override_yml_params(cls, raw_yaml, field_name, override_field):
-        if override_field is not None:
-            field_params = raw_yaml.get(field_name, None)
-            if field_params:
-                field_params.update(**override_field)
-                raw_yaml.update(field_params)
-            else:
-                raw_yaml[field_name] = override_field
+        if override_field:
+            field_params = raw_yaml.get(field_name, {})
+            field_params.update(**override_field)
+            raw_yaml[field_name] = field_params
+
+    @staticmethod
+    def is_valid_jaml(obj: Dict) -> bool:
+        """
+        Verifies the yaml syntax of a given object by first serializing it and attempting to deserialize and catch
+        parser errors
+        :param obj: yaml object
+        :return: whether the syntax is valid or not
+
+        """
+        serialized_yaml = JAML.unescape(
+            JAML.dump(obj),
+            include_unknown_tags=False,
+        )
+
+        try:
+            yaml.safe_load(serialized_yaml)
+        # we only need to validate syntax, e.g, need to detect parser errors
+        except yaml.parser.ParserError:
+            return False
+        except yaml.error.YAMLError:
+            return True
+        return True

@@ -1,0 +1,8 @@
+# Used only with Remote Flow tests
+jtype: Flow
+with:
+  port_expose: $PORT_EXPOSE
+executors:
+  - name: remote
+    uses: MyExecutor
+    py_modules: my_executor.py

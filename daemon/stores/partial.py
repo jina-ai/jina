@@ -1,6 +1,6 @@
 from pathlib import Path
 from argparse import Namespace
-from typing import List, Optional, Union
+from typing import Dict, Optional, Union
 
 from jina.helper import colored, random_port
 from jina.peapods import Pea, Pod, CompoundPod
@@ -83,6 +83,33 @@ class PartialPodStore(PartialPeaStore):
 
     peapod_cls = Pod
 
+    def update(
+        self,
+        kind: UpdateOperation,
+        pod_name: str,
+        uses_with: Optional[Dict] = None,
+        **kwargs,
+    ) -> PartialStoreItem:
+        """Runs an update operation on the Flow.
+        :param kind: type of update command to execute (rolling_update)
+        :param pod_name: pod to target with the dump request
+        :param uses_with: the uses_with for the new executors to be rolled updated
+        :param kwargs: keyword args
+        :return: Item describing the Flow object
+        """
+        try:
+            if kind == UpdateOperation.ROLLING_UPDATE:
+                self.object.rolling_update(uses_with=uses_with)
+            else:
+                self._logger.error(f'unsupported kind: {kind}, no changes done')
+                return self.item
+        except Exception as e:
+            self._logger.error(f'{e!r}')
+            raise
+        else:
+            self.item.arguments = vars(self.object.args)
+            return self.item
+
 
 class PartialFlowStore(PartialStore):
     """A Flow store spawned inside partial-daemon container"""
@@ -103,10 +130,7 @@ class PartialFlowStore(PartialStore):
             elif not Path(args.uses).is_file():
                 raise ValueError(f'uses {args.uses} not found in workspace')
 
-            with open(args.uses) as yaml_file:
-                yaml_source = yaml_file.read()
-
-            self.object: Flow = Flow.load_config(yaml_source).build()
+            self.object: Flow = Flow.load_config(args.uses).build()
             self.object.workspace_id = jinad_args.workspace_id
             self.object.workspace = __partial_workspace__
             self.object.env = {'HOME': __partial_workspace__}
@@ -172,6 +196,9 @@ class PartialFlowStore(PartialStore):
             self._logger.error(f'{e!r}')
             raise
         else:
+            with open(args.uses) as yaml_file:
+                yaml_source = yaml_file.read()
+
             self.item = PartialFlowItem(
                 arguments={
                     'port_expose': self.object.port_expose,
@@ -180,7 +207,7 @@ class PartialFlowStore(PartialStore):
                 },
                 yaml_source=yaml_source,
             )
-            self._logger.success(f'Flow is created')
+            self._logger.success(f'Flow is created successfully!')
             return self.item
 
     def _set_pea_ports(self, pea_args, port_mapping, port_name):
@@ -198,28 +225,27 @@ class PartialFlowStore(PartialStore):
     def update(
         self,
         kind: UpdateOperation,
-        dump_path: str,
         pod_name: str,
-        shards: int,
+        uses_with: Optional[Dict] = None,
         **kwargs,
     ) -> PartialFlowItem:
         """Runs an update operation on the Flow.
-        :param kind: type of update command to execute (dump/rolling_update)
-        :param dump_path: the path to which to dump on disk
+        :param kind: type of update command to execute (rolling_update)
         :param pod_name: pod to target with the dump request
-        :param shards: nr of shards to dump
+        :param uses_with: the uses_with for the new executors to be rolled updated
         :param kwargs: keyword args
         :return: Item describing the Flow object
         """
         try:
             if kind == UpdateOperation.ROLLING_UPDATE:
-                self.object.rolling_update(pod_name=pod_name, dump_path=dump_path)
+                self.object.rolling_update(pod_name=pod_name, uses_with=uses_with)
             else:
-                self._logger.error(f'unsupoorted kind: {kind}, no changes done')
+                self._logger.error(f'unsupported kind: {kind}, no changes done')
                 return self.item
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise
         else:
             self.item.arguments = vars(self.object.args)
+            self._logger.success(f'Flow is updated successfully!')
             return self.item

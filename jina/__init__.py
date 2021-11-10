@@ -31,6 +31,8 @@ def _warning_on_one_line(message, category, filename, lineno, *args, **kwargs):
 
 
 _warnings.formatwarning = _warning_on_one_line
+_warnings.simplefilter('always', DeprecationWarning)
+
 
 # fix fork error on MacOS but seems no effect? must do EXPORT manually before jina start
 _os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
@@ -57,7 +59,7 @@ elif _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
 
-__version__ = '2.1.9'
+__version__ = '2.4.3'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution

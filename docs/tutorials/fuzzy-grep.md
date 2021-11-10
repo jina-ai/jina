@@ -1,12 +1,10 @@
-# Fuzzy `grep` in 30 Lines
+# Fuzzy String Matching in 30 Lines
 
-```{article-info}
-:avatar: avatars/han.jpg
-:avatar-link: https://jobs.jina.ai
-:avatar-outline: muted
-:author: Han @ Jina AI
-:date: July 15, 2021
-```
+
+````{admonition} Different behavior on Jupyter Notebook
+:class: warning
+Be aware of the following when running this tutorial in jupyter notebook. Some python built-in attributes such as `__file__` do not exist. You can change `__file__` for any other file path existing in your system.
+````
 
 
 Now that you understand all fundamental concepts, let's practice the learnings and build a simple end-to-end demo.
@@ -76,8 +74,8 @@ class Indexer(Executor):
 from jina import Flow
 
 f = (Flow(port_expose=12345, protocol='http', cors=True)
-        .add(uses=CharEmbed, parallel=2)
-        .add(uses=Indexer))  # build a Flow, with 2 parallel CharEmbed, tho unnecessary
+        .add(uses=CharEmbed, replicas=2)
+        .add(uses=Indexer))  # build a Flow, with 2 shard CharEmbed, tho unnecessary
 
 ```
 

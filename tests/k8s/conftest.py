@@ -3,7 +3,6 @@ import os
 import docker
 import pytest
 from pytest_kind import KindCluster
-from typing import Optional
 
 from jina.logging.logger import JinaLogger
 
@@ -94,12 +93,40 @@ def dummy_dumper_image(logger: JinaLogger):
 
 
 @pytest.fixture()
+def slow_process_executor_image(logger: JinaLogger):
+    image, build_logs = client.images.build(
+        path=os.path.join(cur_dir, 'slow-process-executor'),
+        tag='slow-process-executor:0.14.1',
+    )
+    for chunk in build_logs:
+        if 'stream' in chunk:
+            for line in chunk['stream'].splitlines():
+                logger.debug(line)
+    return image.tags[-1]
+
+
+@pytest.fixture()
+def slow_init_executor_image(logger: JinaLogger):
+    image, build_logs = client.images.build(
+        path=os.path.join(cur_dir, 'slow-init-executor'),
+        tag='slow-init-executor:0.13.1',
+    )
+    for chunk in build_logs:
+        if 'stream' in chunk:
+            for line in chunk['stream'].splitlines():
+                logger.debug(line)
+    return image.tags[-1]
+
+
+@pytest.fixture()
 def load_images_in_kind(
     logger,
     test_executor_image,
     executor_merger_image,
     dummy_dumper_image,
     reload_executor_image,
+    slow_process_executor_image,
+    slow_init_executor_image,
     k8s_cluster,
 ):
     logger.debug(f'Loading docker image into kind cluster...')
@@ -108,6 +135,8 @@ def load_images_in_kind(
         executor_merger_image,
         dummy_dumper_image,
         reload_executor_image,
+        slow_process_executor_image,
+        slow_init_executor_image,
         'jinaai/jina:test-pip',
     ]:
         k8s_cluster.load_docker_image(image)

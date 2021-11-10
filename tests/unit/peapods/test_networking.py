@@ -1,7 +1,7 @@
 import multiprocessing
 import time
 from multiprocessing import Process
-from threading import Thread, Event
+from threading import Event
 
 import pytest
 
@@ -38,6 +38,9 @@ def test_connection_list(mocker):
     assert connection_list.get_next_connection() == second_connection
     assert connection_list.get_next_connection() == third_connection
     assert connection_list.get_next_connection() == first_connection
+
+    assert connection_list.remove_connection('1.1.1.2') == second_connection
+    assert connection_list.get_next_connection() == third_connection
 
 
 def test_connection_pool(mocker):

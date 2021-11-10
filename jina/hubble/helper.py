@@ -285,7 +285,7 @@ def disk_cache_offline(
                 cache_db = shelve.open(
                     cache_file, protocol=pickle_protocol, writeback=True
                 )
-            except Exception as ex:
+            except Exception:
                 if os.path.exists(cache_file):
                     # cache is in an unsupported format, reset the cache
                     os.remove(cache_file)
@@ -321,7 +321,7 @@ def is_requirements_installed(
     """Return True if requirements.txt is installed locally
     :param requirements_file: the requirements.txt file
     :param show_warning: if to show a warning when a dependency is not satisfied
-    :return: True of False if not satisfied
+    :return: True or False if not satisfied
     """
     from pkg_resources import (
         DistributionNotFound,
@@ -330,38 +330,53 @@ def is_requirements_installed(
     )
     import pkg_resources
 
+    install_reqs, install_options = _get_install_options(requirements_file)
+
+    if len(install_reqs) == 0:
+        return True
+
     try:
-        with requirements_file.open() as requirements:
-            pkg_resources.require(requirements)
+        pkg_resources.require('\n'.join(install_reqs))
     except (DistributionNotFound, VersionConflict, RequirementParseError) as ex:
         if show_warning:
-            warnings.warn(str(ex), UserWarning)
-        return False
+            warnings.warn(repr(ex))
+        return isinstance(ex, VersionConflict)
     return True
 
 
-def install_requirements(
-    requirements_file: 'Path', timeout: int = 1000, excludes: Tuple[str] = ('jina',)
-):
-    """Install modules included in requirments file
-    :param requirements_file: the requirements.txt file
-    :param timeout: the socket timeout (default = 1000s)
-    :param excludes: the excluded module dependencies
-    """
+def _get_install_options(requirements_file: 'Path', excludes: Tuple[str] = ('jina',)):
     import pkg_resources
 
     with requirements_file.open() as requirements:
-        install_reqs = [
-            str(req)
-            for req in pkg_resources.parse_requirements(requirements)
-            if req.project_name not in excludes or len(req.extras) > 0
-        ]
+        install_options = []
+        install_reqs = []
+        for req in requirements:
+            req = req.strip()
+            if (not req) or req.startswith('#'):
+                continue
+            elif req.startswith('-'):
+                install_options.extend(req.split(' '))
+            else:
+                for req_spec in pkg_resources.parse_requirements(req):
+                    if (
+                        req_spec.project_name not in excludes
+                        or len(req_spec.extras) > 0
+                    ):
+                        install_reqs.append(req)
 
-    if len(install_reqs) == 0:
-        return
+    return install_reqs, install_options
+
+
+def install_requirements(requirements_file: 'Path', timeout: int = 1000):
+    """Install modules included in requirments file
+    :param requirements_file: the requirements.txt file
+    :param timeout: the socket timeout (default = 1000s)
+    """
 
     if is_requirements_installed(requirements_file):
         return
+
+    install_reqs, install_options = _get_install_options(requirements_file)
 
     subprocess.check_call(
         [
@@ -373,4 +388,5 @@ def install_requirements(
             f'--default-timeout={timeout}',
         ]
         + install_reqs
+        + install_options
     )

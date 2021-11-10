@@ -1,0 +1,39 @@
+- !IntegerParameter
+  parameter_name: param1
+  jaml_variable: JINA_PARAM1
+  high: 2
+  low: 0
+  step_size: 1
+- !CategoricalParameter
+  parameter_name: param2
+  jaml_variable: JINA_PARAM2
+  choices:
+    - foo
+    - bar
+- !DiscreteUniformParameter
+  jaml_variable: JINA_PARAM3
+  parameter_name: param3
+  high: 2.0
+  low: 1.0
+  q: 0.5
+- !ExecutorAlternativeParameter
+  jaml_variable: JINA_PARAM4
+  parameter_name: param4
+  choices:
+    - spam
+    - ham
+  inner_parameters:
+    spam:
+      - !IntegerParameter
+        parameter_name: param5
+        jaml_variable: JINA_PARAM4_SPAM_PARAM5
+        high: 2
+        low: 0
+        step_size: 1
+    ham:
+      - !IntegerParameter
+        parameter_name: param6
+        jaml_variable: JINA_PARAM4_HAM_PARAM56
+        high: 2
+        low: 0
+        step_size: 1
