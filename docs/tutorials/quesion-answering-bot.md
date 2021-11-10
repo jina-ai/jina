@@ -1,4 +1,4 @@
-# Question-Answering Chatbot for documentations 
+# Question-Answering Chatbot for Documentation 
 
 ```{article-info}
 :avatar: avatars/gregor.jpg
@@ -11,21 +11,21 @@
 This tutorial will take you through the process of creating your own question-answering chatbot. 
 This is an inherently difficult task, due to the fuzzyness of human language and the infinite number of questions one could ask.
 
-One way to solve this is by predicting answers using a neural network that was trained on pairs of quesitons and their corresponding answers. In many cases such a dataset is not available, like in the case of most software documentation. Let's say we want to build a chatbot to answer questions about the jina documentation. What if I told you that there is a way to reframe this task as a search problem and that this would alleviate the need for a large dataset of matching questions and answers?
+One way to solve this is by predicting answers using a neural network that was trained on pairs of questions and their corresponding answers. In many cases such a dataset is not available, like in the case of most software documentation. Let's say we want to build a chatbot to answer questions about the Jina documentation. What if I told you that there is a way to reframe this task as a search problem and that this would alleviate the need for a large dataset of matching questions and answers?
 
-How you ask? *Let me explain!*
+How, you ask? *Let me explain!*
 
 ## Overview 
-Our approach to the problem leverages the [Doc2query method](https://arxiv.org/pdf/1904.08375.pdf), which, form a piece of text, predicts different questions the text could potentially answer. For example, given a sentence such as `Jina is an open source framework for neural search.`, the model predicts questions such as `What is jina?` or `Is jina open source?`.
+Our approach to the problem leverages the [Doc2query method](https://arxiv.org/pdf/1904.08375.pdf), which, form a piece of text, predicts different questions the text could potentially answer. For example, given a sentence such as `Jina is an open source framework for neural search.`, the model predicts questions such as `What is Jina?` or `Is Jina open source?`.
 
-The idea here is to predict a number of questions for every part of the original text document, in our case the jina documentation. Then we use an encoder to create a vector representation for each of the predicted questions. These representations are stored and provide the index for our body of text. When a user prompts the bot with a question, we encode it in the same way we encoded our generated questions. Now we can run a similarity search on the encodings. The encoding of the user's query is compared with the encodings in our index to find the closes match.
+The idea here is to predict a number of questions for every part of the original text document, in our case the Jina documentation. Then we use an encoder to create a vector representation for each of the predicted questions. These representations are stored and provide the index for our body of text. When a user prompts the bot with a question, we encode it in the same way we encoded our generated questions. Now we can run a similarity search on the encodings. The encoding of the user's query is compared with the encodings in our index to find the closes match.
 
 Since we know what part of the original text was used to generate the question, that was most similar to the user's query, we can return the original text as an answer to the user.
 
-Now that you have a general idea of what we will be doing, the following section will show you how to define our `Flow`s in jina. Then we will take a look at how to implement the necessary `Executor`s for our search-based question-answering system.  
+Now that you have a general idea of what we will be doing, the following section will show you how to define our `Flow`s in Jina. Then we will take a look at how to implement the necessary `Executor`s for our search-based question-answering system.  
 
 ## Indexing the text document 
-Let's imagine we extracted a bunch of sentences from jina's documentation and stored them in a `DocumentArray`, as shown below. 
+Let's imagine we extracted a bunch of sentences from Jina's documentation and stored them in a `DocumentArray`, as shown below. 
 
 ```python
 example_sentences = [
@@ -38,7 +38,7 @@ example_sentences = [
 docs = DocumentArray([Document(content=sentence) for sentence in example_sentences])
 ```
 
-As described in the last section, we first need to predict potential questions for each of the elements in the `DocumentArray`. Then we have to use another model to create vector encodings from the the predicted questions. Finally, we store them as the index. 
+As described in the last section, we first need to predict potential questions for each of the elements in the `DocumentArray`. Then we have to use another model to create vector encodings from the predicted questions. Finally, we store them as the index. 
 
 At this point we have enough information to start defining our `Flows`.
 
@@ -87,7 +87,7 @@ Now that we have seen the overall structure of the approach and have defined our
 
 The first `Executor`, that we implement, is the `QuestionGenerator`. It is basically a wrapper around the model that predicts potential questions, which a given piece of text can answer.
 
-Apart from that, all that it does is looping all provided parts of input text. After potential questions are predicted for each of the inputs, they are stored as `chunks` alongside the original text. 
+Apart from that, it just loops over all provided parts of input text. After potential questions are predicted for each of the inputs, they are stored as `chunks` alongside the original text. 
 
 ``` python 
 class QuestionGenerator(Executor): 
@@ -221,4 +221,4 @@ def get_answer(docs, best_matching_id):
 print(get_answer(docs, best_matching_id))
 ```
 
-We have now seen how we can implement a basic question-answering bot using jina and without the need for a large dataset of matching questions and answers. Using this in practice would require us to experiment with a number of parameters such as the initial extraction of answers from the original text. In this tutorial we made the assumption that every sentence will be one potential answer. However, it is very likely that some user queries will require multiple sentences or complete paragraphs to answer.
+We have now seen how we can implement a basic question-answering bot using Jina and without the need for a large dataset of matching questions and answers. Using this in practice would require us to experiment with a number of parameters such as the initial extraction of answers from the original text. In this tutorial we made the assumption that every sentence will be one potential answer. However, it is very likely that some user queries will require multiple sentences or complete paragraphs to answer.
