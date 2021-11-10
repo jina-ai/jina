@@ -157,7 +157,7 @@ class GrpcConnectionPool:
             self, pod: str, type: str, entity_id: Optional[int] = None
         ) -> ReplicaList:
             try:
-                if entity_id is None:
+                if entity_id is None and len(self._pods[pod][type]) > 0:
                     # select a random entity
                     return self._pods[pod][type][
                         random.randrange(0, len(self._pods[pod][type]))
@@ -221,17 +221,17 @@ class GrpcConnectionPool:
         self._logger = logger or JinaLogger(self.__class__.__name__)
         self._connections = self._ConnectionPoolMap(self._logger)
 
-    def send_message(
+    def send_messages(
         self,
-        msg: Message,
+        messages: List[Message],
         pod: str,
-        head: bool,
+        head: bool = False,
         shard_id: Optional[int] = None,
         polling_type: PollingType = PollingType.ANY,
     ) -> List[asyncio.Task]:
-        """Send msg to target via one or all of the pooled connections, depending on polling_type
+        """Send messages to target via one or all of the pooled connections, depending on polling_type
 
-        :param msg: message to send
+        :param messages: list of messages to send
         :param pod: name of the Jina pod to send the message to
         :param head: If True it is send to the head, otherwise to the worker peas
         :param shard_id: Send to a specific shard of the pod, ignored for polling ALL
@@ -252,12 +252,34 @@ class GrpcConnectionPool:
             raise ValueError(f'Unsupported polling type {polling_type}')
 
         for connection in connections:
-            results.append(self._send_message(msg, connection))
+            task = self._send_messages(messages, connection)
+            results.append(task)
 
         return results
 
+    def send_messages_once(
+        self,
+        messages: List[Message],
+        pod: str,
+        head: bool = False,
+        shard_id: Optional[int] = None,
+    ) -> asyncio.Task:
+        """Send messages to target via only one of the pooled connections
+
+        :param messages: list of messages to send
+        :param pod: name of the Jina pod to send the message to
+        :param head: If True it is send to the head, otherwise to the worker peas
+        :param shard_id: Send to a specific shard of the pod, ignored for polling ALL
+        :return: asyncio.Task representing the send call
+        """
+        connection = self._connections.get_replicas(
+            pod, head, shard_id
+        ).get_next_connection()
+
+        return self._send_messages(messages, connection)
+
     def add_connection(
-        self, pod: str, head: bool, address: str, shard_id: Optional[int] = None
+        self, pod: str, address: str, head: bool = False, shard_id: Optional[int] = None
     ):
         """
         Adds a connection for a pod to this connection pool
@@ -277,14 +299,14 @@ class GrpcConnectionPool:
             )
 
     def remove_connection(
-        self, pod: str, head: bool, address: str, shard_id: Optional[int] = None
+        self, pod: str, address: str, head: bool = False, shard_id: Optional[int] = None
     ):
         """
         Removes a connection to a pod
 
         :param pod: The pod the connection belongs to, like 'encoder'
-        :param head: True if the connection is for a head
         :param address: Address used for the grpc connection, format is <host>:<port>
+        :param head: True if the connection is for a head
         :param shard_id: Optional parameter to indicate this connection belongs to a shard, ignored for heads
         :return: The removed connection, None if it did not exist
         """
@@ -307,13 +329,13 @@ class GrpcConnectionPool:
         """
         self._connections.clear()
 
-    def _send_message(self, msg: Message, connection) -> asyncio.Task:
+    def _send_messages(self, messages: List[Message], connection) -> asyncio.Task:
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
-        async def task_wrapper(new_message, stub):
-            return await stub.Call(new_message)
+        async def task_wrapper(new_messages, stub):
+            return await stub.Call(new_messages)
 
-        return asyncio.create_task(task_wrapper(msg, connection))
+        return asyncio.create_task(task_wrapper(messages, connection))
 
     @staticmethod
     def send_message_sync(msg: Message, target: str, timeout=1.0) -> Message:
