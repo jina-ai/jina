@@ -133,16 +133,13 @@ class NdArray(ProtoTypeMixin):
             for j, p in enumerate(protos):
                 _d = _get_dense_array(p.sparse.indices)
 
-                if _d.size > 0:
-                    if framework == 'torch':
-                        _idx = np.array([j] * _d.shape[-1], dtype=np.int32).reshape(
-                            [1, -1]
-                        )
-                        _d = np.vstack([_idx, _d])
-                    if framework == 'scipy':
-                        _idx = np.array([j] * _d.shape[0], dtype=np.int32)
-                        _d = np.stack([_idx, _d[:, 1]], axis=-1)
-                    all_ds.append(_d)
+                if framework == 'torch':
+                    _idx = np.array([j] * _d.shape[-1], dtype=np.int32).reshape([1, -1])
+                    _d = np.vstack([_idx, _d])
+                if framework == 'scipy':
+                    _idx = np.array([j] * _d.shape[0], dtype=np.int32)
+                    _d = np.stack([_idx, _d[:, 1]], axis=-1)
+                all_ds.append(_d)
 
             if framework == 'torch':
                 idx = np.concatenate(all_ds, axis=-1)
