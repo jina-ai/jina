@@ -121,40 +121,54 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :param args: additional arguments in the grpc call, ignored
         :returns: the response message
         """
-        for msg in messages:
-            self.logger.debug('processing msg')
-            try:
-                return self._handle(msg)
-            except RuntimeTerminated:
-                WorkerRuntime.cancel(self.is_cancel)
-            except (RuntimeError, Exception) as ex:
-                self.logger.error(
-                    f'{ex!r}'
-                    + f'\n add "--quiet-error" to suppress the exception details'
-                    if not self.args.quiet_error
-                    else '',
-                    exc_info=not self.args.quiet_error,
-                )
-                raise
+        try:
+            return self._handle(messages)
+        except RuntimeTerminated:
+            WorkerRuntime.cancel(self.is_cancel)
+        except (RuntimeError, Exception) as ex:
+            self.logger.error(
+                f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
+                if not self.args.quiet_error
+                else '',
+                exc_info=not self.args.quiet_error,
+            )
+            raise
 
-    def _handle(self, msg: Message) -> Message:
+    def _handle(self, messages: List[Message]) -> Message:
         """Process the given message, data requests are passed to the DataRequestHandler
 
-        :param msg: received message
+        :param messages: received messages
         :return: the transformed message.
         """
 
-        if self.logger.debug_enabled:
-            self._log_info_msg(msg)
+        # messages have to all be of the same type (DataRequest/ControlRequest)
+        # we can check the first to find their type
+        # DataRequests are handled en bloc, ControlRequests one by one
+        if messages[0].envelope.request_type != 'DataRequest':
+            return self._handle_control_requests(messages)
+        else:
+            if self.logger.debug_enabled:
+                self._log_info_messages(messages)
 
-        # skip executor for non-DataRequest
-        if msg.envelope.request_type != 'DataRequest':
+            return self._data_request_handler.handle(messages=messages)
+
+    def _handle_control_requests(self, messages):
+        # responses for ControlRequests dont matter, just return the last ControlRequest back to the caller
+        last_message = None
+        for msg in messages:
+            if self.logger.debug_enabled:
+                self._log_info_msg(msg)
+
             if msg.request.command == 'TERMINATE':
                 raise RuntimeTerminated()
-            return msg
-
-        self._data_request_handler.handle(msg=msg)
-        return msg
+            elif msg.request.command == 'STATUS':
+                pass
+            else:
+                raise RuntimeError(
+                    f'WorkerRuntime received unsupported ControlRequest command {msg.request.command}'
+                )
+            last_message = msg
+        return last_message
 
     def _log_info_msg(self, msg):
         info_msg = f'recv {msg.envelope.request_type} '
