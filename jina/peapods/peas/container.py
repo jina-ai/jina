@@ -429,6 +429,31 @@ class ContainerPea(BasePea):
         else:
             self._fail_start_timeout(_timeout)
 
+    async def async_wait_start_success(self):
+        """
+        Wait for the `ContainerPea` to start successfully in a non-blocking manner
+        """
+        import asyncio
+
+        _timeout = self.args.timeout_ready
+        if _timeout <= 0:
+            _timeout = None
+        else:
+            _timeout /= 1e3
+
+        timeout_ns = 1e9 * _timeout if _timeout else None
+        now = time.time_ns()
+        while timeout_ns is None or time.time_ns() - now < timeout_ns:
+
+            if self.ready_or_shutdown.event.is_set():
+                self._check_failed_to_start()
+                self.logger.debug(__ready_msg__)
+                return
+            else:
+                await asyncio.sleep(0.1)
+
+        self._fail_start_timeout(_timeout)
+
     def join(self, *args, **kwargs):
         """Joins the Pea.
         This method calls :meth:`join` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.

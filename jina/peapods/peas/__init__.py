@@ -156,6 +156,15 @@ class BasePea(ABC):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
+    def activate_runtime(self):
+        """ Send activate control message. """
+        self.runtime_cls.activate(
+            logger=self.logger,
+            socket_in_type=self.args.socket_in,
+            control_address=self.runtime_ctrl_address,
+            timeout_ctrl=self._timeout_ctrl,
+        )
+
     @abstractmethod
     def _get_runtime_cls(self) -> Tuple[Any, bool]:
         ...
@@ -173,6 +182,13 @@ class BasePea(ABC):
         """Start the BasePea.
         This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         .. #noqa: DAR201
+        """
+        ...
+
+    @abstractmethod
+    async def async_wait_start_success(self):
+        """
+        Wait for the `BasePea` to start successfully in a non-blocking manner
         """
         ...
 
@@ -372,15 +388,6 @@ class Pea(BasePea):
         update_runtime_cls(self.args)
         return get_runtime(self.args.runtime_cls)
 
-    def activate_runtime(self):
-        """ Send activate control message. """
-        self.runtime_cls.activate(
-            logger=self.logger,
-            socket_in_type=self.args.socket_in,
-            control_address=self.runtime_ctrl_address,
-            timeout_ctrl=self._timeout_ctrl,
-        )
-
     def _cancel_runtime(self, skip_deactivate: bool = False):
         """
         Send terminate control message.
@@ -456,10 +463,24 @@ class Pea(BasePea):
         else:
             self._fail_start_timeout(_timeout)
 
-    async def async_wait_start_success(self):
-        """Block until all peas starts successfully.
+    @property
+    def _is_dealer(self):
+        """Return true if this `Pea` must act as a Dealer responding to a Router
+        .. # noqa: DAR201
+        """
+        return self.args.socket_in == SocketType.DEALER_CONNECT
 
-        If not success, it will raise an error hoping the outer function to catch it
+    @property
+    def _is_inner_pea(self) -> bool:
+        """Determine whether this is a inner pea or a head/tail
+
+
+        .. #noqa: DAR201"""
+        return self.role is PeaRoleType.SINGLETON or self.role is PeaRoleType.PARALLEL
+
+    async def async_wait_start_success(self):
+        """
+        Wait for the `Pea` to start successfully in a non-blocking manner
         """
         import asyncio
 
@@ -481,33 +502,3 @@ class Pea(BasePea):
                 await asyncio.sleep(0.1)
 
         self._fail_start_timeout(_timeout)
-
-    @property
-    def _is_dealer(self):
-        """Return true if this `Pea` must act as a Dealer responding to a Router
-        .. # noqa: DAR201
-        """
-        return self.args.socket_in == SocketType.DEALER_CONNECT
-
-    def _get_runtime_cls(self) -> Tuple[Any, bool]:
-        from .helper import update_runtime_cls
-        from ..runtimes import get_runtime
-
-        update_runtime_cls(self.args)
-        return get_runtime(self.args.runtime_cls)
-
-    @property
-    def role(self) -> 'PeaRoleType':
-        """Get the role of this pea in a pod
-
-
-        .. #noqa: DAR201"""
-        return self.args.pea_role
-
-    @property
-    def _is_inner_pea(self) -> bool:
-        """Determine whether this is a inner pea or a head/tail
-
-
-        .. #noqa: DAR201"""
-        return self.role is PeaRoleType.SINGLETON or self.role is PeaRoleType.PARALLEL
