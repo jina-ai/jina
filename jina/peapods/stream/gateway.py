@@ -84,17 +84,8 @@ class GatewayStreamer(BaseStreamer):
                         for d in getattr(r.request, 'docs')
                     ]
                 )
-                groundtruths = DocumentArray(
-                    [
-                        d
-                        for r in filtered_partial_responses
-                        for d in getattr(r.request, 'groundtruths')
-                    ]
-                )
                 filtered_partial_responses[0].request.docs.clear()
                 filtered_partial_responses[0].request.docs.extend(docs)
-                filtered_partial_responses[0].request.groundtruths.clear()
-                filtered_partial_responses[0].request.groundtruths.extend(groundtruths)
 
             return filtered_partial_responses[0]
 
