@@ -345,6 +345,17 @@ class K8sPod(BasePod):
             """
             self._scale_runtime(replicas)
 
+        async def scale(self, replicas: int):
+            """
+            Scale the amount of replicas of a given Executor.
+            :param replicas: The number of replicas to scale to
+            """
+            for deployment in self.k8s_deployments:
+                deployment.scale(replicas=replicas)
+            for deployment in self.k8s_deployments:
+                await deployment.wait_scale_success(replicas=replicas)
+                deployment.num_replicas = replicas
+
         def start(self):
             with JinaLogger(f'start_{self.name}') as logger:
                 logger.debug(f'\t\tDeploying "{self.name}"')
