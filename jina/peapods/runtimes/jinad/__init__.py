@@ -4,9 +4,9 @@ import argparse
 from pathlib import Path
 from typing import TYPE_CHECKING, List, Union
 
+from ...networking import GrpcConnectionPool
 from ....enums import SocketType
 
-from ...zmq import send_ctrl_message
 from ....jaml.helper import complete_path
 from ....importer import ImportExtensions
 from ....enums import replace_enum_to_str
@@ -16,6 +16,7 @@ from ....excepts import (
     DaemonPeaCreationFailed,
     DaemonWorkspaceCreationFailed,
 )
+from ....types.message.common import ControlMessage
 
 if TYPE_CHECKING:
     import multiprocessing
@@ -135,15 +136,12 @@ class JinadRuntime(AsyncNewLoopRuntime):
     def _mask_args(self):
         cargs = copy.deepcopy(self.args)
 
-        # reset the runtime to ZEDRuntime/GRPCDataRuntime or ContainerRuntime
+        # reset the runtime to WorkerRuntime or ContainerRuntime
         if cargs.runtime_cls == 'JinadRuntime':
             if cargs.uses.startswith(('docker://', 'jinahub+docker://')):
                 cargs.runtime_cls = 'ContainerRuntime'
             else:
-                if cargs.grpc_data_requests:
-                    cargs.runtime_cls = 'GRPCDataRuntime'
-                else:
-                    cargs.runtime_cls = 'ZEDRuntime'
+                cargs.runtime_cls = 'WorkerRuntime'
 
         # TODO:/NOTE this prevents jumping from remote to another remote (Han: 2021.1.17)
         # _args.host = __default_host__
@@ -206,16 +204,11 @@ class JinadRuntime(AsyncNewLoopRuntime):
             num_retry: int,
             logger: 'JinaLogger',
         ):
-            from ...zmq import send_ctrl_message
-
             for retry in range(1, num_retry + 1):
                 logger.debug(f'Sending {command} command for the {retry}th time')
                 try:
-                    send_ctrl_message(
-                        ctrl_address,
-                        command,
-                        timeout=timeout_ctrl,
-                        raise_exception=True,
+                    GrpcConnectionPool.send_message_sync(
+                        ControlMessage(command), ctrl_address, timeout=timeout_ctrl
                     )
                     break
                 except Exception as ex:
@@ -242,6 +235,5 @@ class JinadRuntime(AsyncNewLoopRuntime):
         :param kwargs: extra keyword arguments
         :return: The corresponding control address
         """
-        from ...zmq import Zmqlet
 
-        return Zmqlet.get_ctrl_address(host, port, False)[0]
+        return f'{host}:{port}'

@@ -124,10 +124,6 @@ class SocketTypeError(Exception):
     """Raised when such socket type is not supported or does not exist."""
 
 
-class RoutingTableCyclicError(Exception):
-    """Raised when the routing graph has cycles."""
-
-
 class RuntimeRunForeverEarlyError(Exception):
     """Raised when an error occurs when starting the run_forever of Runtime"""
 

@@ -29,7 +29,6 @@ from ..enums import (
 from ..excepts import (
     FlowTopologyError,
     FlowMissingPodError,
-    RoutingTableCyclicError,
     RuntimeFailToStart,
 )
 from ..helper import (
@@ -46,11 +45,8 @@ from ..jaml import JAMLCompatible
 from ..logging.logger import JinaLogger
 from ..parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
 from ..parsers.flow import set_flow_parser
-from ..peapods import CompoundPod, Pod
-from ..peapods.pods.k8s import K8sPod
+from ..peapods import Pod
 from ..peapods.pods.factory import PodFactory
-from ..types.routing.table import RoutingTable
-from ..peapods.networking import is_remote_local_connection
 
 __all__ = ['Flow']
 
@@ -199,7 +195,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         uses_with: Optional[dict] = None,
         uvicorn_kwargs: Optional[dict] = None,
         workspace: Optional[str] = None,
-        zmq_identity: Optional[str] = None,
         **kwargs,
     ):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina gateway` CLI.
@@ -234,7 +229,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - ...
 
           When not given, then the default naming strategy will apply.
-        :param native: If set, only native Executors is allowed, and the Executor is always run inside ZEDRuntime.
+        :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
         :param no_crud_endpoints: If set, /index, /search, /update, /delete endpoints are removed from HTTP interface.
 
                   Any executor that has `@requests(on=...)` bind with those values will receive data requests.
@@ -296,7 +291,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
           More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
-        :param zmq_identity: The identity of a ZMQRuntime. It is used for unique socket identification towards other ZMQRuntimes.
 
         .. # noqa: DAR202
         .. # noqa: DAR101
@@ -562,7 +556,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         replicas: Optional[int] = 1,
         runs_in_docker: Optional[bool] = False,
         runtime_backend: Optional[str] = 'PROCESS',
-        runtime_cls: Optional[str] = 'ZEDRuntime',
+        runtime_cls: Optional[str] = 'WorkerRuntime',
         scheduling: Optional[str] = 'LOAD_BALANCE',
         shards: Optional[int] = 1,
         socket_in: Optional[str] = 'PULL_BIND',
@@ -584,7 +578,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         uses_with: Optional[dict] = None,
         volumes: Optional[List[str]] = None,
         workspace: Optional[str] = None,
-        zmq_identity: Optional[str] = None,
         **kwargs,
     ) -> Union['Flow', 'AsyncFlow']:
         """Add an Executor to the current Flow object.
@@ -625,7 +618,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - ...
 
           When not given, then the default naming strategy will apply.
-        :param native: If set, only native Executors is allowed, and the Executor is always run inside ZEDRuntime.
+        :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
         :param on_error_strategy: The skip strategy on exceptions.
 
           - IGNORE: Ignore it, keep running all Executors in the sequel flow
@@ -701,7 +694,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container.
           - All volumes are mounted with read-write mode.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
-        :param zmq_identity: The identity of a ZMQRuntime. It is used for unique socket identification towards other ZMQRuntimes.
         :return: a (new) Flow object with modification
 
         .. # noqa: DAR202
@@ -793,16 +785,12 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         ):
             raise NotImplementedError("GRPC data runtime does not support sharding")
 
-        if args.grpc_data_requests and args.runtime_cls == 'ZEDRuntime':
-            args.runtime_cls = 'GRPCDataRuntime'
-
         # pod workspace if not set then derive from flow workspace
         args.workspace = os.path.abspath(args.workspace or self.workspace)
 
         args.k8s_namespace = self.args.k8s_namespace or self.args.name
         args.noblock_on_start = True
         args.extra_search_paths = self.args.extra_search_paths
-        args.zmq_identity = None
 
         # BACKWARDS COMPATIBILITY:
         # We assume that this is used in a search Flow if replicas and shards are used
@@ -922,128 +910,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 'expected_parts': 0,
             },
         )
-
-    # TODO needs to be refactored - deployment should not be a dictionary. Related Ticket:
-    #  https://github.com/jina-ai/jina/issues/3280
-    def _get_routing_table(self) -> RoutingTable:
-        graph = RoutingTable()
-        for pod_id, pod in self._pod_nodes.items():
-            if pod_id == GATEWAY_NAME:
-                deployment = pod.deployments[0]
-
-                graph.add_pod(
-                    f'start-{GATEWAY_NAME}',
-                    deployment['head_host'],
-                    deployment['head_port_in'],
-                    deployment['tail_port_out'],
-                    deployment['head_zmq_identity'],
-                )
-                graph.add_pod(
-                    f'end-{GATEWAY_NAME}',
-                    deployment['head_host'],
-                    deployment['head_port_in'],
-                    deployment['tail_port_out'],
-                    deployment['head_zmq_identity'],
-                )
-            else:
-                for deployment in pod.deployments:
-                    graph.add_pod(
-                        deployment['name'],
-                        deployment['head_host'],
-                        deployment['head_port_in'],
-                        deployment['tail_port_out'],
-                        deployment['head_zmq_identity'],
-                    )
-
-        for end, pod in self._pod_nodes.items():
-
-            if end == GATEWAY_NAME:
-                end = f'end-{GATEWAY_NAME}'
-
-            if pod.head_args.hosts_in_connect is None:
-                pod.head_args.hosts_in_connect = []
-
-            if isinstance(pod, K8sPod):
-                from ..peapods.pods.k8slib import kubernetes_deployment
-
-                end = kubernetes_deployment.to_dns_name(end)
-            if end not in graph.pods:
-                end = end + '_head'
-            if isinstance(pod, K8sPod):
-                from ..peapods.pods.k8slib import kubernetes_deployment
-
-                end = kubernetes_deployment.to_dns_name(end)
-
-            for start in pod.needs:
-                start_pod = self._pod_nodes[start]
-
-                if start == GATEWAY_NAME:
-                    start = f'start-{GATEWAY_NAME}'
-
-                if isinstance(start_pod, K8sPod):
-                    from ..peapods.pods.k8slib import kubernetes_deployment
-
-                    start = kubernetes_deployment.to_dns_name(start)
-                if start not in graph.pods:
-                    start = start + '_tail'
-                if isinstance(start_pod, K8sPod):
-                    from ..peapods.pods.k8slib import kubernetes_deployment
-
-                    start = kubernetes_deployment.to_dns_name(start)
-
-                start_pod = graph._get_target_pod(start)
-
-                if pod.connect_to_predecessor or is_remote_local_connection(
-                    start_pod.host, pod.head_host
-                ):
-                    pod.head_args.hosts_in_connect.append(
-                        graph._get_target_pod(start).full_out_address
-                    )
-
-                    graph.add_edge(start, end, True)
-                else:
-                    graph.add_edge(start, end)
-
-        # In case of sharding, the head and the tail pea have to be connected to the shards
-        for end, pod in self._pod_nodes.items():
-            if len(pod.deployments) > 0:
-                deployments = pod.deployments
-                for deployment in deployments[1:-1]:
-                    graph.add_edge(deployments[0]['name'], deployment['name'])
-                    graph.add_edge(deployment['name'], deployments[-1]['name'])
-
-        graph.active_pod = f'start-{GATEWAY_NAME}'
-        return graph
-
-    def _set_initial_dynamic_routing_table(self):
-        routing_table = self._get_routing_table()
-        if not routing_table.is_acyclic():
-            raise RoutingTableCyclicError(
-                'The routing graph has a cycle. This would result in an infinite loop. Fix your Flow setup.'
-            )
-        for pod in self._pod_nodes:
-            routing_table_copy = RoutingTable()
-            routing_table_copy.proto.CopyFrom(routing_table.proto)
-            self._pod_nodes[
-                pod
-            ].args.static_routing_table = self.args.static_routing_table
-            # The gateway always needs the routing table to be set
-            if pod == GATEWAY_NAME:
-                self._pod_nodes[pod].args.routing_table = routing_table_copy.json()
-            # For other pods we only set it if we are told do so
-            elif self.args.static_routing_table:
-                routing_table_copy.active_pod = pod
-                self._pod_nodes[pod].args.routing_table = routing_table_copy.json()
-                # dynamic routing does not apply to shards in a CompoundPod, only its tail
-                if not isinstance(self._pod_nodes[pod], CompoundPod):
-                    self._pod_nodes[pod].update_pea_args()
-                else:
-                    self._pod_nodes[pod].tail_args.routing_table = self._pod_nodes[
-                        pod
-                    ].args.routing_table
-                    self._pod_nodes[
-                        pod
-                    ].tail_args.static_routing_table = self.args.static_routing_table
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def build(self, copy_flow: bool = False) -> 'Flow':
