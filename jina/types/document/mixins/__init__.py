@@ -3,6 +3,7 @@ from .content import ContentPropertyMixin
 from .convert import ConvertMixin
 from .dump import DumpFileMixin
 from .attribute import GetSetAttributeMixin
+from .match import MatchMixin
 from .image import ImageDataMixin
 from .mesh import MeshDataMixin
 from .plot import PlotMixin
@@ -24,6 +25,7 @@ class AllMixins(
     PlotMixin,
     DumpFileMixin,
     VersionedMixin,
+    MatchMixin,
     GetSetAttributeMixin,
 ):
     """All plugins that can be used in :class:`Document`. """

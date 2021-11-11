@@ -9,35 +9,32 @@ a `DocumentArray` like a Python `list`.
 ```python
 from jina import DocumentArray, Document
 
-da = DocumentArray([Document(), Document()]) 
+da = DocumentArray([Document(), Document()])  # equivalent to DocumentArray.empty(2)  
 ```
 
-
-Common methods supported by `DocumentArray`:
-
-| Category | Attributes |
-|--- |--- |
-| Python `list`-like interface | `__getitem__`, `__setitem__`, `__delitem__`, `__len__`, `insert`, `append`, `reverse`, `extend`, `__iadd__`, `__add__`, `__iter__`, `clear`, `sort`, `shuffle`, `sample` |
-| Persistence | `save`, `load` |
-| Math operations | `match`, `visualize`, `shuffle`, `sample` |
-| Advanced getters | `get_attributes`, `get_attributes_with_docs`, `traverse_flat`, `traverse` |
-
-## Construct DocumentArray
+## Construct
 
 You can construct a `DocumentArray` from an iterable of `Document`s:
 
-````{tab} From List
+````{tab} From empty Documents
+```python
+from jina import DocumentArray
+
+da = DocumentArray.empty(10)
+```
+````
+````{tab} From list of Document
 ```python
 from jina import DocumentArray, Document
 
-da = DocumentArray([Document(), Document()])
+da = DocumentArray([Document(...), Document(...)])
 ```
 ````
 ````{tab} From generator
 ```python
 from jina import DocumentArray, Document
 
-da = DocumentArray((Document() for _ in range(10)))
+da = DocumentArray((Document(...) for _ in range(10)))
 ```
 ````
 ````{tab} From another DocumentArray
@@ -49,7 +46,194 @@ da1 = DocumentArray(da)
 ```
 ````
 
-## Persistence DocumentArray
+(bulk-access)=
+## Bulk access on content
+
+You can quickly access `.text`, `.blob`, `.buffer`, `.embedding` of all Documents in the DocumentArray without writing a for-loop.
+
+`DocumentArray` provides the plural counterparts, i.e. `.texts`, `.blobs`, `.buffers`, `.embeddings` that allows one to **get** & **set** these properties in one shot. It is much more efficient than looping.
+
+```python
+from jina import DocumentArray
+
+da = DocumentArray.empty(2)
+da.texts = ['hello', 'world']
+
+print(da[0], da[1])
+```
+
+```text
+<jina.types.document.Document ('id', 'text') at 4520833232>
+<jina.types.document.Document ('id', 'text') at 5763350672>
+```
+
+When accessing `.blobs` or `.embeddings`, it automatically ravels/unravels the NdArray (can be Numpy/Tensorflow/Pytorch/Scipy/PaddlePaddle) for you.
+
+```python
+import numpy as np
+import scipy.sparse
+from jina import DocumentArray
+
+sp_embed = np.random.random([10, 256])
+sp_embed[sp_embed > 0.1] = 0
+sp_embed = scipy.sparse.coo_matrix(sp_embed) 
+
+da = DocumentArray.empty(10)
+
+da.embeddings = scipy.sparse.coo_matrix(sp_embed)
+
+print('da.embeddings.shape=', da.embeddings.shape)
+
+for d in da:
+    print('d.embedding.shape=', d.embedding.shape)
+```
+
+```text
+da.embeddings.shape= (10, 256)
+d.embedding.shape= (1, 256)
+d.embedding.shape= (1, 256)
+d.embedding.shape= (1, 256)
+d.embedding.shape= (1, 256)
+d.embedding.shape= (1, 256)
+d.embedding.shape= (1, 256)
+d.embedding.shape= (1, 256)
+d.embedding.shape= (1, 256)
+d.embedding.shape= (1, 256)
+d.embedding.shape= (1, 256)
+```
+
+(match-documentarray)=
+## Matching
+
+`DocumentArray` provides a`.match` function that finds the closest documents between two `DocumentArray` objects based on their `.embeddings`. This
+function requires all documents to be compared have an `embedding` and all embeddings to have the same length.
+
+The following image shows how `DocumentArrayA` finds `limit=5` matches from the documents in `DocumentArrayB`. By
+default, the cosine similarity is used to evaluate the score between documents.
+
+```{figure} ../../../.github/images/match_illustration_5.svg
+:align: center
+```
+
+More generally, given two `DocumentArray` objects `da_1` and `da_2` the
+function `da_1.match(da_2, metric=some_metric, normalization=(0, 1), limit=N)` finds for each document in `da_1` the `N` documents from `da_2` with the lowest metric values according to `some_metric`.
+
+- `metric` can be `'cosine'`, `'euclidean'`,  `'sqeuclidean'` or a callable that takes 2 `ndarray` parameters and
+  returns an `ndarray`
+- `normalization` is a tuple [a, b] to be used with min-max normalization. The min distance will be rescaled to `a`, the
+  max distance will be rescaled to `b`; all other values will be rescaled into range `[a, b]`.
+
+The following example finds for each element in `da_1` the 3 closest documents from the elements in `da_2` )according to the euclidean distance).
+
+````{tab} Dense embedding 
+```{code-block} python
+---
+emphasize-lines: 18
+---
+from jina import Document, DocumentArray
+import numpy as np
+
+d1 = Document(embedding=np.array([0, 0, 0, 0, 1]))
+d2 = Document(embedding=np.array([1, 0, 0, 0, 0]))
+d3 = Document(embedding=np.array([1, 1, 1, 1, 0]))
+d4 = Document(embedding=np.array([1, 2, 2, 1, 0]))
+
+d1_m = Document(embedding=np.array([0, 0.1, 0, 0, 0]))
+d2_m = Document(embedding=np.array([1, 0.1, 0, 0, 0]))
+d3_m = Document(embedding=np.array([1, 1.2, 1, 1, 0]))
+d4_m = Document(embedding=np.array([1, 2.2, 2, 1, 0]))
+d5_m = Document(embedding=np.array([4, 5.2, 2, 1, 0]))
+
+da_1 = DocumentArray([d1, d2, d3, d4])
+da_2 = DocumentArray([d1_m, d2_m, d3_m, d4_m, d5_m])
+
+da_1.match(da_2, metric='euclidean', limit=3)
+query = da_1[2]
+print(f'query emb = {query.embedding}')
+for m in query.matches:
+    print('match emb =', m.embedding, 'score =', m.scores['euclidean'].value)
+```
+
+```text
+query emb = [1 1 1 1 0]
+match emb = [1.  1.2 1.  1.  0. ] score = 0.20000000298023224
+match emb = [1.  2.2 2.  1.  0. ] score = 1.5620499849319458
+match emb = [1.  0.1 0.  0.  0. ] score = 1.6763054132461548
+```
+````
+
+````{tab} Sparse embedding
+
+
+```{code-block} python
+---
+emphasize-lines: 18
+---
+from jina import Document, DocumentArray
+import scipy.sparse as sp
+
+d1 = Document(embedding=sp.csr_matrix([0, 0, 0, 0, 1]))
+d2 = Document(embedding=sp.csr_matrix([1, 0, 0, 0, 0]))
+d3 = Document(embedding=sp.csr_matrix([1, 1, 1, 1, 0]))
+d4 = Document(embedding=sp.csr_matrix([1, 2, 2, 1, 0]))
+
+d1_m = Document(embedding=sp.csr_matrix([0, 0.1, 0, 0, 0]))
+d2_m = Document(embedding=sp.csr_matrix([1, 0.1, 0, 0, 0]))
+d3_m = Document(embedding=sp.csr_matrix([1, 1.2, 1, 1, 0]))
+d4_m = Document(embedding=sp.csr_matrix([1, 2.2, 2, 1, 0]))
+d5_m = Document(embedding=sp.csr_matrix([4, 5.2, 2, 1, 0]))
+
+da_1 = DocumentArray([d1, d2, d3, d4])
+da_2 = DocumentArray([d1_m, d2_m, d3_m, d4_m, d5_m])
+
+da_1.match(da_2, metric='euclidean', limit=4)
+query = da_1[2]
+print(f'query emb = {query.embedding.todense()}')
+for m in query.matches:
+    print('match emb =', m.embedding.todense(), 'score =', m.scores['euclidean'].value)
+```
+
+```text
+query emb = [[1 1 1 1 0]]
+match emb = [[1.  1.2 1.  1.  0. ]] score = 0.20000000298023224
+match emb = [[1.  2.2 2.  1.  0. ]] score = 1.5620499849319458
+match emb = [[1.  0.1 0.  0.  0. ]] score = 1.6763054132461548
+```
+
+````
+
+## Visualization
+
+`DocumentArray` provides function `.plot_embeddings` to plot document embeddings in a 2D graph. `visualize` supports 2 methods
+to project in 2D space: `pca` and `tsne`.
+
+In the following example, we add 3 different distributions of embeddings and see 3 kinds of point clouds in the graph.
+
+```{code-block} python
+---
+emphasize-lines: 13
+---
+import numpy as np
+from jina import Document, DocumentArray
+
+da = DocumentArray(
+    [
+        Document(embedding=np.random.normal(0, 1, 50)) for _ in range(500)
+    ] + [
+        Document(embedding=np.random.normal(5, 2, 50)) for _ in range(500)
+    ] + [
+        Document(embedding=np.random.normal(2, 5, 50)) for _ in range(500)
+    ]
+)
+da.plot_embeddings()
+
+```
+
+```{figure} ../../../.github/2.0/document-array-visualize.png
+:align: center
+```
+
+## Persistence
 
 To save all elements in a `DocumentArray` in a JSON line format:
 
@@ -73,7 +257,10 @@ da.save('data.bin', file_format='binary')
 da1 = DocumentArray.load('data.bin', file_format='binary')
 ```
 
-## Basic operations
+
+## List-like interface
+
+`DocumentArray` can be used as a Python list. It implements all Python List interface, including `__getitem__`, `__setitem__`, `__delitem__`, `__len__`, `insert`, `append`, `reverse`, `extend`, `__iadd__`, `__add__`, `__iter__`, `clear`, `sort`. 
 
 ### Access elements
 
@@ -436,157 +623,3 @@ np.stack(da.get_attributes('embedding'))
  [4 5 6]
  [7 8 9]]
 ```
-
-## DocumentArray embeddings
-
-There is a faster version to extract embeddings from a `DocumentArray` or `DocumentArrayMemmap`, the property `.embeddings`. This property assumes all embeddings in the array have the same shape and dtype. Note that
-
-```
-da.embeddings
-```
-
-will produce the same output as `np.stack(da.get_attributes('embedding'))` but the results will be retrieved faster.
-
-```
-[[1 2 3]
- [4 5 6]
- [7 8 9]]
-```
-
-````{admonition} Note
-:class: note
-Using `.embeddings` in a DocumenArray or DocumentArrayMemmap with different shapes or dtypes might yield to unnexpected results.
-````
-
-
-### Plot embeddings
-
-`DocumentArray` provides function `.visualize` to plot document embeddings in a 2D graph. `visualize` supports 2 methods
-to project in 2D space: `pca` and `tsne`.
-
-In the following example, we add 3 different distributions of embeddings and see 3 kinds of point clouds in the graph.
-
-```{code-block} python
----
-emphasize-lines: 13
----
-import numpy as np
-from jina import Document, DocumentArray
-
-da = DocumentArray(
-    [
-        Document(embedding=np.random.normal(0, 1, 50)) for _ in range(500)
-    ] + [
-        Document(embedding=np.random.normal(5, 2, 50)) for _ in range(500)
-    ] + [
-        Document(embedding=np.random.normal(2, 5, 50)) for _ in range(500)
-    ]
-)
-da.plot_embeddings()
-
-```
-
-```{figure} ../../../.github/2.0/document-array-visualize.png
-:align: center
-```
-
-
-(match-documentarray)=
-## Matching DocumentArray to another
-
-`DocumentArray` provides a`.match` function that finds the closest documents between two `DocumentArray` objects. This
-function requires all documents to be compared have an `embedding` and all embeddings to have the same length.
-
-The following image shows how `DocumentArrayA` finds `limit=5` matches from the documents in `DocumentArrayB`. By
-default, the cosine similarity is used to evaluate the score between documents.
-
-```{figure} ../../../.github/images/match_illustration_5.svg
-:align: center
-```
-
-More generally, given two `DocumentArray` objects `da_1` and `da_2` the
-function `da_1.match(da_2, metric=some_metric, normalization=(0, 1), limit=N)` finds for each document in `da_1` the `N` documents from `da_2` with the lowest metric values according to `some_metric`.
-
-- `metric` can be `'cosine'`, `'euclidean'`,  `'sqeuclidean'` or a callable that takes 2 `ndarray` parameters and
-  returns an `ndarray`
-- `normalization` is a tuple [a, b] to be used with min-max normalization. The min distance will be rescaled to `a`, the
-  max distance will be rescaled to `b`; all other values will be rescaled into range `[a, b]`.
-
-The following example finds for each element in `da_1` the 3 closest documents from the elements in `da_2` )according to the euclidean distance).
-
-```{code-block} python
----
-emphasize-lines: 18
----
-from jina import Document, DocumentArray
-import numpy as np
-
-d1 = Document(embedding=np.array([0, 0, 0, 0, 1]))
-d2 = Document(embedding=np.array([1, 0, 0, 0, 0]))
-d3 = Document(embedding=np.array([1, 1, 1, 1, 0]))
-d4 = Document(embedding=np.array([1, 2, 2, 1, 0]))
-
-d1_m = Document(embedding=np.array([0, 0.1, 0, 0, 0]))
-d2_m = Document(embedding=np.array([1, 0.1, 0, 0, 0]))
-d3_m = Document(embedding=np.array([1, 1.2, 1, 1, 0]))
-d4_m = Document(embedding=np.array([1, 2.2, 2, 1, 0]))
-d5_m = Document(embedding=np.array([4, 5.2, 2, 1, 0]))
-
-da_1 = DocumentArray([d1, d2, d3, d4])
-da_2 = DocumentArray([d1_m, d2_m, d3_m, d4_m, d5_m])
-
-da_1.match(da_2, metric='euclidean', limit=3)
-query = da_1[2]
-print(f'query emb = {query.embedding}')
-for m in query.matches:
-    print('match emb =', m.embedding, 'score =', m.scores['euclidean'].value)
-```
-
-```text
-query emb = [1 1 1 1 0]
-match emb = [1.  1.2 1.  1.  0. ] score = 0.20000000298023224
-match emb = [1.  2.2 2.  1.  0. ] score = 1.5620499849319458
-match emb = [1.  0.1 0.  0.  0. ] score = 1.6763054132461548
-```
-
-### Matching sparse embeddings
-
-We can use sparse embeddings and do the `.match` using `is_sparse=True`
-
-```{code-block} python
----
-emphasize-lines: 18
----
-from jina import Document, DocumentArray
-import scipy.sparse as sp
-
-d1 = Document(embedding=sp.csr_matrix([0, 0, 0, 0, 1]))
-d2 = Document(embedding=sp.csr_matrix([1, 0, 0, 0, 0]))
-d3 = Document(embedding=sp.csr_matrix([1, 1, 1, 1, 0]))
-d4 = Document(embedding=sp.csr_matrix([1, 2, 2, 1, 0]))
-
-d1_m = Document(embedding=sp.csr_matrix([0, 0.1, 0, 0, 0]))
-d2_m = Document(embedding=sp.csr_matrix([1, 0.1, 0, 0, 0]))
-d3_m = Document(embedding=sp.csr_matrix([1, 1.2, 1, 1, 0]))
-d4_m = Document(embedding=sp.csr_matrix([1, 2.2, 2, 1, 0]))
-d5_m = Document(embedding=sp.csr_matrix([4, 5.2, 2, 1, 0]))
-
-da_1 = DocumentArray([d1, d2, d3, d4])
-da_2 = DocumentArray([d1_m, d2_m, d3_m, d4_m, d5_m])
-
-da_1.match(da_2, metric='euclidean', limit=4, is_sparse=True)
-query = da_1[2]
-print(f'query emb = {query.embedding.todense()}')
-for m in query.matches:
-    print('match emb =', m.embedding.todense(), 'score =', m.scores['euclidean'].value)
-```
-
-```text
-query emb = [[1 1 1 1 0]]
-match emb = [[1.  1.2 1.  1.  0. ]] score = 0.20000000298023224
-match emb = [[1.  2.2 2.  1.  0. ]] score = 1.5620499849319458
-match emb = [[1.  0.1 0.  0.  0. ]] score = 1.6763054132461548
-```
-
-
-

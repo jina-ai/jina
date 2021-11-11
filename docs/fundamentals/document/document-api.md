@@ -21,7 +21,10 @@ d3 = Document(blob=numpy.array([1, 2, 3]))
 <jina.types.document.Document ('id', 'blob') at 4483299536>
 ```
 
-## Document content
+
+## Basic
+
+### Content 
 
 `text`, `blob`, and `buffer` are three content attributes of a Document. They correspond to string-like data (e.g. for natural language), `ndarray`-like data (e.g. for image/audio/video data), and binary data for general purpose, respectively. Each Document can contain only one type of content.
 
@@ -50,7 +53,7 @@ d.text  # <- now it's empty
 ````{admonition} Why Document contains only data type
 :class: question
 
-What if you want to represent more than one kind of information? Say, to fully represent a PDF slide you need to store both image and text. In this case, you can use {ref}`nested Document<nest-document>` by putting image into one sub Document, and putting text into another sub Document.
+What if you want to represent more than one kind of information? Say, to fully represent a PDF slide you need to store both image and text. In this case, you can use {ref}`nested Document<recursive-nested-document>` by putting image into one sub Document, and putting text into another sub Document.
 
 ```python
 d = Document(chunks=[Document(blob=...), Document(text=...)])
@@ -66,9 +69,9 @@ There is also a `doc.content` sugar getter/setter of the above non-empty field. 
 
 
 
-### Loading content from URI
+#### Loading content from URI
 
-Often time you need to load data from a URI instead of assign them directly in your code, `.uri` is the attribute you must learn. 
+Often, you need to load data from a URI instead of assign them directly in your code, `.uri` is the attribute you must learn. 
 
 After set `.uri`, you can load the data into `.text`/`.buffer`/`.blob` as below.
 
@@ -145,7 +148,7 @@ You can convert a URI to a data URI using `doc.convert_uri_to_datauri()`. This w
 ```
 
 
-## Document embedding
+### Embedding
 
 Embedding is a multi-dimensional representation of a `Document` (often a `[1, D]` vector). It serves as a very important piece in the neural search. 
 
@@ -167,7 +170,7 @@ d4 = Document(embedding=torch.tensor([1, 2, 3]))
 d5 = Document(embedding=tf.sparse.from_dense(np.array([[1, 2, 3], [4, 5, 6]])))
 ```
 
-### Finding nearest-neighbours
+#### Finding nearest-neighbours
 
 Once a document has `.embedding` filled, it can be "matched". In this example, we build 10 Documents and put them into a {ref}`DocumentArray<da-intro>`, and then use another Document to search against with.
 
@@ -181,14 +184,97 @@ da.embeddings = np.random.random([10, 256])
 q = Document(embedding=np.random.random([256]))
 q.match(da)
 
-print(q.matches)
+print(q.matches[0])
 ```
 
 ```console
-
+<jina.types.document.Document ('id', 'embedding', 'adjacency', 'scores') at 8256118608>
 ```
 
-## Document tags
+```{admonition} Working on multiple queries
+:class: tip
+
+When you want to match a set Documents (let's call it set `A`) against another set of Documents (set `B`), where you want to find for each element in `A` what are its nearest neighbours in `B`. Then you need `DocumentArray.match()`. It is far more efficient than looping over each Document. You can {ref}`read more about it here<match-documentarray>`.    
+```
+
+(recursive-nested-document)=
+### Recursive Document
+
+`Document` can be recursive both horizontally and vertically. The following graphic illustrates the recursive `Document` structure. Each `Document` can have multiple "Chunks"
+and "matches". Chunks and matches are `Document` object as well.
+
+<img src="https://hanxiao.io/2020/08/28/What-s-New-in-Jina-v0-5/blog-post-v050-protobuf-documents.jpg">
+
+|  Attribute   |   Description  |
+| --- | --- |
+| `doc.chunks` | The list of sub-Documents of this Document. They have `granularity + 1` but same `adjacency` |
+| `doc.matches` | The list of matched Documents of this Document. They have `adjacency + 1` but same `granularity` |
+| `doc.granularity` | The recursion "depth" of the recursive chunks structure |
+| `doc.adjacency` | The recursion "width" of the recursive match structure |
+
+You can add **chunks** (sub-Document) and **matches** (neighbour-Document) to a `Document`:
+
+- Add in constructor:
+
+  ```python
+  d = Document(chunks=[Document(), Document()], matches=[Document(), Document()])
+  ```
+
+- Add to existing `Document`:
+
+  ```python
+  d = Document()
+  d.chunks = [Document(), Document()]
+  d.matches = [Document(), Document()]
+  ```
+
+- Add to existing `doc.chunks` or `doc.matches`:
+
+  ```python
+  d = Document()
+  d.chunks.append(Document())
+  d.matches.append(Document())
+  ```
+
+````{admonition} Note
+:class: note
+Both `doc.chunks` and `doc.matches` return `ChunkArray` and `MatchArray`, which are sub-classes
+of {ref}`DocumentArray<documentarray>`. We will introduce `DocumentArray` later.
+````
+
+#### Caveat: order matters
+
+When adding sub-Documents to `Document.chunks`, do not create them in one line to keep recursive document structure correct. This is because `chunks` use `ref_doc` to control its `granularity`, at `chunk` creation time, it didn't know anything about its parent, and will get a wrong `granularity` value.
+
+````{tab} ✅ Do
+```python
+from jina import Document
+
+root_document = Document(text='i am root')
+# add one chunk to root
+root_document.chunks.append(Document(text='i am chunk 1'))
+root_document.chunks.extend([
+   Document(text='i am chunk 2'),
+   Document(text='i am chunk 3'),
+])  # add multiple chunks to root
+```
+````
+
+````{tab} 😔 Don't
+```python
+from jina import Document
+
+root_document = Document(
+   text='i am root',
+   chunks=[
+      Document(text='i am chunk 2'),
+      Document(text='i am chunk 3'),
+   ]
+)
+```
+````
+
+### Tags
 
 `Document` contains the `tags` field that can hold a map-like structure that can map arbitrary values. 
 In practice, one can store meta information in `tags`.
@@ -289,7 +375,9 @@ with Flow().add(uses=MyExecutor) as f:
 
 `````
 
-## Visualize Document
+
+
+### Visualization
 
 To better see the Document's recursive structure, you can use `.plot()` function. If you are using JupyterLab/Notebook,
 all `Document` objects will be auto-rendered:
@@ -319,7 +407,7 @@ d0.plot()  # simply `d0` on JupyterLab
 :align: center
 ```
 
-## Serialize Document
+### Serialization
 
 You can serialize a `Document` into JSON string or Python dict or binary string:
 ````{tab} JSON
@@ -365,8 +453,7 @@ d.dict()
 ```
 ````
 
-
-## Set/unset attributes
+### Set/unset attributes
 
 Set an attribute as how you would set an attribute to any Python object: 
 
@@ -382,6 +469,10 @@ d.text = 'hello world'
 ```
 
 Unset an attribute:
+
+```python
+d.text = None
+```
 
 ```python
 d.pop('text')
@@ -401,230 +492,20 @@ d.pop('text', 'id', 'mime_type')
 <jina.types.document.Document at 5668344144>
 ```
 
-## Construct Document
+## Advanced
 
-### Construct Document with multiple attributes
+| Category | Attributes |
+|---|---|
+| Meta attributes | `.id`, `.parent_id`, `.weight`, `.mime_type`, `.content_type`, `.modality`,`.granularity`, `.adjacency`, `.location`, `.offset`  |
+| Relevance attributes | `.scores`, `.evaluations` |
 
-| Attribute | Description |
-| --- | --- |
-| `doc.id` | A hexdigest that represents a unique Document ID |
-| `doc.parent_id` | A hexdigest that represents the document's parent id |
-| `doc.weight` | The weight of the Document |
-| `doc.mime_type` | The mime type of the Document |
-| `doc.content_type` | The content type of the Document |
-| `doc.modality` | An identifier of the modality the Document belongs to|
 
-You can assign multiple attributes in the constructor via:
+### Add relevancy
 
-```python
-from jina import Document
-
-d = Document(uri='https://jina.ai',
-             mime_type='text/plain',
-             granularity=1,
-             adjacency=3,
-             tags={'foo': 'bar'})
+```{tip}
+You normaly don't need to add those values by yourself. For example, `.match()` function automatically fills in 
+`.scores` of each matched Document.
 ```
-
-```text
-<jina.types.document.Document id=e01a53bc-aedb-11eb-88e6-1e008a366d48 uri=https://jina.ai mimeType=text/plain tags={'foo': 'bar'} granularity=1 adjacency=3 at 6317309200>
-```
-
-### Construct from dict or JSON string
-
-You can build a `Document` from a `dict` or JSON string:
-
-```python
-from jina import Document
-import json
-
-d = {'id': 'hello123', 'content': 'world'}
-d1 = Document(d)
-
-d = json.dumps({'id': 'hello123', 'content': 'world'})
-d2 = Document(d)
-```
-
-#### Parsing unrecognized fields
-
-Unrecognized fields in a `dict`/JSON string are automatically put into the Document's `.tags` field:
-
-```python
-from jina import Document
-
-d1 = Document({'id': 'hello123', 'foo': 'bar'})
-```
-
-```text
-<jina.types.document.Document id=hello123 tags={'foo': 'bar'} at 6320791056>
-```
-
-You can use `field_resolver` to map external field names to `Document` attributes:
-
-```python
-from jina import Document
-
-d1 = Document({'id': 'hello123', 'foo': 'bar'}, field_resolver={'foo': 'content'})
-```
-
-```text
-<jina.types.document.Document id=hello123 mimeType=text/plain text=bar at 6246985488>
-```
-
-### Construct from another `Document`
-
-Assigning a `Document` object to another `Document` object will make a shallow copy:
-
-```python
-from jina import Document
-
-d = Document(content='hello, world!')
-d1 = d
-
-assert id(d) == id(d1)  # True
-```
-
-To make a deep copy, use `copy=True`:
-
-```python
-d1 = Document(d, copy=True)
-
-assert id(d) == id(d1)  # False
-```
-
-You can partially update a `Document` according to another source `Document`:
-
-```{code-block} python
----
-emphasize-lines: 17, 20
----
-from jina import Document
-
-s = Document(
-    id='🐲',
-    content='hello-world',
-    tags={'a': 'b'},
-    chunks=[Document(id='🐢')],
-)
-d = Document(
-    id='🐦',
-    content='goodbye-world',
-    tags={'c': 'd'},
-    chunks=[Document(id='🐯')],
-)
-
-# only update `id` field
-d.update(s, fields=['id'])
-
-# update all fields. `tags` field as `dict` will be merged.
-d.update(s)
-```
-
-### Construct from JSON, CSV, `ndarray` and files
-
-The `jina.types.document.generators` module let you construct `Document` from common file types such as JSON,
-CSV, `ndarray` and text files. The following functions will give a generator of `Document`, where each `Document` object
-corresponds to a line/row in the original format:
-
-|     |     |
-| --- | --- |
-| `from_ndjson()` | Yield `Document` from a line-based JSON file. Each line is a `Document` object |
-| `from_csv()` | Yield `Document` from a CSV file. Each line is a `Document` object |
-| `from_files()` | Yield `Document` from a glob files. Each file is a `Document` object |
-| `from_ndarray()` | Yield `Document` from a `ndarray`. Each row (depending on `axis`) is a `Document` object |
-| `from_lines()` | Yield `Document` from lines, json and csv |
-
-Using a generator is sometimes less memory-demanding, as it does not load/build all Document objects in one shot.
-
-To convert the generator to `DocumentArray` use:
-
-```python
-from jina import DocumentArray
-from jina.types.document.generators import from_files
-
-DocumentArray(from_files('/*.png'))
-```
-
-(recursive-nested-document)=
-## Recursive & nested Document
-
-`Document` can be recursive both horizontally and vertically. The following graphic illustrates the recursive `Document` structure. Each `Document` can have multiple "Chunks"
-and "matches". Chunks and matches are `Document` object as well.
-
-<img src="https://hanxiao.io/2020/08/28/What-s-New-in-Jina-v0-5/blog-post-v050-protobuf-documents.jpg">
-
-|  Attribute   |   Description  |
-| --- | --- |
-| `doc.chunks` | The list of sub-Documents of this Document. They have `granularity + 1` but same `adjacency` |
-| `doc.matches` | The list of matched Documents of this Document. They have `adjacency + 1` but same `granularity` |
-|  `doc.granularity` | The recursion "depth" of the recursive chunks structure |
-|  `doc.adjacency` | The recursion "width" of the recursive match structure |
-
-You can add **chunks** (sub-Document) and **matches** (neighbour-Document) to a `Document`:
-
-- Add in constructor:
-
-  ```python
-  d = Document(chunks=[Document(), Document()], matches=[Document(), Document()])
-  ```
-
-- Add to existing `Document`:
-
-  ```python
-  d = Document()
-  d.chunks = [Document(), Document()]
-  d.matches = [Document(), Document()]
-  ```
-
-- Add to existing `doc.chunks` or `doc.matches`:
-
-  ```python
-  d = Document()
-  d.chunks.append(Document())
-  d.matches.append(Document())
-  ```
-
-````{admonition} Note
-:class: note
-Both `doc.chunks` and `doc.matches` return `ChunkArray` and `MatchArray`, which are sub-classes
-of {ref}`DocumentArray<documentarray>`. We will introduce `DocumentArray` later.
-````
-
-### Caveat: order matters
-
-When adding sub-Documents to `Document.chunks`, do not create them in one line to keep recursive document structure correct. This is because `chunks` use `ref_doc` to control its `granularity`, at `chunk` creation time, it didn't know anything about its parent, and will get a wrong `granularity` value.
-
-````{tab} ✅ Do
-```python
-from jina import Document
-
-root_document = Document(text='i am root')
-# add one chunk to root
-root_document.chunks.append(Document(text='i am chunk 1'))
-root_document.chunks.extend([
-   Document(text='i am chunk 2'),
-   Document(text='i am chunk 3'),
-])  # add multiple chunks to root
-```
-````
-
-````{tab} 😔 Don't
-```python
-from jina import Document
-
-root_document = Document(
-   text='i am root',
-   chunks=[
-      Document(text='i am chunk 2'),
-      Document(text='i am chunk 3'),
-   ]
-)
-```
-````
-
-## Add relevancy to Document
-
-### Relevance attributes
 
 |  Attributes   |  Description   |
 | --- | --- |
@@ -687,5 +568,150 @@ for evaluation_key, evaluation_score in d.evaluations.items():
 ```text
  precision => precision at 10: 1.0
  recall => recall at 10: 0.5
+```
+
+
+### Summary on Document construction
+
+#### Construct with multiple attributes
+
+| Attribute | Description |
+| --- | --- |
+| `doc.id` | A hexdigest that represents a unique Document ID |
+| `doc.parent_id` | A hexdigest that represents the document's parent id |
+| `doc.weight` | The weight of the Document |
+| `doc.mime_type` | The mime type of the Document |
+| `doc.content_type` | The content type of the Document |
+| `doc.modality` | An identifier of the modality the Document belongs to|
+
+You can assign multiple attributes in the constructor via:
+
+```python
+from jina import Document
+
+d = Document(uri='https://jina.ai',
+             mime_type='text/plain',
+             granularity=1,
+             adjacency=3,
+             tags={'foo': 'bar'})
+```
+
+```text
+<jina.types.document.Document id=e01a53bc-aedb-11eb-88e6-1e008a366d48 uri=https://jina.ai mimeType=text/plain tags={'foo': 'bar'} granularity=1 adjacency=3 at 6317309200>
+```
+
+#### Construct from dict or JSON string
+
+You can build a `Document` from a `dict` or JSON string:
+
+```python
+from jina import Document
+import json
+
+d = {'id': 'hello123', 'content': 'world'}
+d1 = Document(d)
+
+d = json.dumps({'id': 'hello123', 'content': 'world'})
+d2 = Document(d)
+```
+
+#### Parsing unrecognized fields
+
+Unrecognized fields in a `dict`/JSON string are automatically put into the Document's `.tags` field:
+
+```python
+from jina import Document
+
+d1 = Document({'id': 'hello123', 'foo': 'bar'})
+```
+
+```text
+<jina.types.document.Document id=hello123 tags={'foo': 'bar'} at 6320791056>
+```
+
+You can use `field_resolver` to map external field names to `Document` attributes:
+
+```python
+from jina import Document
+
+d1 = Document({'id': 'hello123', 'foo': 'bar'}, field_resolver={'foo': 'content'})
+```
+
+```text
+<jina.types.document.Document id=hello123 mimeType=text/plain text=bar at 6246985488>
+```
+
+#### Construct from another Document
+
+Assigning a `Document` object to another `Document` object will make a shallow copy:
+
+```python
+from jina import Document
+
+d = Document(content='hello, world!')
+d1 = d
+
+assert id(d) == id(d1)  # True
+```
+
+To make a deep copy, use `copy=True`:
+
+```python
+d1 = Document(d, copy=True)
+
+assert id(d) == id(d1)  # False
+```
+
+You can partially update a `Document` according to another source `Document`:
+
+```{code-block} python
+---
+emphasize-lines: 17, 20
+---
+from jina import Document
+
+s = Document(
+    id='🐲',
+    content='hello-world',
+    tags={'a': 'b'},
+    chunks=[Document(id='🐢')],
+)
+d = Document(
+    id='🐦',
+    content='goodbye-world',
+    tags={'c': 'd'},
+    chunks=[Document(id='🐯')],
+)
+
+# only update `id` field
+d.update(s, fields=['id'])
+
+# update all fields. `tags` field as `dict` will be merged.
+d.update(s)
+```
+
+#### Construct from JSON, CSV, files
+
+The `jina.types.document.generators` module let you construct `Document` from common file types such as JSON,
+CSV, `ndarray` and text files. The following functions will give a generator of `Document`, where each `Document` object
+corresponds to a line/row in the original format:
+
+|     |     |
+| --- | --- |
+| `from_ndjson()` | Yield `Document` from a line-based JSON file. Each line is a `Document` object |
+| `from_csv()` | Yield `Document` from a CSV file. Each line is a `Document` object |
+| `from_files()` | Yield `Document` from a glob files. Each file is a `Document` object |
+| `from_ndarray()` | Yield `Document` from a `ndarray`. Each row (depending on `axis`) is a `Document` object |
+| `from_lines()` | Yield `Document` from lines, json and csv |
+
+Using a generator is sometimes less memory-demanding, as it does not load/build all Document objects in one shot.
+
+To convert the generator to `DocumentArray` use:
+
+```python
+from jina import DocumentArray
+from jina.types.document.generators import from_files
+
+DocumentArray(from_files('/*.png'))
 ```
 
