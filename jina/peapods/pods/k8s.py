@@ -267,8 +267,6 @@ class K8sPod(BasePod):
             import asyncio
             from kubernetes import client
 
-            k8s_client = kubernetes_client.K8sClients().apps_v1
-
             with JinaLogger(f'waiting_scale_for_{self.name}') as logger:
                 logger.info(
                     f'🏝️\n\t\tWaiting for "{self.name}" to be scaled, with {self.num_replicas} replicas,'
@@ -279,7 +277,7 @@ class K8sPod(BasePod):
                 exception_to_raise = None
                 while timeout_ns is None or time.time_ns() - now < timeout_ns:
                     try:
-                        api_response = k8s_client.read_namespaced_deployment_scale(
+                        api_response = kubernetes_client.K8sClients().apps_v1.read_namespaced_deployment_scale(
                             name=self.dns_name, namespace=self.k8s_namespace
                         )
                         logger.debug(
