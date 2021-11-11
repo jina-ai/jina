@@ -46,7 +46,9 @@ def test_append_from_documents(chunkarray, document_factory, reference_doc):
     assert rv.text == chunk.text
     assert rv.parent_id == reference_doc.id
     assert rv.granularity == reference_doc.granularity + 1
-    assert rv.mime_type == 'text/plain'
+
+    # match array is not neccessaily the same MIME type, think about multimodal
+    assert rv.mime_type == ''
 
 
 def test_doc_chunks_init():

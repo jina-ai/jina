@@ -22,7 +22,7 @@ d3 = Document(blob=numpy.array([1, 2, 3]))
 ```
 
 
-## Basic
+## Basics
 
 ### Content 
 

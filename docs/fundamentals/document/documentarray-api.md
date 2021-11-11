@@ -2,7 +2,7 @@
 # DocumentArray
 
 A `DocumentArray` is a list of `Document` objects. You can construct, delete, insert, sort and traverse
-a `DocumentArray` like a Python `list`.
+a `DocumentArray` like a Python `list`. It implements all Python List interface, including `__getitem__`, `__setitem__`, `__delitem__`, `__len__`, `insert`, `append`, `reverse`, `extend`, `__iadd__`, `__add__`, `__iter__`, `clear`, `sort`. 
 
 ## Minimum working example
 
@@ -45,6 +45,27 @@ da = DocumentArray((Document() for _ in range(10)))
 da1 = DocumentArray(da)
 ```
 ````
+
+
+## Access Documents
+
+You can access a `Document` in the `DocumentArray` via integer index, string `id` or `slice` indices:
+
+```python
+from jina import DocumentArray, Document
+
+da = DocumentArray([Document(id='hello'), Document(id='world'), Document(id='goodbye')])
+
+da[0]
+da['world']
+da[1:2]
+```
+
+```text
+<jina.types.document.Document id=hello at 5699749904>
+<jina.types.document.Document id=world at 5736614992>
+<jina.types.arrays.document.DocumentArray length=1 at 5705863632>
+```
 
 (bulk-access)=
 ## Bulk access on content
@@ -103,7 +124,7 @@ d.embedding.shape= (1, 256)
 ```
 
 (match-documentarray)=
-## Matching
+## Finding nearest neighbours
 
 `DocumentArray` provides a`.match` function that finds the closest documents between two `DocumentArray` objects based on their `.embeddings`. This
 function requires all documents to be compared have an `embedding` and all embeddings to have the same length.
@@ -202,6 +223,143 @@ match emb = [[1.  0.1 0.  0.  0. ]] score = 1.6763054132461548
 
 ````
 
+## Traverse nested Documents
+
+`DocumentArray.traverse` can be used for iterating over nested & recursive Documents. As return value you get a generator which
+generates `DocumentArrays` matching the provided traversal paths. Let's assume you have the following `Document`
+structure:
+
+```python
+from jina import DocumentArray, Document
+
+root = Document(id='r1')
+
+chunk1 = Document(id='r1c1')
+root.chunks.append(chunk1)
+root.chunks[0].matches.append(Document(id='r1c1m1'))
+
+chunk2 = Document(id='r1c2')
+root.chunks.append(chunk2)
+chunk2_chunk1 = Document(id='r1c2c1')
+chunk2_chunk2 = Document(id='r1c2c2')
+root.chunks[1].chunks.extend([chunk2_chunk1, chunk2_chunk2])
+root.chunks[1].chunks[0].matches.extend([Document(id='r1c2c1m1'), Document(id='r1c2c1m2')])
+
+chunk3 = Document(id='r1c3')
+root.chunks.append(chunk3)
+
+da = DocumentArray([root])
+```
+
+````{dropdown} Visualization of Root Document
+
+```python
+root.plot()
+```
+
+```{figure} ../../../.github/images/traverse-example-docs.svg
+:align: center
+```
+
+````
+
+`DocumentArray.traverse` can be used in this way `da.traverse(['c'])` to get all the `Chunks` of the root `Document`. You can also use `m` to present the `Matches`, for example, `da.traverse['m']` can get all the `Matches` of the root `Document`.
+
+It allows us to composite the `c` and `m` to find `Chunks`/`Matches` which are in deeper level, for example:
+
+- `da.traverse['cm']` will find all `Matches` of the `Chunks` of root `Document`.
+- `da.traverse['cmc']` will find all `Chunks` of the `Matches` of `Chunks` of root `Document`.
+- `da.traverse['c', 'm']` will find all `Chunks` and `Matches` of root `Document`.
+
+````{dropdown} Examples
+
+```python
+for ma in da.traverse(['cm']):
+  for m in ma:
+    print(m.json())
+```
+
+```json
+{
+  "adjacency": 1,
+  "granularity": 1,
+  "id": "r1c1m1"
+}
+```
+
+```python
+for ma in da.traverse(['ccm']):
+  for m in ma:
+    print(m.json())
+```
+
+```json
+{
+  "adjacency": 1,
+  "granularity": 2,
+  "id": "r1c2c1m1"
+}
+{
+  "adjacency": 1,
+  "granularity": 2,
+  "id": "r1c2c1m2"
+}
+```
+
+```python
+for ma in da.traverse(['cm', 'ccm']):
+  for m in ma:
+    print(m.json())
+```
+
+```json
+{
+  "adjacency": 1,
+  "granularity": 1,
+  "id": "r1c1m1"
+}
+{
+  "adjacency": 1,
+  "granularity": 2,
+  "id": "r1c2c1m1"
+}
+{
+  "adjacency": 1,
+  "granularity": 2,
+  "id": "r1c2c1m2"
+}
+```
+````
+
+`DocumentArray.traverse_flat` is doing the same but flattens all `DocumentArrays` in the generator. When
+calling `da.traverse_flat(['cm', 'ccm'])` the result in our example will be the following:
+
+```python
+from jina import Document, DocumentArray
+
+assert da.traverse_flat(['cm', 'ccm']) == DocumentArray([
+    Document(id='r1c1m1', adjacency=1, granularity=1),
+    Document(id='r1c2c1m1', adjacency=1, granularity=2),
+    Document(id='r1c2c1m2', adjacency=1, granularity=2)
+])
+```
+
+`DocumentArray.traverse_flat_per_path` is a further method for `Document` traversal. It works
+like `DocumentArray.traverse_flat` but groups the `Documents` into `DocumentArrays` based on the traversal path. When
+calling `da.traverse_flat_per_path(['cm', 'ccm'])`, the resulting generator emits the following `DocumentArrays`:
+
+```python
+from jina import Document, DocumentArray
+
+DocumentArray([
+    Document(id='r1c1m1', adjacency=1, granularity=1),
+])
+DocumentArray([
+    Document(id='r1c2c1m1', adjacency=1, granularity=2),
+    Document(id='r1c2c1m2', adjacency=1, granularity=2)
+])
+```
+
 ## Visualization
 
 `DocumentArray` provides function `.plot_embeddings` to plot document embeddings in a 2D graph. `visualize` supports 2 methods
@@ -258,31 +416,9 @@ da1 = DocumentArray.load('data.bin', file_format='binary')
 ```
 
 
-## List-like interface
-
-`DocumentArray` can be used as a Python list. It implements all Python List interface, including `__getitem__`, `__setitem__`, `__delitem__`, `__len__`, `insert`, `append`, `reverse`, `extend`, `__iadd__`, `__add__`, `__iter__`, `clear`, `sort`. 
-
-### Access elements
-
-You can access a `Document` in the `DocumentArray` via integer index, string `id` or `slice` indices:
-
-```python
-from jina import DocumentArray, Document
-
-da = DocumentArray([Document(id='hello'), Document(id='world'), Document(id='goodbye')])
-
-da[0]
-# <jina.types.document.Document id=hello at 5699749904>
-
-da['world']
-# <jina.types.document.Document id=world at 5736614992>
-
-da[1:2]
-# <jina.types.arrays.document.DocumentArray length=1 at 5705863632>
-```
 
 
-### Sort elements
+## Sort
 
 `DocumentArray` is a subclass of `MutableSequence`, therefore you can use built-in Python `sort` to sort elements in
 a `DocumentArray` object, e.g.
@@ -315,7 +451,7 @@ To sort elements in `da` in-place, using `tags[id]` value in a descending manner
 {'id': '6a799190-b6b0-11eb-8a66-1e008a366d49', 'tags': {'id': 1.0}}
 ```
 
-### Filter elements
+## Filter
 
 You can use Python's [built-in `filter()`](https://docs.python.org/3/library/functions.html#filter) to filter elements
 in a `DocumentArray` object:
@@ -360,7 +496,7 @@ DocumentArray has 3 items:
 ```
 
 
-### Sample elements
+## Sampling
 
 `DocumentArray` provides function `.sample` that sample `k` elements without replacement. It accepts 2 parameters, `k`
 and `seed`. `k` is used to define the number of elements to sample, and `seed`
@@ -382,7 +518,7 @@ sampled_da = da.sample(k=10)  # sample 10 documents
 sampled_da_with_seed = da.sample(k=10, seed=1)  # sample 10 documents with seed.
 ```
 
-### Shuffle elements
+## Shuffle
 
 `DocumentArray` provides function `.shuffle` that shuffle the entire `DocumentArray`. It accepts the parameter `seed`
 .  `seed` helps you generate pseudo random results. By default, `seed` is None.
@@ -402,7 +538,7 @@ shuffled_da = da.shuffle()  # shuffle the DocumentArray
 shuffled_da_with_seed = da.shuffle(seed=1)  # shuffle the DocumentArray with seed.
 ```
 
-### Split elements by tags
+## Split by `.tags`
 
 `DocumentArray` provides function `.split` that split the `DocumentArray` into multiple `DocumentArray` according to the tag value (stored in `tags`) of each `Document`.
 It returns a python `dict` where `Documents` with the same value on `tag` are grouped together, their orders are preserved from the original `DocumentArray`.
@@ -428,7 +564,7 @@ assert len(rv['c']) == 2  # category `c` is a DocumentArray has 2 Documents
 
 
 
-### Iterate elements via `itertools`
+## Iterate via `itertools`
 
 As `DocumentArray` is an `Iterable`, you can also
 use [Python's built-in `itertools` module](https://docs.python.org/3/library/itertools.html) on it. This enables
@@ -455,139 +591,9 @@ for key, group in groups:
 ```
 
 
-#### Advanced iterator on nested Documents
 
-`DocumentArray.traverse` can be used for iterating over nested & recursive Documents. As return value you get a generator which
-generates `DocumentArrays` matching the provided traversal paths. Let's assume you have the following `Document`
-structure:
 
-```python
-from jina import DocumentArray, Document
-
-root = Document(id='r1')
-
-chunk1 = Document(id='r1c1')
-root.chunks.append(chunk1)
-root.chunks[0].matches.append(Document(id='r1c1m1'))
-
-chunk2 = Document(id='r1c2')
-root.chunks.append(chunk2)
-chunk2_chunk1 = Document(id='r1c2c1')
-chunk2_chunk2 = Document(id='r1c2c2')
-root.chunks[1].chunks.extend([chunk2_chunk1, chunk2_chunk2])
-root.chunks[1].chunks[0].matches.extend([Document(id='r1c2c1m1'), Document(id='r1c2c1m2')])
-
-chunk3 = Document(id='r1c3')
-root.chunks.append(chunk3)
-
-da = DocumentArray([root])
-```
-
-````{dropdown} Visualization of Root Document
-
-```python
-root.plot()
-```
-
-```{figure} ../../../.github/images/traverse-example-docs.svg
-:align: center
-```
-
-````
-
-`DocumentArray.traverse` can be used in this way `da.traverse(['c'])` to get all the `Chunks` of the root `Document`. You can also use `m` to present the `Matches`, for example, `da.traverse['m']` can get all the `Matches` of the root `Document`.
-
-It allows us to composite the `c` and `m` to find `Chunks`/`Matches` which are in deeper level, for example:
-
-- `da.traverse['cm']` will find all `Matches` of the `Chunks` of root `Document`.
-- `da.traverse['cmc']` will find all `Chunks` of the `Matches` of `Chunks` of root `Document`.
-- `da.traverse['c', 'm']` will find all `Chunks` and `Matches` of root `Document`.
-
-````{dropdown} Examples
-
-```python
-for ma in da.traverse(['cm']):
-  for m in ma:
-    print(m.json())
-
-# {
-#   "adjacency": 1,
-#   "granularity": 1,
-#   "id": "r1c1m1"
-# }
-```
-
-```python
-for ma in da.traverse(['ccm']):
-  for m in ma:
-    print(m.json())
-
-# {
-#   "adjacency": 1,
-#   "granularity": 2,
-#   "id": "r1c2c1m1"
-# }
-# {
-#   "adjacency": 1,
-#   "granularity": 2,
-#   "id": "r1c2c1m2"
-# }
-```
-
-```python
-for ma in da.traverse(['cm', 'ccm']):
-  for m in ma:
-    print(m.json())
-
-# {
-#   "adjacency": 1,
-#   "granularity": 1,
-#   "id": "r1c1m1"
-# }
-# {
-#   "adjacency": 1,
-#   "granularity": 2,
-#   "id": "r1c2c1m1"
-# }
-# {
-#   "adjacency": 1,
-#   "granularity": 2,
-#   "id": "r1c2c1m2"
-# }
-```
-
-````
-
-`DocumentArray.traverse_flat` is doing the same but flattens all `DocumentArrays` in the generator. When
-calling `da.traverse_flat(['cm', 'ccm'])` the result in our example will be the following:
-
-```python
-from jina import Document, DocumentArray
-
-assert da.traverse_flat(['cm', 'ccm']) == DocumentArray([
-    Document(id='r1c1m1', adjacency=1, granularity=1),
-    Document(id='r1c2c1m1', adjacency=1, granularity=2),
-    Document(id='r1c2c1m2', adjacency=1, granularity=2)
-])
-```
-
-`DocumentArray.traverse_flat_per_path` is a further method for `Document` traversal. It works
-like `DocumentArray.traverse_flat` but groups the `Documents` into `DocumentArrays` based on the traversal path. When
-calling `da.traverse_flat_per_path(['cm', 'ccm'])`, the resulting generator emits the following `DocumentArrays`:
-
-```python
-from jina import Document, DocumentArray
-
-DocumentArray([
-    Document(id='r1c1m1', adjacency=1, granularity=1),
-])
-DocumentArray([
-    Document(id='r1c2c1m1', adjacency=1, granularity=2),
-    Document(id='r1c2c1m2', adjacency=1, granularity=2)
-])
-```
-
-### Get attributes of elements
+## Get bulk attributes
 
 `DocumentArray` implements powerful getters that lets you fetch multiple attributes from the Documents it contains in
 one-shot:

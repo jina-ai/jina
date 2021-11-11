@@ -30,10 +30,7 @@ class MatchArray(DocumentArray):
         super().append(document)
         match = self[-1]
         match.set_attributes(
-            granularity=self.granularity,
-            adjacency=self.adjacency,
-            mime_type=match.mime_type or self._ref_doc.mime_type,
-            **kwargs
+            granularity=self.granularity, adjacency=self.adjacency, **kwargs
         )
 
         return match
