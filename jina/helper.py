@@ -822,7 +822,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
 
     :return: Version information and environment variables
     """
-    import os, grpc, zmq, numpy, google.protobuf, yaml, platform
+    import os, grpc, google.protobuf, yaml, platform
     from . import (
         __version__,
         __proto_version__,
@@ -841,8 +841,6 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
             'jina': __version__,
             'jina-proto': __proto_version__,
             'jina-vcs-tag': os.environ.get('JINA_VCS_VERSION', __unset_msg__),
-            'libzmq': zmq.zmq_version(),
-            'pyzmq': numpy.__version__,
             'protobuf': google.protobuf.__version__,
             'proto-backend': api_implementation._default_implementation_type,
             'grpcio': getattr(grpc, '__version__', _grpcio_metadata.__version__),

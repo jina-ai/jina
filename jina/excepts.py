@@ -109,10 +109,6 @@ class NotSupportedError(Exception, BaseJinaExeception):
     """Exception when user accidentally using a retired argument."""
 
 
-class RoutingTableCyclicError(Exception, BaseJinaExeception):
-    """Raised when the routing graph has cycles."""
-
-
 class RuntimeRunForeverEarlyError(Exception, BaseJinaExeception):
     """Raised when an error occurs when starting the run_forever of Runtime"""
 
