@@ -73,11 +73,3 @@ class ListView(ProtoTypeMixin, MutableSequence):
                 return True
 
         return False
-
-    def clear(self):
-        """
-        # noqa: DAR101
-        # noqa: DAR102
-        # noqa: DAR103
-        """
-        self._pb_body.Clear()

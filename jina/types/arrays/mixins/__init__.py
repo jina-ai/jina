@@ -33,6 +33,6 @@ class AllMixins(
     TextToolsMixin,
     ABC,
 ):
-    """All plugins that can be used in DA/DAM"""
+    """All plugins that can be used in :class:`DocumentArray` or :class:`DocumentArrayMemmap`. """
 
     ...

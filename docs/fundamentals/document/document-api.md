@@ -8,124 +8,184 @@ all `Document`s in Jina.
 ```python
 from jina import Document
 
-d1 = Document(content='hello')
-d2 = Document(content=b'\f1')
+d1 = Document(text='hello')
+d2 = Document(buffer=b'\f1')
 
 import numpy
-d3 = Document(content=numpy.array([1, 2, 3]))
+d3 = Document(blob=numpy.array([1, 2, 3]))
 ```
 
+```console
+<jina.types.document.Document ('id', 'mime_type', 'text') at 4483297360>
+<jina.types.document.Document ('id', 'buffer') at 5710817424>
+<jina.types.document.Document ('id', 'blob') at 4483299536>
+```
 
 ## Document content
 
 `text`, `blob`, and `buffer` are three content attributes of a Document. They correspond to string-like data (e.g. for natural language), `ndarray`-like data (e.g. for image/audio/video data), and binary data for general purpose, respectively. Each Document can contain only one type of content.
 
-````{admonition} Why a Document can contain only data type
-:class: question
+| Attribute | Accept type | Use case |
+| --- | --- | --- |
+| `doc.text` | Python string | To contain text |
+| `doc.blob` | Numpy `ndarray`, Scipy sparse matrix (`spmatrix`), Tensorflow dense & sparse tensor, PyTorch dense & sparse tensor, PaddlePaddle dense tensor | To contain image/video/audio |
+| `doc.buffer` | 	Binary string | To contain intermediate IO buffer |
 
-What if you want to represent more than one kind of information? Say, to fully represent a PDF slide you need to store both image and text. In this case, you can use {ref}`nested Document<nest-document>` by putting image into a sub-Document
-
-````
-
-| Attribute | Description |
-| --- | --- |
-| `doc.buffer` | The raw binary content of this Document |
-| `doc.blob` | The `ndarray` of the image/audio/video Document |
-| `doc.text` | The text info of the Document |
-| `doc.content` | A sugar syntax to access one of the above non-empty field |
-
-You can assign `str`, `ndarray`, or `buffer` to a `Document`.
-
-```python
-
-```
-
-```text
-<jina.types.document.Document id=2ca74b98-aed9-11eb-b791-1e008a366d48 mimeType=text/plain text=hello at 6247702096>
-<jina.types.document.Document id=2ca74f1c-aed9-11eb-b791-1e008a366d48 buffer=DDE= at 6247702160>
-<jina.types.document.Document id=2caab594-aed9-11eb-b791-1e008a366d48 blob={'dense': {'buffer': 'AQAAAAAAAAACAAAAAAAAAAMAAAAAAAAA', 'shape': [3], 'dtype': '<i8'}} at 6247702416>
-```
-
-The content will be automatically assigned to either the `text`, `buffer`, or `blob` fields. `id` and `mime_type`
-are auto-generated when not given.
-
-```{admonition} Exclusivity of the content
+````{admonition} Exclusivity of the content
 :class: important
 
-Note that one `Document` can only contain one type of `content`: it is either `text`, `buffer`, or `blob`.
-```
-
-You can get a visualization of a `Document` object in Jupyter Notebook or by calling `.plot()`.
-
-<img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDY5fkRvY3VtZW50fnsKK2lkIGU4MDY0MjdlLWEKK21pbWVfdHlwZSB0ZXh0L3BsYWluCit0ZXh0IGhlbGxvCn0="/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDczfkRvY3VtZW50fnsKK2lkIGZmZTQzMmFjLWEKK2J1ZmZlciBEREU9CittaW1lX3R5cGUgdGV4dC9wbGFpbgp9"/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDJmfkRvY3VtZW50fnsKK2lkIDAzOWVmMzE0LWEKK2Jsb2IoPGNsYXNzICdudW1weS5uZGFycmF5Jz4pCn0="/>
-
-
-### Conversion from URI to content
-
-After set `.uri`, you can use the following methods to convert it to `.text`, `.buffer` and `.blob`:
-
-```python
-doc.convert_uri_to_buffer()
-doc.convert_uri_to_text()
-
-doc.convert_buffer_to_uri()
-doc.convert_text_to_uri()
-
-doc.convert_buffer_to_blob()
-doc.convert_blob_to_buffer()
-```
-
-You can use `convert_content_to_uri` to convert the content to URI. This will determine the used `content_type` and use
-the appropriate conversion method.
-
-You can convert a URI to a data URI (a data in-line URI scheme) using `doc.convert_uri_to_datauri()`. This will fetch
-the resource and make it inline.
-
-## Document embedding
-
-An embedding is a multi-dimensional representation of a `Document`. You can assign any Numpy `ndarray` as a `Document`'s
-embedding.
+Note that one `Document` can only contain one type of `content`: it is either `text`, `buffer`, or `blob`. If you set one, the other will be cleared. 
 
 ```python
 import numpy as np
+
+d = Document(text='hello')
+d.blob = np.array([1])
+
+d.text  # <- now it's empty
+```
+
+````
+
+````{admonition} Why Document contains only data type
+:class: question
+
+What if you want to represent more than one kind of information? Say, to fully represent a PDF slide you need to store both image and text. In this case, you can use {ref}`nested Document<nest-document>` by putting image into one sub Document, and putting text into another sub Document.
+
+```python
+d = Document(chunks=[Document(blob=...), Document(text=...)])
+```
+
+
+The principle is each Document contains only one modality. This makes the whole logic more clear.
+````
+
+```{tip}
+There is also a `doc.content` sugar getter/setter of the above non-empty field. The content will be automatically grabbed or assigned to either `text`, `buffer`, or `blob` field based on the given type.
+```
+
+
+
+### Loading content from URI
+
+Often time you need to load data from a URI instead of assign them directly in your code, `.uri` is the attribute you must learn. 
+
+After set `.uri`, you can load the data into `.text`/`.buffer`/`.blob` as below.
+
+The value of `.uri` can point to either local or remote or [data URI](https://en.wikipedia.org/wiki/Data_URI_scheme).
+
+````{tab} Local image URI
+
+
+```python
+from jina import Document
+
+d1 = Document(uri='apple.png').convert_uri_to_image_blob()
+print(d1.content_type, d1.content)
+```
+
+```console
+blob [[[255 255 255]
+  [255 255 255]
+  [255 255 255]
+  ...
+```
+````
+
+
+````{tab} Remote text URI
+
+```python
+from jina import Document
+
+d1 = Document(uri='https://www.gutenberg.org/files/1342/1342-0.txt').convert_uri_to_text()
+
+print(d1.content_type, d1.content)
+```
+
+
+```console
+text ﻿The Project Gutenberg eBook of Pride and Prejudice, by Jane Austen
+
+This eBook is for the use of anyone anywhere in the United States and
+most other parts of the wor
+```
+````
+
+````{tab} Inline data URI
+
+```python
+from jina import Document
+
+d1 = Document(uri='''data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA
+AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO
+9TXL0Y4OHwAAAABJRU5ErkJggg==
+''').convert_uri_to_image_blob()
+
+print(d1.content_type, d1.content)
+```
+```console
+blob [[[255 255 255]
+  [255   0   0]
+  [255   0   0]
+  [255   0   0]
+  [255 255 255]]
+  ...
+```
+
+````
+
+There are more `.convert_uri_to_*` functions allow you to read {ref}`text<text-type>`, {ref}`image<image-type>`, {ref}`video<video-type>`, {ref}`3D mesh<mesh-type>`, {ref}`audio<audio-type>` and {ref}`tabular<table-type>` data into Jina.
+
+```{admonition} Write to data URI
+:class: tip
+Inline data URI is helpful when you need a quick visualization in a HTML, as it embeds all resources directly into that HTML. 
+
+You can convert a URI to a data URI using `doc.convert_uri_to_datauri()`. This will fetch the resource and make it inline.
+```
+
+
+## Document embedding
+
+Embedding is a multi-dimensional representation of a `Document` (often a `[1, D]` vector). It serves as a very important piece in the neural search. 
+
+Document has an attribute `.embedding` to contain the embedding infromation.
+
+Like `.blob`, you can assign it with Numpy `ndarray`, Scipy sparse matrix (`spmatrix`), Tensorflow dense & sparse tensor, PyTorch dense & sparse tensor, PaddlePaddle dense tensor.
+
+```python
+import numpy as np
+import scipy.sparse as sp
+import torch
+import tensorflow as tf
 from jina import Document
 
 d1 = Document(embedding=np.array([1, 2, 3]))
 d2 = Document(embedding=np.array([[1, 2, 3], [4, 5, 6]]))
+d3 = Document(embedding=sp.coo_matrix([0, 0, 0, 1, 0]))
+d4 = Document(embedding=torch.tensor([1, 2, 3]))
+d5 = Document(embedding=tf.sparse.from_dense(np.array([[1, 2, 3], [4, 5, 6]])))
 ```
 
-### Sparse embedding
+### Finding nearest-neighbours
 
-Scipy sparse array (`coo_matrix, bsr_matrix, csr_matrix, csc_matrix`)  are supported as both `embedding` or `blob` :
+Once a document has `.embedding` filled, it can be "matched". In this example, we build 10 Documents and put them into a {ref}`DocumentArray<da-intro>`, and then use another Document to search against with.
 
 ```python
-import scipy.sparse as sp
+from jina import DocumentArray, Document
+import numpy as np
 
-d1 = Document(embedding=sp.coo_matrix([0, 0, 0, 1, 0]))
-d2 = Document(embedding=sp.csr_matrix([0, 0, 0, 1, 0]))
-d3 = Document(embedding=sp.bsr_matrix([0, 0, 0, 1, 0]))
-d4 = Document(embedding=sp.csc_matrix([0, 0, 0, 1, 0]))
+da = DocumentArray.empty(10)
+da.embeddings = np.random.random([10, 256])
 
-d5 = Document(blob=sp.coo_matrix([0, 0, 0, 1, 0]))
-d6 = Document(blob=sp.csr_matrix([0, 0, 0, 1, 0]))
-d7 = Document(blob=sp.bsr_matrix([0, 0, 0, 1, 0]))
-d8 = Document(blob=sp.csc_matrix([0, 0, 0, 1, 0]))
+q = Document(embedding=np.random.random([256]))
+q.match(da)
+
+print(q.matches)
 ```
 
-Tensorflow and Pytorch sparse arrays are also supported
+```console
 
-```python
-import torch
-import tensorflow as tf
-
-indices = [[0, 0], [1, 2]]
-values = [1, 2]
-dense_shape = [3, 4]
-
-d1 = Document(embedding=torch.sparse_coo_tensor(indices, values, dense_shape))
-d2 = Document(embedding=tf.SparseTensor(indices, values, dense_shape))
-d3 = Document(blob=torch.sparse_coo_tensor(indices, values, dense_shape))
-d4 = Document(blob=tf.SparseTensor(indices, values, dense_shape))
 ```
 
 ## Document tags
