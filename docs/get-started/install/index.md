@@ -5,4 +5,5 @@
 :hidden:
 
 ../../advanced/experimental/windows
+troubleshooting
 ```

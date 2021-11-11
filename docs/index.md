@@ -8,7 +8,6 @@
 ## Install
 
 1. Make sure that you have Python 3.7+ installed on Linux/MacOS/{ref}`Windows <jina-on-windows>`.
-2. Install Jina
 
     ````{tab} via PyPI
     ```shell
@@ -22,15 +21,21 @@
     ````
     ````{tab} via Docker
     ```shell
-    docker run jinaai/jina:latest
+    docker pull jinaai/jina:latest
     ```
     ````
 
-3. Run hello-world demo
-   ```bash 
+2. That’s it! Try a hello-world demo
+   ````{tab} Run natively
+   ```shell
    jina hello fashion
    ```
-4. That’s it! In the next few seconds the demo will open in a new page in your browser.
+   ````
+   ````{tab} Run in Docker
+   ```shell
+   docker run -v "$(pwd)/j:/j" jinaai/jina:latest hello fashion --workdir /j && open j/demo.html
+   ```
+   ````
 
 Now that you’re set up, let’s dive into more of how Jina works and how to build great apps.
 

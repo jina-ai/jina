@@ -80,6 +80,7 @@ async def test_no_message_lost_during_scaling(
         name='test-flow-slow-process-executor',
         infrastructure='K8S',
         timeout_ready=120000,
+        k8s_namespace='test-flow-slow-process-executor-ns',
     ).add(
         name='slow_process_executor',
         uses=slow_process_executor_image,
@@ -175,6 +176,7 @@ async def test_no_message_lost_during_kill(
         name='test-flow-slow-process-executor',
         infrastructure='K8S',
         timeout_ready=120000,
+        k8s_namespace='test-flow-slow-process-executor-ns',
     ).add(
         name='slow_process_executor',
         uses=slow_process_executor_image,
@@ -274,6 +276,7 @@ def test_linear_processing_time_scaling(
         name='test-flow-slow-process-executor',
         infrastructure='K8S',
         timeout_ready=120000,
+        k8s_namespace='test-flow-slow-process-executor-ns',
     ).add(
         name='slow_process_executor',
         uses=slow_process_executor_image,
@@ -284,7 +287,7 @@ def test_linear_processing_time_scaling(
 
     with flow:
         with kubernetes_tools.get_port_forward_contextmanager(
-            'test-flow-slow-process-executor', flow.port_expose
+            'test-flow-slow-process-executor-ns', flow.port_expose
         ):
             # sleep as the port forward setup can take some time
             time.sleep(0.1)

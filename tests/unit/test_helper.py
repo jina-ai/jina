@@ -26,7 +26,6 @@ from jina.logging.predefined import default_logger
 from jina.logging.profile import TimeContext
 from jina.proto import jina_pb2
 from jina.types.arrays.memmap import DocumentArrayMemmap
-from jina.types.ndarray.generic import NdArray
 from jina.types.request import Request
 from tests import random_docs
 
@@ -177,12 +176,12 @@ def test_random_docs():
     doc_ids = []
     chunk_ids = []
     for d2, d1 in zip(docs2, docs1):
-        np.testing.assert_almost_equal(d2.embedding, NdArray(d1.embedding).value)
+        np.testing.assert_almost_equal(d2.embedding, d1.embedding)
         doc_ids.append((d1.id))
         assert d2.text == d1.text
         assert d2.tags['id'] == d1.tags['id']
         for c2, c1 in zip(d2.chunks, d1.chunks):
-            np.testing.assert_almost_equal(c2.embedding, NdArray(c1.embedding).value)
+            np.testing.assert_almost_equal(c2.embedding, c1.embedding)
             chunk_ids.append((c1.id))
             assert c2.text == c1.text
             assert c2.tags['id'] == c1.tags['id']

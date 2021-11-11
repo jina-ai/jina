@@ -1,6 +1,7 @@
 import base64
 import json
 import mimetypes
+from collections import Counter
 from hashlib import blake2b
 from typing import (
     Any,
@@ -9,72 +10,43 @@ from typing import (
     List,
     Optional,
     Tuple,
-    Type,
     TypeVar,
     Union,
     overload,
+    TYPE_CHECKING,
 )
 
 import numpy as np
 from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 
-from ...excepts import BadDocType
-from ...helper import download_mermaid_url, dunder_get, random_identity, typename
-from ...importer import ImportExtensions
-from ...logging.predefined import default_logger
-from ...proto import jina_pb2
+from .converters import ContentConversionMixin, _text_to_word_sequence
+from .helper import VersionedMixin, versioned
 from ..mixin import ProtoTypeMixin
-from ..ndarray.generic import BaseSparseNdArray, NdArray
+from ..ndarray import NdArray
 from ..score import NamedScore
 from ..score.map import NamedScoreMapping
 from ..struct import StructView
-from .converters import ContentConversionMixin
-from .helper import VersionedMixin, versioned
+from ...excepts import BadDocType
+from ...helper import download_mermaid_url, dunder_get, random_identity, typename
+from ...logging.predefined import default_logger
+from ...proto import jina_pb2
 
-if False:
-    # fix type-hint complain for sphinx and flake
-    import scipy
-    import tensorflow as tf
-    import torch
-    from scipy.sparse import coo_matrix
-
+if TYPE_CHECKING:
     from ..arrays.chunk import ChunkArray
     from ..arrays.match import MatchArray
+    from ..ndarray import ArrayType
 
-    ArrayType = TypeVar(
-        'ArrayType',
-        np.ndarray,
-        scipy.sparse.csr_matrix,
-        scipy.sparse.coo_matrix,
-        scipy.sparse.bsr_matrix,
-        scipy.sparse.csc_matrix,
-        torch.sparse_coo_tensor,
-        tf.SparseTensor,
-    )
-
-    SparseArrayType = TypeVar(
-        'SparseArrayType',
-        np.ndarray,
-        scipy.sparse.csr_matrix,
-        scipy.sparse.coo_matrix,
-        scipy.sparse.bsr_matrix,
-        scipy.sparse.csc_matrix,
-        torch.sparse_coo_tensor,
-        tf.SparseTensor,
-    )
-
-__all__ = ['Document', 'DocumentContentType', 'DocumentSourceType']
-DIGEST_SIZE = 8
-
-# This list is not exhaustive because we cannot add the `sparse` types without adding the `dependencies`
 DocumentContentType = TypeVar('DocumentContentType', bytes, str, 'ArrayType')
 DocumentSourceType = TypeVar(
-    'DocumentSourceType', jina_pb2.DocumentProto, bytes, str, Dict, 'Document'
+    'DocumentSourceType', jina_pb2.DocumentProto, bytes, str, Dict
 )
 
-_all_mime_types = set(mimetypes.types_map.values())
+__all__ = ['Document']
 
+DIGEST_SIZE = 8
+
+_all_mime_types = set(mimetypes.types_map.values())
 _all_doc_content_keys = {'content', 'blob', 'text', 'buffer', 'graph'}
 _all_doc_array_keys = ('blob', 'embedding')
 _special_mapped_keys = ('scores', 'evaluations')
@@ -140,13 +112,11 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
         self,
         *,
         adjacency: Optional[int] = None,
-        blob: Optional[Union['ArrayType', 'jina_pb2.NdArrayProto', 'NdArray']] = None,
+        blob: Optional['ArrayType'] = None,
         buffer: Optional[bytes] = None,
         chunks: Optional[Iterable['Document']] = None,
-        content: Optional[DocumentContentType] = None,
-        embedding: Optional[
-            Union['ArrayType', 'jina_pb2.NdArrayProto', 'NdArray']
-        ] = None,
+        content: Optional['DocumentContentType'] = None,
+        embedding: Optional['ArrayType'] = None,
         granularity: Optional[int] = None,
         id: Optional[str] = None,
         matches: Optional[Iterable['Document']] = None,
@@ -183,7 +153,7 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
 
     def __init__(
         self,
-        document: Optional[DocumentSourceType] = None,
+        document: Optional[Union['DocumentSourceType', 'Document']] = None,
         field_resolver: Dict[str, str] = None,
         copy: bool = False,
         **kwargs,
@@ -234,7 +204,7 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
                         if key in d:
                             value = d[key]
                             if isinstance(value, list):
-                                d[key] = NdArray(np.array(d[key])).dict()
+                                d[key] = np.array(d[key])
                         if 'chunks' in d:
                             for chunk in d['chunks']:
                                 _update_doc(chunk)
@@ -501,34 +471,16 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
         """
         return NdArray(self._pb_body.blob).value
 
-    def get_sparse_blob(
-        self, sparse_ndarray_cls_type: Type[BaseSparseNdArray], **kwargs
-    ) -> 'SparseArrayType':
-        """Return ``blob`` of the content of a Document as an sparse array.
-
-        :param sparse_ndarray_cls_type: Sparse class type, such as `SparseNdArray`.
-        :param kwargs: Additional key value argument, for `scipy` backend, we need to set
-            the keyword `sp_format` as one of the scipy supported sparse format, such as `coo`
-            or `csr`.
-        :return: the blob of this Document but as an sparse array
-        """
-        return NdArray(
-            self._pb_body.blob,
-            sparse_cls=sparse_ndarray_cls_type,
-            is_sparse=True,
-            **kwargs,
-        ).value
-
     @blob.setter
-    def blob(self, value: Union['ArrayType', 'jina_pb2.NdArrayProto', 'NdArray']):
+    def blob(self, value: 'ArrayType'):
         """Set the `blob` to :param:`value`.
 
         :param value: the array value to set the blob
         """
-        self._update_ndarray('blob', value)
+        NdArray(self._pb_body.blob).value = value
 
     @property
-    def embedding(self) -> 'SparseArrayType':
+    def embedding(self) -> 'ArrayType':
         """Return ``embedding`` of the content of a Document.
 
          .. note::
@@ -540,114 +492,13 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
         """
         return NdArray(self._pb_body.embedding).value
 
-    def get_sparse_embedding(
-        self, sparse_ndarray_cls_type: Type[BaseSparseNdArray], **kwargs
-    ) -> 'SparseArrayType':
-        """Return ``embedding`` of the content of a Document as an sparse array.
-
-        :param sparse_ndarray_cls_type: Sparse class type, such as `SparseNdArray`.
-        :param kwargs: Additional key value argument, for `scipy` backend, we need to set
-            the keyword `sp_format` as one of the scipy supported sparse format, such as `coo`
-            or `csr`.
-        :return: the embedding of this Document but as as an sparse array
-        """
-        return NdArray(
-            self._pb_body.embedding,
-            sparse_cls=sparse_ndarray_cls_type,
-            is_sparse=True,
-            **kwargs,
-        ).value
-
     @embedding.setter
-    def embedding(self, value: Union['ArrayType', 'jina_pb2.NdArrayProto', 'NdArray']):
+    def embedding(self, value: 'ArrayType'):
         """Set the ``embedding`` of the content of a Document.
 
         :param value: the array value to set the embedding
         """
-        self._update_ndarray('embedding', value)
-
-    def _update_sparse_ndarray(self, k, v, sparse_cls):
-        NdArray(
-            is_sparse=True,
-            sparse_cls=sparse_cls,
-            proto=getattr(self._pb_body, k),
-        ).value = v
-
-    @staticmethod
-    def _check_installed_array_packages():
-        from ... import JINA_GLOBAL
-
-        if JINA_GLOBAL.scipy_installed is None:
-            JINA_GLOBAL.scipy_installed = False
-            with ImportExtensions(required=False, pkg_name='scipy'):
-                import scipy
-
-                JINA_GLOBAL.scipy_installed = True
-
-        if JINA_GLOBAL.tensorflow_installed is None:
-            JINA_GLOBAL.tensorflow_installed = False
-            with ImportExtensions(required=False, pkg_name='tensorflow'):
-                import tensorflow
-
-                JINA_GLOBAL.tensorflow_installed = True
-
-        if JINA_GLOBAL.torch_installed is None:
-            JINA_GLOBAL.torch_installed = False
-            with ImportExtensions(required=False, pkg_name='torch'):
-                import torch
-
-                JINA_GLOBAL.torch_installed = True
-
-    def _update_if_sparse(self, k, v):
-
-        from ... import JINA_GLOBAL
-
-        v_valid_sparse_type = False
-        Document._check_installed_array_packages()
-
-        if JINA_GLOBAL.scipy_installed:
-            import scipy
-            import scipy.sparse
-
-            if scipy.sparse.issparse(v):
-                from ..ndarray.sparse.scipy import SparseNdArray
-
-                self._update_sparse_ndarray(k=k, v=v, sparse_cls=SparseNdArray)
-                v_valid_sparse_type = True
-
-        if JINA_GLOBAL.tensorflow_installed:
-            import tensorflow
-
-            if isinstance(v, tensorflow.SparseTensor):
-                from ..ndarray.sparse.tensorflow import SparseNdArray
-
-                self._update_sparse_ndarray(k=k, v=v, sparse_cls=SparseNdArray)
-                v_valid_sparse_type = True
-
-        if JINA_GLOBAL.torch_installed:
-            import torch
-
-            if isinstance(v, torch.Tensor) and v.is_sparse:
-                from ..ndarray.sparse.pytorch import SparseNdArray
-
-                self._update_sparse_ndarray(k=k, v=v, sparse_cls=SparseNdArray)
-                v_valid_sparse_type = True
-
-        return v_valid_sparse_type
-
-    def _update_ndarray(self, k, v):
-        if isinstance(v, jina_pb2.NdArrayProto):
-            getattr(self._pb_body, k).CopyFrom(v)
-        elif isinstance(v, np.ndarray):
-            NdArray(getattr(self._pb_body, k)).value = v
-        elif isinstance(v, NdArray):
-            NdArray(getattr(self._pb_body, k)).is_sparse = v.is_sparse
-            NdArray(getattr(self._pb_body, k)).value = v.value
-        else:
-            v_valid_sparse_type = self._update_if_sparse(k, v)
-
-            if not v_valid_sparse_type:
-                raise TypeError(f'{k} is in unsupported type {typename(v)}')
+        NdArray(self._pb_body.embedding).value = value
 
     @property
     @versioned
@@ -867,7 +718,7 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
         return self._pb_body.WhichOneof('content')
 
     @property
-    def content(self) -> DocumentContentType:
+    def content(self) -> 'DocumentContentType':
         """Return the content of the document. It checks whichever field among :attr:`blob`, :attr:`text`,
         :attr:`buffer` has value and return it.
 
@@ -881,7 +732,7 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
             return getattr(self, attr)
 
     @content.setter
-    def content(self, value: DocumentContentType):
+    def content(self, value: 'DocumentContentType'):
         """Set the content of the document. It assigns the value to field with the right type.
 
         .. seealso::
@@ -1055,10 +906,10 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
 
         mermaid_str = (
             """
-                                        %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
-                                        classDiagram
-
-                                                """
+                                                %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
+                                                classDiagram
+        
+                                                        """
             + self.__mermaid_str__()
         )
 
@@ -1120,44 +971,6 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
                 for match_doc, match_dict in zip(self.matches, d['matches']):
                     match_doc._prettify_doc_dict(match_dict)
 
-    def dict(self, prettify_ndarrays=False, *args, **kwargs):
-        """Return the object in Python dictionary
-
-        :param prettify_ndarrays: boolean indicating if the ndarrays need to be prettified to be shown as lists of values
-        :param args: Extra positional arguments
-        :param kwargs: Extra keyword arguments
-        :return: dict representation of the object
-        """
-        d = super().dict(*args, **kwargs)
-        if prettify_ndarrays:
-            self._prettify_doc_dict(d)
-        return d
-
-    def json(self, prettify_ndarrays=False, *args, **kwargs):
-        """Return the object in JSON string
-
-        :param prettify_ndarrays: boolean indicating if the ndarrays need to be prettified to be shown as lists of values
-        :param args: Extra positional arguments
-        :param kwargs: Extra keyword arguments
-        :return: JSON string of the object
-        """
-        if prettify_ndarrays:
-            import json
-
-            d = super().dict(*args, **kwargs)
-            self._prettify_doc_dict(d)
-            return json.dumps(d, sort_keys=True, **kwargs)
-        else:
-            return super().json(*args, **kwargs)
-
-    @property
-    def non_empty_fields(self) -> Tuple[str]:
-        """Return the set fields of the current document that are not empty
-
-        :return: the tuple of non-empty fields
-        """
-        return tuple(field[0].name for field in self.ListFields())
-
     @staticmethod
     def attributes(
         include_proto_fields: bool = True,
@@ -1201,3 +1014,16 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
         else:
             raise AttributeError(f'no attribute named `{item}`')
         return value
+
+    def get_vocabulary(self, text_attrs: Tuple[str, ...] = ('text',)) -> Dict[str, int]:
+        """Get the text vocabulary in a counter dict that maps from the word to its frequency from all :attr:`text_fields`.
+
+        :param text_attrs: the textual attributes where vocabulary will be derived from
+        :return: a vocabulary in dictionary where key is the word, value is the frequency of that word in all text fields.
+        """
+        all_tokens = Counter()
+
+        for f in text_attrs:
+            all_tokens.update(_text_to_word_sequence(getattr(self, f)))
+
+        return all_tokens

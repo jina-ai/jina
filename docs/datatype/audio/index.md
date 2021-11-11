@@ -3,9 +3,9 @@
 Sound, or audio signals are signals that vibrate in the audible frequency range. When someone talks, it generates air
 pressure signals; when you play music, the speaker converts electrical energy into mechanical energy. The mechanical
 energy compresses air and converts the motion into sound energy. Your ear takes in these air pressure differences and
-communicates with the brain. That's how audio works in real world and we call it analog audio.
+communicates with the brain. That's how audio works in the real world and we call it analog audio.
 
-Digital audio data can be a soundbite, a music, a ringtone, a background noise. It often comes in `.wav`, `.mp3`
+Digital audio data can be a soundbite, music, a ringtone, a background noise. It often comes in `.wav`, `.mp3`
 formats, where the sound waves are digitized by sampling them at discrete intervals. There are many interesting neural
 search tasks on audio data: music recommendations, similarity search for audio files, matching voice commands, voice
 synthesis for chatbot. Before you start to build solutions with Jina, let's recap some fundamental knowledge about audio
@@ -40,14 +40,14 @@ an audio sample to a finite precision as defined by a particular number of bits.
 per sample are used to represent each quantized sample, which means that there are 2{sup}`16` levels for the quantized
 signal. Quantization also forms the core of essentially all lossy compression algorithms.
 
-Below depicts a simple wave quantized in 2bits (left) and 3bits (right).
+Following image depicts a simple wave quantized in 2bits (left) and 3bits (right).
 
 ```{figure} 2-3bit-quant.png
 :align: center
 :width: 80%
 ```
 
-Let's hear some soundbite and feel how quantization affects the audio quality. In this example, the original audio file
+Let's listen to some soundbites and feel how quantization affects the audio quality. In this example, the original audio file
 is at 16-bit, 44.1KHz.
 
 <audio controls>
@@ -55,7 +55,7 @@ is at 16-bit, 44.1KHz.
 Your browser does not support the audio element.
 </audio>
 
-We now keep the sampling rate at 44.1KHz but reduce the number of bits used in quantization:
+Now, we keep the sampling rate at 44.1KHz but reduce the number of bits used in quantization:
 
 
 <table>
@@ -85,7 +85,7 @@ We now keep the sampling rate at 44.1KHz but reduce the number of bits used in q
   </tr>
 </table>
 
-Don't be flattered if you still can somehow recognize the 2-bit version. It is easy only because it is a human voice, which we are born to be very good at recognizing it. Try again with a music.
+Don't be flattered if you still recognize the 2-bit version. It is easy only because it is a human voice, which we are very good at recognizing. Try again with a music.
 
 ## Load `.wav` file 
 
@@ -149,5 +149,5 @@ By no means you are restricted to use Jina native methods for audio processing. 
 ```{toctree}
 :hidden:
 
-find-replace-audio
+similar-audio-search/index
 ```

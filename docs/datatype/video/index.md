@@ -1,12 +1,23 @@
 # {octicon}`device-camera-video` Video
 
+
+````{tip}
+
+To enable the full feature of Document API on video, you need to install `av`.
+
+```shell
+pip install av
+```
+````
+
 Video data is a common asset consumed on daily basis: live stream on Youtube/TikTok, CCTV camera or fun meme gifs. 
 
 Even though most applications of computer vision today center on images, thanks to those viral TikTokers, video data analysis has gained more attention recently, e.g. monitoring real-time video and analyzing archived video.
 
 Comparing to static image, video allows for deeper situational understanding, because sequences of images provide new information about action. For example, we can track an obstacle through a sequence of images and understand its behavior to predict the next move. We can track a human pose, and understand the action taken with action classification.
 
-Neural search on video often includes tasks such as in-video content search, video2video recommendation, video question-answering. Before you start to solve those tasks, let's take a quick tour on the video data format, and how Jina Document API can help you get started. 
+Neural search on video often includes tasks such as in-video content search, video2video recommendation, video question-answering. Before you start to solve those tasks, let's take a quick tour on the video data format, and how Jina Document API can help you get started.
+
 
 ## Video as sequence of images
 

@@ -1,8 +1,18 @@
 # {octicon}`image` Image
 
+````{tip}
+
+To enable the full feature of Document API on image, you need to install `Pillow` and `matplotlib`.
+
+```shell
+pip install matplotlib pillow
+```
+````
+
 Images and pictures are probably the most intuitive data for a lot of people. Comparing to textual data, image data is more universal and easier to comprehend. Neural search on image can be fun: from good-old content-based image retrieval to text2image or image2text cross-modality retrieval. With Jina, one can build all kinds of fancy applications on image data. In this chapter, we will introduce some common tasks that can be built with Jina.
 
 Before we get started, let's recap what we know about image data.
+
 
 
 ## Image is `ndarray`
@@ -49,7 +59,7 @@ from jina import Document
 d = (
     Document(uri='apple.png')
     .convert_uri_to_image_blob()
-    .set_image_blob_size(224, 224)
+    .set_image_blob_shape(shape=(224, 224))
     .set_image_blob_normalization()
     .set_image_blob_channel_axis(-1, 0)
 )

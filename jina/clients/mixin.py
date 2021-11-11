@@ -66,7 +66,7 @@ class PostMixin:
             and self.args.infrastructure == InfrastructureType.K8S
         ):
             context_mgr = kubernetes_tools.get_port_forward_contextmanager(
-                self.args.name, self.port_expose
+                self.args.k8s_namespace or self.args.name, self.port_expose
             )
         else:
             context_mgr = nullcontext()
