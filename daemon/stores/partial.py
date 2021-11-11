@@ -88,7 +88,6 @@ class PartialPodStore(PartialPeaStore):
         kind: UpdateOperation,
         pod_name: str,
         uses_with: Optional[Dict] = None,
-        replicas: Optional[int] = None,  # TODO discuss with Deepankar
         **kwargs,
     ) -> PartialStoreItem:
         """Runs an update operation on the Flow.
@@ -101,8 +100,6 @@ class PartialPodStore(PartialPeaStore):
         try:
             if kind == UpdateOperation.ROLLING_UPDATE:
                 self.object.rolling_update(uses_with=uses_with)
-            elif kind == UpdateOperation.SCALE:
-                self.object.scale(replicas=replicas)
             else:
                 self._logger.error(f'unsupported kind: {kind}, no changes done')
                 return self.item
@@ -230,7 +227,6 @@ class PartialFlowStore(PartialStore):
         kind: UpdateOperation,
         pod_name: str,
         uses_with: Optional[Dict] = None,
-        replicas: Optional[int] = None,  # TODO discuss with Deepankar.
         **kwargs,
     ) -> PartialFlowItem:
         """Runs an update operation on the Flow.
@@ -243,8 +239,6 @@ class PartialFlowStore(PartialStore):
         try:
             if kind == UpdateOperation.ROLLING_UPDATE:
                 self.object.rolling_update(pod_name=pod_name, uses_with=uses_with)
-            elif kind == UpdateOperation.SCALE:
-                self.object.scale(pod_name=pod_name, replicas=replicas)
             else:
                 self._logger.error(f'unsupported kind: {kind}, no changes done')
                 return self.item

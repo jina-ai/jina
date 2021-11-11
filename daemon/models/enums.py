@@ -86,4 +86,3 @@ class UpdateOperation(DaemonEnum):
     """
 
     ROLLING_UPDATE = 'rolling_update'
-    SCALE = 'scale'
