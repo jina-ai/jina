@@ -128,14 +128,6 @@ class K8sPod(BasePod):
                 ),
             )
 
-        def _scale_runtime(self, replicas: int):
-            k8s_client = kubernetes_client.K8sClients().apps_v1
-            k8s_client.patch_namespaced_deployment_scale(
-                self.dns_name,
-                namespace=self.k8s_namespace,
-                body={'spec': {'replicas': replicas}},
-            )
-
         def _restart_runtime(self):
             image_name = self._get_image_name()
             container_args = self._get_container_args()
@@ -344,7 +336,7 @@ class K8sPod(BasePod):
 
             :param replicas: The number of replicas to scale to
             """
-            self._scale_runtime(replicas)
+            self._patch_namespaced_deployment_scale(replicas)
 
         def start(self):
             with JinaLogger(f'start_{self.name}') as logger:
@@ -384,6 +376,13 @@ class K8sPod(BasePod):
         def _read_namespaced_deployment(self):
             return kubernetes_client.K8sClients().apps_v1.read_namespaced_deployment(
                 name=self.dns_name, namespace=self.k8s_namespace
+            )
+
+        def _patch_namespaced_deployment_scale(self, replicas: int):
+            kubernetes_client.K8sClients().apps_v1.patch_namespaced_deployment_scale(
+                self.dns_name,
+                namespace=self.k8s_namespace,
+                body={'spec': {'replicas': replicas}},
             )
 
         def get_pod_uids(self) -> List[str]:
