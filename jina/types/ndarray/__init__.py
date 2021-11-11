@@ -133,16 +133,13 @@ class NdArray(ProtoTypeMixin):
             for j, p in enumerate(protos):
                 _d = _get_dense_array(p.sparse.indices)
 
-                if _d.size > 0:
-                    if framework == 'torch':
-                        _idx = np.array([j] * _d.shape[-1], dtype=np.int32).reshape(
-                            [1, -1]
-                        )
-                        _d = np.vstack([_idx, _d])
-                    if framework == 'scipy':
-                        _idx = np.array([j] * _d.shape[0], dtype=np.int32)
-                        _d = np.stack([_idx, _d[:, 1]], axis=-1)
-                    all_ds.append(_d)
+                if framework == 'torch':
+                    _idx = np.array([j] * _d.shape[-1], dtype=np.int32).reshape([1, -1])
+                    _d = np.vstack([_idx, _d])
+                if framework == 'scipy':
+                    _idx = np.array([j] * _d.shape[0], dtype=np.int32)
+                    _d = np.stack([_idx, _d[:, 1]], axis=-1)
+                all_ds.append(_d)
 
             if framework == 'torch':
                 idx = np.concatenate(all_ds, axis=-1)
@@ -186,7 +183,7 @@ class NdArray(ProtoTypeMixin):
 
         :param value: the framework ndarray to be set.
         """
-        framework, is_sparse = _get_array_type(value)
+        framework, is_sparse = get_array_type(value)
 
         if framework == 'jina':
             # it is Jina's NdArray, simply copy it
@@ -273,7 +270,7 @@ def _set_dense_array(value, target):
     target.dtype = value.dtype.str
 
 
-def _get_array_type(array) -> Tuple[str, bool]:
+def get_array_type(array) -> Tuple[str, bool]:
     """Get the type of ndarray without importing the framework
 
     :param array: any array, scipy, numpy, tf, torch, etc.

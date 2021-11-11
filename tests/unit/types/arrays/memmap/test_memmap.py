@@ -477,14 +477,6 @@ def test_dam_embeddings(tmpdir):
     np.testing.assert_almost_equal(dam.get_attributes('embedding'), dam.embeddings)
 
 
-def test_dam_get_embeddings_slice(tmpdir):
-    da = DocumentArrayMemmap(tmpdir)
-    da.extend(Document(embedding=np.array([1, 2, 3, 4])) for _ in range(100))
-    np.testing.assert_almost_equal(
-        da.get_attributes('embedding')[10:20], da._get_embeddings(slice(10, 20))
-    )
-
-
 def test_embeddings_setter_dam(tmpdir):
     emb = np.random.random((100, 128))
     dam = DocumentArrayMemmap(tmpdir)
