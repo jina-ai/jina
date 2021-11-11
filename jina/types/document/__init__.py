@@ -108,9 +108,11 @@ class Document(AllMixins, ProtoTypeMixin):
         embedding: Optional['ArrayType'] = None,
         granularity: Optional[int] = None,
         id: Optional[str] = None,
+        location: Optional[Sequence[float]] = None,
         matches: Optional[Iterable['Document']] = None,
         mime_type: Optional[str] = None,
         modality: Optional[str] = None,
+        offset: Optional[float] = None,
         parent_id: Optional[str] = None,
         tags: Optional[Union[Dict, StructView]] = None,
         text: Optional[str] = None,
@@ -126,9 +128,11 @@ class Document(AllMixins, ProtoTypeMixin):
         :param embedding: the embedding of this Document
         :param granularity: the granularity of this Document
         :param id: the id of this Document
+        :param location: location info in a tuple.
         :param matches: the array of matches attached to this document
         :param mime_type: the mime_type of this Document
         :param modality: the modality of the document.
+        :param offset: the offset
         :param parent_id: the parent id of this Document
         :param tags: a Python dict view of the tags.
         :param text: the text from this document content
