@@ -394,7 +394,7 @@ async def test_runtimes_with_executor():
     for process in runtime_processes:
         process.join()
 
-    assert len(response_list) == 1
+    assert len(response_list) == 20
     assert (
         len(response_list[0]) == (1 + 1 + 1) * 10 + 1
     )  # 1 starting doc + 1 uses_before + every exec adds 1 * 10 shards + 1 doc uses_after
@@ -485,5 +485,5 @@ def _create_gateway_runtime(graph_description, pod_addresses, port_expose):
 
 
 async def async_inputs():
-    for _ in range(1):
+    for _ in range(20):
         yield Document(text='client0-Request')
