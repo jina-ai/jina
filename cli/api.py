@@ -34,20 +34,17 @@ def pea(args: 'Namespace'):
 
 def executor_native(args: 'Namespace'):
     """
-    Starts an Executor in ZEDRuntime or GRPCDataRuntime depending on the `runtime_cls`
+    Starts an Executor in a WorkerRuntime
 
     :param args: arguments coming from the CLI.
     """
-    from jina.peapods.runtimes.zmq.zed import ZEDRuntime
-    from jina.peapods.runtimes.grpc import WorkerRuntime
+    from jina.peapods.runtimes.worker import WorkerRuntime
 
-    if args.runtime_cls == 'GRPCDataRuntime' or args.grpc_data_requests:
+    if args.runtime_cls == 'WorkerRuntime':
         runtime_cls = WorkerRuntime
-    elif args.runtime_cls == 'ZEDRuntime':
-        runtime_cls = ZEDRuntime
     else:
         raise RuntimeError(
-            f' runtime_cls {args.runtime_cls} is not supported with `--native` argument. `ZEDRuntime` and `GRPCDataRuntime` are supported'
+            f' runtime_cls {args.runtime_cls} is not supported with `--native` argument. `WorkerRuntime` is supported'
         )
 
     with runtime_cls(args) as rt:
@@ -63,7 +60,7 @@ def executor(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
 
-    :returns: return the same as `pea` or `zed_runtime`
+    :returns: return the same as `pea` or `worker_runtime`
     """
     if args.native:
         return executor_native(args)
@@ -71,13 +68,13 @@ def executor(args: 'Namespace'):
         return pea(args)
 
 
-def grpc_data_runtime(args: 'Namespace'):
+def worker_runtime(args: 'Namespace'):
     """
     Starts a GRPCDataRuntime
 
     :param args: arguments coming from the CLI.
     """
-    from jina.peapods.runtimes.grpc import WorkerRuntime
+    from jina.peapods.runtimes.worker import WorkerRuntime
 
     with WorkerRuntime(args) as runtime:
         runtime.logger.success(

@@ -21,17 +21,11 @@ message RouteProto {
  * Represents a Envelope, a part of the ``Message``.
  */
 message EnvelopeProto {
-    // unique id of the sender of the message
-    string sender_id = 1;
-
-    // unique id of the receiver of the message, only used in router-dealer pattern
-    string receiver_id = 2;
-
     // unique id of the request
-    string request_id = 3;
+    string request_id = 1;
 
     // timeout in second until this message is dropped
-    uint32 timeout = 4;
+    uint32 timeout = 2;
 
     /**
      * Represents a the version information
@@ -42,11 +36,11 @@ message EnvelopeProto {
         string vcs = 3; // vcs's version
     }
 
-    VersionProto version = 5; // version info
+    VersionProto version = 3; // version info
 
-    string request_type = 6; // type of the request: DataRequest, ControlRequest
+    string request_type = 4; // type of the request: DataRequest, ControlRequest
 
-    bool check_version = 7; // check local Protobuf version on every Pod that this message flows to
+    bool check_version = 5; // check local Protobuf version on every Pod that this message flows to
 
     /**
      * Represents a config for the compression algorithm
@@ -62,11 +56,11 @@ message EnvelopeProto {
     }
 
 
-    CompressConfigProto compression = 8; // compress configuration used for request
+    CompressConfigProto compression = 6; // compress configuration used for request
 
-    StatusProto status = 9; // status info
+    StatusProto status = 7; // status info
 
-    HeaderProto header = 10; // header contains meta info defined by the user, copied from Request, for lazy serialization
+    HeaderProto header = 8; // header contains meta info defined by the user, copied from Request, for lazy serialization
 }
 
 /**

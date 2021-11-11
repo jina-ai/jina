@@ -31,6 +31,9 @@ class GatewayStreamer(BaseStreamer):
 
     @property
     def msg_handler(self):
+        """Returns the connection pool as the message handler
+        :returns: the connection pool
+        """
         return self._connection_pool
 
     def _handle_result(self, result: 'Message'):
@@ -97,7 +100,7 @@ class GatewayStreamer(BaseStreamer):
         :param request: current request in the iterator
         :return: Message object
         """
-        return Message(None, request, 'gateway', **vars(self.args))
+        return Message(None, request, **vars(self.args))
 
     async def stream(self, request_iterator, *args) -> AsyncIterator['Request']:
         """

@@ -33,6 +33,7 @@ def test_peastore_add(partial_pea_store):
     )
     assert partial_store_item
     assert partial_pea_store.object
+    assert partial_store_item.arguments['runtime_cls'] == 'WorkerRuntime'
     assert partial_pea_store.object.env['key1'] == 'val1'
     assert partial_store_item.arguments['runtime_cls'] == 'ZEDRuntime'
     assert partial_store_item.arguments['host_in'] == __default_host__
