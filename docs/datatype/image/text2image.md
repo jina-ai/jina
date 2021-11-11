@@ -1,27 +1,26 @@
 # Search Image from Text via CLIP model
 
-In this tutorial, we will create an image search system that retrieves images based on short text descriptions of their content.
+In this tutorial, we will create an image search system that retrieves images based on short text descriptions as query.
 
-The interest behind this is that regular search or queries rely on image description or meta data to describe the content of the image, this is simply not efficient 
-and expensive because you need a person to write that description and also information about image content is not always available.
+The interest behind this is that in regular search, image description or meta data describing the content of the image needs to be indexed first before retrieving the images via text query. This can be expensive because you need a person to write that description and also information about image content is not always available.
 
-We need to look for another solution ! What if we directly compare text with images ?  
+We need to look for another solution! What if we can directly compare text with images?  
 
-To do so, we need to figure out a way to match images and texts. One way to find such matches we need to find related images with similar semantics to the query texts. This requires us to represent both images and query texts in the same embedding space to be able to do the matching. In this case, pre-trained cross-modal models can help us out.
+To do so, we need to figure out a way to match images and text. One way is finding related images with similar semantics to the query text. This requires us to represent both images and query text in the same embedding space to be able to do the matching. In this case, pre-trained cross-modal models can help us out.
 
-For example when we write the word "dog" in query we want to be able to retrieve pictures with a dog in then solely by using the embeddings similarity.
+For example when we write the word "dog" in query we want to be able to retrieve pictures with a dog solely by using the embeddings similarity.
 
 ```{tip}
-The full source code of this tutorial is available in this [google colab notebook](https://colab.research.google.com/drive/1CkT1udBrMfefYo0XJO45kIpW43odLLDm?usp=sharing)
+The full source code of this tutorial is available in this [google colab notebook](https://colab.research.google.com/drive/1_dsJA3rxdo4g68jmqJBUeUIVH6kAXQ05?usp=sharing)
 ```
 
-Now that we understand the problem and we have an idea on how to fix it, let's try to imagine what the solution would look like : 
+Now that we understand the problem and we have an idea on how to fix it, let's try to imagine what the solution would look like: 
 
-1. We have a bunch of images with no text description about the content or anything.
+1. We have a bunch of images with no text description about the content.
 2. We use a model to create an embedding that represents those images. 
 3. Now we will index and save our embeddings which we will call Documents inside a workspace folder. 
 
-This is what we call the index flow.  
+This is what we call the index Flow.  
 
 ```{figure} index_flow_text2image.svg
 :align: center
@@ -29,29 +28,29 @@ This is what we call the index flow.
 
 Now to search for an image using text we do the following 
 
-1. We embbed the query text into the same embedding space as the image.
+1. We embed the query text into the same embedding space as the image.
 2. We compute similarity between the query embedding and previously saved embeddings. 
 3. We return the best results.
 
-This is our query flow. 
+This is our query Flow. 
 
 ```{figure} query_flow_text2image.svg
 :align: center
 ```
 
-If we had to build this from scratch, it would take a long time to build these flows. Luckily we can leverage JinaAI's tools such as Executors, Documents and Flows 
-and build such system easily.
+If we had to build this from scratch, it would take a long time to build these Flows. Luckily we can leverage Jina's tools such as Executors, Documents and Flows 
+and build such a system easily.
 ## Pre-requisites
 
-Before we begin building our pipeline we need to do a few things. 
+Before we begin building our Flow we need to do a few things. 
 
 * Install the following dependencies.
 
 ```shell
-pip install Pillow jina==2.1.13 torch==1.9.0 torchvision==0.10.0 transformers==4.9.1 matplotlib jina-commons@git+https://github.com/jina-ai/jina-commons.git#egg=jina-commons
+pip install Pillow jina torch==1.9.0 torchvision==0.10.0 transformers==4.9.1 matplotlib jina-commons@git+https://github.com/jina-ai/jina-commons.git#egg=jina-commons
 ```
 
-* download [the dataset](https://open-images.s3.eu-central-1.amazonaws.com/data.zip) and unzip it.
+* Download [the dataset](https://open-images.s3.eu-central-1.amazonaws.com/data.zip) and unzip it.
 
 You can use the link or the following commands:
 ```shell
@@ -59,19 +58,19 @@ wget https://open-images.s3.eu-central-1.amazonaws.com/data.zip
 unzip data.zip
 ```
 
-You should find 2 folders after unzipping:
+You should find two folders after unzipping:
 * images: this folder contains the images that we will index.
 * query: this folder contains small images that we will use as search queries.
 
 ## Building Executors
-In this section, we will start developing the necessary executors, for both query and index flows.
+In this section, we will start developing the necessary Executors, for both query and index Flows.
 
-To encode images and query texts into the same space, we choose the pre-trained [CLIP model](https://github.com/openai/CLIP) from OpenAI. 
+To encode images and query text into the same space, we choose the pre-trained [CLIP model](https://github.com/openai/CLIP) from OpenAI. 
 
 ```{admonition} What is CLIP?
 :class: info
 
-The CLIP model is trained to learn visual concepts from natural languages. This is done using text snippets and image pairs across the internet. In the original CLIP paper, the model performs Zero Shot Learning by encoding text labels and images with separated models. Later the similarities between the encoded vectors are calculated . 
+The CLIP model is trained to learn visual concepts from natural languages. This is done using text snippets and image pairs across the internet. In the original CLIP paper, the model performs Zero Shot Learning by encoding text labels and images with separate models. Later the similarities between the encoded vectors are calculated. 
 ```
 
 In this tutorial, we use the image and the text encoding parts from CLIP to calculate the embeddings. 
@@ -85,11 +84,11 @@ We can further find the distance between the text vector and the vectors of the 
 
 ### **CLIPImageEncoder**
 This encoder encodes an image into embeddings using the CLIP model. 
-We want an executor that loads the CLIP model and encodes it during the index flow. 
+We want an Executor that loads the CLIP model and encodes it during the index Flow. 
 
-Our executor should:
-* support both **GPU** and **CPU**: That's why we will provision the `device` parameter and use it when encoding.
-* be able to process documents in batches in order to use our resources effectively: To do so, we will use the 
+Our Executor should:
+* Support both **GPU** and **CPU**: That's why we will provision the `device` parameter and use it when encoding.
+* Be able to process Documents in batches in order to use our resources effectively: To do so, we will use the 
 parameter `batch_size`
 
 ```python
@@ -139,10 +138,8 @@ class CLIPImageEncoder(Executor):
 
         traversal_paths = parameters.get("traversal_paths", self.traversal_paths)
         batch_size = parameters.get("batch_size", self.batch_size)
-        document_batches_generator = docs.batch(
-            traversal_paths=traversal_paths,
-            batch_size=batch_size,
-            require_attr="blob",
+        document_batches_generator =  docs.traverse_flat(parameters.get('traversal_paths', self.traversal_paths)).batch(
+            batch_size=batch_size
         )
 
         with torch.inference_mode():
@@ -175,11 +172,11 @@ class CLIPImageEncoder(Executor):
 ```   
 ### **CLIPTextEncoder**
 This encoder encodes a text into embeddings using the CLIP model. 
-We want an executor that loads the CLIP model and encodes it during the query flow. 
+We want an Executor that loads the CLIP model and encodes it during the query Flow. 
 
-Our executor should:
-* support both **GPU** and **CPU**: That's why we will provision the `device` parameter and use it when encoding.
-* be able to process documents in batches in order to use our resources effectively: To do so, we will use the 
+Our Executor should:
+* Support both **GPU** and **CPU**: That's why we will provision the `device` parameter and use it when encoding.
+* Be able to process Documents in batches in order to use our resources effectively: To do so, we will use the 
 parameter `batch_size`
 
 ```python
@@ -218,10 +215,8 @@ class CLIPTextEncoder(Executor):
         if docs is None:
             return
 
-        for docs_batch in docs.batch(
-            traversal_paths=parameters.get('traversal_paths', self.traversal_paths),
-            batch_size=parameters.get('batch_size', self.batch_size),
-            require_attr='text',
+        for docs_batch in docs.traverse_flat(parameters.get('traversal_paths', self.traversal_paths)).batch(
+            batch_size=parameters.get('batch_size', self.batch_size)
         ):
             text_batch = docs_batch.get_attributes('text')
 
@@ -245,19 +240,19 @@ class CLIPTextEncoder(Executor):
 ```
 
 ### **SimpleIndexer**
-To implement SimpleIndexer, we can leverage jina's `DocumentArrayMemmap`. You can read about this data type 
+To implement SimpleIndexer, we can leverage Jina's `DocumentArrayMemmap`. You can read about this data type 
 [here](https://docs.jina.ai/fundamentals/document/documentarraymemmap-api/).
 
-Our indexer will create an instance of `DocumentArrayMemmap` when it's initialized. We want to store indexed documents 
-inside the workspace folder that's why we pass the `workspace` attribute of the executor to `DocumentArrayMemmap`.
+Our indexer will create an instance of `DocumentArrayMemmap` when it's initialized. We want to store indexed Documents 
+inside the workspace folder that's why we pass the `workspace` attribute of the Executor to `DocumentArrayMemmap`.
 
-To index, we implement the method `index` which is bound to the index flow. It's as simple as extending the received 
+To index, we implement the method `index` which has `/index` as the endpoint invoked during the index Flow. It's as simple as extending the received 
 docs to `DocumentArrayMemmap` instance.
 
-On the other hand, for search, we implement the method `search`. We bind it to the query flow using the decorator 
+On the other hand, for search, we implement the method `search`. We bind it to the query Flow using the [decorator](https://book.pythontips.com/en/latest/decorators.html) 
 `@requests(on='/search')`.
-In jina, searching for query documents can be done by adding the results to the `matches` attribute of each query 
-document. Since docs is a `DocumentArray` we can use method `match` to match query against the indexed documents.
+In Jina, searching for query Documents can be done by adding the results to the `matches` attribute of each query 
+document. Since docs is a `DocumentArray` we can use method `match` to match query against the indexed Documents.
 Read more about `match` [here](https://docs.jina.ai/fundamentals/document/documentarray-api/#matching-documentarray-to-another).
 
 
@@ -335,10 +330,10 @@ class SimpleIndexer(Executor):
 
 ## Building Flows
 ### Indexing
-Now, after creating executors, it's time to use them in order to build an index Flow and index our data.
+Now, after creating Executors, it's time to use them in order to build an index Flow and index our data.
 
 #### Building the index Flow
-We create a Flow object and add executors one after the other with the right parameters: 
+We create a Flow object and add Executors one after the other with the right parameters: 
 
 1. CLIPImageEncoder: We specify the device. 
 2. SimpleIndexer: We need to specify the workspace parameter.
@@ -355,7 +350,7 @@ flow_index.plot()
 ```
 
 Now it's time to index the dataset that we have downloaded. Actually, we will index images inside the `images` folder.
-This helper function will convert image files into Jina Documents, creates a generator and yields documents:
+This helper function will convert the image files into Documents, create a generator and yields Documents:
 
 ```python
 import glob
@@ -364,11 +359,11 @@ from jina import Document
 def input_docs(data_path):
     for fn in glob.glob(os.path.join(data_path, '*')):
         doc = Document(uri=fn, tags={'filename': fn})
-        doc.convert_image_uri_to_blob()
+        doc.convert_uri_to_image_blob()
         yield doc 
 ```
 
-The final step in this section is to send the input documents to the index Flow. Note that indexing can take a while:
+The final step in this section is to send the input Documents to the index Flow. Note that indexing can take a while:
 
 ```python
     with flow_index:
@@ -385,12 +380,12 @@ Flow@3084[I]:🎉 Flow is ready to use!
 ```
 
 ### Searching
-Now, let's build the search Flow and use it in order to find sample query images.
+Now, let's build the search Flow and use it to find sample query images.
 
-Our Flow contains the following executors:
+Our Flow contains the following Executors:
 
 1. CLIPTextEncoder: We specify the device.
-2. SimpleIndexer : We need to specify the workspace parameter.
+2. SimpleIndexer: We need to specify the workspace parameter.
 
 ```python
 flow_search = Flow().add(uses=CLIPTextEncoder, name="encoder", uses_with={"device":device}) \
@@ -404,7 +399,7 @@ Query Flow:
 :align: center
 ```
 
-We create a helper function to be able to plot our images 
+We create a helper function to plot our images 
 
 ```python 
 import matplotlib.pyplot as plt
@@ -414,7 +409,7 @@ def show_docs(docs):
       plt.imshow(doc.blob)
       plt.show()
 ```
-and one last function to show us the TOP 3 matches to our text query 
+and one last function to show us the top three matches to our text query 
 
 ```python 
 def plot_search_results(resp: Request):
@@ -425,7 +420,7 @@ def plot_search_results(resp: Request):
         show_docs(doc.matches[:3])
 ```        
 
-Now we put some texts queries which we transform into Documents and here's the results: 
+Now we put some text queries which we transform into Documents and here are the results: 
 
 ```python
 with flow_search:
@@ -481,4 +476,4 @@ Results:
 :align: center
 ```
 
-Congratulations you have built a text2image search engine, you can check the full source code [here](https://colab.research.google.com/drive/1CkT1udBrMfefYo0XJO45kIpW43odLLDm?usp=sharing) and experiment with your own text queries.
+Congratulations! You have built a text-to-image search engine. You can check the full source code [here](https://colab.research.google.com/drive/1_dsJA3rxdo4g68jmqJBUeUIVH6kAXQ05?usp=sharing) and experiment with your own text queries.
