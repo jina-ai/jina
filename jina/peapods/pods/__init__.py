@@ -196,13 +196,6 @@ class BasePod(ExitFIFO):
         """
         return self.tail_args.port_out
 
-    @property
-    def head_zmq_identity(self):
-        """Get the zmq_identity of the HeadPea of this pod
-        .. # noqa: DAR201
-        """
-        return self.head_args.zmq_identity
-
     def __enter__(self) -> 'BasePod':
         with CatchAllCleanupContextManager(self):
             return self.start()
@@ -328,7 +321,6 @@ class BasePod(ExitFIFO):
                 'head_host': self.head_host,
                 'head_port_in': self.head_port_in,
                 'tail_port_out': self.tail_port_out,
-                'head_zmq_identity': self.head_zmq_identity,
             }
         ]
 
@@ -891,25 +883,10 @@ class Pod(BasePod):
         else:
             self.is_head_router = False
             self.is_tail_router = False
-            Pod._set_dynamic_routing_in(args)
-            Pod._set_dynamic_routing_out(args)
             parsed_args['peas'] = [args]
 
         # note that peas_args['peas'][0] exist either way and carries the original property
         return parsed_args
-
-    @staticmethod
-    def _set_dynamic_routing_in(args):
-        if args.dynamic_routing:
-            args.dynamic_routing_in = True
-            args.socket_in = SocketType.ROUTER_BIND
-            args.zmq_identity = random_identity()
-
-    @staticmethod
-    def _set_dynamic_routing_out(args):
-        if args.dynamic_routing:
-            args.dynamic_routing_out = True
-            args.socket_out = SocketType.ROUTER_BIND
 
     @property
     def _mermaid_str(self) -> List[str]:

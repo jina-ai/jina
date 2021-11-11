@@ -21,7 +21,6 @@ class K8sPod(BasePod):
             name: str,
             head_port_in: int,
             tail_port_out: int,
-            head_zmq_identity: bytes,
             version: str,
             pea_type: str,
             jina_pod_name: str,
@@ -33,7 +32,6 @@ class K8sPod(BasePod):
             self.dns_name = kubernetes_deployment.to_dns_name(name)
             self.head_port_in = head_port_in
             self.tail_port_out = tail_port_out
-            self.head_zmq_identity = head_zmq_identity
             self.version = version
             self.pea_type = pea_type
             self.jina_pod_name = jina_pod_name
@@ -428,7 +426,6 @@ class K8sPod(BasePod):
                 'head_host': f'{self.dns_name}.{self.k8s_namespace}.svc',
                 'head_port_in': self.head_port_in,
                 'tail_port_out': self.tail_port_out,
-                'head_zmq_identity': self.head_zmq_identity,
             }
 
     def __init__(
@@ -450,7 +447,6 @@ class K8sPod(BasePod):
                 name=name,
                 head_port_in=self.fixed_head_port_in,
                 tail_port_out=self.fixed_tail_port_out,
-                head_zmq_identity=self.head_zmq_identity,
                 version=self.version,
                 shard_id=None,
                 jina_pod_name=self.name,
@@ -464,7 +460,6 @@ class K8sPod(BasePod):
                 name=name,
                 head_port_in=self.fixed_head_port_in,
                 tail_port_out=self.fixed_tail_port_out,
-                head_zmq_identity=self.head_zmq_identity,
                 version=self.version,
                 shard_id=None,
                 jina_pod_name=self.name,
@@ -485,7 +480,6 @@ class K8sPod(BasePod):
                     name=name,
                     head_port_in=self.fixed_head_port_in,
                     tail_port_out=self.fixed_tail_port_out,
-                    head_zmq_identity=self.head_zmq_identity,
                     version=self.version,
                     shard_id=i,
                     common_args=self.args,
@@ -652,14 +646,6 @@ class K8sPod(BasePod):
             ]
             + [k8s_deployment.num_replicas for k8s_deployment in self.k8s_deployments]
         )
-
-    @property
-    def head_zmq_identity(self) -> bytes:
-        """zmq identity is not needed for k8s deployment
-
-        :return: zmq identity
-        """
-        return b''
 
     @property
     def deployments(self) -> List[Dict]:

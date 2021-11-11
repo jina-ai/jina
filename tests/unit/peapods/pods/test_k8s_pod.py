@@ -150,7 +150,6 @@ def test_deployments(name: str, shards: str, expected_deployments: List[Dict]):
         assert actual['head_host'] == expected['head_host']
         assert actual['head_port_in'] == pod.fixed_head_port_in
         assert actual['tail_port_out'] == pod.fixed_tail_port_out
-        assert actual['head_zmq_identity'] == pod.head_zmq_identity
 
 
 def get_k8s_pod(

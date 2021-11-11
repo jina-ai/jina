@@ -131,21 +131,6 @@ class AsyncNewLoopRuntime(BaseRuntime, ABC):
         pass
 
     @staticmethod
-    def get_control_address(host: str, port: str, **kwargs):
-        """
-        Get the control address for a runtime with a given host and port
-
-        :param host: the host where the runtime works
-        :param port: the control port where the runtime listens
-        :param kwargs: extra keyword arguments
-        :return: The corresponding control address
-        """
-        from ...zmq import Zmqlet
-
-        # TODO: I think the control address with ipc from Gateway is not used anymore
-        return Zmqlet.get_ctrl_address(host, port, True)[0]
-
-    @staticmethod
     def wait_for_ready_or_shutdown(
         timeout: Optional[float],
         ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],

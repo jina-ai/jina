@@ -158,8 +158,7 @@ class FlowDepends:
                     if (
                         runtime_cls
                         in [
-                            'ZEDRuntime',
-                            'GRPCDataRuntime',
+                            'WorkerRuntime',
                             'ContainerRuntime',
                         ]
                         + list(GATEWAY_RUNTIME_DICT.values())
@@ -171,7 +170,7 @@ class FlowDepends:
                             pea_args.runs_in_docker = False
                             self._update_port_mapping(pea_args, pod_name, port_mapping)
                 else:
-                    if runtime_cls in ['ZEDRuntime', 'GRPCDataRuntime'] + list(
+                    if runtime_cls in ['WorkerRuntime'] + list(
                         GATEWAY_RUNTIME_DICT.values()
                     ):
                         pod.args.runs_in_docker = True
@@ -317,7 +316,7 @@ class PeaDepends:
 
         SINGLETON
         =========
-        `runtime_cls`: `ZEDRuntime`
+        `runtime_cls`: `WorkerRuntime`
             `host_in`, `host_out`: set to `DOCKER_HOST`, as it would talk to gateway/other pods
             `ports`: map `port_in` & `port_out` if `socket_in` & `socket_out` are BIND.
                      map `port_ctrl`, ignore `port_exppse`
@@ -328,14 +327,14 @@ class PeaDepends:
 
         PARALLEL
         ========
-        `runtime_cls`: `ZEDRuntime`
+        `runtime_cls`: `WorkerRuntime`
             `host_in`, `host_out`: set to `DOCKERHOST`
                 host config handled interally in `jina pod` wouldn't work here, as they need to talk to head/tail
                 peas which are on `DOCKER_HOST`
             `ports`: don't map `port_in` & `port_out` as they're always CONNECT.
                      map `port_ctrl`??, ignore `port_exppse`
 
-        `runtime_cls`: `ContainerRuntime` or `ZEDRuntime`
+        `runtime_cls`: `ContainerRuntime` or `WorkerRuntime`
             `host_in`, `host_out`: set to `DOCKERHOST`
                 host config handled interally in `jina pod` wouldn't work here, as they need to talk to head/tail
                 peas which are on `DOCKER_HOST`
@@ -343,7 +342,7 @@ class PeaDepends:
 
         HEAD/TAIL
         =========
-        `runtime_cls`:  `ZEDRuntime` (always??)
+        `runtime_cls`:  `HeadRuntime`
             `host_in`, `host_out`: set to `DOCKER_HOST`, as they would talk to gateway/other pods.
             `ports`: map `port_in` & `port_out` if `socket_in` & `socket_out` are BIND.
                      map `port_ctrl`, ignore `port_exppse`
