@@ -5,6 +5,7 @@ import threading
 import time
 from typing import Any, Tuple, Union, Dict, Optional
 
+from ..networking import GrpcConnectionPool
 from ...jaml import JAML
 from .helper import _get_event, ConditionalEvent
 from ... import __stop_msg__, __ready_msg__
@@ -14,6 +15,8 @@ from ...helper import typename
 from ...logging.logger import JinaLogger
 
 __all__ = ['BasePea']
+
+from ...types.message.common import ControlMessage
 
 
 def run(
@@ -130,11 +133,10 @@ class BasePea:
             self._envs.update(self.args.env)
 
         # arguments needed to create `runtime` and communicate with it in the `run` in the stack of the new process
-        # or thread. Control address from Zmqlet has some randomness and therefore we need to make sure Pea knows
-        # control address of runtime
+        # or thread.f
         self.runtime_cls = self._get_runtime_cls()
         self._timeout_ctrl = self.args.timeout_ctrl
-        self._set_ctrl_adrr()
+        self.runtime_ctrl_address = f'{self.args.host}:{self.args.port_in}'
         test_worker = {
             RuntimeBackendType.THREAD: threading.Thread,
             RuntimeBackendType.PROCESS: multiprocessing.Process,
@@ -165,17 +167,6 @@ class BasePea:
             },
         )
         self.daemon = self.args.daemon  #: required here to set process/thread daemon
-
-    def _set_ctrl_adrr(self):
-        """Sets control address for different runtimes"""
-        self.runtime_ctrl_address = self.runtime_cls.get_control_address(
-            host=self.args.host,
-            port=self.args.port_ctrl,
-            docker_kwargs=getattr(self.args, 'docker_kwargs', None),
-        )
-
-        if not self.runtime_ctrl_address:
-            self.runtime_ctrl_address = f'{self.args.host}:{self.args.port_in}'
 
     def start(self):
         """Start the Pea.
@@ -208,16 +199,13 @@ class BasePea:
             self.logger.debug(f' runtime process properly terminated')
 
     def _retry_control_message(self, command: str, num_retry: int = 3):
-        from ..zmq import send_ctrl_message
-
         for retry in range(1, num_retry + 1):
             self.logger.debug(f'Sending {command} command for the {retry}th time')
             try:
-                send_ctrl_message(
+                GrpcConnectionPool.send_message_sync(
+                    ControlMessage(command),
                     self.runtime_ctrl_address,
-                    command,
                     timeout=self._timeout_ctrl,
-                    raise_exception=True,
                 )
                 break
             except Exception as ex:

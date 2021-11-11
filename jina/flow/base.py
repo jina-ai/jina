@@ -29,7 +29,6 @@ from ..enums import (
 from ..excepts import (
     FlowTopologyError,
     FlowMissingPodError,
-    RoutingTableCyclicError,
     RuntimeFailToStart,
 )
 from ..helper import (
@@ -46,11 +45,8 @@ from ..jaml import JAMLCompatible
 from ..logging.logger import JinaLogger
 from ..parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
 from ..parsers.flow import set_flow_parser
-from ..peapods import CompoundPod, Pod
-from ..peapods.pods.k8s import K8sPod
+from ..peapods import Pod
 from ..peapods.pods.factory import PodFactory
-from ..types.routing.table import RoutingTable
-from ..peapods.networking import is_remote_local_connection
 
 __all__ = ['Flow']
 
@@ -149,7 +145,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         compress_min_bytes: Optional[int] = 1024,
         compress_min_ratio: Optional[float] = 1.1,
         cors: Optional[bool] = False,
-        ctrl_with_ipc: Optional[bool] = True,
         daemon: Optional[bool] = False,
         default_swagger_ui: Optional[bool] = False,
         description: Optional[str] = None,
@@ -169,7 +164,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         no_debug_endpoints: Optional[bool] = False,
         on_error_strategy: Optional[str] = 'IGNORE',
         pods_addresses: Optional[str] = None,
-        port_ctrl: Optional[int] = None,
         port_expose: Optional[int] = None,
         port_in: Optional[int] = None,
         port_out: Optional[int] = None,
@@ -186,11 +180,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         shards: Optional[int] = 1,
         socket_in: Optional[str] = 'PULL_CONNECT',
         socket_out: Optional[str] = 'PUSH_CONNECT',
-        ssh_keyfile: Optional[str] = None,
-        ssh_password: Optional[str] = None,
-        ssh_server: Optional[str] = None,
         static_routing_table: Optional[bool] = False,
-        timeout_ctrl: Optional[int] = 5000,
         timeout_ready: Optional[int] = 600000,
         title: Optional[str] = None,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
@@ -199,7 +189,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         uses_with: Optional[dict] = None,
         uvicorn_kwargs: Optional[dict] = None,
         workspace: Optional[str] = None,
-        zmq_identity: Optional[str] = None,
         **kwargs,
     ):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina gateway` CLI.
@@ -211,7 +200,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param compress_min_bytes: The original message size must be larger than this number to trigger the compress algorithm, -1 means disable compression.
         :param compress_min_ratio: The compression ratio (uncompressed_size/compressed_size) must be higher than this number to trigger the compress algorithm.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
-        :param ctrl_with_ipc: If set, use ipc protocol for control socket
         :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
         :param default_swagger_ui: If set, the default swagger ui is used for `/docs` endpoint.
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
@@ -234,7 +222,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - ...
 
           When not given, then the default naming strategy will apply.
-        :param native: If set, only native Executors is allowed, and the Executor is always run inside ZEDRuntime.
+        :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
         :param no_crud_endpoints: If set, /index, /search, /update, /delete endpoints are removed from HTTP interface.
 
                   Any executor that has `@requests(on=...)` bind with those values will receive data requests.
@@ -248,7 +236,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something
           is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.
         :param pods_addresses: dictionary JSON with the input addresses of each Pod
-        :param port_ctrl: The port for controlling the runtime, default a random port between [49152, 65535]
         :param port_expose: The port that the gateway exposes for clients for GRPC connections.
         :param port_in: The port for input data, default a random port between [49152, 65535]
         :param port_out: The port for output data, default a random port between [49152, 65535]
@@ -272,11 +259,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary. For more details check https://docs.jina.ai/fundamentals/flow/topology/
         :param socket_in: The socket type for input port
         :param socket_out: The socket type for output port
-        :param ssh_keyfile: This specifies a key to be used in ssh login, default None. regular default ssh keys will be used without specifying this argument.
-        :param ssh_password: The ssh password to the ssh server.
-        :param ssh_server: The SSH server through which the tunnel will be created, can actually be a fully specified `user@server:port` ssh url.
         :param static_routing_table: Defines if the routing table should be pre computed by the Flow. In this case it is statically defined for each Pod and not send on every data request. Can not be used in combination with external pods
-        :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param uses: The config of the executor, it could be one of the followings:
@@ -296,7 +279,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
           More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
-        :param zmq_identity: The identity of a ZMQRuntime. It is used for unique socket identification towards other ZMQRuntimes.
 
         .. # noqa: DAR202
         .. # noqa: DAR101
@@ -529,7 +511,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self,
         *,
         connect_to_predecessor: Optional[bool] = False,
-        ctrl_with_ipc: Optional[bool] = False,
         daemon: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
@@ -550,7 +531,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         on_error_strategy: Optional[str] = 'IGNORE',
         peas_hosts: Optional[List[str]] = None,
         polling: Optional[str] = 'ANY',
-        port_ctrl: Optional[int] = None,
         port_in: Optional[int] = None,
         port_jinad: Optional[int] = 8000,
         port_out: Optional[int] = None,
@@ -562,16 +542,12 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         replicas: Optional[int] = 1,
         runs_in_docker: Optional[bool] = False,
         runtime_backend: Optional[str] = 'PROCESS',
-        runtime_cls: Optional[str] = 'ZEDRuntime',
+        runtime_cls: Optional[str] = 'WorkerRuntime',
         scheduling: Optional[str] = 'LOAD_BALANCE',
         shards: Optional[int] = 1,
         socket_in: Optional[str] = 'PULL_BIND',
         socket_out: Optional[str] = 'PUSH_BIND',
-        ssh_keyfile: Optional[str] = None,
-        ssh_password: Optional[str] = None,
-        ssh_server: Optional[str] = None,
         static_routing_table: Optional[bool] = False,
-        timeout_ctrl: Optional[int] = 5000,
         timeout_ready: Optional[int] = 600000,
         upload_files: Optional[List[str]] = None,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
@@ -584,13 +560,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         uses_with: Optional[dict] = None,
         volumes: Optional[List[str]] = None,
         workspace: Optional[str] = None,
-        zmq_identity: Optional[str] = None,
         **kwargs,
     ) -> Union['Flow', 'AsyncFlow']:
         """Add an Executor to the current Flow object.
 
         :param connect_to_predecessor: The head Pea of this Pod will connect to the TailPea of the predecessor Pod.
-        :param ctrl_with_ipc: If set, use ipc protocol for control socket
         :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
@@ -625,7 +599,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - ...
 
           When not given, then the default naming strategy will apply.
-        :param native: If set, only native Executors is allowed, and the Executor is always run inside ZEDRuntime.
+        :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
         :param on_error_strategy: The skip strategy on exceptions.
 
           - IGNORE: Ignore it, keep running all Executors in the sequel flow
@@ -640,7 +614,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param polling: The polling strategy of the Pod (when `shards>1`)
           - ANY: only one (whoever is idle) Pea polls the message
           - ALL: all Peas poll the message (like a broadcast)
-        :param port_ctrl: The port for controlling the runtime, default a random port between [49152, 65535]
         :param port_in: The port for input data, default a random port between [49152, 65535]
         :param port_jinad: The port of the remote machine for usage with JinaD.
         :param port_out: The port for output data, default a random port between [49152, 65535]
@@ -662,11 +635,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary. For more details check https://docs.jina.ai/fundamentals/flow/topology/
         :param socket_in: The socket type for input port
         :param socket_out: The socket type for output port
-        :param ssh_keyfile: This specifies a key to be used in ssh login, default None. regular default ssh keys will be used without specifying this argument.
-        :param ssh_password: The ssh password to the ssh server.
-        :param ssh_server: The SSH server through which the tunnel will be created, can actually be a fully specified `user@server:port` ssh url.
         :param static_routing_table: Defines if the routing table should be pre computed by the Flow. In this case it is statically defined for each Pod and not send on every data request. Can not be used in combination with external pods
-        :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever
         :param upload_files: The files on the host to be uploaded to the remote
           workspace. This can be useful when your Pod has more
@@ -701,7 +670,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container.
           - All volumes are mounted with read-write mode.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
-        :param zmq_identity: The identity of a ZMQRuntime. It is used for unique socket identification towards other ZMQRuntimes.
         :return: a (new) Flow object with modification
 
         .. # noqa: DAR202
@@ -793,16 +761,12 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         ):
             raise NotImplementedError("GRPC data runtime does not support sharding")
 
-        if args.grpc_data_requests and args.runtime_cls == 'ZEDRuntime':
-            args.runtime_cls = 'GRPCDataRuntime'
-
         # pod workspace if not set then derive from flow workspace
         args.workspace = os.path.abspath(args.workspace or self.workspace)
 
         args.k8s_namespace = self.args.k8s_namespace or self.args.name
         args.noblock_on_start = True
         args.extra_search_paths = self.args.extra_search_paths
-        args.zmq_identity = None
 
         # BACKWARDS COMPATIBILITY:
         # We assume that this is used in a search Flow if replicas and shards are used
@@ -922,128 +886,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 'expected_parts': 0,
             },
         )
-
-    # TODO needs to be refactored - deployment should not be a dictionary. Related Ticket:
-    #  https://github.com/jina-ai/jina/issues/3280
-    def _get_routing_table(self) -> RoutingTable:
-        graph = RoutingTable()
-        for pod_id, pod in self._pod_nodes.items():
-            if pod_id == GATEWAY_NAME:
-                deployment = pod.deployments[0]
-
-                graph.add_pod(
-                    f'start-{GATEWAY_NAME}',
-                    deployment['head_host'],
-                    deployment['head_port_in'],
-                    deployment['tail_port_out'],
-                    deployment['head_zmq_identity'],
-                )
-                graph.add_pod(
-                    f'end-{GATEWAY_NAME}',
-                    deployment['head_host'],
-                    deployment['head_port_in'],
-                    deployment['tail_port_out'],
-                    deployment['head_zmq_identity'],
-                )
-            else:
-                for deployment in pod.deployments:
-                    graph.add_pod(
-                        deployment['name'],
-                        deployment['head_host'],
-                        deployment['head_port_in'],
-                        deployment['tail_port_out'],
-                        deployment['head_zmq_identity'],
-                    )
-
-        for end, pod in self._pod_nodes.items():
-
-            if end == GATEWAY_NAME:
-                end = f'end-{GATEWAY_NAME}'
-
-            if pod.head_args.hosts_in_connect is None:
-                pod.head_args.hosts_in_connect = []
-
-            if isinstance(pod, K8sPod):
-                from ..peapods.pods.k8slib import kubernetes_deployment
-
-                end = kubernetes_deployment.to_dns_name(end)
-            if end not in graph.pods:
-                end = end + '_head'
-            if isinstance(pod, K8sPod):
-                from ..peapods.pods.k8slib import kubernetes_deployment
-
-                end = kubernetes_deployment.to_dns_name(end)
-
-            for start in pod.needs:
-                start_pod = self._pod_nodes[start]
-
-                if start == GATEWAY_NAME:
-                    start = f'start-{GATEWAY_NAME}'
-
-                if isinstance(start_pod, K8sPod):
-                    from ..peapods.pods.k8slib import kubernetes_deployment
-
-                    start = kubernetes_deployment.to_dns_name(start)
-                if start not in graph.pods:
-                    start = start + '_tail'
-                if isinstance(start_pod, K8sPod):
-                    from ..peapods.pods.k8slib import kubernetes_deployment
-
-                    start = kubernetes_deployment.to_dns_name(start)
-
-                start_pod = graph._get_target_pod(start)
-
-                if pod.connect_to_predecessor or is_remote_local_connection(
-                    start_pod.host, pod.head_host
-                ):
-                    pod.head_args.hosts_in_connect.append(
-                        graph._get_target_pod(start).full_out_address
-                    )
-
-                    graph.add_edge(start, end, True)
-                else:
-                    graph.add_edge(start, end)
-
-        # In case of sharding, the head and the tail pea have to be connected to the shards
-        for end, pod in self._pod_nodes.items():
-            if len(pod.deployments) > 0:
-                deployments = pod.deployments
-                for deployment in deployments[1:-1]:
-                    graph.add_edge(deployments[0]['name'], deployment['name'])
-                    graph.add_edge(deployment['name'], deployments[-1]['name'])
-
-        graph.active_pod = f'start-{GATEWAY_NAME}'
-        return graph
-
-    def _set_initial_dynamic_routing_table(self):
-        routing_table = self._get_routing_table()
-        if not routing_table.is_acyclic():
-            raise RoutingTableCyclicError(
-                'The routing graph has a cycle. This would result in an infinite loop. Fix your Flow setup.'
-            )
-        for pod in self._pod_nodes:
-            routing_table_copy = RoutingTable()
-            routing_table_copy.proto.CopyFrom(routing_table.proto)
-            self._pod_nodes[
-                pod
-            ].args.static_routing_table = self.args.static_routing_table
-            # The gateway always needs the routing table to be set
-            if pod == GATEWAY_NAME:
-                self._pod_nodes[pod].args.routing_table = routing_table_copy.json()
-            # For other pods we only set it if we are told do so
-            elif self.args.static_routing_table:
-                routing_table_copy.active_pod = pod
-                self._pod_nodes[pod].args.routing_table = routing_table_copy.json()
-                # dynamic routing does not apply to shards in a CompoundPod, only its tail
-                if not isinstance(self._pod_nodes[pod], CompoundPod):
-                    self._pod_nodes[pod].update_pea_args()
-                else:
-                    self._pod_nodes[pod].tail_args.routing_table = self._pod_nodes[
-                        pod
-                    ].args.routing_table
-                    self._pod_nodes[
-                        pod
-                    ].tail_args.static_routing_table = self.args.static_routing_table
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def build(self, copy_flow: bool = False) -> 'Flow':

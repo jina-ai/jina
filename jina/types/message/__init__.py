@@ -12,7 +12,6 @@ from ...excepts import MismatchedVersion
 from ...helper import colored
 from ...logging.predefined import default_logger
 from ...proto import jina_pb2
-from ...types.routing.table import RoutingTable
 
 if False:
     from ...executors import BaseExecutor
@@ -159,16 +158,12 @@ class Message:
 
     def _add_envelope(
         self,
-        pod_name,
-        identity,
         check_version=False,
         request_id: Optional[str] = None,
         request_type: Optional[str] = None,
         compress: str = 'NONE',
         compress_min_bytes: int = 0,
         compress_min_ratio: float = 1.0,
-        routing_table: Optional[str] = None,
-        static_routing_table: bool = False,
         *args,
         **kwargs,
     ) -> 'jina_pb2.EnvelopeProto':
@@ -177,9 +172,6 @@ class Message:
         .. note::
             this method should only be called at the gateway before the first pod of flow, not inside the flow.
 
-
-        :param pod_name: the name of the current pod
-        :param identity: the identity of the current pod
         :param check_version: turn on check_version
         :param args: Additional positional arguments
         :param kwargs: Additional keyword arguments
@@ -188,12 +180,9 @@ class Message:
         :param compress: used compression algorithm
         :param compress_min_bytes: used for configuring compression
         :param compress_min_ratio: used for configuring compression
-        :param routing_table: routing graph filled by gateway
-        :param static_routing_table: dont include the routing table in the envelope
         :return: the resulted protobuf message
         """
         envelope = jina_pb2.EnvelopeProto()
-        envelope.receiver_id = identity
         if isinstance(self.request, jina_pb2.RequestProto) or (
             request_id and request_type
         ):
@@ -231,8 +220,6 @@ class Message:
         envelope.compression.min_ratio = compress_min_ratio
         envelope.compression.min_bytes = compress_min_bytes
         envelope.timeout = 5000
-        if routing_table is not None and not static_routing_table:
-            envelope.routing_table.CopyFrom(RoutingTable(routing_table).proto)
         self._add_version(envelope)
         envelope.check_version = check_version
         return envelope
@@ -243,12 +230,11 @@ class Message:
 
         :return: array, containing encoded receiver id, serialized envelope and the compressed serialized envelope
         """
-        r2 = self.request.SerializeToString()
-        r2 = self._compress(r2)
+        r1 = self.request.SerializeToString()
+        r1 = self._compress(r1)
 
-        r0 = self.envelope.receiver_id.encode()
-        r1 = self.envelope.SerializePartialToString()
-        m = [r0, r1, r2]
+        r0 = self.envelope.SerializePartialToString()
+        m = [r0, r1]
         self._size = sum(sys.getsizeof(r) for r in m)
         return m
 
