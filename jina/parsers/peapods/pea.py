@@ -32,7 +32,7 @@ def mixin_pea_parser(parser):
     gp.add_argument(
         '--runtime-cls',
         type=str,
-        default='ZEDRuntime',
+        default='WorkerRuntime',
         help='The runtime class to run inside the Pea',
     )
 

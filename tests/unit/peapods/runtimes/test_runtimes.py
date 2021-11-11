@@ -12,14 +12,14 @@ from jina.peapods.peas import BasePea
 from jina.peapods.runtimes.gateway.grpc import GRPCGatewayRuntime
 from jina.peapods.runtimes.gateway.websocket import WebSocketGatewayRuntime
 from jina.peapods.runtimes.container import ContainerRuntime
-from jina.peapods.runtimes.zmq.zed import ZEDRuntime
+from jina.peapods.runtimes.worker import WorkerRuntime
 
 
 @pytest.mark.parametrize('runtime', ['thread', 'process'])
 @pytest.mark.parametrize('ctrl_ipc', [True, False])
-def test_zed_runtime(runtime, ctrl_ipc):
+def test_worker_runtime(runtime, ctrl_ipc):
     class Pea1(BasePea):
-        runtime_cls = ZEDRuntime
+        runtime_cls = WorkerRuntime
 
     arg = set_pea_parser().parse_args(
         ['--runtime-backend', runtime] + (['--ctrl-with-ipc'] if ctrl_ipc else [])

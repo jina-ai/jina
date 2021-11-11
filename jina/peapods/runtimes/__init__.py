@@ -10,7 +10,6 @@ def list_all_runtimes():
     from .gateway.websocket import WebSocketGatewayRuntime
     from .container import ContainerRuntime
     from .jinad import JinadRuntime
-    from .zmq.zed import ZEDRuntime
     from .worker import WorkerRuntime
 
     return [
@@ -32,7 +31,6 @@ def get_runtime(name: str):
     from .gateway.websocket import WebSocketGatewayRuntime
     from .container import ContainerRuntime
     from .jinad import JinadRuntime
-    from .zmq.zed import ZEDRuntime
     from .worker import WorkerRuntime
 
     s = locals()[name]
