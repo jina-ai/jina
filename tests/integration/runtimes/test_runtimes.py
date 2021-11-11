@@ -554,7 +554,6 @@ def _create_gateway_runtime(graph_description, pod_addresses, port_expose):
     with GRPCGatewayRuntime(
         set_gateway_parser().parse_args(
             [
-                '--grpc-data-requests',
                 '--graph-description',
                 graph_description,
                 '--pods-addresses',

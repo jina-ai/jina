@@ -28,10 +28,11 @@ def test_lazy_access(field, algo):
         assert not r.is_decompressed
 
         # access r.train
-        print(getattr(r, field))
+        if hasattr(r, field):
+            print(getattr(r, field))
 
-        # now it is read
-        assert r.is_decompressed
+            # now it is read
+            assert r.is_decompressed
 
 
 @pytest.mark.parametrize(
@@ -84,7 +85,7 @@ def test_lazy_change_message_type(algo):
     for r in reqs:
         assert not r.is_decompressed
         # write access r.train
-        r.control.command = jina_pb2.RequestProto.ControlRequestProto.IDLE
+        r.control.command = jina_pb2.RequestProto.ControlRequestProto.STATUS
         # now it is read
         assert r.is_decompressed
         assert len(r.data.docs) == 0
@@ -148,8 +149,6 @@ def test_lazy_msg_access():
         Message(
             None,
             r.SerializeToString(),
-            'test',
-            '123',
             request_id='123',
             request_type='DataRequest',
         )
@@ -158,19 +157,19 @@ def test_lazy_msg_access():
     for m in messages:
         assert m.request.is_decompressed
         assert m.envelope
-        assert len(m.dump()) == 3
+        assert len(m.dump()) == 2
         assert m.request.is_decompressed
 
     for m in messages:
         assert m.request.is_decompressed
         assert m.request
-        assert len(m.dump()) == 3
+        assert len(m.dump()) == 2
         assert m.request.is_decompressed
 
     for m in messages:
         assert m.request.is_decompressed
         assert m.request.data.docs
-        assert len(m.dump()) == 3
+        assert len(m.dump()) == 2
         assert m.request.is_decompressed
 
 
@@ -188,7 +187,7 @@ def test_lazy_msg_access_with_envelope():
     for m in messages:
         assert not m.request.is_decompressed
         assert m.envelope
-        assert len(m.dump()) == 3
+        assert len(m.dump()) == 2
         assert not m.request.is_decompressed
         assert m.request._pb_body is None
         assert m.request._buffer is not None
@@ -199,15 +198,13 @@ def test_lazy_msg_access_with_envelope():
 
 
 def test_message_size():
-    reqs = [
-        Message(None, r, 'test', '123') for r in request_generator('/', random_docs(10))
-    ]
+    reqs = [Message(None, r) for r in request_generator('/', random_docs(10))]
     for r in reqs:
         assert r.size == 0
         assert sys.getsizeof(r.envelope.SerializeToString())
         assert sys.getsizeof(r.request.SerializeToString())
-        assert len(r.dump()) == 3
-        assert r.size > sys.getsizeof(r.envelope.SerializeToString()) + sys.getsizeof(
+        assert len(r.dump()) == 2
+        assert r.size >= sys.getsizeof(r.envelope.SerializeToString()) + sys.getsizeof(
             r.request.SerializeToString()
         )
 

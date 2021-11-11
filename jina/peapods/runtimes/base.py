@@ -32,7 +32,7 @@ class BaseRuntime:
      In order to cancel the `run_forever` method of a `Runtime`, you can use their `static` `cancel` method that will make sure that the runtime is properly cancelled.
 
         - Use :class:`threading.Event` or `multiprocessing.Event`, while :meth:`run_forever` polls for this event
-        - Use ZMQ to send a TERMINATE message, while :meth:`run_forever` polls for this message
+        - Use GrpcConnectionPool to send a TERMINATE message, while :meth:`run_forever` polls for this message
 
      Note, another way to jump out from :meth:`run_forever` is raise exceptions from it. This will immediately move to
      :meth:`teardown`.
@@ -119,3 +119,15 @@ class BaseRuntime:
         # from being propagated), it should return a true value. Otherwise, the exception will be processed normally
         # upon exit from this method.
         return True
+
+    @staticmethod
+    def get_control_address(host: str, port: str, **kwargs):
+        """
+        Get the control address for a runtime with a given host and port
+
+        :param host: the host where the runtime works
+        :param port: the control port where the runtime listens
+        :param kwargs: extra keyword arguments
+        :return: The corresponding control address
+        """
+        return f'{host}:{port}'

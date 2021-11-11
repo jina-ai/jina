@@ -1,4 +1,4 @@
-"""Argparser module for ZED runtime"""
+"""Argparser module for WorkerRuntime"""
 import argparse
 
 from ...helper import add_arg_group, _SHOW_ALL_ARGS, KVAppendAction
@@ -7,12 +7,12 @@ from .... import helper
 from ....enums import OnErrorStrategy, SocketType
 
 
-def mixin_zed_runtime_parser(parser):
-    """Mixing in arguments required by :class:`ZEDRuntime` into the given parser.
+def mixin_worker_runtime_parser(parser):
+    """Mixing in arguments required by :class:`WorkerRuntime` into the given parser.
     :param parser: the parser instance to which we add arguments
     """
 
-    gp = add_arg_group(parser, title='ZEDRuntime')
+    gp = add_arg_group(parser, title='WorkerRuntime')
     from jina import __default_executor__
 
     gp.add_argument(
@@ -148,7 +148,7 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
         '--native',
         action='store_true',
         default=False,
-        help='If set, only native Executors is allowed, and the Executor is always run inside ZEDRuntime.',
+        help='If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.',
     )
 
     gp.add_argument(
@@ -156,33 +156,6 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
         type=int,
         default=0,
         help='the number of messages expected from upstream, 0 and 1 means single part'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
-    )
-
-    gp.add_argument(
-        '--dynamic-routing-out',
-        action='store_true',
-        default=False,
-        help='Tells if ZEDRuntime should respect routing graph for outgoing traffic.'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
-    )
-
-    gp.add_argument(
-        '--dynamic-routing-in',
-        action='store_true',
-        default=False,
-        help='Tells if ZEDRuntime should handle incoming traffic as dynamic routing.'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
-    )
-
-    gp.add_argument(
-        '--grpc-data-requests',
-        action='store_true',
-        default=False,
-        help='Tells if a Pea should use gRPC for data requests. Works only with dynamic routing out.'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )

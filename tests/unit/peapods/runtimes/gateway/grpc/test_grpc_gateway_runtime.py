@@ -24,7 +24,6 @@ def test_grpc_gateway_runtime_init_close():
         with GRPCGatewayRuntime(
             set_gateway_parser().parse_args(
                 [
-                    '--grpc-data-requests',
                     '--graph-description',
                     '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}',
                     '--pods-addresses',
