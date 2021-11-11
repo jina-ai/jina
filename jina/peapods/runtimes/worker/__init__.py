@@ -83,7 +83,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
         try:
             GrpcConnectionPool.send_message_sync(ControlMessage('STATUS'), ctrl_address)
-        except RpcError:
+        except RpcError as e:
             return False
 
         return True

@@ -6,10 +6,11 @@ import time
 from typing import Any, Tuple, Union, Dict, Optional
 
 from ..networking import GrpcConnectionPool
+from ..runtimes.asyncio import AsyncNewLoopRuntime
 from ...jaml import JAML
 from .helper import _get_event, ConditionalEvent
 from ... import __stop_msg__, __ready_msg__
-from ...enums import PeaRoleType, RuntimeBackendType, SocketType
+from ...enums import PeaRoleType, RuntimeBackendType
 from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
 from ...helper import typename
 from ...logging.logger import JinaLogger
@@ -194,9 +195,13 @@ class BasePea:
         This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         """
         if hasattr(self.worker, 'terminate'):
-            self.logger.debug(f' terminating the runtime process')
+            self.logger.debug(f'terminating the runtime process')
             self.worker.terminate()
             self.logger.debug(f' runtime process properly terminated')
+        else:
+            self.logger.debug(f'canceling the runtime thread')
+            self.runtime_cls.cancel(cancel_event=self.cancel_event)
+            self.logger.debug(f'runtime thread properly canceled')
 
     def _retry_control_message(self, command: str, num_retry: int = 3):
         for retry in range(1, num_retry + 1):
@@ -212,30 +217,6 @@ class BasePea:
                 self.logger.warning(f'{ex!r}')
                 if retry == num_retry:
                     raise ex
-
-    def activate_runtime(self):
-        """ Send activate control message. """
-        self.runtime_cls.activate(
-            logger=self.logger,
-            socket_in_type=self.args.socket_in,
-            control_address=self.runtime_ctrl_address,
-            timeout_ctrl=self._timeout_ctrl,
-        )
-
-    def _cancel_runtime(self, skip_deactivate: bool = False):
-        """
-        Send terminate control message.
-
-        :param skip_deactivate: Mark that the DEACTIVATE signal may be missed if set to True
-        """
-        self.runtime_cls.cancel(
-            cancel_event=self.cancel_event,
-            logger=self.logger,
-            socket_in_type=self.args.socket_in,
-            control_address=self.runtime_ctrl_address,
-            timeout_ctrl=self._timeout_ctrl,
-            skip_deactivate=skip_deactivate,
-        )
 
     def _wait_for_ready_or_shutdown(self, timeout: Optional[float]):
         """
@@ -323,30 +304,18 @@ class BasePea:
 
         self._fail_start_timeout(_timeout)
 
-    @property
-    def _is_dealer(self):
-        """Return true if this `Pea` must act as a Dealer responding to a Router
-        .. # noqa: DAR201
-        """
-        return self.args.socket_in == SocketType.DEALER_CONNECT
-
     def close(self) -> None:
         """Close the Pea
 
         This method makes sure that the `Process/thread` is properly finished and its resources properly released
         """
-        # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
         self.logger.debug('waiting for ready or shutdown signal from runtime')
-        terminated = False
-        if self.is_ready.is_set() and not self.is_shutdown.is_set():
+        if not self.is_shutdown.is_set():
             try:
-                self.logger.debug(f' Cancel runtime')
-                self._cancel_runtime()
                 self.logger.debug(f' Wait to shutdown')
+                self.terminate()
+                time.sleep(0.1)
                 if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
-                    self.terminate()
-                    terminated = True
-                    time.sleep(0.1)
                     raise Exception(
                         f'Shutdown signal was not received for {self._timeout_ctrl}'
                     )
@@ -358,47 +327,16 @@ class BasePea:
                     else '',
                     exc_info=not self.args.quiet_error,
                 )
-                if not terminated:
-                    self.terminate()
 
             # if it is not daemon, block until the process/thread finish work
             if not self.args.daemon:
                 self.join()
-        elif self.is_shutdown.is_set():
+        else:
             # here shutdown has been set already, therefore `run` will gracefully finish
             self.logger.debug(
                 'shutdown is already set. Runtime will end gracefully on its own'
             )
             pass
-        else:
-            # sometimes, we arrive to the close logic before the `is_ready` is even set.
-            # Observed with `gateway` when Pods fail to start
-            self.logger.warning(
-                'Pea is being closed before being ready. Most likely some other Pea in the Flow or Pod '
-                'failed to start'
-            )
-            _timeout = self.args.timeout_ready
-            if _timeout <= 0:
-                _timeout = None
-            else:
-                _timeout /= 1e3
-            self.logger.debug('waiting for ready or shutdown signal from runtime')
-            if self._wait_for_ready_or_shutdown(_timeout):
-                if not self.is_shutdown.is_set():
-                    self._cancel_runtime(skip_deactivate=True)
-                    if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
-                        self.terminate()
-                        time.sleep(0.1)
-                        raise Exception(
-                            f'Shutdown signal was not received for {self._timeout_ctrl}'
-                        )
-            else:
-                self.logger.warning(
-                    'Terminating process after waiting for readiness signal for graceful shutdown'
-                )
-                # Just last resource, terminate it
-                self.terminate()
-                time.sleep(0.1)
         self.logger.debug(__stop_msg__)
         self.logger.close()
 
@@ -408,7 +346,7 @@ class BasePea:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
-    def _get_runtime_cls(self) -> Tuple[Any, bool]:
+    def _get_runtime_cls(self) -> AsyncNewLoopRuntime:
         from .helper import update_runtime_cls
         from ..runtimes import get_runtime
 

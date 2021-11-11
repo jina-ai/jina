@@ -1,131 +1,11 @@
 import os
-import time
 
 import pytest
-import zmq
 
-from jina.excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
+from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
 from jina.parsers import set_gateway_parser, set_pea_parser
 from jina.peapods import Pea
-from jina.peapods.runtimes.zmq.zed import ZEDRuntime
-from jina.types.message.common import ControlMessage
-
-
-def bad_func(*args, **kwargs):
-    raise Exception('intentional error')
-
-
-def test_base_pea_with_runtime_bad_init(mocker):
-    class Pea1(Pea):
-        def __init__(self, args):
-            super().__init__(args)
-
-    arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
-    mocker.patch.object(ZEDRuntime, '__init__', bad_func)
-    teardown_spy = mocker.spy(ZEDRuntime, 'teardown')
-    cancel_spy = mocker.spy(Pea, '_cancel_runtime')
-    run_spy = mocker.spy(ZEDRuntime, 'run_forever')
-
-    with pytest.raises(RuntimeFailToStart):
-        with Pea1(arg):
-            pass
-
-    # teardown should be called, cancel should not be called
-
-    teardown_spy.assert_not_called()
-    run_spy.assert_not_called()
-    cancel_spy.assert_not_called()
-
-
-@pytest.mark.slow
-def test_base_pea_with_runtime_bad_run_forever(mocker):
-    class Pea1(Pea):
-        def __init__(self, args):
-            super().__init__(args)
-
-    def mock_run_forever(runtime):
-        bad_func()
-
-    arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
-    mocker.patch.object(ZEDRuntime, 'run_forever', mock_run_forever)
-    teardown_spy = mocker.spy(ZEDRuntime, 'teardown')
-    cancel_spy = mocker.spy(Pea, '_cancel_runtime')
-    run_spy = mocker.spy(ZEDRuntime, 'run_forever')
-
-    with pytest.raises(RuntimeRunForeverEarlyError):
-        with Pea1(arg):
-            pass
-
-    # teardown should be called, cancel should not be called
-    teardown_spy.assert_called()
-    run_spy.assert_called()
-    cancel_spy.assert_not_called()
-
-
-@pytest.mark.slow
-def test_base_pea_with_runtime_bad_teardown(mocker):
-    class Pea1(Pea):
-        def __init__(self, args):
-            super().__init__(args)
-
-    def mock_run_forever(*args, **kwargs):
-        time.sleep(3)
-
-    def mock_is_ready(*args, **kwargs):
-        return True
-
-    def mock_cancel(*args, **kwargs):
-        pass
-
-    mocker.patch.object(ZEDRuntime, 'run_forever', mock_run_forever)
-    mocker.patch.object(ZEDRuntime, 'is_ready', mock_is_ready)
-    mocker.patch.object(ZEDRuntime, 'teardown', lambda x: bad_func)
-    mocker.patch.object(ZEDRuntime, 'cancel', lambda *args, **kwargs: mock_cancel)
-    teardown_spy = mocker.spy(ZEDRuntime, 'teardown')
-    cancel_spy = mocker.spy(Pea, '_cancel_runtime')
-    run_spy = mocker.spy(ZEDRuntime, 'run_forever')
-
-    arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
-    with Pea1(arg):
-        pass
-
-    teardown_spy.assert_called()
-    run_spy.assert_called()
-    cancel_spy.assert_called_once()  # 3s > .join(1), need to cancel
-
-    # run_forever cancel should all be called
-
-
-def test_base_pea_with_runtime_bad_cancel(mocker):
-    class Pea1(Pea):
-        def __init__(self, args):
-            super().__init__(args)
-
-    def mock_run_forever(runtime):
-        time.sleep(3)
-
-    def mock_is_ready(*args, **kwargs):
-        return True
-
-    mocker.patch.object(ZEDRuntime, 'run_forever', mock_run_forever)
-    mocker.patch.object(ZEDRuntime, 'is_ready', mock_is_ready)
-    mocker.patch.object(Pea, '_cancel_runtime', bad_func)
-
-    teardown_spy = mocker.spy(ZEDRuntime, 'teardown')
-    cancel_spy = mocker.spy(Pea, '_cancel_runtime')
-    run_spy = mocker.spy(ZEDRuntime, 'run_forever')
-
-    arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
-    with Pea1(arg):
-        time.sleep(0.1)
-        pass
-
-    teardown_spy.assert_called()
-    run_spy.assert_called()
-    cancel_spy.assert_called_once()
-
-    # run_forever cancel should all be called
 
 
 @pytest.fixture()
@@ -227,31 +107,6 @@ def test_gateway_args(protocol, expected):
     assert p.runtime_cls.__name__ == expected
 
 
-@pytest.mark.timeout(30)
-@pytest.mark.slow
-@pytest.mark.parametrize(
-    'command, response_expected',
-    [
-        ('IDLE', 0),
-        ('CANCEL', 0),
-        ('TERMINATE', 1),
-        ('STATUS', 1),
-        ('ACTIVATE', 1),
-        ('DEACTIVATE', 1),
-    ],
-)
-def test_idle_does_not_create_response(command, response_expected):
-    args = set_pea_parser().parse_args([])
-
-    with Pea(args) as p:
-        msg = ControlMessage(command, pod_name='fake_pod')
-
-        with zmq.Context().socket(zmq.PAIR) as socket:
-            socket.connect(f'tcp://localhost:{p.args.port_ctrl}')
-            socket.send_multipart(msg.dump())
-            assert socket.poll(timeout=1000) == response_expected
-
-
 def test_pea_set_shard_pea_id():
     args = set_pea_parser().parse_args(['--shard-id', '1', '--shards', '3'])
 
@@ -261,3 +116,65 @@ def test_pea_set_shard_pea_id():
 
     assert pea.args.shards == 3
     assert pea.args.parallel == 3
+
+
+@pytest.mark.parametrize(
+    'protocol, expected',
+    [
+        ('grpc', 'GRPCGatewayRuntime'),
+        ('websocket', 'WebSocketGatewayRuntime'),
+        ('http', 'HTTPGatewayRuntime'),
+    ],
+)
+def test_gateway_runtimes(protocol, expected):
+    args = set_gateway_parser().parse_args(
+        [
+            '--graph-description',
+            '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}',
+            '--pods-addresses',
+            '{"pod0": ["0.0.0.0:1234"]}',
+            '--protocol',
+            protocol,
+        ]
+    )
+
+    with Pea(args) as p:
+        assert p.runtime_cls.__name__ == expected
+
+
+@pytest.mark.parametrize(
+    'runtime_cls',
+    ['WorkerRuntime', 'HeadRuntime'],
+)
+def test_non_gateway_runtimes(runtime_cls):
+    args = set_pea_parser().parse_args(
+        [
+            '--runtime-cls',
+            runtime_cls,
+        ]
+    )
+
+    with Pea(args) as p:
+        assert p.runtime_cls.__name__ == runtime_cls
+
+
+class RaisingExecutor(BaseExecutor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        raise RuntimeError('intentional error')
+
+
+def test_failing_executor():
+    args = set_pea_parser().parse_args(
+        [
+            '--uses',
+            'RaisingExecutor',
+        ]
+    )
+
+    with pytest.raises(RuntimeFailToStart):
+        with Pea(args) as p:
+            pass
+
+
+# test pea where runtime fails to start

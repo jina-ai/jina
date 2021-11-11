@@ -545,8 +545,7 @@ def _create_head_runtime(
     if uses_after:
         args.uses_after_address = uses_after
 
-    connection_pool = GrpcConnectionPool()
-    with HeadRuntime(args, connection_pool) as runtime:
+    with HeadRuntime(args) as runtime:
         runtime.run_forever()
 
 

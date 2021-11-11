@@ -107,7 +107,7 @@ def test_uses_before_uses_after():
 
 def _create_test_data_message(counter=0):
     req = list(request_generator('/', DocumentArray([Document(text=str(counter))])))[0]
-    msg = Message(None, req, 'test', '123')
+    msg = Message(None, req)
     return msg
 
 
@@ -124,9 +124,8 @@ def _create_runtime(args):
 
             return asyncio.create_task(mock_task_wrapper(messages, connection))
 
-        connection_pool = GrpcConnectionPool()
-        connection_pool._send_messages = _send_messages_mock
-        with HeadRuntime(args, connection_pool, cancel_event) as runtime:
+        with HeadRuntime(args, cancel_event) as runtime:
+            runtime.connection_pool._send_messages = _send_messages_mock
             runtime.run_forever()
 
     runtime_thread = Process(
