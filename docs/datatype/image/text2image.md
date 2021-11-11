@@ -11,7 +11,7 @@ To do so, we need to figure out a way to match images and text. One way is findi
 For example when we write the word "dog" in query we want to be able to retrieve pictures with a dog solely by using the embeddings similarity.
 
 ```{tip}
-The full source code of this tutorial is available in this [google colab notebook](https://colab.research.google.com/drive/1_dsJA3rxdo4g68jmqJBUeUIVH6kAXQ05?usp=sharing)
+The full source code of this tutorial is available in this [Google Colab notebook](https://colab.research.google.com/github/jina-ai/workshops/blob/docs-add-text-to-image-notebook/text2image/Image_Search_via_Text.ipynb)
 ```
 
 Now that we understand the problem and we have an idea on how to fix it, let's try to imagine what the solution would look like: 
@@ -84,7 +84,7 @@ We can further find the distance between the text vector and the vectors of the 
 
 ### **CLIPImageEncoder**
 This encoder encodes an image into embeddings using the CLIP model. 
-We want an Executor that loads the CLIP model and encodes it during the index Flow. 
+We want an Executor that loads the CLIP model and encodes images during the index Flow. 
 
 Our Executor should:
 * Support both **GPU** and **CPU**: That's why we will provision the `device` parameter and use it when encoding.
@@ -340,8 +340,9 @@ We create a Flow object and add Executors one after the other with the right par
 
 ```python
 from jina import Flow
-flow_index = Flow().add(uses=CLIPImageEncoder, name="encoder", uses_with={"device":device}) \
-      .add(uses=SimpleIndexer, name="indexer", workspace='workspace')
+flow_index = Flow() \
+    .add(uses=CLIPImageEncoder, name="encoder", uses_with={"device":device}) \
+    .add(uses=SimpleIndexer, name="indexer", workspace='workspace')
 flow_index.plot()
 ```
 
@@ -366,8 +367,8 @@ def input_docs(data_path):
 The final step in this section is to send the input Documents to the index Flow. Note that indexing can take a while:
 
 ```python
-    with flow_index:
-        flow_index.post(on='/index',inputs=input_docs("/content/images"), request_size=1)
+with flow_index:
+    flow_index.post(on='/index',inputs=input_docs("/content/images"), request_size=1)
 ```
 
 
@@ -380,7 +381,7 @@ Flow@3084[I]:🎉 Flow is ready to use!
 ```
 
 ### Searching
-Now, let's build the search Flow and use it to find sample query images.
+Now, let's build the search Flow and use it to search with sample query images.
 
 Our Flow contains the following Executors:
 
@@ -388,8 +389,9 @@ Our Flow contains the following Executors:
 2. SimpleIndexer: We need to specify the workspace parameter.
 
 ```python
-flow_search = Flow().add(uses=CLIPTextEncoder, name="encoder", uses_with={"device":device}) \
-        .add(uses=SimpleIndexer,name="indexer",workspace="workspace")
+flow_search = Flow() \
+    .add(uses=CLIPTextEncoder, name="encoder", uses_with={"device":device}) \
+    .add(uses=SimpleIndexer,name="indexer",workspace="workspace")
 flow_search.plot()
 ```
 
@@ -399,7 +401,7 @@ Query Flow:
 :align: center
 ```
 
-We create a helper function to plot our images 
+We create a helper function to plot our images: 
 
 ```python 
 import matplotlib.pyplot as plt
@@ -409,7 +411,7 @@ def show_docs(docs):
       plt.imshow(doc.blob)
       plt.show()
 ```
-and one last function to show us the top three matches to our text query 
+and one last function to show us the top three matches to our text query: 
 
 ```python 
 def plot_search_results(resp: Request):
@@ -420,7 +422,7 @@ def plot_search_results(resp: Request):
         show_docs(doc.matches[:3])
 ```        
 
-Now we put some text queries which we transform into Documents and here are the results: 
+Now we input some text queries which we transform into Documents and here are the results: 
 
 ```python
 with flow_search:
@@ -476,4 +478,4 @@ Results:
 :align: center
 ```
 
-Congratulations! You have built a text-to-image search engine. You can check the full source code [here](https://colab.research.google.com/drive/1_dsJA3rxdo4g68jmqJBUeUIVH6kAXQ05?usp=sharing) and experiment with your own text queries.
+Congratulations! You have built a text-to-image search engine. You can check the full source code [here](https://colab.research.google.com/github/jina-ai/workshops/blob/docs-add-text-to-image-notebook/text2image/Image_Search_via_Text.ipynb) and experiment with your own text queries.
