@@ -156,8 +156,7 @@ class PartialFlowStore(PartialStore):
                     if (
                         runtime_cls
                         in [
-                            'ZEDRuntime',
-                            'GRPCDataRuntime',
+                            'WorkerRuntime',
                             'ContainerRuntime',
                         ]
                         + list(GATEWAY_RUNTIME_DICT.values())
@@ -190,9 +189,9 @@ class PartialFlowStore(PartialStore):
                                     )
                         pod.update_worker_pea_args()
 
-                    # avoid setting runs_in_docker for Pods with parallel > 1 and using `ZEDRuntime`
+                    # avoid setting runs_in_docker for Pods with parallel > 1 and using `WorkerRuntime`
                     # else, replica-peas would try connecting to head/tail-pea via __docker_host__
-                    if runtime_cls in ['ZEDRuntime', 'GRPCDataRuntime'] and (
+                    if runtime_cls == 'WorkerRuntime' and (
                         hasattr(pod.args, 'replicas') and pod.args.replicas > 1
                     ):
                         pod.args.runs_in_docker = False

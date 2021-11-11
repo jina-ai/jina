@@ -8,13 +8,13 @@ from pathlib import Path
 from platform import uname
 
 from ..base import BaseRuntime
-from ...zmq import Zmqlet
+from ...networking import GrpcConnectionPool
 from .... import __docker_host__
 from .helper import get_docker_network, get_gpu_device_requests
 from ....excepts import BadImageNameError, DockerVersionError
-from ...zmq import send_ctrl_message
 from ....helper import ArgNamespace, slugify, random_name
 from ....enums import SocketType
+from ....types.message.common import ControlMessage
 
 if TYPE_CHECKING:
     import multiprocessing
@@ -80,10 +80,9 @@ class ContainerRuntime(BaseRuntime):
             try:
                 bridge_network = client.networks.get('bridge')
                 if bridge_network:
-                    self.ctrl_addr, _ = Zmqlet.get_ctrl_address(
+                    self.ctrl_addr, _ = BaseRuntime.get_control_address(
                         bridge_network.attrs['IPAM']['Config'][0]['Gateway'],
                         self.args.port_ctrl,
-                        self.args.ctrl_with_ipc,
                     )
             except Exception as ex:
                 self.logger.warning(
@@ -230,8 +229,8 @@ class ContainerRuntime(BaseRuntime):
 
         :return: control message.
         """
-        return send_ctrl_message(
-            self.ctrl_addr, 'STATUS', timeout=self.args.timeout_ctrl
+        return GrpcConnectionPool.send_message_sync(
+            ControlMessage('STATUS'), self.ctrl_addr, timeout=self.args.timeout_ctrl
         )
 
     @property
@@ -280,16 +279,12 @@ class ContainerRuntime(BaseRuntime):
         num_retry: int,
         logger: 'JinaLogger',
     ):
-        from ...zmq import send_ctrl_message
 
         for retry in range(1, num_retry + 1):
             logger.debug(f'Sending {command} command for the {retry}th time')
             try:
-                send_ctrl_message(
-                    ctrl_address,
-                    command,
-                    timeout=timeout_ctrl,
-                    raise_exception=True,
+                GrpcConnectionPool.send_message_sync(
+                    ControlMessage(command), ctrl_address, timeout=timeout_ctrl
                 )
                 break
             except Exception as ex:
@@ -397,4 +392,4 @@ class ContainerRuntime(BaseRuntime):
         else:
             ctrl_host = host
 
-        return Zmqlet.get_ctrl_address(ctrl_host, port, False)[0]
+        return BaseRuntime.get_control_address(ctrl_host, port, False)
