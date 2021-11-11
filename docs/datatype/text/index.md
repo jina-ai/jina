@@ -1,3 +1,4 @@
+(text-type)=
 # {octicon}`typography` Text
 
 Text is everywhere and it is easily accessible. Neural search with text is probably the first application one can think of. From fuzzy string matching to question-answering, you can leverage Jina to build all kinds of text-based neural search solution in just minutes. By leveraging the state-of-the-art natural language processing and pretrained models, you can easily use Jina to bring the text intelligence of your app to the next level.

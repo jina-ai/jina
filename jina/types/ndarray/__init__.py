@@ -270,7 +270,7 @@ def _set_dense_array(value, target):
     target.dtype = value.dtype.str
 
 
-def get_array_type(array) -> Tuple[str, bool]:
+def get_array_type(array: 'ArrayType') -> Tuple[str, bool]:
     """Get the type of ndarray without importing the framework
 
     :param array: any array, scipy, numpy, tf, torch, etc.

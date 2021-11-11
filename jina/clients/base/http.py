@@ -1,14 +1,17 @@
-from typing import Callable, Optional
 from contextlib import nullcontext, AsyncExitStack
+from typing import Optional, TYPE_CHECKING
 
-from ...excepts import BadClient
 from .helper import HTTPClientlet
+from ..base import BaseClient
 from ..helper import callback_exec
-from ...types.request import Request
+from ...excepts import BadClient
 from ...importer import ImportExtensions
-from ..base import BaseClient, InputType
 from ...logging.profile import ProgressBar
 from ...peapods.stream.client import HTTPClientStreamer
+from ...types.request import Request
+
+if TYPE_CHECKING:
+    from ..base import InputType, CallbackFnType
 
 
 class HTTPBaseClient(BaseClient):
@@ -16,10 +19,10 @@ class HTTPBaseClient(BaseClient):
 
     async def _get_results(
         self,
-        inputs: InputType,
-        on_done: Callable,
-        on_error: Optional[Callable] = None,
-        on_always: Optional[Callable] = None,
+        inputs: 'InputType',
+        on_done: 'CallbackFnType',
+        on_error: Optional['CallbackFnType'] = None,
+        on_always: Optional['CallbackFnType'] = None,
         **kwargs,
     ):
         """

@@ -1,9 +1,12 @@
-from typing import Dict, Tuple
+from typing import Dict, Tuple, TypeVar
+
 
 from google.protobuf.json_format import MessageToJson, MessageToDict
 
 from ..helper import typename
 from ..proto import jina_pb2
+
+T = TypeVar('T')
 
 
 class ProtoTypeMixin:
@@ -69,3 +72,32 @@ class ProtoTypeMixin:
         :return: the tuple of non-empty fields
         """
         return tuple(field[0].name for field in self._pb_body.ListFields())
+
+    def MergeFrom(self: T, other: T) -> None:
+        """Merge the content of target
+
+        :param other: the document to merge from
+        """
+        self._pb_body.MergeFrom(other._pb_body)
+
+    def CopyFrom(self: T, other: T) -> None:
+        """Copy the content of target
+
+        :param other: the document to copy from
+        """
+        self._pb_body.MergeFrom(other._pb_body)
+
+    def clear(self) -> None:
+        """Remove all values from all fields of this Document."""
+        self._pb_body.Clear()
+
+    def pop(self, *fields) -> None:
+        """Remove the values from the given fields of this Document.
+
+        :param fields: field names
+        """
+        for k in fields:
+            self._pb_body.ClearField(k)
+
+    def __eq__(self, other):
+        return self.proto == other.proto

@@ -1,19 +1,17 @@
 import asyncio
 from contextlib import nullcontext
-from typing import Callable, Union, Optional
+from typing import TYPE_CHECKING
 
 import grpc
 
 from ..base import BaseClient
 from ..helper import callback_exec
-from ..request import GeneratorSourceType
 from ...excepts import BadClient, BadClientInput
 from ...logging.profile import ProgressBar
 from ...proto import jina_pb2_grpc
-from ...types.request import Response
 
-InputType = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
-CallbackFnType = Optional[Callable[[Response], None]]
+if TYPE_CHECKING:
+    from . import InputType, CallbackFnType
 
 
 class GRPCBaseClient(BaseClient):
@@ -24,10 +22,10 @@ class GRPCBaseClient(BaseClient):
 
     async def _get_results(
         self,
-        inputs: InputType,
-        on_done: Callable,
-        on_error: Callable = None,
-        on_always: Callable = None,
+        inputs: 'InputType',
+        on_done: 'CallbackFnType',
+        on_error: 'CallbackFnType' = None,
+        on_always: 'CallbackFnType' = None,
         **kwargs,
     ):
         try:
