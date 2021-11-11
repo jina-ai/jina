@@ -145,7 +145,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         compress_min_bytes: Optional[int] = 1024,
         compress_min_ratio: Optional[float] = 1.1,
         cors: Optional[bool] = False,
-        ctrl_with_ipc: Optional[bool] = True,
         daemon: Optional[bool] = False,
         default_swagger_ui: Optional[bool] = False,
         description: Optional[str] = None,
@@ -165,7 +164,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         no_debug_endpoints: Optional[bool] = False,
         on_error_strategy: Optional[str] = 'IGNORE',
         pods_addresses: Optional[str] = None,
-        port_ctrl: Optional[int] = None,
         port_expose: Optional[int] = None,
         port_in: Optional[int] = None,
         port_out: Optional[int] = None,
@@ -182,11 +180,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         shards: Optional[int] = 1,
         socket_in: Optional[str] = 'PULL_CONNECT',
         socket_out: Optional[str] = 'PUSH_CONNECT',
-        ssh_keyfile: Optional[str] = None,
-        ssh_password: Optional[str] = None,
-        ssh_server: Optional[str] = None,
         static_routing_table: Optional[bool] = False,
-        timeout_ctrl: Optional[int] = 5000,
         timeout_ready: Optional[int] = 600000,
         title: Optional[str] = None,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
@@ -206,7 +200,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param compress_min_bytes: The original message size must be larger than this number to trigger the compress algorithm, -1 means disable compression.
         :param compress_min_ratio: The compression ratio (uncompressed_size/compressed_size) must be higher than this number to trigger the compress algorithm.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
-        :param ctrl_with_ipc: If set, use ipc protocol for control socket
         :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
         :param default_swagger_ui: If set, the default swagger ui is used for `/docs` endpoint.
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
@@ -243,7 +236,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something
           is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.
         :param pods_addresses: dictionary JSON with the input addresses of each Pod
-        :param port_ctrl: The port for controlling the runtime, default a random port between [49152, 65535]
         :param port_expose: The port that the gateway exposes for clients for GRPC connections.
         :param port_in: The port for input data, default a random port between [49152, 65535]
         :param port_out: The port for output data, default a random port between [49152, 65535]
@@ -267,11 +259,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary. For more details check https://docs.jina.ai/fundamentals/flow/topology/
         :param socket_in: The socket type for input port
         :param socket_out: The socket type for output port
-        :param ssh_keyfile: This specifies a key to be used in ssh login, default None. regular default ssh keys will be used without specifying this argument.
-        :param ssh_password: The ssh password to the ssh server.
-        :param ssh_server: The SSH server through which the tunnel will be created, can actually be a fully specified `user@server:port` ssh url.
         :param static_routing_table: Defines if the routing table should be pre computed by the Flow. In this case it is statically defined for each Pod and not send on every data request. Can not be used in combination with external pods
-        :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param uses: The config of the executor, it could be one of the followings:
@@ -523,7 +511,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self,
         *,
         connect_to_predecessor: Optional[bool] = False,
-        ctrl_with_ipc: Optional[bool] = False,
         daemon: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
@@ -544,7 +531,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         on_error_strategy: Optional[str] = 'IGNORE',
         peas_hosts: Optional[List[str]] = None,
         polling: Optional[str] = 'ANY',
-        port_ctrl: Optional[int] = None,
         port_in: Optional[int] = None,
         port_jinad: Optional[int] = 8000,
         port_out: Optional[int] = None,
@@ -561,11 +547,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         shards: Optional[int] = 1,
         socket_in: Optional[str] = 'PULL_BIND',
         socket_out: Optional[str] = 'PUSH_BIND',
-        ssh_keyfile: Optional[str] = None,
-        ssh_password: Optional[str] = None,
-        ssh_server: Optional[str] = None,
         static_routing_table: Optional[bool] = False,
-        timeout_ctrl: Optional[int] = 5000,
         timeout_ready: Optional[int] = 600000,
         upload_files: Optional[List[str]] = None,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
@@ -583,7 +565,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """Add an Executor to the current Flow object.
 
         :param connect_to_predecessor: The head Pea of this Pod will connect to the TailPea of the predecessor Pod.
-        :param ctrl_with_ipc: If set, use ipc protocol for control socket
         :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
@@ -633,7 +614,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param polling: The polling strategy of the Pod (when `shards>1`)
           - ANY: only one (whoever is idle) Pea polls the message
           - ALL: all Peas poll the message (like a broadcast)
-        :param port_ctrl: The port for controlling the runtime, default a random port between [49152, 65535]
         :param port_in: The port for input data, default a random port between [49152, 65535]
         :param port_jinad: The port of the remote machine for usage with JinaD.
         :param port_out: The port for output data, default a random port between [49152, 65535]
@@ -655,11 +635,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary. For more details check https://docs.jina.ai/fundamentals/flow/topology/
         :param socket_in: The socket type for input port
         :param socket_out: The socket type for output port
-        :param ssh_keyfile: This specifies a key to be used in ssh login, default None. regular default ssh keys will be used without specifying this argument.
-        :param ssh_password: The ssh password to the ssh server.
-        :param ssh_server: The SSH server through which the tunnel will be created, can actually be a fully specified `user@server:port` ssh url.
         :param static_routing_table: Defines if the routing table should be pre computed by the Flow. In this case it is statically defined for each Pod and not send on every data request. Can not be used in combination with external pods
-        :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever
         :param upload_files: The files on the host to be uploaded to the remote
           workspace. This can be useful when your Pod has more
