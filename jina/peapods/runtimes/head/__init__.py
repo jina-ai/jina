@@ -9,8 +9,8 @@ from typing import Optional, Union, List
 import grpc
 from grpc import RpcError
 
+from ..asyncio import AsyncNewLoopRuntime
 from ..request_handlers.data_request_handler import DataRequestHandler
-from ..zmq.asyncio import AsyncNewLoopRuntime
 from ...networking import GrpcConnectionPool
 from .... import DocumentArray
 from ....enums import PollingType
@@ -21,6 +21,10 @@ from ....types.message.common import ControlMessage
 
 
 class HeadRuntime(AsyncNewLoopRuntime, ABC):
+    """
+    Runtime is used in head peas. It responds to Gateway requests and sends to uses_before/uses_after and its workers
+    """
+
     def __init__(
         self,
         args: argparse.Namespace,

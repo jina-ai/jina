@@ -221,6 +221,31 @@ class GrpcConnectionPool:
         self._logger = logger or JinaLogger(self.__class__.__name__)
         self._connections = self._ConnectionPoolMap(self._logger)
 
+    def send_message(
+        self,
+        msg: Message,
+        pod: str,
+        head: bool = False,
+        shard_id: Optional[int] = None,
+        polling_type: PollingType = PollingType.ANY,
+    ) -> List[asyncio.Task]:
+        """Send a single message to target via one or all of the pooled connections, depending on polling_type. Convinience function wrapper around send_messages
+
+        :param msg: a single message to send
+        :param pod: name of the Jina pod to send the message to
+        :param head: If True it is send to the head, otherwise to the worker peas
+        :param shard_id: Send to a specific shard of the pod, ignored for polling ALL
+        :param polling_type: defines if the message should be send to any or all pooled connections for the target
+        :return: list of asyncio.Task items for each send call
+        """
+        return self.send_messages(
+            messages=[msg],
+            pod=pod,
+            head=head,
+            shard_id=shard_id,
+            polling_type=polling_type,
+        )
+
     def send_messages(
         self,
         messages: List[Message],
@@ -256,6 +281,23 @@ class GrpcConnectionPool:
             results.append(task)
 
         return results
+
+    def send_message_once(
+        self,
+        msg: Message,
+        pod: str,
+        head: bool = False,
+        shard_id: Optional[int] = None,
+    ) -> asyncio.Task:
+        """Send msg to target via only one of the pooled connections
+
+        :param msg: message to send
+        :param pod: name of the Jina pod to send the message to
+        :param head: If True it is send to the head, otherwise to the worker peas
+        :param shard_id: Send to a specific shard of the pod, ignored for polling ALL
+        :return: asyncio.Task representing the send call
+        """
+        return self.send_messages_once([msg], pod=pod, head=head, shard_id=shard_id)
 
     def send_messages_once(
         self,
