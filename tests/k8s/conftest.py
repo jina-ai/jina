@@ -69,18 +69,6 @@ def test_executor_image(logger: JinaLogger):
 
 
 @pytest.fixture()
-def scale_executor_image(logger: JinaLogger):
-    image, build_logs = client.images.build(
-        path=os.path.join(cur_dir, 'scale-executor'), tag='scale-executor:0.13.1'
-    )
-    for chunk in build_logs:
-        if 'stream' in chunk:
-            for line in chunk['stream'].splitlines():
-                logger.debug(line)
-    return image.tags[-1]
-
-
-@pytest.fixture()
 def executor_merger_image(logger: JinaLogger):
     image, build_logs = client.images.build(
         path=os.path.join(cur_dir, 'executor-merger'), tag='merger-executor:0.1.1'
@@ -140,7 +128,6 @@ def load_images_in_kind(
     slow_process_executor_image,
     slow_init_executor_image,
     k8s_cluster,
-    scale_executor_image,
 ):
     logger.debug(f'Loading docker image into kind cluster...')
     for image in [
@@ -151,7 +138,6 @@ def load_images_in_kind(
         slow_process_executor_image,
         slow_init_executor_image,
         'jinaai/jina:test-pip',
-        scale_executor_image,
     ]:
         k8s_cluster.load_docker_image(image)
     logger.debug(f'Done loading docker image into kind cluster...')

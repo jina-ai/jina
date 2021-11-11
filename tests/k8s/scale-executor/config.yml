@@ -1,6 +1,0 @@
-!ScalableExecutor
-with:
-  {}
-metas:
-  py_modules:
-    - debug_executor.py

@@ -43,3 +43,13 @@ def test_k8s_scale(
         )
         replica = deployment.status.replicas
         assert replica == new_replicas
+
+
+def test_k8s_scale_fail(
+    k8s_cluster,
+    load_images_in_kind,
+    set_test_pip_version,
+    shards,
+    new_replicas,
+):
+    pass
