@@ -85,7 +85,7 @@ Now that we have seen the overall structure of the approach and have defined our
 
 ## Building the Executor to Generate Potential Questions 
 
-The first `Executor`, that we implement, is the `QuestionGenerator`. It is a wrapper around the model that predicts potential questions, which a given piece of text can answer.
+The first `Executor`, thatÏ we implement, is the `QuestionGenerator`. It is a wrapper around the model that predicts potential questions, which a given piece of text can answer.
 
 Apart from that, it just loops over all provided parts of input text. After potential questions are predicted for each of the inputs, they are stored as `chunks` alongside the original text. 
 
