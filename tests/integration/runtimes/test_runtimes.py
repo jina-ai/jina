@@ -16,6 +16,93 @@ from jina.peapods.runtimes.worker import WorkerRuntime
 from jina.types.message.common import ControlMessage
 
 
+class NameChangeExecutor(Executor):
+    def __init__(self, runtime_args, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.name = runtime_args['name']
+
+    @requests
+    def foo(self, docs, **kwargs):
+        print(f'{self.name} doc count {len(docs)}')
+        docs.append(Document(text=self.name))
+        return docs
+
+
+class FastSlowExecutor(Executor):
+    @requests
+    def foo(self, docs, **kwargs):
+        for doc in docs:
+            if doc.text == 'slow':
+                time.sleep(1.0)
+
+
+async def _activate_worker(head_port, worker_port, shard_id=None):
+    # this would be done by the Pod, its adding the worker to the head
+    activate_msg = ControlMessage(command='ACTIVATE')
+    activate_msg.add_related_entity(
+        'worker', '127.0.0.1', worker_port, shard_id=shard_id
+    )
+    assert GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
+
+
+async def _create_worker(pod, type='worker', executor=None):
+    worker_port = random_port()
+    worker_process = multiprocessing.Process(
+        target=_create_worker_runtime, args=(worker_port, f'{pod}/{type}', executor)
+    )
+    worker_process.start()
+    return worker_port, worker_process
+
+
+def _create_worker_runtime(port, name='', executor=None):
+    args = set_pea_parser().parse_args([])
+    args.port_in = port
+    args.name = name
+    if executor:
+        args.uses = executor
+    with WorkerRuntime(args) as runtime:
+        runtime.run_forever()
+
+
+def _create_head_runtime(
+    port, name='', polling='ANY', uses_before=None, uses_after=None
+):
+    args = set_pea_parser().parse_args([])
+    args.port_in = port
+    args.name = name
+    args.polling = PollingType.ANY if polling == 'ANY' else PollingType.ALL
+    if uses_before:
+        args.uses_before_address = uses_before
+    if uses_after:
+        args.uses_after_address = uses_after
+
+    connection_pool = GrpcConnectionPool()
+    with HeadRuntime(args, connection_pool) as runtime:
+        runtime.run_forever()
+
+
+def _create_gateway_runtime(graph_description, pod_addresses, port_expose):
+    with GRPCGatewayRuntime(
+        set_gateway_parser().parse_args(
+            [
+                '--grpc-data-requests',
+                '--graph-description',
+                graph_description,
+                '--pods-addresses',
+                pod_addresses,
+                '--port-expose',
+                str(port_expose),
+            ]
+        )
+    ) as runtime:
+        runtime.run_forever()
+
+
+async def async_inputs():
+    for _ in range(1):
+        yield Document(text='client0-Request')
+
+
 @pytest.mark.asyncio
 # test gateway, head and worker runtime by creating them manually in the most simple configuration
 async def test_runtimes_trivial_topology():
@@ -410,80 +497,76 @@ async def test_runtimes_with_executor():
         assert process.exitcode == 0
 
 
-class NameChangeExecutor(Executor):
-    def __init__(self, runtime_args, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.name = runtime_args['name']
+@pytest.mark.asyncio
+async def test_runtimes_with_replicas_advance_faster():
+    head_port = random_port()
+    port_expose = random_port()
+    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
+    pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
 
-    @requests
-    def foo(self, docs, **kwargs):
-        print(f'{self.name} doc count {len(docs)}')
-        docs.append(Document(text=self.name))
-        return docs
-
-
-async def _activate_worker(head_port, worker_port, shard_id=None):
-    # this would be done by the Pod, its adding the worker to the head
-    activate_msg = ControlMessage(command='ACTIVATE')
-    activate_msg.add_related_entity(
-        'worker', '127.0.0.1', worker_port, shard_id=shard_id
+    # create a single head runtime
+    head_process = multiprocessing.Process(
+        target=_create_head_runtime, args=(head_port, 'head')
     )
-    assert GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
+    head_process.start()
 
-
-async def _create_worker(pod, type='worker', executor=None):
-    worker_port = random_port()
-    worker_process = multiprocessing.Process(
-        target=_create_worker_runtime, args=(worker_port, f'{pod}/{type}', executor)
-    )
-    worker_process.start()
-    return worker_port, worker_process
-
-
-def _create_worker_runtime(port, name='', executor=None):
-    args = set_pea_parser().parse_args([])
-    args.port_in = port
-    args.name = name
-    if executor:
-        args.uses = executor
-    with WorkerRuntime(args) as runtime:
-        runtime.run_forever()
-
-
-def _create_head_runtime(
-    port, name='', polling='ANY', uses_before=None, uses_after=None
-):
-    args = set_pea_parser().parse_args([])
-    args.port_in = port
-    args.name = name
-    args.polling = PollingType.ANY if polling == 'ANY' else PollingType.ALL
-    if uses_before:
-        args.uses_before_address = uses_before
-    if uses_after:
-        args.uses_after_address = uses_after
-
-    connection_pool = GrpcConnectionPool()
-    with HeadRuntime(args, connection_pool) as runtime:
-        runtime.run_forever()
-
-
-def _create_gateway_runtime(graph_description, pod_addresses, port_expose):
-    with GRPCGatewayRuntime(
-        set_gateway_parser().parse_args(
-            [
-                '--grpc-data-requests',
-                '--graph-description',
-                graph_description,
-                '--pods-addresses',
-                pod_addresses,
-                '--port-expose',
-                str(port_expose),
-            ]
+    # create the shards
+    replica_processes = []
+    for i in range(10):
+        # create worker
+        worker_port = random_port()
+        # create a single worker runtime
+        worker_process = multiprocessing.Process(
+            target=_create_worker_runtime,
+            args=(worker_port, f'pod0/{i}', 'FastSlowExecutor'),
         )
-    ) as runtime:
-        runtime.run_forever()
+        replica_processes.append(worker_process)
+        worker_process.start()
 
+        await asyncio.sleep(0.1)
 
-async def async_inputs():
-    for _ in range(1):
-        yield Document(text='client0-Request')
+        # this would be done by the Pod, its adding the worker to the head
+        activate_msg = ControlMessage(command='ACTIVATE')
+        activate_msg.add_related_entity('worker', '127.0.0.1', worker_port)
+        assert GrpcConnectionPool.send_message_sync(
+            activate_msg, f'127.0.0.1:{head_port}'
+        )
+
+    # create a single gateway runtime
+    gateway_process = multiprocessing.Process(
+        target=_create_gateway_runtime,
+        args=(graph_description, pod_addresses, port_expose),
+    )
+    gateway_process.start()
+
+    await asyncio.sleep(1.0)
+
+    c = Client(host='localhost', port=port_expose, asyncio=True)
+    input_docs = [Document(text='slow'), Document(text='fast')]
+    responses = c.post('/', inputs=input_docs, request_size=1, return_results=True)
+    response_list = []
+    async for response in responses:
+        response_list.append(response)
+
+    # clean up runtimes
+    gateway_process.terminate()
+    head_process.terminate()
+    for replica_process in replica_processes:
+        replica_process.terminate()
+
+    gateway_process.join()
+    head_process.join()
+    for replica_process in replica_processes:
+        replica_process.join()
+
+    assert len(response_list) == 2
+    for response in response_list:
+        assert len(response.docs) == 1
+
+    assert response_list[0].docs[0].text == 'fast'
+    assert response_list[1].docs[0].text == 'slow'
+
+    assert gateway_process.exitcode == 0
+    assert head_process.exitcode == 0
+    for replica_process in replica_processes:
+        assert replica_process.exitcode == 0
