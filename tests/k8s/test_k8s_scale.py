@@ -1,7 +1,6 @@
 import pytest
 
 from jina import Flow
-from jina.excepts import RuntimeFailToStart
 
 DEFAULT_REPLICAS = 2
 

@@ -5,6 +5,7 @@ import pytest
 
 from jina import Flow, Executor, Document, DocumentArray, requests
 from jina.excepts import RuntimeFailToStart, ScalingFails
+from jina.clients import Client
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 IMG_NAME = 'jina/scale-executor'
@@ -160,3 +161,51 @@ def test_scale_fail(flow_with_runtime, pod_params, mocker):
         for replica_id in r2.docs.get_attributes('tags__replica_id'):
             replica2_ids.add(replica_id)
     assert replica1_ids == replica2_ids == {0, 1}
+
+
+@pytest.mark.parametrize(
+    'pod_params',
+    [
+        (2, 3, 1),
+    ],
+    indirect=True,
+)
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_scale_with_client(flow_with_runtime, pod_params, protocol):
+    num_replicas, scale_to, shards = pod_params
+    with flow_with_runtime as f:
+        f.protocol = protocol
+        client = Client(
+            host='localhost',
+            port=str(flow_with_runtime.port_expose),
+            protocol=protocol,
+        )
+        ret1 = client.index(
+            inputs=DocumentArray([Document() for _ in range(200)]),
+            return_results=True,
+            request_size=10,
+        )
+        f.scale(pod_name='executor', replicas=scale_to)
+        ret2 = client.index(
+            inputs=DocumentArray([Document() for _ in range(200)]),
+            return_results=True,
+            request_size=10,
+        )
+
+        assert len(ret1) == 20
+        replica_ids = set()
+        for r in ret1:
+            assert len(r.docs) == 10
+            for replica_id in r.docs.get_attributes('tags__replica_id'):
+                replica_ids.add(replica_id)
+
+        assert replica_ids == set(range(num_replicas))
+
+        assert len(ret2) == 20
+        replica_ids = set()
+        for r in ret2:
+            assert len(r.docs) == 10
+            for replica_id in r.docs.get_attributes('tags__replica_id'):
+                replica_ids.add(replica_id)
+
+        assert replica_ids == set(range(scale_to))
