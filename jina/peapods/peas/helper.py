@@ -5,7 +5,7 @@ from functools import partial
 from typing import Union, TYPE_CHECKING
 
 from ... import __default_host__
-from ...enums import GatewayProtocolType, RuntimeBackendType
+from ...enums import GatewayProtocolType, RuntimeBackendType, PeaRoleType
 from ...hubble.helper import is_valid_huburi
 from ...hubble.hubio import HubIO
 
@@ -110,5 +110,7 @@ def update_runtime_cls(args, copy=False) -> 'Namespace':
 
     if hasattr(_args, 'protocol'):
         _args.runtime_cls = gateway_runtime_dict[_args.protocol]
+    if _args.pea_role == PeaRoleType.HEAD:
+        _args.runtime_cls = 'HeadRuntime'
 
     return _args
