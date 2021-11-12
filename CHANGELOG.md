@@ -113,6 +113,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -11408,4 +11409,38 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```fa14355b```](https://github.com/jina-ai/jina/commit/fa14355b25a0a63b98919f3af0842cdf0129d39f)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
  - [[```c394962b```](https://github.com/jina-ai/jina/commit/c394962b2221e60d67c6cd474022599d2790ed22)] __-__ __version__: the next version will be 2.4.2 (*Jina Dev Bot*)
+
+<a name=release-note-2-4-3></a>
+## Release Note (`2.4.3`)
+
+> Release time: 2021-11-11 23:52:04
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Gregor von Dulong,  Zhaofeng Miao,  Joan Fontanals,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```872684ac```](https://github.com/jina-ai/jina/commit/872684ac414fb5e3e95c88e0b8b96a920c8b19ce)] __-__ fix signal handling from __init__ streamlit (#3909) (*Joan Fontanals*)
+ - [[```dd3091ac```](https://github.com/jina-ai/jina/commit/dd3091ac4773845d3c5dbc37f2c5162d3eeb6d77)] __-__ __types__: fix all zeros and near zero sparse ravel (#3903) (*Han Xiao*)
+
+### 🧼 Code Refactoring
+
+ - [[```440e3c70```](https://github.com/jina-ai/jina/commit/440e3c70556fe7da2f709ff660324121857f9631)] __-__ __types__: use mixin to refactor document class (#3919) (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```355343ae```](https://github.com/jina-ai/jina/commit/355343ae990d2d7aa658a76eb207aed656139004)] __-__ create tutorial for qa bot (#3886) (*Gregor von Dulong*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```db105828```](https://github.com/jina-ai/jina/commit/db10582899a11a09a25f45f15c2a9ef70b5428a9)] __-__ fake two required jobs for ci-no-code-related workflow (#3914) (*Zhaofeng Miao*)
+
+### 🍹 Other Improvements
+
+ - [[```920dfe0e```](https://github.com/jina-ai/jina/commit/920dfe0ecb417d6fcf464d1637cc417434d77721)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```3c80a9aa```](https://github.com/jina-ai/jina/commit/3c80a9aacfca11cac2814f09ca7daf6e36c49ffc)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```1112756d```](https://github.com/jina-ai/jina/commit/1112756df0c59a2542a5083f09036ce5302fb7ef)] __-__ __version__: the next version will be 2.4.3 (*Jina Dev Bot*)
 

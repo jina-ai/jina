@@ -1,30 +1,43 @@
 """Module for Jina Requests."""
 
-from typing import Iterator, Union, Tuple, AsyncIterable, Iterable, Optional, Dict
+from typing import (
+    Iterator,
+    Union,
+    Tuple,
+    AsyncIterable,
+    Iterable,
+    Optional,
+    Dict,
+    TYPE_CHECKING,
+)
 
 from .helper import _new_data_request_from_batch, _new_data_request
 from ...enums import DataInputType
 from ...helper import batch_iterator
 from ...logging.predefined import default_logger
-from ...types.document import DocumentSourceType, DocumentContentType, Document
-from ...types.request import Request
 
-SingletonDataType = Union[
-    DocumentContentType,
-    DocumentSourceType,
-    Document,
-    Tuple[DocumentContentType, DocumentContentType],
-    Tuple[DocumentSourceType, DocumentSourceType],
-]
+if TYPE_CHECKING:
 
-GeneratorSourceType = Union[
-    Document, Iterable[SingletonDataType], AsyncIterable[SingletonDataType]
-]
+    from ...types.document import DocumentSourceType, Document
+    from ...types.document.mixins.content import DocumentContentType
+    from ...types.request import Request
+
+    SingletonDataType = Union[
+        DocumentContentType,
+        DocumentSourceType,
+        Document,
+        Tuple[DocumentContentType, DocumentContentType],
+        Tuple[DocumentSourceType, DocumentSourceType],
+    ]
+
+    GeneratorSourceType = Union[
+        Document, Iterable[SingletonDataType], AsyncIterable[SingletonDataType]
+    ]
 
 
 def request_generator(
     exec_endpoint: str,
-    data: GeneratorSourceType,
+    data: 'GeneratorSourceType',
     request_size: int = 0,
     data_type: DataInputType = DataInputType.AUTO,
     target_peapod: Optional[str] = None,

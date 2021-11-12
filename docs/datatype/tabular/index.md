@@ -1,3 +1,4 @@
+(table-type)=
 # {octicon}`table` Table
 
 

@@ -1,3 +1,4 @@
+(image-type)=
 # {octicon}`image` Image
 
 ````{tip}

@@ -1,18 +1,20 @@
 """Module for async requests generator."""
 
-from typing import AsyncIterator, Optional, Dict
+from typing import AsyncIterator, Optional, Dict, TYPE_CHECKING
 
-from . import GeneratorSourceType
 from .helper import _new_data_request_from_batch, _new_data_request
 from ...enums import DataInputType
 from ...importer import ImportExtensions
 from ...logging.predefined import default_logger
 from ...types.request import Request
 
+if TYPE_CHECKING:
+    from . import GeneratorSourceType
+
 
 async def request_generator(
     exec_endpoint: str,
-    data: GeneratorSourceType,
+    data: 'GeneratorSourceType',
     request_size: int = 0,
     data_type: DataInputType = DataInputType.AUTO,
     target_peapod: Optional[str] = None,

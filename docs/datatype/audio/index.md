@@ -1,3 +1,4 @@
+(audio-type)=
 # {octicon}`unmute` Audio
 
 Sound, or audio signals are signals that vibrate in the audible frequency range. When someone talks, it generates air

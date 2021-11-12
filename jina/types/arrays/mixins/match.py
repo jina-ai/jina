@@ -3,7 +3,6 @@ from typing import Optional, Union, Callable, Tuple, Sequence, TYPE_CHECKING
 
 import numpy as np
 
-from ...ndarray import get_array_type
 from .... import Document
 from ....math.helper import top_k, minmax_normalize, update_rows_x_mat_best
 

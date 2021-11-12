@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'docs/**'
+      - 'README.md'
 
 jobs:
   commit-lint:
