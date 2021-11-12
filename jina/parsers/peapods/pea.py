@@ -86,7 +86,7 @@ def mixin_pea_parser(parser):
         '--pea-role',
         type=PeaRoleType.from_string,
         choices=list(PeaRoleType),
-        default=PeaRoleType.SINGLETON,
+        default=PeaRoleType.WORKER,
         help='The role of this Pea in a Pod' if _SHOW_ALL_ARGS else argparse.SUPPRESS,
     )
 

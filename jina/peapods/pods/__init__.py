@@ -705,7 +705,7 @@ class Pod(BasePod):
             _args.pea_id = getattr(_args, 'shard_id', 0)
             _args.replica_id = idx
             if args.replicas > 1:
-                _args.pea_role = PeaRoleType.PARALLEL
+                _args.pea_role = PeaRoleType.WORKER
                 _args.identity = random_identity()
 
                 if _args.peas_hosts:
