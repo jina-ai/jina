@@ -186,9 +186,9 @@ class BasePea:
         :param args: extra positional arguments to pass to join
         :param kwargs: extra keyword arguments to pass to join
         """
-        self.logger.debug(f' Joining the process')
+        self.logger.debug(f'Joining the process')
         self.worker.join(*args, **kwargs)
-        self.logger.debug(f' Successfully joined the process')
+        self.logger.debug(f'Successfully joined the process')
 
     def terminate(self):
         """Terminate the Pea.
@@ -200,7 +200,8 @@ class BasePea:
             self.logger.debug(f' runtime process properly terminated')
         else:
             self.logger.debug(f'canceling the runtime thread')
-            self.runtime_cls.cancel(cancel_event=self.cancel_event)
+            # Threads can not be terminated, but they will end if the cancel_event is set
+            self.cancel_event.set()
             self.logger.debug(f'runtime thread properly canceled')
 
     def _retry_control_message(self, command: str, num_retry: int = 3):
@@ -314,7 +315,6 @@ class BasePea:
             try:
                 self.logger.debug(f' Wait to shutdown')
                 self.terminate()
-                time.sleep(0.1)
                 if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
                     raise Exception(
                         f'Shutdown signal was not received for {self._timeout_ctrl}'
