@@ -3,7 +3,9 @@ from argparse import Namespace
 from typing import Dict, Optional, Union
 
 from jina.helper import colored, random_port
-from jina.peapods import Pea, Pod, CompoundPod
+from jina.peapods.pods.factory import PodFactory
+from jina.peapods.peas.factory import PeaFactory
+from jina.peapods import BasePod, BasePea, CompoundPod
 from jina.peapods.peas.helper import update_runtime_cls
 from jina import Flow, __docker_host__
 from jina.logging.logger import JinaLogger
@@ -51,7 +53,7 @@ class PartialStore:
 class PartialPeaStore(PartialStore):
     """A Pea store spawned inside partial-daemon container"""
 
-    peapod_cls = Pea
+    peapod_constructor = PeaFactory.build_pea
 
     def add(self, args: Namespace, **kwargs) -> PartialStoreItem:
         """Starts a Pea in `partial-daemon`
@@ -66,7 +68,9 @@ class PartialPeaStore(PartialStore):
             # and on linux machines, we can access dockerhost inside containers
             if args.runtime_cls == 'ContainerRuntime':
                 args.docker_kwargs = {'extra_hosts': {__docker_host__: 'host-gateway'}}
-            self.object: Union['Pea', 'Pod'] = self.peapod_cls(args).__enter__()
+            self.object: Union['BasePea', 'BasePod'] = self.peapod_constructor(
+                args
+            ).__enter__()
         except Exception as e:
             if hasattr(self, 'object'):
                 self.object.__exit__(type(e), e, e.__traceback__)
@@ -81,7 +85,7 @@ class PartialPeaStore(PartialStore):
 class PartialPodStore(PartialPeaStore):
     """A Pod store spawned inside partial-daemon container"""
 
-    peapod_cls = Pod
+    peapod_constructor = PodFactory.build_pod
 
     def update(
         self,

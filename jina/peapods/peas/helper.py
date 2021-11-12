@@ -97,16 +97,11 @@ def update_runtime_cls(args, copy=False) -> 'Namespace':
         # NOTE: remote pea would also create a remote workspace which might take alot of time.
         # setting it to -1 so that wait_start_success doesn't fail
         _args.timeout_ready = -1
-    if _args.runtime_cls == 'WorkerRuntime' and _args.uses.startswith('docker://'):
-        _args.runtime_cls = 'ContainerRuntime'
     if _args.runtime_cls == 'WorkerRuntime' and is_valid_huburi(_args.uses):
         _hub_args = deepcopy(_args)
         _hub_args.uri = _args.uses
         _hub_args.no_usage = True
         _args.uses = HubIO(_hub_args).pull()
-
-        if _args.uses.startswith('docker://'):
-            _args.runtime_cls = 'ContainerRuntime'
 
     if hasattr(_args, 'protocol'):
         _args.runtime_cls = gateway_runtime_dict[_args.protocol]

@@ -971,7 +971,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         Remember to close the Flow with :meth:`close`.
 
         Note that this method has a timeout of ``timeout_ready`` set in CLI,
-        which is inherited all the way from :class:`jina.peapods.peas.BasePea`
+        which is inherited all the way from :class:`jina.peapods.peas.Pea`
 
 
         .. # noqa: DAR401

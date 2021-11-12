@@ -10,7 +10,7 @@ from jina import helper
 from jina.clients import Client
 from jina.excepts import BadClientInput
 from jina.parsers import set_gateway_parser
-from jina.peapods import Pea
+from jina.peapods.peas.factory import PeaFactory
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.document.generators import (
     from_csv,
@@ -73,7 +73,7 @@ def test_gateway_ready(port_expose, route, status_code):
     p = set_gateway_parser().parse_args(
         ['--port-expose', str(port_expose), '--protocol', 'http']
     )
-    with Pea(p):
+    with PeaFactory.build_pea(p):
         time.sleep(0.5)
         a = requests.get(f'http://localhost:{p.port_expose}{route}')
         assert a.status_code == status_code

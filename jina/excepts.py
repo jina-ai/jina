@@ -30,7 +30,7 @@ class NoAvailablePortError(Exception):
 
 
 class RuntimeTerminated(KeyboardInterrupt):
-    """The event loop of BasePea ends."""
+    """The event loop of Pea ends."""
 
 
 class UnknownControlCommand(RuntimeError):

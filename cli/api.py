@@ -23,10 +23,10 @@ def pea(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-    from jina.peapods import Pea
+    from jina.peapods.peas.factory import PeaFactory
 
     try:
-        with Pea(args) as p:
+        with PeaFactory.build_pea(args) as p:
             p.join()
     except KeyboardInterrupt:
         pass

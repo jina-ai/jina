@@ -1,9 +1,10 @@
+from abc import ABC, abstractmethod
 import argparse
 import multiprocessing
 import os
 import threading
 import time
-from typing import Any, Tuple, Union, Dict, Optional
+from typing import Union, Dict, Optional
 
 from ..networking import GrpcConnectionPool
 from ..runtimes.asyncio import AsyncNewLoopRuntime
@@ -14,10 +15,9 @@ from ...enums import PeaRoleType, RuntimeBackendType
 from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
 from ...helper import typename
 from ...logging.logger import JinaLogger
-
-__all__ = ['BasePea']
-
 from ...types.message.common import ControlMessage
+
+__all__ = ['BasePea', 'Pea']
 
 
 def run(
@@ -103,12 +103,14 @@ def run(
         logger.debug(f' Process terminated')
 
 
-class BasePea:
+class BasePea(ABC):
     """
-    :class:`BasePea` is a thread/process- container of :class:`BaseRuntime`. It leverages :class:`threading.Thread`
-    or :class:`multiprocessing.Process` to manage the lifecycle of a :class:`BaseRuntime` object in a robust way.
+    :class:`BasePea` is an interface from which all the classes managing the lifetime of a Runtime inside a local process,
+    container or in a remote JinaD instance (to come) must inherit.
 
-    A :class:`BasePea` must be equipped with a proper :class:`Runtime` class to work.
+    It exposes the required APIs so that the `BasePea` can be handled by the `cli` api as a context manager or by a `Pod`.
+
+    What makes a BasePea a BasePea is that it manages the lifecycle of a Runtime (gateway or not gateway)
     """
 
     def __init__(self, args: 'argparse.Namespace'):
@@ -117,7 +119,6 @@ class BasePea:
         self.args.pea_id = self.args.shard_id
         self.args.parallel = self.args.shards
         self.name = self.args.name or self.__class__.__name__
-
         self.logger = JinaLogger(self.name, **vars(self.args))
 
         if self.args.runtime_backend == RuntimeBackendType.THREAD:
@@ -137,7 +138,7 @@ class BasePea:
         # or thread.f
         self.runtime_cls = self._get_runtime_cls()
         self._timeout_ctrl = self.args.timeout_ctrl
-        self.runtime_ctrl_address = f'{self.args.host}:{self.args.port_in}'
+        self.runtime_ctrl_address = self._get_control_address()
         test_worker = {
             RuntimeBackendType.THREAD: threading.Thread,
             RuntimeBackendType.PROCESS: multiprocessing.Process,
@@ -150,58 +151,59 @@ class BasePea:
             getattr(args, 'runtime_backend', RuntimeBackendType.THREAD),
             events_list=[self.is_ready, self.is_shutdown],
         )
-        self.worker = {
-            RuntimeBackendType.THREAD: threading.Thread,
-            RuntimeBackendType.PROCESS: multiprocessing.Process,
-        }.get(getattr(args, 'runtime_backend', RuntimeBackendType.THREAD))(
-            target=run,
-            kwargs={
-                'args': args,
-                'name': self.name,
-                'envs': self._envs,
-                'is_started': self.is_started,
-                'is_shutdown': self.is_shutdown,
-                'is_ready': self.is_ready,
-                'cancel_event': self.cancel_event,
-                'runtime_cls': self.runtime_cls,
-                'jaml_classes': JAML.registered_classes(),
-            },
-        )
-        self.daemon = self.args.daemon  #: required here to set process/thread daemon
+        self.daemon = self.args.daemon
 
-    def start(self):
-        """Start the Pea.
-        This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
-        .. #noqa: DAR201
+    def _get_control_address(self):
+        return f'{self.args.host}:{self.args.port_in}'
+
+    def close(self) -> None:
+        """Close the Pea
+
+        This method makes sure that the `Process/thread` is properly finished and its resources properly released
         """
-        self.worker.start()
-        if not self.args.noblock_on_start:
-            self.wait_start_success()
-        return self
+        self.logger.debug('waiting for ready or shutdown signal from runtime')
+        if not self.is_shutdown.is_set():
+            try:
+                self.logger.debug(f' Wait to shutdown')
+                self._terminate()
+                time.sleep(0.1)
+                if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
+                    raise Exception(
+                        f'Shutdown signal was not received for {self._timeout_ctrl}'
+                    )
+            except Exception as ex:
+                self.logger.error(
+                    f'{ex!r} during {self.close!r}'
+                    + f'\n add "--quiet-error" to suppress the exception details'
+                    if not self.args.quiet_error
+                    else '',
+                    exc_info=not self.args.quiet_error,
+                )
 
-    def join(self, *args, **kwargs):
-        """Joins the Pea.
-        This method calls :meth:`join` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
-
-        :param args: extra positional arguments to pass to join
-        :param kwargs: extra keyword arguments to pass to join
-        """
-        self.logger.debug(f' Joining the process')
-        self.worker.join(*args, **kwargs)
-        self.logger.debug(f' Successfully joined the process')
-
-    def terminate(self):
-        """Terminate the Pea.
-        This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
-        """
-        if hasattr(self.worker, 'terminate'):
-            self.logger.debug(f'terminating the runtime process')
-            self.worker.terminate()
-            self.logger.debug(f' runtime process properly terminated')
+            # if it is not daemon, block until the process/thread finish work
+            if not self.args.daemon:
+                self.join()
         else:
-            self.logger.debug(f'canceling the runtime thread')
-            self.runtime_cls.cancel(cancel_event=self.cancel_event)
-            self.logger.debug(f'runtime thread properly canceled')
+            # here shutdown has been set already, therefore `run` will gracefully finish
+            self.logger.debug(
+                'shutdown is already set. Runtime will end gracefully on its own'
+            )
+            pass
+        self.logger.debug(__stop_msg__)
+        self.logger.close()
+
+    def __enter__(self):
+        return self.start()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
+    def _get_runtime_cls(self) -> AsyncNewLoopRuntime:
+        from .helper import update_runtime_cls
+        from ..runtimes import get_runtime
+
+        update_runtime_cls(self.args)
+        return get_runtime(self.args.runtime_cls)
 
     def _retry_control_message(self, command: str, num_retry: int = 3):
         for retry in range(1, num_retry + 1):
@@ -279,9 +281,8 @@ class BasePea:
             self._fail_start_timeout(_timeout)
 
     async def async_wait_start_success(self):
-        """Block until all peas starts successfully.
-
-        If not success, it will raise an error hoping the outer function to catch it
+        """
+        Wait for the `Pea` to start successfully in a non-blocking manner
         """
         import asyncio
 
@@ -304,55 +305,6 @@ class BasePea:
 
         self._fail_start_timeout(_timeout)
 
-    def close(self) -> None:
-        """Close the Pea
-
-        This method makes sure that the `Process/thread` is properly finished and its resources properly released
-        """
-        self.logger.debug('waiting for ready or shutdown signal from runtime')
-        if not self.is_shutdown.is_set():
-            try:
-                self.logger.debug(f' Wait to shutdown')
-                self.terminate()
-                time.sleep(0.1)
-                if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
-                    raise Exception(
-                        f'Shutdown signal was not received for {self._timeout_ctrl}'
-                    )
-            except Exception as ex:
-                self.logger.error(
-                    f'{ex!r} during {self.close!r}'
-                    + f'\n add "--quiet-error" to suppress the exception details'
-                    if not self.args.quiet_error
-                    else '',
-                    exc_info=not self.args.quiet_error,
-                )
-
-            # if it is not daemon, block until the process/thread finish work
-            if not self.args.daemon:
-                self.join()
-        else:
-            # here shutdown has been set already, therefore `run` will gracefully finish
-            self.logger.debug(
-                'shutdown is already set. Runtime will end gracefully on its own'
-            )
-            pass
-        self.logger.debug(__stop_msg__)
-        self.logger.close()
-
-    def __enter__(self):
-        return self.start()
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()
-
-    def _get_runtime_cls(self) -> AsyncNewLoopRuntime:
-        from .helper import update_runtime_cls
-        from ..runtimes import get_runtime
-
-        update_runtime_cls(self.args)
-        return get_runtime(self.args.runtime_cls)
-
     @property
     def role(self) -> 'PeaRoleType':
         """Get the role of this pea in a pod
@@ -361,10 +313,87 @@ class BasePea:
         .. #noqa: DAR201"""
         return self.args.pea_role
 
-    @property
-    def _is_inner_pea(self) -> bool:
-        """Determine whether this is a inner pea or a head/tail
+    @abstractmethod
+    def start(self):
+        """Start the BasePea.
+        This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
+        .. #noqa: DAR201
+        """
+        ...
+
+    @abstractmethod
+    def _terminate(self):
+        ...
+
+    @abstractmethod
+    def join(self, *args, **kwargs):
+        """Joins the BasePea. Wait for the BasePea to properly terminate
+
+        :param args: extra positional arguments
+        :param kwargs: extra keyword arguments
+        """
+        ...
 
 
-        .. #noqa: DAR201"""
-        return self.role is PeaRoleType.SINGLETON or self.role is PeaRoleType.PARALLEL
+class Pea(BasePea):
+    """
+    :class:`Pea` is a thread/process- container of :class:`BaseRuntime`. It leverages :class:`threading.Thread`
+    or :class:`multiprocessing.Process` to manage the lifecycle of a :class:`BaseRuntime` object in a robust way.
+
+    A :class:`Pea` must be equipped with a proper :class:`Runtime` class to work.
+    """
+
+    def __init__(self, args: 'argparse.Namespace'):
+        super().__init__(args)
+        self.worker = {
+            RuntimeBackendType.THREAD: threading.Thread,
+            RuntimeBackendType.PROCESS: multiprocessing.Process,
+        }.get(getattr(args, 'runtime_backend', RuntimeBackendType.THREAD))(
+            target=run,
+            kwargs={
+                'args': args,
+                'name': self.name,
+                'envs': self._envs,
+                'is_started': self.is_started,
+                'is_shutdown': self.is_shutdown,
+                'is_ready': self.is_ready,
+                'cancel_event': self.cancel_event,
+                'runtime_cls': self.runtime_cls,
+                'jaml_classes': JAML.registered_classes(),
+            },
+        )
+        self.runtime_ctrl_address = f'{self.args.host}:{self.args.port_in}'
+
+    def start(self):
+        """Start the Pea.
+        This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
+        .. #noqa: DAR201
+        """
+        self.worker.start()
+        if not self.args.noblock_on_start:
+            self.wait_start_success()
+        return self
+
+    def join(self, *args, **kwargs):
+        """Joins the Pea.
+        This method calls :meth:`join` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
+
+        :param args: extra positional arguments to pass to join
+        :param kwargs: extra keyword arguments to pass to join
+        """
+        self.logger.debug(f' Joining the process')
+        self.worker.join(*args, **kwargs)
+        self.logger.debug(f' Successfully joined the process')
+
+    def _terminate(self):
+        """Terminate the Pea.
+        This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
+        """
+        if hasattr(self.worker, 'terminate'):
+            self.logger.debug(f'terminating the runtime process')
+            self.worker.terminate()
+            self.logger.debug(f' runtime process properly terminated')
+        else:
+            self.logger.debug(f'canceling the runtime thread')
+            self.cancel_event.set()
+            self.logger.debug(f'runtime thread properly canceled')
