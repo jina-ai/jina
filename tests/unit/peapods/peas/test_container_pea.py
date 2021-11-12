@@ -5,7 +5,7 @@ import pytest
 from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
 from jina.parsers import set_gateway_parser, set_pea_parser
-from jina.peapods import Pea
+from jina.peapods.peas.container import ContainerPea
 
 
 @pytest.fixture()
@@ -26,7 +26,7 @@ class EnvChecker1(BaseExecutor):
 
 
 def test_pea_runtime_env_setting_in_process(fake_env):
-    with Pea(
+    with ContainerPea(
         set_pea_parser().parse_args(
             [
                 '--uses',
@@ -62,7 +62,7 @@ class EnvChecker2(BaseExecutor):
 def test_pea_runtime_env_setting_in_thread(fake_env):
     os.environ['key_parent'] = 'value3'
 
-    with Pea(
+    with ContainerPea(
         set_pea_parser().parse_args(
             [
                 '--uses',
@@ -104,14 +104,14 @@ def test_gateway_args(protocol, expected):
             protocol,
         ]
     )
-    p = Pea(args)
+    p = ContainerPea(args)
     assert p.runtime_cls.__name__ == expected
 
 
 def test_pea_set_shard_pea_id():
     args = set_pea_parser().parse_args(['--shard-id', '1', '--shards', '3'])
 
-    pea = Pea(args)
+    pea = ContainerPea(args)
     assert pea.args.shard_id == 1
     assert pea.args.pea_id == 1
 
@@ -139,7 +139,7 @@ def test_gateway_runtimes(protocol, expected):
         ]
     )
 
-    with Pea(args) as p:
+    with ContainerPea(args) as p:
         assert p.runtime_cls.__name__ == expected
 
 
@@ -155,7 +155,7 @@ def test_non_gateway_runtimes(runtime_cls):
         ]
     )
 
-    with Pea(args) as p:
+    with ContainerPea(args) as p:
         assert p.runtime_cls.__name__ == runtime_cls
 
 
@@ -174,7 +174,7 @@ def test_failing_executor():
     )
 
     with pytest.raises(RuntimeFailToStart):
-        with Pea(args):
+        with ContainerPea(args) as p:
             pass
 
 
@@ -200,7 +200,7 @@ def test_failing_gateway_runtimes(protocol, expected):
     )
 
     with pytest.raises(RuntimeFailToStart):
-        with Pea(args):
+        with ContainerPea(args):
             pass
 
 
@@ -214,5 +214,5 @@ def test_failing_head():
     args.port_in = None
 
     with pytest.raises(RuntimeFailToStart):
-        with Pea(args):
+        with ContainerPea(args):
             pass

@@ -136,7 +136,6 @@ class BasePea(ABC):
 
         # arguments needed to create `runtime` and communicate with it in the `run` in the stack of the new process
         # or thread.f
-        self.runtime_cls = self._get_runtime_cls()
         self._timeout_ctrl = self.args.timeout_ctrl
         self.runtime_ctrl_address = self._get_control_address()
         test_worker = {
@@ -197,13 +196,6 @@ class BasePea(ABC):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
-
-    def _get_runtime_cls(self) -> AsyncNewLoopRuntime:
-        from .helper import update_runtime_cls
-        from ..runtimes import get_runtime
-
-        update_runtime_cls(self.args)
-        return get_runtime(self.args.runtime_cls)
 
     def _retry_control_message(self, command: str, num_retry: int = 3):
         for retry in range(1, num_retry + 1):
@@ -343,6 +335,8 @@ class Pea(BasePea):
 
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
+        self.runtime_cls = self._get_runtime_cls()
+
         self.worker = {
             RuntimeBackendType.THREAD: threading.Thread,
             RuntimeBackendType.PROCESS: multiprocessing.Process,
@@ -395,3 +389,10 @@ class Pea(BasePea):
             self.logger.debug(f'canceling the runtime thread')
             self.cancel_event.set()
             self.logger.debug(f'runtime thread properly canceled')
+
+    def _get_runtime_cls(self) -> AsyncNewLoopRuntime:
+        from .helper import update_runtime_cls
+        from ..runtimes import get_runtime
+
+        update_runtime_cls(self.args)
+        return get_runtime(self.args.runtime_cls)

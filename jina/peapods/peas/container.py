@@ -193,7 +193,6 @@ class ContainerPea(BasePea):
                 'entrypoint',
                 'volumes',
                 'pull_latest',
-                'runtime_cls',
                 'docker_kwargs',
                 'gpus',
             },
