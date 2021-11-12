@@ -1,5 +1,7 @@
 import os
 import time
+import threading
+from functools import partial
 
 import pytest
 
@@ -171,41 +173,27 @@ def test_scale_fail(flow_with_runtime, pod_params, mocker):
     indirect=True,
 )
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
-def test_scale_with_client(flow_with_runtime, pod_params, protocol):
-    num_replicas, scale_to, shards = pod_params
+def test_scale_with_concurrent_client(flow_with_runtime, pod_params, protocol, reraise):
+    num_replicas, scale_to, _ = pod_params
+
+    def peer_client(port, protocol, peer_hash):
+        c = Client(protocol=protocol, port=port)
+        for _ in range(5):
+            c.index(Document(text=peer_hash), return_results=True)
+
     with flow_with_runtime as f:
         f.protocol = protocol
-        client = Client(
-            host='localhost',
-            port=str(flow_with_runtime.port_expose),
-            protocol=protocol,
-        )
-        ret1 = client.index(
-            inputs=DocumentArray([Document() for _ in range(200)]),
-            return_results=True,
-            request_size=10,
-        )
-        f.scale(pod_name='executor', replicas=scale_to)
-        ret2 = client.index(
-            inputs=DocumentArray([Document() for _ in range(200)]),
-            return_results=True,
-            request_size=10,
-        )
+        port_expose = f.port_expose
 
-        assert len(ret1) == 20
-        replica_ids = set()
-        for r in ret1:
-            assert len(r.docs) == 10
-            for replica_id in r.docs.get_attributes('tags__replica_id'):
-                replica_ids.add(replica_id)
+        thread_pool = []
+        for peer_id in range(5):
+            t = threading.Thread(
+                target=partial(peer_client, port_expose, protocol, str(peer_id)),
+                daemon=True,
+            )
+            t.start()
+            f.scale(pod_name='executor', replicas=scale_to)
+            thread_pool.append(t)
 
-        assert replica_ids == set(range(num_replicas))
-
-        assert len(ret2) == 20
-        replica_ids = set()
-        for r in ret2:
-            assert len(r.docs) == 10
-            for replica_id in r.docs.get_attributes('tags__replica_id'):
-                replica_ids.add(replica_id)
-
-        assert replica_ids == set(range(scale_to))
+        for t in thread_pool:
+            t.join()
