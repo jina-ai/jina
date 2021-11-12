@@ -201,3 +201,17 @@ def test_failing_gateway_runtimes(protocol, expected):
     with pytest.raises(RuntimeFailToStart):
         with Pea(args):
             pass
+
+
+def test_failing_head():
+    args = set_pea_parser().parse_args(
+        [
+            '--runtime-cls',
+            'HeadRuntime',
+        ]
+    )
+    args.port_in = None
+
+    with pytest.raises(RuntimeFailToStart):
+        with Pea(args):
+            pass
