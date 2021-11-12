@@ -107,7 +107,7 @@ def test_uses_before_uses_after():
 
 def _create_test_data_message(counter=0):
     req = list(request_generator('/', DocumentArray([Document(text=str(counter))])))[0]
-    msg = Message(None, req, 'test', '123')
+    msg = Message(None, req)
     return msg
 
 
@@ -124,9 +124,8 @@ def _create_runtime(args):
 
             return asyncio.create_task(mock_task_wrapper(messages, connection))
 
-        connection_pool = GrpcConnectionPool()
-        connection_pool._send_messages = _send_messages_mock
-        with HeadRuntime(args, connection_pool, cancel_event) as runtime:
+        with HeadRuntime(args, cancel_event) as runtime:
+            runtime.connection_pool._send_messages = _send_messages_mock
             runtime.run_forever()
 
     runtime_thread = Process(
@@ -160,6 +159,6 @@ def _remove_worker(args, ip='fake_ip', shard_id=None):
 
 
 def _destroy_runtime(args, cancel_event, runtime_thread):
-    HeadRuntime.cancel(cancel_event)
+    cancel_event.set()
     runtime_thread.join()
     assert not HeadRuntime.is_ready(f'{args.host}:{args.port_in}')

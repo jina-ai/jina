@@ -1,4 +1,6 @@
 import copy
+from typing import List
+
 import pytest
 import asyncio
 
@@ -408,11 +410,13 @@ class DummyMockConnectionPool:
         self.sent_msg = defaultdict(dict)
         self.responded_messages = defaultdict(dict)
 
-    def send_message(self, msg: Message, pod: str, head: bool) -> asyncio.Task:
+    def send_messages_once(
+        self, messages: List[Message], pod: str, head: bool
+    ) -> asyncio.Task:
         assert head
-        response_msg = copy.deepcopy(msg)
-        response_msg.request = Request(msg.request.proto, copy=True)
-        request = msg.request
+        response_msg = copy.deepcopy(messages[0])
+        response_msg.request = Request(messages[0].request.proto, copy=True)
+        request = messages[0].request
         new_docs = DocumentArray()
         for doc in request.docs:
             clientid = doc.text[0:7]
@@ -458,7 +462,7 @@ def create_msg_from_text(text: str):
     from jina.clients.request import request_generator
 
     req = list(request_generator('/', DocumentArray([Document(text=text)])))[0]
-    msg = Message(None, req, 'test', '123')
+    msg = Message(None, req)
     return msg
 
 

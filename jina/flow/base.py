@@ -163,8 +163,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         graph_description: Optional[str] = None,
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
-        host_out: Optional[str] = '0.0.0.0',
-        hosts_in_connect: Optional[List[str]] = None,
         log_config: Optional[str] = None,
         memory_hwm: Optional[int] = -1,
         name: Optional[str] = 'gateway',
@@ -175,7 +173,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         pods_addresses: Optional[str] = None,
         port_expose: Optional[int] = None,
         port_in: Optional[int] = None,
-        port_out: Optional[int] = None,
         prefetch: Optional[int] = 0,
         protocol: Optional[str] = 'GRPC',
         proxy: Optional[bool] = False,
@@ -187,9 +184,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         runtime_backend: Optional[str] = 'PROCESS',
         runtime_cls: Optional[str] = 'GRPCGatewayRuntime',
         shards: Optional[int] = 1,
-        socket_in: Optional[str] = 'PULL_CONNECT',
-        socket_out: Optional[str] = 'PUSH_CONNECT',
-        static_routing_table: Optional[bool] = False,
+        timeout_ctrl: Optional[int] = 5000,
         timeout_ready: Optional[int] = 600000,
         title: Optional[str] = None,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
@@ -217,9 +212,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas
         :param graph_description: Routing graph for the gateway
         :param host: The host address of the runtime, by default it is 0.0.0.0.
-        :param host_in: The host address for input, by default it is 0.0.0.0
-        :param host_out: The host address for output, by default it is 0.0.0.0
-        :param hosts_in_connect: The host address for input, by default it is 0.0.0.0
+        :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param log_config: The YAML config of the logger used in this object.
         :param memory_hwm: The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. -1 means no restriction
         :param name: The name of this object.
@@ -246,8 +239,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.
         :param pods_addresses: dictionary JSON with the input addresses of each Pod
         :param port_expose: The port that the gateway exposes for clients for GRPC connections.
-        :param port_in: The port for input data, default a random port between [49152, 65535]
-        :param port_out: The port for output data, default a random port between [49152, 65535]
+        :param port_in: The port for input data to bind to, default a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
               Used to control the speed of data input into a Flow. 0 disables prefetch (disabled by default)
@@ -266,9 +258,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param runtime_backend: The parallel backend of the runtime inside the Pea
         :param runtime_cls: The runtime class to run inside the Pea
         :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary. For more details check https://docs.jina.ai/fundamentals/flow/topology/
-        :param socket_in: The socket type for input port
-        :param socket_out: The socket type for output port
-        :param static_routing_table: Defines if the routing table should be pre computed by the Flow. In this case it is statically defined for each Pod and not send on every data request. Can not be used in combination with external pods
+        :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param uses: The config of the executor, it could be one of the followings:
@@ -306,7 +296,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         name: Optional[str] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
-        static_routing_table: Optional[bool] = False,
+        timeout_ctrl: Optional[int] = 5000,
         uses: Optional[str] = None,
         workspace: Optional[str] = './',
         **kwargs,
@@ -329,7 +319,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           When not given, then the default naming strategy will apply.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
-        :param static_routing_table: Defines if the routing table should be pre computed by the Flow. In this case it is statically defined for each Pod and not send on every data request. Can not be used in combination with external pods
+        :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param uses: The YAML file represents a flow
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
@@ -530,8 +520,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         gpus: Optional[str] = None,
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
-        host_out: Optional[str] = '0.0.0.0',
-        hosts_in_connect: Optional[List[str]] = None,
         install_requirements: Optional[bool] = False,
         log_config: Optional[str] = None,
         memory_hwm: Optional[int] = -1,
@@ -542,7 +530,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         polling: Optional[str] = 'ANY',
         port_in: Optional[int] = None,
         port_jinad: Optional[int] = 8000,
-        port_out: Optional[int] = None,
         pull_latest: Optional[bool] = False,
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
@@ -554,9 +541,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         runtime_cls: Optional[str] = 'WorkerRuntime',
         scheduling: Optional[str] = 'LOAD_BALANCE',
         shards: Optional[int] = 1,
-        socket_in: Optional[str] = 'PULL_BIND',
-        socket_out: Optional[str] = 'PUSH_BIND',
-        static_routing_table: Optional[bool] = False,
+        timeout_ctrl: Optional[int] = 5000,
         timeout_ready: Optional[int] = 600000,
         upload_files: Optional[List[str]] = None,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
@@ -593,9 +578,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
               - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
               - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
         :param host: The host address of the runtime, by default it is 0.0.0.0.
-        :param host_in: The host address for input, by default it is 0.0.0.0
-        :param host_out: The host address for output, by default it is 0.0.0.0
-        :param hosts_in_connect: The host address for input, by default it is 0.0.0.0
+        :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
         :param log_config: The YAML config of the logger used in this object.
         :param memory_hwm: The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. -1 means no restriction
@@ -623,9 +606,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param polling: The polling strategy of the Pod (when `shards>1`)
           - ANY: only one (whoever is idle) Pea polls the message
           - ALL: all Peas poll the message (like a broadcast)
-        :param port_in: The port for input data, default a random port between [49152, 65535]
+        :param port_in: The port for input data to bind to, default a random port between [49152, 65535]
         :param port_jinad: The port of the remote machine for usage with JinaD.
-        :param port_out: The port for output data, default a random port between [49152, 65535]
         :param pull_latest: Pull the latest image before running
         :param py_modules: The customized python modules need to be imported before loading the executor
 
@@ -642,9 +624,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param runtime_cls: The runtime class to run inside the Pea
         :param scheduling: The strategy of scheduling workload among Peas
         :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary. For more details check https://docs.jina.ai/fundamentals/flow/topology/
-        :param socket_in: The socket type for input port
-        :param socket_out: The socket type for output port
-        :param static_routing_table: Defines if the routing table should be pre computed by the Flow. In this case it is statically defined for each Pod and not send on every data request. Can not be used in combination with external pods
+        :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever
         :param upload_files: The files on the host to be uploaded to the remote
           workspace. This can be useful when your Pod has more
